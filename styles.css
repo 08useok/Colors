@@ -474,6 +474,39 @@ body {
   margin: 12px 0 0;
 }
 
+.daily-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 80, 60, 0.15);
+  border: 1px solid rgba(255, 100, 80, 0.3);
+  color: #ffb4a8;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.lobby-recovery-btn {
+  margin-top: 10px;
+  background: linear-gradient(135deg, #6b4226, #9b6240);
+  color: #ffdac6;
+}
+
+.lobby-recovery-btn:hover { opacity: 0.88; }
+
+.daily-recovery-info {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(255, 210, 158, 0.12);
+  border: 1px solid rgba(255, 210, 158, 0.3);
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
 .char-btn.selected {
   border-color: rgba(255, 210, 158, 0.8);
   background: rgba(255, 210, 158, 0.14);

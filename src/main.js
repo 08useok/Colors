@@ -4,8 +4,17 @@ const canvas = document.getElementById("game-canvas");
 const messageOverlay = document.getElementById("message-overlay");
 const accountCreation = document.getElementById("account-creation");
 const lobbyMain = document.getElementById("lobby-main");
+const idInput = document.getElementById("id-input");
 const nicknameInput = document.getElementById("nickname-input");
 const createAccountBtn = document.getElementById("create-account-btn");
+const dailyLogin = document.getElementById("daily-login");
+const dailyLoginNickname = document.getElementById("daily-login-nickname");
+const dailyLoginLevel = document.getElementById("daily-login-level");
+const dailyIdInput = document.getElementById("daily-id-input");
+const dailyLoginError = document.getElementById("daily-login-error");
+const dailyLoginBtn = document.getElementById("daily-login-btn");
+const accountRecoveryBtn = document.getElementById("account-recovery-btn");
+const accountRecoveryInfo = document.getElementById("account-recovery-info");
 const startBattleBtn = document.getElementById("start-battle-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
 const lobbyLevel = document.getElementById("lobby-level");
@@ -108,8 +117,34 @@ function saveAccount(account) {
   }
 }
 
-function createAccount(nickname) {
-  const account = { nickname, trophies: 0, wins: 0, losses: 0, selectedCharacter: "red" };
+function getTodayString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isLoginDoneToday(account) {
+  return account.lastLoginDate === getTodayString();
+}
+
+function getLoginAttemptsToday(account) {
+  if (account.lastLoginDate !== getTodayString()) return 0;
+  return account.loginAttempts ?? 0;
+}
+
+function isLockedToday(account) {
+  return getLoginAttemptsToday(account) >= 5;
+}
+
+function createAccount(id, nickname) {
+  const account = {
+    id,
+    nickname,
+    trophies: 0,
+    wins: 0,
+    losses: 0,
+    selectedCharacter: "red",
+    lastLoginDate: getTodayString(),
+    loginAttempts: 0,
+  };
   saveAccount(account);
   return account;
 }
@@ -131,19 +166,59 @@ function updateLobbyUI(account) {
   state.selectedCharacter = account.selectedCharacter;
 }
 
+function showDailyLogin(account) {
+  dailyLoginNickname.textContent = account.nickname;
+  dailyLoginLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
+  dailyIdInput.value = "";
+  dailyLoginError.style.display = "none";
+  dailyLoginError.textContent = "";
+  accountRecoveryInfo.style.display = "none";
+
+  // 날짜가 바뀌었으면 시도 횟수 리셋
+  if (account.lastLoginDate !== getTodayString()) {
+    account.loginAttempts = 0;
+    saveAccount(account);
+  }
+
+  const locked = isLockedToday(account);
+  dailyIdInput.disabled = locked;
+  dailyLoginBtn.disabled = locked;
+  accountRecoveryBtn.style.display = locked ? "block" : "none";
+
+  if (locked) {
+    dailyLoginError.textContent = "아이디 입력 횟수를 초과했습니다.";
+    dailyLoginError.style.display = "block";
+  }
+
+  setTimeout(() => { if (!locked) dailyIdInput.focus(); }, 50);
+}
+
 function showLobby() {
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   const account = loadAccount();
-  if (account) {
-    accountCreation.style.display = "none";
-    lobbyMain.style.display = "block";
-    updateLobbyUI(account);
-  } else {
+
+  if (!account || !account.id) {
+    // 계정 없거나 구버전 계정(id 없음) → 회원가입
     accountCreation.style.display = "block";
     lobbyMain.style.display = "none";
+    dailyLogin.style.display = "none";
+    idInput.value = "";
     nicknameInput.value = "";
-    setTimeout(() => nicknameInput.focus(), 50);
+    createAccountBtn.disabled = true;
+    setTimeout(() => idInput.focus(), 50);
+  } else if (isLoginDoneToday(account)) {
+    // 오늘 인증 완료 → 로비 메인
+    accountCreation.style.display = "none";
+    lobbyMain.style.display = "block";
+    dailyLogin.style.display = "none";
+    updateLobbyUI(account);
+  } else {
+    // 오늘 미인증 → 일일 인증 화면
+    accountCreation.style.display = "none";
+    lobbyMain.style.display = "none";
+    dailyLogin.style.display = "block";
+    showDailyLogin(account);
   }
 }
 
@@ -1819,11 +1894,19 @@ function setupInput() {
     }
   }
 
-  // 계정 생성
+  // 계정 생성 — 버튼 활성화 검사
+  function validateCreateBtn() {
+    createAccountBtn.disabled = !idInput.value.trim() || !nicknameInput.value.trim();
+  }
+  idInput.addEventListener("input", validateCreateBtn);
+  nicknameInput.addEventListener("input", validateCreateBtn);
+  idInput.addEventListener("keydown", (e) => { if (e.key === "Enter") nicknameInput.focus(); });
+
   createAccountBtn.addEventListener("click", () => {
+    const id = idInput.value.trim();
     const nick = nicknameInput.value.trim();
-    if (!nick) { nicknameInput.focus(); return; }
-    const account = createAccount(nick);
+    if (!id || !nick) return;
+    const account = createAccount(id, nick);
     accountCreation.style.display = "none";
     lobbyMain.style.display = "block";
     updateLobbyUI(account);
@@ -1831,6 +1914,60 @@ function setupInput() {
 
   nicknameInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") createAccountBtn.click();
+  });
+
+  // 일일 아이디 인증
+  function handleDailyLogin() {
+    const account = loadAccount();
+    if (!account) return;
+
+    const today = getTodayString();
+    // 날짜 바뀌었으면 시도 리셋
+    if (account.lastLoginDate !== today) {
+      account.loginAttempts = 0;
+    }
+
+    const entered = dailyIdInput.value.trim();
+    if (!entered) { dailyIdInput.focus(); return; }
+
+    if (entered === account.id) {
+      // 성공
+      account.lastLoginDate = today;
+      account.loginAttempts = 0;
+      saveAccount(account);
+      dailyLogin.style.display = "none";
+      lobbyMain.style.display = "block";
+      updateLobbyUI(account);
+    } else {
+      // 실패
+      account.loginAttempts += 1;
+      saveAccount(account);
+
+      const remaining = Math.max(0, 5 - account.loginAttempts);
+      if (account.loginAttempts >= 5) {
+        dailyLoginError.textContent = "아이디가 틀렸습니다.";
+        dailyLoginError.style.display = "block";
+        dailyIdInput.disabled = true;
+        dailyLoginBtn.disabled = true;
+        accountRecoveryBtn.style.display = "block";
+      } else {
+        dailyLoginError.textContent = `아이디가 틀렸습니다. 남은 시도: ${remaining}회`;
+        dailyLoginError.style.display = "block";
+      }
+      dailyIdInput.value = "";
+      dailyIdInput.focus();
+    }
+  }
+
+  dailyLoginBtn.addEventListener("click", handleDailyLogin);
+  dailyIdInput.addEventListener("keydown", (e) => { if (e.key === "Enter") handleDailyLogin(); });
+
+  // 계정 문제 해결하기
+  accountRecoveryBtn.addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    accountRecoveryInfo.textContent = `내 아이디: ${account.id}`;
+    accountRecoveryInfo.style.display = "block";
   });
 
   // 캐릭터 선택 (선택만, 게임 시작은 전투 시작 버튼)
