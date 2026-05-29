@@ -82,13 +82,15 @@ const CHARACTERS = {
     color: 0xe53729,
     maxHealth: 10000,
     attackType: "punch",
+    reloadDuration: 0.5,
   },
   green: {
     color: 0x3dbd4a,
     maxHealth: 8400,
     attackType: "boomerang",
+    reloadDuration: 1.0,
     boomerangCount: 4,
-    boomerangDamage: 800,
+    boomerangDamage: 1000,
     boomerangRange: 5,
     boomerangSpeed: 16,
     boomerangFarThreshold: 3.5,
@@ -1079,7 +1081,7 @@ function startReload(fighter) {
   }
   fighter.isReloading = true;
   fighter.pendingAutoReload = false;
-  fighter.reloadEndsAt = state.gameTime + reloadDuration;
+  fighter.reloadEndsAt = state.gameTime + (CHARACTERS[fighter.characterType]?.reloadDuration ?? reloadDuration);
   if (fighter.isPlayer) {
     audio.play("reload");
   }
