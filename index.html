@@ -66,26 +66,53 @@
       <div id="warning" class="hidden">자기장 밖입니다</div>
       <div id="kill-feed"></div>
 
+      <!-- 로비 오버레이 -->
       <div id="message-overlay">
-        <div class="message-card">
+
+        <!-- 계정 생성 (최초 1회) -->
+        <div id="account-creation" class="message-card hidden">
           <h1>해골천</h1>
-          <p>WASD 이동 · 마우스로 조준 · 클릭으로 공격 · R 장전</p>
-          <p class="char-select-label">캐릭터를 선택하세요</p>
+          <p class="lobby-intro">배틀로얄 전장에 오신 것을 환영합니다</p>
+          <p class="char-select-label">닉네임을 입력하세요</p>
+          <input id="nickname-input" class="lobby-input" type="text" maxlength="12" placeholder="최대 12자" autocomplete="off">
+          <button id="create-account-btn" class="lobby-start-btn" type="button">전장 입장</button>
+        </div>
+
+        <!-- 로비 메인 -->
+        <div id="lobby-main" class="message-card hidden">
+          <div class="lobby-header">
+            <div class="lobby-left">
+              <div class="lobby-nickname" id="lobby-nickname">플레이어</div>
+              <div class="lobby-level" id="lobby-level">Lv.1</div>
+            </div>
+            <div class="lobby-right">
+              <div class="lobby-trophy">🏆 <span id="lobby-trophies">0</span></div>
+              <div class="lobby-record" id="lobby-record">0승 0패</div>
+            </div>
+          </div>
+
+          <div class="lobby-divider"></div>
+
+          <p class="char-select-label">캐릭터 선택</p>
           <div class="char-select-row">
-            <button id="select-red" class="char-btn" type="button">
+            <button id="select-red" class="char-btn" type="button" data-char="red">
               <div class="char-icon char-icon-red">R</div>
               <div class="char-name">Red</div>
               <div class="char-stats">HP 10,000</div>
               <div class="char-desc">더블 펀치 · 사거리 4타일</div>
             </button>
-            <button id="select-green" class="char-btn" type="button">
+            <button id="select-green" class="char-btn" type="button" data-char="green">
               <div class="char-icon char-icon-green">G</div>
               <div class="char-name">Green</div>
               <div class="char-stats">HP 8,400</div>
-              <div class="char-desc">부메랑 4연발 · 사거리 5타일</div>
+              <div class="char-desc">부메랑 60° 4연발 · 사거리 5타일</div>
             </button>
           </div>
+
+          <p class="lobby-controls">WASD 이동 · 마우스 조준 · 클릭 공격 · R 장전</p>
+          <button id="start-battle-btn" class="lobby-start-btn" type="button">전투 시작</button>
         </div>
+
       </div>
 
       <div id="result-overlay" class="hidden">

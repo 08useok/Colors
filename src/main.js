@@ -2,6 +2,15 @@ import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
 
 const canvas = document.getElementById("game-canvas");
 const messageOverlay = document.getElementById("message-overlay");
+const accountCreation = document.getElementById("account-creation");
+const lobbyMain = document.getElementById("lobby-main");
+const nicknameInput = document.getElementById("nickname-input");
+const createAccountBtn = document.getElementById("create-account-btn");
+const startBattleBtn = document.getElementById("start-battle-btn");
+const lobbyNickname = document.getElementById("lobby-nickname");
+const lobbyLevel = document.getElementById("lobby-level");
+const lobbyTrophies = document.getElementById("lobby-trophies");
+const lobbyRecord = document.getElementById("lobby-record");
 const resultOverlay = document.getElementById("result-overlay");
 const resultTitle = document.getElementById("result-title");
 const resultBody = document.getElementById("result-body");
@@ -74,11 +83,84 @@ const CHARACTERS = {
     boomerangRange: 5,
     boomerangSpeed: 16,
     boomerangFarThreshold: 3.5,
-    boomerangFarMultiplier: 0.7,
-    boomerangAngles: [-22.5, -7.5, 7.5, 22.5].map((d) => d * (Math.PI / 180)),
+    boomerangFarMultiplier: 0.625,
+    boomerangAngles: [-30, -10, 10, 30].map((d) => d * (Math.PI / 180)),
   },
 };
 
+// ── 계정 관리 ──────────────────────────────────────────────────────────────
+const ACCOUNT_KEY = "skullCreekAccount";
+
+function loadAccount() {
+  try {
+    const raw = localStorage.getItem(ACCOUNT_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveAccount(account) {
+  try {
+    localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+  } catch {
+    // storage unavailable — ignore
+  }
+}
+
+function createAccount(nickname) {
+  const account = { nickname, trophies: 0, wins: 0, losses: 0, selectedCharacter: "red" };
+  saveAccount(account);
+  return account;
+}
+
+function calcLevel(trophies) {
+  return Math.floor(trophies / 300) + 1;
+}
+
+function updateLobbyUI(account) {
+  lobbyNickname.textContent = account.nickname;
+  lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
+  lobbyTrophies.textContent = account.trophies;
+  lobbyRecord.textContent = `${account.wins}승 ${account.losses}패`;
+
+  // 캐릭터 선택 상태 반영
+  document.querySelectorAll(".char-btn").forEach((btn) => {
+    btn.classList.toggle("selected", btn.dataset.char === account.selectedCharacter);
+  });
+  state.selectedCharacter = account.selectedCharacter;
+}
+
+function showLobby() {
+  messageOverlay.style.display = "flex";
+  resultOverlay.style.display = "none";
+  const account = loadAccount();
+  if (account) {
+    accountCreation.style.display = "none";
+    lobbyMain.style.display = "block";
+    updateLobbyUI(account);
+  } else {
+    accountCreation.style.display = "block";
+    lobbyMain.style.display = "none";
+    nicknameInput.value = "";
+    setTimeout(() => nicknameInput.focus(), 50);
+  }
+}
+
+function recordGameResult(won) {
+  const account = loadAccount();
+  if (!account) return;
+  if (won) {
+    account.wins += 1;
+    account.trophies += 30;
+  } else {
+    account.losses += 1;
+    account.trophies = Math.max(0, account.trophies - 10);
+  }
+  saveAccount(account);
+}
+
+// ──────────────────────────────────────────────────────────────────────────
 const aimRaycaster = new THREE.Raycaster();
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const mouseAimWorld = new THREE.Vector3();
@@ -580,6 +662,67 @@ const zoneRing = (() => {
 
 const attackAimIndicator = createAttackAimIndicator();
 
+function createGreenAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.green.boomerangRange;
+  const halfAngle = Math.PI / 6; // 30° = half of 60°
+
+  // Fan fill (ShapeGeometry in XZ plane via rotation)
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  const segments = 24;
+  for (let i = 0; i <= segments; i += 1) {
+    const a = -halfAngle + (i / segments) * halfAngle * 2;
+    shape.lineTo(Math.sin(a) * range, Math.cos(a) * range);
+  }
+  shape.lineTo(0, 0);
+  const fanMesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(shape),
+    new THREE.MeshBasicMaterial({
+      color: 0x3dea60,
+      transparent: true,
+      opacity: 0.13,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  fanMesh.rotation.x = -Math.PI / 2;
+  fanMesh.position.y = 0.08;
+  group.add(fanMesh);
+
+  // Arc outline
+  const arcPts = [];
+  for (let i = 0; i <= 32; i += 1) {
+    const a = -halfAngle + (i / 32) * halfAngle * 2;
+    arcPts.push(new THREE.Vector3(Math.sin(a) * range, 0.09, Math.cos(a) * range));
+  }
+  const arcLine = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(arcPts),
+    new THREE.LineBasicMaterial({ color: 0x7dff8a, transparent: true, opacity: 0.55 }),
+  );
+  group.add(arcLine);
+
+  // Side lines
+  [-halfAngle, halfAngle].forEach((a) => {
+    const sideLine = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0.09, 0),
+        new THREE.Vector3(Math.sin(a) * range, 0.09, Math.cos(a) * range),
+      ]),
+      new THREE.LineBasicMaterial({ color: 0x7dff8a, transparent: true, opacity: 0.55 }),
+    );
+    group.add(sideLine);
+  });
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { fanMesh };
+  scene.add(group);
+  return group;
+}
+
+const greenAimIndicator = createGreenAimIndicator();
+
 function rebuildAmmoPips() {
   ammoPips.innerHTML = "";
   for (let i = 0; i < maxAmmo; i += 1) {
@@ -713,8 +856,8 @@ function resetGame() {
   initPlayers();
   rebuildAmmoPips();
   updateHud();
-  resultOverlay.classList.add("hidden");
-  messageOverlay.classList.add("hidden");
+  resultOverlay.style.display = "none";
+  messageOverlay.style.display = "none";
 }
 
 function getPlayer() {
@@ -1407,22 +1550,36 @@ function updateCamera(dt) {
 
 function updateAttackAimIndicator() {
   const player = getPlayer();
+  const isGreen = player?.characterType === "green";
+
   if (!player || player.dead || !state.running) {
     attackAimIndicator.visible = false;
+    greenAimIndicator.visible = false;
     return;
   }
 
-  attackAimIndicator.visible = true;
-  attackAimIndicator.position.set(player.mesh.position.x, 0, player.mesh.position.z);
-  attackAimIndicator.rotation.y = player.yaw;
-
+  const pos = player.mesh.position;
+  const yaw = player.yaw;
   const unavailable = player.isReloading || player.ammo <= 0;
-  const activeAlpha = unavailable ? 0.08 : 0.14;
-  const edgeAlpha = unavailable ? 0.22 : 0.5;
 
-  attackAimIndicator.userData.rect.material.opacity = activeAlpha;
-  attackAimIndicator.userData.edge.material.opacity = edgeAlpha;
-  attackAimIndicator.userData.centerLine.material.opacity = unavailable ? 0.18 : 0.45;
+  if (isGreen) {
+    attackAimIndicator.visible = false;
+    greenAimIndicator.visible = true;
+    greenAimIndicator.position.set(pos.x, 0, pos.z);
+    greenAimIndicator.rotation.y = yaw;
+    greenAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.13;
+  } else {
+    greenAimIndicator.visible = false;
+    attackAimIndicator.visible = true;
+    attackAimIndicator.position.set(pos.x, 0, pos.z);
+    attackAimIndicator.rotation.y = yaw;
+
+    const activeAlpha = unavailable ? 0.08 : 0.14;
+    const edgeAlpha = unavailable ? 0.22 : 0.5;
+    attackAimIndicator.userData.rect.material.opacity = activeAlpha;
+    attackAimIndicator.userData.edge.material.opacity = edgeAlpha;
+    attackAimIndicator.userData.centerLine.material.opacity = unavailable ? 0.18 : 0.45;
+  }
 }
 
 function updateHud() {
@@ -1470,16 +1627,21 @@ function checkEndState() {
     state.running = false;
     const winner = alive[0];
     if (!winner) {
+      recordGameResult(false);
       resultTitle.textContent = "무승부";
       resultBody.textContent = "모두 쓰러졌습니다. 다시 전투를 시작해 보세요.";
     } else if (winner.isPlayer) {
-      resultTitle.textContent = "승리";
-      resultBody.textContent = "해골천의 최후의 1인이 되었습니다.";
+      recordGameResult(true);
+      const account = loadAccount();
+      resultTitle.textContent = "승리! 🏆";
+      resultBody.textContent = `해골천의 최후의 1인이 되었습니다. +30 트로피${account ? ` (총 ${account.trophies})` : ""}`;
     } else {
+      recordGameResult(false);
+      const account = loadAccount();
       resultTitle.textContent = "패배";
-      resultBody.textContent = `${winner.name}에게 전장을 내주었습니다. 다시 시도해 보세요.`;
+      resultBody.textContent = `${winner.name}에게 전장을 내주었습니다. -10 트로피${account ? ` (총 ${account.trophies})` : ""}`;
     }
-    resultOverlay.classList.remove("hidden");
+    resultOverlay.style.display = "flex";
     document.exitPointerLock?.();
   }
 }
@@ -1648,18 +1810,47 @@ function setupInput() {
     }
   }
 
-  async function selectAndStart(characterType) {
-    state.selectedCharacter = characterType;
+  // 계정 생성
+  createAccountBtn.addEventListener("click", () => {
+    const nick = nicknameInput.value.trim();
+    if (!nick) { nicknameInput.focus(); return; }
+    const account = createAccount(nick);
+    accountCreation.style.display = "none";
+    lobbyMain.style.display = "block";
+    updateLobbyUI(account);
+  });
+
+  nicknameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") createAccountBtn.click();
+  });
+
+  // 캐릭터 선택 (선택만, 게임 시작은 전투 시작 버튼)
+  document.getElementById("select-red").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "red";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
+  document.getElementById("select-green").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "green";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
+  // 전투 시작
+  startBattleBtn.addEventListener("click", async () => {
     await initAudio();
+    messageOverlay.style.display = "none";
     resetGame();
-  }
+  });
 
-  document.getElementById("select-red").addEventListener("click", () => selectAndStart("red"));
-  document.getElementById("select-green").addEventListener("click", () => selectAndStart("green"));
-
+  // 재시작 → 로비
   restartButton.addEventListener("click", () => {
-    resultOverlay.classList.add("hidden");
-    messageOverlay.classList.remove("hidden");
+    showLobby();
   });
 
   mobileAttackButton.addEventListener("pointerdown", async (event) => {
@@ -1677,3 +1868,4 @@ setupInput();
 animate();
 rebuildAmmoPips();
 updateHud();
+showLobby();

@@ -305,9 +305,7 @@ body {
   letter-spacing: 0.05em;
 }
 
-#warning.hidden,
-#result-overlay.hidden,
-#message-overlay.hidden {
+.hidden {
   display: none;
 }
 
@@ -385,6 +383,103 @@ body {
   cursor: pointer;
 }
 
+/* ── 로비 ── */
+.lobby-intro {
+  margin: 6px 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.lobby-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 210, 158, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+.lobby-input:focus {
+  border-color: rgba(255, 210, 158, 0.7);
+}
+
+.lobby-start-btn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 13px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff9342, #ffd166);
+  color: #2f1909;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+
+.lobby-start-btn:hover { opacity: 0.88; }
+.lobby-start-btn:active { transform: scale(0.97); }
+.lobby-start-btn:disabled { opacity: 0.35; cursor: default; }
+
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.lobby-nickname {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+
+.lobby-level {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.lobby-right {
+  text-align: right;
+}
+
+.lobby-trophy {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+
+.lobby-record {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.lobby-divider {
+  height: 1px;
+  background: rgba(255, 210, 158, 0.15);
+  margin: 14px 0;
+}
+
+.lobby-controls {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+
+.char-btn.selected {
+  border-color: rgba(255, 210, 158, 0.8);
+  background: rgba(255, 210, 158, 0.14);
+}
+
+/* ── 캐릭터 선택 공통 ── */
 .char-select-label {
   margin: 16px 0 10px;
   font-size: 13px;
