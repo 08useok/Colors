@@ -1081,8 +1081,10 @@ function beginBoomerangAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.12);
 
-  charDef.boomerangAngles.forEach((angleOffset) => {
+  charDef.boomerangAngles.forEach((angleOffset, index) => {
     const yaw = fighter.yaw + angleOffset;
+    const mesh = createBoomerangMesh(fighter.mesh.position, yaw);
+    mesh.visible = false;
     state.projectiles.push({
       ownerId: fighter.id,
       x: fighter.mesh.position.x,
@@ -1094,7 +1096,8 @@ function beginBoomerangAttack(fighter) {
       farThreshold: charDef.boomerangFarThreshold,
       farMultiplier: charDef.boomerangFarMultiplier,
       distTraveled: 0,
-      mesh: createBoomerangMesh(fighter.mesh.position, yaw),
+      launchAt: state.gameTime + index * 0.08,
+      mesh,
     });
   });
 
@@ -1110,6 +1113,12 @@ function beginBoomerangAttack(fighter) {
 function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
+
+    if (state.gameTime < proj.launchAt) {
+      continue;
+    }
+    proj.mesh.visible = true;
+
     const step = Math.hypot(proj.vx, proj.vz) * dt;
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
