@@ -313,17 +313,17 @@ function createAttackAimIndicator() {
     depthWrite: false,
   });
 
-  // 첫 번째 공격: 왼쪽 1타일
+  // 첫 번째 공격: 오른쪽 0.5타일
+  const rectRight = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
+  rectRight.rotation.x = -Math.PI / 2;
+  rectRight.position.set(0.5, 0.08, attackDepth * 0.5);
+  group.add(rectRight);
+
+  // 두 번째 공격: 왼쪽 1타일
   const rectLeft = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
   rectLeft.rotation.x = -Math.PI / 2;
   rectLeft.position.set(-1, 0.08, attackDepth * 0.5);
   group.add(rectLeft);
-
-  // 두 번째 공격: 오른쪽 1타일
-  const rectRight = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectRight.rotation.x = -Math.PI / 2;
-  rectRight.position.set(1, 0.08, attackDepth * 0.5);
-  group.add(rectRight);
 
   const edge = new THREE.Mesh(
     new THREE.PlaneGeometry(attackWidth * 2 + 2, 0.2),
@@ -841,8 +841,8 @@ function createAttackEffect(attacker, hitIndex) {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.y = attacker.yaw - Math.PI / 2;
   mesh.rotation.x = Math.PI / 2;
-  // 앞방향 + 좌우 오프셋 (hitIndex 0: 왼쪽, 1: 오른쪽)
-  const effectSide = hitIndex === 0 ? -1 : 1;
+  // 앞방향 + 좌우 오프셋 (hitIndex 0: 오른쪽 0.5, 1: 왼쪽 -1)
+  const effectSide = hitIndex === 0 ? 0.5 : -1;
   tempVec3.set(Math.sin(attacker.yaw), 0, Math.cos(attacker.yaw)).multiplyScalar(Math.max(1.2, attackDepth * 0.55));
   tempVec3.x += Math.cos(attacker.yaw) * effectSide;
   tempVec3.z -= Math.sin(attacker.yaw) * effectSide;
@@ -1268,8 +1268,8 @@ function resolveAttack(attacker, hitIndex, damage) {
   const spreadOffset = attacker.spread * 0.2 * (Math.random() * 2 - 1);
   const sinYaw = Math.sin(attacker.yaw);
   const cosYaw = Math.cos(attacker.yaw);
-  // 첫 번째 공격(hitIndex 0): 왼쪽(-1), 두 번째(hitIndex 1): 오른쪽(+1)
-  const punchSide = hitIndex === 0 ? -1 : 1;
+  // 첫 번째 공격(hitIndex 0): 오른쪽(+0.5), 두 번째(hitIndex 1): 왼쪽(-1)
+  const punchSide = hitIndex === 0 ? 0.5 : -1;
   let bestTarget = null;
   let bestScore = -Infinity;
 
