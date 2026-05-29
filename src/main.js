@@ -222,16 +222,20 @@ function showLobby() {
   }
 }
 
-function recordGameResult(won) {
+function calcTrophyChange(rank) {
+  return 12 - rank * 2; // 1위 +10, 6위 0, 10위 -8
+}
+
+function recordGameResult(rank) {
   const account = loadAccount();
   if (!account) return;
-  if (won) {
+  if (rank === 1) {
     account.wins += 1;
-    account.trophies += 30;
   } else {
     account.losses += 1;
-    account.trophies = Math.max(0, account.trophies - 10);
   }
+  const delta = calcTrophyChange(rank);
+  account.trophies = Math.max(0, account.trophies + delta);
   saveAccount(account);
 }
 
@@ -257,6 +261,7 @@ const state = {
   winner: "",
   players: [],
   projectiles: [],
+  deathOrder: [],
   solids: [],
   bushes: [],
   lakeRects: [],
@@ -916,6 +921,7 @@ function resetGame() {
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
   state.projectiles = [];
+  state.deathOrder = [];
   state.effects.forEach((effect) => scene.remove(effect.mesh));
   state.effects = [];
   state.feedback.hitFlashUntil = 0;
@@ -1327,6 +1333,7 @@ function applyDamage(target, amount, attacker = null) {
     target.mesh.visible = false;
     target.shadow.visible = false;
     target.healthBar.visible = false;
+    state.deathOrder.push(target.id);
     if (attacker) {
       addKillFeed(`${attacker.name} 처치 -> ${target.name}`);
       if (attacker.isPlayer || target.isPlayer) {
@@ -1421,7 +1428,7 @@ function chooseBotTarget(bot) {
     const dx = fighter.mesh.position.x - bot.mesh.position.x;
     const dz = fighter.mesh.position.z - bot.mesh.position.z;
     const distanceSq = dx * dx + dz * dz;
-    if (distanceSq > 30 * 30) {
+    if (distanceSq > 50 * 50) {
       continue;
     }
     if (!isVisibleThroughBush(bot, fighter) && distanceSq > 9 * 9) {
@@ -1710,20 +1717,26 @@ function checkEndState() {
     state.gameOver = true;
     state.running = false;
     const winner = alive[0];
+    const player = getPlayer();
+    const playerRank = (!player || !player.dead)
+      ? 1
+      : state.players.length - state.deathOrder.indexOf(player.id);
+    recordGameResult(playerRank);
+    const account = loadAccount();
+    const delta = calcTrophyChange(playerRank);
+    const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
+    const totalText = account ? ` (총 ${account.trophies})` : "";
+
     if (!winner) {
-      recordGameResult(false);
-      resultTitle.textContent = "무승부";
-      resultBody.textContent = "모두 쓰러졌습니다. 다시 전투를 시작해 보세요.";
+      resultTitle.textContent = `${playerRank}위`;
+      resultBody.textContent = `무승부. ${deltaText} 트로피${totalText}`;
     } else if (winner.isPlayer) {
-      recordGameResult(true);
-      const account = loadAccount();
-      resultTitle.textContent = "승리! 🏆";
-      resultBody.textContent = `해골천의 최후의 1인이 되었습니다. +30 트로피${account ? ` (총 ${account.trophies})` : ""}`;
+      resultTitle.textContent = "1위 🏆";
+      resultBody.textContent = `해골천의 최후의 1인! ${deltaText} 트로피${totalText}`;
     } else {
-      recordGameResult(false);
-      const account = loadAccount();
-      resultTitle.textContent = "패배";
-      resultBody.textContent = `${winner.name}에게 전장을 내주었습니다. -10 트로피${account ? ` (총 ${account.trophies})` : ""}`;
+      const rankLabel = playerRank === 1 ? "1위" : `${playerRank}위`;
+      resultTitle.textContent = rankLabel;
+      resultBody.textContent = `${winner.name}이(가) 우승했습니다. ${deltaText} 트로피${totalText}`;
     }
     resultOverlay.style.display = "flex";
     document.exitPointerLock?.();
