@@ -916,6 +916,7 @@ function resetGame() {
   state.running = true;
   state.gameOver = false;
   state.winner = "";
+  state.mouseHeld = false;
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
   state.projectiles = [];
@@ -1857,9 +1858,13 @@ function setupInput() {
     }
   }
 
+  const releaseHold = () => { state.mouseHeld = false; };
   window.addEventListener("mousedown", triggerDesktopAttack);
-  window.addEventListener("mouseup", () => { state.mouseHeld = false; });
-  window.addEventListener("mouseleave", () => { state.mouseHeld = false; });
+  window.addEventListener("mouseup", releaseHold);
+  window.addEventListener("pointerup", releaseHold);
+  window.addEventListener("pointercancel", releaseHold);
+  window.addEventListener("blur", releaseHold);
+  document.addEventListener("mouseleave", releaseHold);
   canvas.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse") {
       triggerDesktopAttack(event);
