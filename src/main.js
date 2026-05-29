@@ -305,25 +305,28 @@ function moveAngleToward(current, target, maxStep) {
 
 function createAttackAimIndicator() {
   const group = new THREE.Group();
-  const rect = new THREE.Mesh(
-    new THREE.PlaneGeometry(attackWidth, attackDepth),
-    new THREE.MeshBasicMaterial({
-      color: 0xe53729,
-      transparent: true,
-      opacity: 0.14,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-  );
-  rect.rotation.x = -Math.PI / 2;
-  rect.position.set(0, 0.08, attackDepth * 0.5);
-  group.add(rect);
+  const rectMat = new THREE.MeshBasicMaterial({
+    color: 0xe53729,
+    transparent: true,
+    opacity: 0.14,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
 
-  const edgeWidth = attackWidth;
-  const edgeDepth = 0.2;
-  const edgeCenterZ = attackDepth;
+  // 첫 번째 공격: 왼쪽 1타일
+  const rectLeft = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
+  rectLeft.rotation.x = -Math.PI / 2;
+  rectLeft.position.set(-1, 0.08, attackDepth * 0.5);
+  group.add(rectLeft);
+
+  // 두 번째 공격: 오른쪽 1타일
+  const rectRight = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
+  rectRight.rotation.x = -Math.PI / 2;
+  rectRight.position.set(1, 0.08, attackDepth * 0.5);
+  group.add(rectRight);
+
   const edge = new THREE.Mesh(
-    new THREE.PlaneGeometry(edgeWidth, edgeDepth),
+    new THREE.PlaneGeometry(attackWidth * 2 + 2, 0.2),
     new THREE.MeshBasicMaterial({
       color: 0xffb4a1,
       transparent: true,
@@ -333,26 +336,12 @@ function createAttackAimIndicator() {
     }),
   );
   edge.rotation.x = -Math.PI / 2;
-  edge.position.set(0, 0.09, edgeCenterZ);
+  edge.position.set(0, 0.09, attackDepth);
   group.add(edge);
-
-  const centerLine = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.12, attackDepth),
-    new THREE.MeshBasicMaterial({
-      color: 0xffdfd4,
-      transparent: true,
-      opacity: 0.45,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-  );
-  centerLine.rotation.x = -Math.PI / 2;
-  centerLine.position.set(0, 0.091, attackDepth * 0.5);
-  group.add(centerLine);
 
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { rect, edge, centerLine };
+  group.userData = { rects: [rectLeft, rectRight], edge };
   scene.add(group);
   return group;
 }
@@ -852,7 +841,11 @@ function createAttackEffect(attacker, hitIndex) {
   const mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.y = attacker.yaw - Math.PI / 2;
   mesh.rotation.x = Math.PI / 2;
+  // 앞방향 + 좌우 오프셋 (hitIndex 0: 왼쪽, 1: 오른쪽)
+  const effectSide = hitIndex === 0 ? -1 : 1;
   tempVec3.set(Math.sin(attacker.yaw), 0, Math.cos(attacker.yaw)).multiplyScalar(Math.max(1.2, attackDepth * 0.55));
+  tempVec3.x += Math.cos(attacker.yaw) * effectSide;
+  tempVec3.z -= Math.sin(attacker.yaw) * effectSide;
   mesh.position.copy(attacker.mesh.position).add(tempVec3);
   mesh.position.y = 1.25;
   scene.add(mesh);
@@ -1275,6 +1268,8 @@ function resolveAttack(attacker, hitIndex, damage) {
   const spreadOffset = attacker.spread * 0.2 * (Math.random() * 2 - 1);
   const sinYaw = Math.sin(attacker.yaw);
   const cosYaw = Math.cos(attacker.yaw);
+  // 첫 번째 공격(hitIndex 0): 왼쪽(-1), 두 번째(hitIndex 1): 오른쪽(+1)
+  const punchSide = hitIndex === 0 ? -1 : 1;
   let bestTarget = null;
   let bestScore = -Infinity;
 
@@ -1290,7 +1285,7 @@ function resolveAttack(attacker, hitIndex, damage) {
     if (localZ < 0 || localZ > attackDepth) {
       continue;
     }
-    if (Math.abs(localX) > attackHalfWidth) {
+    if (Math.abs(localX - punchSide) > attackHalfWidth) {
       continue;
     }
 
@@ -1298,7 +1293,7 @@ function resolveAttack(attacker, hitIndex, damage) {
       continue;
     }
 
-    const score = localZ * -1 - Math.abs(localX) * 0.2;
+    const score = localZ * -1 - Math.abs(localX - punchSide) * 0.2;
     if (score > bestScore) {
       bestScore = score;
       bestTarget = target;
@@ -1674,9 +1669,8 @@ function updateAttackAimIndicator() {
 
     const activeAlpha = unavailable ? 0.08 : 0.14;
     const edgeAlpha = unavailable ? 0.22 : 0.5;
-    attackAimIndicator.userData.rect.material.opacity = activeAlpha;
+    attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
     attackAimIndicator.userData.edge.material.opacity = edgeAlpha;
-    attackAimIndicator.userData.centerLine.material.opacity = unavailable ? 0.18 : 0.45;
   }
 }
 
