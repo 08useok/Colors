@@ -313,35 +313,20 @@ function createAttackAimIndicator() {
     depthWrite: false,
   });
 
-  // 첫 번째 공격: 오른쪽 0.5타일 -20도 기울기
-  const rectRight = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectRight.rotation.set(-Math.PI / 2, -20 * (Math.PI / 180), 0);
-  rectRight.position.set(0.5, 0.08, attackDepth * 0.5);
-  group.add(rectRight);
+  // X자형: 중앙 기준 -20도 / +20도 교차
+  const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
+  rectA.rotation.set(-Math.PI / 2, -20 * (Math.PI / 180), 0);
+  rectA.position.set(0, 0.08, attackDepth * 0.5);
+  group.add(rectA);
 
-  // 두 번째 공격: 왼쪽 1타일 +20도 기울기 (X자 교차)
-  const rectLeft = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectLeft.rotation.set(-Math.PI / 2, 20 * (Math.PI / 180), 0);
-  rectLeft.position.set(-1, 0.08, attackDepth * 0.5);
-  group.add(rectLeft);
-
-  const edge = new THREE.Mesh(
-    new THREE.PlaneGeometry(attackWidth * 2 + 2, 0.2),
-    new THREE.MeshBasicMaterial({
-      color: 0xffb4a1,
-      transparent: true,
-      opacity: 0.5,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-  );
-  edge.rotation.x = -Math.PI / 2;
-  edge.position.set(0, 0.09, attackDepth);
-  group.add(edge);
+  const rectB = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
+  rectB.rotation.set(-Math.PI / 2, 20 * (Math.PI / 180), 0);
+  rectB.position.set(0, 0.08, attackDepth * 0.5);
+  group.add(rectB);
 
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { rects: [rectLeft, rectRight], edge };
+  group.userData = { rects: [rectA, rectB] };
   scene.add(group);
   return group;
 }
@@ -1682,10 +1667,8 @@ function updateAttackAimIndicator() {
     attackAimIndicator.position.set(pos.x, 0, pos.z);
     attackAimIndicator.rotation.y = yaw;
 
-    const activeAlpha = unavailable ? 0.08 : 0.14;
-    const edgeAlpha = unavailable ? 0.22 : 0.5;
+    const activeAlpha = unavailable ? 0.06 : 0.14;
     attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
-    attackAimIndicator.userData.edge.material.opacity = edgeAlpha;
   }
 }
 
