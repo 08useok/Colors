@@ -817,28 +817,29 @@ function flashHitMarker() {
 }
 
 function createAttackEffect(attacker, hitIndex) {
-  // X자형: hitIndex 0 -20도(오른→왼), hitIndex 1 +20도(왼→오른)
+  // 위치: 바라보는 방향(attacker.yaw) 정면 기준으로 고정
+  // 회전(각도): X자 기울기(tilt) 적용
   const tilt = (hitIndex === 0 ? -20 : 20) * (Math.PI / 180);
   const effectYaw = attacker.yaw + tilt;
-  const effectSide = hitIndex === 0 ? 0.5 : -1;
   const color0 = hitIndex === 0 ? 0xffcb66 : 0xff8d57;
 
-  // 기존 토러스 고리
+  // 정면 기준 위치 (side offset 제거 — 바라보는 방향 정중앙)
+  const fwdDist = attackDepth * 0.5;
+  const cx = attacker.mesh.position.x + Math.sin(attacker.yaw) * fwdDist;
+  const cz = attacker.mesh.position.z + Math.cos(attacker.yaw) * fwdDist;
+
+  // 토러스 고리 — 기울기 방향으로 회전
   const torusMesh = new THREE.Mesh(
     new THREE.TorusGeometry(0.72 + hitIndex * 0.08, 0.08, 8, 20, Math.PI * 0.78),
     new THREE.MeshBasicMaterial({ color: color0, transparent: true, opacity: 0.85 }),
   );
   torusMesh.rotation.y = effectYaw - Math.PI / 2;
   torusMesh.rotation.x = Math.PI / 2;
-  tempVec3.set(Math.sin(effectYaw), 0, Math.cos(effectYaw)).multiplyScalar(Math.max(1.2, attackDepth * 0.55));
-  tempVec3.x += Math.cos(effectYaw) * effectSide;
-  tempVec3.z -= Math.sin(effectYaw) * effectSide;
-  torusMesh.position.copy(attacker.mesh.position).add(tempVec3);
-  torusMesh.position.y = 1.25;
+  torusMesh.position.set(cx, 1.25, cz);
   scene.add(torusMesh);
   state.effects.push({ mesh: torusMesh, life: 0.22, maxLife: 0.22, type: "attack" });
 
-  // 슬래시 라인: effectYaw 방향으로 세워서 각도가 명확하게 보임
+  // 슬래시 라인 — 기울기 방향으로 세운 수직 평면
   const slashMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(0.26, attackDepth * 0.9),
     new THREE.MeshBasicMaterial({
@@ -849,11 +850,8 @@ function createAttackEffect(attacker, hitIndex) {
       depthWrite: false,
     }),
   );
-  // effectYaw 방향을 향해 세움 (수직 평면) → 각도 차이가 화면에 명확히 보임
   slashMesh.rotation.set(0, effectYaw, 0);
-  const sx = attacker.mesh.position.x + Math.sin(effectYaw) * attackDepth * 0.44 + Math.cos(effectYaw) * effectSide;
-  const sz = attacker.mesh.position.z + Math.cos(effectYaw) * attackDepth * 0.44 - Math.sin(effectYaw) * effectSide;
-  slashMesh.position.set(sx, 0.9, sz);
+  slashMesh.position.set(cx, 0.9, cz);
   scene.add(slashMesh);
   state.effects.push({ mesh: slashMesh, life: 0.13, maxLife: 0.13, type: "slash" });
 }
