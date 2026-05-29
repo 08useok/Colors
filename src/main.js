@@ -83,12 +83,14 @@ const CHARACTERS = {
     maxHealth: 10000,
     attackType: "punch",
     reloadDuration: 0.5,
+    attackCooldown: 0.62,
   },
   green: {
     color: 0x3dbd4a,
     maxHealth: 8400,
     attackType: "boomerang",
     reloadDuration: 1.0,
+    attackCooldown: 0.40,
     boomerangCount: 4,
     boomerangDamage: 1000,
     boomerangRange: 5,
@@ -275,6 +277,7 @@ const state = {
     screenX: window.innerWidth * 0.5,
     screenY: window.innerHeight * 0.5,
   },
+  mouseHeld: false,
   mobileMove: {
     x: 0,
     y: 0,
@@ -1104,9 +1107,10 @@ function beginAttack(fighter) {
     return false;
   }
 
+  const charCooldown = CHARACTERS[fighter.characterType]?.attackCooldown ?? attackCooldown;
   fighter.ammo -= 1;
-  fighter.nextAttackAt = state.gameTime + attackCooldown;
-  fighter.attackSequenceEndsAt = state.gameTime + attackCooldown;
+  fighter.nextAttackAt = state.gameTime + charCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charCooldown;
   fighter.attackSwing = 1;
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.18);
@@ -1152,8 +1156,8 @@ function beginBoomerangAttack(fighter) {
 
   const charDef = CHARACTERS.green;
   fighter.ammo -= 1;
-  fighter.nextAttackAt = state.gameTime + attackCooldown;
-  fighter.attackSequenceEndsAt = state.gameTime + attackCooldown;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
   fighter.attackSwing = 1;
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.12);
@@ -1433,6 +1437,11 @@ function updatePlayerControls(dt) {
   }
 
   player.mesh.rotation.y = player.yaw;
+
+  // 마우스 홀드 시 연속 공격 (beginAttack 내부 nextAttackAt 가드로 쿨다운 자동 제어)
+  if (state.mouseHeld && state.running) {
+    beginAttack(player);
+  }
 
   moveFighter(player, tempVec3, dt);
 }
@@ -1843,11 +1852,14 @@ function setupInput() {
     }
     event.preventDefault();
     if (state.running) {
+      state.mouseHeld = true;
       beginAttack(getPlayer());
     }
   }
 
   window.addEventListener("mousedown", triggerDesktopAttack);
+  window.addEventListener("mouseup", () => { state.mouseHeld = false; });
+  window.addEventListener("mouseleave", () => { state.mouseHeld = false; });
   canvas.addEventListener("pointerdown", (event) => {
     if (event.pointerType === "mouse") {
       triggerDesktopAttack(event);
@@ -2042,9 +2054,12 @@ function setupInput() {
     event.preventDefault();
     await initAudio();
     if (state.running) {
+      state.mouseHeld = true;
       beginAttack(getPlayer());
     }
   });
+  mobileAttackButton.addEventListener("pointerup", () => { state.mouseHeld = false; });
+  mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
 }
 
 createLights();
