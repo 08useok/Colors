@@ -65,7 +65,7 @@ camera.add(listener);
 
 const worldRadius = 52;
 const attackDepth = 6;
-const attackWidth = 1;
+const attackWidth = 1.5;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
@@ -319,9 +319,9 @@ function createAttackAimIndicator() {
   rectRight.position.set(0.5, 0.08, attackDepth * 0.5);
   group.add(rectRight);
 
-  // 두 번째 공격: 왼쪽 1타일 -20도 기울기
+  // 두 번째 공격: 왼쪽 1타일 +20도 기울기 (X자 교차)
   const rectLeft = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectLeft.rotation.set(-Math.PI / 2, -20 * (Math.PI / 180), 0);
+  rectLeft.rotation.set(-Math.PI / 2, 20 * (Math.PI / 180), 0);
   rectLeft.position.set(-1, 0.08, attackDepth * 0.5);
   group.add(rectLeft);
 
@@ -839,8 +839,8 @@ function createAttackEffect(attacker, hitIndex) {
     opacity: 0.85,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  // hitIndex 0: 오른쪽 -20도, hitIndex 1: 왼쪽 -20도
-  const tilt = -20 * (Math.PI / 180);
+  // X자형: hitIndex 0 -20도(오른→왼), hitIndex 1 +20도(왼→오른)
+  const tilt = (hitIndex === 0 ? -20 : 20) * (Math.PI / 180);
   const effectYaw = attacker.yaw + tilt;
   mesh.rotation.y = effectYaw - Math.PI / 2;
   mesh.rotation.x = Math.PI / 2;
@@ -1278,8 +1278,8 @@ function resolveAttack(attacker, hitIndex, damage) {
   }
 
   const spreadOffset = attacker.spread * 0.2 * (Math.random() * 2 - 1);
-  // hitIndex 0: 오른쪽 -20도 기울기, hitIndex 1: 왼쪽 -20도 기울기
-  const tilt = -20 * (Math.PI / 180);
+  // X자형: hitIndex 0 -20도(오른→왼), hitIndex 1 +20도(왼→오른)
+  const tilt = (hitIndex === 0 ? -20 : 20) * (Math.PI / 180);
   const effectiveYaw = attacker.yaw + tilt;
   const sinYaw = Math.sin(effectiveYaw);
   const cosYaw = Math.cos(effectiveYaw);
