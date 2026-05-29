@@ -817,31 +817,45 @@ function flashHitMarker() {
 }
 
 function createAttackEffect(attacker, hitIndex) {
-  const geometry = new THREE.TorusGeometry(0.72 + hitIndex * 0.08, 0.08, 8, 20, Math.PI * 0.78);
-  const material = new THREE.MeshBasicMaterial({
-    color: hitIndex === 0 ? 0xffcb66 : 0xff8d57,
-    transparent: true,
-    opacity: 0.85,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
   // X자형: hitIndex 0 -20도(오른→왼), hitIndex 1 +20도(왼→오른)
   const tilt = (hitIndex === 0 ? -20 : 20) * (Math.PI / 180);
   const effectYaw = attacker.yaw + tilt;
-  mesh.rotation.y = effectYaw - Math.PI / 2;
-  mesh.rotation.x = Math.PI / 2;
   const effectSide = hitIndex === 0 ? 0.5 : -1;
+  const color0 = hitIndex === 0 ? 0xffcb66 : 0xff8d57;
+
+  // 기존 토러스 고리
+  const torusMesh = new THREE.Mesh(
+    new THREE.TorusGeometry(0.72 + hitIndex * 0.08, 0.08, 8, 20, Math.PI * 0.78),
+    new THREE.MeshBasicMaterial({ color: color0, transparent: true, opacity: 0.85 }),
+  );
+  torusMesh.rotation.y = effectYaw - Math.PI / 2;
+  torusMesh.rotation.x = Math.PI / 2;
   tempVec3.set(Math.sin(effectYaw), 0, Math.cos(effectYaw)).multiplyScalar(Math.max(1.2, attackDepth * 0.55));
   tempVec3.x += Math.cos(effectYaw) * effectSide;
   tempVec3.z -= Math.sin(effectYaw) * effectSide;
-  mesh.position.copy(attacker.mesh.position).add(tempVec3);
-  mesh.position.y = 1.25;
-  scene.add(mesh);
-  state.effects.push({
-    mesh,
-    life: 0.24,
-    maxLife: 0.24,
-    type: "attack",
-  });
+  torusMesh.position.copy(attacker.mesh.position).add(tempVec3);
+  torusMesh.position.y = 1.25;
+  scene.add(torusMesh);
+  state.effects.push({ mesh: torusMesh, life: 0.22, maxLife: 0.22, type: "attack" });
+
+  // 슬래시 라인: 공격 방향으로 뻗는 얇고 긴 빛줄기
+  const slashMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.18, attackDepth * 0.88),
+    new THREE.MeshBasicMaterial({
+      color: hitIndex === 0 ? 0xfff2bb : 0xffd4aa,
+      transparent: true,
+      opacity: 1.0,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  slashMesh.rotation.y = effectYaw;
+  slashMesh.rotation.x = -Math.PI / 2;
+  const sx = attacker.mesh.position.x + Math.sin(effectYaw) * attackDepth * 0.44 + Math.cos(effectYaw) * effectSide;
+  const sz = attacker.mesh.position.z + Math.cos(effectYaw) * attackDepth * 0.44 - Math.sin(effectYaw) * effectSide;
+  slashMesh.position.set(sx, 0.18, sz);
+  scene.add(slashMesh);
+  state.effects.push({ mesh: slashMesh, life: 0.13, maxLife: 0.13, type: "slash" });
 }
 
 function createHitSpark(position) {
@@ -1372,6 +1386,11 @@ function updateEffects(dt) {
     if (effect.type === "attack") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.28);
       effect.mesh.material.opacity = alpha * 0.85;
+    } else if (effect.type === "slash") {
+      // 너비는 빠르게 퍼지고, 투명도는 제곱으로 빠르게 사라짐
+      effect.mesh.scale.x = 1 + (1 - alpha) * 1.8;
+      effect.mesh.scale.y = 1.0;
+      effect.mesh.material.opacity = alpha * alpha;
     } else {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.6);
       effect.mesh.material.opacity = alpha;
