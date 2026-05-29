@@ -94,7 +94,7 @@ const CHARACTERS = {
     boomerangRange: 5,
     boomerangSpeed: 16,
     boomerangFarThreshold: 3.5,
-    boomerangFarMultiplier: 0.625,
+    boomerangFarMultiplier: 0.30,
     boomerangAngles: [-30, -10, 10, 30].map((d) => d * (Math.PI / 180)),
   },
 };
@@ -1225,6 +1225,16 @@ function updateProjectiles(dt) {
         createHitSpark(tempVec3);
         hit = true;
         break;
+      }
+    }
+
+    // 벽 충돌 시 소멸
+    if (!hit) {
+      for (const solid of state.solids) {
+        if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
+          hit = true;
+          break;
+        }
       }
     }
 
