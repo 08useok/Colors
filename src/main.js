@@ -567,6 +567,7 @@ function makeFighter(options) {
     attackSwing: 0,
     attackAnimTime: -1,
     pendingAutoReload: false,
+    lastCombatTime: -999,
   };
 
   fighter.mesh = createStickman(charDef.color);
@@ -1116,6 +1117,7 @@ function beginAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.18);
   fighter.recoilKick = Math.min(1.5, fighter.recoilKick + 0.5);
+  fighter.lastCombatTime = state.gameTime;
 
   attackEvents.forEach((event, index) => {
     queueAttackHit(fighter, index, event.damage, state.gameTime + event.delay);
@@ -1125,7 +1127,7 @@ function beginAttack(fighter) {
   if (fighter.isPlayer) {
     audio.play("attack");
   }
-  if (fighter.ammo <= 0) {
+  if (fighter.ammo < maxAmmo) {
     fighter.pendingAutoReload = true;
   }
   return true;
@@ -1161,6 +1163,7 @@ function beginBoomerangAttack(fighter) {
   fighter.attackSwing = 1;
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.12);
+  fighter.lastCombatTime = state.gameTime;
 
   charDef.boomerangAngles.forEach((angleOffset, index) => {
     const yaw = fighter.yaw + angleOffset;
@@ -1182,7 +1185,7 @@ function beginBoomerangAttack(fighter) {
     });
   });
 
-  if (fighter.ammo <= 0) {
+  if (fighter.ammo < maxAmmo) {
     fighter.pendingAutoReload = true;
   }
   if (fighter.isPlayer) {
@@ -1322,6 +1325,8 @@ function applyDamage(target, amount, attacker = null) {
   target.health = Math.max(0, target.health - amount);
   target.flashTimer = 0.12;
   target.pitchKick = Math.min(1, target.pitchKick + 0.55);
+  target.lastCombatTime = state.gameTime;
+  if (attacker) attacker.lastCombatTime = state.gameTime;
 
   if (target.isPlayer) {
     state.feedback.hitFlashUntil = state.gameTime + 0.18;
@@ -1499,7 +1504,7 @@ function updateBot(bot, dt, zone) {
     bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
   }
 
-  if (bot.ammo <= 0 && !bot.isReloading) {
+  if (bot.ammo < maxAmmo && !bot.isReloading) {
     startReload(bot);
   }
 
@@ -1586,7 +1591,7 @@ function updateReloads() {
     if (fighter.dead) {
       continue;
     }
-    if (!fighter.isReloading && fighter.ammo <= 0 && state.gameTime >= fighter.nextAttackAt) {
+    if (!fighter.isReloading && fighter.ammo < maxAmmo && state.gameTime >= fighter.nextAttackAt) {
       fighter.pendingAutoReload = true;
     }
     if (fighter.isReloading && state.gameTime >= fighter.reloadEndsAt) {
@@ -1700,6 +1705,15 @@ function updateHud() {
   warning.classList.toggle("hidden", !state.playerOutsideZone);
 }
 
+function updateNaturalRegen(dt) {
+  for (const fighter of state.players) {
+    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    if (state.gameTime - fighter.lastCombatTime >= 5) {
+      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1 * dt);
+    }
+  }
+}
+
 function updateZoneVisual(zone) {
   zoneRing.ring.scale.set(zone.radius, zone.radius, zone.radius);
   zoneRing.wall.scale.set(zone.radius, 1, zone.radius);
@@ -1756,6 +1770,7 @@ function animate() {
       updateBot(state.players[i], dt, zone);
     }
     updateReloads();
+    updateNaturalRegen(dt);
     updateScheduledHits();
     updateProjectiles(dt);
     updateZoneDamage(dt, zone);
