@@ -231,7 +231,7 @@ function calcTrophyChange(rank) {
 function recordGameResult(rank) {
   const account = loadAccount();
   if (!account) return;
-  if (rank === 1) {
+  if (rank <= 4) {
     account.wins += 1;
   } else {
     account.losses += 1;
