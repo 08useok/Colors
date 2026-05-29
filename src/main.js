@@ -64,7 +64,7 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 const worldRadius = 52;
-const attackDepth = 4;
+const attackDepth = 6;
 const attackWidth = 1;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
