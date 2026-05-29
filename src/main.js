@@ -1,4 +1,4 @@
-import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 
 const canvas = document.getElementById("game-canvas");
 const messageOverlay = document.getElementById("message-overlay");
