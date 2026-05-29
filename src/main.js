@@ -313,15 +313,15 @@ function createAttackAimIndicator() {
     depthWrite: false,
   });
 
-  // 첫 번째 공격: 오른쪽 0.5타일
+  // 첫 번째 공격: 오른쪽 0.5타일 +20도 기울기
   const rectRight = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectRight.rotation.x = -Math.PI / 2;
+  rectRight.rotation.set(-Math.PI / 2, 20 * (Math.PI / 180), 0);
   rectRight.position.set(0.5, 0.08, attackDepth * 0.5);
   group.add(rectRight);
 
-  // 두 번째 공격: 왼쪽 1타일
+  // 두 번째 공격: 왼쪽 1타일 -20도 기울기
   const rectLeft = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectLeft.rotation.x = -Math.PI / 2;
+  rectLeft.rotation.set(-Math.PI / 2, -20 * (Math.PI / 180), 0);
   rectLeft.position.set(-1, 0.08, attackDepth * 0.5);
   group.add(rectLeft);
 
@@ -839,13 +839,15 @@ function createAttackEffect(attacker, hitIndex) {
     opacity: 0.85,
   });
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.rotation.y = attacker.yaw - Math.PI / 2;
+  // hitIndex 0: 오른쪽 +20도, hitIndex 1: 왼쪽 -20도
+  const tilt = (hitIndex === 0 ? 20 : -20) * (Math.PI / 180);
+  const effectYaw = attacker.yaw + tilt;
+  mesh.rotation.y = effectYaw - Math.PI / 2;
   mesh.rotation.x = Math.PI / 2;
-  // 앞방향 + 좌우 오프셋 (hitIndex 0: 오른쪽 0.5, 1: 왼쪽 -1)
   const effectSide = hitIndex === 0 ? 0.5 : -1;
-  tempVec3.set(Math.sin(attacker.yaw), 0, Math.cos(attacker.yaw)).multiplyScalar(Math.max(1.2, attackDepth * 0.55));
-  tempVec3.x += Math.cos(attacker.yaw) * effectSide;
-  tempVec3.z -= Math.sin(attacker.yaw) * effectSide;
+  tempVec3.set(Math.sin(effectYaw), 0, Math.cos(effectYaw)).multiplyScalar(Math.max(1.2, attackDepth * 0.55));
+  tempVec3.x += Math.cos(effectYaw) * effectSide;
+  tempVec3.z -= Math.sin(effectYaw) * effectSide;
   mesh.position.copy(attacker.mesh.position).add(tempVec3);
   mesh.position.y = 1.25;
   scene.add(mesh);
@@ -1276,8 +1278,11 @@ function resolveAttack(attacker, hitIndex, damage) {
   }
 
   const spreadOffset = attacker.spread * 0.2 * (Math.random() * 2 - 1);
-  const sinYaw = Math.sin(attacker.yaw);
-  const cosYaw = Math.cos(attacker.yaw);
+  // hitIndex 0: 오른쪽 +20도 기울기, hitIndex 1: 왼쪽 -20도 기울기
+  const tilt = (hitIndex === 0 ? 20 : -20) * (Math.PI / 180);
+  const effectiveYaw = attacker.yaw + tilt;
+  const sinYaw = Math.sin(effectiveYaw);
+  const cosYaw = Math.cos(effectiveYaw);
   // 첫 번째 공격(hitIndex 0): 오른쪽(+0.5), 두 번째(hitIndex 1): 왼쪽(-1)
   const punchSide = hitIndex === 0 ? 0.5 : -1;
   let bestTarget = null;
