@@ -306,7 +306,7 @@ function moveAngleToward(current, target, maxStep) {
 function createAttackAimIndicator() {
   const group = new THREE.Group();
   const rectMat = new THREE.MeshBasicMaterial({
-    color: 0xe53729,
+    color: 0xffffff,
     transparent: true,
     opacity: 0.14,
     side: THREE.DoubleSide,
@@ -838,9 +838,9 @@ function createAttackEffect(attacker, hitIndex) {
   scene.add(torusMesh);
   state.effects.push({ mesh: torusMesh, life: 0.22, maxLife: 0.22, type: "attack" });
 
-  // 슬래시 라인: 공격 방향으로 뻗는 얇고 긴 빛줄기
+  // 슬래시 라인: effectYaw 방향으로 세워서 각도가 명확하게 보임
   const slashMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.18, attackDepth * 0.88),
+    new THREE.PlaneGeometry(0.26, attackDepth * 0.9),
     new THREE.MeshBasicMaterial({
       color: hitIndex === 0 ? 0xfff2bb : 0xffd4aa,
       transparent: true,
@@ -849,11 +849,11 @@ function createAttackEffect(attacker, hitIndex) {
       depthWrite: false,
     }),
   );
-  slashMesh.rotation.y = effectYaw;
-  slashMesh.rotation.x = -Math.PI / 2;
+  // effectYaw 방향을 향해 세움 (수직 평면) → 각도 차이가 화면에 명확히 보임
+  slashMesh.rotation.set(0, effectYaw, 0);
   const sx = attacker.mesh.position.x + Math.sin(effectYaw) * attackDepth * 0.44 + Math.cos(effectYaw) * effectSide;
   const sz = attacker.mesh.position.z + Math.cos(effectYaw) * attackDepth * 0.44 - Math.sin(effectYaw) * effectSide;
-  slashMesh.position.set(sx, 0.18, sz);
+  slashMesh.position.set(sx, 0.9, sz);
   scene.add(slashMesh);
   state.effects.push({ mesh: slashMesh, life: 0.13, maxLife: 0.13, type: "slash" });
 }
