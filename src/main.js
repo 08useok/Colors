@@ -321,7 +321,8 @@ function moveAngleToward(current, target, maxStep) {
 
 function createAttackAimIndicator() {
   const group = new THREE.Group();
-  const rectMat = new THREE.MeshBasicMaterial({
+
+  const makeMat = () => new THREE.MeshBasicMaterial({
     color: 0xffffff,
     transparent: true,
     opacity: 0.17,
@@ -329,17 +330,26 @@ function createAttackAimIndicator() {
     depthWrite: false,
   });
 
-  // X자형: 1타(-20°) 오른쪽, 2타(+20°) 왼쪽 — 실제 punchSide 위치에 맞춤
-  // punchSide 0: +0.5 (그룹 로컬 x ≈ +0.5), punchSide 1: -1 (그룹 로컬 x ≈ -1)
-  const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectA.rotation.set(-Math.PI / 2, -20 * (Math.PI / 180), 0);
+  // 히트박스와 정확히 일치하는 구조:
+  //   subGroup에 tilt 회전 → rect 위치가 effectiveYaw 프레임(히트박스 검사 프레임)에서 정의됨
+  //
+  // Hit 0: effectiveYaw = yaw + (-20°), punchSide = +0.5
+  const subA = new THREE.Group();
+  subA.rotation.y = -20 * (Math.PI / 180);
+  const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), makeMat());
+  rectA.rotation.x = -Math.PI / 2;
   rectA.position.set(0.5, 0.08, attackDepth * 0.5);
-  group.add(rectA);
+  subA.add(rectA);
+  group.add(subA);
 
-  const rectB = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
-  rectB.rotation.set(-Math.PI / 2, 20 * (Math.PI / 180), 0);
+  // Hit 1: effectiveYaw = yaw + (+20°), punchSide = -1
+  const subB = new THREE.Group();
+  subB.rotation.y = 20 * (Math.PI / 180);
+  const rectB = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), makeMat());
+  rectB.rotation.x = -Math.PI / 2;
   rectB.position.set(-1.0, 0.08, attackDepth * 0.5);
-  group.add(rectB);
+  subB.add(rectB);
+  group.add(subB);
 
   group.renderOrder = 4;
   group.visible = false;
