@@ -16,6 +16,7 @@ const dailyLoginBtn = document.getElementById("daily-login-btn");
 const accountRecoveryBtn = document.getElementById("account-recovery-btn");
 const accountRecoveryInfo = document.getElementById("account-recovery-info");
 const startBattleBtn = document.getElementById("start-battle-btn");
+const startTrainingBtn = document.getElementById("start-training-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
 const lobbyLevel = document.getElementById("lobby-level");
 const lobbyTrophies = document.getElementById("lobby-trophies");
@@ -64,8 +65,8 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 const worldRadius = 52;
-const attackDepth = 4;
-const attackWidth = 2.0;
+const attackDepth = 5;
+const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
@@ -278,6 +279,7 @@ const state = {
     screenY: window.innerHeight * 0.5,
   },
   mouseHeld: false,
+  trainingMode: false,
   mobileMove: {
     x: 0,
     y: 0,
@@ -911,7 +913,102 @@ function initPlayers() {
   });
 }
 
+function initTrainingPlayers() {
+  state.players.forEach((fighter) => {
+    scene.remove(fighter.mesh);
+    scene.remove(fighter.shadow);
+  });
+  state.players = [];
+
+  // 플레이어
+  const characterType = state.selectedCharacter;
+  const label = characterType === "red" ? "Red" : "Green";
+  const player = makeFighter({
+    id: 0,
+    name: label,
+    characterType,
+    isPlayer: true,
+    position: new THREE.Vector3(0, 0, 25),
+    yaw: Math.PI,
+  });
+  state.players.push(player);
+
+  // 거대 로봇 (HP 150,000, 스케일 2)
+  const giant = makeFighter({
+    id: 1,
+    name: "거대 로봇",
+    characterType: "red",
+    isPlayer: false,
+    position: new THREE.Vector3(0, 0, -5),
+    yaw: 0,
+    botStyle: "aggressive",
+  });
+  giant.isDummy = true;
+  giant.health = 150000;
+  giant.maxHealth = 150000;
+  giant.radius = 2.1;
+  giant.mesh.scale.set(2, 2, 2);
+  giant.mesh.position.y = 3.7;
+  giant.shadow.geometry.dispose();
+  giant.shadow.geometry = new THREE.CircleGeometry(1.9, 16);
+  state.players.push(giant);
+
+  // 짤짝이 로봇 (HP 1,500) — 5열 × 4행
+  let dummyId = 2;
+  for (let row = 0; row < 4; row += 1) {
+    for (let col = 0; col < 5; col += 1) {
+      const x = (col - 2) * 4;
+      const z = -16 - row * 5;
+      const small = makeFighter({
+        id: dummyId,
+        name: "짤짝이",
+        characterType: "red",
+        isPlayer: false,
+        position: new THREE.Vector3(x, 0, z),
+        yaw: 0,
+        botStyle: "aggressive",
+      });
+      small.isDummy = true;
+      small.health = 1500;
+      small.maxHealth = 1500;
+      state.players.push(small);
+      dummyId += 1;
+    }
+  }
+}
+
+function startTraining() {
+  state.trainingMode = true;
+  state.gameTime = 0;
+  state.running = true;
+  state.gameOver = false;
+  state.winner = "";
+  state.mouseHeld = false;
+  state.scheduledHits = [];
+  state.projectiles.forEach((p) => scene.remove(p.mesh));
+  state.projectiles = [];
+  state.deathOrder = [];
+  state.effects.forEach((effect) => scene.remove(effect.mesh));
+  state.effects = [];
+  state.feedback.hitFlashUntil = 0;
+  state.feedback.warningPulseUntil = 0;
+  state.mouse.yaw = Math.PI;
+  state.mouse.pitch = 0.26;
+  state.mobileMove.x = 0;
+  state.mobileMove.y = 0;
+  state.mobileMove.active = false;
+  state.mobileMove.pointerId = null;
+  mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
+  state.safeCenter.set(0, 0);
+  initTrainingPlayers();
+  rebuildAmmoPips();
+  updateHud();
+  resultOverlay.style.display = "none";
+  messageOverlay.style.display = "none";
+}
+
 function resetGame() {
+  state.trainingMode = false;
   state.gameTime = 0;
   state.running = true;
   state.gameOver = false;
@@ -1494,7 +1591,7 @@ function chooseBotTarget(bot) {
 }
 
 function updateBot(bot, dt, zone) {
-  if (bot.dead) {
+  if (bot.dead || bot.isDummy) {
     return;
   }
 
@@ -1651,6 +1748,7 @@ function updateReloads() {
 }
 
 function updateZoneDamage(dt, zone) {
+  if (state.trainingMode) return;
   state.playerOutsideZone = false;
   for (const fighter of state.players) {
     if (fighter.dead || zone.damage <= 0) {
@@ -1766,6 +1864,19 @@ function updateZoneVisual(zone) {
 
 function checkEndState() {
   if (state.gameOver) {
+    return;
+  }
+
+  if (state.trainingMode) {
+    const player = getPlayer();
+    if (player && player.dead) {
+      state.gameOver = true;
+      state.running = false;
+      resultTitle.textContent = "전투 불능";
+      resultBody.textContent = "훈련 중 쓰러졌습니다.";
+      resultOverlay.style.display = "flex";
+      document.exitPointerLock?.();
+    }
     return;
   }
 
@@ -2071,6 +2182,12 @@ function setupInput() {
     await initAudio();
     messageOverlay.style.display = "none";
     resetGame();
+  });
+
+  // 훈련장 시작
+  startTrainingBtn.addEventListener("click", async () => {
+    await initAudio();
+    startTraining();
   });
 
   // 재시작 → 로비
