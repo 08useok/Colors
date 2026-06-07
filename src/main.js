@@ -65,7 +65,7 @@ camera.add(listener);
 
 const worldRadius = 52;
 const attackDepth = 4;
-const attackWidth = 1.0;
+const attackWidth = 2.0;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
