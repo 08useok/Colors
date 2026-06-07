@@ -101,6 +101,17 @@ const CHARACTERS = {
     boomerangFarMultiplier: 0.30,
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
   },
+  blue: {
+    color: 0x4a8fd4,
+    maxHealth: 4400,
+    attackType: "bullet",
+    reloadDuration: 0.1,
+    attackCooldown: 0.25,
+    maxAmmo: 5,
+    bulletDamage: 1000,
+    bulletRange: 16,
+    bulletSpeed: 28,
+  },
 };
 
 // ── 계정 관리 ──────────────────────────────────────────────────────────────
@@ -550,7 +561,8 @@ function makeFighter(options) {
     botStyle: options.botStyle ?? "aggressive",
     health: charDef.maxHealth,
     maxHealth: charDef.maxHealth,
-    ammo: maxAmmo,
+    maxAmmo: charDef.maxAmmo ?? maxAmmo,
+    ammo: charDef.maxAmmo ?? maxAmmo,
     isReloading: false,
     reloadEndsAt: 0,
     nextAttackAt: 0,
@@ -897,11 +909,55 @@ function createGreenAimIndicator() {
 
 const greenAimIndicator = createGreenAimIndicator();
 
+function createBlueAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.blue.bulletRange;
+
+  // 레이저 빔 라인
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.16, range),
+    new THREE.MeshBasicMaterial({
+      color: 0x7ec8ff,
+      transparent: true,
+      opacity: 0.22,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  // 사거리 끝 원형 마커
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0xaae4ff,
+      transparent: true,
+      opacity: 0.50,
+      depthWrite: false,
+    }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, range);
+  group.add(dot);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, dot };
+  scene.add(group);
+  return group;
+}
+
+const blueAimIndicator = createBlueAimIndicator();
+
 function rebuildAmmoPips() {
+  const player = getPlayer();
+  const count = player?.maxAmmo ?? maxAmmo;
   ammoPips.innerHTML = "";
-  for (let i = 0; i < maxAmmo; i += 1) {
+  for (let i = 0; i < count; i += 1) {
     const pip = document.createElement("div");
-    pip.className = `ammo-pip${i < maxAmmo ? " filled" : ""}`;
+    pip.className = "ammo-pip filled";
     ammoPips.appendChild(pip);
   }
 }
@@ -1009,8 +1065,9 @@ function initPlayers() {
   ];
 
   spawns.forEach((spawn, index) => {
-    const characterType = index === 0 ? state.selectedCharacter : (Math.random() < 0.5 ? "red" : "green");
-    const label = characterType === "red" ? "Red" : "Green";
+    const botTypes = ["red", "green", "blue"];
+    const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
+    const label = characterType === "red" ? "Red" : characterType === "green" ? "Green" : "Blue";
     const name = index === 0 ? label : `${label} AI ${index}`;
     const fighter = makeFighter({
       id: index,
@@ -1291,7 +1348,7 @@ function getCurrentZone() {
 }
 
 function startReload(fighter) {
-  if (fighter.dead || fighter.isReloading || fighter.ammo === maxAmmo) {
+  if (fighter.dead || fighter.isReloading || fighter.ammo === fighter.maxAmmo) {
     return false;
   }
   fighter.isReloading = true;
@@ -1304,7 +1361,7 @@ function startReload(fighter) {
 }
 
 function finishReload(fighter) {
-  fighter.ammo = maxAmmo;
+  fighter.ammo = fighter.maxAmmo;
   fighter.isReloading = false;
   fighter.reloadEndsAt = 0;
   fighter.pendingAutoReload = false;
@@ -1322,6 +1379,9 @@ function queueAttackHit(attacker, hitIndex, damage, executeAt) {
 function beginAttack(fighter) {
   if (fighter.characterType === "green") {
     return beginBoomerangAttack(fighter);
+  }
+  if (fighter.characterType === "blue") {
+    return beginBulletAttack(fighter);
   }
   if (fighter.dead || fighter.isReloading || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
@@ -1345,7 +1405,7 @@ function beginAttack(fighter) {
   if (fighter.isPlayer) {
     audio.play("attack");
   }
-  if (fighter.ammo < maxAmmo) {
+  if (fighter.ammo < fighter.maxAmmo) {
     fighter.pendingAutoReload = true;
   }
   return true;
@@ -1353,7 +1413,62 @@ function beginAttack(fighter) {
 
 function getAttackRange(fighter) {
   if (fighter.characterType === "green") return CHARACTERS.green.boomerangRange;
+  if (fighter.characterType === "blue") return CHARACTERS.blue.bulletRange;
   return attackDepth;
+}
+
+function createBulletMesh(position, yaw) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.18, 8, 6),
+    new THREE.MeshBasicMaterial({ color: 0x7ec8ff }),
+  );
+  mesh.position.set(
+    position.x + Math.sin(yaw) * 0.9,
+    1.3,
+    position.z + Math.cos(yaw) * 0.9,
+  );
+  scene.add(mesh);
+  return mesh;
+}
+
+function beginBulletAttack(fighter) {
+  if (fighter.dead || fighter.isReloading || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
+    return false;
+  }
+  const charDef = CHARACTERS.blue;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.06);
+  fighter.lastCombatTime = state.gameTime;
+
+  const yaw = fighter.yaw;
+  const mesh = createBulletMesh(fighter.mesh.position, yaw);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+    z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+    vx: Math.sin(yaw) * charDef.bulletSpeed,
+    vz: Math.cos(yaw) * charDef.bulletSpeed,
+    damage: charDef.bulletDamage,
+    range: charDef.bulletRange,
+    farThreshold: Infinity,
+    farMultiplier: 1,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    mesh,
+    isBullet: true,
+  });
+
+  if (fighter.ammo < fighter.maxAmmo) {
+    fighter.pendingAutoReload = true;
+  }
+  if (fighter.isPlayer) {
+    audio.play("attack");
+  }
+  return true;
 }
 
 function createBoomerangMesh(position, yaw) {
@@ -1403,7 +1518,7 @@ function beginBoomerangAttack(fighter) {
     });
   });
 
-  if (fighter.ammo < maxAmmo) {
+  if (fighter.ammo < fighter.maxAmmo) {
     fighter.pendingAutoReload = true;
   }
   if (fighter.isPlayer) {
@@ -1425,8 +1540,10 @@ function updateProjectiles(dt) {
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
     proj.distTraveled += step;
-    proj.mesh.position.set(proj.x, 1.2, proj.z);
-    proj.mesh.rotation.z += dt * 10;
+    proj.mesh.position.set(proj.x, proj.isBullet ? 1.3 : 1.2, proj.z);
+    if (!proj.isBullet) {
+      proj.mesh.rotation.z += dt * 10;
+    }
 
     let hit = false;
     const attacker = state.players.find((p) => p.id === proj.ownerId);
@@ -1775,7 +1892,7 @@ function updateBot(bot, dt, zone) {
     bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
   }
 
-  if (bot.ammo < maxAmmo && !bot.isReloading) {
+  if (bot.ammo < bot.maxAmmo && !bot.isReloading) {
     startReload(bot);
   }
 
@@ -1918,11 +2035,12 @@ function updateCamera(dt) {
 
 function updateAttackAimIndicator() {
   const player = getPlayer();
-  const isGreen = player?.characterType === "green";
+  const charType = player?.characterType;
 
   if (!player || player.dead || !state.running) {
     attackAimIndicator.visible = false;
     greenAimIndicator.visible = false;
+    blueAimIndicator.visible = false;
     return;
   }
 
@@ -1930,18 +2048,25 @@ function updateAttackAimIndicator() {
   const yaw = player.yaw;
   const unavailable = player.isReloading || player.ammo <= 0;
 
-  if (isGreen) {
-    attackAimIndicator.visible = false;
+  attackAimIndicator.visible = false;
+  greenAimIndicator.visible = false;
+  blueAimIndicator.visible = false;
+
+  if (charType === "green") {
     greenAimIndicator.visible = true;
     greenAimIndicator.position.set(pos.x, 0, pos.z);
     greenAimIndicator.rotation.y = yaw;
     greenAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.13;
+  } else if (charType === "blue") {
+    blueAimIndicator.visible = true;
+    blueAimIndicator.position.set(pos.x, 0, pos.z);
+    blueAimIndicator.rotation.y = yaw;
+    blueAimIndicator.userData.beam.material.opacity = unavailable ? 0.07 : 0.22;
+    blueAimIndicator.userData.dot.material.opacity = unavailable ? 0.15 : 0.50;
   } else {
-    greenAimIndicator.visible = false;
     attackAimIndicator.visible = true;
     attackAimIndicator.position.set(pos.x, 0, pos.z);
     attackAimIndicator.rotation.y = yaw;
-
     const activeAlpha = unavailable ? 0.06 : 0.17;
     attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
   }
@@ -1958,7 +2083,9 @@ function updateHud() {
   healthText.textContent = `${Math.round(player.health)} / ${player.maxHealth}`;
   charName.textContent = player.name;
   reloadState.textContent = player.isReloading ? `장전 중 ${Math.max(0, (player.reloadEndsAt - state.gameTime)).toFixed(1)}s` : "준비 완료";
-  const attackLabel = player.characterType === "green" ? "부메랑 4연발" : "더블 펀치";
+  const attackLabel = player.characterType === "green" ? "부메랑 4연발"
+    : player.characterType === "blue" ? "고속 저격"
+    : "더블 펀치";
   attackState.textContent = player.isReloading ? "공격 불가" : attackLabel;
   spreadState.textContent = `안정성 ${Math.round((1 - player.spread * 0.55) * 100)}%`;
   updateAmmoPips(player.ammo);
@@ -2311,6 +2438,14 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     account.selectedCharacter = "green";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
+  document.getElementById("select-blue").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "blue";
     saveAccount(account);
     updateLobbyUI(account);
   });
