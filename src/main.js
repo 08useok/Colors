@@ -64,8 +64,8 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 const worldRadius = 52;
-const attackDepth = 6;
-const attackWidth = 1.5;
+const attackDepth = 4;
+const attackWidth = 1.0;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
@@ -1434,6 +1434,28 @@ function updatePlayerControls(dt) {
       if (Math.hypot(dx, dz) > 0.3) {
         player.yaw = Math.atan2(dx, dz);
       }
+    }
+  }
+
+  // 오토에임: 15유닛 이내 가장 가까운 적을 향해 자동 조준
+  {
+    const autoAimRange = 15;
+    let bestTarget = null;
+    let bestDist = autoAimRange;
+    for (const fighter of state.players) {
+      if (fighter.id === player.id || fighter.dead) continue;
+      const dx = fighter.mesh.position.x - player.mesh.position.x;
+      const dz = fighter.mesh.position.z - player.mesh.position.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist < bestDist) { bestDist = dist; bestTarget = fighter; }
+    }
+    if (bestTarget) {
+      const dx = bestTarget.mesh.position.x - player.mesh.position.x;
+      const dz = bestTarget.mesh.position.z - player.mesh.position.z;
+      const targetYaw = Math.atan2(dx, dz);
+      // 홀드 중: 빠르게 스냅 / 일반: 부드럽게 당김
+      const aimSpeed = state.mouseHeld ? dt * 16 : dt * 6;
+      player.yaw = moveAngleToward(player.yaw, targetYaw, aimSpeed);
     }
   }
 
