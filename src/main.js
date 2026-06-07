@@ -93,11 +93,11 @@ const CHARACTERS = {
     attackCooldown: 0.40,
     boomerangCount: 4,
     boomerangDamage: 1000,
-    boomerangRange: 5,
+    boomerangRange: 8,
     boomerangSpeed: 16,
-    boomerangFarThreshold: 3.5,
+    boomerangFarThreshold: 5.5,
     boomerangFarMultiplier: 0.30,
-    boomerangAngles: [-30, -10, 10, 30].map((d) => d * (Math.PI / 180)),
+    boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
   },
 };
 
@@ -725,7 +725,7 @@ const attackAimIndicator = createAttackAimIndicator();
 function createGreenAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.green.boomerangRange;
-  const halfAngle = Math.PI / 6; // 30° = half of 60°
+  const halfAngle = Math.PI / 12; // 15° = half of 30° (각도 30도 감소)
 
   // Fan fill (ShapeGeometry in XZ plane via rotation)
   const shape = new THREE.Shape();
