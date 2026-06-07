@@ -32,6 +32,7 @@ const attackState = document.getElementById("attack-state");
 const charName = document.getElementById("char-name");
 const spreadState = document.getElementById("spread-state");
 const survivorsLabel = document.getElementById("survivors");
+const survivorsPanel = survivorsLabel.parentElement;
 const zonePanel = document.getElementById("zone-panel");
 const zoneState = document.getElementById("zone-state");
 const zoneTimer = document.getElementById("zone-timer");
@@ -1496,6 +1497,7 @@ function resolveAttack(attacker, hitIndex, damage) {
   const punchSide = hitIndex === 0 ? 0.5 : -1;
   let bestTarget = null;
   let bestScore = -Infinity;
+  const hitTargets = [];
 
   for (const target of state.players) {
     if (target.id === attacker.id || target.dead) {
@@ -1517,6 +1519,7 @@ function resolveAttack(attacker, hitIndex, damage) {
       continue;
     }
 
+    hitTargets.push(target);
     const score = localZ * -1 - Math.abs(localX - punchSide) * 0.2;
     if (score > bestScore) {
       bestScore = score;
@@ -1526,15 +1529,19 @@ function resolveAttack(attacker, hitIndex, damage) {
 
   createAttackEffect(attacker, hitIndex);
 
-  if (bestTarget) {
-    applyDamage(bestTarget, damage, attacker);
-    tempVec3.copy(bestTarget.mesh.position);
+  // 훈련장 레드: 관통 (히트박스 내 전체 타격)
+  const penetrate = state.trainingMode && attacker.characterType === "red";
+  const targets = penetrate ? hitTargets : (bestTarget ? [bestTarget] : []);
+
+  for (const t of targets) {
+    applyDamage(t, damage, attacker);
+    tempVec3.copy(t.mesh.position);
     tempVec3.y = 1.6;
     createHitSpark(tempVec3);
-    if (attacker.isPlayer) {
-      flashHitMarker();
-      audio.play("hit");
-    }
+  }
+  if (targets.length > 0 && attacker.isPlayer) {
+    flashHitMarker();
+    audio.play("hit");
   }
 }
 
@@ -1945,15 +1952,25 @@ function updateHud() {
   spreadState.textContent = `안정성 ${Math.round((1 - player.spread * 0.55) * 100)}%`;
   updateAmmoPips(player.ammo);
 
-  const alive = state.players.filter((fighter) => !fighter.dead).length;
-  survivorsLabel.textContent = `${alive}`;
-
-  const zone = getCurrentZone();
-  const showZoneEvent = state.gameTime >= zonePhases[1].start;
-  zonePanel.classList.toggle("is-hidden-panel", !showZoneEvent);
-  zoneState.textContent = zone.label;
-  zoneTimer.textContent = formatTime(zone.phaseEnd - state.gameTime);
-  warning.classList.toggle("hidden", !state.playerOutsideZone);
+  if (state.trainingMode) {
+    survivorsPanel.style.display = "none";
+    zonePanel.classList.add("is-hidden-panel");
+    warning.classList.add("hidden");
+    zoneRing.ring.visible = false;
+    zoneRing.wall.visible = false;
+  } else {
+    survivorsPanel.style.display = "";
+    const alive = state.players.filter((fighter) => !fighter.dead).length;
+    survivorsLabel.textContent = `${alive}`;
+    const zone = getCurrentZone();
+    const showZoneEvent = state.gameTime >= zonePhases[1].start;
+    zonePanel.classList.toggle("is-hidden-panel", !showZoneEvent);
+    zoneState.textContent = zone.label;
+    zoneTimer.textContent = formatTime(zone.phaseEnd - state.gameTime);
+    warning.classList.toggle("hidden", !state.playerOutsideZone);
+    zoneRing.ring.visible = true;
+    zoneRing.wall.visible = true;
+  }
 }
 
 function updateNaturalRegen(dt) {
