@@ -324,20 +324,21 @@ function createAttackAimIndicator() {
   const rectMat = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     transparent: true,
-    opacity: 0.14,
+    opacity: 0.17,
     side: THREE.DoubleSide,
     depthWrite: false,
   });
 
-  // X자형: 중앙 기준 -20도 / +20도 교차
+  // X자형: 1타(-20°) 오른쪽, 2타(+20°) 왼쪽 — 실제 punchSide 위치에 맞춤
+  // punchSide 0: +0.5 (그룹 로컬 x ≈ +0.5), punchSide 1: -1 (그룹 로컬 x ≈ -1)
   const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
   rectA.rotation.set(-Math.PI / 2, -20 * (Math.PI / 180), 0);
-  rectA.position.set(0, 0.08, attackDepth * 0.5);
+  rectA.position.set(0.5, 0.08, attackDepth * 0.5);
   group.add(rectA);
 
   const rectB = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), rectMat.clone());
   rectB.rotation.set(-Math.PI / 2, 20 * (Math.PI / 180), 0);
-  rectB.position.set(0, 0.08, attackDepth * 0.5);
+  rectB.position.set(-1.0, 0.08, attackDepth * 0.5);
   group.add(rectB);
 
   group.renderOrder = 4;
@@ -1529,8 +1530,8 @@ function resolveAttack(attacker, hitIndex, damage) {
 
   createAttackEffect(attacker, hitIndex);
 
-  // 훈련장 레드: 관통 (히트박스 내 전체 타격)
-  const penetrate = state.trainingMode && attacker.characterType === "red";
+  // 레드: 관통 (히트박스 내 전체 타격)
+  const penetrate = attacker.characterType === "red";
   const targets = penetrate ? hitTargets : (bestTarget ? [bestTarget] : []);
 
   for (const t of targets) {
@@ -1931,7 +1932,7 @@ function updateAttackAimIndicator() {
     attackAimIndicator.position.set(pos.x, 0, pos.z);
     attackAimIndicator.rotation.y = yaw;
 
-    const activeAlpha = unavailable ? 0.06 : 0.14;
+    const activeAlpha = unavailable ? 0.06 : 0.17;
     attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
   }
 }
