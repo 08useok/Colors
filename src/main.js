@@ -1827,8 +1827,9 @@ function setupInput() {
       event.preventDefault();
     }
     state.keyState[event.code] = true;
-    if (event.code === "KeyR") {
-      startReload(getPlayer());
+    if (event.code === "KeyR" && state.running) {
+      const p = getPlayer();
+      if (p) startReload(p);
     }
   });
 
