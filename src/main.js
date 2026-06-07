@@ -270,6 +270,10 @@ const state = {
   solids: [],
   bushes: [],
   lakeRects: [],
+  battleSolids: [],
+  battleLakeRects: [],
+  battleBushes: [],
+  trainingSolids: [],
   safeCenter: new THREE.Vector2(0, 0),
   scheduledHits: [],
   effects: [],
@@ -295,6 +299,12 @@ const state = {
   audioContext: null,
   selectedCharacter: "red",
 };
+
+const battleMapGroup = new THREE.Group();
+scene.add(battleMapGroup);
+const trainingMapGroup = new THREE.Group();
+scene.add(trainingMapGroup);
+trainingMapGroup.visible = false;
 
 const tempVec3 = new THREE.Vector3();
 const tempVec32 = new THREE.Vector3();
@@ -398,7 +408,7 @@ function createLights() {
   scene.add(sun);
 }
 
-function createGround() {
+function createGround(group = scene) {
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(120, 120, 40, 40),
     new THREE.MeshStandardMaterial({
@@ -409,13 +419,13 @@ function createGround() {
   );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
-  scene.add(ground);
+  group.add(ground);
 
   const grid = new THREE.GridHelper(120, 24, 0xe2b27b, 0xd6a071);
   grid.position.y = 0.05;
   grid.material.opacity = 0.18;
   grid.material.transparent = true;
-  scene.add(grid);
+  group.add(grid);
 }
 
 function createStickman(color) {
@@ -572,11 +582,11 @@ function makeFighter(options) {
   return fighter;
 }
 
-function createWall(x, z, width, depth, height = 2.8) {
+function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr = state.solids, color = 0xb77658) {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(width, height, depth),
     new THREE.MeshStandardMaterial({
-      color: 0xb77658,
+      color,
       roughness: 0.9,
       metalness: 0.02,
     }),
@@ -584,8 +594,8 @@ function createWall(x, z, width, depth, height = 2.8) {
   mesh.position.set(x, height * 0.5, z);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
-  scene.add(mesh);
-  state.solids.push({
+  group.add(mesh);
+  solidsArr.push({
     type: "wall",
     x,
     z,
@@ -598,7 +608,7 @@ function createWall(x, z, width, depth, height = 2.8) {
   });
 }
 
-function createBush(x, z, radius = 1.35) {
+function createBush(x, z, radius = 1.35, group = scene, bushArr = state.bushes) {
   const bush = new THREE.Group();
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(radius * 0.9, radius, 0.7, 8),
@@ -614,11 +624,11 @@ function createBush(x, z, radius = 1.35) {
   bush.add(base);
   bush.add(top);
   bush.position.set(x, 0.3, z);
-  scene.add(bush);
-  state.bushes.push({ x, z, radius: radius + 0.25 });
+  group.add(bush);
+  bushArr.push({ x, z, radius: radius + 0.25 });
 }
 
-function createSkullCluster(x, z, count = 7) {
+function createSkullCluster(x, z, count = 7, group = scene) {
   const cluster = new THREE.Group();
   for (let i = 0; i < count; i += 1) {
     const skull = new THREE.Mesh(
@@ -631,10 +641,10 @@ function createSkullCluster(x, z, count = 7) {
     cluster.add(skull);
   }
   cluster.position.set(x, 0, z);
-  scene.add(cluster);
+  group.add(cluster);
 }
 
-function createLake(x, z, width, depth) {
+function createLake(x, z, width, depth, group = scene, lakesArr = state.lakeRects) {
   const lake = new THREE.Mesh(
     new THREE.BoxGeometry(width, 0.1, depth),
     new THREE.MeshStandardMaterial({
@@ -647,8 +657,8 @@ function createLake(x, z, width, depth) {
   );
   lake.position.set(x, 0.07, z);
   lake.receiveShadow = true;
-  scene.add(lake);
-  state.lakeRects.push({
+  group.add(lake);
+  lakesArr.push({
     x,
     z,
     width,
@@ -661,7 +671,11 @@ function createLake(x, z, width, depth) {
 }
 
 function createMap() {
-  createGround();
+  state.battleSolids = [];
+  state.battleLakeRects = [];
+  state.battleBushes = [];
+
+  createGround(battleMapGroup);
 
   const wallSpecs = [
     [-39, 39, 6, 2], [-33, 34, 2, 6], [-18, 40, 8, 2], [-7, 35, 2, 8], [9, 36, 2, 10], [24, 38, 2, 8],
@@ -673,8 +687,7 @@ function createMap() {
     [-6, -14, 6, 2], [8, -14, 2, 8], [12, -12, 8, 2], [-20, -14, 2, 8], [-24, -8, 8, 2], [24, -10, 8, 2],
     [31, -8, 2, 8], [5, 28, 8, 2], [15, 28, 2, 8], [-26, 28, 10, 2], [-18, 25, 2, 8], [32, 26, 8, 2],
   ];
-
-  wallSpecs.forEach((spec) => createWall(...spec));
+  wallSpecs.forEach((spec) => createWall(...spec, undefined, battleMapGroup, state.battleSolids));
 
   const bushSpecs = [
     [-42, 44], [-33, 42], [-23, 44], [-6, 44], [10, 44], [28, 42], [40, 44],
@@ -684,15 +697,102 @@ function createMap() {
     [-44, -18], [-31, -17], [-18, -19], [-3, -18], [13, -18], [28, -18], [42, -22],
     [-40, -34], [-22, -36], [-6, -33], [8, -34], [24, -33], [38, -36],
   ];
-
-  bushSpecs.forEach(([x, z]) => createBush(x, z, 1.45 + Math.random() * 0.25));
+  bushSpecs.forEach(([x, z]) => createBush(x, z, 1.45 + Math.random() * 0.25, battleMapGroup, state.battleBushes));
 
   const skullSpecs = [
     [-18, 12], [-6, 8], [8, 10], [18, 7], [-12, 24], [14, 24], [0, 28], [-28, 0], [30, -18], [-4, -22],
   ];
-  skullSpecs.forEach(([x, z]) => createSkullCluster(x, z, 8 + Math.floor(Math.random() * 5)));
+  skullSpecs.forEach(([x, z]) => createSkullCluster(x, z, 8 + Math.floor(Math.random() * 5), battleMapGroup));
 
-  createLake(0, -18, 18, 5.5);
+  createLake(0, -18, 18, 5.5, battleMapGroup, state.battleLakeRects);
+
+  // 초기 상태: 배틀 맵 활성
+  state.solids = state.battleSolids;
+  state.lakeRects = state.battleLakeRects;
+  state.bushes = state.battleBushes;
+}
+
+function createTrainingMap() {
+  state.trainingSolids = [];
+
+  // 콘크리트 바닥
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(50, 85, 25, 42),
+    new THREE.MeshStandardMaterial({ color: 0x909090, roughness: 0.96, metalness: 0 }),
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.set(0, 0.005, -7);
+  ground.receiveShadow = true;
+  trainingMapGroup.add(ground);
+
+  // 그리드
+  const grid = new THREE.GridHelper(50, 25, 0x6a6a6a, 0x7a7a7a);
+  grid.position.set(0, 0.055, -7);
+  grid.material.opacity = 0.28;
+  grid.material.transparent = true;
+  trainingMapGroup.add(grid);
+
+  // 경계 벽 (콘크리트 색)
+  const bWalls = [
+    [0, 35, 50, 2],   // 앞벽
+    [0, -49, 50, 2],  // 뒷벽
+    [-26, -7, 2, 88], // 좌벽
+    [26, -7, 2, 88],  // 우벽
+  ];
+  bWalls.forEach(([x, z, w, d]) => createWall(x, z, w, d, 3.5, trainingMapGroup, state.trainingSolids, 0x5c5c5c));
+
+  // 거대 로봇 단상 (팔각형 받침대)
+  const podium = new THREE.Mesh(
+    new THREE.CylinderGeometry(3.8, 4.4, 0.45, 8),
+    new THREE.MeshStandardMaterial({ color: 0x484848, roughness: 0.88, metalness: 0.05 }),
+  );
+  podium.position.set(0, 0.225, -5);
+  podium.castShadow = true;
+  podium.receiveShadow = true;
+  trainingMapGroup.add(podium);
+
+  // 사격 라인 (발사 위치 표시)
+  const lineGeo = new THREE.PlaneGeometry(50, 0.3);
+  const lineMat = new THREE.MeshBasicMaterial({ color: 0xffee44, transparent: true, opacity: 0.55 });
+  const fireLine = new THREE.Mesh(lineGeo, lineMat);
+  fireLine.rotation.x = -Math.PI / 2;
+  fireLine.position.set(0, 0.07, 20);
+  trainingMapGroup.add(fireLine);
+
+  // 사격 레인 구분선 (세로)
+  for (let i = -2; i <= 2; i += 1) {
+    const lane = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.15, 55),
+      new THREE.MeshBasicMaterial({ color: 0xaaaaaa, transparent: true, opacity: 0.25 }),
+    );
+    lane.rotation.x = -Math.PI / 2;
+    lane.position.set(i * 8, 0.07, -7);
+    trainingMapGroup.add(lane);
+  }
+
+  // 타겟 마커 (짤짝이 위치)
+  for (let row = 0; row < 4; row += 1) {
+    for (let col = 0; col < 5; col += 1) {
+      const tx = (col - 2) * 4;
+      const tz = -16 - row * 5;
+      const marker = new THREE.Mesh(
+        new THREE.CircleGeometry(1.3, 16),
+        new THREE.MeshBasicMaterial({ color: 0xdd3311, transparent: true, opacity: 0.38, depthWrite: false }),
+      );
+      marker.rotation.x = -Math.PI / 2;
+      marker.position.set(tx, 0.06, tz);
+      trainingMapGroup.add(marker);
+    }
+  }
+
+  // 거대 로봇 타겟 마커
+  const bossMarker = new THREE.Mesh(
+    new THREE.CircleGeometry(4, 24),
+    new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.28, depthWrite: false }),
+  );
+  bossMarker.rotation.x = -Math.PI / 2;
+  bossMarker.position.set(0, 0.06, -5);
+  trainingMapGroup.add(bossMarker);
 }
 
 const zoneRing = (() => {
@@ -978,6 +1078,11 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
+  battleMapGroup.visible = false;
+  trainingMapGroup.visible = true;
+  state.solids = state.trainingSolids;
+  state.lakeRects = [];
+  state.bushes = [];
   state.trainingMode = true;
   state.gameTime = 0;
   state.running = true;
@@ -1008,6 +1113,11 @@ function startTraining() {
 }
 
 function resetGame() {
+  battleMapGroup.visible = true;
+  trainingMapGroup.visible = false;
+  state.solids = state.battleSolids;
+  state.lakeRects = state.battleLakeRects;
+  state.bushes = state.battleBushes;
   state.trainingMode = false;
   state.gameTime = 0;
   state.running = true;
@@ -2209,6 +2319,7 @@ function setupInput() {
 
 createLights();
 createMap();
+createTrainingMap();
 setupInput();
 animate();
 rebuildAmmoPips();
