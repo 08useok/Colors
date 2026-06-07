@@ -249,12 +249,12 @@ const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const mouseAimWorld = new THREE.Vector3();
 
 const zonePhases = [
-  { start: 0, end: 30, radius: 52, damage: 0, label: "대기 중" },
-  { start: 30, end: 85, radius: 42, damage: 150, label: "1단계 축소" },
-  { start: 85, end: 140, radius: 32, damage: 250, label: "2단계 축소" },
-  { start: 140, end: 195, radius: 23, damage: 400, label: "3단계 축소" },
-  { start: 195, end: 245, radius: 15, damage: 650, label: "4단계 축소" },
-  { start: 245, end: 999, radius: 8, damage: 1000, label: "최종 구역" },
+  { start: 0,   end: 30,  radius: 52, damage: 0,    label: "대기 중" },
+  { start: 30,  end: 57,  radius: 42, damage: 150,  label: "1단계 축소" },
+  { start: 57,  end: 84,  radius: 32, damage: 250,  label: "2단계 축소" },
+  { start: 84,  end: 111, radius: 23, damage: 400,  label: "3단계 축소" },
+  { start: 111, end: 136, radius: 15, damage: 650,  label: "4단계 축소" },
+  { start: 136, end: 999, radius: 8,  damage: 1000, label: "최종 구역" },
 ];
 
 const state = {
