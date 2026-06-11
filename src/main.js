@@ -17,6 +17,7 @@ const accountRecoveryBtn = document.getElementById("account-recovery-btn");
 const accountRecoveryInfo = document.getElementById("account-recovery-info");
 const startBattleBtn = document.getElementById("start-battle-btn");
 const startTrainingBtn = document.getElementById("start-training-btn");
+const exitTrainingBtn = document.getElementById("exit-training-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
 const lobbyLevel = document.getElementById("lobby-level");
 const lobbyTrophies = document.getElementById("lobby-trophies");
@@ -26,6 +27,7 @@ const resultTitle = document.getElementById("result-title");
 const resultBody = document.getElementById("result-body");
 const restartButton = document.getElementById("restart-button");
 const healthFill = document.getElementById("health-fill");
+const healthValue = document.getElementById("health-value");
 const healthText = document.getElementById("health-text");
 const reloadState = document.getElementById("reload-state");
 const attackState = document.getElementById("attack-state");
@@ -37,7 +39,7 @@ const zonePanel = document.getElementById("zone-panel");
 const zoneState = document.getElementById("zone-state");
 const zoneTimer = document.getElementById("zone-timer");
 const warning = document.getElementById("warning");
-const ammoPips = document.getElementById("ammo-pips");
+const ammoPips = document.getElementById("ammo-fan");
 const killFeed = document.getElementById("kill-feed");
 const hitMarker = document.getElementById("hit-marker");
 const mobileJoystick = document.getElementById("mobile-joystick");
@@ -84,20 +86,20 @@ const CHARACTERS = {
     color: 0xe53729,
     maxHealth: 10000,
     attackType: "punch",
-    reloadDuration: 0.5,
+    reloadDuration: 1.0,
     attackCooldown: 0.62,
   },
   green: {
     color: 0x3dbd4a,
     maxHealth: 8400,
     attackType: "boomerang",
-    reloadDuration: 1.0,
+    reloadDuration: 1.5,
     attackCooldown: 0.40,
     boomerangCount: 4,
     boomerangDamage: 1000,
     boomerangRange: 8,
     boomerangSpeed: 16,
-    boomerangFarThreshold: 5.5,
+    boomerangFarThreshold: 7,
     boomerangFarMultiplier: 0.30,
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
   },
@@ -563,8 +565,7 @@ function makeFighter(options) {
     maxHealth: charDef.maxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
     ammo: charDef.maxAmmo ?? maxAmmo,
-    isReloading: false,
-    reloadEndsAt: 0,
+    reloadTimer: 0,
     nextAttackAt: 0,
     attackSequenceEndsAt: 0,
     spread: 0,
@@ -581,7 +582,6 @@ function makeFighter(options) {
     botHoldUntil: 0,
     attackSwing: 0,
     attackAnimTime: -1,
-    pendingAutoReload: false,
     lastCombatTime: -999,
   };
 
@@ -955,9 +955,13 @@ function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
   ammoPips.innerHTML = "";
+  const spread = 64;
+  const step = count > 1 ? spread / (count - 1) : 0;
   for (let i = 0; i < count; i += 1) {
     const pip = document.createElement("div");
-    pip.className = "ammo-pip filled";
+    pip.className = "ammo-fan-segment filled";
+    const angle = count > 1 ? -spread / 2 + i * step : 0;
+    pip.style.transform = `rotate(${angle}deg)`;
     ammoPips.appendChild(pip);
   }
 }
@@ -1181,6 +1185,18 @@ function startTraining() {
   messageOverlay.style.display = "none";
 }
 
+function exitTraining() {
+  state.running = false;
+  state.gameOver = true;
+  state.trainingMode = false;
+  state.mouseHeld = false;
+  battleMapGroup.visible = false;
+  trainingMapGroup.visible = false;
+  exitTrainingBtn.classList.add("hidden");
+  document.exitPointerLock?.();
+  showLobby();
+}
+
 function resetGame() {
   battleMapGroup.visible = true;
   trainingMapGroup.visible = false;
@@ -1291,6 +1307,21 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
   }
 }
 
+function isWallAhead(fighter, dirX, dirZ, lookahead) {
+  const len = Math.hypot(dirX, dirZ);
+  if (len < 0.0001) {
+    return false;
+  }
+  const checkX = fighter.mesh.position.x + (dirX / len) * lookahead;
+  const checkZ = fighter.mesh.position.z + (dirZ / len) * lookahead;
+  for (const solid of state.solids) {
+    if (intersectsRect(checkX, checkZ, fighter.radius, solid)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function moveFighter(fighter, desiredMove, dt) {
   if (fighter.dead) {
     return;
@@ -1347,24 +1378,9 @@ function getCurrentZone() {
   };
 }
 
-function startReload(fighter) {
-  if (fighter.dead || fighter.isReloading || fighter.ammo === fighter.maxAmmo) {
-    return false;
-  }
-  fighter.isReloading = true;
-  fighter.pendingAutoReload = false;
-  fighter.reloadEndsAt = state.gameTime + (CHARACTERS[fighter.characterType]?.reloadDuration ?? reloadDuration);
-  if (fighter.isPlayer) {
-    audio.play("reload");
-  }
-  return true;
-}
-
-function finishReload(fighter) {
-  fighter.ammo = fighter.maxAmmo;
-  fighter.isReloading = false;
-  fighter.reloadEndsAt = 0;
-  fighter.pendingAutoReload = false;
+function getReloadInterval(fighter) {
+  const reloadDur = CHARACTERS[fighter.characterType]?.reloadDuration ?? reloadDuration;
+  return reloadDur / fighter.maxAmmo;
 }
 
 function queueAttackHit(attacker, hitIndex, damage, executeAt) {
@@ -1383,7 +1399,7 @@ function beginAttack(fighter) {
   if (fighter.characterType === "blue") {
     return beginBulletAttack(fighter);
   }
-  if (fighter.dead || fighter.isReloading || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
 
@@ -1404,9 +1420,6 @@ function beginAttack(fighter) {
   createAttackEffect(fighter, 0);
   if (fighter.isPlayer) {
     audio.play("attack");
-  }
-  if (fighter.ammo < fighter.maxAmmo) {
-    fighter.pendingAutoReload = true;
   }
   return true;
 }
@@ -1432,7 +1445,7 @@ function createBulletMesh(position, yaw) {
 }
 
 function beginBulletAttack(fighter) {
-  if (fighter.dead || fighter.isReloading || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
   const charDef = CHARACTERS.blue;
@@ -1462,9 +1475,6 @@ function beginBulletAttack(fighter) {
     isBullet: true,
   });
 
-  if (fighter.ammo < fighter.maxAmmo) {
-    fighter.pendingAutoReload = true;
-  }
   if (fighter.isPlayer) {
     audio.play("attack");
   }
@@ -1485,7 +1495,7 @@ function createBoomerangMesh(position, yaw) {
 }
 
 function beginBoomerangAttack(fighter) {
-  if (fighter.dead || fighter.isReloading || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
 
@@ -1518,9 +1528,6 @@ function beginBoomerangAttack(fighter) {
     });
   });
 
-  if (fighter.ammo < fighter.maxAmmo) {
-    fighter.pendingAutoReload = true;
-  }
   if (fighter.isPlayer) {
     audio.play("attack");
   }
@@ -1760,44 +1767,45 @@ function updatePlayerControls(dt) {
     tempVec3.set(inputX / inputLength, 0, -inputZ / inputLength).multiplyScalar(baseMoveSpeed);
   }
 
-  const isMobile = state.mobileMove.active;
-  if (isMobile) {
-    if (Math.abs(inputX) > 0.001 || Math.abs(inputZ) > 0.001) {
-      const desiredYaw = Math.atan2(tempVec3.x, tempVec3.z);
-      player.yaw = moveAngleToward(player.yaw, desiredYaw, dt * turnSpeed * 2.4);
-    }
-  } else {
-    const ndcX = (state.mouse.screenX / window.innerWidth) * 2 - 1;
-    const ndcY = -(state.mouse.screenY / window.innerHeight) * 2 + 1;
-    aimRaycaster.setFromCamera({ x: ndcX, y: ndcY }, camera);
-    if (aimRaycaster.ray.intersectPlane(groundPlane, mouseAimWorld)) {
-      const dx = mouseAimWorld.x - player.mesh.position.x;
-      const dz = mouseAimWorld.z - player.mesh.position.z;
-      if (Math.hypot(dx, dz) > 0.3) {
-        player.yaw = Math.atan2(dx, dz);
-      }
-    }
-  }
-
-  // 오토에임: 15유닛 이내 가장 가까운 적을 향해 자동 조준
-  {
-    const autoAimRange = 15;
-    let bestTarget = null;
-    let bestDist = autoAimRange;
+  // 오토에임: 클릭(공격) 중일 때만 사거리 내 가장 가까운 적을 자동 추적
+  let autoTarget = null;
+  if (state.mouseHeld) {
+    const autoAimRange = Math.max(15, getAttackRange(player));
+    let autoTargetDist = autoAimRange;
     for (const fighter of state.players) {
       if (fighter.id === player.id || fighter.dead) continue;
       const dx = fighter.mesh.position.x - player.mesh.position.x;
       const dz = fighter.mesh.position.z - player.mesh.position.z;
       const dist = Math.hypot(dx, dz);
-      if (dist < bestDist) { bestDist = dist; bestTarget = fighter; }
+      if (dist < autoTargetDist) { autoTargetDist = dist; autoTarget = fighter; }
     }
-    if (bestTarget) {
-      const dx = bestTarget.mesh.position.x - player.mesh.position.x;
-      const dz = bestTarget.mesh.position.z - player.mesh.position.z;
-      const targetYaw = Math.atan2(dx, dz);
-      // 홀드 중: 빠르게 스냅 / 일반: 부드럽게 당김
-      const aimSpeed = state.mouseHeld ? dt * 16 : dt * 6;
-      player.yaw = moveAngleToward(player.yaw, targetYaw, aimSpeed);
+  }
+
+  if (autoTarget) {
+    // 타겟 발견 → 마우스/조이스틱 무시하고 자동 추적
+    const dx = autoTarget.mesh.position.x - player.mesh.position.x;
+    const dz = autoTarget.mesh.position.z - player.mesh.position.z;
+    const targetYaw = Math.atan2(dx, dz);
+    player.yaw = moveAngleToward(player.yaw, targetYaw, dt * 28);
+  } else {
+    // 타겟 없음 → 일반 조준 (조이스틱 or 마우스)
+    const isMobile = state.mobileMove.active;
+    if (isMobile) {
+      if (Math.abs(inputX) > 0.001 || Math.abs(inputZ) > 0.001) {
+        const desiredYaw = Math.atan2(tempVec3.x, tempVec3.z);
+        player.yaw = moveAngleToward(player.yaw, desiredYaw, dt * turnSpeed * 2.4);
+      }
+    } else {
+      const ndcX = (state.mouse.screenX / window.innerWidth) * 2 - 1;
+      const ndcY = -(state.mouse.screenY / window.innerHeight) * 2 + 1;
+      aimRaycaster.setFromCamera({ x: ndcX, y: ndcY }, camera);
+      if (aimRaycaster.ray.intersectPlane(groundPlane, mouseAimWorld)) {
+        const dx = mouseAimWorld.x - player.mesh.position.x;
+        const dz = mouseAimWorld.z - player.mesh.position.z;
+        if (Math.hypot(dx, dz) > 0.3) {
+          player.yaw = Math.atan2(dx, dz);
+        }
+      }
     }
   }
 
@@ -1814,6 +1822,9 @@ function updatePlayerControls(dt) {
 function chooseBotTarget(bot) {
   let best = null;
   let bestScore = Infinity;
+  const playerDead = getPlayer()?.dead ?? false;
+  const visionRange = playerDead ? 200 : 50;
+  const bushVisionRange = playerDead ? 200 : 9;
   for (const fighter of state.players) {
     if (fighter.id === bot.id || fighter.dead) {
       continue;
@@ -1821,10 +1832,10 @@ function chooseBotTarget(bot) {
     const dx = fighter.mesh.position.x - bot.mesh.position.x;
     const dz = fighter.mesh.position.z - bot.mesh.position.z;
     const distanceSq = dx * dx + dz * dz;
-    if (distanceSq > 50 * 50) {
+    if (distanceSq > visionRange * visionRange) {
       continue;
     }
-    if (!isVisibleThroughBush(bot, fighter) && distanceSq > 9 * 9) {
+    if (!isVisibleThroughBush(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) {
       continue;
     }
     if (distanceSq < bestScore) {
@@ -1892,8 +1903,20 @@ function updateBot(bot, dt, zone) {
     bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
   }
 
-  if (bot.ammo < bot.maxAmmo && !bot.isReloading) {
-    startReload(bot);
+  const moveSpeed = Math.hypot(tempVec3.x, tempVec3.z);
+  if (moveSpeed > 0.0001) {
+    const lookahead = bot.radius + 1.5;
+    if (isWallAhead(bot, tempVec3.x, tempVec3.z, lookahead)) {
+      const dirX = tempVec3.x / moveSpeed;
+      const dirZ = tempVec3.z / moveSpeed;
+      const sideX = -dirZ * bot.botStrafeDir;
+      const sideZ = dirX * bot.botStrafeDir;
+      if (isWallAhead(bot, sideX, sideZ, lookahead)) {
+        tempVec3.set(-sideX * moveSpeed, 0, -sideZ * moveSpeed);
+      } else {
+        tempVec3.set(sideX * moveSpeed, 0, sideZ * moveSpeed);
+      }
+    }
   }
 
   bot.mesh.rotation.y = bot.yaw;
@@ -1974,20 +1997,26 @@ function updateFighterAnimation(fighter, dt) {
   fighter.healthBar.quaternion.copy(camera.quaternion);
 }
 
-function updateReloads() {
+function updateAmmoRegen(dt) {
   for (const fighter of state.players) {
     if (fighter.dead) {
       continue;
     }
-    if (!fighter.isReloading && fighter.ammo < maxAmmo && state.gameTime >= fighter.nextAttackAt) {
-      fighter.pendingAutoReload = true;
+    if (fighter.ammo >= fighter.maxAmmo) {
+      fighter.reloadTimer = 0;
+      continue;
     }
-    if (fighter.isReloading && state.gameTime >= fighter.reloadEndsAt) {
-      finishReload(fighter);
+    if (state.gameTime < fighter.nextAttackAt) {
+      continue;
     }
-    if (fighter.pendingAutoReload && !fighter.isReloading && state.gameTime >= fighter.nextAttackAt) {
-      fighter.pendingAutoReload = false;
-      startReload(fighter);
+    fighter.reloadTimer += dt;
+    const interval = getReloadInterval(fighter);
+    while (fighter.reloadTimer >= interval && fighter.ammo < fighter.maxAmmo) {
+      fighter.reloadTimer -= interval;
+      fighter.ammo += 1;
+      if (fighter.isPlayer && fighter.ammo >= fighter.maxAmmo) {
+        audio.play("reload");
+      }
     }
   }
 }
@@ -2046,7 +2075,7 @@ function updateAttackAimIndicator() {
 
   const pos = player.mesh.position;
   const yaw = player.yaw;
-  const unavailable = player.isReloading || player.ammo <= 0;
+  const unavailable = player.ammo <= 0;
 
   attackAimIndicator.visible = false;
   greenAimIndicator.visible = false;
@@ -2081,12 +2110,18 @@ function updateHud() {
   const healthRatio = THREE.MathUtils.clamp(player.health / player.maxHealth, 0, 1);
   healthFill.style.width = `${healthRatio * 100}%`;
   healthText.textContent = `${Math.round(player.health)} / ${player.maxHealth}`;
+  healthValue.textContent = `${Math.round(player.health)}`;
   charName.textContent = player.name;
-  reloadState.textContent = player.isReloading ? `장전 중 ${Math.max(0, (player.reloadEndsAt - state.gameTime)).toFixed(1)}s` : "준비 완료";
+  if (player.ammo >= player.maxAmmo) {
+    reloadState.textContent = "탄약 가득";
+  } else {
+    const remain = Math.max(0, getReloadInterval(player) - player.reloadTimer);
+    reloadState.textContent = `다음 탄 ${remain.toFixed(1)}s`;
+  }
   const attackLabel = player.characterType === "green" ? "부메랑 4연발"
     : player.characterType === "blue" ? "고속 저격"
     : "더블 펀치";
-  attackState.textContent = player.isReloading ? "공격 불가" : attackLabel;
+  attackState.textContent = player.ammo <= 0 ? "공격 불가" : attackLabel;
   spreadState.textContent = `안정성 ${Math.round((1 - player.spread * 0.55) * 100)}%`;
   updateAmmoPips(player.ammo);
 
@@ -2096,7 +2131,9 @@ function updateHud() {
     warning.classList.add("hidden");
     zoneRing.ring.visible = false;
     zoneRing.wall.visible = false;
+    exitTrainingBtn.classList.remove("hidden");
   } else {
+    exitTrainingBtn.classList.add("hidden");
     survivorsPanel.style.display = "";
     const alive = state.players.filter((fighter) => !fighter.dead).length;
     survivorsLabel.textContent = `${alive}`;
@@ -2188,7 +2225,7 @@ function animate() {
     for (let i = 1; i < state.players.length; i += 1) {
       updateBot(state.players[i], dt, zone);
     }
-    updateReloads();
+    updateAmmoRegen(dt);
     updateNaturalRegen(dt);
     updateScheduledHits();
     updateProjectiles(dt);
@@ -2221,18 +2258,14 @@ function setupInput() {
   coarsePointerQuery.addEventListener?.("change", syncVirtualControlsVisibility);
 
   window.addEventListener("keydown", (event) => {
-    if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyR", "Space"].includes(event.code)) {
+    if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
     state.keyState[event.code] = true;
-    if (event.code === "KeyR" && state.running) {
-      const p = getPlayer();
-      if (p) startReload(p);
-    }
   });
 
   window.addEventListener("keyup", (event) => {
-    if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyR", "Space"].includes(event.code)) {
+    if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
     state.keyState[event.code] = false;
@@ -2461,6 +2494,11 @@ function setupInput() {
   startTrainingBtn.addEventListener("click", async () => {
     await initAudio();
     startTraining();
+  });
+
+  // 훈련장 나가기
+  exitTrainingBtn.addEventListener("click", () => {
+    exitTraining();
   });
 
   // 재시작 → 로비

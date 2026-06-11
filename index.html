@@ -14,6 +14,7 @@
       <div class="panel top-left">
         <div class="title">SKULL CREEK</div>
         <div class="subtitle">3D TPS Battle Royale Prototype</div>
+        <button id="exit-training-btn" class="exit-training-btn hidden" type="button">훈련장 나가기</button>
       </div>
 
       <div class="panel top-center">
@@ -31,18 +32,20 @@
         <div class="stat-label" id="char-name">Red</div>
         <div class="health-bar">
           <div class="health-fill" id="health-fill"></div>
+          <div class="health-segments">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="health-value" id="health-value">10000</div>
         </div>
         <div class="stat-row">
           <span id="health-text">10000 / 10000</span>
-          <span id="reload-state">준비 완료</span>
+          <span id="reload-state">탄약 가득</span>
         </div>
       </div>
 
       <div class="panel bottom-right">
-        <div class="ammo-wrap">
-          <div class="stat-label">탄약</div>
-          <div class="ammo-pips" id="ammo-pips"></div>
-        </div>
+        <div class="stat-label">탄약</div>
+        <div class="ammo-fan" id="ammo-fan"></div>
         <div class="stat-row">
           <span id="attack-state">더블 펀치</span>
           <span id="spread-state">안정성 100%</span>
