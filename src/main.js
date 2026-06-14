@@ -105,8 +105,8 @@ const CHARACTERS = {
     boomerangDamage: 1000,
     boomerangRange: 8,
     boomerangSpeed: 16,
-    boomerangFarThreshold: 7,
-    boomerangFarMultiplier: 0.30,
+    boomerangFarThreshold: 6,
+    boomerangFarMultiplier: 0.5,
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
     walk: { cycleSpeed: 8, armAmp: 0.30, legAmp: 0.38, armRestZ: Math.PI * 0.06 },
   },
@@ -1242,6 +1242,23 @@ function exitTraining() {
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
   exitTrainingBtn.classList.add("hidden");
+
+  state.players.forEach((fighter) => {
+    scene.remove(fighter.mesh);
+    scene.remove(fighter.shadow);
+  });
+  state.players = [];
+  state.projectiles.forEach((p) => scene.remove(p.mesh));
+  state.projectiles = [];
+  state.effects.forEach((effect) => {
+    scene.remove(effect.mesh);
+    if (effect.type === "damagePopup") {
+      effect.mesh.material.map.dispose();
+      effect.mesh.material.dispose();
+    }
+  });
+  state.effects = [];
+
   document.exitPointerLock?.();
   showLobby();
 }
@@ -2278,7 +2295,7 @@ function updateHud() {
 
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    if (!fighter.isPlayer || fighter.dead || fighter.health >= fighter.maxHealth) continue;
     if (state.gameTime - fighter.lastCombatTime >= 2) {
       fighter.regenTimer += dt;
       while (fighter.regenTimer >= 0.5 && fighter.health < fighter.maxHealth) {
