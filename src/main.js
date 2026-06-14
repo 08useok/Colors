@@ -2474,8 +2474,9 @@ function updateHud() {
 
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (!fighter.isPlayer || fighter.dead || fighter.health >= fighter.maxHealth) continue;
-    if (state.gameTime - fighter.lastCombatTime >= 3 && state.gameTime >= fighter.nextRegenAt) {
+    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    const regenDelay = fighter.isPlayer ? 3 : 5;
+    if (state.gameTime - fighter.lastCombatTime >= regenDelay && state.gameTime >= fighter.nextRegenAt) {
       fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.25);
       fighter.nextRegenAt = state.gameTime + 1;
     }
