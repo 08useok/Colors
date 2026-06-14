@@ -647,20 +647,23 @@ function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr =
 
 function createBush(x, z, radius = 1.35, group = scene, bushArr = state.bushes) {
   const bush = new THREE.Group();
-  const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(radius * 0.9, radius, 0.7, 8),
-    new THREE.MeshStandardMaterial({ color: 0xd4ab48, roughness: 1 }),
-  );
-  const top = new THREE.Mesh(
-    new THREE.ConeGeometry(radius, 1.65, 8),
-    new THREE.MeshStandardMaterial({ color: 0xe7bf58, roughness: 1 }),
-  );
-  top.position.y = 0.95;
-  base.castShadow = true;
-  top.castShadow = true;
-  bush.add(base);
-  bush.add(top);
-  bush.position.set(x, 0.3, z);
+  const colors = [0x5a7d3a, 0x6f9447, 0x4f6f31, 0x7da84f];
+  const clumpCount = 4 + Math.floor(Math.random() * 2);
+  for (let i = 0; i < clumpCount; i += 1) {
+    const clumpRadius = radius * (0.5 + Math.random() * 0.3);
+    const clump = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(clumpRadius, 0),
+      new THREE.MeshStandardMaterial({ color: colors[i % colors.length], roughness: 0.95 }),
+    );
+    const angle = (i / clumpCount) * Math.PI * 2 + Math.random() * 0.6;
+    const offset = radius * 0.35;
+    clump.position.set(Math.cos(angle) * offset, clumpRadius * 0.7, Math.sin(angle) * offset);
+    clump.scale.y = 0.75;
+    clump.rotation.y = Math.random() * Math.PI * 2;
+    clump.castShadow = true;
+    bush.add(clump);
+  }
+  bush.position.set(x, 0, z);
   group.add(bush);
   bushArr.push({ x, z, radius: radius + 0.25 });
 }
@@ -1789,6 +1792,44 @@ function isVisibleThroughBush(observer, target) {
   return true;
 }
 
+// 수풀 안에 들어가면 일정 거리 밖에서는 완전히 보이지 않음
+const bushStealthRevealRangeSq = 3 * 3;
+
+function isInBush(fighter) {
+  for (const bush of state.bushes) {
+    const dx = fighter.mesh.position.x - bush.x;
+    const dz = fighter.mesh.position.z - bush.z;
+    if (dx * dx + dz * dz < bush.radius * bush.radius) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isFighterVisible(observer, target) {
+  const dx = target.mesh.position.x - observer.mesh.position.x;
+  const dz = target.mesh.position.z - observer.mesh.position.z;
+  if (isInBush(target) && dx * dx + dz * dz > bushStealthRevealRangeSq) {
+    return false;
+  }
+  return isVisibleThroughBush(observer, target);
+}
+
+function findNearestBush(pos) {
+  let nearest = null;
+  let bestDistSq = Infinity;
+  for (const bush of state.bushes) {
+    const dx = bush.x - pos.x;
+    const dz = bush.z - pos.z;
+    const distSq = dx * dx + dz * dz;
+    if (distSq < bestDistSq) {
+      bestDistSq = distSq;
+      nearest = bush;
+    }
+  }
+  return nearest;
+}
+
 function resolveAttack(attacker, hitIndex, damage) {
   if (!attacker || attacker.dead) {
     return;
@@ -1822,7 +1863,7 @@ function resolveAttack(attacker, hitIndex, damage) {
       continue;
     }
 
-    if (!isVisibleThroughBush(attacker, target)) {
+    if (!isFighterVisible(attacker, target)) {
       continue;
     }
 
@@ -2026,8 +2067,11 @@ function chooseBotTarget(bot) {
     if (distanceSq > visionRange * visionRange) {
       continue;
     }
-    if (!isVisibleThroughBush(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) {
-      continue;
+    if (!isFighterVisible(bot, fighter)) {
+      const fullyHidden = isInBush(fighter) && distanceSq > bushStealthRevealRangeSq;
+      if (fullyHidden || distanceSq > bushVisionRange * bushVisionRange) {
+        continue;
+      }
     }
     if (distanceSq < bestScore) {
       bestScore = distanceSq;
@@ -2047,7 +2091,41 @@ function updateBot(bot, dt, zone) {
   const botSpeed = getMoveSpeed(bot);
   tempVec3.set(0, 0, 0);
 
-  if (target) {
+  // 체력이 낮으면 가장 가까운 수풀로 도피해 매복
+  const lowHealth = bot.health < bot.maxHealth * 0.3;
+  const hidingBush = lowHealth ? findNearestBush(botPos) : null;
+  const inHidingBush = hidingBush !== null && isInBush(bot);
+
+  if (hidingBush && !inHidingBush) {
+    const toBushX = hidingBush.x - botPos.x;
+    const toBushZ = hidingBush.z - botPos.z;
+    const distToBush = Math.hypot(toBushX, toBushZ);
+    if (distToBush > 0.5) {
+      bot.yaw = Math.atan2(toBushX, toBushZ);
+      tempVec3.set(toBushX / distToBush, 0, toBushZ / distToBush).multiplyScalar(botSpeed);
+    }
+    if (target) {
+      const toTargetX = target.mesh.position.x - botPos.x;
+      const toTargetZ = target.mesh.position.z - botPos.z;
+      const distance = Math.hypot(toTargetX, toTargetZ);
+      const atkRange = getAttackRange(bot);
+      if (distance <= atkRange * 1.05) {
+        beginAttack(bot);
+      }
+    }
+  } else if (inHidingBush) {
+    // 수풀 속에서 매복 — 자리를 지키며 사거리 내 적만 공격
+    if (target) {
+      const toTargetX = target.mesh.position.x - botPos.x;
+      const toTargetZ = target.mesh.position.z - botPos.z;
+      const distance = Math.hypot(toTargetX, toTargetZ);
+      bot.yaw = Math.atan2(toTargetX, toTargetZ);
+      const atkRange = getAttackRange(bot);
+      if (distance <= atkRange * 1.05) {
+        beginAttack(bot);
+      }
+    }
+  } else if (target) {
     const toTargetX = target.mesh.position.x - botPos.x;
     const toTargetZ = target.mesh.position.z - botPos.z;
     const distance = Math.hypot(toTargetX, toTargetZ);
@@ -2377,7 +2455,7 @@ function updateHud() {
 
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    if (!fighter.isPlayer || fighter.dead || fighter.health >= fighter.maxHealth) continue;
     if (state.gameTime - fighter.lastCombatTime >= 5) {
       fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1 * dt);
     }
