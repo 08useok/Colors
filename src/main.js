@@ -595,7 +595,11 @@ function makeFighter(options) {
     attackAnimTime: -1,
     lastCombatTime: -999,
     regenTimer: 0,
+    nextRegenAt: 0,
     damageDealt: 0,
+    ambushing: false,
+    ambushUntil: 0,
+    ambushCooldownUntil: 0,
   };
 
   fighter.mesh = createStickman(charDef.color);
@@ -1893,7 +1897,7 @@ function resolveAttack(attacker, hitIndex, damage) {
   }
 }
 
-function applyDamage(target, amount, attacker = null) {
+function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
   if (target.dead) {
     return;
   }
@@ -1902,7 +1906,9 @@ function applyDamage(target, amount, attacker = null) {
   target.health = Math.max(0, target.health - amount);
   target.flashTimer = 0.12;
   target.pitchKick = Math.min(1, target.pitchKick + 0.55);
-  target.lastCombatTime = state.gameTime;
+  if (updateCombatTime) {
+    target.lastCombatTime = state.gameTime;
+  }
   const dealt = healthBefore - target.health;
   if (attacker) {
     attacker.lastCombatTime = state.gameTime;
@@ -2091,10 +2097,23 @@ function updateBot(bot, dt, zone) {
   const botSpeed = getMoveSpeed(bot);
   tempVec3.set(0, 0, 0);
 
-  // 체력이 낮으면 가장 가까운 수풀로 도피해 매복
-  const lowHealth = bot.health < bot.maxHealth * 0.3;
-  const hidingBush = lowHealth ? findNearestBush(botPos) : null;
+  // 체력이 낮으면 가장 가까운 수풀로 도피해 매복 (영구 정지 방지: 5초 후 매복 해제 + 8초 재진입 쿨다운)
+  if (bot.ambushing) {
+    if (bot.ambushUntil > 0 && state.gameTime >= bot.ambushUntil) {
+      bot.ambushing = false;
+      bot.ambushUntil = 0;
+      bot.ambushCooldownUntil = state.gameTime + 8;
+    }
+  } else if (bot.health < bot.maxHealth * 0.3 && state.gameTime >= bot.ambushCooldownUntil) {
+    bot.ambushing = true;
+    bot.ambushUntil = 0;
+  }
+
+  const hidingBush = bot.ambushing ? findNearestBush(botPos) : null;
   const inHidingBush = hidingBush !== null && isInBush(bot);
+  if (inHidingBush && bot.ambushUntil === 0) {
+    bot.ambushUntil = state.gameTime + 5;
+  }
 
   if (hidingBush && !inHidingBush) {
     const toBushX = hidingBush.x - botPos.x;
@@ -2338,7 +2357,7 @@ function updateZoneDamage(dt, zone) {
     const dz = fighter.mesh.position.z - state.safeCenter.y;
     const distance = Math.hypot(dx, dz);
     if (distance > zone.radius) {
-      applyDamage(fighter, zone.damage * dt);
+      applyDamage(fighter, zone.damage * dt, null, false);
       if (fighter.isPlayer) {
         state.playerOutsideZone = true;
         warning.classList.remove("hidden");
@@ -2456,8 +2475,9 @@ function updateHud() {
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
     if (!fighter.isPlayer || fighter.dead || fighter.health >= fighter.maxHealth) continue;
-    if (state.gameTime - fighter.lastCombatTime >= 5) {
-      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1 * dt);
+    if (state.gameTime - fighter.lastCombatTime >= 3 && state.gameTime >= fighter.nextRegenAt) {
+      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.25);
+      fighter.nextRegenAt = state.gameTime + 1;
     }
   }
 }

@@ -3,8 +3,8 @@
 ## 자연 회복 (Natural Health Regen)
 
 ### 동작 조건
-- 마지막 전투 행동(공격 또는 피격)으로부터 **5초** 경과 시 회복 시작
-- 회복 속도: **초당 최대 체력의 10%** (매 프레임 `maxHealth * 0.1 * dt`)
+- 마지막 전투 행동(공격 또는 피격)으로부터 **3초** 경과 시, **최대 체력의 25%를 즉시(한 번에) 회복**
+- 이후에도 전투 없이 체력이 가득 차지 않았다면 **1초마다 추가로 25%씩** 회복 (틱 단위 즉시 회복, 점진적 증가 아님)
 - 체력 상한: `maxHealth` 초과 불가
 
 ### 전투 행동 정의 (lastCombatTime 갱신 조건)
@@ -22,16 +22,20 @@
 ```js
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
-    if (state.gameTime - fighter.lastCombatTime >= 5) {
-      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1 * dt);
+    if (!fighter.isPlayer || fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    if (state.gameTime - fighter.lastCombatTime >= 3 && state.gameTime >= fighter.nextRegenAt) {
+      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.25);
+      fighter.nextRegenAt = state.gameTime + 1;
     }
   }
 }
 ```
 
+- `nextRegenAt`: 다음 회복 틱이 가능한 시각. 회복 직후 `gameTime + 1`로 설정해 1초 간격으로 추가 회복 허용
+- 전투 행동(피격/공격) 시 `lastCombatTime` 갱신으로 3초 조건이 다시 false가 되어 회복 사이클이 중단됨
+
 ### 적용 대상
-- 플레이어 + 봇 전원
+- 플레이어만 (봇은 자연회복 없음)
 
 ---
 
@@ -66,10 +70,11 @@ function updateNaturalRegen(dt) {
 - 자기장 데미지는 lastCombatTime 갱신 안 함 (자기장 밖에서도 회복 가능)
 
 ## Acceptance Criteria
-- [ ] 5초간 피격/공격 없으면 체력이 자동으로 회복된다
-- [ ] 회복 중 공격하거나 피격 시 회복이 즉시 중단된다
+- [ ] 3초간 피격/공격 없으면 최대 체력의 25%가 즉시 한 번에 회복된다
+- [ ] 이후에도 전투가 없고 체력이 가득 차지 않았다면 1초마다 25%씩 추가로 즉시 회복된다
+- [ ] 회복 중 공격하거나 피격 시 회복 사이클이 즉시 중단된다
 - [ ] 회복은 최대 체력을 초과하지 않는다
-- [ ] 봇도 자연 회복이 적용된다
+- [ ] 자연회복은 플레이어에게만 적용된다 (봇은 회복 안 함)
 - [ ] 공격 후 ammo < maxAmmo 이면 자동으로 재장전이 시작된다
 - [ ] 재장전 속도는 기존 0.5s와 동일하다
 - [ ] ammo가 가득 찬 상태에서 공격해도 불필요한 재장전이 시작되지 않는다
