@@ -48,6 +48,7 @@ const damageTakenIndicator = document.getElementById("damage-taken-indicator");
 const mobileJoystick = document.getElementById("mobile-joystick");
 const mobileJoystickThumb = document.getElementById("mobile-joystick-thumb");
 const mobileAttackButton = document.getElementById("mobile-attack-button");
+const mapNameEl = document.getElementById("map-name");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -89,7 +90,7 @@ const CHARACTERS = {
     color: 0xe53729,
     maxHealth: 10000,
     attackType: "punch",
-    reloadDuration: 1.0,
+    reloadDuration: 0.5,
     attackCooldown: 0.62,
     moveSpeedMultiplier: 1.25,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
@@ -98,16 +99,16 @@ const CHARACTERS = {
     color: 0x3dbd4a,
     maxHealth: 8400,
     attackType: "boomerang",
-    reloadDuration: 1.5,
+    reloadDuration: 1.0,
     attackCooldown: 0.40,
     moveSpeedMultiplier: 1.1,
     boomerangCount: 4,
     boomerangDamage: 1000,
-    boomerangRange: 8,
+    boomerangRange: 5,
     boomerangSpeed: 16,
-    boomerangFarThreshold: 6,
-    boomerangFarMultiplier: 0.5,
-    boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
+    boomerangFarThreshold: 3.5,
+    boomerangFarMultiplier: 0.625,
+    boomerangAngles: [-30, -10, 10, 30].map((d) => d * (Math.PI / 180)),
     walk: { cycleSpeed: 8, armAmp: 0.30, legAmp: 0.38, armRestZ: Math.PI * 0.06 },
   },
   blue: {
@@ -223,6 +224,7 @@ function showDailyLogin(account) {
 function showLobby() {
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
+  mapNameEl.classList.add("hidden");
   const account = loadAccount();
 
   if (!account || !account.id) {
@@ -320,6 +322,7 @@ const state = {
   audioEnabled: false,
   audioContext: null,
   selectedCharacter: "red",
+  currentMapId: 0,
 };
 
 const battleMapGroup = new THREE.Group();
@@ -704,43 +707,127 @@ function createLake(x, z, width, depth, group = scene, lakesArr = state.lakeRect
   });
 }
 
-function createMap() {
+const MAP_POOL = [
+  {
+    id: 0,
+    name: "해골 협곡",
+    wallSpecs: [
+      [-39, 39, 6, 2], [-33, 34, 2, 6], [-18, 40, 8, 2], [-7, 35, 2, 8], [9, 36, 2, 10], [24, 38, 2, 8],
+      [34, 34, 8, 2], [41, 23, 2, 8], [36, 12, 6, 2], [22, 20, 2, 8], [14, 9, 8, 2], [0, 17, 10, 2],
+      [-13, 18, 2, 8], [-24, 15, 6, 2], [-36, 20, 2, 10], [-42, 8, 6, 2], [-28, 4, 2, 8], [-15, -2, 10, 2],
+      [-2, 4, 2, 10], [16, -2, 6, 2], [28, 4, 2, 8], [40, -2, 6, 2], [35, -18, 2, 12], [25, -24, 10, 2],
+      [15, -30, 2, 8], [0, -26, 8, 2], [-12, -30, 2, 8], [-28, -24, 10, 2], [-38, -16, 2, 8], [-42, -30, 8, 2],
+      [-30, -40, 10, 2], [-14, -40, 8, 2], [2, -40, 12, 2], [18, -38, 2, 10], [30, -40, 8, 2], [42, -34, 2, 8],
+      [-6, -14, 6, 2], [8, -14, 2, 8], [12, -12, 8, 2], [-20, -14, 2, 8], [-24, -8, 8, 2], [24, -10, 8, 2],
+      [31, -8, 2, 8], [5, 28, 8, 2], [15, 28, 2, 8], [-26, 28, 10, 2], [-18, 25, 2, 8], [32, 26, 8, 2],
+    ],
+    bushSpecs: [
+      [-42, 44], [-33, 42], [-23, 44], [-6, 44], [10, 44], [28, 42], [40, 44],
+      [-44, 30], [-34, 27], [-20, 30], [-8, 27], [5, 31], [18, 30], [34, 28], [43, 26],
+      [-44, 14], [-32, 12], [-17, 10], [0, 9], [16, 12], [33, 14], [43, 9],
+      [-41, -2], [-29, -3], [-14, -2], [0, -3], [18, -4], [34, -1], [42, -4],
+      [-44, -18], [-31, -17], [-18, -19], [-3, -18], [13, -18], [28, -18], [42, -22],
+      [-40, -34], [-22, -36], [-6, -33], [8, -34], [24, -33], [38, -36],
+    ],
+    skullSpecs: [
+      [-18, 12], [-6, 8], [8, 10], [18, 7], [-12, 24], [14, 24], [0, 28], [-28, 0], [30, -18], [-4, -22],
+    ],
+    lakes: [{ x: 0, z: -18, width: 18, depth: 5.5 }],
+    spawns: [
+      [-40, 0, 42], [-18, 0, 44], [6, 0, 43], [32, 0, 40], [43, 0, 12],
+      [38, 0, -26], [12, 0, -42], [-16, 0, -41], [-39, 0, -22], [-44, 0, 10],
+    ],
+  },
+  {
+    id: 1,
+    name: "마른 호수",
+    wallSpecs: [
+      [-38, 42, 8, 2], [-20, 38, 2, 8], [0, 42, 10, 2], [18, 38, 2, 8], [36, 40, 6, 2],
+      [-42, 28, 2, 10], [-28, 22, 8, 2], [-10, 28, 2, 8], [10, 22, 8, 2], [28, 28, 2, 10], [42, 20, 6, 2],
+      [-36, 10, 6, 2], [-22, 6, 2, 8], [-8, 10, 8, 2], [8, 6, 2, 8], [22, 10, 6, 2], [38, 8, 2, 8],
+      [-40, -6, 8, 2], [-24, -10, 2, 8], [-6, -6, 6, 2], [10, -10, 2, 8], [26, -6, 8, 2], [42, -10, 2, 8],
+      [-36, -22, 2, 10], [-18, -24, 8, 2], [0, -20, 2, 8], [18, -24, 8, 2], [36, -22, 2, 10],
+      [-42, -36, 8, 2], [-26, -38, 2, 8], [-8, -40, 10, 2], [12, -38, 2, 8], [30, -40, 8, 2], [42, -34, 2, 8],
+      [-14, 14, 2, 6], [14, 14, 2, 6], [-14, -14, 2, 6], [14, -14, 2, 6], [0, 0, 4, 4],
+    ],
+    bushSpecs: [
+      [-44, 44], [-30, 44], [-10, 44], [10, 44], [30, 44], [44, 44],
+      [-44, 28], [-16, 30], [16, 30], [44, 28],
+      [-44, 10], [-30, 8], [0, 12], [30, 8], [44, 10],
+      [-44, -8], [-30, -8], [0, -8], [30, -8], [44, -8],
+      [-44, -24], [-14, -26], [14, -26], [44, -24],
+      [-44, -40], [-18, -42], [6, -42], [24, -42], [44, -40],
+    ],
+    skullSpecs: [
+      [-20, 30], [20, 30], [-20, -30], [20, -30], [0, 18], [0, -18], [-30, 0], [30, 0],
+    ],
+    lakes: [
+      { x: -30, z: -14, width: 10, depth: 6 },
+      { x: 30, z: 14, width: 10, depth: 6 },
+    ],
+    spawns: [
+      [-42, 0, 44], [-14, 0, 44], [14, 0, 44], [42, 0, 44], [44, 0, 14],
+      [44, 0, -20], [14, 0, -42], [-14, 0, -42], [-44, 0, -20], [-44, 0, 14],
+    ],
+  },
+  {
+    id: 2,
+    name: "뼈의 미로",
+    wallSpecs: [
+      [-40, 40, 10, 2], [-24, 36, 2, 10], [0, 40, 12, 2], [24, 36, 2, 10], [40, 40, 10, 2],
+      [-42, 24, 2, 8], [-30, 18, 8, 2], [-14, 24, 2, 10], [0, 18, 10, 2], [14, 24, 2, 10], [30, 18, 8, 2], [42, 24, 2, 8],
+      [-38, 6, 6, 2], [-20, 2, 2, 10], [-6, 6, 6, 2], [6, 2, 2, 10], [20, 6, 6, 2], [38, 2, 2, 10],
+      [-42, -10, 8, 2], [-28, -14, 2, 8], [-10, -10, 10, 2], [10, -14, 2, 8], [28, -10, 8, 2], [42, -14, 2, 8],
+      [-36, -26, 2, 10], [-18, -28, 8, 2], [0, -26, 2, 10], [18, -28, 8, 2], [36, -26, 2, 10],
+      [-40, -40, 10, 2], [-22, -42, 2, 8], [0, -40, 12, 2], [22, -42, 2, 8], [40, -40, 10, 2],
+    ],
+    bushSpecs: [
+      [-42, 44], [-20, 44], [0, 44], [20, 44], [42, 44],
+      [-36, 28], [-6, 28], [6, 28], [36, 28],
+      [-42, 12], [-28, 8], [0, 8], [28, 8], [42, 12],
+      [-42, -6], [-14, -6], [14, -6], [42, -6],
+      [-42, -22], [-10, -22], [10, -22], [42, -22],
+      [-42, -38], [-10, -38], [10, -38], [42, -38],
+    ],
+    skullSpecs: [
+      [-30, 30], [30, 30], [-30, -30], [30, -30], [0, 0],
+      [-20, 14], [20, 14], [-20, -14], [20, -14], [0, 30],
+    ],
+    lakes: [{ x: 0, z: -34, width: 14, depth: 5 }],
+    spawns: [
+      [-42, 0, 42], [-10, 0, 42], [10, 0, 42], [42, 0, 42], [44, 0, 10],
+      [44, 0, -18], [10, 0, -44], [-10, 0, -44], [-44, 0, -18], [-44, 0, 10],
+    ],
+  },
+];
+
+function clearBattleMap() {
+  battleMapGroup.traverse((obj) => {
+    if (obj.geometry) obj.geometry.dispose();
+    if (obj.material) {
+      if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose());
+      else obj.material.dispose();
+    }
+  });
+  battleMapGroup.clear();
   state.battleSolids = [];
   state.battleLakeRects = [];
   state.battleBushes = [];
+}
+
+function createMap(mapData) {
+  clearBattleMap();
 
   createGround(battleMapGroup);
 
-  const wallSpecs = [
-    [-39, 39, 6, 2], [-33, 34, 2, 6], [-18, 40, 8, 2], [-7, 35, 2, 8], [9, 36, 2, 10], [24, 38, 2, 8],
-    [34, 34, 8, 2], [41, 23, 2, 8], [36, 12, 6, 2], [22, 20, 2, 8], [14, 9, 8, 2], [0, 17, 10, 2],
-    [-13, 18, 2, 8], [-24, 15, 6, 2], [-36, 20, 2, 10], [-42, 8, 6, 2], [-28, 4, 2, 8], [-15, -2, 10, 2],
-    [-2, 4, 2, 10], [16, -2, 6, 2], [28, 4, 2, 8], [40, -2, 6, 2], [35, -18, 2, 12], [25, -24, 10, 2],
-    [15, -30, 2, 8], [0, -26, 8, 2], [-12, -30, 2, 8], [-28, -24, 10, 2], [-38, -16, 2, 8], [-42, -30, 8, 2],
-    [-30, -40, 10, 2], [-14, -40, 8, 2], [2, -40, 12, 2], [18, -38, 2, 10], [30, -40, 8, 2], [42, -34, 2, 8],
-    [-6, -14, 6, 2], [8, -14, 2, 8], [12, -12, 8, 2], [-20, -14, 2, 8], [-24, -8, 8, 2], [24, -10, 8, 2],
-    [31, -8, 2, 8], [5, 28, 8, 2], [15, 28, 2, 8], [-26, 28, 10, 2], [-18, 25, 2, 8], [32, 26, 8, 2],
-  ];
-  wallSpecs.forEach((spec) => createWall(...spec, undefined, battleMapGroup, state.battleSolids));
+  mapData.wallSpecs.forEach((spec) => createWall(...spec, undefined, battleMapGroup, state.battleSolids));
 
-  const bushSpecs = [
-    [-42, 44], [-33, 42], [-23, 44], [-6, 44], [10, 44], [28, 42], [40, 44],
-    [-44, 30], [-34, 27], [-20, 30], [-8, 27], [5, 31], [18, 30], [34, 28], [43, 26],
-    [-44, 14], [-32, 12], [-17, 10], [0, 9], [16, 12], [33, 14], [43, 9],
-    [-41, -2], [-29, -3], [-14, -2], [0, -3], [18, -4], [34, -1], [42, -4],
-    [-44, -18], [-31, -17], [-18, -19], [-3, -18], [13, -18], [28, -18], [42, -22],
-    [-40, -34], [-22, -36], [-6, -33], [8, -34], [24, -33], [38, -36],
-  ];
-  bushSpecs.forEach(([x, z]) => createBush(x, z, 1.45 + Math.random() * 0.25, battleMapGroup, state.battleBushes));
+  mapData.bushSpecs.forEach(([x, z]) => createBush(x, z, 1.45 + Math.random() * 0.25, battleMapGroup, state.battleBushes));
 
-  const skullSpecs = [
-    [-18, 12], [-6, 8], [8, 10], [18, 7], [-12, 24], [14, 24], [0, 28], [-28, 0], [30, -18], [-4, -22],
-  ];
-  skullSpecs.forEach(([x, z]) => createSkullCluster(x, z, 8 + Math.floor(Math.random() * 5), battleMapGroup));
+  mapData.skullSpecs.forEach(([x, z]) => createSkullCluster(x, z, 8 + Math.floor(Math.random() * 5), battleMapGroup));
 
-  createLake(0, -18, 18, 5.5, battleMapGroup, state.battleLakeRects);
+  mapData.lakes.forEach((lake) => createLake(lake.x, lake.z, lake.width, lake.depth, battleMapGroup, state.battleLakeRects));
 
-  // 초기 상태: 배틀 맵 활성
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
@@ -861,7 +948,7 @@ const attackAimIndicator = createAttackAimIndicator();
 function createGreenAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.green.boomerangRange;
-  const halfAngle = Math.PI / 12; // 15° = half of 30° (각도 30도 감소)
+  const halfAngle = Math.PI / 6; // 30° = half of 60°
 
   // Fan fill (ShapeGeometry in XZ plane via rotation)
   const shape = new THREE.Shape();
@@ -1104,18 +1191,8 @@ function initPlayers() {
   });
   state.players = [];
 
-  const spawns = [
-    new THREE.Vector3(-40, 0, 42),
-    new THREE.Vector3(-18, 0, 44),
-    new THREE.Vector3(6, 0, 43),
-    new THREE.Vector3(32, 0, 40),
-    new THREE.Vector3(43, 0, 12),
-    new THREE.Vector3(38, 0, -26),
-    new THREE.Vector3(12, 0, -42),
-    new THREE.Vector3(-16, 0, -41),
-    new THREE.Vector3(-39, 0, -22),
-    new THREE.Vector3(-44, 0, 10),
-  ];
+  const mapData = MAP_POOL[state.currentMapId];
+  const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   spawns.forEach((spawn, index) => {
     const botTypes = ["red", "green", "blue"];
@@ -1144,7 +1221,7 @@ function initTrainingPlayers() {
 
   // 플레이어
   const characterType = state.selectedCharacter;
-  const label = characterType === "red" ? "Red" : "Green";
+  const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
   const player = makeFighter({
     id: 0,
     name: label,
@@ -1206,6 +1283,7 @@ function startTraining() {
   state.lakeRects = [];
   state.bushes = [];
   state.trainingMode = true;
+  mapNameEl.classList.add("hidden");
   state.gameTime = 0;
   state.running = true;
   state.gameOver = false;
@@ -1241,6 +1319,7 @@ function exitTraining() {
   state.mouseHeld = false;
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
+  mapNameEl.classList.add("hidden");
   exitTrainingBtn.classList.add("hidden");
 
   state.players.forEach((fighter) => {
@@ -1270,6 +1349,9 @@ function resetGame() {
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
   state.trainingMode = false;
+  const currentMap = MAP_POOL[state.currentMapId];
+  mapNameEl.textContent = "맵: " + currentMap.name;
+  mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
   state.running = true;
   state.gameOver = false;
@@ -2295,15 +2377,9 @@ function updateHud() {
 
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (!fighter.isPlayer || fighter.dead || fighter.health >= fighter.maxHealth) continue;
-    if (state.gameTime - fighter.lastCombatTime >= 2) {
-      fighter.regenTimer += dt;
-      while (fighter.regenTimer >= 0.5 && fighter.health < fighter.maxHealth) {
-        fighter.regenTimer -= 0.5;
-        fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1);
-      }
-    } else {
-      fighter.regenTimer = 0;
+    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    if (state.gameTime - fighter.lastCombatTime >= 5) {
+      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1 * dt);
     }
   }
 }
@@ -2644,6 +2720,8 @@ function setupInput() {
   startBattleBtn.addEventListener("click", async () => {
     await initAudio();
     messageOverlay.style.display = "none";
+    state.currentMapId = Math.floor(Math.random() * MAP_POOL.length);
+    createMap(MAP_POOL[state.currentMapId]);
     resetGame();
   });
 
@@ -2685,7 +2763,7 @@ function setupInput() {
 }
 
 createLights();
-createMap();
+createMap(MAP_POOL[0]);
 createTrainingMap();
 setupInput();
 animate();
