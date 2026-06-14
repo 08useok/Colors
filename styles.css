@@ -343,6 +343,32 @@ body {
   animation: hitFlash 180ms ease-out;
 }
 
+.damage-indicator {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 800;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+}
+
+.damage-indicator.damage-taken {
+  top: 34px;
+  color: #ff5c5c;
+}
+
+.damage-indicator.damage-taken.flash {
+  animation: damagePopDown 900ms ease-out;
+}
+
+@keyframes damagePopDown {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  70% { opacity: 1; transform: translate(-50%, 10px); }
+  100% { opacity: 0; transform: translate(-50%, 18px); }
+}
+
 @keyframes hitFlash {
   0% { opacity: 1; transform: scale(0.75); }
   100% { opacity: 0; transform: scale(1.35); }
@@ -402,7 +428,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(10, 7, 5, 0.5);
+  background: radial-gradient(circle at 50% 35%, rgba(100, 65, 45, 0.55), rgba(8, 5, 4, 0.78) 75%);
+  backdrop-filter: blur(6px);
   pointer-events: auto;
 }
 
@@ -410,16 +437,29 @@ body {
   width: min(90vw, 420px);
   padding: 30px 28px;
   border-radius: 24px;
-  background: linear-gradient(180deg, rgba(69, 41, 22, 0.95), rgba(27, 16, 9, 0.95));
+  background: linear-gradient(180deg, rgba(75, 45, 25, 0.96), rgba(24, 14, 8, 0.97));
   border: 1px solid rgba(255, 210, 158, 0.28);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 210, 158, 0.06) inset,
+    0 0 40px rgba(255, 160, 90, 0.08);
   text-align: center;
+  animation: cardEnter 360ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+@keyframes cardEnter {
+  0% { opacity: 0; transform: translateY(18px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .message-card h1,
 .message-card h2 {
   margin: 0 0 14px;
   font-size: 34px;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, #ffe9c7, #ffac5f 60%, #ff8a3d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 4px 24px rgba(255, 150, 70, 0.25);
 }
 
 .message-card p {
@@ -512,6 +552,7 @@ body {
   font-weight: 800;
   color: var(--accent);
   margin-bottom: 3px;
+  text-shadow: 0 0 16px rgba(255, 204, 102, 0.45);
 }
 
 .lobby-record {
@@ -574,6 +615,8 @@ body {
 .char-btn.selected {
   border-color: rgba(255, 210, 158, 0.8);
   background: rgba(255, 210, 158, 0.14);
+  box-shadow: 0 0 0 3px rgba(255, 210, 158, 0.16), 0 10px 24px rgba(255, 170, 90, 0.22);
+  transform: translateY(-2px);
 }
 
 /* ── 캐릭터 선택 공통 ── */
@@ -602,7 +645,7 @@ body {
   color: var(--text);
   cursor: pointer;
   text-align: center;
-  transition: border-color 120ms, background 120ms, transform 100ms;
+  transition: border-color 120ms, background 120ms, transform 100ms, box-shadow 120ms;
 }
 
 .char-btn:hover {

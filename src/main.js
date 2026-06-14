@@ -25,6 +25,8 @@ const lobbyRecord = document.getElementById("lobby-record");
 const resultOverlay = document.getElementById("result-overlay");
 const resultTitle = document.getElementById("result-title");
 const resultBody = document.getElementById("result-body");
+const resultStats = document.getElementById("result-stats");
+const playAgainButton = document.getElementById("play-again-button");
 const restartButton = document.getElementById("restart-button");
 const healthFill = document.getElementById("health-fill");
 const healthValue = document.getElementById("health-value");
@@ -42,6 +44,7 @@ const warning = document.getElementById("warning");
 const ammoPips = document.getElementById("ammo-fan");
 const killFeed = document.getElementById("kill-feed");
 const hitMarker = document.getElementById("hit-marker");
+const damageTakenIndicator = document.getElementById("damage-taken-indicator");
 const mobileJoystick = document.getElementById("mobile-joystick");
 const mobileJoystickThumb = document.getElementById("mobile-joystick-thumb");
 const mobileAttackButton = document.getElementById("mobile-attack-button");
@@ -88,6 +91,8 @@ const CHARACTERS = {
     attackType: "punch",
     reloadDuration: 1.0,
     attackCooldown: 0.62,
+    moveSpeedMultiplier: 1.25,
+    walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
   green: {
     color: 0x3dbd4a,
@@ -95,6 +100,7 @@ const CHARACTERS = {
     attackType: "boomerang",
     reloadDuration: 1.5,
     attackCooldown: 0.40,
+    moveSpeedMultiplier: 1.1,
     boomerangCount: 4,
     boomerangDamage: 1000,
     boomerangRange: 8,
@@ -102,6 +108,7 @@ const CHARACTERS = {
     boomerangFarThreshold: 7,
     boomerangFarMultiplier: 0.30,
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
+    walk: { cycleSpeed: 8, armAmp: 0.30, legAmp: 0.38, armRestZ: Math.PI * 0.06 },
   },
   blue: {
     color: 0x4a8fd4,
@@ -109,10 +116,11 @@ const CHARACTERS = {
     attackType: "bullet",
     reloadDuration: 0.1,
     attackCooldown: 0.25,
-    maxAmmo: 5,
     bulletDamage: 1000,
     bulletRange: 16,
     bulletSpeed: 28,
+    moveSpeedMultiplier: 1.0,
+    walk: { cycleSpeed: 7, armAmp: 0.20, legAmp: 0.34, armRestZ: Math.PI * 0.03 },
   },
 };
 
@@ -583,6 +591,8 @@ function makeFighter(options) {
     attackSwing: 0,
     attackAnimTime: -1,
     lastCombatTime: -999,
+    regenTimer: 0,
+    damageDealt: 0,
   };
 
   fighter.mesh = createStickman(charDef.color);
@@ -872,7 +882,7 @@ function createGreenAimIndicator() {
       depthWrite: false,
     }),
   );
-  fanMesh.rotation.x = -Math.PI / 2;
+  fanMesh.rotation.x = Math.PI / 2;
   fanMesh.position.y = 0.08;
   group.add(fanMesh);
 
@@ -993,6 +1003,13 @@ function flashHitMarker() {
   hitMarker.classList.add("flash");
 }
 
+function showDamageTakenIndicator(amount) {
+  damageTakenIndicator.textContent = `${Math.round(amount)}`;
+  damageTakenIndicator.classList.remove("flash");
+  void damageTakenIndicator.offsetWidth;
+  damageTakenIndicator.classList.add("flash");
+}
+
 function createAttackEffect(attacker, hitIndex) {
   // 위치: 바라보는 방향(attacker.yaw) 정면 기준으로 고정
   // 회전(각도): X자 기울기(tilt) 적용
@@ -1045,6 +1062,38 @@ function createHitSpark(position) {
     life: 0.18,
     maxLife: 0.18,
     type: "spark",
+  });
+}
+
+function createDamagePopup(position, amount) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  ctx.font = "bold 40px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "rgba(40, 20, 0, 0.75)";
+  ctx.fillStyle = "#ffd27a";
+  const text = `${Math.round(amount)}`;
+  ctx.strokeText(text, 64, 32);
+  ctx.fillText(text, 64, 32);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }),
+  );
+  sprite.scale.set(1.4, 0.7, 1);
+  sprite.position.copy(position);
+  sprite.position.y += 3.6;
+  sprite.position.x += (Math.random() - 0.5) * 0.6;
+  scene.add(sprite);
+  state.effects.push({
+    mesh: sprite,
+    life: 0.7,
+    maxLife: 0.7,
+    type: "damagePopup",
   });
 }
 
@@ -1322,6 +1371,25 @@ function isWallAhead(fighter, dirX, dirZ, lookahead) {
   return false;
 }
 
+function findWallEscapeDir(fighter, dirX, dirZ, lookahead) {
+  if (!isWallAhead(fighter, dirX, dirZ, lookahead)) {
+    return null;
+  }
+  const baseAngle = Math.atan2(dirX, dirZ);
+  const step = Math.PI / 8;
+  for (let i = 1; i <= 8; i++) {
+    for (const sign of [1, -1]) {
+      const angle = baseAngle + sign * step * i;
+      const dx = Math.sin(angle);
+      const dz = Math.cos(angle);
+      if (!isWallAhead(fighter, dx, dz, lookahead)) {
+        return { x: dx, z: dz };
+      }
+    }
+  }
+  return null;
+}
+
 function moveFighter(fighter, desiredMove, dt) {
   if (fighter.dead) {
     return;
@@ -1428,6 +1496,11 @@ function getAttackRange(fighter) {
   if (fighter.characterType === "green") return CHARACTERS.green.boomerangRange;
   if (fighter.characterType === "blue") return CHARACTERS.blue.bulletRange;
   return attackDepth;
+}
+
+function getMoveSpeed(fighter) {
+  const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
+  return baseMoveSpeed * multiplier;
 }
 
 function createBulletMesh(position, yaw) {
@@ -1685,15 +1758,27 @@ function applyDamage(target, amount, attacker = null) {
     return;
   }
 
+  const healthBefore = target.health;
   target.health = Math.max(0, target.health - amount);
   target.flashTimer = 0.12;
   target.pitchKick = Math.min(1, target.pitchKick + 0.55);
   target.lastCombatTime = state.gameTime;
-  if (attacker) attacker.lastCombatTime = state.gameTime;
+  const dealt = healthBefore - target.health;
+  if (attacker) {
+    attacker.lastCombatTime = state.gameTime;
+    attacker.damageDealt += dealt;
+    if (attacker.isPlayer && target.id !== attacker.id) {
+      tempVec3.copy(target.mesh.position);
+      createDamagePopup(tempVec3, dealt);
+    }
+  }
 
   if (target.isPlayer) {
     state.feedback.hitFlashUntil = state.gameTime + 0.18;
     audio.play("hit");
+    if (!attacker || target.id !== attacker.id) {
+      showDamageTakenIndicator(dealt);
+    }
   }
 
   if (target.health <= 0) {
@@ -1731,6 +1816,10 @@ function updateEffects(dt) {
     effect.life -= dt;
     if (effect.life <= 0) {
       scene.remove(effect.mesh);
+      if (effect.type === "damagePopup") {
+        effect.mesh.material.map.dispose();
+        effect.mesh.material.dispose();
+      }
       state.effects.splice(i, 1);
       continue;
     }
@@ -1743,6 +1832,9 @@ function updateEffects(dt) {
       effect.mesh.scale.x = 1 + (1 - alpha) * 1.8;
       effect.mesh.scale.y = 1.0;
       effect.mesh.material.opacity = alpha * alpha;
+    } else if (effect.type === "damagePopup") {
+      effect.mesh.position.y += dt * 1.4;
+      effect.mesh.material.opacity = alpha;
     } else {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.6);
       effect.mesh.material.opacity = alpha;
@@ -1764,7 +1856,7 @@ function updatePlayerControls(dt) {
   tempVec3.set(0, 0, 0);
   if (Math.abs(inputX) > 0.001 || Math.abs(inputZ) > 0.001) {
     const inputLength = Math.hypot(inputX, inputZ) || 1;
-    tempVec3.set(inputX / inputLength, 0, -inputZ / inputLength).multiplyScalar(baseMoveSpeed);
+    tempVec3.set(inputX / inputLength, 0, -inputZ / inputLength).multiplyScalar(getMoveSpeed(player));
   }
 
   // 오토에임: 클릭(공격) 중일 때만 사거리 내 가장 가까운 적을 자동 추적
@@ -1853,6 +1945,7 @@ function updateBot(bot, dt, zone) {
 
   const target = chooseBotTarget(bot);
   const botPos = bot.mesh.position;
+  const botSpeed = getMoveSpeed(bot);
   tempVec3.set(0, 0, 0);
 
   if (target) {
@@ -1862,12 +1955,12 @@ function updateBot(bot, dt, zone) {
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
     if (distance > atkRange * 0.86) {
-      tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(baseMoveSpeed * 0.82);
+      tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.82);
     } else if (distance < atkRange * 0.58) {
-      tempVec3.set(-Math.sin(bot.yaw), 0, -Math.cos(bot.yaw)).multiplyScalar(baseMoveSpeed * 0.48);
+      tempVec3.set(-Math.sin(bot.yaw), 0, -Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.48);
     } else {
       tempVec3.set(Math.sin(bot.yaw + Math.PI / 2), 0, Math.cos(bot.yaw + Math.PI / 2))
-        .multiplyScalar(baseMoveSpeed * 0.28 * bot.botStrafeDir);
+        .multiplyScalar(botSpeed * 0.28 * bot.botStrafeDir);
     }
 
     if (distance <= atkRange * 1.05) {
@@ -1888,7 +1981,7 @@ function updateBot(bot, dt, zone) {
     tempVec3.set(bot.botMoveTarget.x - botPos.x, 0, bot.botMoveTarget.z - botPos.z);
     if (tempVec3.lengthSq() > 1) {
       bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
-      tempVec3.normalize().multiplyScalar(baseMoveSpeed * 0.62);
+      tempVec3.normalize().multiplyScalar(botSpeed * 0.62);
     } else {
       tempVec3.set(0, 0, 0);
     }
@@ -1899,23 +1992,18 @@ function updateBot(bot, dt, zone) {
     const toCenterX = state.safeCenter.x - botPos.x;
     const toCenterZ = state.safeCenter.y - botPos.z;
     const len = Math.hypot(toCenterX, toCenterZ) || 1;
-    tempVec3.set((toCenterX / len) * baseMoveSpeed, 0, (toCenterZ / len) * baseMoveSpeed);
+    tempVec3.set((toCenterX / len) * botSpeed, 0, (toCenterZ / len) * botSpeed);
     bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
   }
 
   const moveSpeed = Math.hypot(tempVec3.x, tempVec3.z);
   if (moveSpeed > 0.0001) {
     const lookahead = bot.radius + 1.5;
-    if (isWallAhead(bot, tempVec3.x, tempVec3.z, lookahead)) {
-      const dirX = tempVec3.x / moveSpeed;
-      const dirZ = tempVec3.z / moveSpeed;
-      const sideX = -dirZ * bot.botStrafeDir;
-      const sideZ = dirX * bot.botStrafeDir;
-      if (isWallAhead(bot, sideX, sideZ, lookahead)) {
-        tempVec3.set(-sideX * moveSpeed, 0, -sideZ * moveSpeed);
-      } else {
-        tempVec3.set(sideX * moveSpeed, 0, sideZ * moveSpeed);
-      }
+    const dirX = tempVec3.x / moveSpeed;
+    const dirZ = tempVec3.z / moveSpeed;
+    const escapeDir = findWallEscapeDir(bot, dirX, dirZ, lookahead);
+    if (escapeDir) {
+      tempVec3.set(escapeDir.x * moveSpeed, 0, escapeDir.z * moveSpeed);
     }
   }
 
@@ -1946,36 +2034,76 @@ function updateFighterAnimation(fighter, dt) {
   fighter.lastX = fighter.mesh.position.x;
   fighter.lastZ = fighter.mesh.position.z;
 
-  const walkCycle = state.gameTime * 8 + fighter.id;
+  const charType = fighter.characterType;
+  const walkStyle = CHARACTERS[charType]?.walk ?? CHARACTERS.red.walk;
+  const walkCycle = state.gameTime * walkStyle.cycleSpeed + fighter.id;
   const swing = Math.min(1, speed / 8);
-  const leftLegWalk = Math.sin(walkCycle) * 0.38 * swing;
-  const rightLegWalk = -Math.sin(walkCycle) * 0.38 * swing;
-  const leftArmWalk = -Math.sin(walkCycle) * 0.32 * swing;
-  const rightArmWalk = Math.sin(walkCycle) * 0.32 * swing;
+  let leftLeg = Math.sin(walkCycle) * walkStyle.legAmp * swing;
+  let rightLeg = -Math.sin(walkCycle) * walkStyle.legAmp * swing;
+  let leftArmX = -Math.sin(walkCycle) * walkStyle.armAmp * swing;
+  let rightArmX = Math.sin(walkCycle) * walkStyle.armAmp * swing;
+  let leftArmZ = walkStyle.armRestZ;
+  let rightArmZ = -walkStyle.armRestZ;
+  let bodyZ = Math.sin(walkCycle * 0.5) * 0.03;
+  let bodyY = 0;
+  let headX = 0;
+  let headY = 0;
 
-  let punchOne = 0;
-  let punchTwo = 0;
-  let recover = 0;
   if (fighter.attackAnimTime >= 0) {
     fighter.attackAnimTime += dt;
-    punchOne = pulse(fighter.attackAnimTime, 0.02, 0.11, 0.2);
-    punchTwo = pulse(fighter.attackAnimTime, 0.2, 0.31, 0.43);
-    recover = pulse(fighter.attackAnimTime, 0.43, 0.5, 0.6);
-    if (fighter.attackAnimTime > 0.6) {
+    const t = fighter.attackAnimTime;
+
+    if (charType === "green") {
+      // 부메랑 던지기: 팔을 뒤로 젖혔다가 앞으로 내던짐
+      const windup = pulse(t, 0, 0.1, 0.2);
+      const release = pulse(t, 0.2, 0.28, 0.5);
+      rightArmX += windup * 0.9 - release * 1.6;
+      rightArmZ += -windup * 0.4 - release * 0.2;
+      leftArmX += -windup * 0.15 + release * 0.25;
+      bodyY += windup * 0.12 - release * 0.28;
+      bodyZ += -windup * 0.04 + release * 0.06;
+      headY += windup * 0.06 - release * 0.14;
+      rightLeg += -windup * 0.08 + release * 0.15;
+    } else if (charType === "blue") {
+      // 사격: 양팔로 조준 후 발사 반동
+      const raise = Math.min(1, t / 0.06) * (t > 0.5 ? Math.max(0, 1 - (t - 0.5) / 0.1) : 1);
+      const recoil = pulse(t, 0.06, 0.1, 0.25);
+      rightArmX += -raise * 1.3 + recoil * 0.3;
+      leftArmX += -raise * 1.1 + recoil * 0.2;
+      bodyZ += -recoil * 0.05;
+      headX += recoil * 0.04;
+    } else {
+      // 더블 펀치 콤보
+      const punchOne = pulse(t, 0.02, 0.11, 0.2);
+      const punchTwo = pulse(t, 0.2, 0.31, 0.43);
+      const recover = pulse(t, 0.43, 0.5, 0.6);
+      leftLeg += -punchOne * 0.08 + punchTwo * 0.18;
+      rightLeg += punchOne * 0.18 - punchTwo * 0.08;
+      leftArmX += -fighter.attackSwing * 0.32 - punchTwo * 1.25 + recover * 0.18;
+      rightArmX += -fighter.attackSwing * 0.42 - punchOne * 1.35 + recover * 0.2;
+      leftArmZ += punchTwo * 0.18;
+      rightArmZ += -punchOne * 0.18;
+      bodyZ += punchOne * 0.06 - punchTwo * 0.05;
+      bodyY += -punchOne * 0.22 + punchTwo * 0.22;
+      headY += -punchOne * 0.12 + punchTwo * 0.12;
+      headX += punchOne * 0.03 + punchTwo * 0.03;
+    }
+
+    if (t > 0.6) {
       fighter.attackAnimTime = -1;
     }
   }
 
-  body.leftLeg.rotation.x = leftLegWalk - punchOne * 0.08 + punchTwo * 0.18;
-  body.rightLeg.rotation.x = rightLegWalk + punchOne * 0.18 - punchTwo * 0.08;
-  body.leftArm.rotation.x = leftArmWalk - fighter.attackSwing * 0.32 - punchTwo * 1.25 + recover * 0.18;
-  body.rightArm.rotation.x = rightArmWalk - fighter.attackSwing * 0.42 - punchOne * 1.35 + recover * 0.2;
-  body.leftArm.rotation.z = Math.PI * 0.1 + punchTwo * 0.18;
-  body.rightArm.rotation.z = -Math.PI * 0.1 - punchOne * 0.18;
-  body.body.rotation.z = Math.sin(walkCycle * 0.5) * 0.03 + punchOne * 0.06 - punchTwo * 0.05;
-  body.body.rotation.y = -punchOne * 0.22 + punchTwo * 0.22;
-  body.head.rotation.y = -punchOne * 0.12 + punchTwo * 0.12;
-  body.head.rotation.x = punchOne * 0.03 + punchTwo * 0.03;
+  body.leftLeg.rotation.x = leftLeg;
+  body.rightLeg.rotation.x = rightLeg;
+  body.leftArm.rotation.x = leftArmX;
+  body.rightArm.rotation.x = rightArmX;
+  body.leftArm.rotation.z = leftArmZ;
+  body.rightArm.rotation.z = rightArmZ;
+  body.body.rotation.z = bodyZ;
+  body.body.rotation.y = bodyY;
+  body.head.rotation.y = headY;
+  body.head.rotation.x = headX;
 
   fighter.attackSwing = Math.max(0, fighter.attackSwing - dt * 5);
   fighter.spread = Math.max(0, fighter.spread - dt * 0.13);
@@ -2151,8 +2279,14 @@ function updateHud() {
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
     if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
-    if (state.gameTime - fighter.lastCombatTime >= 5) {
-      fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1 * dt);
+    if (state.gameTime - fighter.lastCombatTime >= 2) {
+      fighter.regenTimer += dt;
+      while (fighter.regenTimer >= 0.5 && fighter.health < fighter.maxHealth) {
+        fighter.regenTimer -= 0.5;
+        fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.1);
+      }
+    } else {
+      fighter.regenTimer = 0;
     }
   }
 }
@@ -2176,6 +2310,7 @@ function checkEndState() {
       state.running = false;
       resultTitle.textContent = "전투 불능";
       resultBody.textContent = "훈련 중 쓰러졌습니다.";
+      resultStats.textContent = `입힌 데미지: ${Math.round(player.damageDealt)}`;
       resultOverlay.style.display = "flex";
       document.exitPointerLock?.();
     }
@@ -2183,11 +2318,12 @@ function checkEndState() {
   }
 
   const alive = state.players.filter((fighter) => !fighter.dead);
-  if (alive.length <= 1) {
+  const player = getPlayer();
+  const playerDead = !!player?.dead;
+  if (alive.length <= 1 || playerDead) {
     state.gameOver = true;
     state.running = false;
     const winner = alive[0];
-    const player = getPlayer();
     const playerRank = (!player || !player.dead)
       ? 1
       : state.players.length - state.deathOrder.indexOf(player.id);
@@ -2197,7 +2333,10 @@ function checkEndState() {
     const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
     const totalText = account ? ` (총 ${account.trophies})` : "";
 
-    if (!winner) {
+    if (playerDead && alive.length > 1) {
+      resultTitle.textContent = `${playerRank}위`;
+      resultBody.textContent = `전투 불능. ${deltaText} 트로피${totalText}`;
+    } else if (!winner) {
       resultTitle.textContent = `${playerRank}위`;
       resultBody.textContent = `무승부. ${deltaText} 트로피${totalText}`;
     } else if (winner.isPlayer) {
@@ -2208,6 +2347,7 @@ function checkEndState() {
       resultTitle.textContent = rankLabel;
       resultBody.textContent = `${winner.name}이(가) 우승했습니다. ${deltaText} 트로피${totalText}`;
     }
+    resultStats.textContent = player ? `입힌 데미지: ${Math.round(player.damageDealt)}` : "";
     resultOverlay.style.display = "flex";
     document.exitPointerLock?.();
   }
@@ -2499,6 +2639,15 @@ function setupInput() {
   // 훈련장 나가기
   exitTrainingBtn.addEventListener("click", () => {
     exitTraining();
+  });
+
+  // 다시 시작
+  playAgainButton.addEventListener("click", () => {
+    if (state.trainingMode) {
+      startTraining();
+    } else {
+      resetGame();
+    }
   });
 
   // 재시작 → 로비
