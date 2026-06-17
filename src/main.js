@@ -594,7 +594,6 @@ function makeFighter(options) {
     attackSwing: 0,
     attackAnimTime: -1,
     lastCombatTime: -999,
-    regenTimer: 0,
     nextRegenAt: 0,
     damageDealt: 0,
     ambushing: false,
@@ -649,20 +648,21 @@ function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr =
   });
 }
 
+const bushClumpGeo = new THREE.IcosahedronGeometry(1, 0);
+const bushClumpMats = [0x5a7d3a, 0x6f9447, 0x4f6f31, 0x7da84f].map(
+  (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.95 }),
+);
+
 function createBush(x, z, radius = 1.35, group = scene, bushArr = state.bushes) {
   const bush = new THREE.Group();
-  const colors = [0x5a7d3a, 0x6f9447, 0x4f6f31, 0x7da84f];
   const clumpCount = 4 + Math.floor(Math.random() * 2);
   for (let i = 0; i < clumpCount; i += 1) {
     const clumpRadius = radius * (0.5 + Math.random() * 0.3);
-    const clump = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(clumpRadius, 0),
-      new THREE.MeshStandardMaterial({ color: colors[i % colors.length], roughness: 0.95 }),
-    );
+    const clump = new THREE.Mesh(bushClumpGeo, bushClumpMats[i % bushClumpMats.length]);
     const angle = (i / clumpCount) * Math.PI * 2 + Math.random() * 0.6;
     const offset = radius * 0.35;
     clump.position.set(Math.cos(angle) * offset, clumpRadius * 0.7, Math.sin(angle) * offset);
-    clump.scale.y = 0.75;
+    clump.scale.set(clumpRadius, clumpRadius * 0.75, clumpRadius);
     clump.rotation.y = Math.random() * Math.PI * 2;
     clump.castShadow = true;
     bush.add(clump);
@@ -810,10 +810,10 @@ const MAP_POOL = [
 
 function clearBattleMap() {
   battleMapGroup.traverse((obj) => {
-    if (obj.geometry) obj.geometry.dispose();
+    if (obj.geometry && obj.geometry !== bushClumpGeo) obj.geometry.dispose();
     if (obj.material) {
-      if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose());
-      else obj.material.dispose();
+      const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+      mats.forEach((m) => { if (!bushClumpMats.includes(m)) m.dispose(); });
     }
   });
   battleMapGroup.clear();
