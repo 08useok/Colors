@@ -2073,12 +2073,8 @@ function chooseBotTarget(bot) {
     if (distanceSq > visionRange * visionRange) {
       continue;
     }
-    if (!isFighterVisible(bot, fighter)) {
-      const fullyHidden = isInBush(fighter) && distanceSq > bushStealthRevealRangeSq;
-      if (fullyHidden || distanceSq > bushVisionRange * bushVisionRange) {
-        continue;
-      }
-    }
+    if (!isFighterVisible(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) continue;
+    if (isInBush(fighter) && distanceSq > bushStealthRevealRangeSq) continue;
     if (distanceSq < bestScore) {
       bestScore = distanceSq;
       best = fighter;
@@ -2357,7 +2353,7 @@ function updateZoneDamage(dt, zone) {
     const dz = fighter.mesh.position.z - state.safeCenter.y;
     const distance = Math.hypot(dx, dz);
     if (distance > zone.radius) {
-      applyDamage(fighter, zone.damage * dt, null, false);
+      applyDamage(fighter, zone.damage * dt);
       if (fighter.isPlayer) {
         state.playerOutsideZone = true;
         warning.classList.remove("hidden");

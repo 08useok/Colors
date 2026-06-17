@@ -68,7 +68,7 @@ function updateNaturalRegen(dt) {
 - 기존 수치 변경 없음: `reloadDuration 0.5s`, `maxAmmo 3`, `attackCooldown 0.62s`
 - Red / Green 캐릭터 공격 판정 변경 없음
 - R 키 수동 재장전 여전히 동작
-- 자기장 데미지는 lastCombatTime 갱신 안 함 (자기장 밖에서도 회복 가능)
+- 자기장 데미지도 lastCombatTime 갱신 (자기장 안에서는 회복 억제)
 
 ## Acceptance Criteria
 - [ ] 플레이어는 3초간 피격/공격 없으면 최대 체력의 25%가 즉시 한 번에 회복된다
