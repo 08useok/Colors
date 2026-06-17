@@ -2106,12 +2106,12 @@ function updateBot(bot, dt, zone) {
     }
   } else if (bot.health < bot.maxHealth * 0.3 && state.gameTime >= bot.ambushCooldownUntil) {
     bot.ambushing = true;
-    bot.ambushUntil = 0;
+    bot.ambushUntil = state.gameTime + 10;
   }
 
   const hidingBush = bot.ambushing ? findNearestBush(botPos) : null;
   const inHidingBush = hidingBush !== null && isInBush(bot);
-  if (inHidingBush && bot.ambushUntil === 0) {
+  if (inHidingBush && bot.ambushUntil > state.gameTime + 5) {
     bot.ambushUntil = state.gameTime + 5;
   }
 
@@ -2474,7 +2474,7 @@ function updateHud() {
 
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (fighter.dead || fighter.health >= fighter.maxHealth) continue;
+    if (fighter.dead || fighter.isDummy || fighter.health >= fighter.maxHealth) continue;
     const regenDelay = fighter.isPlayer ? 3 : 5;
     if (state.gameTime - fighter.lastCombatTime >= regenDelay && state.gameTime >= fighter.nextRegenAt) {
       fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.25);
