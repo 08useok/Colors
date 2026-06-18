@@ -26,6 +26,7 @@ const resultOverlay = document.getElementById("result-overlay");
 const resultTitle = document.getElementById("result-title");
 const resultBody = document.getElementById("result-body");
 const resultStats = document.getElementById("result-stats");
+const resultStreak = document.getElementById("result-streak");
 const playAgainButton = document.getElementById("play-again-button");
 const restartButton = document.getElementById("restart-button");
 const healthFill = document.getElementById("health-fill");
@@ -131,7 +132,18 @@ const ACCOUNT_KEY = "skullCreekAccount";
 function loadAccount() {
   try {
     const raw = localStorage.getItem(ACCOUNT_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const account = JSON.parse(raw);
+    if (!account.charStats) {
+      account.charStats = {
+        red:   { wins: 0, games: 0 },
+        green: { wins: 0, games: 0 },
+        blue:  { wins: 0, games: 0 },
+      };
+    }
+    if (account.winStreak === undefined) account.winStreak = 0;
+    if (account.bestStreak === undefined) account.bestStreak = 0;
+    return account;
   } catch {
     return null;
   }
@@ -172,6 +184,13 @@ function createAccount(id, nickname) {
     selectedCharacter: "red",
     lastLoginDate: getTodayString(),
     loginAttempts: 0,
+    charStats: {
+      red:   { wins: 0, games: 0 },
+      green: { wins: 0, games: 0 },
+      blue:  { wins: 0, games: 0 },
+    },
+    winStreak: 0,
+    bestStreak: 0,
   };
   saveAccount(account);
   return account;
@@ -186,6 +205,30 @@ function updateLobbyUI(account) {
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   lobbyTrophies.textContent = account.trophies;
   lobbyRecord.textContent = `${account.wins}승 ${account.losses}패`;
+
+  // 캐릭터별 승률
+  for (const char of ["red", "green", "blue"]) {
+    const el = document.getElementById(`winrate-${char}`);
+    if (!el) continue;
+    const s = account.charStats[char];
+    if (s.games === 0) {
+      el.textContent = "첫 판에 도전하세요!";
+    } else {
+      const rate = Math.round((s.wins / s.games) * 100);
+      el.textContent = `승률 ${rate}%  |  ${s.wins}승 / ${s.games}판`;
+    }
+  }
+
+  // 연승 표시
+  const streakEl = document.getElementById("streak-display");
+  if (streakEl) {
+    if (account.winStreak >= 2) {
+      streakEl.textContent = `🔥 ${account.winStreak}연승 중`;
+      streakEl.classList.remove("hidden");
+    } else {
+      streakEl.classList.add("hidden");
+    }
+  }
 
   // 캐릭터 선택 상태 반영
   document.querySelectorAll(".char-btn").forEach((btn) => {
@@ -255,17 +298,40 @@ function calcTrophyChange(rank) {
   return 12 - rank * 2; // 1위 +10, 6위 0, 10위 -8
 }
 
+function streakBonus(streak) {
+  if (streak <= 1) return 0;
+  return Math.min(streak - 1, 4);
+}
+
 function recordGameResult(rank) {
   const account = loadAccount();
-  if (!account) return;
+  if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false };
+
+  const char = account.selectedCharacter;
+  const prevStreak = account.winStreak;
+  let bonus = 0;
+  let milestone = false;
+
+  account.charStats[char].games += 1;
   if (rank <= 4) {
     account.wins += 1;
+    account.charStats[char].wins += 1;
+    account.winStreak += 1;
+    if (account.winStreak > account.bestStreak) account.bestStreak = account.winStreak;
+    bonus = streakBonus(account.winStreak);
+    if (account.charStats[char].wins > 0 && account.charStats[char].wins % 100 === 0) {
+      account.trophies += 50;
+      milestone = true;
+    }
   } else {
     account.losses += 1;
+    account.winStreak = 0;
   }
+
   const delta = calcTrophyChange(rank);
-  account.trophies = Math.max(0, account.trophies + delta);
+  account.trophies = Math.max(0, account.trophies + delta + bonus);
   saveAccount(account);
+  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone };
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -2499,6 +2565,7 @@ function checkEndState() {
       resultTitle.textContent = "전투 불능";
       resultBody.textContent = "훈련 중 쓰러졌습니다.";
       resultStats.textContent = `입힌 데미지: ${Math.round(player.damageDealt)}`;
+      resultStreak.style.display = "none";
       resultOverlay.style.display = "flex";
       document.exitPointerLock?.();
     }
@@ -2515,7 +2582,7 @@ function checkEndState() {
     const playerRank = (!player || !player.dead)
       ? 1
       : state.players.length - state.deathOrder.indexOf(player.id);
-    recordGameResult(playerRank);
+    const { streakBefore, streakAfter, bonus, milestone } = recordGameResult(playerRank);
     const account = loadAccount();
     const delta = calcTrophyChange(playerRank);
     const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
@@ -2536,6 +2603,18 @@ function checkEndState() {
       resultBody.textContent = `${winner.name}이(가) 우승했습니다. ${deltaText} 트로피${totalText}`;
     }
     resultStats.textContent = player ? `입힌 데미지: ${Math.round(player.damageDealt)}` : "";
+
+    let streakMsg = "";
+    if (milestone) streakMsg += `🎉 100승 달성! +50 트로피\n`;
+    if (streakAfter >= 2) {
+      const bonusText = bonus > 0 ? ` (+${bonus} 보너스)` : "";
+      streakMsg += `🔥 ${streakAfter}연승!${bonusText}`;
+    } else if (streakBefore >= 2 && streakAfter === 0) {
+      streakMsg += `연승이 끊겼습니다 (최고: ${account?.bestStreak ?? streakBefore}연승)`;
+    }
+    resultStreak.textContent = streakMsg;
+    resultStreak.style.display = streakMsg ? "block" : "none";
+
     resultOverlay.style.display = "flex";
     document.exitPointerLock?.();
   }

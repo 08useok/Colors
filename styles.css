@@ -711,6 +711,30 @@ body {
   line-height: 1.4;
 }
 
+.char-winrate {
+  margin-top: 7px;
+  font-size: 11px;
+  color: var(--safe);
+  font-weight: 700;
+  border-top: 1px solid rgba(255, 210, 158, 0.15);
+  padding-top: 6px;
+  line-height: 1.5;
+}
+
+#streak-display {
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffaa33;
+  margin-top: 2px;
+}
+
+#result-streak {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffaa33;
+  margin: 4px 0 0;
+}
+
 .screen-flash {
   animation: screenFlash 220ms ease-out;
 }
