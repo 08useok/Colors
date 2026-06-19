@@ -2663,6 +2663,13 @@ function setupInput() {
     btn.textContent = table.classList.contains("hidden") ? "상성표 보기" : "상성표 닫기";
   });
 
+  document.getElementById("patchnotes-toggle").addEventListener("click", () => {
+    const panel = document.getElementById("patchnotes");
+    const btn = document.getElementById("patchnotes-toggle");
+    panel.classList.toggle("hidden");
+    btn.textContent = panel.classList.contains("hidden") ? "패치노트" : "패치노트 닫기";
+  });
+
   const coarsePointerQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
   const syncVirtualControlsVisibility = () => {
     mobileJoystick.style.display = "block";

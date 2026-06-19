@@ -775,6 +775,44 @@ body {
 .mu-green { color: #7ee87a; }
 .mu-blue { color: #7ec8ff; }
 
+.matchup-desc {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin: 0 0 6px;
+}
+
+.patchnotes {
+  margin: 8px auto 0;
+  max-width: 340px;
+  max-height: 240px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.patch-entry {
+  margin-bottom: 10px;
+}
+
+.patch-version {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+
+.patchnotes ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.patchnotes li {
+  margin-bottom: 1px;
+}
+
 #result-streak {
   font-size: 13px;
   font-weight: 700;

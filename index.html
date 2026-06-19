@@ -139,9 +139,10 @@
 
           <button id="matchup-toggle" class="matchup-toggle-btn" type="button">상성표 보기</button>
           <div id="matchup-table" class="matchup-table hidden">
+            <p class="matchup-desc">가위바위보 상성 — 유리한 상대를 노려 승률을 높이세요!</p>
             <table>
               <thead>
-                <tr><th>캐릭터</th><th>유리</th><th>불리</th></tr>
+                <tr><th>캐릭터</th><th>✅ 유리</th><th>❌ 불리</th></tr>
               </thead>
               <tbody>
                 <tr><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td><td class="mu-green">🟢 Green</td></tr>
@@ -149,6 +150,39 @@
                 <tr><td class="mu-blue">🔵 Blue</td><td class="mu-green">🟢 Green</td><td class="mu-red">🔴 Red</td></tr>
               </tbody>
             </table>
+          </div>
+
+          <button id="patchnotes-toggle" class="matchup-toggle-btn" type="button">패치노트</button>
+          <div id="patchnotes" class="patchnotes hidden">
+            <div class="patch-entry">
+              <div class="patch-version">v1.2 — 2026.06.19</div>
+              <ul>
+                <li>캐릭터별 승률 · 판수 · 승리 횟수 표시 추가</li>
+                <li>연승 시스템 추가 (2연승+1 ~ 5연승이상+4 보너스 트로피)</li>
+                <li>상성표 추가</li>
+                <li>패치노트 추가</li>
+              </ul>
+            </div>
+            <div class="patch-entry">
+              <div class="patch-version">v1.1 — 2026.06.18</div>
+              <ul>
+                <li>즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)</li>
+                <li>봇 수풀 매복 영구 정지 버그 수정</li>
+                <li>자기장 피해 중 자연회복 동시 적용 차단</li>
+                <li>수풀 GPU 최적화 (공유 Geometry/Material)</li>
+                <li>봇 타겟팅 로직 개선</li>
+              </ul>
+            </div>
+            <div class="patch-entry">
+              <div class="patch-version">v1.0 — 2026.06.14</div>
+              <ul>
+                <li>3종 캐릭터 (Red / Green / Blue)</li>
+                <li>배틀 맵 3종 로테이션</li>
+                <li>트로피 · 순위 시스템</li>
+                <li>수풀 은신 메커닉</li>
+                <li>훈련장</li>
+              </ul>
+            </div>
           </div>
 
           <p class="lobby-controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
