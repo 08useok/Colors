@@ -119,6 +119,11 @@ function applyLanguage() {
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("skullCreekLang", lang);
+  const account = loadAccount();
+  if (account) {
+    account.lang = lang;
+    saveAccount(account);
+  }
   applyLanguage();
 }
 
@@ -265,6 +270,7 @@ function loadAccount() {
     }
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
+    if (!account.lang) account.lang = "ko";
     return account;
   } catch {
     return null;
@@ -313,6 +319,7 @@ function createAccount(id, nickname) {
     },
     winStreak: 0,
     bestStreak: 0,
+    lang: currentLang,
   };
   saveAccount(account);
   return account;
@@ -407,6 +414,7 @@ function showLobby() {
     lobbyMain.classList.remove("hidden");
     dailyLogin.classList.add("hidden");
     sidePanel.classList.remove("hidden");
+    if (account.lang && account.lang !== currentLang) setLanguage(account.lang);
     updateLobbyUI(account);
   } else {
     accountCreation.classList.add("hidden");
@@ -2976,6 +2984,7 @@ function setupInput() {
       dailyLogin.classList.add("hidden");
       lobbyMain.classList.remove("hidden");
       document.getElementById("lobby-side-panel").classList.remove("hidden");
+      if (account.lang && account.lang !== currentLang) setLanguage(account.lang);
       updateLobbyUI(account);
     } else {
       // 실패
