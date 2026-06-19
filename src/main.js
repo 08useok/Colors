@@ -1901,6 +1901,7 @@ function beginBoomerangAttack(fighter) {
       distTraveled: 0,
       launchAt: state.gameTime + index * 0.08,
       mesh,
+      projRadius: 0.26,
     });
   });
 
@@ -1936,7 +1937,8 @@ function updateProjectiles(dt) {
       }
       const dx = target.mesh.position.x - proj.x;
       const dz = target.mesh.position.z - proj.z;
-      if (dx * dx + dz * dz < target.radius * target.radius) {
+      const hitDist = target.radius + (proj.projRadius || 0);
+      if (dx * dx + dz * dz < hitDist * hitDist) {
         const isFar = proj.distTraveled > proj.farThreshold;
         const dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
         applyDamage(target, dmg, attacker ?? null);
