@@ -7,7 +7,14 @@
   <link rel="stylesheet" href="./styles.css?v=1.2.3">
 </head>
 <body>
-  <div id="game-shell">
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-title">SKULL CREEK</div>
+      <div class="loading-bar"><div class="loading-fill" id="loading-fill"></div></div>
+      <div class="loading-text" id="loading-text">로딩 중...</div>
+    </div>
+  </div>
+  <div id="game-shell" class="hidden">
     <canvas id="game-canvas"></canvas>
 
     <div id="hud">

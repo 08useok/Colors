@@ -37,6 +37,9 @@ const LANGS = {
     killFeed: "{0} 처치 -> {1}",
     zonePhase1: "1단계 축소", zonePhase2: "2단계 축소", zonePhase3: "3단계 축소",
     zonePhase4: "4단계 축소", zoneFinal: "최종 구역",
+    loadingLights: "조명 생성 중...", loadingMap: "맵 생성 중...",
+    loadingTraining: "훈련장 생성 중...", loadingInput: "입력 설정 중...",
+    loadingReady: "준비 중...", loadingDone: "완료!",
     pv123a: "다국어 시스템 추가 (한국어/영어)",
     pv122a: "상성표 · 패치노트를 로비 우측 상단으로 이동",
     pv121a: "알파 시즌 1 시작", pv121b: "상성표 설명 텍스트 추가", pv121c: "패치노트 스크롤 수정",
@@ -84,6 +87,9 @@ const LANGS = {
     killFeed: "{0} killed {1}",
     zonePhase1: "Phase 1", zonePhase2: "Phase 2", zonePhase3: "Phase 3",
     zonePhase4: "Phase 4", zoneFinal: "Final Zone",
+    loadingLights: "Creating lights...", loadingMap: "Building map...",
+    loadingTraining: "Setting up training...", loadingInput: "Configuring input...",
+    loadingReady: "Getting ready...", loadingDone: "Done!",
     pv123a: "Multi-language support (KR/EN)",
     pv122a: "Moved matchups & patch notes to top-right",
     pv121a: "Alpha Season 1 start", pv121b: "Matchup description added", pv121c: "Patch notes scroll fix",
@@ -3062,12 +3068,46 @@ function setupInput() {
   mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
 }
 
-createLights();
-createMap(MAP_POOL[0]);
-createTrainingMap();
-setupInput();
-animate();
-rebuildAmmoPips();
-updateHud();
-applyLanguage();
-showLobby();
+const loadingFill = document.getElementById("loading-fill");
+const loadingText = document.getElementById("loading-text");
+const loadingScreen = document.getElementById("loading-screen");
+const gameShell = document.getElementById("game-shell");
+
+function setLoading(pct, msg) {
+  loadingFill.style.width = pct + "%";
+  loadingText.textContent = msg;
+}
+
+async function boot() {
+  setLoading(10, t("loadingLights"));
+  createLights();
+  await new Promise((r) => setTimeout(r, 50));
+
+  setLoading(30, t("loadingMap"));
+  createMap(MAP_POOL[0]);
+  await new Promise((r) => setTimeout(r, 50));
+
+  setLoading(50, t("loadingTraining"));
+  createTrainingMap();
+  await new Promise((r) => setTimeout(r, 50));
+
+  setLoading(70, t("loadingInput"));
+  setupInput();
+  await new Promise((r) => setTimeout(r, 50));
+
+  setLoading(90, t("loadingReady"));
+  animate();
+  rebuildAmmoPips();
+  updateHud();
+  applyLanguage();
+  await new Promise((r) => setTimeout(r, 100));
+
+  setLoading(100, t("loadingDone"));
+  await new Promise((r) => setTimeout(r, 300));
+
+  loadingScreen.style.display = "none";
+  gameShell.classList.remove("hidden");
+  showLobby();
+}
+
+boot();
