@@ -221,10 +221,14 @@
             </div>
             <div class="lobby-right">
               <div class="lobby-trophy"><span data-i18n="trophyLabel">트로피</span> <span id="lobby-trophies">0</span></div>
-              <div class="lobby-record" id="lobby-record">0승 0패</div>
-              <div class="lobby-winrate" id="lobby-winrate">승률 0%</div>
-              <div class="lobby-best-record" id="lobby-best-record">최고 연승: 0</div>
-              <div id="streak-display" class="lobby-streak hidden"></div>
+              <div class="lobby-stats-group">
+                <div class="lobby-record" id="lobby-record">0승 0패</div>
+                <div class="lobby-winrate" id="lobby-winrate">승률 0%</div>
+              </div>
+              <div class="lobby-streak-group">
+                <div class="lobby-best-record" id="lobby-best-record">최고 연승: 0</div>
+                <div id="streak-display" class="lobby-streak hidden"></div>
+              </div>
             </div>
           </div>
 
@@ -260,12 +264,12 @@
               <div class="char-winrate" id="winrate-blue"></div>
             </button>
             <button class="char-btn locked" type="button" disabled>
-              <div class="selected-badge">Coming Soon</div>
+              <div class="selected-badge">출시예정</div>
               <div class="char-icon char-icon-orange">O</div>
               <div class="char-name">Orange</div>
               <div class="char-stats">Alpha Season 2</div>
-              <div class="char-details">Coming Soon</div>
-              <div class="char-desc">새 시즌 콘텐츠 예고</div>
+              <div class="char-details">버프/디버프 지원가</div>
+              <div class="char-desc" data-i18n="comingSoonDesc">새 시즌 출시 예정</div>
             </button>
           </div>
 
