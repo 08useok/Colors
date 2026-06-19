@@ -793,9 +793,7 @@ function makeFighter(options) {
     lastCombatTime: -999,
     nextRegenAt: 0,
     damageDealt: 0,
-    ambushing: false,
-    ambushUntil: 0,
-    ambushCooldownUntil: 0,
+    respawnAt: 0,
   };
 
   fighter.mesh = createStickman(charDef.color);
@@ -2131,14 +2129,18 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     target.mesh.visible = false;
     target.shadow.visible = false;
     target.healthBar.visible = false;
-    state.deathOrder.push(target.id);
-    if (attacker) {
-      addKillFeed(t("killFeed", attacker.name, target.name));
-      if (attacker.isPlayer || target.isPlayer) {
-        audio.play("kill");
-      }
+    if (state.trainingMode && target.isDummy) {
+      target.respawnAt = state.gameTime + 3;
     } else {
-      addKillFeed(`${target.name} 사망`);
+      state.deathOrder.push(target.id);
+      if (attacker) {
+        addKillFeed(t("killFeed", attacker.name, target.name));
+        if (attacker.isPlayer || target.isPlayer) {
+          audio.play("kill");
+        }
+      } else {
+        addKillFeed(`${target.name} 사망`);
+      }
     }
   }
 }
@@ -2631,6 +2633,21 @@ function updateNaturalRegen(dt) {
   }
 }
 
+function updateTrainingRespawn() {
+  if (!state.trainingMode) return;
+  for (const fighter of state.players) {
+    if (!fighter.isDummy || !fighter.dead || !fighter.respawnAt) continue;
+    if (state.gameTime >= fighter.respawnAt) {
+      fighter.dead = false;
+      fighter.health = fighter.maxHealth;
+      fighter.mesh.visible = true;
+      fighter.shadow.visible = true;
+      fighter.healthBar.visible = true;
+      fighter.respawnAt = 0;
+    }
+  }
+}
+
 function updateZoneVisual(zone) {
   zoneRing.ring.scale.set(zone.radius, zone.radius, zone.radius);
   zoneRing.wall.scale.set(zone.radius, 1, zone.radius);
@@ -2719,6 +2736,7 @@ function animate() {
     }
     updateAmmoRegen(dt);
     updateNaturalRegen(dt);
+    updateTrainingRespawn();
     updateScheduledHits();
     updateProjectiles(dt);
     updateZoneDamage(dt, zone);
