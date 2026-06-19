@@ -742,27 +742,44 @@ body {
   margin-top: 2px;
 }
 
-.matchup-toggle-btn {
-  margin: 8px auto 0;
-  padding: 5px 16px;
+.lobby-side-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.side-toggle-btn {
+  padding: 5px 14px;
   font-size: 12px;
   font-weight: 700;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 210, 158, 0.2);
+  background: rgba(31, 20, 10, 0.85);
+  border: 1px solid rgba(255, 210, 158, 0.25);
   border-radius: 8px;
   cursor: pointer;
-  display: block;
+  backdrop-filter: blur(4px);
 }
 
-.matchup-toggle-btn:hover {
-  background: rgba(255, 210, 158, 0.1);
-  border-color: rgba(255, 210, 158, 0.4);
+.side-toggle-btn:hover {
+  background: rgba(255, 210, 158, 0.12);
+  border-color: rgba(255, 210, 158, 0.45);
 }
 
 .matchup-table {
-  margin: 8px auto 0;
-  max-width: 320px;
+  margin: 0;
+  max-width: 280px;
+  padding: 10px 14px;
+  background: rgba(31, 20, 10, 0.9);
+  border: 1px solid rgba(255, 210, 158, 0.2);
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
 }
 
 .matchup-table table {
@@ -797,11 +814,16 @@ body {
 }
 
 .patchnotes {
-  margin: 8px auto 0;
-  max-width: 340px;
-  max-height: 240px;
+  margin: 0;
+  max-width: 280px;
+  max-height: 300px;
   overflow-y: auto;
   text-align: left;
+  padding: 10px 14px;
+  background: rgba(31, 20, 10, 0.9);
+  border: 1px solid rgba(255, 210, 158, 0.2);
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
 }
 
 .patch-entry {

@@ -268,28 +268,29 @@ function showLobby() {
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   mapNameEl.classList.add("hidden");
+  const sidePanel = document.getElementById("lobby-side-panel");
   const account = loadAccount();
 
   if (!account || !account.id) {
-    // 계정 없거나 구버전 계정(id 없음) → 회원가입
     accountCreation.style.display = "block";
     lobbyMain.style.display = "none";
     dailyLogin.style.display = "none";
+    sidePanel.classList.add("hidden");
     idInput.value = "";
     nicknameInput.value = "";
     createAccountBtn.disabled = true;
     setTimeout(() => idInput.focus(), 50);
   } else if (isLoginDoneToday(account)) {
-    // 오늘 인증 완료 → 로비 메인
     accountCreation.style.display = "none";
     lobbyMain.style.display = "block";
     dailyLogin.style.display = "none";
+    sidePanel.classList.remove("hidden");
     updateLobbyUI(account);
   } else {
-    // 오늘 미인증 → 일일 인증 화면
     accountCreation.style.display = "none";
     lobbyMain.style.display = "none";
     dailyLogin.style.display = "block";
+    sidePanel.classList.add("hidden");
     showDailyLogin(account);
   }
 }
