@@ -2741,16 +2741,19 @@ function checkEndState() {
 }
 
 let bgInterval = null;
+let inBackground = false;
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    if (!bgInterval) bgInterval = setInterval(() => animate(true), 50);
+    inBackground = true;
+    if (!bgInterval) bgInterval = setInterval(animate, 50);
   } else {
+    inBackground = false;
     if (bgInterval) { clearInterval(bgInterval); bgInterval = null; }
   }
 });
 
-function animate(background = false) {
-  if (!background) requestAnimationFrame(animate);
+function animate() {
+  if (!inBackground) requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
 
   if (state.running) {
