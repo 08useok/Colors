@@ -590,6 +590,24 @@ body {
   letter-spacing: 0.5px;
 }
 
+.season-info {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.season-info span {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 210, 158, 0.18);
+  border-radius: 999px;
+}
+
 .lobby-header {
   display: flex;
   justify-content: space-between;
@@ -612,6 +630,12 @@ body {
 
 .lobby-right {
   text-align: right;
+}
+
+.lobby-winrate {
+  font-size: 12px;
+  color: var(--safe);
+  margin-bottom: 4px;
 }
 
 .lobby-trophy {
@@ -637,6 +661,29 @@ body {
   font-size: 11px;
   color: var(--muted);
   margin: 12px 0 0;
+}
+
+@media (max-width: 900px) {
+  .char-select-row {
+    flex-wrap: wrap;
+  }
+
+  .char-btn {
+    max-width: 100%;
+  }
+
+  .lobby-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lobby-right {
+    text-align: left;
+  }
+
+  .season-info {
+    justify-content: center;
+  }
 }
 
 .daily-error {
@@ -680,10 +727,10 @@ body {
 }
 
 .char-btn.selected {
-  border-color: rgba(255, 210, 158, 0.8);
-  background: rgba(255, 210, 158, 0.14);
-  box-shadow: 0 0 0 3px rgba(255, 210, 158, 0.16), 0 10px 24px rgba(255, 170, 90, 0.22);
-  transform: translateY(-2px);
+  border-color: rgba(255, 210, 158, 0.95);
+  background: rgba(255, 210, 158, 0.18);
+  box-shadow: 0 0 0 3px rgba(255, 210, 158, 0.24), 0 16px 28px rgba(255, 170, 90, 0.24);
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* ── 캐릭터 선택 공통 ── */
@@ -717,8 +764,20 @@ body {
 
 .char-btn:hover {
   border-color: rgba(255, 210, 158, 0.55);
-  background: rgba(255, 210, 158, 0.1);
+  background: rgba(255, 210, 158, 0.12);
   transform: translateY(-2px);
+}
+
+.char-btn.locked {
+  opacity: 0.72;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 210, 158, 0.14);
+}
+
+.char-btn.locked:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .char-btn:active {
@@ -750,6 +809,61 @@ body {
 .char-icon-blue {
   background: radial-gradient(circle at 35% 35%, #7ec8ff, #2a5db0 70%);
   box-shadow: 0 6px 18px rgba(74, 143, 212, 0.45);
+}
+
+.char-name {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.selected-badge {
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #2f1909;
+  background: #ffdc80;
+  border-radius: 10px;
+  letter-spacing: 0.03em;
+}
+
+.char-btn.selected .selected-badge,
+.char-btn.locked .selected-badge {
+  display: block;
+}
+
+.char-btn.locked .selected-badge {
+  color: #3b2f21;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.char-details {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.char-btn {
+  position: relative;
+  flex: 1;
+  max-width: 160px;
+  padding: 18px 14px;
+  border: 2px solid rgba(255, 210, 158, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 160ms, background 160ms, transform 120ms, box-shadow 160ms;
+}
+
+.char-btn.locked {
+  pointer-events: none;
 }
 
 .char-name {

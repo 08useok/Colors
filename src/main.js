@@ -50,6 +50,10 @@ const LANGS = {
     pv126a: "그린 공격 쿨다운 0.40 → 0.45",
     pv126b: "캐릭터 통계 표시 개선",
     pv126c: "사소한 버그 수정",
+    pv127a: "로비 UI 개선: 선택된 캐릭터 강조, 배지, 애니메이션",
+    pv127b: "캐릭터 정보 표시 강화",
+    pv127c: "플레이어 정보 및 시즌 정보 개선",
+    pv127d: "Orange Coming Soon 카드 추가",
     pv123a: "다국어 시스템 추가 (한국어/영어)",
     pv122a: "상성표 · 패치노트를 로비 우측 상단으로 이동",
     pv121a: "알파 시즌 1 시작", pv121b: "상성표 설명 텍스트 추가", pv121c: "패치노트 스크롤 수정",
@@ -120,6 +124,10 @@ const LANGS = {
     pv126a: "Green attack cooldown 0.40 → 0.45",
     pv126b: "Improved character statistics display",
     pv126c: "Minor bug fixes",
+    pv127a: "Lobby UI improvements: selected character highlight, badge, animation",
+    pv127b: "Enhanced character info display",
+    pv127c: "Player info and season info improvements",
+    pv127d: "Orange Coming Soon card added",
     pv10c: "Trophy & ranking system", pv10d: "Bush stealth mechanic", pv10e: "Training mode",
   },
 };
@@ -175,6 +183,7 @@ const lobbyNickname = document.getElementById("lobby-nickname");
 const lobbyLevel = document.getElementById("lobby-level");
 const lobbyTrophies = document.getElementById("lobby-trophies");
 const lobbyRecord = document.getElementById("lobby-record");
+const lobbyWinrate = document.getElementById("lobby-winrate");
 const resultOverlay = document.getElementById("result-overlay");
 const resultTitle = document.getElementById("result-title");
 const resultBody = document.getElementById("result-body");
@@ -360,6 +369,11 @@ function updateLobbyUI(account) {
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   lobbyTrophies.textContent = account.trophies;
   lobbyRecord.textContent = t("record", account.wins, account.losses);
+  if (lobbyWinrate) {
+    const totalGames = account.wins + account.losses;
+    const rate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
+    lobbyWinrate.textContent = t("winrate", rate, account.wins, totalGames);
+  }
 
   // 캐릭터별 승률
   for (const char of ["red", "green", "blue"]) {
