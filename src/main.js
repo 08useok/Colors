@@ -3078,32 +3078,41 @@ function setLoading(pct, msg) {
   loadingText.textContent = msg;
 }
 
+function nextFrame() {
+  if (document.hidden) return new Promise((r) => setTimeout(r, 16));
+  return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+}
+
 async function boot() {
-  setLoading(10, t("loadingLights"));
-  createLights();
-  await new Promise((r) => setTimeout(r, 50));
+  try {
+    setLoading(10, t("loadingLights"));
+    await nextFrame();
+    createLights();
 
-  setLoading(30, t("loadingMap"));
-  createMap(MAP_POOL[0]);
-  await new Promise((r) => setTimeout(r, 50));
+    setLoading(30, t("loadingMap"));
+    await nextFrame();
+    createMap(MAP_POOL[0]);
 
-  setLoading(50, t("loadingTraining"));
-  createTrainingMap();
-  await new Promise((r) => setTimeout(r, 50));
+    setLoading(50, t("loadingTraining"));
+    await nextFrame();
+    createTrainingMap();
 
-  setLoading(70, t("loadingInput"));
-  setupInput();
-  await new Promise((r) => setTimeout(r, 50));
+    setLoading(70, t("loadingInput"));
+    await nextFrame();
+    setupInput();
 
-  setLoading(90, t("loadingReady"));
-  animate();
-  rebuildAmmoPips();
-  updateHud();
-  applyLanguage();
-  await new Promise((r) => setTimeout(r, 100));
+    setLoading(90, t("loadingReady"));
+    await nextFrame();
+    animate();
+    rebuildAmmoPips();
+    updateHud();
+    applyLanguage();
 
-  setLoading(100, t("loadingDone"));
-  await new Promise((r) => setTimeout(r, 300));
+    setLoading(100, t("loadingDone"));
+    await new Promise((r) => setTimeout(r, 400));
+  } catch (e) {
+    console.error("Boot error:", e);
+  }
 
   loadingScreen.style.display = "none";
   gameShell.classList.remove("hidden");
