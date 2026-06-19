@@ -2292,54 +2292,7 @@ function updateBot(bot, dt, zone) {
   const botSpeed = getMoveSpeed(bot);
   tempVec3.set(0, 0, 0);
 
-  // 체력이 낮으면 가장 가까운 수풀로 도피해 매복 (영구 정지 방지: 5초 후 매복 해제 + 8초 재진입 쿨다운)
-  if (bot.ambushing) {
-    if (bot.ambushUntil > 0 && state.gameTime >= bot.ambushUntil) {
-      bot.ambushing = false;
-      bot.ambushUntil = 0;
-      bot.ambushCooldownUntil = state.gameTime + 8;
-    }
-  } else if (bot.health < bot.maxHealth * 0.3 && state.gameTime >= bot.ambushCooldownUntil) {
-    bot.ambushing = true;
-    bot.ambushUntil = state.gameTime + 10;
-  }
-
-  const hidingBush = bot.ambushing ? findNearestBush(botPos) : null;
-  const inHidingBush = hidingBush !== null && isInBush(bot);
-  if (inHidingBush && bot.ambushUntil > state.gameTime + 5) {
-    bot.ambushUntil = state.gameTime + 5;
-  }
-
-  if (hidingBush && !inHidingBush) {
-    const toBushX = hidingBush.x - botPos.x;
-    const toBushZ = hidingBush.z - botPos.z;
-    const distToBush = Math.hypot(toBushX, toBushZ);
-    if (distToBush > 0.5) {
-      bot.yaw = Math.atan2(toBushX, toBushZ);
-      tempVec3.set(toBushX / distToBush, 0, toBushZ / distToBush).multiplyScalar(botSpeed);
-    }
-    if (target) {
-      const toTargetX = target.mesh.position.x - botPos.x;
-      const toTargetZ = target.mesh.position.z - botPos.z;
-      const distance = Math.hypot(toTargetX, toTargetZ);
-      const atkRange = getAttackRange(bot);
-      if (distance <= atkRange * 1.05) {
-        beginAttack(bot);
-      }
-    }
-  } else if (inHidingBush) {
-    // 수풀 속에서 매복 — 자리를 지키며 사거리 내 적만 공격
-    if (target) {
-      const toTargetX = target.mesh.position.x - botPos.x;
-      const toTargetZ = target.mesh.position.z - botPos.z;
-      const distance = Math.hypot(toTargetX, toTargetZ);
-      bot.yaw = Math.atan2(toTargetX, toTargetZ);
-      const atkRange = getAttackRange(bot);
-      if (distance <= atkRange * 1.05) {
-        beginAttack(bot);
-      }
-    }
-  } else if (target) {
+  if (target) {
     const toTargetX = target.mesh.position.x - botPos.x;
     const toTargetZ = target.mesh.position.z - botPos.z;
     const distance = Math.hypot(toTargetX, toTargetZ);
