@@ -2656,6 +2656,13 @@ function animate() {
 }
 
 function setupInput() {
+  document.getElementById("matchup-toggle").addEventListener("click", () => {
+    const table = document.getElementById("matchup-table");
+    const btn = document.getElementById("matchup-toggle");
+    table.classList.toggle("hidden");
+    btn.textContent = table.classList.contains("hidden") ? "상성표 보기" : "상성표 닫기";
+  });
+
   const coarsePointerQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
   const syncVirtualControlsVisibility = () => {
     mobileJoystick.style.display = "block";

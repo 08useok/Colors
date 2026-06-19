@@ -137,6 +137,20 @@
             </button>
           </div>
 
+          <button id="matchup-toggle" class="matchup-toggle-btn" type="button">상성표 보기</button>
+          <div id="matchup-table" class="matchup-table hidden">
+            <table>
+              <thead>
+                <tr><th>캐릭터</th><th>유리</th><th>불리</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td><td class="mu-green">🟢 Green</td></tr>
+                <tr><td class="mu-green">🟢 Green</td><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td></tr>
+                <tr><td class="mu-blue">🔵 Blue</td><td class="mu-green">🟢 Green</td><td class="mu-red">🔴 Red</td></tr>
+              </tbody>
+            </table>
+          </div>
+
           <p class="lobby-controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
           <button id="start-battle-btn" class="lobby-start-btn" type="button">전투 시작</button>
           <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button">훈련장</button>

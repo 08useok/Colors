@@ -728,6 +728,53 @@ body {
   margin-top: 2px;
 }
 
+.matchup-toggle-btn {
+  margin: 8px auto 0;
+  padding: 5px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 210, 158, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  display: block;
+}
+
+.matchup-toggle-btn:hover {
+  background: rgba(255, 210, 158, 0.1);
+  border-color: rgba(255, 210, 158, 0.4);
+}
+
+.matchup-table {
+  margin: 8px auto 0;
+  max-width: 320px;
+}
+
+.matchup-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.matchup-table th {
+  padding: 5px 8px;
+  color: var(--accent);
+  font-weight: 800;
+  border-bottom: 1px solid rgba(255, 210, 158, 0.25);
+  text-align: center;
+}
+
+.matchup-table td {
+  padding: 5px 8px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.mu-red { color: #ff7a6a; }
+.mu-green { color: #7ee87a; }
+.mu-blue { color: #7ec8ff; }
+
 #result-streak {
   font-size: 13px;
   font-weight: 700;
