@@ -744,7 +744,7 @@ body {
 
 .lobby-side-panel {
   position: absolute;
-  top: 50px;
+  top: 16px;
   right: 16px;
   z-index: 10;
   display: flex;
