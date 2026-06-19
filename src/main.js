@@ -2819,6 +2819,7 @@ function setupInput() {
     const account = createAccount(id, nick);
     accountCreation.style.display = "none";
     lobbyMain.style.display = "block";
+    document.getElementById("lobby-side-panel").classList.remove("hidden");
     updateLobbyUI(account);
   });
 
@@ -2847,6 +2848,7 @@ function setupInput() {
       saveAccount(account);
       dailyLogin.style.display = "none";
       lobbyMain.style.display = "block";
+      document.getElementById("lobby-side-panel").classList.remove("hidden");
       updateLobbyUI(account);
     } else {
       // 실패
