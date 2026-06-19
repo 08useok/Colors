@@ -108,18 +108,7 @@ function t(key, ...args) {
 
 function applyLanguage() {
   document.querySelectorAll("[data-i18n]").forEach((el) => {
-    const key = el.dataset.i18n;
-    if (key === "trophyLabel") {
-      const span = el.querySelector("span");
-      const val = span ? span.textContent : "0";
-      el.textContent = t(key) + " ";
-      const newSpan = document.createElement("span");
-      newSpan.id = "lobby-trophies";
-      newSpan.textContent = val;
-      el.appendChild(newSpan);
-    } else {
-      el.textContent = t(key);
-    }
+    el.textContent = t(el.dataset.i18n);
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
     el.placeholder = t(el.dataset.i18nPlaceholder);
