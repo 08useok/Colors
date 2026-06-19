@@ -394,24 +394,24 @@ function showLobby() {
   const account = loadAccount();
 
   if (!account || !account.id) {
-    accountCreation.style.display = "block";
-    lobbyMain.style.display = "none";
-    dailyLogin.style.display = "none";
+    accountCreation.classList.remove("hidden");
+    lobbyMain.classList.add("hidden");
+    dailyLogin.classList.add("hidden");
     sidePanel.classList.add("hidden");
     idInput.value = "";
     nicknameInput.value = "";
     createAccountBtn.disabled = true;
     setTimeout(() => idInput.focus(), 50);
   } else if (isLoginDoneToday(account)) {
-    accountCreation.style.display = "none";
-    lobbyMain.style.display = "block";
-    dailyLogin.style.display = "none";
+    accountCreation.classList.add("hidden");
+    lobbyMain.classList.remove("hidden");
+    dailyLogin.classList.add("hidden");
     sidePanel.classList.remove("hidden");
     updateLobbyUI(account);
   } else {
-    accountCreation.style.display = "none";
-    lobbyMain.style.display = "none";
-    dailyLogin.style.display = "block";
+    accountCreation.classList.add("hidden");
+    lobbyMain.classList.add("hidden");
+    dailyLogin.classList.remove("hidden");
     sidePanel.classList.add("hidden");
     showDailyLogin(account);
   }
@@ -2944,8 +2944,8 @@ function setupInput() {
     const nick = nicknameInput.value.trim();
     if (!id || !nick) return;
     const account = createAccount(id, nick);
-    accountCreation.style.display = "none";
-    lobbyMain.style.display = "block";
+    accountCreation.classList.add("hidden");
+    lobbyMain.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     updateLobbyUI(account);
   });
@@ -2973,8 +2973,8 @@ function setupInput() {
       account.lastLoginDate = today;
       account.loginAttempts = 0;
       saveAccount(account);
-      dailyLogin.style.display = "none";
-      lobbyMain.style.display = "block";
+      dailyLogin.classList.add("hidden");
+      lobbyMain.classList.remove("hidden");
       document.getElementById("lobby-side-panel").classList.remove("hidden");
       updateLobbyUI(account);
     } else {
