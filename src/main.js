@@ -203,7 +203,7 @@ const worldRadius = 52;
 const attackDepth = 5;
 const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
-const baseMoveSpeed = 10.4;
+const baseMoveSpeed = 2.40;
 const turnSpeed = 4.4;
 const maxAmmo = 3;
 const reloadDuration = 0.5;
@@ -220,7 +220,7 @@ const CHARACTERS = {
     attackType: "punch",
     reloadDuration: 0.5,
     attackCooldown: 0.62,
-    moveSpeedMultiplier: 1.25,
+    moveSpeedMultiplier: 1.1375,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
   green: {
@@ -229,7 +229,7 @@ const CHARACTERS = {
     attackType: "boomerang",
     reloadDuration: 1.0,
     attackCooldown: 0.40,
-    moveSpeedMultiplier: 1.1,
+    moveSpeedMultiplier: 1.0708,
     boomerangCount: 4,
     boomerangDamage: 1000,
     boomerangRange: 5,
