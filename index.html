@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
-  <link rel="stylesheet" href="./styles.css?v=1.2.7">
+  <link rel="stylesheet" href="./styles.css?v=1.2.8">
 </head>
 <body>
   <div id="loading-screen">
@@ -46,6 +46,9 @@
         <div class="stat-row">
           <span id="health-text">10000 / 10000</span>
           <span id="reload-state" data-i18n="ammoFull">탄약 가득</span>
+        </div>
+        <div class="reload-bar-outer">
+          <div class="reload-bar-inner" id="reload-bar"></div>
         </div>
       </div>
 
@@ -96,12 +99,12 @@
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
             <div class="patch-entry">
-              <div class="patch-version">v1.2.7 — 2026.06.19</div>
+              <div class="patch-version">v1.2.8 — 2026.06.19</div>
               <ul>
-                <li data-i18n="pv127a">로비 UI 개선: 선택된 캐릭터 강조, 배지, 애니메이션</li>
-                <li data-i18n="pv127b">캐릭터 정보 표시 강화</li>
-                <li data-i18n="pv127c">플레이어 정보 및 시즌 정보 개선</li>
-                <li data-i18n="pv127d">Orange Coming Soon 카드 추가</li>
+                <li data-i18n="pv128a">알파 시즌 1 UI와 전투 경험 다듬기</li>
+                <li data-i18n="pv128b">캐릭터 카드 간소화 및 Orange 카드 개선</li>
+                <li data-i18n="pv128c">재장전 UI 개선 및 피격 이펙트 강화</li>
+                <li data-i18n="pv128d">킬 로그, 승률, 최고 기록 시스템 추가</li>
               </ul>
             </div>
             <div class="patch-entry">
@@ -220,6 +223,8 @@
               <div class="lobby-trophy"><span data-i18n="trophyLabel">트로피</span> <span id="lobby-trophies">0</span></div>
               <div class="lobby-record" id="lobby-record">0승 0패</div>
               <div class="lobby-winrate" id="lobby-winrate">승률 0%</div>
+              <div class="lobby-best-record" id="lobby-best-record">최고 연승: 0</div>
+              <div id="streak-display" class="lobby-streak hidden"></div>
             </div>
           </div>
 
@@ -283,6 +288,6 @@
     </div>
   </div>
 
-  <script type="module" src="./src/main.js?v=1.2.7"></script>
+  <script type="module" src="./src/main.js?v=1.2.8"></script>
 </body>
 </html>

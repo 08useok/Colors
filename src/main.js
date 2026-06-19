@@ -127,7 +127,15 @@ const LANGS = {
     pv127a: "Lobby UI improvements: selected character highlight, badge, animation",
     pv127b: "Enhanced character info display",
     pv127c: "Player info and season info improvements",
-    pv127d: "Orange Coming Soon card added",
+pv127d: "Orange Coming Soon card added",
+    pv128a: "Alpha Season 1 UI + combat polish",
+    pv128b: "Simplified character cards + Orange card polish",
+    pv128c: "Reload UI polish + hit feedback improvements",
+    pv128d: "Kill log, win rate, best streak system added",
+    pv128a: "Alpha Season 1 UI + combat polish",
+    pv128b: "Simplified character cards + Orange card polish",
+    pv128c: "Reload UI polish + hit feedback improvements",
+    pv128d: "Kill log, win rate, best streak system added",
     pv10c: "Trophy & ranking system", pv10d: "Bush stealth mechanic", pv10e: "Training mode",
   },
 };
@@ -198,6 +206,7 @@ const reloadState = document.getElementById("reload-state");
 const attackState = document.getElementById("attack-state");
 const charName = document.getElementById("char-name");
 const spreadState = document.getElementById("spread-state");
+const reloadBar = document.getElementById("reload-bar");
 const survivorsLabel = document.getElementById("survivors");
 const survivorsPanel = survivorsLabel.parentElement;
 const zonePanel = document.getElementById("zone-panel");
@@ -373,6 +382,12 @@ function updateLobbyUI(account) {
     const totalGames = account.wins + account.losses;
     const rate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
     lobbyWinrate.textContent = t("winrate", rate, account.wins, totalGames);
+  }
+
+  // 최고 기록
+  const bestRecordEl = document.getElementById("lobby-best-record");
+  if (bestRecordEl) {
+    bestRecordEl.textContent = t("bestStreakLabel", account.bestStreak);
   }
 
   // 캐릭터별 승률
@@ -1323,7 +1338,10 @@ function addKillFeed(text) {
   item.className = "kill-item";
   item.textContent = text;
   killFeed.prepend(item);
-  window.setTimeout(() => item.remove(), 4000);
+  if (killFeed.children.length > 6) {
+    killFeed.lastChild?.remove();
+  }
+  window.setTimeout(() => item.remove(), 5200);
 }
 
 function flashHitMarker() {
@@ -1333,7 +1351,7 @@ function flashHitMarker() {
 }
 
 function showDamageTakenIndicator(amount) {
-  damageTakenIndicator.textContent = `${Math.round(amount)}`;
+  damageTakenIndicator.textContent = `-${Math.round(amount)}`;
   damageTakenIndicator.classList.remove("flash");
   void damageTakenIndicator.offsetWidth;
   damageTakenIndicator.classList.add("flash");
@@ -2316,8 +2334,15 @@ function chooseBotTarget(bot) {
     }
     if (!isFighterVisible(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) continue;
     if (isInBush(fighter) && distanceSq > bushStealthRevealRangeSq) continue;
-    if (distanceSq < bestScore) {
-      bestScore = distanceSq;
+
+    // v1.2.8: Enhanced target selection with health weighting
+    const healthRatio = fighter.health / fighter.maxHealth;
+    const healthScore = (1 - healthRatio) * 180; // Low HP targets get higher priority
+    const bushPenalty = isInBush(fighter) ? 240 : 0;
+    const score = distanceSq + healthScore + bushPenalty;
+
+    if (score < bestScore) {
+      bestScore = score;
       best = fighter;
     }
   }
@@ -2626,10 +2651,18 @@ function updateHud() {
   healthText.textContent = `${Math.round(player.health)} / ${player.maxHealth}`;
   healthValue.textContent = `${Math.round(player.health)}`;
   charName.textContent = player.name;
+  const reloadInterval = getReloadInterval(player);
+  const reloadProgress = player.ammo >= player.maxAmmo
+    ? 1
+    : THREE.MathUtils.clamp(player.reloadTimer / reloadInterval, 0, 1);
+
+  reloadBar.style.width = `${reloadProgress * 100}%`;
+  reloadBar.dataset.state = player.ammo >= player.maxAmmo ? "full" : "reloading";
+
   if (player.ammo >= player.maxAmmo) {
     reloadState.textContent = t("ammoFull");
   } else {
-    const remain = Math.max(0, getReloadInterval(player) - player.reloadTimer);
+    const remain = Math.max(0, reloadInterval - player.reloadTimer);
     reloadState.textContent = t("nextAmmo", remain.toFixed(1));
   }
   const attackLabel = player.characterType === "green" ? t("boomerang")
