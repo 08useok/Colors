@@ -15,17 +15,17 @@
         <div class="title">SKULL CREEK</div>
         <div class="subtitle">3D TPS Battle Royale Prototype</div>
         <div id="map-name" class="map-name hidden"></div>
-        <button id="exit-training-btn" class="exit-training-btn hidden" type="button">훈련장 나가기</button>
+        <button id="exit-training-btn" class="exit-training-btn hidden" type="button" data-i18n="exitTraining">훈련장 나가기</button>
       </div>
 
       <div class="panel top-center">
-        <div class="stat-label">생존 인원</div>
+        <div class="stat-label" data-i18n="survivorsLabel">생존 인원</div>
         <div class="stat-value" id="survivors">10</div>
       </div>
 
       <div class="panel top-right is-hidden-panel" id="zone-panel">
-        <div class="stat-label">자기장</div>
-        <div class="stat-value" id="zone-state">대기 중</div>
+        <div class="stat-label" data-i18n="zoneLabel">자기장</div>
+        <div class="stat-value" id="zone-state" data-i18n="zoneWaiting">대기 중</div>
         <div class="zone-timer" id="zone-timer">00:30</div>
       </div>
 
@@ -40,12 +40,12 @@
         </div>
         <div class="stat-row">
           <span id="health-text">10000 / 10000</span>
-          <span id="reload-state">탄약 가득</span>
+          <span id="reload-state" data-i18n="ammoFull">탄약 가득</span>
         </div>
       </div>
 
       <div class="panel bottom-right">
-        <div class="stat-label">탄약</div>
+        <div class="stat-label" data-i18n="ammoLabel">탄약</div>
         <div class="ammo-fan" id="ammo-fan"></div>
         <div class="stat-row">
           <span id="attack-state">더블 펀치</span>
@@ -66,19 +66,20 @@
         </div>
       </div>
 
-      <button id="mobile-attack-button" type="button" aria-label="공격">공격</button>
+      <button id="mobile-attack-button" type="button" aria-label="공격" data-i18n="attack">공격</button>
 
-      <div id="warning" class="hidden">자기장 밖입니다</div>
+      <div id="warning" class="hidden" data-i18n="zoneWarning">자기장 밖입니다</div>
       <div id="kill-feed"></div>
 
       <div id="message-overlay">
         <div id="lobby-side-panel" class="lobby-side-panel hidden">
-          <button id="matchup-toggle" class="side-toggle-btn" type="button">상성표</button>
+          <button id="lang-toggle" class="side-toggle-btn" type="button">EN</button>
+          <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
           <div id="matchup-table" class="matchup-table hidden">
-            <p class="matchup-desc">가위바위보 상성 — 유리한 상대를 노려 승률을 높이세요!</p>
+            <p class="matchup-desc" data-i18n="matchupDesc">가위바위보 상성 — 유리한 상대를 노려 승률을 높이세요!</p>
             <table>
               <thead>
-                <tr><th>캐릭터</th><th>✅ 유리</th><th>❌ 불리</th></tr>
+                <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muAdv">✅ 유리</th><th data-i18n="muDis">❌ 불리</th></tr>
               </thead>
               <tbody>
                 <tr><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td><td class="mu-green">🟢 Green</td></tr>
@@ -87,62 +88,68 @@
               </tbody>
             </table>
           </div>
-          <button id="patchnotes-toggle" class="side-toggle-btn" type="button">패치노트</button>
+          <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
+            <div class="patch-entry">
+              <div class="patch-version">v1.2.3 — 2026.06.19</div>
+              <ul>
+                <li data-i18n="pv123a">다국어 시스템 추가 (한국어/영어)</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.2.2 — 2026.06.19</div>
               <ul>
-                <li>상성표 · 패치노트를 로비 우측 상단으로 이동</li>
+                <li data-i18n="pv122a">상성표 · 패치노트를 로비 우측 상단으로 이동</li>
               </ul>
             </div>
             <div class="patch-entry">
               <div class="patch-version">v1.2.1 — 2026.06.19</div>
               <ul>
-                <li>알파 시즌 1 시작</li>
-                <li>상성표 설명 텍스트 추가</li>
-                <li>패치노트 스크롤 수정</li>
+                <li data-i18n="pv121a">알파 시즌 1 시작</li>
+                <li data-i18n="pv121b">상성표 설명 텍스트 추가</li>
+                <li data-i18n="pv121c">패치노트 스크롤 수정</li>
               </ul>
             </div>
             <div class="patch-entry">
               <div class="patch-version">v1.2 — 2026.06.19</div>
               <ul>
-                <li>캐릭터별 승률 · 판수 · 승리 횟수 표시 추가</li>
-                <li>연승 시스템 추가 (2연승+1 ~ 5연승이상+4 보너스 트로피)</li>
-                <li>상성표 추가</li>
-                <li>패치노트 추가</li>
+                <li data-i18n="pv12a">캐릭터별 승률 · 판수 · 승리 횟수 표시 추가</li>
+                <li data-i18n="pv12b">연승 시스템 추가 (2연승+1 ~ 5연승이상+4 보너스 트로피)</li>
+                <li data-i18n="pv12c">상성표 추가</li>
+                <li data-i18n="pv12d">패치노트 추가</li>
               </ul>
             </div>
             <div class="patch-entry">
               <div class="patch-version">v1.1 — 2026.06.18</div>
               <ul>
-                <li>즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)</li>
-                <li>봇 수풀 매복 영구 정지 버그 수정</li>
-                <li>자기장 피해 중 자연회복 동시 적용 차단</li>
-                <li>수풀 GPU 최적화</li>
-                <li>봇 타겟팅 로직 개선</li>
+                <li data-i18n="pv11a">즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)</li>
+                <li data-i18n="pv11b">봇 수풀 매복 영구 정지 버그 수정</li>
+                <li data-i18n="pv11c">자기장 피해 중 자연회복 동시 적용 차단</li>
+                <li data-i18n="pv11d">수풀 GPU 최적화</li>
+                <li data-i18n="pv11e">봇 타겟팅 로직 개선</li>
               </ul>
             </div>
             <div class="patch-entry">
               <div class="patch-version">v1.0 — 2026.06.14</div>
               <ul>
-                <li>3종 캐릭터 (Red / Green / Blue)</li>
-                <li>배틀 맵 3종 로테이션</li>
-                <li>트로피 · 순위 시스템</li>
-                <li>수풀 은신 메커닉</li>
-                <li>훈련장</li>
+                <li data-i18n="pv10a">3종 캐릭터 (Red / Green / Blue)</li>
+                <li data-i18n="pv10b">배틀 맵 3종 로테이션</li>
+                <li data-i18n="pv10c">트로피 · 순위 시스템</li>
+                <li data-i18n="pv10d">수풀 은신 메커닉</li>
+                <li data-i18n="pv10e">훈련장</li>
               </ul>
             </div>
           </div>
         </div>
 
         <div id="account-creation" class="message-card">
-          <h1>해골천</h1>
-          <p class="lobby-intro">배틀로얄 전장에 오신 것을 환영합니다.</p>
-          <p class="char-select-label">아이디</p>
-          <input id="id-input" class="lobby-input" type="text" maxlength="16" placeholder="최대 16자" autocomplete="off">
-          <p class="char-select-label">닉네임</p>
-          <input id="nickname-input" class="lobby-input" type="text" maxlength="12" placeholder="최대 12자" autocomplete="off">
-          <button id="create-account-btn" class="lobby-start-btn" type="button" disabled>전장 입장</button>
+          <h1 data-i18n="gameTitle">해골천</h1>
+          <p class="lobby-intro" data-i18n="welcomeMsg">배틀로얄 전장에 오신 것을 환영합니다.</p>
+          <p class="char-select-label" data-i18n="idLabel">아이디</p>
+          <input id="id-input" class="lobby-input" type="text" maxlength="16" data-i18n-placeholder="idPlaceholder" placeholder="최대 16자" autocomplete="off">
+          <p class="char-select-label" data-i18n="nicknameLabel">닉네임</p>
+          <input id="nickname-input" class="lobby-input" type="text" maxlength="12" data-i18n-placeholder="nickPlaceholder" placeholder="최대 12자" autocomplete="off">
+          <button id="create-account-btn" class="lobby-start-btn" type="button" disabled data-i18n="enterBattle">전장 입장</button>
         </div>
 
         <div id="daily-login" class="message-card hidden">
@@ -152,23 +159,23 @@
               <div class="lobby-level" id="daily-login-level">Lv.1</div>
             </div>
           </div>
-          <p class="lobby-intro">오늘의 아이디를 입력하세요.</p>
-          <input id="daily-id-input" class="lobby-input" type="text" maxlength="16" placeholder="아이디 입력" autocomplete="off">
+          <p class="lobby-intro" data-i18n="dailyLoginMsg">오늘의 아이디를 입력하세요.</p>
+          <input id="daily-id-input" class="lobby-input" type="text" maxlength="16" data-i18n-placeholder="dailyIdPlaceholder" placeholder="아이디 입력" autocomplete="off">
           <div id="daily-login-error" class="daily-error hidden"></div>
-          <button id="daily-login-btn" class="lobby-start-btn" type="button">확인</button>
-          <button id="account-recovery-btn" class="lobby-start-btn lobby-recovery-btn hidden" type="button">계정 문제 해결하기</button>
+          <button id="daily-login-btn" class="lobby-start-btn" type="button" data-i18n="confirm">확인</button>
+          <button id="account-recovery-btn" class="lobby-start-btn lobby-recovery-btn hidden" type="button" data-i18n="accountRecovery">계정 문제 해결하기</button>
           <div id="account-recovery-info" class="daily-recovery-info hidden"></div>
         </div>
 
         <div id="lobby-main" class="message-card hidden">
-          <div class="season-badge">알파 시즌 1</div>
+          <div class="season-badge" data-i18n="season">알파 시즌 1</div>
           <div class="lobby-header">
             <div class="lobby-left">
               <div class="lobby-nickname" id="lobby-nickname">플레이어</div>
               <div class="lobby-level" id="lobby-level">Lv.1</div>
             </div>
             <div class="lobby-right">
-              <div class="lobby-trophy">트로피 <span id="lobby-trophies">0</span></div>
+              <div class="lobby-trophy" data-i18n="trophyLabel">트로피 <span id="lobby-trophies">0</span></div>
               <div class="lobby-record" id="lobby-record">0승 0패</div>
               <div id="streak-display" class="hidden"></div>
             </div>
@@ -176,34 +183,34 @@
 
           <div class="lobby-divider"></div>
 
-          <p class="char-select-label">캐릭터 선택</p>
+          <p class="char-select-label" data-i18n="charSelect">캐릭터 선택</p>
           <div class="char-select-row">
             <button id="select-red" class="char-btn" type="button" data-char="red">
               <div class="char-icon char-icon-red">R</div>
               <div class="char-name">Red</div>
               <div class="char-stats">HP 10,000</div>
-              <div class="char-desc">더블 펀치, 근접 압박형 탱커</div>
+              <div class="char-desc" data-i18n="redDesc">더블 펀치, 근접 압박형 탱커</div>
               <div class="char-winrate" id="winrate-red"></div>
             </button>
             <button id="select-green" class="char-btn" type="button" data-char="green">
               <div class="char-icon char-icon-green">G</div>
               <div class="char-name">Green</div>
               <div class="char-stats">HP 8,400</div>
-              <div class="char-desc">부메랑 4연발, 중거리 견제</div>
+              <div class="char-desc" data-i18n="greenDesc">부메랑 4연발, 중거리 견제</div>
               <div class="char-winrate" id="winrate-green"></div>
             </button>
             <button id="select-blue" class="char-btn" type="button" data-char="blue">
               <div class="char-icon char-icon-blue">B</div>
               <div class="char-name">Blue</div>
               <div class="char-stats">HP 4,400</div>
-              <div class="char-desc">고속 저격, 긴 사거리</div>
+              <div class="char-desc" data-i18n="blueDesc">고속 저격, 긴 사거리</div>
               <div class="char-winrate" id="winrate-blue"></div>
             </button>
           </div>
 
-          <p class="lobby-controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
-          <button id="start-battle-btn" class="lobby-start-btn" type="button">전투 시작</button>
-          <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button">훈련장</button>
+          <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
+          <button id="start-battle-btn" class="lobby-start-btn" type="button" data-i18n="startBattle">전투 시작</button>
+          <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
         </div>
       </div>
 
@@ -213,8 +220,8 @@
           <p id="result-body"></p>
           <p id="result-stats"></p>
           <p id="result-streak"></p>
-          <button id="play-again-button" type="button">다시 시작</button>
-          <button id="restart-button" class="lobby-recovery-btn" type="button">나가기</button>
+          <button id="play-again-button" type="button" data-i18n="playAgain">다시 시작</button>
+          <button id="restart-button" class="lobby-recovery-btn" type="button" data-i18n="exit">나가기</button>
         </div>
       </div>
     </div>

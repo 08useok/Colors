@@ -1,5 +1,138 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 
+// ── i18n ────────────────────────────────────────────────────────────────
+const LANGS = {
+  ko: {
+    exitTraining: "훈련장 나가기", survivorsLabel: "생존 인원", zoneLabel: "자기장",
+    zoneWaiting: "대기 중", ammoFull: "탄약 가득", ammoLabel: "탄약", attack: "공격",
+    zoneWarning: "자기장 밖입니다", matchupBtn: "상성표", matchupBtnClose: "상성표 닫기",
+    matchupDesc: "가위바위보 상성 — 유리한 상대를 노려 승률을 높이세요!",
+    muChar: "캐릭터", muAdv: "✅ 유리", muDis: "❌ 불리",
+    patchnotesBtn: "패치노트", patchnotesBtnClose: "패치노트 닫기",
+    gameTitle: "해골천", welcomeMsg: "배틀로얄 전장에 오신 것을 환영합니다.",
+    idLabel: "아이디", nicknameLabel: "닉네임", idPlaceholder: "최대 16자",
+    nickPlaceholder: "최대 12자", enterBattle: "전장 입장",
+    dailyLoginMsg: "오늘의 아이디를 입력하세요.", dailyIdPlaceholder: "아이디 입력",
+    confirm: "확인", accountRecovery: "계정 문제 해결하기",
+    season: "알파 시즌 1", charSelect: "캐릭터 선택",
+    redDesc: "더블 펀치, 근접 압박형 탱커", greenDesc: "부메랑 4연발, 중거리 견제",
+    blueDesc: "고속 저격, 긴 사거리",
+    controls: "WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전",
+    startBattle: "전투 시작", training: "훈련장", playAgain: "다시 시작", exit: "나가기",
+    trophyLabel: "트로피", record: "{0}승 {1}패", winrate: "승률 {0}%  |  {1}승 / {2}판",
+    firstGame: "첫 판에 도전하세요!", streak: "🔥 {0}연승 중",
+    nextAmmo: "다음 탄 {0}s", noAmmo: "공격 불가", stability: "안정성 {0}%",
+    doublePunch: "더블 펀치", boomerang: "부메랑", sniper: "고속 저격",
+    mapPrefix: "맵: ", resultKO: "전투 불능", trainingKO: "훈련 중 쓰러졌습니다.",
+    dmgDealt: "입힌 데미지: {0}", rank1: "1위 🏆", rankN: "{0}위",
+    resultDead: "전투 불능. {0} 트로피{1}", resultDraw: "무승부. {0} 트로피{1}",
+    resultWin: "해골천의 최후의 1인! {0} 트로피{1}",
+    resultLose: "{0}이(가) 우승했습니다. {1} 트로피{2}",
+    streakAchieve: "🔥 {0}연승!{1}", streakBonus: " (+{0} 보너스)",
+    streakBroken: "연승이 끊겼습니다 (최고: {0}연승)",
+    milestone100: "🎉 100승 달성! +50 트로피\n",
+    loginExceeded: "아이디 입력 횟수를 초과했습니다.",
+    loginWrong: "아이디가 틀렸습니다.", loginRemain: "아이디가 틀렸습니다. 남은 시도: {0}회",
+    myId: "내 아이디: {0}", totalTrophy: " (총 {0})",
+    killFeed: "{0} 처치 -> {1}",
+    zonePhase1: "1단계 축소", zonePhase2: "2단계 축소", zonePhase3: "3단계 축소",
+    zonePhase4: "4단계 축소", zoneFinal: "최종 구역",
+    pv123a: "다국어 시스템 추가 (한국어/영어)",
+    pv122a: "상성표 · 패치노트를 로비 우측 상단으로 이동",
+    pv121a: "알파 시즌 1 시작", pv121b: "상성표 설명 텍스트 추가", pv121c: "패치노트 스크롤 수정",
+    pv12a: "캐릭터별 승률 · 판수 · 승리 횟수 표시 추가",
+    pv12b: "연승 시스템 추가 (2연승+1 ~ 5연승이상+4 보너스 트로피)",
+    pv12c: "상성표 추가", pv12d: "패치노트 추가",
+    pv11a: "즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)",
+    pv11b: "봇 수풀 매복 영구 정지 버그 수정", pv11c: "자기장 피해 중 자연회복 동시 적용 차단",
+    pv11d: "수풀 GPU 최적화", pv11e: "봇 타겟팅 로직 개선",
+    pv10a: "3종 캐릭터 (Red / Green / Blue)", pv10b: "배틀 맵 3종 로테이션",
+    pv10c: "트로피 · 순위 시스템", pv10d: "수풀 은신 메커닉", pv10e: "훈련장",
+  },
+  en: {
+    exitTraining: "Leave Training", survivorsLabel: "Survivors", zoneLabel: "Zone",
+    zoneWaiting: "Waiting", ammoFull: "Ammo Full", ammoLabel: "Ammo", attack: "ATK",
+    zoneWarning: "Outside the zone!", matchupBtn: "Matchups", matchupBtnClose: "Close Matchups",
+    matchupDesc: "Rock-paper-scissors — target your advantage to win!",
+    muChar: "Character", muAdv: "✅ Strong", muDis: "❌ Weak",
+    patchnotesBtn: "Patch Notes", patchnotesBtnClose: "Close Notes",
+    gameTitle: "Skull Creek", welcomeMsg: "Welcome to the Battle Royale arena.",
+    idLabel: "User ID", nicknameLabel: "Nickname", idPlaceholder: "Max 16 chars",
+    nickPlaceholder: "Max 12 chars", enterBattle: "Enter Arena",
+    dailyLoginMsg: "Enter your ID for today.", dailyIdPlaceholder: "Enter ID",
+    confirm: "Confirm", accountRecovery: "Account Recovery",
+    season: "Alpha Season 1", charSelect: "Select Character",
+    redDesc: "Double Punch, close-range tank", greenDesc: "4-shot boomerang, mid-range",
+    blueDesc: "Fast sniper, long range",
+    controls: "WASD Move · Mouse Aim · Click Attack · Auto Reload",
+    startBattle: "Start Battle", training: "Training", playAgain: "Play Again", exit: "Exit",
+    trophyLabel: "Trophies", record: "{0}W {1}L", winrate: "WR {0}%  |  {1}W / {2}G",
+    firstGame: "Play your first match!", streak: "🔥 {0} Win Streak",
+    nextAmmo: "Next {0}s", noAmmo: "No Ammo", stability: "Stability {0}%",
+    doublePunch: "Double Punch", boomerang: "Boomerang", sniper: "Sniper",
+    mapPrefix: "Map: ", resultKO: "Eliminated", trainingKO: "Knocked out during training.",
+    dmgDealt: "Damage Dealt: {0}", rank1: "#1 🏆", rankN: "#{0}",
+    resultDead: "Eliminated. {0} trophies{1}", resultDraw: "Draw. {0} trophies{1}",
+    resultWin: "Last one standing! {0} trophies{1}",
+    resultLose: "{0} wins. {1} trophies{2}",
+    streakAchieve: "🔥 {0} Win Streak!{1}", streakBonus: " (+{0} bonus)",
+    streakBroken: "Streak broken (best: {0})",
+    milestone100: "🎉 100 Wins! +50 Trophies\n",
+    loginExceeded: "Too many login attempts.",
+    loginWrong: "Incorrect ID.", loginRemain: "Incorrect ID. Remaining: {0}",
+    myId: "My ID: {0}", totalTrophy: " (total {0})",
+    killFeed: "{0} killed {1}",
+    zonePhase1: "Phase 1", zonePhase2: "Phase 2", zonePhase3: "Phase 3",
+    zonePhase4: "Phase 4", zoneFinal: "Final Zone",
+    pv123a: "Multi-language support (KR/EN)",
+    pv122a: "Moved matchups & patch notes to top-right",
+    pv121a: "Alpha Season 1 start", pv121b: "Matchup description added", pv121c: "Patch notes scroll fix",
+    pv12a: "Per-character win rate / games / wins display",
+    pv12b: "Win streak system (2-streak +1 ~ 5+ streak +4 bonus trophies)",
+    pv12c: "Matchup table added", pv12d: "Patch notes added",
+    pv11a: "Instant regen changed (25% lump after 3s, bots 5s)",
+    pv11b: "Bot bush ambush freeze fix", pv11c: "Zone damage blocks natural regen",
+    pv11d: "Bush GPU optimization", pv11e: "Bot targeting improvements",
+    pv10a: "3 Characters (Red / Green / Blue)", pv10b: "3 Battle Map rotation",
+    pv10c: "Trophy & ranking system", pv10d: "Bush stealth mechanic", pv10e: "Training mode",
+  },
+};
+
+let currentLang = localStorage.getItem("skullCreekLang") || "ko";
+
+function t(key, ...args) {
+  let str = LANGS[currentLang]?.[key] ?? LANGS.ko[key] ?? key;
+  args.forEach((v, i) => { str = str.replace(`{${i}}`, v); });
+  return str;
+}
+
+function applyLanguage() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.dataset.i18n;
+    if (key === "trophyLabel") {
+      const span = el.querySelector("span");
+      const val = span ? span.textContent : "0";
+      el.textContent = t(key) + " ";
+      const newSpan = document.createElement("span");
+      newSpan.id = "lobby-trophies";
+      newSpan.textContent = val;
+      el.appendChild(newSpan);
+    } else {
+      el.textContent = t(key);
+    }
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  document.getElementById("lang-toggle").textContent = currentLang === "ko" ? "EN" : "KO";
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem("skullCreekLang", lang);
+  applyLanguage();
+}
+
 const canvas = document.getElementById("game-canvas");
 const messageOverlay = document.getElementById("message-overlay");
 const accountCreation = document.getElementById("account-creation");
@@ -204,7 +337,7 @@ function updateLobbyUI(account) {
   lobbyNickname.textContent = account.nickname;
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   lobbyTrophies.textContent = account.trophies;
-  lobbyRecord.textContent = `${account.wins}승 ${account.losses}패`;
+  lobbyRecord.textContent = t("record", account.wins, account.losses);
 
   // 캐릭터별 승률
   for (const char of ["red", "green", "blue"]) {
@@ -212,10 +345,10 @@ function updateLobbyUI(account) {
     if (!el) continue;
     const s = account.charStats[char];
     if (s.games === 0) {
-      el.textContent = "첫 판에 도전하세요!";
+      el.textContent = t("firstGame");
     } else {
       const rate = Math.round((s.wins / s.games) * 100);
-      el.textContent = `승률 ${rate}%  |  ${s.wins}승 / ${s.games}판`;
+      el.textContent = t("winrate", rate, s.wins, s.games);
     }
   }
 
@@ -223,7 +356,7 @@ function updateLobbyUI(account) {
   const streakEl = document.getElementById("streak-display");
   if (streakEl) {
     if (account.winStreak >= 2) {
-      streakEl.textContent = `🔥 ${account.winStreak}연승 중`;
+      streakEl.textContent = t("streak", account.winStreak);
       streakEl.classList.remove("hidden");
     } else {
       streakEl.classList.add("hidden");
@@ -257,7 +390,7 @@ function showDailyLogin(account) {
   accountRecoveryBtn.style.display = locked ? "block" : "none";
 
   if (locked) {
-    dailyLoginError.textContent = "아이디 입력 횟수를 초과했습니다.";
+    dailyLoginError.textContent = t("loginExceeded");
     dailyLoginError.style.display = "block";
   }
 
@@ -341,12 +474,12 @@ const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const mouseAimWorld = new THREE.Vector3();
 
 const zonePhases = [
-  { start: 0,   end: 30,  radius: 52, damage: 0,    label: "대기 중" },
-  { start: 30,  end: 57,  radius: 42, damage: 150,  label: "1단계 축소" },
-  { start: 57,  end: 84,  radius: 32, damage: 250,  label: "2단계 축소" },
-  { start: 84,  end: 111, radius: 23, damage: 400,  label: "3단계 축소" },
-  { start: 111, end: 136, radius: 15, damage: 650,  label: "4단계 축소" },
-  { start: 136, end: 999, radius: 8,  damage: 1000, label: "최종 구역" },
+  { start: 0,   end: 30,  radius: 52, damage: 0,    labelKey: "zoneWaiting" },
+  { start: 30,  end: 57,  radius: 42, damage: 150,  labelKey: "zonePhase1" },
+  { start: 57,  end: 84,  radius: 32, damage: 250,  labelKey: "zonePhase2" },
+  { start: 84,  end: 111, radius: 23, damage: 400,  labelKey: "zonePhase3" },
+  { start: 111, end: 136, radius: 15, damage: 650,  labelKey: "zonePhase4" },
+  { start: 136, end: 999, radius: 8,  damage: 1000, labelKey: "zoneFinal" },
 ];
 
 const state = {
@@ -1424,7 +1557,7 @@ function resetGame() {
   state.bushes = state.battleBushes;
   state.trainingMode = false;
   const currentMap = MAP_POOL[state.currentMapId];
-  mapNameEl.textContent = "맵: " + currentMap.name;
+  mapNameEl.textContent = t("mapPrefix") + currentMap.name;
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
   state.running = true;
@@ -2001,7 +2134,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     target.healthBar.visible = false;
     state.deathOrder.push(target.id);
     if (attacker) {
-      addKillFeed(`${attacker.name} 처치 -> ${target.name}`);
+      addKillFeed(t("killFeed", attacker.name, target.name));
       if (attacker.isPlayer || target.isPlayer) {
         audio.play("kill");
       }
@@ -2500,16 +2633,16 @@ function updateHud() {
   healthValue.textContent = `${Math.round(player.health)}`;
   charName.textContent = player.name;
   if (player.ammo >= player.maxAmmo) {
-    reloadState.textContent = "탄약 가득";
+    reloadState.textContent = t("ammoFull");
   } else {
     const remain = Math.max(0, getReloadInterval(player) - player.reloadTimer);
-    reloadState.textContent = `다음 탄 ${remain.toFixed(1)}s`;
+    reloadState.textContent = t("nextAmmo", remain.toFixed(1));
   }
-  const attackLabel = player.characterType === "green" ? "부메랑 4연발"
-    : player.characterType === "blue" ? "고속 저격"
-    : "더블 펀치";
-  attackState.textContent = player.ammo <= 0 ? "공격 불가" : attackLabel;
-  spreadState.textContent = `안정성 ${Math.round((1 - player.spread * 0.55) * 100)}%`;
+  const attackLabel = player.characterType === "green" ? t("boomerang")
+    : player.characterType === "blue" ? t("sniper")
+    : t("doublePunch");
+  attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
+  spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
 
   if (state.trainingMode) {
@@ -2527,7 +2660,7 @@ function updateHud() {
     const zone = getCurrentZone();
     const showZoneEvent = state.gameTime >= zonePhases[1].start;
     zonePanel.classList.toggle("is-hidden-panel", !showZoneEvent);
-    zoneState.textContent = zone.label;
+    zoneState.textContent = t(zone.labelKey);
     zoneTimer.textContent = formatTime(zone.phaseEnd - state.gameTime);
     warning.classList.toggle("hidden", !state.playerOutsideZone);
     zoneRing.ring.visible = true;
@@ -2563,9 +2696,9 @@ function checkEndState() {
     if (player && player.dead) {
       state.gameOver = true;
       state.running = false;
-      resultTitle.textContent = "전투 불능";
-      resultBody.textContent = "훈련 중 쓰러졌습니다.";
-      resultStats.textContent = `입힌 데미지: ${Math.round(player.damageDealt)}`;
+      resultTitle.textContent = t("resultKO");
+      resultBody.textContent = t("trainingKO");
+      resultStats.textContent = t("dmgDealt", Math.round(player.damageDealt));
       resultStreak.style.display = "none";
       resultOverlay.style.display = "flex";
       document.exitPointerLock?.();
@@ -2587,31 +2720,30 @@ function checkEndState() {
     const account = loadAccount();
     const delta = calcTrophyChange(playerRank);
     const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
-    const totalText = account ? ` (총 ${account.trophies})` : "";
+    const totalText = account ? t("totalTrophy", account.trophies) : "";
 
     if (playerDead && alive.length > 1) {
-      resultTitle.textContent = `${playerRank}위`;
-      resultBody.textContent = `전투 불능. ${deltaText} 트로피${totalText}`;
+      resultTitle.textContent = t("rankN", playerRank);
+      resultBody.textContent = t("resultDead", deltaText, totalText);
     } else if (!winner) {
-      resultTitle.textContent = `${playerRank}위`;
-      resultBody.textContent = `무승부. ${deltaText} 트로피${totalText}`;
+      resultTitle.textContent = t("rankN", playerRank);
+      resultBody.textContent = t("resultDraw", deltaText, totalText);
     } else if (winner.isPlayer) {
-      resultTitle.textContent = "1위 🏆";
-      resultBody.textContent = `해골천의 최후의 1인! ${deltaText} 트로피${totalText}`;
+      resultTitle.textContent = t("rank1");
+      resultBody.textContent = t("resultWin", deltaText, totalText);
     } else {
-      const rankLabel = playerRank === 1 ? "1위" : `${playerRank}위`;
-      resultTitle.textContent = rankLabel;
-      resultBody.textContent = `${winner.name}이(가) 우승했습니다. ${deltaText} 트로피${totalText}`;
+      resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
+      resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
     }
-    resultStats.textContent = player ? `입힌 데미지: ${Math.round(player.damageDealt)}` : "";
+    resultStats.textContent = player ? t("dmgDealt", Math.round(player.damageDealt)) : "";
 
     let streakMsg = "";
-    if (milestone) streakMsg += `🎉 100승 달성! +50 트로피\n`;
+    if (milestone) streakMsg += t("milestone100");
     if (streakAfter >= 2) {
-      const bonusText = bonus > 0 ? ` (+${bonus} 보너스)` : "";
-      streakMsg += `🔥 ${streakAfter}연승!${bonusText}`;
+      const bonusText = bonus > 0 ? t("streakBonus", bonus) : "";
+      streakMsg += t("streakAchieve", streakAfter, bonusText);
     } else if (streakBefore >= 2 && streakAfter === 0) {
-      streakMsg += `연승이 끊겼습니다 (최고: ${account?.bestStreak ?? streakBefore}연승)`;
+      streakMsg += t("streakBroken", account?.bestStreak ?? streakBefore);
     }
     resultStreak.textContent = streakMsg;
     resultStreak.style.display = streakMsg ? "block" : "none";
@@ -2661,14 +2793,20 @@ function setupInput() {
     const table = document.getElementById("matchup-table");
     const btn = document.getElementById("matchup-toggle");
     table.classList.toggle("hidden");
-    btn.textContent = table.classList.contains("hidden") ? "상성표 보기" : "상성표 닫기";
+    btn.textContent = table.classList.contains("hidden") ? t("matchupBtn") : t("matchupBtnClose");
   });
 
   document.getElementById("patchnotes-toggle").addEventListener("click", () => {
     const panel = document.getElementById("patchnotes");
     const btn = document.getElementById("patchnotes-toggle");
     panel.classList.toggle("hidden");
-    btn.textContent = panel.classList.contains("hidden") ? "패치노트" : "패치노트 닫기";
+    btn.textContent = panel.classList.contains("hidden") ? t("patchnotesBtn") : t("patchnotesBtnClose");
+  });
+
+  document.getElementById("lang-toggle").addEventListener("click", () => {
+    setLanguage(currentLang === "ko" ? "en" : "ko");
+    const account = loadAccount();
+    if (account) updateLobbyUI(account);
   });
 
   const coarsePointerQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
@@ -2857,13 +2995,13 @@ function setupInput() {
 
       const remaining = Math.max(0, 5 - account.loginAttempts);
       if (account.loginAttempts >= 5) {
-        dailyLoginError.textContent = "아이디가 틀렸습니다.";
+        dailyLoginError.textContent = t("loginWrong");
         dailyLoginError.style.display = "block";
         dailyIdInput.disabled = true;
         dailyLoginBtn.disabled = true;
         accountRecoveryBtn.style.display = "block";
       } else {
-        dailyLoginError.textContent = `아이디가 틀렸습니다. 남은 시도: ${remaining}회`;
+        dailyLoginError.textContent = t("loginRemain", remaining);
         dailyLoginError.style.display = "block";
       }
       dailyIdInput.value = "";
@@ -2878,7 +3016,7 @@ function setupInput() {
   accountRecoveryBtn.addEventListener("click", () => {
     const account = loadAccount();
     if (!account) return;
-    accountRecoveryInfo.textContent = `내 아이디: ${account.id}`;
+    accountRecoveryInfo.textContent = t("myId", account.id);
     accountRecoveryInfo.style.display = "block";
   });
 
@@ -2960,4 +3098,5 @@ setupInput();
 animate();
 rebuildAmmoPips();
 updateHud();
+applyLanguage();
 showLobby();
