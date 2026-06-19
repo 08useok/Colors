@@ -2728,8 +2728,17 @@ function checkEndState() {
   }
 }
 
-function animate() {
-  requestAnimationFrame(animate);
+let bgInterval = null;
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    if (!bgInterval) bgInterval = setInterval(() => animate(true), 50);
+  } else {
+    if (bgInterval) { clearInterval(bgInterval); bgInterval = null; }
+  }
+});
+
+function animate(background = false) {
+  if (!background) requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
 
   if (state.running) {
