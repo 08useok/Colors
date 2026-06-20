@@ -3207,8 +3207,7 @@ function setLoading(pct, msg) {
 }
 
 function nextFrame() {
-  if (document.hidden) return new Promise((r) => setTimeout(r, 16));
-  return new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  return new Promise((r) => setTimeout(r, 30));
 }
 
 async function boot() {
