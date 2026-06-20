@@ -3212,57 +3212,12 @@ function setupInput() {
   mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
 }
 
-const loadingFill = document.getElementById("loading-fill");
-const loadingText = document.getElementById("loading-text");
-const loadingScreen = document.getElementById("loading-screen");
-const gameShell = document.getElementById("game-shell");
-
-function setLoading(pct, msg) {
-  loadingFill.style.width = pct + "%";
-  loadingText.textContent = msg;
-}
-
-function nextFrame() {
-  return new Promise((r) => setTimeout(r, 30));
-}
-
-async function boot() {
-  try {
-    setLoading(10, t("loadingLights"));
-    await nextFrame();
-    createLights();
-
-    setLoading(30, t("loadingMap"));
-    await nextFrame();
-    createMap(MAP_POOL[0]);
-
-    setLoading(50, t("loadingTraining"));
-    await nextFrame();
-    createTrainingMap();
-
-    setLoading(70, t("loadingInput"));
-    await nextFrame();
-    setupInput();
-
-    setLoading(90, t("loadingReady"));
-    await nextFrame();
-    animate();
-    rebuildAmmoPips();
-    updateHud();
-    applyLanguage();
-
-    setLoading(100, t("loadingDone"));
-    await new Promise((r) => setTimeout(r, 400));
-  } catch (e) {
-    console.error("Boot error:", e);
-    loadingText.textContent = "Error: " + e.message;
-    loadingText.style.color = "#ff6a4f";
-    await new Promise((r) => setTimeout(r, 3000));
-  }
-
-  loadingScreen.style.display = "none";
-  gameShell.classList.remove("hidden");
-  showLobby();
-}
-
-boot();
+createLights();
+createMap(MAP_POOL[0]);
+createTrainingMap();
+setupInput();
+animate();
+rebuildAmmoPips();
+updateHud();
+applyLanguage();
+showLobby();
