@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
-  <link rel="stylesheet" href="./styles.css?v=1.2.8">
+  <link rel="stylesheet" href="./styles.css?v=1.2.9">
 </head>
 <body>
   <div id="loading-screen">
@@ -14,6 +14,7 @@
       <div class="loading-text" id="loading-text">로딩 중...</div>
     </div>
   </div>
+  <script>setTimeout(function(){var l=document.getElementById('loading-screen'),g=document.getElementById('game-shell');if(l&&l.style.display!=='none'){l.style.display='none';if(g)g.classList.remove('hidden');}},8000);</script>
   <div id="game-shell" class="hidden">
     <canvas id="game-canvas"></canvas>
 
@@ -292,6 +293,6 @@
     </div>
   </div>
 
-  <script type="module" src="./src/main.js?v=1.2.8"></script>
+  <script type="module" src="./src/main.js?v=1.2.9"></script>
 </body>
 </html>
