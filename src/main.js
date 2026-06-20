@@ -3269,6 +3269,14 @@ function setupInput() {
     updateLobbyUI(account);
   });
 
+  document.getElementById("select-orange").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "orange";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
   // 전투 시작
   startBattleBtn.addEventListener("click", async () => {
     await initAudio();
