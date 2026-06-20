@@ -863,6 +863,7 @@ function makeFighter(options) {
     nextRegenAt: 0,
     damageDealt: 0,
     respawnAt: 0,
+    revealedUntil: 0,
   };
 
   fighter.mesh = createStickman(charDef.color);
@@ -1853,6 +1854,7 @@ function beginAttack(fighter) {
   fighter.spread = Math.min(1, fighter.spread + 0.18);
   fighter.recoilKick = Math.min(1.5, fighter.recoilKick + 0.5);
   fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   attackEvents.forEach((event, index) => {
     queueAttackHit(fighter, index, event.damage, state.gameTime + event.delay);
@@ -1902,6 +1904,7 @@ function beginBulletAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.06);
   fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   const yaw = fighter.yaw;
   const mesh = createBulletMesh(fighter.mesh.position, yaw);
@@ -1953,6 +1956,7 @@ function beginBoomerangAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.12);
   fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   charDef.boomerangAngles.forEach((angleOffset, index) => {
     const yaw = fighter.yaw + angleOffset;
@@ -2080,6 +2084,7 @@ function isInBush(fighter) {
 }
 
 function isFighterVisible(observer, target) {
+  if (state.gameTime < target.revealedUntil) return true;
   const dx = target.mesh.position.x - observer.mesh.position.x;
   const dz = target.mesh.position.z - observer.mesh.position.z;
   if (isInBush(target) && dx * dx + dz * dz > bushStealthRevealRangeSq) {
@@ -2178,6 +2183,8 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
   if (updateCombatTime) {
     target.lastCombatTime = state.gameTime;
   }
+  if (isInBush(target)) target.revealedUntil = state.gameTime + 3;
+  if (attacker && isInBush(attacker)) attacker.revealedUntil = state.gameTime + 3;
   const dealt = healthBefore - target.health;
   if (attacker) {
     attacker.lastCombatTime = state.gameTime;
