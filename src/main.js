@@ -2391,7 +2391,6 @@ function updateBot(bot, dt, zone) {
   const botSpeed = getMoveSpeed(bot);
   tempVec3.set(0, 0, 0);
 
-  const zone = getCurrentZone();
   const dxZone = botPos.x - state.safeCenter.x;
   const dzZone = botPos.z - state.safeCenter.y;
   const distToZoneCenter = Math.hypot(dxZone, dzZone);
