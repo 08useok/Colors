@@ -331,6 +331,22 @@ const CHARACTERS = {
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.20, legAmp: 0.34, armRestZ: Math.PI * 0.03 },
   },
+  orange: {
+    color: 0xff9800,
+    maxHealth: 6500,
+    attackType: "bomb",
+    reloadDuration: 1.0,
+    attackCooldown: 0.7,
+    bombDamage: 1200,
+    bombSplashDamage: 450,
+    bombRange: 7,
+    bombSpeed: 14,
+    bombSplashCount: 5,
+    bombSplashSpeed: 10,
+    bombSplashRange: 3,
+    moveSpeedMultiplier: 1.0,
+    walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
+  },
 };
 
 // ── 계정 관리 ──────────────────────────────────────────────────────────────
@@ -1493,9 +1509,9 @@ function initPlayers() {
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue"];
+    const botTypes = ["red", "green", "blue", "orange"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
-    const label = characterType === "red" ? "Red" : characterType === "green" ? "Green" : "Blue";
+    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : `${label} AI ${index}`;
     const fighter = makeFighter({
       id: index,
@@ -1864,6 +1880,9 @@ function beginAttack(fighter) {
   if (fighter.characterType === "blue") {
     return beginBulletAttack(fighter);
   }
+  if (fighter.characterType === "orange") {
+    return beginBombAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -1893,6 +1912,7 @@ function beginAttack(fighter) {
 function getAttackRange(fighter) {
   if (fighter.characterType === "green") return CHARACTERS.green.boomerangRange;
   if (fighter.characterType === "blue") return CHARACTERS.blue.bulletRange;
+  if (fighter.characterType === "orange") return CHARACTERS.orange.bombRange;
   return attackDepth;
 }
 
@@ -2008,6 +2028,77 @@ function beginBoomerangAttack(fighter) {
   return true;
 }
 
+function createBombMesh(position, yaw) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.24, 10, 8),
+    new THREE.MeshStandardMaterial({ color: 0xff9800, roughness: 0.4, metalness: 0.2 }),
+  );
+  mesh.position.set(position.x + Math.sin(yaw) * 0.9, 1.2, position.z + Math.cos(yaw) * 0.9);
+  mesh.castShadow = false;
+  scene.add(mesh);
+  return mesh;
+}
+
+function beginBombAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.orange;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.08);
+  fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+
+  const yaw = fighter.yaw;
+  const mesh = createBombMesh(fighter.mesh.position, yaw);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+    z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+    vx: Math.sin(yaw) * charDef.bombSpeed,
+    vz: Math.cos(yaw) * charDef.bombSpeed,
+    damage: charDef.bombDamage,
+    range: charDef.bombRange,
+    farThreshold: Infinity,
+    farMultiplier: 1,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    mesh,
+    isBomb: true,
+  });
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
+function spawnBombSplash(x, z, ownerId) {
+  const charDef = CHARACTERS.orange;
+  for (let i = 0; i < charDef.bombSplashCount; i++) {
+    const angle = (i / charDef.bombSplashCount) * Math.PI * 2;
+    const splashMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.14, 6, 6),
+      new THREE.MeshBasicMaterial({ color: 0xffcc44, transparent: true, opacity: 0.9 }),
+    );
+    splashMesh.position.set(x, 1.0, z);
+    scene.add(splashMesh);
+    state.projectiles.push({
+      ownerId,
+      x, z,
+      vx: Math.sin(angle) * charDef.bombSplashSpeed,
+      vz: Math.cos(angle) * charDef.bombSplashSpeed,
+      damage: charDef.bombSplashDamage,
+      range: charDef.bombSplashRange,
+      farThreshold: Infinity,
+      farMultiplier: 1,
+      distTraveled: 0,
+      launchAt: state.gameTime,
+      mesh: splashMesh,
+      isSplash: true,
+    });
+  }
+}
+
 function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
@@ -2045,15 +2136,17 @@ function updateProjectiles(dt) {
         }
         tempVec3.set(proj.x, 1.6, proj.z);
         createHitSpark(tempVec3);
+        if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
         hit = true;
         break;
       }
     }
 
-    // 벽 충돌 시 소멸
+    // 벽 충돌 시 소멸 (폭탄은 벽에 맞아도 폭발)
     if (!hit) {
       for (const solid of state.solids) {
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
+          if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
           hit = true;
           break;
         }
@@ -2061,6 +2154,7 @@ function updateProjectiles(dt) {
     }
 
     if (hit || proj.distTraveled >= proj.range) {
+      if (proj.isBomb && !hit) spawnBombSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
       state.projectiles.splice(i, 1);
     }
