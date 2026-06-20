@@ -1,49 +1,117 @@
-# Implementation Plan — 해골천 (Skull Creek)
+# Implementation Plan — v1.3 Alpha Season 2
 
-> Auto-generated gap analysis: specs/* vs src/main.js
-> Last updated: 2026-06-14
-
----
-
-## Completed Specs (verified against code)
-
-- [x] **mouse-aim.md** — Mouse raycasting decouples aim from movement. Auto-aim on mouseHeld. Mobile fallback via joystick.
-- [x] **character-select.md** — Red/Green/Blue selectable in lobby. Bots randomly assigned. Stats match spec (Red 10K HP, Green 8.4K HP). Blue (4.4K HP bullet) added beyond spec as bonus.
-- [x] **fix-initial-render.md** — CDN switched to jsdelivr. `account-creation` visible by default. `message-overlay` has no inline `display:none`. `showLobby()` called at init.
-- [x] **daily-login.md** — ID registration, daily re-auth, 5-attempt lockout, account recovery reveal, localStorage schema all implemented.
-- [x] **trophy-ranking.md** — `calcTrophyChange(rank) = 12 - rank*2`. `deathOrder[]` tracking. Floor at 0. Bot detection range = 50 units. Result screen shows rank + trophy delta.
-- [x] **lobby.md** — Full flow: account creation → daily auth → lobby main → char select → battle/training. Level formula, win/loss recording, trophy display all working.
-- [x] **green-boomerang.md** — Angles ±30°/±10° (60° total), range 5 units, far threshold 3.5, far multiplier 0.625, reload 1.0s, aim indicator 60° fan. All match spec.
-- [x] **combat-regen-autoreload.md** — Combat cooldown (player 3s / bot 5s), then instant 25% maxHealth heal, repeating every 1s while uncombated (`fighter.nextRegenAt`), applies to all players and bots. Red reload 0.5s.
-- [x] **map-rotation.md** — 3 maps (해골 협곡, 마른 호수, 뼈의 미로) with random selection on battle start. Map name shown in HUD. Play Again reuses same map. Training unaffected.
+> Status: In Development
+> Target Release: 2026-06-20
+> Focus: Blue balance retuning + Orange character implementation
 
 ---
 
-## Remaining Items (priority order)
+## 🔵 Phase 1: Blue Balance Adjustment
 
-### P6: Bot style placeholder (low priority)
-> `botStyle` ("aggressive"/"skirmisher") is assigned per bot in `initPlayers()` but `updateBot()` never branches on it. Both styles behave identically.
+### Task 1.1: Update Reload Speed
+- [ ] Change `CHARACTERS.blue.reloadDuration` from **0.1** to **0.35**
+- [ ] Update internal references if any
+- [ ] Verify reload bar visual updates correctly
 
-This is cosmetic — no spec requires differentiated bot styles. Leave as-is unless a spec is authored.
-
----
-
-## Missing Specs (features in code but no spec)
-
-### Blue Character
-> Blue (HP 4,400, bullet attack, range 16, speed 28) is fully implemented in code but has no spec under `specs/`. The overview says "캐릭터 2종 (Red/Green)" — Blue was added in commit `eb87032`.
-
-Recommendation: Author `specs/blue-bullet.md` to document Blue's stats, attack behavior, aim indicator (laser beam + dot), and training label fix.
+**Impact**: Reduces Blue's continuous DPS, increases risk for missed shots
 
 ---
 
-## Notes
+## 🟠 Phase 2: Orange Character Implementation
 
-- `showLobby()` is called at init (line 2772) ✓
-- `lastCombatTime` initialized to `-999` (line 593) — regen available at game start ✓
-- Zone damage does NOT update `lastCombatTime` ✓
-- Auto-reload triggers at `ammo < maxAmmo` in `updateAmmoRegen()` ✓
-- Training mode label now uses dynamic character name lookup ✓
-- Map rotation: `clearBattleMap()` does full GPU resource cleanup (geometry + material dispose) ✓
-- `state.pointerLocked` declared but unused (no Pointer Lock API call) — harmless
-- `Space` key captured but unbound — harmless
+### Task 2.1: CHARACTERS Config
+- [ ] Add Orange entry to CHARACTERS object
+  - `hp`: ~6500 (medium-tanky)
+  - `attackCooldown`: ~0.7s
+  - `reloadDuration`: N/A (auto-reload bomb)
+  - `moveSpeedMultiplier`: 1.0 (normal)
+  - `boomerangRange`: N/A
+  - `bulletRange`: ~6.5 (between Green and Blue)
+  - `weaponType`: "bomb" (custom)
+
+### Task 2.2: Bomb Projectile System
+- [ ] Create bomb projectile type (separate from bullet/boomerang)
+- [ ] Implement properties:
+  - Position, velocity, lifetime
+  - maxRange: ~6.5 units
+  - maxLifetime: calculated from speed
+  - visual: orange mesh/sphere
+  - damage: base 1000 (per split)
+
+### Task 2.3: 5-Way Explosion Logic
+- [ ] Detonation trigger: 
+  - On collision with player OR
+  - On maxRange reached OR
+  - On lifetime expiry
+- [ ] Spread pattern: 5 directions (cross pattern or radial)
+  - Direction 1: forward
+  - Directions 2-5: ±45° and perpendicular
+- [ ] Each split is separate projectile (continues for ~2-3 units)
+- [ ] Collision detection: Spread can hit targets
+
+### Task 2.4: Damage Calculation
+- [ ] Base damage per split: 1000
+- [ ] Direct hit (all 5 on single target): 5000
+- [ ] Area damage: Check overlap of split paths
+- [ ] No falloff initially (can adjust if needed)
+
+### Task 2.5: VFX & Audio
+- [ ] Bomb launch effect (glow, particle trail)
+- [ ] Explosion effect (5-way burst with color)
+- [ ] Impact sounds (launch, explosion, hit)
+- [ ] Color scheme: Orange (#ff9800) with gold accents
+
+---
+
+## 🎮 Phase 3: UI & Localization
+
+### Task 3.1: Enable Orange Character
+- [ ] Remove "locked" class from Orange button in index.html
+- [ ] Change badge text from "출시예정" to "선택됨" (dynamic)
+- [ ] Update char-details to show weapon info
+
+### Task 3.2: Patch Notes
+- [ ] Add v1.3 section in HTML
+- [ ] Bullet 1: Blue reload speed adjustment
+- [ ] Bullet 2: Orange character introduction
+- [ ] Bullet 3: (optional) game philosophy note
+
+### Task 3.3: Localization (i18n)
+- [ ] LANGS.ko:
+  - `pv13a`: "블루 재장전 속도 조정"
+  - `pv13b`: "오렌지 캐릭터 추가 (폭탄형 딜러)"
+  - Orange skill name & description
+- [ ] LANGS.en: parallel translations
+
+---
+
+## ✅ Phase 4: Testing & Validation
+
+### Task 4.1: Local HTTP Testing
+- [ ] Start server: `py -m http.server 4173`
+- [ ] Verify character select (Orange selectable)
+- [ ] Verify Blue reload timing (slower, visual bar updates)
+- [ ] Play battle with Orange:
+  - [ ] Bomb launches from hand
+  - [ ] Travels correctly to max range
+  - [ ] Detonates on hit/range
+  - [ ] 5 spreads visible
+  - [ ] Damage numbers appear
+  - [ ] Hit detection works
+
+### Task 4.2: Bug Checks
+- [ ] No console errors
+- [ ] Training mode still works
+- [ ] All 4 characters play-testable
+- [ ] Stats display correct
+- [ ] Patch notes render correctly
+
+### Task 4.3: Deployment
+- [ ] `git add -A`
+- [ ] `git commit -m "v1.3 Alpha Season 2 — Blue reload tuning + Orange character"`
+- [ ] `git push origin master`
+- [ ] Update index.html version query: `?v=1.3`
+
+---
+
+## 📊 Current Status: READY TO IMPLEMENT
