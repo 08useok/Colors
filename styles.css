@@ -409,8 +409,6 @@ body {
   background: linear-gradient(90deg, #7cf3a4, #4cd17c);
 }
 
-.damage-indicator.damage-taken.flash {
-
 .damage-indicator.damage-taken {
   top: 34px;
   color: #ff5c5c;
