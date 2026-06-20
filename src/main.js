@@ -3220,4 +3220,5 @@ animate();
 rebuildAmmoPips();
 updateHud();
 applyLanguage();
+document.getElementById("game-shell").style.display = "block";
 showLobby();
