@@ -2337,23 +2337,18 @@ function chooseBotTarget(bot) {
   const visionRange = playerDead ? 200 : 50;
   const bushVisionRange = playerDead ? 200 : 9;
   for (const fighter of state.players) {
-    if (fighter.id === bot.id || fighter.dead) {
-      continue;
-    }
+    if (fighter.id === bot.id || fighter.dead) continue;
     const dx = fighter.mesh.position.x - bot.mesh.position.x;
     const dz = fighter.mesh.position.z - bot.mesh.position.z;
     const distanceSq = dx * dx + dz * dz;
-    if (distanceSq > visionRange * visionRange) {
-      continue;
-    }
+    if (distanceSq > visionRange * visionRange) continue;
     if (!isFighterVisible(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) continue;
     if (isInBush(fighter) && distanceSq > bushStealthRevealRangeSq) continue;
 
-    // v1.2.8: Enhanced target selection with health weighting
     const healthRatio = fighter.health / fighter.maxHealth;
-    const healthScore = (1 - healthRatio) * 180; // Low HP targets get higher priority
+    const lowHpBonus = healthRatio * 200;
     const bushPenalty = isInBush(fighter) ? 240 : 0;
-    const score = distanceSq + healthScore + bushPenalty;
+    const score = distanceSq + lowHpBonus + bushPenalty;
 
     if (score < bestScore) {
       bestScore = score;
@@ -2373,14 +2368,47 @@ function updateBot(bot, dt, zone) {
   const botSpeed = getMoveSpeed(bot);
   tempVec3.set(0, 0, 0);
 
-  if (target) {
+  const zone = getCurrentZone();
+  const dxZone = botPos.x - state.safeCenter.x;
+  const dzZone = botPos.z - state.safeCenter.y;
+  const distToZoneCenter = Math.hypot(dxZone, dzZone);
+  const outsideZone = distToZoneCenter > zone.radius * 0.85;
+
+  if (outsideZone && zone.damage > 0) {
+    const toCenter = Math.atan2(-dxZone, -dzZone);
+    bot.yaw = toCenter;
+    tempVec3.set(Math.sin(toCenter), 0, Math.cos(toCenter)).multiplyScalar(botSpeed);
+    if (target) {
+      const toTargetX = target.mesh.position.x - botPos.x;
+      const toTargetZ = target.mesh.position.z - botPos.z;
+      if (Math.hypot(toTargetX, toTargetZ) <= getAttackRange(bot) * 1.05) {
+        bot.yaw = Math.atan2(toTargetX, toTargetZ);
+        beginAttack(bot);
+      }
+    }
+  } else if (bot.health < bot.maxHealth * 0.25 && target) {
+    const toTargetX = target.mesh.position.x - botPos.x;
+    const toTargetZ = target.mesh.position.z - botPos.z;
+    const distance = Math.hypot(toTargetX, toTargetZ);
+    const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+    bot.yaw = fleeYaw;
+    tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.9);
+    if (distance <= getAttackRange(bot) * 1.05) {
+      bot.yaw = Math.atan2(toTargetX, toTargetZ);
+      beginAttack(bot);
+    }
+  } else if (target) {
     const toTargetX = target.mesh.position.x - botPos.x;
     const toTargetZ = target.mesh.position.z - botPos.z;
     const distance = Math.hypot(toTargetX, toTargetZ);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
+    const isRanged = bot.characterType === "green" || bot.characterType === "blue";
     if (distance > atkRange * 0.86) {
       tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.82);
+    } else if (isRanged && distance < atkRange * 0.5) {
+      const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.55);
     } else if (distance < atkRange * 0.58) {
       tempVec3.set(-Math.sin(bot.yaw), 0, -Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.48);
     } else {
