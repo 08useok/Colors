@@ -562,12 +562,12 @@ const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const mouseAimWorld = new THREE.Vector3();
 
 const zonePhases = [
-  { start: 0,   end: 30,  radius: 52, damage: 0,    labelKey: "zoneWaiting" },
-  { start: 30,  end: 57,  radius: 42, damage: 150,  labelKey: "zonePhase1" },
-  { start: 57,  end: 84,  radius: 32, damage: 250,  labelKey: "zonePhase2" },
-  { start: 84,  end: 111, radius: 23, damage: 400,  labelKey: "zonePhase3" },
-  { start: 111, end: 136, radius: 15, damage: 650,  labelKey: "zonePhase4" },
-  { start: 136, end: 999, radius: 8,  damage: 1000, labelKey: "zoneFinal" },
+  { start: 0,   end: 15,  radius: 52, damage: 0,    labelKey: "zoneWaiting" },
+  { start: 15,  end: 30,  radius: 42, damage: 150,  labelKey: "zonePhase1" },
+  { start: 30,  end: 45,  radius: 32, damage: 250,  labelKey: "zonePhase2" },
+  { start: 45,  end: 60,  radius: 23, damage: 400,  labelKey: "zonePhase3" },
+  { start: 60,  end: 75,  radius: 15, damage: 650,  labelKey: "zonePhase4" },
+  { start: 75,  end: 999, radius: 8,  damage: 1000, labelKey: "zoneFinal" },
 ];
 
 const state = {
@@ -1213,7 +1213,7 @@ function createTrainingMap() {
 const zoneRing = (() => {
   const geometry = new THREE.RingGeometry(0.96, 1.0, 96);
   const material = new THREE.MeshBasicMaterial({
-    color: 0x81f6ff,
+    color: 0x5dea6a,
     side: THREE.DoubleSide,
     transparent: true,
     opacity: 0.9,
@@ -1226,7 +1226,7 @@ const zoneRing = (() => {
   const wall = new THREE.Mesh(
     new THREE.CylinderGeometry(1, 1, 12, 96, 1, true),
     new THREE.MeshBasicMaterial({
-      color: 0x77c3ff,
+      color: 0x4ac75a,
       transparent: true,
       opacity: 0.08,
       side: THREE.DoubleSide,
@@ -1449,7 +1449,7 @@ function createHitSpark(position) {
   });
 }
 
-function createDamagePopup(position, amount) {
+function createDamagePopup(position, amount, color = "#ffd27a") {
   const canvas = document.createElement("canvas");
   canvas.width = 128;
   canvas.height = 64;
@@ -1458,9 +1458,10 @@ function createDamagePopup(position, amount) {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.lineWidth = 6;
-  ctx.strokeStyle = "rgba(40, 20, 0, 0.75)";
-  ctx.fillStyle = "#ffd27a";
-  const text = `${Math.round(amount)}`;
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillStyle = color;
+  const prefix = color === "#ff5c5c" ? "-" : "";
+  const text = `${prefix}${Math.round(amount)}`;
   ctx.strokeText(text, 64, 32);
   ctx.fillText(text, 64, 32);
 
@@ -2221,7 +2222,8 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     state.feedback.hitFlashUntil = state.gameTime + 0.18;
     audio.play("hit");
     if (!attacker || target.id !== attacker.id) {
-      showDamageTakenIndicator(dealt);
+      tempVec3.copy(target.mesh.position);
+      createDamagePopup(tempVec3, dealt, "#ff5c5c");
     }
   }
 
