@@ -926,6 +926,11 @@ body {
   box-shadow: 0 6px 18px rgba(74, 143, 212, 0.45);
 }
 
+.char-icon-orange {
+  background: radial-gradient(circle at 35% 35%, #ffcc66, #e67e22 70%);
+  box-shadow: 0 6px 18px rgba(255, 152, 0, 0.45);
+}
+
 .char-name {
   font-size: 16px;
   font-weight: 800;
