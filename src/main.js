@@ -3255,6 +3255,9 @@ async function boot() {
     await new Promise((r) => setTimeout(r, 400));
   } catch (e) {
     console.error("Boot error:", e);
+    loadingText.textContent = "Error: " + e.message;
+    loadingText.style.color = "#ff6a4f";
+    await new Promise((r) => setTimeout(r, 3000));
   }
 
   loadingScreen.style.display = "none";
