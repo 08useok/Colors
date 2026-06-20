@@ -797,9 +797,6 @@ body {
     width: min(95vw, 420px);
   }
 }
-    justify-content: center;
-  }
-}
 
 .daily-error {
   margin-top: 8px;
