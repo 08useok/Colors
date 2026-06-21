@@ -1189,7 +1189,46 @@ function createBlueAimIndicator() {
   return group;
 }
 
+function createOrangeAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.orange.bombRange;
+
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.2, range),
+    new THREE.MeshBasicMaterial({
+      color: 0xffaa33,
+      transparent: true,
+      opacity: 0.2,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.4, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0xff9800,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+    }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, range);
+  group.add(dot);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, dot };
+  scene.add(group);
+  return group;
+}
+
 const blueAimIndicator = createBlueAimIndicator();
+const orangeAimIndicator = createOrangeAimIndicator();
 
 function rebuildAmmoPips() {
   const player = getPlayer();
@@ -2608,6 +2647,7 @@ function updateAttackAimIndicator() {
     attackAimIndicator.visible = false;
     greenAimIndicator.visible = false;
     blueAimIndicator.visible = false;
+    orangeAimIndicator.visible = false;
     return;
   }
 
@@ -2618,6 +2658,7 @@ function updateAttackAimIndicator() {
   attackAimIndicator.visible = false;
   greenAimIndicator.visible = false;
   blueAimIndicator.visible = false;
+  orangeAimIndicator.visible = false;
 
   if (charType === "green") {
     greenAimIndicator.visible = true;
@@ -2630,6 +2671,12 @@ function updateAttackAimIndicator() {
     blueAimIndicator.rotation.y = yaw;
     blueAimIndicator.userData.beam.material.opacity = unavailable ? 0.07 : 0.22;
     blueAimIndicator.userData.dot.material.opacity = unavailable ? 0.15 : 0.50;
+  } else if (charType === "orange") {
+    orangeAimIndicator.visible = true;
+    orangeAimIndicator.position.set(pos.x, 0, pos.z);
+    orangeAimIndicator.rotation.y = yaw;
+    orangeAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+    orangeAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   } else {
     attackAimIndicator.visible = true;
     attackAimIndicator.position.set(pos.x, 0, pos.z);
