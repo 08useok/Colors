@@ -351,7 +351,7 @@ const CHARACTERS = {
     bombSpeed: 14,
     bombSplashCount: 5,
     bombSplashSpeed: 10,
-    bombSplashRange: 3,
+    bombSplashRange: 5,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
