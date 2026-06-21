@@ -2928,42 +2928,48 @@ function checkEndState() {
   if (alive.length <= 1 || playerDead) {
     state.gameOver = true;
     state.running = false;
-    const winner = alive[0];
-    const playerRank = (!player || !player.dead)
-      ? 1
-      : state.players.length - state.deathOrder.indexOf(player.id);
-    const { streakBefore, streakAfter, bonus, milestone } = recordGameResult(playerRank);
-    const account = loadAccount();
-    const delta = calcTrophyChange(playerRank);
-    const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
-    const totalText = account ? t("totalTrophy", account.trophies) : "";
+    try {
+      const winner = alive[0];
+      const playerRank = (!player || !player.dead)
+        ? 1
+        : state.players.length - state.deathOrder.indexOf(player.id);
+      const { streakBefore, streakAfter, bonus, milestone } = recordGameResult(playerRank);
+      const account = loadAccount();
+      const delta = calcTrophyChange(playerRank);
+      const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
+      const totalText = account ? t("totalTrophy", account.trophies) : "";
 
-    if (playerDead && alive.length > 1) {
-      resultTitle.textContent = t("rankN", playerRank);
-      resultBody.textContent = t("resultDead", deltaText, totalText);
-    } else if (!winner) {
-      resultTitle.textContent = t("rankN", playerRank);
-      resultBody.textContent = t("resultDraw", deltaText, totalText);
-    } else if (winner.isPlayer) {
+      if (playerDead && alive.length > 1) {
+        resultTitle.textContent = t("rankN", playerRank);
+        resultBody.textContent = t("resultDead", deltaText, totalText);
+      } else if (!winner) {
+        resultTitle.textContent = t("rankN", playerRank);
+        resultBody.textContent = t("resultDraw", deltaText, totalText);
+      } else if (winner.isPlayer) {
+        resultTitle.textContent = t("rank1");
+        resultBody.textContent = t("resultWin", deltaText, totalText);
+      } else {
+        resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
+        resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
+      }
+      resultStats.textContent = player ? t("dmgDealt", Math.round(player.damageDealt)) : "";
+
+      let streakMsg = "";
+      if (milestone) streakMsg += t("milestone100");
+      if (streakAfter >= 2) {
+        const bonusText = bonus > 0 ? t("streakBonus", bonus) : "";
+        streakMsg += t("streakAchieve", streakAfter, bonusText);
+      } else if (streakBefore >= 2 && streakAfter === 0) {
+        streakMsg += t("streakBroken", account?.bestStreak ?? streakBefore);
+      }
+      resultStreak.textContent = streakMsg;
+      resultStreak.style.display = streakMsg ? "block" : "none";
+    } catch (e) {
+      console.error("End state error:", e);
       resultTitle.textContent = t("rank1");
-      resultBody.textContent = t("resultWin", deltaText, totalText);
-    } else {
-      resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
-      resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
+      resultBody.textContent = "";
+      resultStats.textContent = "";
     }
-    resultStats.textContent = player ? t("dmgDealt", Math.round(player.damageDealt)) : "";
-
-    let streakMsg = "";
-    if (milestone) streakMsg += t("milestone100");
-    if (streakAfter >= 2) {
-      const bonusText = bonus > 0 ? t("streakBonus", bonus) : "";
-      streakMsg += t("streakAchieve", streakAfter, bonusText);
-    } else if (streakBefore >= 2 && streakAfter === 0) {
-      streakMsg += t("streakBroken", account?.bestStreak ?? streakBefore);
-    }
-    resultStreak.textContent = streakMsg;
-    resultStreak.style.display = streakMsg ? "block" : "none";
-
     resultOverlay.style.display = "flex";
     document.exitPointerLock?.();
   }
