@@ -492,7 +492,7 @@ body {
 }
 
 .message-card {
-  width: min(90vw, 420px);
+  width: min(90vw, 525px);
   max-height: 88vh;
   overflow-y: auto;
   overflow-x: hidden;
@@ -792,7 +792,7 @@ body {
   }
 
   .message-card {
-    width: min(95vw, 420px);
+    width: min(95vw, 525px);
   }
 }
 
