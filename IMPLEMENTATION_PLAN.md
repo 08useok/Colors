@@ -28,8 +28,8 @@ The following specs are fully implemented in `src/main.js` and `index.html`:
 ## Priority 1 — Bugs & Balance Alignment (spec vs code divergence)
 
 ### 1.1 Blue Reload Speed
-- [ ] `src/main.js` line ~155: Change `CHARACTERS.blue.reloadDuration` from **0.1** to **0.35**
-- [ ] Verify reload bar visual updates at the new speed (reload is incremental: one pip per `reloadDuration / maxAmmo` seconds)
+- [x] `src/main.js` line ~155: Change `CHARACTERS.blue.reloadDuration` from **0.1** to **0.35**
+- [x] Verify reload bar visual updates at the new speed (reload is incremental: one pip per `reloadDuration / maxAmmo` seconds)
 - [ ] Spec ref: `specs/alpha-season-2-v13.md` says 0.3~0.4s; plan target is 0.35
 
 ### 1.2 Orange Damage/Range Tuning (review needed)

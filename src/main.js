@@ -152,7 +152,7 @@ const CHARACTERS = {
     color: 0x4a8fd4,
     maxHealth: 4400,
     attackType: "bullet",
-    reloadDuration: 0.1,
+    reloadDuration: 0.35,
     attackCooldown: 0.3,
     bulletDamage: 1000,
     bulletRange: 16,
@@ -240,9 +240,10 @@ function createAccount(id, nickname) {
     lastLoginDate: getTodayString(),
     loginAttempts: 0,
     charStats: {
-      red:   { wins: 0, games: 0 },
-      green: { wins: 0, games: 0 },
-      blue:  { wins: 0, games: 0 },
+      red:    { wins: 0, games: 0 },
+      green:  { wins: 0, games: 0 },
+      blue:   { wins: 0, games: 0 },
+      orange: { wins: 0, games: 0 },
     },
     winStreak: 0,
     bestStreak: 0,
@@ -2399,7 +2400,7 @@ function updateBot(bot, dt, zone) {
     const distance = Math.hypot(toTargetX, toTargetZ);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
-    const isRanged = bot.characterType === "green" || bot.characterType === "blue";
+    const isRanged = ["green", "blue", "orange"].includes(bot.characterType);  
     if (distance > atkRange * 0.86) {
       tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.82);
     } else if (isRanged && distance < atkRange * 0.5) {
@@ -2711,12 +2712,11 @@ function updateHud() {
     const remain = Math.max(0, reloadInterval - player.reloadTimer);
     reloadState.textContent = t("nextAmmo", remain.toFixed(1));
   }
-  const attackLabel = player.characterType === "green" ? t("boomerang")
-    : player.characterType === "blue" ? t("sniper")
-    : t("doublePunch");
-  attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
-  spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
-  updateAmmoPips(player.ammo);
+  const attackLabel =
+  player.characterType === "green" ? t("boomerang") :
+  player.characterType === "blue" ? t("sniper") :
+  player.characterType === "orange" ? t("bombAttack") :
+  t("doublePunch");
 
   if (state.trainingMode) {
     survivorsPanel.style.display = "none";

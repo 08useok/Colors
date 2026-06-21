@@ -175,8 +175,11 @@ export function updateHud(getPlayer, getCurrentZone, zonePhases, zoneRing, t) {
     const remain = Math.max(0, reloadInterval - player.reloadTimer);
     DOM.reloadState.textContent = t("nextAmmo", remain.toFixed(1));
   }
-  const attackLabel = player.characterType === "green" ? t("boomerang")
-    : player.characterType === "blue" ? t("sniper") : t("doublePunch");
+  const attackLabel =
+    player.characterType === "green" ? t("boomerang")
+    : player.characterType === "blue" ? t("sniper")
+    : player.characterType === "orange" ? t("bombAttack")
+    : t("doublePunch");
   DOM.attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   DOM.spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
