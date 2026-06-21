@@ -129,7 +129,7 @@ const CHARACTERS = {
     attackType: "punch",
     reloadDuration: 0.5,
     attackCooldown: 0.62,
-    moveSpeedMultiplier: 1.1375,
+    moveSpeedMultiplier: 1.18,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
   green: {
@@ -172,7 +172,7 @@ const CHARACTERS = {
     bombSpeed: 14,
     bombSplashCount: 5,
     bombSplashSpeed: 10,
-    bombSplashRange: 5,
+    bombSplashRange: 2.5,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
