@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 import { LANGS } from "./LANGS/langs.js";
+import { CHARACTERS } from "./character.js";
 
 // ── i18n ────────────────────────────────────────────────────────────────
 // LANGS는 ./LANGS/langs.js에서 import
@@ -166,8 +167,8 @@ const CHARACTERS = {
     attackType: "bomb",
     reloadDuration: 1.0,
     attackCooldown: 0.7,
-    bombDamage: 1200,
-    bombSplashDamage: 450,
+    bombDamage: 1000,
+    bombSplashDamage: 10,
     bombRange: 8,
     bombSpeed: 14,
     bombSplashCount: 5,

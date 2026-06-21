@@ -56,6 +56,28 @@ export function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
+    } else if (charType === "orange") {
+      const windup = pulse(t, 0.00, 0.10, 0.18);
+      const throwRelease = pulse(t, 0.18, 0.24, 0.32);
+      const recover = pulse(t, 0.32, 0.50, 0.60);
+
+      // 오른팔 크게 뒤로 → 앞으로 던짐
+      rightArmX += -windup * 1.2 + throwRelease * 1.8 - recover * 0.4;
+      rightArmZ += -windup * 0.5;
+
+      // 왼팔은 밸런스 잡는 정도
+      leftArmX += windup * 0.2 - throwRelease * 0.3;
+
+      // 상체를 던지는 방향으로 기울임
+      bodyY += windup * 0.1 - throwRelease * 0.15;
+      bodyZ += -windup * 0.08 + throwRelease * 0.1;
+
+      // 머리 살짝 따라감
+      headY += windup * 0.05;
+
+      // 다리는 안정성 유지 (큰 이동 없음)
+      leftLeg += -windup * 0.05 + recover * 0.08;
+      rightLeg += windup * 0.05 - recover * 0.08;
     } else {
       const punchOne = pulse(t, 0.02, 0.11, 0.2);
       const punchTwo = pulse(t, 0.2, 0.31, 0.43);

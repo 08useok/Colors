@@ -43,32 +43,32 @@ Current values in `main.js` vs spec (`specs/alpha-season-2-v13.md`):
 | `bombSplashRange` | 2.5 | ~2-3 | OK |
 | Direct hit total | 3450 | 5000 | -1550 |
 
-- [ ] Decide: are current values intentional balance patches, or spec drift?
-- [ ] If aligning to spec: set `bombDamage: 1000`, `bombSplashDamage: 1000`, `bombRange: 6.5`
-- [ ] If keeping current: update spec to reflect actual tuned values
-- [ ] Update `orangeAimIndicator` beam length if `bombRange` changes (beam uses `CHARACTERS.orange.bombRange` dynamically — auto-adjusts)
+- [x] Decide: are current values intentional balance patches, or spec drift?
+- [x] If aligning to spec: set `bombDamage: 1000`, `bombSplashDamage: 1000`, `bombRange: 6.5`
+- [x] If keeping current: update spec to reflect actual tuned values
+- [x] Update `orangeAimIndicator` beam length if `bombRange` changes (beam uses `CHARACTERS.orange.bombRange` dynamically — auto-adjusts)
 
 ### 1.3 Red Balance (spec mentions planned changes)
-- [ ] `specs/alpha-season-2-v13.md` says Red: "slight range increase, slight damage increase" — no concrete values yet
-- [ ] Author concrete values or mark as deferred in spec
+- [x] `specs/alpha-season-2-v13.md` says Red: "slight range increase, slight damage increase" — no concrete values yet
+- [x]Author concrete values or mark as deferred in spec
 
 ### 1.4 Orange HUD Label Bug
-- [ ] `main.js:2714-2716`: Orange attack state label falls into the `"doublePunch"` fallback — should have its own `"bombAttack"` label
-- [ ] Add `bombAttack` i18n key to `LANGS.ko` and `LANGS.en` in `src/LANGS/langs.js`
+- [x] `main.js:2714-2716`: Orange attack state label falls into the `"doublePunch"` fallback — should have its own `"bombAttack"` label
+- [x] Add `bombAttack` i18n key to `LANGS.ko` and `LANGS.en` in `src/LANGS/langs.js`
 
 ### 1.5 Bot `isRanged` Missing Orange (gameplay bug)
-- [ ] `main.js:2402`: `const isRanged = bot.characterType === "green" || bot.characterType === "blue";` — Orange is not included
-- [ ] Orange bots currently position like melee fighters (charge close, no backing away) despite being a bomb-thrower with range 8
-- [ ] Fix: add `|| bot.characterType === "orange"` to the `isRanged` check
+- [x] `main.js:2402`: `const isRanged = bot.characterType === "green" || bot.characterType === "blue";` — Orange is not included
+- [x] Orange bots currently position like melee fighters (charge close, no backing away) despite being a bomb-thrower with range 8
+- [x] Fix: add `|| bot.characterType === "orange"` to the `isRanged` check
 
 ### 1.6 `createAccount` Missing Orange in `charStats`
-- [ ] `main.js:242-246`: `createAccount()` initializes `charStats` with only `red`, `green`, `blue` — `orange` is missing
-- [ ] The `loadAccount()` migration guard at line 197 patches this at load time, so existing accounts work, but newly created accounts have an incomplete initial object until reload
-- [ ] Fix: add `orange: { wins: 0, games: 0 }` to the `charStats` object in `createAccount()`
+- [x] `main.js:242-246`: `createAccount()` initializes `charStats` with only `red`, `green`, `blue` — `orange` is missing
+- [x] The `loadAccount()` migration guard at line 197 patches this at load time, so existing accounts work, but newly created accounts have an incomplete initial object until reload
+- [x] Fix: add `orange: { wins: 0, games: 0 }` to the `charStats` object in `createAccount()`
 
 ### 1.7 Orange Attack Animation Gap (cosmetic)
-- [ ] `main.js` attack animation logic: Orange has no dedicated bomb-throw animation branch — falls through to Red's double-punch arm swing
-- [ ] Add an orange-specific animation (e.g., single overhead throw motion) or accept punch anim as placeholder
+- [x] `main.js` attack animation logic: Orange has no dedicated bomb-throw animation branch — falls through to Red's double-punch arm swing
+- [x] Add an orange-specific animation (e.g., single overhead throw motion) or accept punch anim as placeholder
 
 ---
 
