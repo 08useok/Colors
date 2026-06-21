@@ -370,8 +370,10 @@ function loadAccount() {
         red:   { wins: 0, games: 0 },
         green: { wins: 0, games: 0 },
         blue:  { wins: 0, games: 0 },
+        orange: { wins: 0, games: 0 },
       };
     }
+    if (!account.charStats.orange) account.charStats.orange = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (!account.lang) account.lang = "ko";
