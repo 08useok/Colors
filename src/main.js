@@ -153,7 +153,7 @@ const CHARACTERS = {
     maxHealth: 4400,
     attackType: "bullet",
     reloadDuration: 0.1,
-    attackCooldown: 0.25,
+    attackCooldown: 0.3,
     bulletDamage: 1000,
     bulletRange: 16,
     bulletSpeed: 28,
