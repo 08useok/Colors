@@ -1232,8 +1232,8 @@ function createChopWoodMap() {
   treeB.add(treeBarB);
 
   state.teams = {
-    a: { tree: { x: -25, z: 0, health: 100, maxHealth: 100 }, treeMesh: treeA, treeBar: treeBarA },
-    b: { tree: { x: 25, z: 0, health: 100, maxHealth: 100 }, treeMesh: treeB, treeBar: treeBarB },
+    a: { tree: { x: -25, z: 0, health: 50, maxHealth: 50 }, treeMesh: treeA, treeBar: treeBarA },
+    b: { tree: { x: 25, z: 0, health: 50, maxHealth: 50 }, treeMesh: treeB, treeBar: treeBarB },
   };
   state.playerTeam = "a";
 }
@@ -1976,7 +1976,7 @@ function moveFighter(fighter, desiredMove, dt) {
   const next = tempVec32.copy(pos);
   next.x += desiredMove.x * dt;
   next.z += desiredMove.z * dt;
-  const zone = fighter.isPlayer ? getCurrentZone() : null;
+  const zone = (fighter.isPlayer && !state.chopWoodMode && !state.trainingMode) ? getCurrentZone() : null;
   resolveMovementCollision(next, fighter.radius, zone ? zone.radius : null);
 
   pos.x = next.x;
