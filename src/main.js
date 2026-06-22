@@ -3411,6 +3411,65 @@ function animate() {
 }
 
 function setupInput() {
+  document.getElementById("stats-toggle").addEventListener("click", () => {
+    const panel = document.getElementById("stats-panel");
+    const btn = document.getElementById("stats-toggle");
+    panel.classList.toggle("hidden");
+    btn.textContent = panel.classList.contains("hidden") ? t("statsBtn") : t("statsBtnClose");
+    if (!panel.classList.contains("hidden")) {
+      const account = loadAccount();
+      if (account) {
+        const totalGames = account.wins + account.losses;
+        const winRate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
+        let html = `<div class="stats-header">${account.nickname} · Lv.${calcLevel(account.trophies)}</div>`;
+        html += `<div class="stats-row">🏆 ${t("trophyLabel")}: ${account.trophies}</div>`;
+        html += `<div class="stats-row">${t("record", account.wins, account.losses)}</div>`;
+        html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
+        html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
+        html += `<div class="stats-divider"></div>`;
+        for (const char of ["red", "green", "blue", "orange"]) {
+          const s = account.charStats?.[char];
+          if (!s || s.games === 0) {
+            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
+          } else {
+            const r = Math.round((s.wins / s.games) * 100);
+            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("charWinrate", r, s.wins, s.games)}</div>`;
+          }
+        }
+        panel.innerHTML = html;
+      }
+    }
+  });
+
+  document.getElementById("leaderboard-toggle").addEventListener("click", () => {
+    const panel = document.getElementById("leaderboard-panel");
+    const btn = document.getElementById("leaderboard-toggle");
+    panel.classList.toggle("hidden");
+    btn.textContent = panel.classList.contains("hidden") ? t("leaderboardBtn") : t("leaderboardBtnClose");
+    if (!panel.classList.contains("hidden")) {
+      const account = loadAccount();
+      if (account) {
+        const totalGames = account.wins + account.losses;
+        const winRate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
+        let html = `<div class="stats-row">${t("lbTrophy", account.trophies)}</div>`;
+        html += `<div class="stats-row">${t("lbTotalWinrate", winRate, account.wins, totalGames)}</div>`;
+        html += `<div class="stats-row">${t("lbBestStreak", account.bestStreak)}</div>`;
+        html += `<div class="stats-divider"></div>`;
+        html += `<div class="stats-row" style="font-weight:700">${t("lbCharBest")}</div>`;
+        for (const char of ["red", "green", "blue", "orange"]) {
+          const s = account.charStats?.[char];
+          if (!s || s.games === 0) {
+            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: -</div>`;
+          } else {
+            const r = Math.round((s.wins / s.games) * 100);
+            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${r}% (${s.wins}W/${s.games}G)</div>`;
+          }
+        }
+        panel.innerHTML = html;
+      }
+    }
+  });
+
   document.getElementById("matchup-toggle").addEventListener("click", () => {
     const table = document.getElementById("matchup-table");
     const btn = document.getElementById("matchup-toggle");
