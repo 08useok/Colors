@@ -2923,7 +2923,7 @@ function updateAmmoRegen(dt) {
 }
 
 function updateZoneDamage(dt, zone) {
-  if (state.trainingMode) return;
+  if (state.trainingMode || state.chopWoodMode) return;
   state.playerOutsideZone = false;
   for (const fighter of state.players) {
     if (fighter.dead || zone.damage <= 0) {
