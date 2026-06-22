@@ -1,6 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 import { LANGS } from "./LANGS/langs.js";
-import { CHARACTERS } from "./character.js";
+// CHARACTERS는 아래 인라인 정의 사용
 
 // ── i18n ────────────────────────────────────────────────────────────────
 // LANGS는 ./LANGS/langs.js에서 import
