@@ -109,6 +109,14 @@ export const LANGS = {
     axeWooden: "나무", axeStone: "돌", axeIron: "철", axeGold: "금",
     axeDiamond: "다이아", axeEmerald: "에메랄드", axeSapphire: "사파이어",
     axeRuby: "루비", axeAmethyst: "아메시스트", axeRainbow: "무지개",
+    // Leaderboard & Stats
+    statsBtn: "내 정보", statsBtnClose: "내 정보 닫기",
+    leaderboardBtn: "리더보드", leaderboardBtnClose: "리더보드 닫기",
+    lbTrophy: "🏆 트로피: {0}", lbTotalWinrate: "📊 총 승률: {0}% ({1}승 / {2}판)",
+    lbBestStreak: "🔥 최고 연승: {0}", lbCharBest: "캐릭터별 최고 승률:",
+    statsShowdown: "쇼다운 전적:", statsChopWood: "찹 우드 전적:",
+    statsNoRecord: "-",
+    charWinrate: "{0}% | {1}승/{2}판",
   },
   en: {
     exitTraining: "Leave Training", survivorsLabel: "Survivors", zoneLabel: "Zone",
@@ -220,5 +228,13 @@ export const LANGS = {
     axeWooden: "Wooden", axeStone: "Stone", axeIron: "Iron", axeGold: "Gold",
     axeDiamond: "Diamond", axeEmerald: "Emerald", axeSapphire: "Sapphire",
     axeRuby: "Ruby", axeAmethyst: "Amethyst", axeRainbow: "Rainbow",
+    // Leaderboard & Stats
+    statsBtn: "My Stats", statsBtnClose: "Close Stats",
+    leaderboardBtn: "Leaderboard", leaderboardBtnClose: "Close Leaderboard",
+    lbTrophy: "🏆 Trophies: {0}", lbTotalWinrate: "📊 Win Rate: {0}% ({1}W / {2}G)",
+    lbBestStreak: "🔥 Best Streak: {0}", lbCharBest: "Best Win Rate by Character:",
+    statsShowdown: "Showdown Record:", statsChopWood: "Chop Wood Record:",
+    statsNoRecord: "-",
+    charWinrate: "{0}% | {1}W/{2}G",
   },
 };
