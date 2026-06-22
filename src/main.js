@@ -803,7 +803,23 @@ function makeFighter(options) {
   fighter.mesh.add(fighter.healthBar);
 
   fighter.flashMaterial = fighter.mesh.userData.body.material;
+  fighter.teamMarker = null;
   return fighter;
+}
+
+function addTeamMarker(fighter, team) {
+  const color = team === "a" ? 0x4488ff : 0xff4444;
+  const marker = new THREE.Mesh(
+    new THREE.CircleGeometry(0.28, 12),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
+  );
+  marker.rotation.x = -Math.PI / 2;
+  marker.position.set(0, 3.6, 0);
+  fighter.mesh.add(marker);
+  fighter.teamMarker = marker;
+
+  const nameColor = team === "a" ? "#4488ff" : "#ff4444";
+  fighter.teamNameColor = nameColor;
 }
 
 function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr = state.solids, color = 0xb77658) {
@@ -1255,8 +1271,9 @@ function initChopWoodPlayers() {
       yaw: 0,
     });
     fighter.team = "a";
+    addTeamMarker(fighter, "a");
     const axeInd = createAxeIndicator();
-    axeInd.position.set(0, 3.4, 0);
+    axeInd.position.set(0, 3.9, 0);
     fighter.mesh.add(axeInd);
     fighter.axeIndicator = axeInd;
     state.players.push(fighter);
@@ -1275,8 +1292,9 @@ function initChopWoodPlayers() {
       yaw: Math.PI,
     });
     fighter.team = "b";
+    addTeamMarker(fighter, "b");
     const axeInd = createAxeIndicator();
-    axeInd.position.set(0, 3.4, 0);
+    axeInd.position.set(0, 3.9, 0);
     fighter.mesh.add(axeInd);
     fighter.axeIndicator = axeInd;
     state.players.push(fighter);
@@ -1527,10 +1545,14 @@ function formatTime(seconds) {
   return `${minutes}:${secs}`;
 }
 
-function addKillFeed(text) {
+function addKillFeed(text, attackerColor, targetColor) {
   const item = document.createElement("div");
   item.className = "kill-item";
-  item.textContent = text;
+  if (attackerColor || targetColor) {
+    item.innerHTML = text;
+  } else {
+    item.textContent = text;
+  }
   killFeed.prepend(item);
   if (killFeed.children.length > 6) {
     killFeed.lastChild?.remove();
@@ -2480,7 +2502,9 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
       if (target.axeIndicator) target.axeIndicator.material.color.setHex(AXE_GRADES[0].color);
       if (attacker && attacker.team !== target.team) {
         onChopWoodKill(attacker, target);
-        addKillFeed(t("killFeed", attacker.name, target.name));
+        const ac = attacker.teamNameColor || "#fff";
+        const tc = target.teamNameColor || "#fff";
+        addKillFeed(`<span style="color:${ac}">${attacker.name}</span> 처치 → <span style="color:${tc}">${target.name}</span>`, ac, tc);
         if (attacker.isPlayer || target.isPlayer) audio.play("kill");
       }
     } else {
