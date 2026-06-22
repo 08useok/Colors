@@ -3041,7 +3041,9 @@ function updateHud() {
   player.characterType === "blue" ? t("sniper") :
   player.characterType === "orange" ? t("bombAttack") :
   t("doublePunch");
-  attackState.textContent = attackLabel;
+  attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
+  spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
+  updateAmmoPips(player.ammo);
 
   if (state.chopWoodMode) {
     survivorsPanel.style.display = "none";
