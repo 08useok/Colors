@@ -181,7 +181,7 @@ const CHARACTERS = {
     reloadDuration: 1.0,
     attackCooldown: 0.7,
     bombDamage: 1000,
-    bombSplashDamage: 10,
+    bombSplashDamage: 1000,
     bombRange: 8,
     bombSpeed: 14,
     bombSplashCount: 5,
@@ -2231,6 +2231,7 @@ function beginBombAttack(fighter) {
     launchAt: state.gameTime,
     mesh,
     isBomb: true,
+    projRadius: 0.52,
   });
   if (fighter.isPlayer) audio.play("attack");
   return true;
@@ -2259,6 +2260,7 @@ function spawnBombSplash(x, z, ownerId) {
       launchAt: state.gameTime,
       mesh: splashMesh,
       isSplash: true,
+      projRadius: 0.52,
     });
   }
 }
