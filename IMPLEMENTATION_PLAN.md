@@ -74,38 +74,38 @@ Current values in `main.js` vs spec (`specs/alpha-season-2-v13.md`):
 
 ## Priority 2 — Chop Wood Game Mode (entirely new)
 
-Spec: `specs/chop-wood.md` — fully written, zero code exists. Confirmed no `chopWood`/`chop_wood`/`CHOP`/`team` references in `main.js`.
+Spec: `specs/chop-wood.md` — implemented in `main.js`.
 
 ### 2.1 State & Data Structures
-- [ ] Add to `state`: `chopWoodMode`, `teams`, `playerTeam`
-- [ ] Add to fighter: `team`, `axeLevel`, `isChopping`, `chopTimer`
-- [ ] Axe grade table (10 tiers: Wooden=1, Stone=2, Iron=3, Gold=5, Diamond=6, Emerald=7, Sapphire=8, Ruby=9, Amethyst=10, Rainbow=12)
+- [x] Add to `state`: `chopWoodMode`, `teams`, `playerTeam`
+- [x] Add to fighter: `team`, `axeLevel`, `isChopping`, `chopTimer`, `chopDamageDealt`, `bestAxeLevel`, `cwKills`
+- [x] Axe grade table (10 tiers: Wooden=1, Stone=2, Iron=3, Gold=5, Diamond=6, Emerald=7, Sapphire=8, Ruby=9, Amethyst=10, Rainbow=12)
 
 ### 2.2 Map
-- [ ] `createChopWoodMap()`: 60x30 arena, two trees at (-25,0) and (25,0), team spawns at (±28, -8 to +8)
-- [ ] Tree mesh (3D object with HP=100, not damageable by projectiles)
-- [ ] Central walls/bushes for engagement
+- [x] `createChopWoodMap()`: 60x30 arena, two trees at (-25,0) and (25,0), team spawns at (±28, -8 to +8)
+- [x] Tree mesh (3D object with HP=100, not damageable by projectiles)
+- [x] Central walls/bushes for engagement
 
 ### 2.3 Core Mechanics
-- [ ] Auto-chop: within 3 tiles of enemy tree, chop every 2s, damage = axe grade value
-- [ ] Kill reward: axe upgrades +1 grade + bonus absorption from victim's axe tier
-- [ ] Death: axe resets to Wooden, 5s respawn at team spawn
-- [ ] Win condition: enemy tree HP = 0
-- [ ] No zone/storm in Chop Wood mode
+- [x] Auto-chop: within 3 tiles of enemy tree, chop every 2s, damage = axe grade value
+- [x] Kill reward: axe upgrades +1 grade + bonus absorption from victim's axe tier
+- [x] Death: axe resets to Wooden, 5s respawn at team spawn
+- [x] Win condition: enemy tree HP = 0
+- [x] No zone/storm in Chop Wood mode
 
 ### 2.4 Bot AI for Chop Wood
-- [ ] Bots need team-aware targeting (attack enemies, ignore teammates)
-- [ ] Bots should path toward enemy tree when safe, retreat/fight when engaged
+- [x] Bots need team-aware targeting (attack enemies, ignore teammates)
+- [x] Bots should path toward enemy tree when safe, retreat/fight when engaged
 
 ### 2.5 HUD & UI
-- [ ] Lobby button: "찹 우드" (beside Start Battle / Training)
-- [ ] In-game HUD: team tree HP bars (top left/right), axe grade display (bottom), "벌목 중..." progress bar
-- [ ] Per-player axe grade icon above head
-- [ ] Result screen: win/loss + personal stats (kills, chop damage, best axe grade)
+- [x] Lobby button: "찹 우드" (beside Start Battle / Training)
+- [x] In-game HUD: team tree HP bars (top left/right), axe grade display (bottom), "벌목 중..." progress bar
+- [x] Per-player axe grade icon above head
+- [x] Result screen: win/loss + personal stats (kills, chop damage, best axe grade)
 
 ### 2.6 Localization
-- [ ] Add all Chop Wood strings to `LANGS.ko` and `LANGS.en` in `src/LANGS/langs.js`
-- [ ] Add Chop Wood button label and HTML elements to `index.html`
+- [x] Add all Chop Wood strings to `LANGS.ko` and `LANGS.en` in `src/LANGS/langs.js`
+- [x] Add Chop Wood button label and HTML elements to `index.html`
 
 ---
 

@@ -87,6 +87,19 @@ const mobileJoystick = document.getElementById("mobile-joystick");
 const mobileJoystickThumb = document.getElementById("mobile-joystick-thumb");
 const mobileAttackButton = document.getElementById("mobile-attack-button");
 const mapNameEl = document.getElementById("map-name");
+const cwHud = document.getElementById("chop-wood-hud");
+const cwTreeAFill = document.getElementById("cw-tree-a-fill");
+const cwTreeBFill = document.getElementById("cw-tree-b-fill");
+const cwTreeAText = document.getElementById("cw-tree-a-text");
+const cwTreeBText = document.getElementById("cw-tree-b-text");
+const cwTreeALabel = document.getElementById("cw-tree-a-label");
+const cwTreeBLabel = document.getElementById("cw-tree-b-label");
+const cwAxeIcon = document.getElementById("cw-axe-icon");
+const cwAxeName = document.getElementById("cw-axe-name");
+const cwChopBar = document.getElementById("cw-chop-bar");
+const cwChopLabel = document.getElementById("cw-chop-label");
+const cwChopFill = document.getElementById("cw-chop-progress-fill");
+const cwRespawnEl = document.getElementById("cw-respawn");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -1096,6 +1109,225 @@ function createTrainingMap() {
   trainingMapGroup.add(bossMarker);
 }
 
+// ── Chop Wood Map & Init ─────────────────────────────────────────────────
+const chopWoodMapGroup = new THREE.Group();
+scene.add(chopWoodMapGroup);
+chopWoodMapGroup.visible = false;
+
+function createTreeMesh(color) {
+  const group = new THREE.Group();
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.6, 0.8, 4, 8),
+    new THREE.MeshStandardMaterial({ color: 0x8B5A2B, roughness: 0.9 }),
+  );
+  trunk.position.y = 2;
+  trunk.castShadow = true;
+  group.add(trunk);
+  const leaves = new THREE.Mesh(
+    new THREE.SphereGeometry(2.5, 10, 8),
+    new THREE.MeshStandardMaterial({ color, roughness: 0.85 }),
+  );
+  leaves.position.y = 5;
+  leaves.castShadow = true;
+  group.add(leaves);
+  return group;
+}
+
+function createTreeHealthBarMesh() {
+  const bg = new THREE.Mesh(
+    new THREE.PlaneGeometry(3.2, 0.4),
+    new THREE.MeshBasicMaterial({ color: 0x222222, transparent: true, opacity: 0.7, depthWrite: false }),
+  );
+  const fill = new THREE.Mesh(
+    new THREE.PlaneGeometry(3.0, 0.28),
+    new THREE.MeshBasicMaterial({ color: 0x4caf50, depthWrite: false }),
+  );
+  fill.position.z = 0.001;
+  bg.add(fill);
+  bg.userData = { fill };
+  return bg;
+}
+
+function createChopWoodMap() {
+  chopWoodMapGroup.traverse((obj) => {
+    if (obj.geometry && obj.geometry !== bushClumpGeo) obj.geometry.dispose();
+    if (obj.material) {
+      const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+      mats.forEach((m) => { if (!bushClumpMats.includes(m)) m.dispose(); });
+    }
+  });
+  chopWoodMapGroup.clear();
+  state.battleSolids = [];
+  state.battleLakeRects = [];
+  state.battleBushes = [];
+
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(64, 34, 32, 17),
+    new THREE.MeshStandardMaterial({ color: 0xc8895a, roughness: 0.98, metalness: 0 }),
+  );
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  chopWoodMapGroup.add(ground);
+
+  const grid = new THREE.GridHelper(64, 16, 0xe2b27b, 0xd6a071);
+  grid.position.y = 0.05;
+  grid.material.opacity = 0.18;
+  grid.material.transparent = true;
+  chopWoodMapGroup.add(grid);
+
+  const borderWalls = [
+    [0, -18, 64, 2], [0, 18, 64, 2],
+    [-33, 0, 2, 36], [33, 0, 2, 36],
+  ];
+  borderWalls.forEach(([x, z, w, d]) =>
+    createWall(x, z, w, d, 3.5, chopWoodMapGroup, state.battleSolids, 0x7a5a3a));
+
+  const midWalls = [
+    [-6, -6, 2, 4], [6, -6, 2, 4],
+    [-6, 6, 2, 4], [6, 6, 2, 4],
+    [0, 0, 6, 2],
+    [-12, 0, 2, 8], [12, 0, 2, 8],
+  ];
+  midWalls.forEach(([x, z, w, d]) =>
+    createWall(x, z, w, d, undefined, chopWoodMapGroup, state.battleSolids));
+
+  const bushPositions = [
+    [-10, -10], [10, -10], [-10, 10], [10, 10],
+    [-18, -5], [18, -5], [-18, 5], [18, 5],
+    [0, -12], [0, 12],
+  ];
+  bushPositions.forEach(([x, z]) =>
+    createBush(x, z, 1.4, chopWoodMapGroup, state.battleBushes));
+
+  const treeA = createTreeMesh(0x4caf50);
+  treeA.position.set(-25, 0, 0);
+  chopWoodMapGroup.add(treeA);
+
+  const treeB = createTreeMesh(0xe53935);
+  treeB.position.set(25, 0, 0);
+  chopWoodMapGroup.add(treeB);
+
+  const treeBarA = createTreeHealthBarMesh();
+  treeBarA.position.set(0, 8.5, 0);
+  treeA.add(treeBarA);
+
+  const treeBarB = createTreeHealthBarMesh();
+  treeBarB.position.set(0, 8.5, 0);
+  treeB.add(treeBarB);
+
+  state.teams = {
+    a: { tree: { x: -25, z: 0, health: 100, maxHealth: 100 }, treeMesh: treeA, treeBar: treeBarA },
+    b: { tree: { x: 25, z: 0, health: 100, maxHealth: 100 }, treeMesh: treeB, treeBar: treeBarB },
+  };
+  state.playerTeam = "a";
+}
+
+function createAxeIndicator() {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(0.5, 0.5, 0.1),
+    new THREE.MeshBasicMaterial({ color: AXE_GRADES[0].color, depthWrite: false }),
+  );
+  return mesh;
+}
+
+function initChopWoodPlayers() {
+  state.players.forEach((fighter) => {
+    scene.remove(fighter.mesh);
+    scene.remove(fighter.shadow);
+  });
+  state.players = [];
+
+  const botTypes = ["red", "green", "blue", "orange"];
+  const teamASpawns = CHOP_WOOD_SPAWNS_A;
+  const teamBSpawns = CHOP_WOOD_SPAWNS_B;
+
+  for (let i = 0; i < 3; i += 1) {
+    const isPlayer = i === 0;
+    const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
+    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
+    const name = isPlayer ? label : `${label} AI ${i}`;
+    const fighter = makeFighter({
+      id: i,
+      name,
+      characterType,
+      isPlayer,
+      position: teamASpawns[i],
+      yaw: 0,
+    });
+    fighter.team = "a";
+    const axeInd = createAxeIndicator();
+    axeInd.position.set(0, 3.4, 0);
+    fighter.mesh.add(axeInd);
+    fighter.axeIndicator = axeInd;
+    state.players.push(fighter);
+  }
+
+  for (let i = 0; i < 3; i += 1) {
+    const characterType = botTypes[Math.floor(Math.random() * botTypes.length)];
+    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
+    const name = `${label} AI ${i + 3}`;
+    const fighter = makeFighter({
+      id: i + 3,
+      name,
+      characterType,
+      isPlayer: false,
+      position: teamBSpawns[i],
+      yaw: Math.PI,
+    });
+    fighter.team = "b";
+    const axeInd = createAxeIndicator();
+    axeInd.position.set(0, 3.4, 0);
+    fighter.mesh.add(axeInd);
+    fighter.axeIndicator = axeInd;
+    state.players.push(fighter);
+  }
+}
+
+function startChopWood() {
+  battleMapGroup.visible = false;
+  trainingMapGroup.visible = false;
+  chopWoodMapGroup.visible = true;
+  state.chopWoodMode = true;
+  state.trainingMode = false;
+  state.mode = "chopwood";
+  mapNameEl.textContent = t("chopWood");
+  mapNameEl.classList.remove("hidden");
+
+  state.gameTime = 0;
+  state.running = true;
+  state.gameOver = false;
+  state.winner = "";
+  state.mouseHeld = false;
+  state.scheduledHits = [];
+  state.projectiles.forEach((p) => scene.remove(p.mesh));
+  state.projectiles = [];
+  state.deathOrder = [];
+  state.effects.forEach((effect) => scene.remove(effect.mesh));
+  state.effects = [];
+  state.feedback.hitFlashUntil = 0;
+  state.feedback.warningPulseUntil = 0;
+  state.mouse.yaw = Math.PI;
+  state.mouse.pitch = 0.26;
+  state.mobileMove.x = 0;
+  state.mobileMove.y = 0;
+  state.mobileMove.active = false;
+  state.mobileMove.pointerId = null;
+  mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
+  state.safeCenter.set(0, 0);
+
+  createChopWoodMap();
+
+  state.solids = state.battleSolids;
+  state.lakeRects = state.battleLakeRects;
+  state.bushes = state.battleBushes;
+
+  initChopWoodPlayers();
+  rebuildAmmoPips();
+  updateHud();
+  resultOverlay.style.display = "none";
+  messageOverlay.style.display = "none";
+}
+
 const zoneRing = (() => {
   const geometry = new THREE.RingGeometry(0.96, 1.0, 96);
   const material = new THREE.MeshBasicMaterial({
@@ -1565,6 +1797,10 @@ function exitTraining() {
 function resetGame() {
   battleMapGroup.visible = true;
   trainingMapGroup.visible = false;
+  chopWoodMapGroup.visible = false;
+  state.chopWoodMode = false;
+  state.teams = null;
+  state.playerTeam = null;
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
@@ -2029,6 +2265,7 @@ function updateProjectiles(dt) {
       if (target.id === proj.ownerId || target.dead) {
         continue;
       }
+      if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
       const dx = target.mesh.position.x - proj.x;
       const dz = target.mesh.position.z - proj.z;
       const hitDist = target.radius + (proj.projRadius || 0);
@@ -2152,6 +2389,7 @@ function resolveAttack(attacker, hitIndex, damage) {
     if (target.id === attacker.id || target.dead) {
       continue;
     }
+    if (state.chopWoodMode && target.team === attacker.team) continue;
 
     const deltaX = target.mesh.position.x - attacker.mesh.position.x;
     const deltaZ = target.mesh.position.z - attacker.mesh.position.z;
@@ -2234,6 +2472,17 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     target.healthBar.visible = false;
     if (state.trainingMode && target.isDummy) {
       target.respawnAt = state.gameTime + 3;
+    } else if (state.chopWoodMode) {
+      target.respawnAt = state.gameTime + 5;
+      target.axeLevel = 0;
+      target.chopTimer = 0;
+      target.isChopping = false;
+      if (target.axeIndicator) target.axeIndicator.material.color.setHex(AXE_GRADES[0].color);
+      if (attacker && attacker.team !== target.team) {
+        onChopWoodKill(attacker, target);
+        addKillFeed(t("killFeed", attacker.name, target.name));
+        if (attacker.isPlayer || target.isPlayer) audio.play("kill");
+      }
     } else {
       state.deathOrder.push(target.id);
       if (attacker) {
@@ -2316,6 +2565,7 @@ function updatePlayerControls(dt) {
     let autoTargetDist = autoAimRange;
     for (const fighter of state.players) {
       if (fighter.id === player.id || fighter.dead) continue;
+      if (state.chopWoodMode && fighter.team === player.team) continue;
       const dx = fighter.mesh.position.x - player.mesh.position.x;
       const dz = fighter.mesh.position.z - player.mesh.position.z;
       const dist = Math.hypot(dx, dz);
@@ -2369,6 +2619,7 @@ function chooseBotTarget(bot) {
   const bushVisionRange = playerDead ? 200 : 9;
   for (const fighter of state.players) {
     if (fighter.id === bot.id || fighter.dead) continue;
+    if (state.chopWoodMode && fighter.team === bot.team) continue;
     const dx = fighter.mesh.position.x - bot.mesh.position.x;
     const dz = fighter.mesh.position.z - bot.mesh.position.z;
     const distanceSq = dx * dx + dz * dz;
@@ -2402,7 +2653,7 @@ function updateBot(bot, dt, zone) {
   const dxZone = botPos.x - state.safeCenter.x;
   const dzZone = botPos.z - state.safeCenter.y;
   const distToZoneCenter = Math.hypot(dxZone, dzZone);
-  const outsideZone = distToZoneCenter > zone.radius * 0.85;
+  const outsideZone = !state.chopWoodMode && zone && distToZoneCenter > zone.radius * 0.85;
 
   if (outsideZone && zone.damage > 0) {
     const toCenter = Math.atan2(-dxZone, -dzZone);
@@ -2449,6 +2700,19 @@ function updateBot(bot, dt, zone) {
     if (distance <= atkRange * 1.05) {
       beginAttack(bot);
     }
+  } else if (state.chopWoodMode) {
+    const enemyTree = getChopWoodEnemyTree(bot);
+    if (enemyTree) {
+      const toTreeX = enemyTree.x - botPos.x;
+      const toTreeZ = enemyTree.z - botPos.z;
+      const treeDist = Math.hypot(toTreeX, toTreeZ);
+      if (treeDist > 2.5) {
+        bot.yaw = Math.atan2(toTreeX, toTreeZ);
+        tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.75);
+      } else {
+        tempVec3.set(0, 0, 0);
+      }
+    }
   } else {
     if (state.gameTime >= bot.botDecisionAt) {
       bot.botDecisionAt = state.gameTime + 1.6 + Math.random() * 2.1;
@@ -2470,13 +2734,15 @@ function updateBot(bot, dt, zone) {
     }
   }
 
-  const distFromCenter = Math.hypot(botPos.x - state.safeCenter.x, botPos.z - state.safeCenter.y);
-  if (distFromCenter > zone.radius - 4) {
-    const toCenterX = state.safeCenter.x - botPos.x;
-    const toCenterZ = state.safeCenter.y - botPos.z;
-    const len = Math.hypot(toCenterX, toCenterZ) || 1;
-    tempVec3.set((toCenterX / len) * botSpeed, 0, (toCenterZ / len) * botSpeed);
-    bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
+  if (!state.chopWoodMode) {
+    const distFromCenter = Math.hypot(botPos.x - state.safeCenter.x, botPos.z - state.safeCenter.y);
+    if (distFromCenter > zone.radius - 4) {
+      const toCenterX = state.safeCenter.x - botPos.x;
+      const toCenterZ = state.safeCenter.y - botPos.z;
+      const len = Math.hypot(toCenterX, toCenterZ) || 1;
+      tempVec3.set((toCenterX / len) * botSpeed, 0, (toCenterZ / len) * botSpeed);
+      bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
+    }
   }
 
   const moveSpeed = Math.hypot(tempVec3.x, tempVec3.z);
@@ -2751,7 +3017,71 @@ function updateHud() {
   player.characterType === "orange" ? t("bombAttack") :
   t("doublePunch");
 
-  if (state.trainingMode) {
+  if (state.chopWoodMode) {
+    survivorsPanel.style.display = "none";
+    zonePanel.classList.add("is-hidden-panel");
+    warning.classList.add("hidden");
+    zoneRing.ring.visible = false;
+    zoneRing.wall.visible = false;
+    exitTrainingBtn.classList.add("hidden");
+    cwHud.classList.remove("hidden");
+
+    if (state.teams) {
+      const allyTeam = state.playerTeam || "a";
+      const enemyTeam = allyTeam === "a" ? "b" : "a";
+      const allyTree = state.teams[allyTeam].tree;
+      const enemyTree = state.teams[enemyTeam].tree;
+
+      cwTreeALabel.textContent = t("cwTeamA");
+      cwTreeBLabel.textContent = t("cwTeamB");
+      cwTreeAFill.style.width = `${(allyTree.health / allyTree.maxHealth) * 100}%`;
+      cwTreeBFill.style.width = `${(enemyTree.health / enemyTree.maxHealth) * 100}%`;
+      cwTreeAText.textContent = `${Math.round(allyTree.health)} / ${allyTree.maxHealth}`;
+      cwTreeBText.textContent = `${Math.round(enemyTree.health)} / ${enemyTree.maxHealth}`;
+
+      const treeBarA = state.teams[allyTeam].treeBar;
+      const treeBarB = state.teams[enemyTeam].treeBar;
+      if (treeBarA) {
+        const fill = treeBarA.userData.fill;
+        fill.scale.x = THREE.MathUtils.clamp(allyTree.health / allyTree.maxHealth, 0, 1);
+        fill.position.x = (-3.0 * (1 - fill.scale.x)) * 0.5;
+        treeBarA.quaternion.copy(camera.quaternion);
+      }
+      if (treeBarB) {
+        const fill = treeBarB.userData.fill;
+        fill.scale.x = THREE.MathUtils.clamp(enemyTree.health / enemyTree.maxHealth, 0, 1);
+        fill.position.x = (-3.0 * (1 - fill.scale.x)) * 0.5;
+        treeBarB.quaternion.copy(camera.quaternion);
+      }
+    }
+
+    const grade = AXE_GRADES[player.axeLevel];
+    cwAxeIcon.style.backgroundColor = `#${grade.color.toString(16).padStart(6, "0")}`;
+    cwAxeName.textContent = `${t("cwAxeLabel")}: ${t(grade.key)}`;
+
+    if (player.dead && player.respawnAt > 0) {
+      const remain = Math.max(0, player.respawnAt - state.gameTime);
+      cwRespawnEl.textContent = t("cwRespawn", Math.ceil(remain));
+      cwRespawnEl.classList.remove("hidden");
+    } else {
+      cwRespawnEl.classList.add("hidden");
+    }
+
+    if (player.isChopping && !player.dead) {
+      cwChopBar.classList.remove("hidden");
+      cwChopLabel.textContent = t("cwChopping");
+      cwChopFill.style.width = `${(player.chopTimer / 2) * 100}%`;
+    } else {
+      cwChopBar.classList.add("hidden");
+    }
+
+    for (const fighter of state.players) {
+      if (fighter.axeIndicator) {
+        fighter.axeIndicator.quaternion.copy(camera.quaternion);
+      }
+    }
+  } else if (state.trainingMode) {
+    cwHud.classList.add("hidden");
     survivorsPanel.style.display = "none";
     zonePanel.classList.add("is-hidden-panel");
     warning.classList.add("hidden");
@@ -2759,6 +3089,7 @@ function updateHud() {
     zoneRing.wall.visible = false;
     exitTrainingBtn.classList.remove("hidden");
   } else {
+    cwHud.classList.add("hidden");
     exitTrainingBtn.classList.add("hidden");
     survivorsPanel.style.display = "";
     const alive = state.players.filter((fighter) => !fighter.dead).length;
@@ -2800,6 +3131,82 @@ function updateTrainingRespawn() {
   }
 }
 
+// ── Chop Wood mechanics ───────────────────────────────────────────────────
+function updateChopping(dt) {
+  if (!state.chopWoodMode || !state.teams) return;
+  for (const fighter of state.players) {
+    if (fighter.dead) {
+      fighter.isChopping = false;
+      continue;
+    }
+    const enemyTeam = fighter.team === "a" ? "b" : "a";
+    const tree = state.teams[enemyTeam].tree;
+    const dx = fighter.mesh.position.x - tree.x;
+    const dz = fighter.mesh.position.z - tree.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist <= 3) {
+      fighter.isChopping = true;
+      fighter.chopTimer += dt;
+      if (fighter.chopTimer >= 2) {
+        fighter.chopTimer -= 2;
+        const dmg = AXE_GRADES[fighter.axeLevel].damage;
+        tree.health = Math.max(0, tree.health - dmg);
+        fighter.chopDamageDealt += dmg;
+        if (fighter.isPlayer) {
+          audio.play("hit");
+        }
+      }
+    } else {
+      fighter.isChopping = false;
+      fighter.chopTimer = Math.min(fighter.chopTimer, 0);
+    }
+  }
+}
+
+function onChopWoodKill(attacker, target) {
+  if (!attacker) return;
+  attacker.cwKills += 1;
+  let upgrade = 1;
+  upgrade += AXE_ABSORB[target.axeLevel] ?? 0;
+  attacker.axeLevel = Math.min(9, attacker.axeLevel + upgrade);
+  if (attacker.axeLevel > attacker.bestAxeLevel) attacker.bestAxeLevel = attacker.axeLevel;
+  if (attacker.axeIndicator) {
+    const grade = AXE_GRADES[attacker.axeLevel];
+    attacker.axeIndicator.material.color.setHex(grade.color);
+  }
+}
+
+function updateChopWoodRespawn() {
+  if (!state.chopWoodMode) return;
+  for (const fighter of state.players) {
+    if (!fighter.dead || !fighter.respawnAt) continue;
+    if (state.gameTime >= fighter.respawnAt) {
+      fighter.dead = false;
+      fighter.health = fighter.maxHealth;
+      fighter.mesh.visible = true;
+      fighter.shadow.visible = true;
+      fighter.healthBar.visible = true;
+      fighter.respawnAt = 0;
+      fighter.axeLevel = 0;
+      fighter.chopTimer = 0;
+      fighter.isChopping = false;
+      if (fighter.axeIndicator) {
+        fighter.axeIndicator.material.color.setHex(AXE_GRADES[0].color);
+      }
+      const spawns = fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B;
+      const spawn = spawns[Math.floor(Math.random() * spawns.length)];
+      fighter.mesh.position.set(spawn.x, 1.85, spawn.z);
+      fighter.shadow.position.set(spawn.x, 0.04, spawn.z);
+    }
+  }
+}
+
+function getChopWoodEnemyTree(fighter) {
+  if (!state.teams) return null;
+  const enemyTeam = fighter.team === "a" ? "b" : "a";
+  return state.teams[enemyTeam].tree;
+}
+
 function updateZoneVisual(zone) {
   zoneRing.ring.scale.set(zone.radius, zone.radius, zone.radius);
   zoneRing.wall.scale.set(zone.radius, 1, zone.radius);
@@ -2809,6 +3216,36 @@ function updateZoneVisual(zone) {
 
 function checkEndState() {
   if (state.gameOver) {
+    return;
+  }
+
+  if (state.chopWoodMode && state.teams) {
+    const player = getPlayer();
+    const allyTeam = state.playerTeam || "a";
+    const enemyTeam = allyTeam === "a" ? "b" : "a";
+    let winningTeam = null;
+    if (state.teams[allyTeam].tree.health <= 0) winningTeam = enemyTeam;
+    if (state.teams[enemyTeam].tree.health <= 0) winningTeam = allyTeam;
+    if (winningTeam) {
+      state.gameOver = true;
+      state.running = false;
+      if (winningTeam === allyTeam) {
+        resultTitle.textContent = t("cwWin");
+      } else {
+        resultTitle.textContent = t("cwLose");
+      }
+      resultBody.textContent = "";
+      const statsLines = [];
+      if (player) {
+        statsLines.push(t("cwKills", player.cwKills));
+        statsLines.push(t("cwChopDmg", player.chopDamageDealt));
+        statsLines.push(t("cwBestAxe", t(AXE_GRADES[player.bestAxeLevel].key)));
+      }
+      resultStats.textContent = statsLines.join("  |  ");
+      resultStreak.style.display = "none";
+      resultOverlay.style.display = "flex";
+      document.exitPointerLock?.();
+    }
     return;
   }
 
@@ -2907,10 +3344,14 @@ function animate() {
     updateAmmoRegen(dt);
     updateNaturalRegen(dt);
     updateTrainingRespawn();
+    updateChopWoodRespawn();
+    updateChopping(dt);
     updateScheduledHits();
     updateProjectiles(dt);
-    updateZoneDamage(dt, zone);
-    updateZoneVisual(zone);
+    if (!state.chopWoodMode) {
+      updateZoneDamage(dt, zone);
+      updateZoneVisual(zone);
+    }
     updateEffects(dt);
 
     for (const fighter of state.players) {
@@ -3209,6 +3650,12 @@ function setupInput() {
     startTraining();
   });
 
+  // 찹 우드 시작
+  document.getElementById("start-chopwood-btn").addEventListener("click", async () => {
+    await initAudio();
+    startChopWood();
+  });
+
   // 훈련장 나가기
   exitTrainingBtn.addEventListener("click", () => {
     exitTraining();
@@ -3216,7 +3663,9 @@ function setupInput() {
 
   // 다시 시작
   playAgainButton.addEventListener("click", () => {
-    if (state.trainingMode) {
+    if (state.chopWoodMode) {
+      startChopWood();
+    } else if (state.trainingMode) {
       startTraining();
     } else {
       resetGame();
@@ -3225,6 +3674,21 @@ function setupInput() {
 
   // 재시작 → 로비
   restartButton.addEventListener("click", () => {
+    if (state.chopWoodMode) {
+      state.chopWoodMode = false;
+      state.teams = null;
+      state.playerTeam = null;
+      chopWoodMapGroup.visible = false;
+      cwHud.classList.add("hidden");
+      state.running = false;
+      state.gameOver = true;
+      state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
+      state.players = [];
+      state.projectiles.forEach((p) => scene.remove(p.mesh));
+      state.projectiles = [];
+      state.effects.forEach((e) => { scene.remove(e.mesh); });
+      state.effects = [];
+    }
     showLobby();
   });
 
