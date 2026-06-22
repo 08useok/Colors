@@ -2590,6 +2590,7 @@ function updatePlayerControls(dt) {
     for (const fighter of state.players) {
       if (fighter.id === player.id || fighter.dead) continue;
       if (state.chopWoodMode && fighter.team === player.team) continue;
+      if (!isFighterVisible(player, fighter)) continue;
       const dx = fighter.mesh.position.x - player.mesh.position.x;
       const dz = fighter.mesh.position.z - player.mesh.position.z;
       const dist = Math.hypot(dx, dz);
@@ -3040,6 +3041,7 @@ function updateHud() {
   player.characterType === "blue" ? t("sniper") :
   player.characterType === "orange" ? t("bombAttack") :
   t("doublePunch");
+  attackState.textContent = attackLabel;
 
   if (state.chopWoodMode) {
     survivorsPanel.style.display = "none";
