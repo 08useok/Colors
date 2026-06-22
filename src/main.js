@@ -128,6 +128,25 @@ const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
+
+const BOT_NAMES_KO = ["하늘", "별빛", "소금", "달콤", "번개", "구름", "바람", "눈꽃", "폭풍", "태양",
+  "은하", "수박", "딸기", "감자", "당근", "호랑이", "토끼", "펭귄", "고양이", "강아지",
+  "치킨", "피자", "라면", "떡볶이", "김밥", "초코", "우유", "사이다", "콜라", "커피"];
+const BOT_NAMES_EN = ["Shadow", "Storm", "Blaze", "Frost", "Nova", "Echo", "Pixel", "Spark", "Viper", "Comet",
+  "Ghost", "Titan", "Flash", "Drift", "Blade", "Rocket", "Wolf", "Hawk", "Bear", "Fox",
+  "Ace", "Zero", "Neo", "Max", "Rex", "Dash", "Bolt", "Fury", "Edge", "Pulse"];
+const BOT_SUFFIXES = ["", "123", "YT", "TV", "Pro", "GG", "xD", "님", "킹", "짱", "_", "99", "77", "01"];
+
+function randomBotName() {
+  const style = Math.random();
+  if (style < 0.4) {
+    return BOT_NAMES_KO[Math.floor(Math.random() * BOT_NAMES_KO.length)] + BOT_SUFFIXES[Math.floor(Math.random() * BOT_SUFFIXES.length)];
+  } else if (style < 0.8) {
+    return BOT_NAMES_EN[Math.floor(Math.random() * BOT_NAMES_EN.length)] + BOT_SUFFIXES[Math.floor(Math.random() * BOT_SUFFIXES.length)];
+  } else {
+    return BOT_NAMES_KO[Math.floor(Math.random() * BOT_NAMES_KO.length)] + BOT_NAMES_EN[Math.floor(Math.random() * BOT_NAMES_EN.length)];
+  }
+}
 const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
@@ -1261,7 +1280,7 @@ function initChopWoodPlayers() {
     const isPlayer = i === 0;
     const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
-    const name = isPlayer ? label : `${label} AI ${i}`;
+    const name = isPlayer ? label : randomBotName();
     const fighter = makeFighter({
       id: i,
       name,
@@ -1282,7 +1301,7 @@ function initChopWoodPlayers() {
   for (let i = 0; i < 3; i += 1) {
     const characterType = botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
-    const name = `${label} AI ${i + 3}`;
+    const name = randomBotName();
     const fighter = makeFighter({
       id: i + 3,
       name,
@@ -1675,7 +1694,7 @@ function initPlayers() {
     const botTypes = ["red", "green", "blue", "orange"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
-    const name = index === 0 ? label : `${label} AI ${index}`;
+    const name = index === 0 ? label : randomBotName();
     const fighter = makeFighter({
       id: index,
       name,
@@ -3449,22 +3468,18 @@ function setupInput() {
     if (!panel.classList.contains("hidden")) {
       const account = loadAccount();
       if (account) {
-        const totalGames = account.wins + account.losses;
-        const winRate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
-        let html = `<div class="stats-row">${t("lbTrophy", account.trophies)}</div>`;
-        html += `<div class="stats-row">${t("lbTotalWinrate", winRate, account.wins, totalGames)}</div>`;
-        html += `<div class="stats-row">${t("lbBestStreak", account.bestStreak)}</div>`;
-        html += `<div class="stats-divider"></div>`;
-        html += `<div class="stats-row" style="font-weight:700">${t("lbCharBest")}</div>`;
-        for (const char of ["red", "green", "blue", "orange"]) {
-          const s = account.charStats?.[char];
-          if (!s || s.games === 0) {
-            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: -</div>`;
-          } else {
-            const r = Math.round((s.wins / s.games) * 100);
-            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${r}% (${s.wins}W/${s.games}G)</div>`;
-          }
+        const entries = [];
+        entries.push({ name: account.nickname, trophies: account.trophies, isPlayer: true });
+        for (let i = 0; i < 19; i++) {
+          entries.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600), isPlayer: false });
         }
+        entries.sort((a, b) => b.trophies - a.trophies);
+        let html = `<div class="stats-row" style="font-weight:700;margin-bottom:6px">🏆 ${t("leaderboardBtn")}</div>`;
+        entries.forEach((e, i) => {
+          const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
+          const highlight = e.isPlayer ? ' style="color:#ffcc66;font-weight:700"' : '';
+          html += `<div class="stats-char"${highlight}>${medal} ${e.name} — ${e.trophies}</div>`;
+        });
         panel.innerHTML = html;
       }
     }
