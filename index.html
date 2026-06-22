@@ -70,6 +70,28 @@
 
       <button id="mobile-attack-button" type="button" aria-label="공격" data-i18n="attack">공격</button>
 
+      <div id="chop-wood-hud" class="hidden">
+        <div class="cw-tree-bar cw-tree-left">
+          <div class="cw-tree-label" id="cw-tree-a-label">아군 나무</div>
+          <div class="cw-tree-hp-outer"><div class="cw-tree-hp-fill cw-fill-ally" id="cw-tree-a-fill"></div></div>
+          <div class="cw-tree-hp-text" id="cw-tree-a-text">100</div>
+        </div>
+        <div class="cw-tree-bar cw-tree-right">
+          <div class="cw-tree-label" id="cw-tree-b-label">적군 나무</div>
+          <div class="cw-tree-hp-outer"><div class="cw-tree-hp-fill cw-fill-enemy" id="cw-tree-b-fill"></div></div>
+          <div class="cw-tree-hp-text" id="cw-tree-b-text">100</div>
+        </div>
+        <div class="cw-axe-display" id="cw-axe-display">
+          <span class="cw-axe-icon" id="cw-axe-icon"></span>
+          <span class="cw-axe-name" id="cw-axe-name">나무 도끼</span>
+        </div>
+        <div class="cw-chop-bar hidden" id="cw-chop-bar">
+          <div class="cw-chop-label" id="cw-chop-label">벌목 중...</div>
+          <div class="cw-chop-progress-outer"><div class="cw-chop-progress-fill" id="cw-chop-progress-fill"></div></div>
+        </div>
+        <div class="cw-respawn hidden" id="cw-respawn"></div>
+      </div>
+
       <div id="warning" class="hidden" data-i18n="zoneWarning">자기장 밖입니다</div>
       <div id="kill-feed"></div>
 
@@ -321,6 +343,7 @@
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
           <button id="start-battle-btn" class="lobby-start-btn" type="button" data-i18n="startBattle">전투 시작</button>
           <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
+          <button id="start-chopwood-btn" class="lobby-start-btn lobby-chopwood-btn" type="button" data-i18n="startChopWood">찹 우드 시작</button>
         </div>
       </div>
 

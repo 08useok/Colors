@@ -410,6 +410,31 @@ const aimRaycaster = new THREE.Raycaster();
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const mouseAimWorld = new THREE.Vector3();
 
+// ── Chop Wood constants ──────────────────────────────────────────────────
+const AXE_GRADES = [
+  { key: "axeWooden",    damage: 1,  color: 0x8B6914 },
+  { key: "axeStone",     damage: 2,  color: 0x999999 },
+  { key: "axeIron",      damage: 3,  color: 0xC0C0C0 },
+  { key: "axeGold",      damage: 5,  color: 0xFFD700 },
+  { key: "axeDiamond",   damage: 6,  color: 0x00CED1 },
+  { key: "axeEmerald",   damage: 7,  color: 0x50C878 },
+  { key: "axeSapphire",  damage: 8,  color: 0x0F52BA },
+  { key: "axeRuby",      damage: 9,  color: 0xE0115F },
+  { key: "axeAmethyst",  damage: 10, color: 0x9966CC },
+  { key: "axeRainbow",   damage: 12, color: 0xffffff },
+];
+const AXE_ABSORB = [0, 0, 0, 2, 2, 3, 3, 4, 5, 8];
+const CHOP_WOOD_SPAWNS_A = [
+  new THREE.Vector3(-28, 0, -8),
+  new THREE.Vector3(-28, 0,  0),
+  new THREE.Vector3(-28, 0,  8),
+];
+const CHOP_WOOD_SPAWNS_B = [
+  new THREE.Vector3(28, 0, -8),
+  new THREE.Vector3(28, 0,  0),
+  new THREE.Vector3(28, 0,  8),
+];
+
 const zonePhases = [
   { start: 0,   end: 15,  radius: 52, damage: 0,    labelKey: "zoneWaiting" },
   { start: 15,  end: 30,  radius: 42, damage: 150,  labelKey: "zonePhase1" },
@@ -461,6 +486,9 @@ const state = {
   audioContext: null,
   selectedCharacter: "red",
   currentMapId: 0,
+  chopWoodMode: false,
+  teams: null,
+  playerTeam: null,
 };
 
 const battleMapGroup = new THREE.Group();
@@ -735,6 +763,13 @@ function makeFighter(options) {
     damageDealt: 0,
     respawnAt: 0,
     revealedUntil: 0,
+    team: null,
+    axeLevel: 0,
+    isChopping: false,
+    chopTimer: 0,
+    chopDamageDealt: 0,
+    bestAxeLevel: 0,
+    cwKills: 0,
   };
 
   fighter.mesh = createStickman(charDef.color);

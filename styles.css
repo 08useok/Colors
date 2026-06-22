@@ -1210,3 +1210,82 @@ body {
     opacity: 0.62;
   }
 }
+
+/* ── Chop Wood HUD ──────────────────────────────── */
+.lobby-chopwood-btn {
+  background: #5a3e1b;
+  margin-top: 6px;
+}
+.lobby-chopwood-btn:hover { background: #7a5428; }
+
+#chop-wood-hud { pointer-events: none; }
+
+.cw-tree-bar {
+  position: fixed; top: 18px;
+  width: 220px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 8px;
+  padding: 6px 10px;
+  z-index: 20;
+}
+.cw-tree-left  { left: 18px; }
+.cw-tree-right { right: 18px; text-align: right; }
+.cw-tree-label {
+  font-size: 11px; color: #ccc;
+  margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.cw-tree-hp-outer {
+  width: 100%; height: 14px;
+  background: #333; border-radius: 4px; overflow: hidden;
+}
+.cw-tree-hp-fill {
+  height: 100%; border-radius: 4px;
+  transition: width 0.2s ease;
+}
+.cw-fill-ally  { background: #4caf50; width: 100%; }
+.cw-fill-enemy { background: #e53935; width: 100%; }
+.cw-tree-hp-text {
+  font-size: 12px; color: #eee;
+  margin-top: 2px; font-variant-numeric: tabular-nums;
+}
+
+.cw-axe-display {
+  position: fixed; bottom: 88px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  border-radius: 8px; padding: 5px 16px;
+  display: flex; align-items: center; gap: 8px;
+  z-index: 20;
+}
+.cw-axe-icon {
+  display: inline-block; width: 16px; height: 16px;
+  border-radius: 3px; border: 1px solid rgba(255,255,255,0.3);
+}
+.cw-axe-name { font-size: 13px; color: #fff; }
+
+.cw-chop-bar {
+  position: fixed; bottom: 130px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  border-radius: 8px; padding: 5px 14px;
+  text-align: center; z-index: 20; min-width: 140px;
+}
+.cw-chop-label { font-size: 11px; color: #aed581; margin-bottom: 3px; }
+.cw-chop-progress-outer {
+  width: 120px; height: 8px;
+  background: #444; border-radius: 4px; overflow: hidden;
+}
+.cw-chop-progress-fill {
+  height: 100%; width: 0%;
+  background: #aed581; border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.cw-respawn {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.7);
+  border-radius: 10px; padding: 14px 28px;
+  font-size: 18px; color: #fff;
+  z-index: 25; text-align: center;
+}
