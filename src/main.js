@@ -3094,7 +3094,7 @@ function updateHud() {
     if (player.isChopping && !player.dead) {
       cwChopBar.classList.remove("hidden");
       cwChopLabel.textContent = t("cwChopping");
-      cwChopFill.style.width = `${(player.chopTimer / 2) * 100}%`;
+      cwChopFill.style.width = `${(player.chopTimer / 1) * 100}%`;
     } else {
       cwChopBar.classList.add("hidden");
     }
@@ -3171,8 +3171,8 @@ function updateChopping(dt) {
     if (dist <= 3) {
       fighter.isChopping = true;
       fighter.chopTimer += dt;
-      if (fighter.chopTimer >= 2) {
-        fighter.chopTimer -= 2;
+      if (fighter.chopTimer >= 1) {
+        fighter.chopTimer -= 1;
         const dmg = AXE_GRADES[fighter.axeLevel].damage;
         tree.health = Math.max(0, tree.health - dmg);
         fighter.chopDamageDealt += dmg;
