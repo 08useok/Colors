@@ -132,8 +132,8 @@ const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
 const attackEvents = [
-  { delay: 0.12, damage: 2000 },
-  { delay: 0.36, damage: 2000 },
+  { delay: 0.12, damage: 2200 },
+  { delay: 0.36, damage: 2200 },
 ];
 
 const CHARACTERS = {
