@@ -439,6 +439,7 @@ const state = {
   scheduledHits: [],
   effects: [],
   keyState: {},
+  mode: "battle",
   mouse: {
     screenX: window.innerWidth * 0.5,
     screenY: window.innerHeight * 0.5,
