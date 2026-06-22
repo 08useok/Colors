@@ -139,7 +139,7 @@ const attackEvents = [
 const CHARACTERS = {
   red: {
     color: 0xe53729,
-    maxHealth: 10000,
+    maxHealth: 9000,
     attackType: "punch",
     reloadDuration: 0.5,
     attackCooldown: 0.62,
@@ -155,7 +155,7 @@ const CHARACTERS = {
     moveSpeedMultiplier: 1.0708,
     boomerangCount: 4,
     boomerangDamage: 1100,
-    boomerangRange: 5,
+    boomerangRange: 6,
     boomerangSpeed: 16,
     boomerangFarThreshold: 3.5,
     boomerangFarMultiplier: 0.625,
@@ -183,7 +183,7 @@ const CHARACTERS = {
     bombDamage: 1000,
     bombSplashDamage: 400,
     bombRange: 8,
-    bombSpeed: 14,
+    bombSpeed: 16,
     bombSplashCount: 5,
     bombSplashSpeed: 10,
     bombSplashRange: 2.5,
