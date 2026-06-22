@@ -1,4 +1,4 @@
-// src/core/dom.js
+// src/LANGS/dom-core.js
 export const DOM = {
   canvas: document.getElementById("game-canvas"),
   messageOverlay: document.getElementById("message-overlay"),

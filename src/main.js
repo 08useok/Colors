@@ -709,7 +709,6 @@ function makeFighter(options) {
     name: options.name,
     characterType: options.characterType ?? "red",
     isPlayer: options.isPlayer,
-    botStyle: options.botStyle ?? "aggressive",
     health: charDef.maxHealth,
     maxHealth: charDef.maxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -1395,7 +1394,6 @@ function initPlayers() {
       isPlayer: index === 0,
       position: spawn,
       yaw: Math.random() * Math.PI * 2,
-      botStyle: index % 2 === 0 ? "aggressive" : "skirmisher",
     });
     state.players.push(fighter);
   });
@@ -1429,7 +1427,6 @@ function initTrainingPlayers() {
     isPlayer: false,
     position: new THREE.Vector3(0, 0, -5),
     yaw: 0,
-    botStyle: "aggressive",
   });
   giant.isDummy = true;
   giant.health = 150000;
@@ -1454,8 +1451,7 @@ function initTrainingPlayers() {
         isPlayer: false,
         position: new THREE.Vector3(x, 0, z),
         yaw: 0,
-        botStyle: "aggressive",
-      });
+          });
       small.isDummy = true;
       small.health = 1500;
       small.maxHealth = 1500;
