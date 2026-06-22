@@ -91,6 +91,7 @@ export const LANGS = {
     pv10a: "3종 캐릭터 (Red / Green / Blue)", pv10b: "배틀 맵 3종 로테이션",
     pv10c: "트로피 · 순위 시스템", pv10d: "수풀 은신 메커닉", pv10e: "훈련장",
     // Chop Wood
+    modeShowdown: "쇼다운", modeChopWood: "찹 우드", modeBack: "뒤로",
     chopWood: "찹 우드", startChopWood: "찹 우드 시작",
     cwTreeHP: "나무 HP", cwAxeLabel: "도끼",
     cwChopping: "벌목 중...",
@@ -194,6 +195,7 @@ export const LANGS = {
     pv10a: "3 Characters (Red / Green / Blue)", pv10b: "3 Battle Map rotation",
     pv10c: "Trophy & ranking system", pv10d: "Bush stealth mechanic", pv10e: "Training mode",
     // Chop Wood
+    modeShowdown: "Showdown", modeChopWood: "Chop Wood", modeBack: "Back",
     chopWood: "Chop Wood", startChopWood: "Start Chop Wood",
     cwTreeHP: "Tree HP", cwAxeLabel: "Axe",
     cwChopping: "Chopping...",

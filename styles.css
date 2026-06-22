@@ -816,6 +816,71 @@ body {
 
 .lobby-recovery-btn:hover { opacity: 0.88; }
 
+.mode-selector {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mode-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 14px 12px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: transform 100ms, box-shadow 120ms;
+}
+
+.mode-btn:hover { transform: translateY(-2px); }
+.mode-btn:active { transform: scale(0.97); }
+
+.mode-showdown {
+  background: linear-gradient(135deg, #7ecf4e, #3a9d2a);
+  border-color: rgba(126, 207, 78, 0.4);
+  box-shadow: 0 8px 20px rgba(62, 157, 42, 0.35);
+}
+
+.mode-chopwood {
+  background: linear-gradient(135deg, #4ecfcf, #1a8f8f);
+  border-color: rgba(78, 207, 207, 0.4);
+  box-shadow: 0 8px 20px rgba(26, 143, 143, 0.35);
+}
+
+.mode-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.mode-icon-text {
+  font-size: 36px;
+  line-height: 48px;
+}
+
+.mode-back-btn {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(255, 210, 158, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mode-back-btn:hover { background: rgba(255, 210, 158, 0.1); }
+
 .lobby-training-btn {
   margin-top: 8px;
   background: linear-gradient(135deg, #2a4a2a, #3a7a3a);

@@ -3636,24 +3636,39 @@ function setupInput() {
   });
 
   // 전투 시작
-  startBattleBtn.addEventListener("click", async () => {
+  const modeSelector = document.getElementById("mode-selector");
+
+  startBattleBtn.addEventListener("click", () => {
+    modeSelector.classList.toggle("hidden");
+    startBattleBtn.classList.toggle("hidden");
+  });
+
+  document.getElementById("mode-back").addEventListener("click", () => {
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("hidden");
+  });
+
+  document.getElementById("mode-showdown").addEventListener("click", async () => {
     await initAudio();
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("hidden");
     messageOverlay.style.display = "none";
     state.currentMapId = Math.floor(Math.random() * MAP_POOL.length);
     createMap(MAP_POOL[state.currentMapId]);
     resetGame();
   });
 
+  document.getElementById("mode-chopwood").addEventListener("click", async () => {
+    await initAudio();
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("hidden");
+    startChopWood();
+  });
+
   // 훈련장 시작
   startTrainingBtn.addEventListener("click", async () => {
     await initAudio();
     startTraining();
-  });
-
-  // 찹 우드 시작
-  document.getElementById("start-chopwood-btn").addEventListener("click", async () => {
-    await initAudio();
-    startChopWood();
   });
 
   // 훈련장 나가기
