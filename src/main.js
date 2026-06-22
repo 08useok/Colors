@@ -129,6 +129,12 @@ const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
+const CURRENT_SEASON = "alpha2";
+const SEASONS = {
+  alpha1: "알파 시즌 1",
+  alpha2: "알파 시즌 2",
+};
+
 const BOT_NAMES_KO = ["하늘", "별빛", "소금", "달콤", "번개", "구름", "바람", "눈꽃", "폭풍", "태양",
   "은하", "수박", "딸기", "감자", "당근", "호랑이", "토끼", "펭귄", "고양이", "강아지",
   "치킨", "피자", "라면", "떡볶이", "김밥", "초코", "우유", "사이다", "콜라", "커피"];
@@ -231,6 +237,14 @@ function loadAccount() {
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (!account.lang) account.lang = "ko";
+    if (!account.seasonStats) {
+      account.seasonStats = {
+        alpha1: { wins: account.wins, losses: account.losses },
+      };
+    }
+    if (!account.seasonStats[CURRENT_SEASON]) {
+      account.seasonStats[CURRENT_SEASON] = { wins: 0, losses: 0 };
+    }
     return account;
   } catch {
     return null;
@@ -416,9 +430,11 @@ function recordGameResult(rank) {
   let milestone = false;
 
   account.charStats[char].games += 1;
+  const ss = account.seasonStats[CURRENT_SEASON];
   if (rank <= 4) {
     account.wins += 1;
     account.charStats[char].wins += 1;
+    ss.wins += 1;
     account.winStreak += 1;
     if (account.winStreak > account.bestStreak) account.bestStreak = account.winStreak;
     bonus = streakBonus(account.winStreak);
@@ -428,6 +444,7 @@ function recordGameResult(rank) {
     }
   } else {
     account.losses += 1;
+    ss.losses += 1;
     account.winStreak = 0;
   }
 
@@ -3454,6 +3471,16 @@ function setupInput() {
             const r = Math.round((s.wins / s.games) * 100);
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("charWinrate", r, s.wins, s.games)}</div>`;
           }
+        }
+        html += `<div class="stats-divider"></div>`;
+        html += `<div class="stats-row" style="font-weight:700">📅 시즌별 전적</div>`;
+        for (const [key, label] of Object.entries(SEASONS)) {
+          const ss = account.seasonStats?.[key];
+          if (!ss) { html += `<div class="stats-char">${label}: -</div>`; continue; }
+          const sg = ss.wins + ss.losses;
+          const sr = sg === 0 ? 0 : Math.round((ss.wins / sg) * 100);
+          const current = key === CURRENT_SEASON ? " ⬅" : "";
+          html += `<div class="stats-char">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
         }
         panel.innerHTML = html;
       }
