@@ -574,23 +574,29 @@ function moveAngleToward(current, target, maxStep) {
 
 function createAttackAimIndicator() {
   const group = new THREE.Group();
-  const beam = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.12, 1),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false }),
-  );
-  beam.rotation.x = -Math.PI / 2;
-  beam.position.set(0, 0.08, 0.5);
-  group.add(beam);
-  const dot = new THREE.Mesh(
-    new THREE.CircleGeometry(0.2, 10),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, depthWrite: false }),
-  );
-  dot.rotation.x = -Math.PI / 2;
-  dot.position.set(0, 0.08, 1);
-  group.add(dot);
+  const makeMat = () => new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.17, side: THREE.DoubleSide, depthWrite: false,
+  });
+
+  const subA = new THREE.Group();
+  subA.rotation.y = -20 * (Math.PI / 180);
+  const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), makeMat());
+  rectA.rotation.x = -Math.PI / 2;
+  rectA.position.set(0.5, 0.08, attackDepth * 0.5);
+  subA.add(rectA);
+  group.add(subA);
+
+  const subB = new THREE.Group();
+  subB.rotation.y = 20 * (Math.PI / 180);
+  const rectB = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), makeMat());
+  rectB.rotation.x = -Math.PI / 2;
+  rectB.position.set(-1.0, 0.08, attackDepth * 0.5);
+  subB.add(rectB);
+  group.add(subB);
+
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { beam, dot };
+  group.userData = { rects: [rectA, rectB] };
   scene.add(group);
   return group;
 }
@@ -1474,11 +1480,10 @@ function createBlueAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.blue.bulletRange;
 
-  // 레이저 빔 라인
   const beam = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.16, range),
+    new THREE.PlaneGeometry(1, range),
     new THREE.MeshBasicMaterial({
-      color: 0x7ec8ff,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.22,
       side: THREE.DoubleSide,
@@ -1493,7 +1498,7 @@ function createBlueAimIndicator() {
   const dot = new THREE.Mesh(
     new THREE.CircleGeometry(0.3, 12),
     new THREE.MeshBasicMaterial({
-      color: 0xaae4ff,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.50,
       depthWrite: false,
@@ -1515,9 +1520,9 @@ function createOrangeAimIndicator() {
   const range = CHARACTERS.orange.bombRange;
 
   const beam = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.2, range),
+    new THREE.PlaneGeometry(1, range),
     new THREE.MeshBasicMaterial({
-      color: 0xffaa33,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.2,
       side: THREE.DoubleSide,
@@ -1531,7 +1536,7 @@ function createOrangeAimIndicator() {
   const dot = new THREE.Mesh(
     new THREE.CircleGeometry(0.4, 12),
     new THREE.MeshBasicMaterial({
-      color: 0xff9800,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.45,
       depthWrite: false,
@@ -3033,20 +3038,32 @@ function updateAttackAimIndicator() {
   orangeAimIndicator.visible = false;
 
   const range = getAttackRange(player);
-  attackAimIndicator.visible = true;
-  attackAimIndicator.position.set(pos.x, 0, pos.z);
-  attackAimIndicator.rotation.y = yaw;
-  attackAimIndicator.userData.beam.scale.y = range;
-  attackAimIndicator.userData.beam.position.z = range * 0.5;
-  attackAimIndicator.userData.dot.position.z = range;
-  attackAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
-  attackAimIndicator.userData.dot.material.opacity = unavailable ? 0.1 : 0.35;
+  const alpha = unavailable ? 0.06 : 0.2;
 
-  if (charType === "green") {
+  if (charType === "red") {
+    attackAimIndicator.visible = true;
+    attackAimIndicator.position.set(pos.x, 0, pos.z);
+    attackAimIndicator.rotation.y = yaw;
+    attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = alpha; });
+  } else if (charType === "green") {
     greenAimIndicator.visible = true;
     greenAimIndicator.position.set(pos.x, 0, pos.z);
     greenAimIndicator.rotation.y = yaw;
     greenAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.13;
+  } else if (charType === "blue") {
+    blueAimIndicator.visible = true;
+    blueAimIndicator.position.set(pos.x, 0, pos.z);
+    blueAimIndicator.rotation.y = yaw;
+    blueAimIndicator.userData.beam.scale.set(1, 1, 1);
+    blueAimIndicator.userData.beam.material.opacity = unavailable ? 0.07 : 0.22;
+    blueAimIndicator.userData.dot.material.opacity = unavailable ? 0.15 : 0.50;
+  } else if (charType === "orange") {
+    orangeAimIndicator.visible = true;
+    orangeAimIndicator.position.set(pos.x, 0, pos.z);
+    orangeAimIndicator.rotation.y = yaw;
+    orangeAimIndicator.userData.beam.scale.set(1, 1, 1);
+    orangeAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+    orangeAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   }
 }
 
