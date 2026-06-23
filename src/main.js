@@ -245,6 +245,17 @@ function loadAccount() {
     if (!account.seasonStats[CURRENT_SEASON]) {
       account.seasonStats[CURRENT_SEASON] = { wins: 0, losses: 0 };
     }
+    if (!account.seasonCharStats) {
+      account.seasonCharStats = {
+        alpha1: JSON.parse(JSON.stringify(account.charStats)),
+      };
+    }
+    if (!account.seasonCharStats[CURRENT_SEASON]) {
+      account.seasonCharStats[CURRENT_SEASON] = {
+        red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
+        blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
+      };
+    }
     return account;
   } catch {
     return null;
@@ -431,10 +442,13 @@ function recordGameResult(rank) {
 
   account.charStats[char].games += 1;
   const ss = account.seasonStats[CURRENT_SEASON];
+  const scs = account.seasonCharStats[CURRENT_SEASON][char];
+  scs.games += 1;
   if (rank <= 4) {
     account.wins += 1;
     account.charStats[char].wins += 1;
     ss.wins += 1;
+    scs.wins += 1;
     account.winStreak += 1;
     if (account.winStreak > account.bestStreak) account.bestStreak = account.winStreak;
     bonus = streakBonus(account.winStreak);
@@ -3480,7 +3494,19 @@ function setupInput() {
           const sg = ss.wins + ss.losses;
           const sr = sg === 0 ? 0 : Math.round((ss.wins / sg) * 100);
           const current = key === CURRENT_SEASON ? " ⬅" : "";
-          html += `<div class="stats-char">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
+          html += `<div class="stats-char" style="font-weight:600">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
+          const scs = account.seasonCharStats?.[key];
+          if (scs) {
+            for (const c of ["red", "green", "blue", "orange"]) {
+              const cs = scs[c];
+              if (!cs || cs.games === 0) {
+                html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
+              } else {
+                const cr = Math.round((cs.wins / cs.games) * 100);
+                html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: ${cr}% (${cs.wins}W/${cs.games}G)</div>`;
+              }
+            }
+          }
         }
         panel.innerHTML = html;
       }
