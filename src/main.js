@@ -1432,7 +1432,7 @@ function createGreenAimIndicator() {
   const fanMesh = new THREE.Mesh(
     new THREE.ShapeGeometry(shape),
     new THREE.MeshBasicMaterial({
-      color: 0x3dea60,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.13,
       side: THREE.DoubleSide,
@@ -1451,7 +1451,7 @@ function createGreenAimIndicator() {
   }
   const arcLine = new THREE.Line(
     new THREE.BufferGeometry().setFromPoints(arcPts),
-    new THREE.LineBasicMaterial({ color: 0x7dff8a, transparent: true, opacity: 0.55 }),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 }),
   );
   group.add(arcLine);
 
@@ -1462,7 +1462,7 @@ function createGreenAimIndicator() {
         new THREE.Vector3(0, 0.09, 0),
         new THREE.Vector3(Math.sin(a) * range, 0.09, Math.cos(a) * range),
       ]),
-      new THREE.LineBasicMaterial({ color: 0x7dff8a, transparent: true, opacity: 0.55 }),
+      new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 }),
     );
     group.add(sideLine);
   });
@@ -3020,7 +3020,7 @@ function updateAttackAimIndicator() {
   const player = getPlayer();
   const charType = player?.characterType;
 
-  if (!player || player.dead || !state.running) {
+  if (!player || player.dead || !state.running || !state.mouseHeld) {
     attackAimIndicator.visible = false;
     greenAimIndicator.visible = false;
     blueAimIndicator.visible = false;
