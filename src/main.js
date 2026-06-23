@@ -3041,6 +3041,13 @@ function updateAttackAimIndicator() {
   attackAimIndicator.userData.dot.position.z = range;
   attackAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
   attackAimIndicator.userData.dot.material.opacity = unavailable ? 0.1 : 0.35;
+
+  if (charType === "green") {
+    greenAimIndicator.visible = true;
+    greenAimIndicator.position.set(pos.x, 0, pos.z);
+    greenAimIndicator.rotation.y = yaw;
+    greenAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.13;
+  }
 }
 
 function updateHud() {
