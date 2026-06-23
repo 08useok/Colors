@@ -574,39 +574,23 @@ function moveAngleToward(current, target, maxStep) {
 
 function createAttackAimIndicator() {
   const group = new THREE.Group();
-
-  const makeMat = () => new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.17,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  });
-
-  // 히트박스와 정확히 일치하는 구조:
-  //   subGroup에 tilt 회전 → rect 위치가 effectiveYaw 프레임(히트박스 검사 프레임)에서 정의됨
-  //
-  // Hit 0: effectiveYaw = yaw + (-20°), punchSide = +0.5
-  const subA = new THREE.Group();
-  subA.rotation.y = -20 * (Math.PI / 180);
-  const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), makeMat());
-  rectA.rotation.x = -Math.PI / 2;
-  rectA.position.set(0.5, 0.08, attackDepth * 0.5);
-  subA.add(rectA);
-  group.add(subA);
-
-  // Hit 1: effectiveYaw = yaw + (+20°), punchSide = -1
-  const subB = new THREE.Group();
-  subB.rotation.y = 20 * (Math.PI / 180);
-  const rectB = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, attackDepth), makeMat());
-  rectB.rotation.x = -Math.PI / 2;
-  rectB.position.set(-1.0, 0.08, attackDepth * 0.5);
-  subB.add(rectB);
-  group.add(subB);
-
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.12, 1),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, 0.5);
+  group.add(beam);
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.2, 10),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35, depthWrite: false }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, 1);
+  group.add(dot);
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { rects: [rectA, rectB] };
+  group.userData = { beam, dot };
   scene.add(group);
   return group;
 }
@@ -3048,11 +3032,15 @@ function updateAttackAimIndicator() {
   blueAimIndicator.visible = false;
   orangeAimIndicator.visible = false;
 
+  const range = getAttackRange(player);
   attackAimIndicator.visible = true;
   attackAimIndicator.position.set(pos.x, 0, pos.z);
   attackAimIndicator.rotation.y = yaw;
-  const activeAlpha = unavailable ? 0.06 : 0.17;
-  attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
+  attackAimIndicator.userData.beam.scale.y = range;
+  attackAimIndicator.userData.beam.position.z = range * 0.5;
+  attackAimIndicator.userData.dot.position.z = range;
+  attackAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+  attackAimIndicator.userData.dot.material.opacity = unavailable ? 0.1 : 0.35;
 }
 
 function updateHud() {
