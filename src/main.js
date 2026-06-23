@@ -181,7 +181,7 @@ const CHARACTERS = {
     boomerangCount: 4,
     boomerangDamage: 1100,
     boomerangRange: 6,
-    boomerangSpeed: 16,
+    boomerangSpeed: 20,
     boomerangFarThreshold: 3.5,
     boomerangFarMultiplier: 0.625,
     boomerangAngles: [-30, -10, 10, 30].map((d) => d * (Math.PI / 180)),
@@ -3048,30 +3048,11 @@ function updateAttackAimIndicator() {
   blueAimIndicator.visible = false;
   orangeAimIndicator.visible = false;
 
-  if (charType === "green") {
-    greenAimIndicator.visible = true;
-    greenAimIndicator.position.set(pos.x, 0, pos.z);
-    greenAimIndicator.rotation.y = yaw;
-    greenAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.13;
-  } else if (charType === "blue") {
-    blueAimIndicator.visible = true;
-    blueAimIndicator.position.set(pos.x, 0, pos.z);
-    blueAimIndicator.rotation.y = yaw;
-    blueAimIndicator.userData.beam.material.opacity = unavailable ? 0.07 : 0.22;
-    blueAimIndicator.userData.dot.material.opacity = unavailable ? 0.15 : 0.50;
-  } else if (charType === "orange") {
-    orangeAimIndicator.visible = true;
-    orangeAimIndicator.position.set(pos.x, 0, pos.z);
-    orangeAimIndicator.rotation.y = yaw;
-    orangeAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
-    orangeAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
-  } else {
-    attackAimIndicator.visible = true;
-    attackAimIndicator.position.set(pos.x, 0, pos.z);
-    attackAimIndicator.rotation.y = yaw;
-    const activeAlpha = unavailable ? 0.06 : 0.17;
-    attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
-  }
+  attackAimIndicator.visible = true;
+  attackAimIndicator.position.set(pos.x, 0, pos.z);
+  attackAimIndicator.rotation.y = yaw;
+  const activeAlpha = unavailable ? 0.06 : 0.17;
+  attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = activeAlpha; });
 }
 
 function updateHud() {
