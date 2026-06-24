@@ -845,6 +845,7 @@ function makeFighter(options) {
     botDecisionAt: 0,
     botMoveTarget: new THREE.Vector3(options.position.x, 0, options.position.z),
     botStrafeDir: Math.random() > 0.5 ? 1 : -1,
+    botDifficulty: 1,
     botHoldUntil: 0,
     attackSwing: 0,
     attackAnimTime: -1,
@@ -1800,6 +1801,9 @@ function initPlayers() {
       position: spawn,
       yaw: Math.random() * Math.PI * 2,
     });
+    if (!fighter.isPlayer) {
+      fighter.botDifficulty = Math.floor(Math.random() * 3);
+    }
     state.players.push(fighter);
   });
 }
@@ -2838,14 +2842,21 @@ function chooseBotTarget(bot) {
   return best;
 }
 
+const BOT_DIFF = [
+  { speedMult: 0.7, aimMult: 1.3, fleePct: 0.15, reactDelay: 0.3 },
+  { speedMult: 0.85, aimMult: 1.05, fleePct: 0.25, reactDelay: 0.1 },
+  { speedMult: 1.0, aimMult: 0.9, fleePct: 0.35, reactDelay: 0 },
+];
+
 function updateBot(bot, dt, zone) {
   if (bot.dead || bot.isDummy) {
     return;
   }
 
+  const diff = BOT_DIFF[bot.botDifficulty] ?? BOT_DIFF[1];
   const target = chooseBotTarget(bot);
   const botPos = bot.mesh.position;
-  const botSpeed = getMoveSpeed(bot);
+  const botSpeed = getMoveSpeed(bot) * diff.speedMult;
   tempVec3.set(0, 0, 0);
 
   const dxZone = botPos.x - state.safeCenter.x;
@@ -2865,7 +2876,7 @@ function updateBot(bot, dt, zone) {
         beginAttack(bot);
       }
     }
-  } else if (bot.health < bot.maxHealth * 0.25 && target) {
+  } else if (bot.health < bot.maxHealth * diff.fleePct && target) {
     const toTargetX = target.mesh.position.x - botPos.x;
     const toTargetZ = target.mesh.position.z - botPos.z;
     const distance = Math.hypot(toTargetX, toTargetZ);
@@ -2906,7 +2917,7 @@ function updateBot(bot, dt, zone) {
         .multiplyScalar(botSpeed * 0.28 * bot.botStrafeDir);
     }
 
-    if (distance <= atkRange * 1.05) {
+    if (distance <= atkRange * diff.aimMult && Math.random() > diff.reactDelay) {
       beginAttack(bot);
     }
   } else if (state.chopWoodMode) {
