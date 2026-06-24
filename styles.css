@@ -987,8 +987,8 @@ body {
 }
 
 .char-icon-blue {
-  background: radial-gradient(circle at 35% 35%, #7ec8ff, #2a5db0 70%);
-  box-shadow: 0 6px 18px rgba(74, 143, 212, 0.45);
+  background: radial-gradient(circle at 35% 35%, #6699ff, #0000FF 70%);
+  box-shadow: 0 6px 18px rgba(0, 0, 255, 0.45);
 }
 
 .char-icon-orange {
