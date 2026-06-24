@@ -502,6 +502,14 @@ function recordGameResult(rank) {
   const delta = calcTrophyChange(rank);
   account.trophies = Math.max(0, account.trophies + delta + bonus);
   saveAccount(account);
+
+  for (const bot of leaderboardBots) {
+    const botRank = Math.floor(Math.random() * 10) + 1;
+    const botDelta = 12 - botRank * 2;
+    bot.trophies = Math.max(0, bot.trophies + botDelta);
+  }
+  localStorage.setItem("skullCreekLeaderboardBots", JSON.stringify(leaderboardBots));
+
   return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone };
 }
 
