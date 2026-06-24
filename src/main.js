@@ -3642,6 +3642,11 @@ function setupInput() {
     }
   });
 
+  const leaderboardBots = [];
+  for (let i = 0; i < 19; i++) {
+    leaderboardBots.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600) });
+  }
+
   document.getElementById("leaderboard-toggle").addEventListener("click", () => {
     const panel = document.getElementById("leaderboard-panel");
     const btn = document.getElementById("leaderboard-toggle");
@@ -3652,9 +3657,7 @@ function setupInput() {
       if (account) {
         const entries = [];
         entries.push({ name: account.nickname, trophies: account.trophies, isPlayer: true });
-        for (let i = 0; i < 19; i++) {
-          entries.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600), isPlayer: false });
-        }
+        leaderboardBots.forEach((bot) => entries.push({ ...bot, isPlayer: false }));
         entries.sort((a, b) => b.trophies - a.trophies);
         let html = `<div class="stats-row" style="font-weight:700;margin-bottom:6px">🏆 ${t("leaderboardBtn")}</div>`;
         entries.forEach((e, i) => {
