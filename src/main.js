@@ -153,6 +153,12 @@ function randomBotName() {
     return BOT_NAMES_KO[Math.floor(Math.random() * BOT_NAMES_KO.length)] + BOT_NAMES_EN[Math.floor(Math.random() * BOT_NAMES_EN.length)];
   }
 }
+
+const leaderboardBots = [];
+for (let i = 0; i < 19; i++) {
+  leaderboardBots.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600) });
+}
+
 const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
@@ -3641,11 +3647,6 @@ function setupInput() {
       }
     }
   });
-
-  const leaderboardBots = [];
-  for (let i = 0; i < 19; i++) {
-    leaderboardBots.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600) });
-  }
 
   document.getElementById("leaderboard-toggle").addEventListener("click", () => {
     const panel = document.getElementById("leaderboard-panel");
