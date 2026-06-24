@@ -154,9 +154,13 @@ function randomBotName() {
   }
 }
 
-const leaderboardBots = [];
-for (let i = 0; i < 19; i++) {
-  leaderboardBots.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600) });
+let leaderboardBots = JSON.parse(localStorage.getItem("skullCreekLeaderboardBots") || "null");
+if (!leaderboardBots) {
+  leaderboardBots = [];
+  for (let i = 0; i < 19; i++) {
+    leaderboardBots.push({ name: randomBotName(), trophies: Math.floor(Math.random() * 600) });
+  }
+  localStorage.setItem("skullCreekLeaderboardBots", JSON.stringify(leaderboardBots));
 }
 
 const maxAmmo = 3;
