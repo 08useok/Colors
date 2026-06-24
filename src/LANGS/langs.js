@@ -126,7 +126,10 @@ export const LANGS = {
     electricAttack: "전기 사냥",
     yellowDesc: "전기 사냥꾼, 감전으로 적을 느리게 한다",
     pv137a: "Yellow 캐릭터 추가 (전기 투사체 + 감전 감속)",
-    pv137b: "상성표 5캐릭터 확장 (Yellow: ✅Blue ❌Red)",
+    pv137b: "상성표 5캐릭터 + 경합 열 추가",
+    pv137d: "Yellow 사거리 8→10, 데미지 4400→3400",
+    pv137e: "캐릭터 카드 실제 인게임 수치 동기화",
+    pv137f: "리더보드 봇 이름 고정", pv137g: "Blue 아이콘 색상 수정",
     pv137c: "로비 왼쪽 캐릭터 컬러 버튼 추가",
   },
   en: {
@@ -256,7 +259,10 @@ export const LANGS = {
     electricAttack: "Electric Shot",
     yellowDesc: "Electric hunter that slows enemies with every hit",
     pv137a: "Yellow character added (electric projectile + shock slow)",
-    pv137b: "Matchup table expanded to 5 characters (Yellow: ✅Blue ❌Red)",
+    pv137b: "Matchup table 5 chars + Even column",
+    pv137d: "Yellow range 8→10, damage 4400→3400",
+    pv137e: "Character card stats synced with in-game values",
+    pv137f: "Leaderboard bot names fixed", pv137g: "Blue icon color fix",
     pv137c: "Character color buttons added to lobby left side",
   },
 };
