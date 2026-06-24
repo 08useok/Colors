@@ -123,6 +123,11 @@ export const LANGS = {
     statsShowdown: "쇼다운 전적:", statsChopWood: "찹 우드 전적:",
     statsNoRecord: "-",
     charWinrate: "{0}% | {1}승/{2}판",
+    electricAttack: "전기 사냥",
+    yellowDesc: "전기 사냥꾼, 감전으로 적을 느리게 한다",
+    pv140a: "Yellow 캐릭터 추가 (전기 투사체 + 감전 감속)",
+    pv140b: "상성표 5캐릭터 확장 (Yellow: ✅Blue ❌Red)",
+    pv140c: "로비 왼쪽 캐릭터 컬러 버튼 추가",
   },
   en: {
     exitTraining: "Leave Training", survivorsLabel: "Survivors", zoneLabel: "Zone",
@@ -248,5 +253,10 @@ export const LANGS = {
     statsShowdown: "Showdown Record:", statsChopWood: "Chop Wood Record:",
     statsNoRecord: "-",
     charWinrate: "{0}% | {1}W/{2}G",
+    electricAttack: "Electric Shot",
+    yellowDesc: "Electric hunter that slows enemies with every hit",
+    pv140a: "Yellow character added (electric projectile + shock slow)",
+    pv140b: "Matchup table expanded to 5 characters (Yellow: ✅Blue ❌Red)",
+    pv140c: "Character color buttons added to lobby left side",
   },
 };

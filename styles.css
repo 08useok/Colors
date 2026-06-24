@@ -996,6 +996,11 @@ body {
   box-shadow: 0 6px 18px rgba(255, 152, 0, 0.45);
 }
 
+.char-icon-yellow {
+  background: radial-gradient(circle at 35% 35%, #ffff66, #ddbb00 70%);
+  box-shadow: 0 6px 18px rgba(255, 221, 0, 0.45);
+}
+
 .char-name {
   font-size: 16px;
   font-weight: 800;
@@ -1092,6 +1097,37 @@ body {
   font-weight: 800;
   color: #ffaa33;
   margin-top: 2px;
+}
+
+.color-buttons {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.color-dot:hover {
+  transform: scale(1.2);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.color-dot.selected {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  transform: scale(1.15);
 }
 
 .lobby-side-panel {
@@ -1199,6 +1235,7 @@ body {
 .mu-green { color: #7ee87a; }
 .mu-blue { color: #7ec8ff; }
 .mu-orange { color: #ffb347; }
+.mu-yellow { color: #ffee55; }
 
 .matchup-desc {
   font-size: 11px;

@@ -215,6 +215,20 @@ const CHARACTERS = {
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
+  yellow: {
+    color: 0xFFDD00,
+    maxHealth: 5800,
+    attackType: "electric",
+    reloadDuration: 1.0,
+    attackCooldown: 0.7,
+    electricDamage: 4400,
+    electricRange: 8,
+    electricSpeed: 16,
+    shockSlowPercent: 0.4,
+    shockDuration: 2.0,
+    moveSpeedMultiplier: 1.0,
+    walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
+  },
 };
 
 // ── 계정 관리 ──────────────────────────────────────────────────────────────
@@ -234,6 +248,7 @@ function loadAccount() {
       };
     }
     if (!account.charStats.orange) account.charStats.orange = { wins: 0, games: 0 };
+    if (!account.charStats.yellow) account.charStats.yellow = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (!account.lang) account.lang = "ko";
@@ -254,7 +269,11 @@ function loadAccount() {
       account.seasonCharStats[CURRENT_SEASON] = {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 },
       };
+    }
+    for (const s of Object.values(account.seasonCharStats)) {
+      if (!s.yellow) s.yellow = { wins: 0, games: 0 };
     }
     return account;
   } catch {
@@ -302,6 +321,7 @@ function createAccount(id, nickname) {
       green:  { wins: 0, games: 0 },
       blue:   { wins: 0, games: 0 },
       orange: { wins: 0, games: 0 },
+      yellow: { wins: 0, games: 0 },
     },
     winStreak: 0,
     bestStreak: 0,
@@ -333,7 +353,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
@@ -359,6 +379,9 @@ function updateLobbyUI(account) {
   // 캐릭터 선택 상태 반영
   document.querySelectorAll(".char-btn").forEach((btn) => {
     btn.classList.toggle("selected", btn.dataset.char === account.selectedCharacter);
+  });
+  document.querySelectorAll(".color-dot").forEach((dot) => {
+    dot.classList.toggle("selected", dot.dataset.char === account.selectedCharacter);
   });
   state.selectedCharacter = account.selectedCharacter;
 }
@@ -395,6 +418,7 @@ function showLobby() {
   resultOverlay.style.display = "none";
   mapNameEl.classList.add("hidden");
   const sidePanel = document.getElementById("lobby-side-panel");
+  const colorButtons = document.getElementById("color-buttons");
   const account = loadAccount();
 
   if (!account || !account.id) {
@@ -402,6 +426,7 @@ function showLobby() {
     lobbyMain.classList.add("hidden");
     dailyLogin.classList.add("hidden");
     sidePanel.classList.add("hidden");
+    colorButtons.classList.add("hidden");
     idInput.value = "";
     nicknameInput.value = "";
     createAccountBtn.disabled = true;
@@ -411,6 +436,7 @@ function showLobby() {
     lobbyMain.classList.remove("hidden");
     dailyLogin.classList.add("hidden");
     sidePanel.classList.remove("hidden");
+    colorButtons.classList.remove("hidden");
     if (account.lang && account.lang !== currentLang) setLanguage(account.lang);
     updateLobbyUI(account);
   } else {
@@ -418,6 +444,7 @@ function showLobby() {
     lobbyMain.classList.add("hidden");
     dailyLogin.classList.remove("hidden");
     sidePanel.classList.add("hidden");
+    colorButtons.classList.add("hidden");
     showDailyLogin(account);
   }
 }
@@ -1293,7 +1320,7 @@ function initChopWoodPlayers() {
   });
   state.players = [];
 
-  const botTypes = ["red", "green", "blue", "orange"];
+  const botTypes = ["red", "green", "blue", "orange", "yellow"];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
 
@@ -1556,6 +1583,46 @@ function createOrangeAimIndicator() {
 const blueAimIndicator = createBlueAimIndicator();
 const orangeAimIndicator = createOrangeAimIndicator();
 
+function createYellowAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.yellow.electricRange;
+
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, range),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.2,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+    }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, range);
+  group.add(dot);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, dot };
+  scene.add(group);
+  return group;
+}
+
+const yellowAimIndicator = createYellowAimIndicator();
+
 function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
@@ -1711,7 +1778,7 @@ function initPlayers() {
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue", "orange"];
+    const botTypes = ["red", "green", "blue", "orange", "yellow"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
@@ -2086,6 +2153,9 @@ function beginAttack(fighter) {
   if (fighter.characterType === "orange") {
     return beginBombAttack(fighter);
   }
+  if (fighter.characterType === "yellow") {
+    return beginElectricAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -2116,12 +2186,17 @@ function getAttackRange(fighter) {
   if (fighter.characterType === "green") return CHARACTERS.green.boomerangRange;
   if (fighter.characterType === "blue") return CHARACTERS.blue.bulletRange;
   if (fighter.characterType === "orange") return CHARACTERS.orange.bombRange;
+  if (fighter.characterType === "yellow") return CHARACTERS.yellow.electricRange;
   return attackDepth;
 }
 
 function getMoveSpeed(fighter) {
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
-  return baseMoveSpeed * multiplier;
+  let speed = baseMoveSpeed * multiplier;
+  if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
+    speed *= (1 - CHARACTERS.yellow.shockSlowPercent);
+  }
+  return speed;
 }
 
 function createBulletMesh(position, yaw) {
@@ -2304,6 +2379,50 @@ function spawnBombSplash(x, z, ownerId) {
   }
 }
 
+function createElectricMesh(position, yaw) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.2, 8, 6),
+    new THREE.MeshBasicMaterial({ color: 0xFFDD00 }),
+  );
+  mesh.position.set(position.x + Math.sin(yaw) * 0.9, 1.3, position.z + Math.cos(yaw) * 0.9);
+  mesh.castShadow = false;
+  scene.add(mesh);
+  return mesh;
+}
+
+function beginElectricAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.yellow;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.06);
+  fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+
+  const yaw = fighter.yaw;
+  const mesh = createElectricMesh(fighter.mesh.position, yaw);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+    z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+    vx: Math.sin(yaw) * charDef.electricSpeed,
+    vz: Math.cos(yaw) * charDef.electricSpeed,
+    damage: charDef.electricDamage,
+    range: charDef.electricRange,
+    farThreshold: Infinity,
+    farMultiplier: 1,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    mesh,
+    isElectric: true,
+  });
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
 function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
@@ -2317,8 +2436,8 @@ function updateProjectiles(dt) {
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
     proj.distTraveled += step;
-    proj.mesh.position.set(proj.x, proj.isBullet ? 1.3 : 1.2, proj.z);
-    if (!proj.isBullet) {
+    proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric) ? 1.3 : 1.2, proj.z);
+    if (!proj.isBullet && !proj.isElectric) {
       proj.mesh.rotation.z += dt * 10;
     }
 
@@ -2343,6 +2462,9 @@ function updateProjectiles(dt) {
         tempVec3.set(proj.x, 1.6, proj.z);
         createHitSpark(tempVec3);
         if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
+        if (proj.isElectric) {
+          target.shockUntil = state.gameTime + CHARACTERS.yellow.shockDuration;
+        }
         hit = true;
         break;
       }
@@ -2750,7 +2872,7 @@ function updateBot(bot, dt, zone) {
     const distance = Math.hypot(toTargetX, toTargetZ);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
-    const isRanged = ["green", "blue", "orange"].includes(bot.characterType);  
+    const isRanged = ["green", "blue", "orange", "yellow"].includes(bot.characterType);
     if (bot.characterType === "green") {
       const idealDist = 3.5;
       if (distance > idealDist + 1) {
@@ -2940,6 +3062,10 @@ function updateFighterAnimation(fighter, dt) {
     fighter.flashTimer -= dt;
     fighter.flashMaterial.emissive = new THREE.Color(0x7f0f0f);
     fighter.flashMaterial.emissiveIntensity = fighter.flashTimer > 0 ? 0.75 : 0;
+  } else if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
+    const pulse = Math.sin(state.gameTime * 12) * 0.3 + 0.5;
+    fighter.flashMaterial.emissive = new THREE.Color(0x7f6e00);
+    fighter.flashMaterial.emissiveIntensity = pulse;
   } else {
     fighter.flashMaterial.emissiveIntensity = 0;
   }
@@ -3025,6 +3151,7 @@ function updateAttackAimIndicator() {
     greenAimIndicator.visible = false;
     blueAimIndicator.visible = false;
     orangeAimIndicator.visible = false;
+    yellowAimIndicator.visible = false;
     return;
   }
 
@@ -3036,6 +3163,7 @@ function updateAttackAimIndicator() {
   greenAimIndicator.visible = false;
   blueAimIndicator.visible = false;
   orangeAimIndicator.visible = false;
+  yellowAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -3064,6 +3192,13 @@ function updateAttackAimIndicator() {
     orangeAimIndicator.userData.beam.scale.set(1, 1, 1);
     orangeAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     orangeAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
+  } else if (charType === "yellow") {
+    yellowAimIndicator.visible = true;
+    yellowAimIndicator.position.set(pos.x, 0, pos.z);
+    yellowAimIndicator.rotation.y = yaw;
+    yellowAimIndicator.userData.beam.scale.set(1, 1, 1);
+    yellowAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+    yellowAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   }
 }
 
@@ -3096,6 +3231,7 @@ function updateHud() {
   player.characterType === "green" ? t("boomerang") :
   player.characterType === "blue" ? t("sniper") :
   player.characterType === "orange" ? t("bombAttack") :
+  player.characterType === "yellow" ? t("electricAttack") :
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
@@ -3470,7 +3606,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
         html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
         html += `<div class="stats-divider"></div>`;
-        for (const char of ["red", "green", "blue", "orange"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -3490,7 +3626,7 @@ function setupInput() {
           html += `<div class="stats-char" style="font-weight:600">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -3794,6 +3930,24 @@ function setupInput() {
     account.selectedCharacter = "orange";
     saveAccount(account);
     updateLobbyUI(account);
+  });
+
+  document.getElementById("select-yellow").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "yellow";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
+  document.querySelectorAll(".color-dot").forEach((dot) => {
+    dot.addEventListener("click", () => {
+      const account = loadAccount();
+      if (!account) return;
+      account.selectedCharacter = dot.dataset.char;
+      saveAccount(account);
+      updateLobbyUI(account);
+    });
   });
 
   // 전투 시작

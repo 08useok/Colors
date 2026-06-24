@@ -114,11 +114,20 @@
                 <tr><td class="mu-green">🟢 Green</td><td class="mu-orange">🟠 Orange</td><td class="mu-red">🔴 Red</td></tr>
                 <tr><td class="mu-orange">🟠 Orange</td><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td></tr>
                 <tr><td class="mu-blue">🔵 Blue</td><td class="mu-orange">🟠 Orange</td><td class="mu-green">🟢 Green</td></tr>
+                <tr><td class="mu-yellow">🟡 Yellow</td><td class="mu-blue">🔵 Blue</td><td class="mu-red">🔴 Red</td></tr>
               </tbody>
             </table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
+            <div class="patch-entry">
+              <div class="patch-version">v1.4.0 — 2026.06.24</div>
+              <ul>
+                <li data-i18n="pv140a">Yellow 캐릭터 추가 (전기 투사체 + 감전 감속)</li>
+                <li data-i18n="pv140b">상성표 5캐릭터 확장 (Yellow: ✅Blue ❌Red)</li>
+                <li data-i18n="pv140c">로비 왼쪽 캐릭터 컬러 버튼 추가</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.3.6 — 2026.06.22</div>
               <ul>
@@ -316,6 +325,14 @@
           <div id="account-recovery-info" class="daily-recovery-info hidden"></div>
         </div>
 
+        <div id="color-buttons" class="color-buttons hidden">
+          <button class="color-dot" data-char="red" style="background:#e53729" type="button"></button>
+          <button class="color-dot" data-char="green" style="background:#3dbd4a" type="button"></button>
+          <button class="color-dot" data-char="blue" style="background:#4a8fd4" type="button"></button>
+          <button class="color-dot" data-char="orange" style="background:#ff9800" type="button"></button>
+          <button class="color-dot" data-char="yellow" style="background:#FFDD00" type="button"></button>
+        </div>
+
         <div id="lobby-main" class="message-card hidden">
           <div class="season-badge" data-i18n="season">알파 시즌 2</div>
           <div class="season-info">
@@ -380,6 +397,15 @@
               <div class="char-details">데미지 딜러 · 사거리 8 · 이동속도 보통</div>
               <div class="char-desc" data-i18n="orangeDesc">데미지 딜러, 폭발 분산 공격</div>
               <div class="char-winrate" id="winrate-orange"></div>
+            </button>
+            <button id="select-yellow" class="char-btn" type="button" data-char="yellow">
+              <div class="selected-badge">선택됨</div>
+              <div class="char-icon char-icon-yellow">Y</div>
+              <div class="char-name">Yellow</div>
+              <div class="char-stats">HP 5,800</div>
+              <div class="char-details">감전 사냥꾼 · 사거리 8 · 이동속도 보통</div>
+              <div class="char-desc" data-i18n="yellowDesc">전기 사냥꾼, 감전으로 적을 느리게 한다</div>
+              <div class="char-winrate" id="winrate-yellow"></div>
             </button>
           </div>
 
