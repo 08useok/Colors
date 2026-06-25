@@ -354,12 +354,15 @@
         </div>
 
         <div id="color-buttons" class="color-buttons hidden">
-          <button class="color-dot" data-char="red" style="background:#ff0000" type="button"></button>
-          <button class="color-dot" data-char="green" style="background:#00ff00" type="button"></button>
-          <button class="color-dot" data-char="blue" style="background:#0000ff" type="button"></button>
-          <button class="color-dot" data-char="orange" style="background:#ffa500" type="button"></button>
-          <button class="color-dot" data-char="yellow" style="background:#ffff00" type="button"></button>
-          <button class="color-dot" data-char="cyan" style="background:#0ff0fe" type="button"></button>
+          <div class="color-dot-list">
+            <button class="color-dot" data-char="red" style="background:#ff0000" type="button"></button>
+            <button class="color-dot" data-char="green" style="background:#00ff00" type="button"></button>
+            <button class="color-dot" data-char="blue" style="background:#0000ff" type="button"></button>
+            <button class="color-dot" data-char="orange" style="background:#ffa500" type="button"></button>
+            <button class="color-dot" data-char="yellow" style="background:#ffff00" type="button"></button>
+            <button class="color-dot" data-char="cyan" style="background:#0ff0fe" type="button"></button>
+          </div>
+          <div id="color-info" class="color-info"></div>
         </div>
 
         <div id="lobby-main" class="message-card hidden">
@@ -399,54 +402,36 @@
               <div class="selected-badge">선택됨</div>
               <div class="char-icon char-icon-red">R</div>
               <div class="char-name">Red</div>
-              <div class="char-stats">HP 9,000</div>
-              <div class="char-details" data-i18n="redDetails">탱커 · 사거리 5 · 이동속도 매우 빠름</div>
-              <div class="char-desc" data-i18n="redDesc">더블 펀치, 근접 압박형 탱커</div>
               <div class="char-winrate" id="winrate-red"></div>
             </button>
             <button id="select-green" class="char-btn" type="button" data-char="green">
               <div class="selected-badge">선택됨</div>
               <div class="char-icon char-icon-green">G</div>
               <div class="char-name">Green</div>
-              <div class="char-stats">HP 8,400</div>
-              <div class="char-details" data-i18n="greenDetails">암살자 · 사거리 6 · 이동속도 빠름</div>
-              <div class="char-desc" data-i18n="greenDesc">부메랑 4연발, 중거리 견제</div>
               <div class="char-winrate" id="winrate-green"></div>
             </button>
             <button id="select-blue" class="char-btn" type="button" data-char="blue">
               <div class="selected-badge">선택됨</div>
               <div class="char-icon char-icon-blue">B</div>
               <div class="char-name">Blue</div>
-              <div class="char-stats">HP 4,400</div>
-              <div class="char-details" data-i18n="blueDetails">장거리 딜러 · 사거리 16 · 이동속도 보통</div>
-              <div class="char-desc" data-i18n="blueDesc">고속 저격, 긴 사거리</div>
               <div class="char-winrate" id="winrate-blue"></div>
             </button>
             <button id="select-orange" class="char-btn" type="button" data-char="orange">
               <div class="selected-badge">선택됨</div>
               <div class="char-icon char-icon-orange">O</div>
               <div class="char-name">Orange</div>
-              <div class="char-stats">HP 6,500</div>
-              <div class="char-details" data-i18n="orangeDetails">데미지 딜러 · 사거리 8 · 이동속도 보통</div>
-              <div class="char-desc" data-i18n="orangeDesc">데미지 딜러, 폭발 분산 공격</div>
               <div class="char-winrate" id="winrate-orange"></div>
             </button>
             <button id="select-yellow" class="char-btn" type="button" data-char="yellow">
               <div class="selected-badge">선택됨</div>
               <div class="char-icon char-icon-yellow">Y</div>
               <div class="char-name">Yellow</div>
-              <div class="char-stats">HP 5,800</div>
-              <div class="char-details" data-i18n="yellowDetails">감전 사냥꾼 · 사거리 8 · 이동속도 보통</div>
-              <div class="char-desc" data-i18n="yellowDesc">전기 사냥꾼, 감전으로 적을 느리게 한다</div>
               <div class="char-winrate" id="winrate-yellow"></div>
             </button>
             <button id="select-cyan" class="char-btn" type="button" data-char="cyan">
               <div class="selected-badge">선택됨</div>
               <div class="char-icon char-icon-cyan">C</div>
               <div class="char-name">Cyan</div>
-              <div class="char-stats">HP 6,200</div>
-              <div class="char-details" data-i18n="cyanDetails">컨트롤 파이터 · 사거리 8 · 이동속도 보통</div>
-              <div class="char-desc" data-i18n="cyanDesc">알약 6연발, 넓은 범위 제압</div>
               <div class="char-winrate" id="winrate-cyan"></div>
             </button>
           </div>

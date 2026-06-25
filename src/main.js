@@ -410,8 +410,31 @@ function updateLobbyUI(account) {
   document.querySelectorAll(".color-dot").forEach((dot) => {
     dot.classList.toggle("selected", dot.dataset.char === account.selectedCharacter);
   });
+  updateColorInfo(account.selectedCharacter, account);
   state.selectedCharacter = account.selectedCharacter;
   setPreviewCharacter(account.selectedCharacter);
+}
+
+function updateColorInfo(charKey, account) {
+  const el = document.getElementById("color-info");
+  if (!el) return;
+  const charDef = CHARACTERS[charKey];
+  if (!charDef) { el.innerHTML = ""; return; }
+  const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
+  const hp = charDef.maxHealth.toLocaleString();
+  const details = t(charKey + "Details");
+  const desc = t(charKey + "Desc");
+  const s = account?.charStats?.[charKey];
+  let winrateText = t("firstGame");
+  if (s && s.games > 0) {
+    const rate = Math.round((s.wins / s.games) * 100);
+    winrateText = t("winrate", rate, s.wins, s.games);
+  }
+  el.innerHTML = `<div class="ci-name">${name}</div>`
+    + `<div class="ci-hp">HP ${hp}</div>`
+    + `<div class="ci-details">${details}</div>`
+    + `<div class="ci-desc">${desc}</div>`
+    + `<div class="ci-winrate">${winrateText}</div>`;
 }
 
 function showDailyLogin(account) {
@@ -612,6 +635,7 @@ const state = {
   audioContext: null,
   selectedCharacter: "red",
   currentMapId: 0,
+  freezeUntil: 0,
   chopWoodMode: false,
   teams: null,
   playerTeam: null,
@@ -858,6 +882,31 @@ function createStickman(color) {
   return group;
 }
 
+function createNameLabel(name, hexColor) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  ctx.font = "bold 24px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.strokeStyle = "rgba(0,0,0,0.85)";
+  ctx.lineWidth = 4;
+  const r = (hexColor >> 16) & 0xff;
+  const g = (hexColor >> 8) & 0xff;
+  const b = hexColor & 0xff;
+  ctx.fillStyle = `rgb(${r},${g},${b})`;
+  ctx.strokeText(name, 128, 32);
+  ctx.fillText(name, 128, 32);
+  const texture = new THREE.CanvasTexture(canvas);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }),
+  );
+  sprite.scale.set(2.5, 0.625, 1);
+  sprite.position.set(0, 3.6, 0);
+  return sprite;
+}
+
 // ── Lobby 3D character preview ──
 const previewCanvas = document.getElementById("char-preview-canvas");
 const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -996,6 +1045,9 @@ function makeFighter(options) {
 
   fighter.flashMaterial = fighter.mesh.userData.body.material;
   fighter.bodyMaterials = fighter.mesh.userData.bodyMaterials;
+  const charDef2 = CHARACTERS[options.characterType ?? "red"];
+  fighter.nameLabel = createNameLabel(options.name, charDef2.color);
+  fighter.mesh.add(fighter.nameLabel);
   fighter.teamMarker = null;
   return fighter;
 }
@@ -3509,13 +3561,10 @@ function updateBushVisuals() {
     const dz = fighter.mesh.position.z - player.mesh.position.z;
     const distSq = dx * dx + dz * dz;
     const revealed = state.gameTime < fighter.revealedUntil;
-    const shouldFade = inBush && !revealed && distSq > bushStealthRevealRangeSq;
-    const opacity = shouldFade ? 0.15 : 1.0;
-    if (fighter.bodyMaterials) {
-      for (const m of fighter.bodyMaterials) m.opacity = opacity;
-    }
-    fighter.shadow.material.opacity = shouldFade ? 0.05 : 0.22;
-    fighter.healthBar.visible = !shouldFade;
+    const shouldHide = inBush && !revealed && distSq > bushStealthRevealRangeSq;
+    fighter.mesh.visible = !shouldHide && !fighter.dead;
+    fighter.shadow.visible = !shouldHide && !fighter.dead;
+    fighter.healthBar.visible = !shouldHide;
   }
 }
 
