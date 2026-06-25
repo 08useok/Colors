@@ -2905,27 +2905,22 @@ function updateBot(bot, dt, zone) {
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
     const isRanged = ["green", "blue", "orange", "yellow"].includes(bot.characterType);
-    if (bot.characterType === "green") {
-      const idealDist = 3.5;
-      if (distance > idealDist + 1) {
-        tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.8);
-      } else if (distance < idealDist - 0.5) {
-        const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
-        tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.6);
-      } else {
-        tempVec3.set(Math.sin(bot.yaw + Math.PI / 2), 0, Math.cos(bot.yaw + Math.PI / 2))
-          .multiplyScalar(botSpeed * 0.35 * bot.botStrafeDir);
-      }
-    } else if (distance > atkRange * 0.86) {
-      tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.82);
-    } else if (isRanged && distance < atkRange * 0.5) {
+    const ct = bot.characterType;
+    let idealDist;
+    if (ct === "green") idealDist = 1.5;
+    else if (ct === "red" || ct === "orange") idealDist = 3.5;
+    else if (ct === "blue") idealDist = 12;
+    else if (ct === "yellow") idealDist = 7;
+    else idealDist = atkRange * 0.6;
+
+    if (distance > idealDist + 1.5) {
+      tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.85);
+    } else if (distance < idealDist - 1) {
       const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
-      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.55);
-    } else if (distance < atkRange * 0.58) {
-      tempVec3.set(-Math.sin(bot.yaw), 0, -Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.48);
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.6);
     } else {
       tempVec3.set(Math.sin(bot.yaw + Math.PI / 2), 0, Math.cos(bot.yaw + Math.PI / 2))
-        .multiplyScalar(botSpeed * 0.28 * bot.botStrafeDir);
+        .multiplyScalar(botSpeed * 0.3 * bot.botStrafeDir);
     }
 
     if (distance <= atkRange * diff.aimMult && Math.random() > diff.reactDelay) {
