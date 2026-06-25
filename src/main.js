@@ -174,10 +174,10 @@ const attackEvents = [
 const CHARACTERS = {
   red: {
     color: 0xe53729,
-    maxHealth: 9000,
+    maxHealth: 9800,
     attackType: "punch",
     reloadDuration: 0.5,
-    attackCooldown: 0.62,
+    attackCooldown: 0.55,
     moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
@@ -211,11 +211,11 @@ const CHARACTERS = {
   },
   orange: {
     color: 0xff9800,
-    maxHealth: 6500,
+    maxHealth: 5800,
     attackType: "bomb",
     reloadDuration: 1.0,
     attackCooldown: 0.35,
-    bombDamage: 1000,
+    bombDamage: 850,
     bombSplashDamage: 400,
     bombRange: 8,
     bombSpeed: 16,
@@ -232,10 +232,10 @@ const CHARACTERS = {
     reloadDuration: 1.0,
     attackCooldown: 0.35,
     electricDamage: 3400,
-    electricRange: 10,
+    electricRange: 8,
     electricSpeed: 16,
     shockSlowPercent: 0.4,
-    shockDuration: 2.0,
+    shockDuration: 1.5,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
@@ -734,6 +734,8 @@ function createStickman(color) {
     color,
     roughness: 0.82,
     metalness: 0.03,
+    transparent: true,
+    depthWrite: true,
   });
   const darkMaterial = material.clone();
   darkMaterial.color.offsetHSL(0, 0, -0.08);
@@ -836,6 +838,7 @@ function createStickman(color) {
     rightThigh,
     leftLeg,
     rightLeg,
+    bodyMaterials: [material, darkMaterial],
   };
 
   return group;
@@ -919,6 +922,7 @@ function makeFighter(options) {
   fighter.mesh.add(fighter.healthBar);
 
   fighter.flashMaterial = fighter.mesh.userData.body.material;
+  fighter.bodyMaterials = fighter.mesh.userData.bodyMaterials;
   fighter.teamMarker = null;
   return fighter;
 }
@@ -974,7 +978,9 @@ function createBush(x, z, radius = 1.35, group = scene, bushArr = state.bushes) 
   const clumpCount = 4 + Math.floor(Math.random() * 2);
   for (let i = 0; i < clumpCount; i += 1) {
     const clumpRadius = radius * (0.5 + Math.random() * 0.3);
-    const clump = new THREE.Mesh(bushClumpGeo, bushClumpMats[i % bushClumpMats.length]);
+    const mat = bushClumpMats[i % bushClumpMats.length].clone();
+    mat.transparent = true;
+    const clump = new THREE.Mesh(bushClumpGeo, mat);
     const angle = (i / clumpCount) * Math.PI * 2 + Math.random() * 0.6;
     const offset = radius * 0.35;
     clump.position.set(Math.cos(angle) * offset, clumpRadius * 0.7, Math.sin(angle) * offset);
@@ -985,7 +991,7 @@ function createBush(x, z, radius = 1.35, group = scene, bushArr = state.bushes) 
   }
   bush.position.set(x, 0, z);
   group.add(bush);
-  bushArr.push({ x, z, radius: radius + 0.25 });
+  bushArr.push({ x, z, radius: radius + 0.25, mesh: bush });
 }
 
 function createSkullCluster(x, z, count = 7, group = scene) {
@@ -2846,11 +2852,6 @@ function updatePlayerControls(dt) {
 
   player.mesh.rotation.y = player.yaw;
 
-  // 마우스 홀드 시 연속 공격 (beginAttack 내부 nextAttackAt 가드로 쿨다운 자동 제어)
-  if (state.mouseHeld && state.running) {
-    beginAttack(player);
-  }
-
   moveFighter(player, tempVec3, dt);
 }
 
@@ -3287,6 +3288,37 @@ function updateAttackAimIndicator() {
   }
 }
 
+function updateBushVisuals() {
+  const player = getPlayer();
+  if (!player) return;
+
+  for (const bush of state.bushes) {
+    if (!bush.mesh) continue;
+    const dx = player.mesh.position.x - bush.x;
+    const dz = player.mesh.position.z - bush.z;
+    const playerInThis = dx * dx + dz * dz < bush.radius * bush.radius;
+    bush.mesh.traverse((child) => {
+      if (child.isMesh) child.material.opacity = playerInThis ? 0.35 : 1.0;
+    });
+  }
+
+  for (const fighter of state.players) {
+    if (fighter.isPlayer || fighter.dead) continue;
+    const inBush = isInBush(fighter);
+    const dx = fighter.mesh.position.x - player.mesh.position.x;
+    const dz = fighter.mesh.position.z - player.mesh.position.z;
+    const distSq = dx * dx + dz * dz;
+    const revealed = state.gameTime < fighter.revealedUntil;
+    const shouldFade = inBush && !revealed && distSq > bushStealthRevealRangeSq;
+    const opacity = shouldFade ? 0.15 : 1.0;
+    if (fighter.bodyMaterials) {
+      for (const m of fighter.bodyMaterials) m.opacity = opacity;
+    }
+    fighter.shadow.material.opacity = shouldFade ? 0.05 : 0.22;
+    fighter.healthBar.visible = !shouldFade;
+  }
+}
+
 function updateHud() {
   const player = getPlayer();
   if (!player) {
@@ -3665,6 +3697,7 @@ function animate() {
 
     updateCamera(dt);
     updateAttackAimIndicator();
+    updateBushVisuals();
     updateHud();
     checkEndState();
   } else {
@@ -3800,28 +3833,28 @@ function setupInput() {
     event.preventDefault();
   });
 
-  function triggerDesktopAttack(event) {
-    if (event.button !== 0 && event.button !== 2) {
-      return;
-    }
+  function startAiming(event) {
+    if (event.button !== 0 && event.button !== 2) return;
     event.preventDefault();
-    if (state.running) {
-      state.mouseHeld = true;
+    if (state.running) state.mouseHeld = true;
+  }
+
+  function attackOnRelease() {
+    if (state.mouseHeld && state.running) {
       beginAttack(getPlayer());
     }
+    state.mouseHeld = false;
   }
 
   const releaseHold = () => { state.mouseHeld = false; };
-  window.addEventListener("mousedown", triggerDesktopAttack);
-  window.addEventListener("mouseup", releaseHold);
-  window.addEventListener("pointerup", releaseHold);
+  window.addEventListener("mousedown", startAiming);
+  window.addEventListener("mouseup", attackOnRelease);
+  window.addEventListener("pointerup", attackOnRelease);
   window.addEventListener("pointercancel", releaseHold);
   window.addEventListener("blur", releaseHold);
   document.addEventListener("mouseleave", releaseHold);
   canvas.addEventListener("pointerdown", (event) => {
-    if (event.pointerType === "mouse") {
-      triggerDesktopAttack(event);
-    }
+    if (event.pointerType === "mouse") startAiming(event);
   });
 
   function setJoystickFromEvent(event) {
@@ -4108,12 +4141,12 @@ function setupInput() {
   mobileAttackButton.addEventListener("pointerdown", async (event) => {
     event.preventDefault();
     await initAudio();
-    if (state.running) {
-      state.mouseHeld = true;
-      beginAttack(getPlayer());
-    }
+    if (state.running) state.mouseHeld = true;
   });
-  mobileAttackButton.addEventListener("pointerup", () => { state.mouseHeld = false; });
+  mobileAttackButton.addEventListener("pointerup", () => {
+    if (state.mouseHeld && state.running) beginAttack(getPlayer());
+    state.mouseHeld = false;
+  });
   mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
 }
 
