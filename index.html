@@ -346,7 +346,7 @@
         <div id="color-buttons" class="color-buttons hidden">
           <button class="color-dot" data-char="red" style="background:#e53729" type="button"></button>
           <button class="color-dot" data-char="green" style="background:#3dbd4a" type="button"></button>
-          <button class="color-dot" data-char="blue" style="background:#4a8fd4" type="button"></button>
+          <button class="color-dot" data-char="blue" style="background:#5eaaef" type="button"></button>
           <button class="color-dot" data-char="orange" style="background:#ff9800" type="button"></button>
           <button class="color-dot" data-char="yellow" style="background:#FFDD00" type="button"></button>
         </div>
@@ -378,6 +378,10 @@
 
           <div class="lobby-divider"></div>
 
+          <div id="char-preview-wrap" class="char-preview-wrap">
+            <canvas id="char-preview-canvas"></canvas>
+          </div>
+
           <p class="char-select-label" data-i18n="charSelect">캐릭터 선택</p>
           <div class="char-select-row">
             <button id="select-red" class="char-btn" type="button" data-char="red">
@@ -385,7 +389,7 @@
               <div class="char-icon char-icon-red">R</div>
               <div class="char-name">Red</div>
               <div class="char-stats">HP 9,000</div>
-              <div class="char-details">탱커 · 사거리 5 · 이동속도 매우 빠름</div>
+              <div class="char-details" data-i18n="redDetails">탱커 · 사거리 5 · 이동속도 매우 빠름</div>
               <div class="char-desc" data-i18n="redDesc">더블 펀치, 근접 압박형 탱커</div>
               <div class="char-winrate" id="winrate-red"></div>
             </button>
@@ -394,7 +398,7 @@
               <div class="char-icon char-icon-green">G</div>
               <div class="char-name">Green</div>
               <div class="char-stats">HP 8,400</div>
-              <div class="char-details">암살자 · 사거리 6 · 이동속도 빠름</div>
+              <div class="char-details" data-i18n="greenDetails">암살자 · 사거리 6 · 이동속도 빠름</div>
               <div class="char-desc" data-i18n="greenDesc">부메랑 4연발, 중거리 견제</div>
               <div class="char-winrate" id="winrate-green"></div>
             </button>
@@ -403,7 +407,7 @@
               <div class="char-icon char-icon-blue">B</div>
               <div class="char-name">Blue</div>
               <div class="char-stats">HP 4,400</div>
-              <div class="char-details">장거리 딜러 · 사거리 16 · 이동속도 보통</div>
+              <div class="char-details" data-i18n="blueDetails">장거리 딜러 · 사거리 16 · 이동속도 보통</div>
               <div class="char-desc" data-i18n="blueDesc">고속 저격, 긴 사거리</div>
               <div class="char-winrate" id="winrate-blue"></div>
             </button>
@@ -412,7 +416,7 @@
               <div class="char-icon char-icon-orange">O</div>
               <div class="char-name">Orange</div>
               <div class="char-stats">HP 6,500</div>
-              <div class="char-details">데미지 딜러 · 사거리 8 · 이동속도 보통</div>
+              <div class="char-details" data-i18n="orangeDetails">데미지 딜러 · 사거리 8 · 이동속도 보통</div>
               <div class="char-desc" data-i18n="orangeDesc">데미지 딜러, 폭발 분산 공격</div>
               <div class="char-winrate" id="winrate-orange"></div>
             </button>
@@ -421,7 +425,7 @@
               <div class="char-icon char-icon-yellow">Y</div>
               <div class="char-name">Yellow</div>
               <div class="char-stats">HP 5,800</div>
-              <div class="char-details">감전 사냥꾼 · 사거리 10 · 이동속도 보통</div>
+              <div class="char-details" data-i18n="yellowDetails">감전 사냥꾼 · 사거리 8 · 이동속도 보통</div>
               <div class="char-desc" data-i18n="yellowDesc">전기 사냥꾼, 감전으로 적을 느리게 한다</div>
               <div class="char-winrate" id="winrate-yellow"></div>
             </button>
