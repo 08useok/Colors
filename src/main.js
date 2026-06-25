@@ -755,6 +755,20 @@ function createStickman(color) {
 
   const armGeo = new THREE.CapsuleGeometry(0.18, 0.9, 6, 10);
   const legGeo = new THREE.CapsuleGeometry(0.2, 1.15, 6, 10);
+  const shoulderGeo = new THREE.SphereGeometry(0.24, 10, 10);
+  const thighGeo = new THREE.SphereGeometry(0.26, 10, 10);
+
+  const leftShoulder = new THREE.Mesh(shoulderGeo, material);
+  leftShoulder.position.set(-0.6, 0.75, 0);
+  leftShoulder.scale.set(1.15, 0.9, 1.0);
+  leftShoulder.castShadow = true;
+  group.add(leftShoulder);
+
+  const rightShoulder = new THREE.Mesh(shoulderGeo, material);
+  rightShoulder.position.set(0.6, 0.75, 0);
+  rightShoulder.scale.set(1.15, 0.9, 1.0);
+  rightShoulder.castShadow = true;
+  group.add(rightShoulder);
 
   const leftArm = new THREE.Mesh(armGeo, darkMaterial);
   leftArm.position.set(-0.6, 0.35, 0);
@@ -777,6 +791,18 @@ function createStickman(color) {
   rightFist.castShadow = true;
   rightArm.add(rightFist);
   group.add(rightArm);
+
+  const leftThigh = new THREE.Mesh(thighGeo, material);
+  leftThigh.position.set(-0.24, -0.55, 0);
+  leftThigh.scale.set(1.1, 0.85, 1.0);
+  leftThigh.castShadow = true;
+  group.add(leftThigh);
+
+  const rightThigh = new THREE.Mesh(thighGeo, material);
+  rightThigh.position.set(0.24, -0.55, 0);
+  rightThigh.scale.set(1.1, 0.85, 1.0);
+  rightThigh.castShadow = true;
+  group.add(rightThigh);
 
   const leftLeg = new THREE.Mesh(legGeo, darkMaterial);
   leftLeg.position.set(-0.24, -1.15, 0);
@@ -802,8 +828,12 @@ function createStickman(color) {
     body,
     neck,
     head,
+    leftShoulder,
+    rightShoulder,
     leftArm,
     rightArm,
+    leftThigh,
+    rightThigh,
     leftLeg,
     rightLeg,
   };
@@ -3097,6 +3127,12 @@ function updateFighterAnimation(fighter, dt) {
   body.rightArm.rotation.x = rightArmX;
   body.leftArm.rotation.z = leftArmZ;
   body.rightArm.rotation.z = rightArmZ;
+  body.leftShoulder.rotation.x = leftArmX * 0.3;
+  body.leftShoulder.rotation.z = leftArmZ * 0.3;
+  body.rightShoulder.rotation.x = rightArmX * 0.3;
+  body.rightShoulder.rotation.z = rightArmZ * 0.3;
+  body.leftThigh.rotation.x = leftLeg * 0.4;
+  body.rightThigh.rotation.x = rightLeg * 0.4;
   body.body.rotation.z = bodyZ;
   body.body.rotation.y = bodyY;
   body.head.rotation.y = headY;
