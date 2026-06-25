@@ -178,7 +178,7 @@ const CHARACTERS = {
     attackType: "punch",
     reloadDuration: 0.5,
     attackCooldown: 0.62,
-    moveSpeedMultiplier: 1.18,
+    moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
   green: {
@@ -187,7 +187,7 @@ const CHARACTERS = {
     attackType: "boomerang",
     reloadDuration: 1.0,
     attackCooldown: 0.45,
-    moveSpeedMultiplier: 1.0708,
+    moveSpeedMultiplier: 1.2,
     boomerangCount: 4,
     boomerangDamage: 1100,
     boomerangRange: 6,
