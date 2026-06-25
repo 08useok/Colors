@@ -394,6 +394,7 @@ function updateLobbyUI(account) {
     dot.classList.toggle("selected", dot.dataset.char === account.selectedCharacter);
   });
   state.selectedCharacter = account.selectedCharacter;
+  setPreviewCharacter(account.selectedCharacter);
 }
 
 function showDailyLogin(account) {
@@ -842,6 +843,65 @@ function createStickman(color) {
   };
 
   return group;
+}
+
+// ── Lobby 3D character preview ──
+const previewCanvas = document.getElementById("char-preview-canvas");
+const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+previewRenderer.setSize(180, 180);
+previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const previewScene = new THREE.Scene();
+const previewCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+previewCamera.position.set(0, 2.2, 7.5);
+previewCamera.lookAt(0, 0.8, 0);
+previewScene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const previewDirLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
+previewDirLight.position.set(3, 6, 4);
+previewScene.add(previewDirLight);
+const previewRimLight = new THREE.DirectionalLight(0xffe0c0, 0.4);
+previewRimLight.position.set(-3, 2, -3);
+previewScene.add(previewRimLight);
+
+let previewModel, previewChar;
+let previewTime = 0;
+
+function setPreviewCharacter(charType) {
+  if (previewChar === charType && previewModel) return;
+  if (previewModel) previewScene.remove(previewModel);
+  previewChar = charType;
+  const charDef = CHARACTERS[charType];
+  if (!charDef) return;
+  previewModel = createStickman(charDef.color);
+  previewModel.position.y = 0;
+  previewScene.add(previewModel);
+}
+
+function renderPreview(dt) {
+  if (!previewModel) return;
+  previewTime += dt;
+  const parts = previewModel.userData;
+  const charDef = CHARACTERS[previewChar];
+  if (!charDef) return;
+
+  previewModel.rotation.y = previewTime * 0.6;
+
+  const w = charDef.walk;
+  const cycle = Math.sin(previewTime * w.cycleSpeed * 0.4);
+  parts.leftArm.rotation.x = cycle * w.armAmp * 0.5;
+  parts.rightArm.rotation.x = -cycle * w.armAmp * 0.5;
+  parts.leftArm.rotation.z = w.armRestZ;
+  parts.rightArm.rotation.z = -w.armRestZ;
+  parts.leftLeg.rotation.x = -cycle * w.legAmp * 0.4;
+  parts.rightLeg.rotation.x = cycle * w.legAmp * 0.4;
+  parts.leftShoulder.rotation.x = cycle * w.armAmp * 0.15;
+  parts.rightShoulder.rotation.x = -cycle * w.armAmp * 0.15;
+  parts.leftThigh.rotation.x = -cycle * w.legAmp * 0.16;
+  parts.rightThigh.rotation.x = cycle * w.legAmp * 0.16;
+  parts.body.rotation.z = Math.sin(previewTime * 1.2) * 0.02;
+
+  previewRenderer.render(previewScene, previewCamera);
 }
 
 function createHealthBarMesh() {
@@ -3705,6 +3765,10 @@ function animate() {
   }
 
   renderer.render(scene, camera);
+
+  if (!state.running) {
+    renderPreview(dt);
+  }
 }
 
 function setupInput() {
