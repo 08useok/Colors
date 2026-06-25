@@ -765,16 +765,8 @@ function createStickman(color) {
   leftShoulder.position.set(-0.6, 0.75, 0);
   leftShoulder.scale.set(1.15, 0.9, 1.0);
   leftShoulder.castShadow = true;
-  group.add(leftShoulder);
-
-  const rightShoulder = new THREE.Mesh(shoulderGeo, material);
-  rightShoulder.position.set(0.6, 0.75, 0);
-  rightShoulder.scale.set(1.15, 0.9, 1.0);
-  rightShoulder.castShadow = true;
-  group.add(rightShoulder);
-
   const leftArm = new THREE.Mesh(armGeo, darkMaterial);
-  leftArm.position.set(-0.6, 0.35, 0);
+  leftArm.position.set(0, -0.4, 0);
   leftArm.rotation.z = Math.PI * 0.1;
   leftArm.castShadow = true;
   const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
@@ -782,10 +774,15 @@ function createStickman(color) {
   leftFist.scale.set(1.1, 1, 1.12);
   leftFist.castShadow = true;
   leftArm.add(leftFist);
-  group.add(leftArm);
+  leftShoulder.add(leftArm);
+  group.add(leftShoulder);
 
+  const rightShoulder = new THREE.Mesh(shoulderGeo, material);
+  rightShoulder.position.set(0.6, 0.75, 0);
+  rightShoulder.scale.set(1.15, 0.9, 1.0);
+  rightShoulder.castShadow = true;
   const rightArm = new THREE.Mesh(armGeo, darkMaterial);
-  rightArm.position.set(0.6, 0.35, 0);
+  rightArm.position.set(0, -0.4, 0);
   rightArm.rotation.z = -Math.PI * 0.1;
   rightArm.castShadow = true;
   const rightFist = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
@@ -793,39 +790,38 @@ function createStickman(color) {
   rightFist.scale.set(1.1, 1, 1.12);
   rightFist.castShadow = true;
   rightArm.add(rightFist);
-  group.add(rightArm);
+  rightShoulder.add(rightArm);
+  group.add(rightShoulder);
 
   const leftThigh = new THREE.Mesh(thighGeo, material);
   leftThigh.position.set(-0.24, -0.55, 0);
   leftThigh.scale.set(1.1, 0.85, 1.0);
   leftThigh.castShadow = true;
-  group.add(leftThigh);
-
-  const rightThigh = new THREE.Mesh(thighGeo, material);
-  rightThigh.position.set(0.24, -0.55, 0);
-  rightThigh.scale.set(1.1, 0.85, 1.0);
-  rightThigh.castShadow = true;
-  group.add(rightThigh);
-
   const leftLeg = new THREE.Mesh(legGeo, darkMaterial);
-  leftLeg.position.set(-0.24, -1.15, 0);
+  leftLeg.position.set(0, -0.6, 0);
   leftLeg.castShadow = true;
   const leftFoot = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 12), darkMaterial);
   leftFoot.position.set(0, -0.72, 0.14);
   leftFoot.scale.set(1.18, 0.7, 1.55);
   leftFoot.castShadow = true;
   leftLeg.add(leftFoot);
-  group.add(leftLeg);
+  leftThigh.add(leftLeg);
+  group.add(leftThigh);
 
+  const rightThigh = new THREE.Mesh(thighGeo, material);
+  rightThigh.position.set(0.24, -0.55, 0);
+  rightThigh.scale.set(1.1, 0.85, 1.0);
+  rightThigh.castShadow = true;
   const rightLeg = new THREE.Mesh(legGeo, darkMaterial);
-  rightLeg.position.set(0.24, -1.15, 0);
+  rightLeg.position.set(0, -0.6, 0);
   rightLeg.castShadow = true;
   const rightFoot = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 12), darkMaterial);
   rightFoot.position.set(0, -0.72, 0.14);
   rightFoot.scale.set(1.18, 0.7, 1.55);
   rightFoot.castShadow = true;
   rightLeg.add(rightFoot);
-  group.add(rightLeg);
+  rightThigh.add(rightLeg);
+  group.add(rightThigh);
 
   group.userData = {
     body,
@@ -889,16 +885,16 @@ function renderPreview(dt) {
 
   const w = charDef.walk;
   const cycle = Math.sin(previewTime * w.cycleSpeed * 0.4);
-  parts.leftArm.rotation.x = cycle * w.armAmp * 0.5;
-  parts.rightArm.rotation.x = -cycle * w.armAmp * 0.5;
+  parts.leftShoulder.rotation.x = cycle * w.armAmp * 0.18;
+  parts.rightShoulder.rotation.x = -cycle * w.armAmp * 0.18;
+  parts.leftArm.rotation.x = cycle * w.armAmp * 0.32;
+  parts.rightArm.rotation.x = -cycle * w.armAmp * 0.32;
   parts.leftArm.rotation.z = w.armRestZ;
   parts.rightArm.rotation.z = -w.armRestZ;
-  parts.leftLeg.rotation.x = -cycle * w.legAmp * 0.4;
-  parts.rightLeg.rotation.x = cycle * w.legAmp * 0.4;
-  parts.leftShoulder.rotation.x = cycle * w.armAmp * 0.15;
-  parts.rightShoulder.rotation.x = -cycle * w.armAmp * 0.15;
-  parts.leftThigh.rotation.x = -cycle * w.legAmp * 0.16;
-  parts.rightThigh.rotation.x = cycle * w.legAmp * 0.16;
+  parts.leftThigh.rotation.x = -cycle * w.legAmp * 0.2;
+  parts.rightThigh.rotation.x = cycle * w.legAmp * 0.2;
+  parts.leftLeg.rotation.x = -cycle * w.legAmp * 0.2;
+  parts.rightLeg.rotation.x = cycle * w.legAmp * 0.2;
   parts.body.rotation.z = Math.sin(previewTime * 1.2) * 0.02;
 
   previewRenderer.render(previewScene, previewCamera);
@@ -3182,18 +3178,18 @@ function updateFighterAnimation(fighter, dt) {
     }
   }
 
-  body.leftLeg.rotation.x = leftLeg;
-  body.rightLeg.rotation.x = rightLeg;
-  body.leftArm.rotation.x = leftArmX;
-  body.rightArm.rotation.x = rightArmX;
-  body.leftArm.rotation.z = leftArmZ;
-  body.rightArm.rotation.z = rightArmZ;
-  body.leftShoulder.rotation.x = leftArmX * 0.3;
+  body.leftShoulder.rotation.x = leftArmX * 0.35;
   body.leftShoulder.rotation.z = leftArmZ * 0.3;
-  body.rightShoulder.rotation.x = rightArmX * 0.3;
+  body.rightShoulder.rotation.x = rightArmX * 0.35;
   body.rightShoulder.rotation.z = rightArmZ * 0.3;
+  body.leftArm.rotation.x = leftArmX * 0.65;
+  body.rightArm.rotation.x = rightArmX * 0.65;
+  body.leftArm.rotation.z = leftArmZ * 0.7;
+  body.rightArm.rotation.z = rightArmZ * 0.7;
   body.leftThigh.rotation.x = leftLeg * 0.4;
   body.rightThigh.rotation.x = rightLeg * 0.4;
+  body.leftLeg.rotation.x = leftLeg * 0.6;
+  body.rightLeg.rotation.x = rightLeg * 0.6;
   body.body.rotation.z = bodyZ;
   body.body.rotation.y = bodyY;
   body.head.rotation.y = headY;
