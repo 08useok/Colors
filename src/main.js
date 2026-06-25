@@ -173,7 +173,7 @@ const attackEvents = [
 
 const CHARACTERS = {
   red: {
-    color: 0xe53729,
+    color: 0xff0000,
     maxHealth: 9800,
     attackType: "punch",
     reloadDuration: 0.5,
@@ -182,7 +182,7 @@ const CHARACTERS = {
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
   green: {
-    color: 0x3dbd4a,
+    color: 0x00ff00,
     maxHealth: 8400,
     attackType: "boomerang",
     reloadDuration: 1.0,
@@ -198,7 +198,7 @@ const CHARACTERS = {
     walk: { cycleSpeed: 8, armAmp: 0.30, legAmp: 0.38, armRestZ: Math.PI * 0.06 },
   },
   blue: {
-    color: 0x4a8fd4,
+    color: 0x0000ff,
     maxHealth: 4400,
     attackType: "bullet",
     reloadDuration: 0.35,
@@ -210,7 +210,7 @@ const CHARACTERS = {
     walk: { cycleSpeed: 7, armAmp: 0.20, legAmp: 0.34, armRestZ: Math.PI * 0.03 },
   },
   orange: {
-    color: 0xff9800,
+    color: 0xffa500,
     maxHealth: 5800,
     attackType: "bomb",
     reloadDuration: 1.0,
@@ -226,7 +226,7 @@ const CHARACTERS = {
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
   yellow: {
-    color: 0xFFDD00,
+    color: 0xffff00,
     maxHealth: 5800,
     attackType: "electric",
     reloadDuration: 1.0,
@@ -236,6 +236,20 @@ const CHARACTERS = {
     electricSpeed: 16,
     shockSlowPercent: 0.4,
     shockDuration: 1.5,
+    moveSpeedMultiplier: 1.0,
+    walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
+  },
+  cyan: {
+    color: 0x0ff0fe,
+    maxHealth: 6200,
+    attackType: "spreadLine",
+    reloadDuration: 1.0,
+    attackCooldown: 0.35,
+    spreadLineDamage: 450,
+    spreadLineRange: 8.33,
+    spreadLineSpeed: 18,
+    spreadLineCount: 6,
+    spreadLineSpacing: 0.75,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
@@ -259,6 +273,7 @@ function loadAccount() {
     }
     if (!account.charStats.orange) account.charStats.orange = { wins: 0, games: 0 };
     if (!account.charStats.yellow) account.charStats.yellow = { wins: 0, games: 0 };
+    if (!account.charStats.cyan) account.charStats.cyan = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (!account.lang) account.lang = "ko";
@@ -279,11 +294,12 @@ function loadAccount() {
       account.seasonCharStats[CURRENT_SEASON] = {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
       };
     }
     for (const s of Object.values(account.seasonCharStats)) {
       if (!s.yellow) s.yellow = { wins: 0, games: 0 };
+      if (!s.cyan) s.cyan = { wins: 0, games: 0 };
     }
     return account;
   } catch {
@@ -332,6 +348,7 @@ function createAccount(id, nickname) {
       blue:   { wins: 0, games: 0 },
       orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 },
+      cyan:   { wins: 0, games: 0 },
     },
     winStreak: 0,
     bestStreak: 0,
@@ -363,7 +380,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
@@ -534,14 +551,14 @@ const AXE_GRADES = [
 ];
 const AXE_ABSORB = [0, 0, 0, 2, 2, 3, 3, 4, 5, 8];
 const CHOP_WOOD_SPAWNS_A = [
-  new THREE.Vector3(-28, 0, -8),
-  new THREE.Vector3(-28, 0,  0),
-  new THREE.Vector3(-28, 0,  8),
+  new THREE.Vector3(-8, 0, -28),
+  new THREE.Vector3( 0, 0, -28),
+  new THREE.Vector3( 8, 0, -28),
 ];
 const CHOP_WOOD_SPAWNS_B = [
-  new THREE.Vector3(28, 0, -8),
-  new THREE.Vector3(28, 0,  0),
-  new THREE.Vector3(28, 0,  8),
+  new THREE.Vector3(-8, 0, 28),
+  new THREE.Vector3( 0, 0, 28),
+  new THREE.Vector3( 8, 0, 28),
 ];
 
 const zonePhases = [
@@ -1356,7 +1373,7 @@ function createChopWoodMap() {
   state.battleBushes = [];
 
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(64, 34, 32, 17),
+    new THREE.PlaneGeometry(34, 64, 17, 32),
     new THREE.MeshStandardMaterial({ color: 0xc8895a, roughness: 0.98, metalness: 0 }),
   );
   ground.rotation.x = -Math.PI / 2;
@@ -1370,35 +1387,35 @@ function createChopWoodMap() {
   chopWoodMapGroup.add(grid);
 
   const borderWalls = [
-    [0, -18, 64, 2], [0, 18, 64, 2],
-    [-33, 0, 2, 36], [33, 0, 2, 36],
+    [-18, 0, 2, 64], [18, 0, 2, 64],
+    [0, -33, 36, 2], [0, 33, 36, 2],
   ];
   borderWalls.forEach(([x, z, w, d]) =>
     createWall(x, z, w, d, 3.5, chopWoodMapGroup, state.battleSolids, 0x7a5a3a));
 
   const midWalls = [
-    [-6, -6, 2, 4], [6, -6, 2, 4],
-    [-6, 6, 2, 4], [6, 6, 2, 4],
-    [0, 0, 6, 2],
-    [-12, 0, 2, 8], [12, 0, 2, 8],
+    [-6, -6, 4, 2], [6, -6, 4, 2],
+    [-6, 6, 4, 2], [6, 6, 4, 2],
+    [0, 0, 2, 6],
+    [0, -12, 8, 2], [0, 12, 8, 2],
   ];
   midWalls.forEach(([x, z, w, d]) =>
     createWall(x, z, w, d, undefined, chopWoodMapGroup, state.battleSolids));
 
   const bushPositions = [
     [-10, -10], [10, -10], [-10, 10], [10, 10],
-    [-18, -5], [18, -5], [-18, 5], [18, 5],
-    [0, -12], [0, 12],
+    [-5, -18], [5, -18], [-5, 18], [5, 18],
+    [-12, 0], [12, 0],
   ];
   bushPositions.forEach(([x, z]) =>
     createBush(x, z, 1.4, chopWoodMapGroup, state.battleBushes));
 
   const treeA = createTreeMesh(0x4caf50);
-  treeA.position.set(-25, 0, 0);
+  treeA.position.set(0, 0, -25);
   chopWoodMapGroup.add(treeA);
 
   const treeB = createTreeMesh(0xe53935);
-  treeB.position.set(25, 0, 0);
+  treeB.position.set(0, 0, 25);
   chopWoodMapGroup.add(treeB);
 
   const treeBarA = createTreeHealthBarMesh();
@@ -1410,8 +1427,8 @@ function createChopWoodMap() {
   treeB.add(treeBarB);
 
   state.teams = {
-    a: { tree: { x: -25, z: 0, health: 50, maxHealth: 50 }, treeMesh: treeA, treeBar: treeBarA },
-    b: { tree: { x: 25, z: 0, health: 50, maxHealth: 50 }, treeMesh: treeB, treeBar: treeBarB },
+    a: { tree: { x: 0, z: -25, health: 50, maxHealth: 50 }, treeMesh: treeA, treeBar: treeBarA },
+    b: { tree: { x: 0, z: 25, health: 50, maxHealth: 50 }, treeMesh: treeB, treeBar: treeBarB },
   };
   state.playerTeam = "a";
 }
@@ -1431,7 +1448,7 @@ function initChopWoodPlayers() {
   });
   state.players = [];
 
-  const botTypes = ["red", "green", "blue", "orange", "yellow"];
+  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan"];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
 
@@ -1735,6 +1752,47 @@ function createYellowAimIndicator() {
 
 const yellowAimIndicator = createYellowAimIndicator();
 
+function createCyanAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.cyan.spreadLineRange;
+  const totalWidth = (CHARACTERS.cyan.spreadLineCount - 1) * CHARACTERS.cyan.spreadLineSpacing;
+
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(totalWidth, range),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.2,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  const dot = new THREE.Mesh(
+    new THREE.PlaneGeometry(totalWidth, 0.3),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+    }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, range);
+  group.add(dot);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, dot };
+  scene.add(group);
+  return group;
+}
+
+const cyanAimIndicator = createCyanAimIndicator();
+
 function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
@@ -1890,7 +1948,7 @@ function initPlayers() {
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue", "orange", "yellow"];
+    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
@@ -2273,6 +2331,9 @@ function beginAttack(fighter) {
   if (fighter.characterType === "yellow") {
     return beginElectricAttack(fighter);
   }
+  if (fighter.characterType === "cyan") {
+    return beginSpreadLineAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -2304,6 +2365,7 @@ function getAttackRange(fighter) {
   if (fighter.characterType === "blue") return CHARACTERS.blue.bulletRange;
   if (fighter.characterType === "orange") return CHARACTERS.orange.bombRange;
   if (fighter.characterType === "yellow") return CHARACTERS.yellow.electricRange;
+  if (fighter.characterType === "cyan") return CHARACTERS.cyan.spreadLineRange;
   return attackDepth;
 }
 
@@ -2319,7 +2381,7 @@ function getMoveSpeed(fighter) {
 function createBulletMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.18, 8, 6),
-    new THREE.MeshBasicMaterial({ color: 0x7ec8ff }),
+    new THREE.MeshBasicMaterial({ color: 0x0000ff }),
   );
   mesh.position.set(
     position.x + Math.sin(yaw) * 0.9,
@@ -2426,7 +2488,7 @@ function beginBoomerangAttack(fighter) {
 function createBombMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.24, 10, 8),
-    new THREE.MeshStandardMaterial({ color: 0xff9800, roughness: 0.4, metalness: 0.2 }),
+    new THREE.MeshStandardMaterial({ color: 0xffa500, roughness: 0.4, metalness: 0.2 }),
   );
   mesh.position.set(position.x + Math.sin(yaw) * 0.9, 1.2, position.z + Math.cos(yaw) * 0.9);
   mesh.castShadow = false;
@@ -2499,7 +2561,7 @@ function spawnBombSplash(x, z, ownerId) {
 function createElectricMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.2, 8, 6),
-    new THREE.MeshBasicMaterial({ color: 0xFFDD00 }),
+    new THREE.MeshBasicMaterial({ color: 0xffff00 }),
   );
   mesh.position.set(position.x + Math.sin(yaw) * 0.9, 1.3, position.z + Math.cos(yaw) * 0.9);
   mesh.castShadow = false;
@@ -2540,6 +2602,66 @@ function beginElectricAttack(fighter) {
   return true;
 }
 
+function createSpreadLineMesh(position, yaw, offsetX) {
+  const mesh = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.12, 0.28, 4, 6),
+    new THREE.MeshBasicMaterial({ color: 0x0ff0fe }),
+  );
+  const perpX = Math.cos(yaw);
+  const perpZ = -Math.sin(yaw);
+  mesh.position.set(
+    position.x + Math.sin(yaw) * 0.9 + perpX * offsetX,
+    1.3,
+    position.z + Math.cos(yaw) * 0.9 + perpZ * offsetX,
+  );
+  mesh.rotation.x = Math.PI / 2;
+  mesh.rotation.z = -yaw;
+  scene.add(mesh);
+  return mesh;
+}
+
+function beginSpreadLineAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.cyan;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.06);
+  fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+
+  const yaw = fighter.yaw;
+  const count = charDef.spreadLineCount;
+  const spacing = charDef.spreadLineSpacing;
+  const halfWidth = (count - 1) * spacing * 0.5;
+
+  for (let j = 0; j < count; j++) {
+    const offsetX = -halfWidth + j * spacing;
+    const mesh = createSpreadLineMesh(fighter.mesh.position, yaw, offsetX);
+    const perpX = Math.cos(yaw);
+    const perpZ = -Math.sin(yaw);
+    state.projectiles.push({
+      ownerId: fighter.id,
+      x: fighter.mesh.position.x + Math.sin(yaw) * 0.9 + perpX * offsetX,
+      z: fighter.mesh.position.z + Math.cos(yaw) * 0.9 + perpZ * offsetX,
+      vx: Math.sin(yaw) * charDef.spreadLineSpeed,
+      vz: Math.cos(yaw) * charDef.spreadLineSpeed,
+      damage: charDef.spreadLineDamage,
+      range: charDef.spreadLineRange,
+      farThreshold: Infinity,
+      farMultiplier: 1,
+      distTraveled: 0,
+      launchAt: state.gameTime,
+      mesh,
+      isSpreadLine: true,
+    });
+  }
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
 function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
@@ -2553,8 +2675,8 @@ function updateProjectiles(dt) {
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
     proj.distTraveled += step;
-    proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric) ? 1.3 : 1.2, proj.z);
-    if (!proj.isBullet && !proj.isElectric) {
+    proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric || proj.isSpreadLine) ? 1.3 : 1.2, proj.z);
+    if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine) {
       proj.mesh.rotation.z += dt * 10;
     }
 
@@ -3008,7 +3130,7 @@ function updateBot(bot, dt, zone) {
     const distance = Math.hypot(toTargetX, toTargetZ);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
-    const isRanged = ["green", "blue", "orange", "yellow"].includes(bot.characterType);
+    const isRanged = ["green", "blue", "orange", "yellow", "cyan"].includes(bot.characterType);
     const ct = bot.characterType;
     let idealDist;
     if (ct === "green") idealDist = 1.5;
@@ -3016,6 +3138,7 @@ function updateBot(bot, dt, zone) {
     else if (ct === "orange") idealDist = 6;
     else if (ct === "blue") idealDist = 12;
     else if (ct === "yellow") idealDist = 7;
+    else if (ct === "cyan") idealDist = 6;
     else idealDist = atkRange * 0.6;
 
     if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
@@ -3156,6 +3279,18 @@ function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
+    } else if (charType === "orange" || charType === "cyan") {
+      const windup = pulse(t, 0.00, 0.10, 0.18);
+      const throwRelease = pulse(t, 0.18, 0.24, 0.32);
+      const recover = pulse(t, 0.32, 0.50, 0.60);
+      rightArmX += -windup * 1.2 + throwRelease * 1.8 - recover * 0.4;
+      rightArmZ += -windup * 0.5;
+      leftArmX += windup * 0.2 - throwRelease * 0.3;
+      bodyY += windup * 0.1 - throwRelease * 0.15;
+      bodyZ += -windup * 0.08 + throwRelease * 0.1;
+      headY += windup * 0.05;
+      leftLeg += -windup * 0.05 + recover * 0.08;
+      rightLeg += windup * 0.05 - recover * 0.08;
     } else {
       // 더블 펀치 콤보
       const punchOne = pulse(t, 0.02, 0.11, 0.2);
@@ -3294,6 +3429,7 @@ function updateAttackAimIndicator() {
     blueAimIndicator.visible = false;
     orangeAimIndicator.visible = false;
     yellowAimIndicator.visible = false;
+    cyanAimIndicator.visible = false;
     return;
   }
 
@@ -3306,6 +3442,7 @@ function updateAttackAimIndicator() {
   blueAimIndicator.visible = false;
   orangeAimIndicator.visible = false;
   yellowAimIndicator.visible = false;
+  cyanAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -3341,6 +3478,13 @@ function updateAttackAimIndicator() {
     yellowAimIndicator.userData.beam.scale.set(1, 1, 1);
     yellowAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     yellowAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
+  } else if (charType === "cyan") {
+    cyanAimIndicator.visible = true;
+    cyanAimIndicator.position.set(pos.x, 0, pos.z);
+    cyanAimIndicator.rotation.y = yaw;
+    cyanAimIndicator.userData.beam.scale.set(1, 1, 1);
+    cyanAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+    cyanAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   }
 }
 
@@ -3405,6 +3549,7 @@ function updateHud() {
   player.characterType === "blue" ? t("sniper") :
   player.characterType === "orange" ? t("bombAttack") :
   player.characterType === "yellow" ? t("electricAttack") :
+  player.characterType === "cyan" ? t("spreadLineAttack") :
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
@@ -3784,7 +3929,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
         html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
         html += `<div class="stats-divider"></div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -3804,7 +3949,7 @@ function setupInput() {
           html += `<div class="stats-char" style="font-weight:600">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -4112,6 +4257,14 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     account.selectedCharacter = "yellow";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
+  document.getElementById("select-cyan").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "cyan";
     saveAccount(account);
     updateLobbyUI(account);
   });

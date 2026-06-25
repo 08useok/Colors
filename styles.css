@@ -993,28 +993,33 @@ body {
 }
 
 .char-icon-red {
-  background: radial-gradient(circle at 35% 35%, #ff7a6a, #c0281c 70%);
-  box-shadow: 0 6px 18px rgba(224, 55, 41, 0.45);
+  background: radial-gradient(circle at 35% 35%, #ff6666, #cc0000 70%);
+  box-shadow: 0 6px 18px rgba(255, 0, 0, 0.45);
 }
 
 .char-icon-green {
-  background: radial-gradient(circle at 35% 35%, #7ee87a, #2a9d3a 70%);
-  box-shadow: 0 6px 18px rgba(61, 189, 74, 0.45);
+  background: radial-gradient(circle at 35% 35%, #66ff66, #00cc00 70%);
+  box-shadow: 0 6px 18px rgba(0, 255, 0, 0.45);
 }
 
 .char-icon-blue {
-  background: radial-gradient(circle at 35% 35%, #6699ff, #0000FF 70%);
+  background: radial-gradient(circle at 35% 35%, #6666ff, #0000cc 70%);
   box-shadow: 0 6px 18px rgba(0, 0, 255, 0.45);
 }
 
 .char-icon-orange {
-  background: radial-gradient(circle at 35% 35%, #ffcc66, #e67e22 70%);
-  box-shadow: 0 6px 18px rgba(255, 152, 0, 0.45);
+  background: radial-gradient(circle at 35% 35%, #ffc966, #cc8400 70%);
+  box-shadow: 0 6px 18px rgba(255, 165, 0, 0.45);
 }
 
 .char-icon-yellow {
-  background: radial-gradient(circle at 35% 35%, #ffff66, #ddbb00 70%);
-  box-shadow: 0 6px 18px rgba(255, 221, 0, 0.45);
+  background: radial-gradient(circle at 35% 35%, #ffff66, #cccc00 70%);
+  box-shadow: 0 6px 18px rgba(255, 255, 0, 0.45);
+}
+
+.char-icon-cyan {
+  background: radial-gradient(circle at 35% 35%, #66fff0, #0cc0c8 70%);
+  box-shadow: 0 6px 18px rgba(15, 240, 254, 0.45);
 }
 
 .char-name {
@@ -1247,11 +1252,12 @@ body {
   font-weight: 600;
 }
 
-.mu-red { color: #ff7a6a; }
-.mu-green { color: #7ee87a; }
-.mu-blue { color: #7ec8ff; }
+.mu-red { color: #ff6666; }
+.mu-green { color: #66ff66; }
+.mu-blue { color: #6666ff; }
 .mu-orange { color: #ffb347; }
-.mu-yellow { color: #ffee55; }
+.mu-yellow { color: #ffff66; }
+.mu-cyan { color: #0ff0fe; }
 
 .matchup-desc {
   font-size: 11px;

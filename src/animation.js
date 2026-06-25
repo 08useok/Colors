@@ -56,6 +56,23 @@ export function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
+    } else if (charType === "cyan") {
+      const windup = pulse(t, 0.00, 0.10, 0.18);
+      const throwRelease = pulse(t, 0.18, 0.24, 0.32);
+      const recover = pulse(t, 0.32, 0.50, 0.60);
+
+      rightArmX += -windup * 1.2 + throwRelease * 1.8 - recover * 0.4;
+      rightArmZ += -windup * 0.5;
+
+      leftArmX += windup * 0.2 - throwRelease * 0.3;
+
+      bodyY += windup * 0.1 - throwRelease * 0.15;
+      bodyZ += -windup * 0.08 + throwRelease * 0.1;
+
+      headY += windup * 0.05;
+
+      leftLeg += -windup * 0.05 + recover * 0.08;
+      rightLeg += windup * 0.05 - recover * 0.08;
     } else if (charType === "orange") {
       const windup = pulse(t, 0.00, 0.10, 0.18);
       const throwRelease = pulse(t, 0.18, 0.24, 0.32);

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
-  <link rel="stylesheet" href="./styles.css?v=1.3.12">
+  <link rel="stylesheet" href="./styles.css?v=1.4.0">
   <style>.hidden{display:none!important}</style>
 </head>
 <body>
@@ -110,16 +110,26 @@
                 <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muAdv">✅ 유리</th><th data-i18n="muEven">⚔ 경합</th><th data-i18n="muDis">❌ 불리</th></tr>
               </thead>
               <tbody>
-                <tr><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td><td>🟢 🟡</td><td class="mu-orange">🟠 Orange</td></tr>
-                <tr><td class="mu-green">🟢 Green</td><td class="mu-yellow">🟡 Yellow</td><td>🔴 🟠</td><td class="mu-blue">🔵 Blue</td></tr>
-                <tr><td class="mu-blue">🔵 Blue</td><td>🟢 🟠</td><td class="mu-yellow">🟡 Yellow</td><td class="mu-red">🔴 Red</td></tr>
-                <tr><td class="mu-orange">🟠 Orange</td><td class="mu-red">🔴 Red</td><td>🟢 🟡</td><td class="mu-blue">🔵 Blue</td></tr>
-                <tr><td class="mu-yellow">🟡 Yellow</td><td>🔴 🟠</td><td class="mu-blue">🔵 Blue</td><td class="mu-green">🟢 Green</td></tr>
+                <tr><td class="mu-red">🔴 Red</td><td class="mu-blue">🔵 Blue</td><td>🟢 🟡</td><td>🟠 🩵</td></tr>
+                <tr><td class="mu-green">🟢 Green</td><td class="mu-yellow">🟡 Yellow</td><td>🔴 🟠</td><td>🔵 🩵</td></tr>
+                <tr><td class="mu-blue">🔵 Blue</td><td>🟢 🟠 🩵</td><td class="mu-yellow">🟡 Yellow</td><td class="mu-red">🔴 Red</td></tr>
+                <tr><td class="mu-orange">🟠 Orange</td><td class="mu-red">🔴 Red</td><td>🟢 🟡 🩵</td><td class="mu-blue">🔵 Blue</td></tr>
+                <tr><td class="mu-yellow">🟡 Yellow</td><td>🔴 🟠</td><td>🔵 🩵</td><td class="mu-green">🟢 Green</td></tr>
+                <tr><td class="mu-cyan">🩵 Cyan</td><td>🔴 🟢</td><td>🟠 🟡</td><td class="mu-blue">🔵 Blue</td></tr>
               </tbody>
             </table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
+            <div class="patch-entry">
+              <div class="patch-version">v1.4.0 — 2026.06.25</div>
+              <ul>
+                <li data-i18n="pv140a">Cyan 캐릭터 추가 — 컨트롤 파이터 (알약 6연발, 넓은 범위 제압)</li>
+                <li data-i18n="pv140b">상성표 6캐릭터로 갱신</li>
+                <li data-i18n="pv140c">찹 우드 맵 세로 레이아웃으로 변경</li>
+                <li data-i18n="pv140d">전체 캐릭터 색상 통일</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.3.9 — 2026.06.25</div>
               <ul>
@@ -344,11 +354,12 @@
         </div>
 
         <div id="color-buttons" class="color-buttons hidden">
-          <button class="color-dot" data-char="red" style="background:#e53729" type="button"></button>
-          <button class="color-dot" data-char="green" style="background:#3dbd4a" type="button"></button>
-          <button class="color-dot" data-char="blue" style="background:#5eaaef" type="button"></button>
-          <button class="color-dot" data-char="orange" style="background:#ff9800" type="button"></button>
-          <button class="color-dot" data-char="yellow" style="background:#FFDD00" type="button"></button>
+          <button class="color-dot" data-char="red" style="background:#ff0000" type="button"></button>
+          <button class="color-dot" data-char="green" style="background:#00ff00" type="button"></button>
+          <button class="color-dot" data-char="blue" style="background:#0000ff" type="button"></button>
+          <button class="color-dot" data-char="orange" style="background:#ffa500" type="button"></button>
+          <button class="color-dot" data-char="yellow" style="background:#ffff00" type="button"></button>
+          <button class="color-dot" data-char="cyan" style="background:#0ff0fe" type="button"></button>
         </div>
 
         <div id="lobby-main" class="message-card hidden">
@@ -356,7 +367,7 @@
           <div class="season-info">
             <span>배틀로얄</span>
             <span>해골천</span>
-            <span>캐릭터 4종</span>
+            <span data-i18n="charCount">캐릭터 6종</span>
           </div>
           <div class="lobby-header">
             <div class="lobby-left">
@@ -429,6 +440,15 @@
               <div class="char-desc" data-i18n="yellowDesc">전기 사냥꾼, 감전으로 적을 느리게 한다</div>
               <div class="char-winrate" id="winrate-yellow"></div>
             </button>
+            <button id="select-cyan" class="char-btn" type="button" data-char="cyan">
+              <div class="selected-badge">선택됨</div>
+              <div class="char-icon char-icon-cyan">C</div>
+              <div class="char-name">Cyan</div>
+              <div class="char-stats">HP 6,200</div>
+              <div class="char-details" data-i18n="cyanDetails">컨트롤 파이터 · 사거리 8 · 이동속도 보통</div>
+              <div class="char-desc" data-i18n="cyanDesc">알약 6연발, 넓은 범위 제압</div>
+              <div class="char-winrate" id="winrate-cyan"></div>
+            </button>
           </div>
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
@@ -460,6 +480,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.3.13"></script>
+  <script type="module" src="./src/main.js?v=1.4.0"></script>
 </body>
 </html>
