@@ -2891,9 +2891,26 @@ function updateBot(bot, dt, zone) {
     const toTargetX = target.mesh.position.x - botPos.x;
     const toTargetZ = target.mesh.position.z - botPos.z;
     const distance = Math.hypot(toTargetX, toTargetZ);
-    const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
-    bot.yaw = fleeYaw;
-    tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.9);
+    const nearBush = findNearestBush(botPos);
+    if (nearBush && !isInBush(bot)) {
+      const toBushX = nearBush.x - botPos.x;
+      const toBushZ = nearBush.z - botPos.z;
+      const bushDist = Math.hypot(toBushX, toBushZ);
+      if (bushDist < 15) {
+        bot.yaw = Math.atan2(toBushX, toBushZ);
+        tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed);
+      } else {
+        const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+        bot.yaw = fleeYaw;
+        tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.9);
+      }
+    } else if (isInBush(bot)) {
+      tempVec3.set(0, 0, 0);
+    } else {
+      const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+      bot.yaw = fleeYaw;
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.9);
+    }
     if (distance <= getAttackRange(bot) * 1.05) {
       bot.yaw = Math.atan2(toTargetX, toTargetZ);
       beginAttack(bot);
