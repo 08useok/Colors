@@ -1027,7 +1027,7 @@ const MAP_POOL = [
     ],
     lakes: [{ x: 0, z: -18, width: 18, depth: 5.5 }],
     spawns: [
-      [-34, 0, 36], [-18, 0, 44], [6, 0, 43], [28, 0, 36], [43, 0, 12],
+      [-30, 0, 32], [-18, 0, 44], [6, 0, 43], [28, 0, 36], [43, 0, 12],
       [38, 0, -26], [12, 0, -42], [-16, 0, -41], [-39, 0, -22], [-44, 0, 10],
     ],
   },
@@ -1060,7 +1060,7 @@ const MAP_POOL = [
       { x: 30, z: 14, width: 10, depth: 6 },
     ],
     spawns: [
-      [-34, 0, 36], [-14, 0, 44], [14, 0, 44], [34, 0, 36], [44, 0, 14],
+      [-30, 0, 32], [-14, 0, 44], [14, 0, 44], [30, 0, 32], [44, 0, 14],
       [38, 0, -20], [14, 0, -42], [-14, 0, -42], [-38, 0, -20], [-44, 0, 14],
     ],
   },
@@ -1090,7 +1090,7 @@ const MAP_POOL = [
     ],
     lakes: [{ x: 0, z: -34, width: 14, depth: 5 }],
     spawns: [
-      [-34, 0, 36], [-10, 0, 42], [10, 0, 42], [34, 0, 36], [44, 0, 10],
+      [-30, 0, 32], [-10, 0, 42], [10, 0, 42], [30, 0, 32], [44, 0, 10],
       [44, 0, -18], [10, 0, -44], [-10, 0, -44], [-44, 0, -18], [-44, 0, 10],
     ],
   },
@@ -1388,6 +1388,7 @@ function initChopWoodPlayers() {
 }
 
 function startChopWood() {
+  clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
   chopWoodMapGroup.visible = true;
@@ -1879,6 +1880,7 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
+  clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = true;
   state.solids = state.trainingSolids;
@@ -1945,6 +1947,7 @@ function exitTraining() {
 }
 
 function resetGame() {
+  clock.getDelta();
   battleMapGroup.visible = true;
   trainingMapGroup.visible = false;
   chopWoodMapGroup.visible = false;
