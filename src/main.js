@@ -415,6 +415,23 @@ function updateLobbyUI(account) {
   setPreviewCharacter(account.selectedCharacter);
 }
 
+const CHAR_STAT_BARS = {
+  red:    { hp: 10, atk: 9, range: 3, speed: 10 },
+  green:  { hp: 8,  atk: 7, range: 4, speed: 8 },
+  blue:   { hp: 4,  atk: 5, range: 10, speed: 6 },
+  orange: { hp: 5,  atk: 6, range: 5, speed: 6 },
+  yellow: { hp: 5,  atk: 7, range: 5, speed: 6 },
+  cyan:   { hp: 6,  atk: 6, range: 5, speed: 6 },
+};
+
+function statBar(label, value) {
+  const pct = value * 10;
+  return `<div class="ci-stat-row">`
+    + `<span class="ci-stat-label">${label}</span>`
+    + `<div class="ci-stat-bar"><div class="ci-stat-fill" style="width:${pct}%"></div></div>`
+    + `</div>`;
+}
+
 function updateColorInfo(charKey, account) {
   const el = document.getElementById("color-info");
   if (!el) return;
@@ -422,7 +439,6 @@ function updateColorInfo(charKey, account) {
   if (!charDef) { el.innerHTML = ""; return; }
   const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
   const hp = charDef.maxHealth.toLocaleString();
-  const details = t(charKey + "Details");
   const desc = t(charKey + "Desc");
   const s = account?.charStats?.[charKey];
   let winrateText = t("firstGame");
@@ -430,10 +446,16 @@ function updateColorInfo(charKey, account) {
     const rate = Math.round((s.wins / s.games) * 100);
     winrateText = t("winrate", rate, s.wins, s.games);
   }
+  const bars = CHAR_STAT_BARS[charKey] || { hp: 5, atk: 5, range: 5, speed: 5 };
   el.innerHTML = `<div class="ci-name">${name}</div>`
     + `<div class="ci-hp">HP ${hp}</div>`
-    + `<div class="ci-details">${details}</div>`
     + `<div class="ci-desc">${desc}</div>`
+    + `<div class="ci-stats">`
+    + statBar(t("statHp"), bars.hp)
+    + statBar(t("statAtk"), bars.atk)
+    + statBar(t("statRange"), bars.range)
+    + statBar(t("statSpeed"), bars.speed)
+    + `</div>`
     + `<div class="ci-winrate">${winrateText}</div>`;
 }
 
