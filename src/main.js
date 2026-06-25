@@ -1560,6 +1560,7 @@ function startChopWood() {
   mapNameEl.classList.remove("hidden");
 
   state.gameTime = 0;
+  state.freezeUntil = 5;
   state.running = true;
   state.gameOver = false;
   state.winner = "";
@@ -2164,6 +2165,7 @@ function resetGame() {
   mapNameEl.textContent = t("mapPrefix") + currentMap.name;
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
+  state.freezeUntil = 5;
   state.running = true;
   state.gameOver = false;
   state.winner = "";
@@ -2264,6 +2266,10 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
       position.z = solid.maxZ + radius;
     }
   }
+
+  if (zoneRadius !== null) {
+    clampToZone(position, radius, zoneRadius);
+  }
 }
 
 function isWallAhead(fighter, dirX, dirZ, lookahead) {
@@ -2274,9 +2280,10 @@ function isWallAhead(fighter, dirX, dirZ, lookahead) {
   const checkX = fighter.mesh.position.x + (dirX / len) * lookahead;
   const checkZ = fighter.mesh.position.z + (dirZ / len) * lookahead;
   for (const solid of state.solids) {
-    if (intersectsRect(checkX, checkZ, fighter.radius, solid)) {
-      return true;
-    }
+    if (intersectsRect(checkX, checkZ, fighter.radius, solid)) return true;
+  }
+  for (const rect of state.lakeRects) {
+    if (intersectsRect(checkX, checkZ, fighter.radius, rect)) return true;
   }
   return false;
 }
@@ -2371,6 +2378,7 @@ function queueAttackHit(attacker, hitIndex, damage, executeAt) {
 }
 
 function beginAttack(fighter) {
+  if (state.gameTime < state.freezeUntil) return false;
   if (fighter.characterType === "green") {
     return beginBoomerangAttack(fighter);
   }
@@ -3263,6 +3271,7 @@ function updateBot(bot, dt, zone) {
     const escapeDir = findWallEscapeDir(bot, dirX, dirZ, lookahead);
     if (escapeDir) {
       tempVec3.set(escapeDir.x * moveSpeed, 0, escapeDir.z * moveSpeed);
+      bot.yaw = Math.atan2(escapeDir.x, escapeDir.z);
     }
   }
 
@@ -3923,20 +3932,25 @@ function animate() {
   if (state.running) {
     state.gameTime += dt;
     const zone = getCurrentZone();
+    const frozen = state.gameTime < state.freezeUntil;
 
-    updatePlayerControls(dt);
-    for (let i = 1; i < state.players.length; i += 1) {
-      updateBot(state.players[i], dt, zone);
+    if (!frozen) {
+      updatePlayerControls(dt);
+      for (let i = 1; i < state.players.length; i += 1) {
+        updateBot(state.players[i], dt, zone);
+      }
+      updateAmmoRegen(dt);
+      updateNaturalRegen(dt);
+      updateTrainingRespawn();
+      updateChopWoodRespawn();
+      updateChopping(dt);
+      updateScheduledHits();
+      updateProjectiles(dt);
+      if (!state.chopWoodMode) {
+        updateZoneDamage(dt, zone);
+      }
     }
-    updateAmmoRegen(dt);
-    updateNaturalRegen(dt);
-    updateTrainingRespawn();
-    updateChopWoodRespawn();
-    updateChopping(dt);
-    updateScheduledHits();
-    updateProjectiles(dt);
     if (!state.chopWoodMode) {
-      updateZoneDamage(dt, zone);
       updateZoneVisual(zone);
     }
     updateEffects(dt);
@@ -3949,6 +3963,12 @@ function animate() {
     updateAttackAimIndicator();
     updateBushVisuals();
     updateHud();
+
+    if (frozen) {
+      const remain = Math.ceil(state.freezeUntil - state.gameTime);
+      mapNameEl.textContent = remain > 0 ? `${remain}` : "";
+    }
+
     checkEndState();
   } else {
     updateAttackAimIndicator();
