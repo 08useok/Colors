@@ -2854,8 +2854,8 @@ function chooseBotTarget(bot) {
 }
 
 const BOT_DIFF = [
-  { speedMult: 0.7, aimMult: 1.3, fleePct: 0.15, reactDelay: 0.3 },
-  { speedMult: 0.85, aimMult: 1.05, fleePct: 0.25, reactDelay: 0.1 },
+  { speedMult: 0.9, aimMult: 1.3, fleePct: 0.15, reactDelay: 0.3 },
+  { speedMult: 0.95, aimMult: 1.05, fleePct: 0.25, reactDelay: 0.1 },
   { speedMult: 1.0, aimMult: 0.9, fleePct: 0.35, reactDelay: 0 },
 ];
 
