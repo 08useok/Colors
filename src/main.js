@@ -2908,7 +2908,8 @@ function updateBot(bot, dt, zone) {
     const ct = bot.characterType;
     let idealDist;
     if (ct === "green") idealDist = 1.5;
-    else if (ct === "red" || ct === "orange") idealDist = 3.5;
+    else if (ct === "red") idealDist = 3.5;
+    else if (ct === "orange") idealDist = 6;
     else if (ct === "blue") idealDist = 12;
     else if (ct === "yellow") idealDist = 7;
     else idealDist = atkRange * 0.6;
