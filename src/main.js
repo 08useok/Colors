@@ -2914,7 +2914,11 @@ function updateBot(bot, dt, zone) {
     else if (ct === "yellow") idealDist = 7;
     else idealDist = atkRange * 0.6;
 
-    if (distance > idealDist + 1.5) {
+    if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
+      const zigzag = Math.sin(state.gameTime * 4 + bot.id) * 0.8;
+      const rushYaw = bot.yaw + zigzag;
+      tempVec3.set(Math.sin(rushYaw), 0, Math.cos(rushYaw)).multiplyScalar(botSpeed);
+    } else if (distance > idealDist + 1.5) {
       tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.85);
     } else if (distance < idealDist - 1) {
       const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
