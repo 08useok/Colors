@@ -100,6 +100,12 @@ const cwChopBar = document.getElementById("cw-chop-bar");
 const cwChopLabel = document.getElementById("cw-chop-label");
 const cwChopFill = document.getElementById("cw-chop-progress-fill");
 const cwRespawnEl = document.getElementById("cw-respawn");
+const lobbyCoins = document.getElementById("lobby-coins");
+const shopOverlay = document.getElementById("shop-overlay");
+const shopCoins = document.getElementById("shop-coins");
+const shopCloseBtn = document.getElementById("shop-close-btn");
+const shopContent = document.getElementById("shop-levelup");
+const openShopBtn = document.getElementById("open-shop-btn");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -129,10 +135,49 @@ const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
-const CURRENT_SEASON = "alpha2";
+const CURRENT_SEASON = "alpha3";
 const SEASONS = {
   alpha1: "알파 시즌 1",
   alpha2: "알파 시즌 2",
+  alpha3: "알파 시즌 3",
+};
+
+const LEVEL_UP_COST = [0, 200, 500, 1000, 2000];
+const MAX_CHAR_LEVEL = 5;
+const LEVEL_BONUS_PER_LEVEL = 0.02;
+
+const MASTERY_TIERS = [
+  { name: "Bronze", emoji: "🥉", threshold: 10 },
+  { name: "Silver", emoji: "🥈", threshold: 50 },
+  { name: "Gold", emoji: "🥇", threshold: 100 },
+  { name: "Diamond", emoji: "💎", threshold: 250 },
+  { name: "Master", emoji: "👑", threshold: 500 },
+];
+
+function getMasteryTier(wins) {
+  let tier = null;
+  for (const t of MASTERY_TIERS) {
+    if (wins >= t.threshold) tier = t;
+  }
+  return tier;
+}
+
+function getCharLevel(account, charKey) {
+  if (!account.charLevels) return 1;
+  return account.charLevels[charKey] ?? 1;
+}
+
+function getLevelMultiplier(level) {
+  return 1 + (level - 1) * LEVEL_BONUS_PER_LEVEL;
+}
+
+const COIN_REWARDS = {
+  win: 50,
+  lose: 20,
+  first: 50,
+  streak3: 20,
+  streak5: 50,
+  streak10: 100,
 };
 
 const BOT_NAMES_KO = ["하늘", "별빛", "소금", "달콤", "번개", "구름", "바람", "눈꽃", "폭풍", "태양",
@@ -301,6 +346,15 @@ function loadAccount() {
       if (!s.yellow) s.yellow = { wins: 0, games: 0 };
       if (!s.cyan) s.cyan = { wins: 0, games: 0 };
     }
+    let migrated = false;
+    if (account.coins === undefined) { account.coins = 0; migrated = true; }
+    if (!account.charLevels) {
+      account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1 };
+      migrated = true;
+    }
+    if (!account.charLevels.yellow) { account.charLevels.yellow = 1; migrated = true; }
+    if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
+    if (migrated) saveAccount(account);
     return account;
   } catch {
     return null;
@@ -339,6 +393,7 @@ function createAccount(id, nickname) {
     trophies: 0,
     wins: 0,
     losses: 0,
+    coins: 0,
     selectedCharacter: "red",
     lastLoginDate: getTodayString(),
     loginAttempts: 0,
@@ -349,6 +404,9 @@ function createAccount(id, nickname) {
       orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 },
       cyan:   { wins: 0, games: 0 },
+    },
+    charLevels: {
+      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1,
     },
     winStreak: 0,
     bestStreak: 0,
@@ -366,6 +424,7 @@ function updateLobbyUI(account) {
   lobbyNickname.textContent = account.nickname;
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   lobbyTrophies.textContent = account.trophies;
+  if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
   lobbyRecord.textContent = t("record", account.wins, account.losses);
   if (lobbyWinrate) {
     const totalGames = account.wins + account.losses;
@@ -447,14 +506,26 @@ function updateColorInfo(charKey, account) {
     winrateText = t("winrate", rate, s.wins, s.games);
   }
   const bars = CHAR_STAT_BARS[charKey] || { hp: 5, atk: 5, range: 5, speed: 5 };
+  const charLevel = account ? getCharLevel(account, charKey) : 1;
+  const charWins = s ? s.wins : 0;
+  const mastery = getMasteryTier(charWins);
+  const masteryText = mastery ? `${mastery.emoji} ${mastery.name}` : "";
+  const levelText = `Lv.${charLevel}`;
+  const mult = getLevelMultiplier(charLevel);
+  const effectiveHp = Math.round(charDef.maxHealth * mult).toLocaleString();
+
   el.innerHTML = `<div class="ci-name">${name}</div>`
-    + `<div class="ci-hp">HP ${hp}</div>`
+    + `<div class="ci-hp">HP ${effectiveHp}</div>`
     + `<div class="ci-desc">${desc}</div>`
     + `<div class="ci-stats">`
     + statBar(t("statHp"), bars.hp)
     + statBar(t("statAtk"), bars.atk)
     + statBar(t("statRange"), bars.range)
     + statBar(t("statSpeed"), bars.speed)
+    + `</div>`
+    + `<div class="ci-level-mastery">`
+    + `<span class="ci-level">${levelText}</span>`
+    + (masteryText ? `<span class="ci-mastery">${masteryText}</span>` : "")
     + `</div>`
     + `<div class="ci-winrate">${winrateText}</div>`;
 }
@@ -533,12 +604,13 @@ function streakBonus(streak) {
 
 function recordGameResult(rank) {
   const account = loadAccount();
-  if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false };
+  if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
 
   const char = account.selectedCharacter;
   const prevStreak = account.winStreak;
   let bonus = 0;
   let milestone = false;
+  let coinsEarned = 0;
 
   account.charStats[char].games += 1;
   const ss = account.seasonStats[CURRENT_SEASON];
@@ -556,12 +628,19 @@ function recordGameResult(rank) {
       account.trophies += 50;
       milestone = true;
     }
+    coinsEarned += COIN_REWARDS.win;
+    if (rank === 1) coinsEarned += COIN_REWARDS.first;
+    if (account.winStreak >= 10) coinsEarned += COIN_REWARDS.streak10;
+    else if (account.winStreak >= 5) coinsEarned += COIN_REWARDS.streak5;
+    else if (account.winStreak >= 3) coinsEarned += COIN_REWARDS.streak3;
   } else {
     account.losses += 1;
     ss.losses += 1;
     account.winStreak = 0;
+    coinsEarned += COIN_REWARDS.lose;
   }
 
+  account.coins = (account.coins || 0) + coinsEarned;
   const delta = calcTrophyChange(rank);
   account.trophies = Math.max(0, account.trophies + delta + bonus);
   saveAccount(account);
@@ -573,7 +652,7 @@ function recordGameResult(rank) {
   }
   localStorage.setItem("skullCreekLeaderboardBots", JSON.stringify(leaderboardBots));
 
-  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone };
+  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone, coinsEarned };
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -1007,13 +1086,20 @@ function createHealthBarMesh() {
 
 function makeFighter(options) {
   const charDef = CHARACTERS[options.characterType ?? "red"];
+  let levelMult = 1;
+  if (options.isPlayer) {
+    const acc = loadAccount();
+    if (acc) levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
+  }
+  const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
   const fighter = {
     id: options.id,
     name: options.name,
     characterType: options.characterType ?? "red",
     isPlayer: options.isPlayer,
-    health: charDef.maxHealth,
-    maxHealth: charDef.maxHealth,
+    levelMult,
+    health: effectiveMaxHealth,
+    maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
     ammo: charDef.maxAmmo ?? maxAmmo,
     reloadTimer: 0,
@@ -2943,8 +3029,9 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     return;
   }
 
+  const finalAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
   const healthBefore = target.health;
-  target.health = Math.max(0, target.health - amount);
+  target.health = Math.max(0, target.health - finalAmount);
   target.flashTimer = 0.12;
   target.pitchKick = Math.min(1, target.pitchKick + 0.55);
   if (updateCombatTime) {
@@ -3893,11 +3980,12 @@ function checkEndState() {
       const playerRank = (!player || !player.dead)
         ? 1
         : state.players.length - state.deathOrder.indexOf(player.id);
-      const { streakBefore, streakAfter, bonus, milestone } = recordGameResult(playerRank);
+      const { streakBefore, streakAfter, bonus, milestone, coinsEarned } = recordGameResult(playerRank);
       const account = loadAccount();
       const delta = calcTrophyChange(playerRank);
       const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
       const totalText = account ? t("totalTrophy", account.trophies) : "";
+      const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
 
       if (playerDead && alive.length > 1) {
         resultTitle.textContent = t("rankN", playerRank);
@@ -3912,7 +4000,7 @@ function checkEndState() {
         resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
         resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
       }
-      resultStats.textContent = player ? t("dmgDealt", Math.round(player.damageDealt)) : "";
+      resultStats.textContent = (player ? t("dmgDealt", Math.round(player.damageDealt)) : "") + coinText;
 
       let streakMsg = "";
       if (milestone) streakMsg += t("milestone100");
@@ -4409,6 +4497,80 @@ function setupInput() {
   // 훈련장 나가기
   exitTrainingBtn.addEventListener("click", () => {
     exitTraining();
+  });
+
+  // ── 상점 ──
+  function renderShopLevelUp() {
+    const account = loadAccount();
+    if (!account) return;
+    const chars = ["red", "green", "blue", "orange", "yellow", "cyan"];
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe" };
+    let html = '<div class="shop-grid">';
+    for (const c of chars) {
+      const lv = getCharLevel(account, c);
+      const name = c.charAt(0).toUpperCase() + c.slice(1);
+      const wins = account.charStats[c]?.wins ?? 0;
+      const mastery = getMasteryTier(wins);
+      const masteryText = mastery ? `${mastery.emoji} ${mastery.name}` : "";
+      if (lv >= MAX_CHAR_LEVEL) {
+        html += `<div class="shop-card shop-card-max" style="border-color:${colorMap[c]}">
+          <div class="shop-card-name" style="color:${colorMap[c]}">${name}</div>
+          <div class="shop-card-level">Lv.${lv} MAX</div>
+          ${masteryText ? `<div class="shop-card-mastery">${masteryText}</div>` : ""}
+        </div>`;
+      } else {
+        const cost = LEVEL_UP_COST[lv];
+        const canBuy = account.coins >= cost;
+        html += `<div class="shop-card" style="border-color:${colorMap[c]}">
+          <div class="shop-card-name" style="color:${colorMap[c]}">${name}</div>
+          <div class="shop-card-level">Lv.${lv} → Lv.${lv + 1}</div>
+          <div class="shop-card-effect">체력·공격력 +2%</div>
+          ${masteryText ? `<div class="shop-card-mastery">${masteryText}</div>` : ""}
+          <button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-char="${c}" data-cost="${cost}" type="button"${canBuy ? "" : " disabled"}>
+            🪙 ${cost}
+          </button>
+        </div>`;
+      }
+    }
+    html += "</div>";
+    shopContent.innerHTML = html;
+    if (shopCoins) shopCoins.textContent = account.coins ?? 0;
+
+    shopContent.querySelectorAll(".shop-buy-btn:not(.disabled)").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const acc = loadAccount();
+        if (!acc) return;
+        const char = btn.dataset.char;
+        const cost = parseInt(btn.dataset.cost);
+        const curLv = getCharLevel(acc, char);
+        if (curLv >= MAX_CHAR_LEVEL || acc.coins < cost) return;
+        acc.coins -= cost;
+        acc.charLevels[char] = curLv + 1;
+        saveAccount(acc);
+        renderShopLevelUp();
+      });
+    });
+  }
+
+  openShopBtn.addEventListener("click", () => {
+    shopOverlay.classList.remove("hidden");
+    renderShopLevelUp();
+  });
+
+  shopCloseBtn.addEventListener("click", () => {
+    shopOverlay.classList.add("hidden");
+    const acc = loadAccount();
+    if (acc) updateLobbyUI(acc);
+  });
+
+  document.querySelectorAll(".shop-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".shop-tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      const target = tab.dataset.tab;
+      document.getElementById("shop-levelup").classList.toggle("hidden", target !== "levelup");
+      document.getElementById("shop-coming").classList.toggle("hidden", target !== "coming");
+    });
   });
 
   // 다시 시작

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
-  <link rel="stylesheet" href="./styles.css?v=1.4.0">
+  <link rel="stylesheet" href="./styles.css?v=1.4.2">
   <style>.hidden{display:none!important}</style>
 </head>
 <body>
@@ -121,6 +121,16 @@
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
+            <div class="patch-entry">
+              <div class="patch-version">v1.4.2 — 2026.06.25</div>
+              <ul>
+                <li>코인 재화 시스템 추가 (승리/패배/1위/연승 보너스)</li>
+                <li>캐릭터 레벨 시스템 추가 (Lv.1~5, 레벨당 체력·공격력 +2%)</li>
+                <li>마스터리 시스템 추가 (Bronze~Master 5등급)</li>
+                <li>상점 화면 추가 (캐릭터 레벨업 구매)</li>
+                <li>알파 시즌 3 전환</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.4.1 — 2026.06.25</div>
               <ul>
@@ -376,7 +386,7 @@
         </div>
 
         <div id="lobby-main" class="message-card hidden">
-          <div class="season-badge" data-i18n="season">알파 시즌 2</div>
+          <div class="season-badge" data-i18n="season">알파 시즌 3</div>
           <div class="season-info">
             <span>배틀로얄</span>
             <span>해골천</span>
@@ -387,11 +397,12 @@
               <div class="lobby-nickname" id="lobby-nickname">플레이어</div>
               <div class="lobby-level-row">
                 <span id="lobby-level">Lv.1</span>
-                <span class="lobby-season-tag" data-i18n="season">알파 시즌 2</span>
-                <span class="lobby-version">v1.4.1</span>
+                <span class="lobby-season-tag" data-i18n="season">알파 시즌 3</span>
+                <span class="lobby-version">v1.4.2</span>
               </div>
             </div>
             <div class="lobby-right">
+              <div class="lobby-coins">🪙 <span id="lobby-coins">0</span></div>
               <div class="lobby-trophy"><span data-i18n="trophyLabel">트로피</span> <span id="lobby-trophies">0</span></div>
               <div class="lobby-stats-group">
                 <div class="lobby-record" id="lobby-record">0승 0패</div>
@@ -464,6 +475,7 @@
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>
           <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
+          <button id="open-shop-btn" class="lobby-start-btn lobby-shop-btn" type="button">🪙 상점</button>
         </div>
       </div>
 
@@ -479,6 +491,25 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.4.0"></script>
+  <div id="shop-overlay" class="hidden">
+    <div class="shop-screen">
+      <div class="shop-header">
+        <h2>🪙 상점</h2>
+        <div class="shop-coins">🪙 <span id="shop-coins">0</span></div>
+        <button id="shop-close-btn" class="shop-close-btn" type="button">✕</button>
+      </div>
+      <div class="shop-category-tabs">
+        <button class="shop-tab active" data-tab="levelup" type="button">캐릭터 레벨업</button>
+        <button class="shop-tab" data-tab="coming" type="button">준비 중</button>
+      </div>
+      <div id="shop-content" class="shop-content">
+        <div id="shop-levelup" class="shop-tab-content"></div>
+        <div id="shop-coming" class="shop-tab-content hidden">
+          <p class="shop-coming-msg">스킨, 이모트, 프로필 꾸미기 — 준비 중입니다!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./src/main.js?v=1.4.2"></script>
 </body>
 </html>
