@@ -908,14 +908,14 @@ function createStickman(color) {
 
   const armGeo = new THREE.CapsuleGeometry(0.18, 0.9, 6, 10);
   const legGeo = new THREE.CapsuleGeometry(0.2, 1.15, 6, 10);
-  const shoulderGeo = new THREE.SphereGeometry(0.24, 10, 10);
-  const thighGeo = new THREE.SphereGeometry(0.26, 10, 10);
+  const shoulderGeo = new THREE.SphereGeometry(0.20, 10, 10);
+  const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
 
   const leftShoulder = new THREE.Group();
   leftShoulder.position.set(-0.6, 0.75, 0);
   const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   leftShoulderMesh.position.set(0, -0.05, 0);
-  leftShoulderMesh.scale.set(1.15, 0.9, 1.0);
+  leftShoulderMesh.scale.set(1.1, 0.85, 1.0);
   leftShoulderMesh.castShadow = true;
   leftShoulder.add(leftShoulderMesh);
   group.add(leftShoulder);
@@ -924,7 +924,7 @@ function createStickman(color) {
   rightShoulder.position.set(0.6, 0.75, 0);
   const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   rightShoulderMesh.position.set(0, -0.05, 0);
-  rightShoulderMesh.scale.set(1.15, 0.9, 1.0);
+  rightShoulderMesh.scale.set(1.1, 0.85, 1.0);
   rightShoulderMesh.castShadow = true;
   rightShoulder.add(rightShoulderMesh);
   group.add(rightShoulder);
@@ -1041,8 +1041,8 @@ previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const previewScene = new THREE.Scene();
 const previewCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-previewCamera.position.set(0, 2.2, 7.5);
-previewCamera.lookAt(0, 0.8, 0);
+previewCamera.position.set(0, 0.8, 7.5);
+previewCamera.lookAt(0, 0.2, 0);
 previewScene.add(new THREE.AmbientLight(0xffffff, 0.7));
 const previewDirLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
 previewDirLight.position.set(3, 6, 4);
