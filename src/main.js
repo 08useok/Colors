@@ -411,6 +411,14 @@ function createAccount(id, nickname) {
     winStreak: 0,
     bestStreak: 0,
     lang: currentLang,
+    seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
+    seasonCharStats: {
+      [CURRENT_SEASON]: {
+        red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
+        blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+      },
+    },
   };
   saveAccount(account);
   return account;
@@ -903,10 +911,12 @@ function createStickman(color) {
   const shoulderGeo = new THREE.SphereGeometry(0.24, 10, 10);
   const thighGeo = new THREE.SphereGeometry(0.26, 10, 10);
 
-  const leftShoulder = new THREE.Mesh(shoulderGeo, material);
-  leftShoulder.position.set(-0.6, 0.75, 0);
-  leftShoulder.scale.set(1.15, 0.9, 1.0);
-  leftShoulder.castShadow = true;
+  const leftShoulderPivot = new THREE.Group();
+  leftShoulderPivot.position.set(-0.6, 0.75, 0);
+  const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
+  leftShoulderMesh.scale.set(1.15, 0.9, 1.0);
+  leftShoulderMesh.castShadow = true;
+  leftShoulderPivot.add(leftShoulderMesh);
   const leftArm = new THREE.Mesh(armGeo, darkMaterial);
   leftArm.position.set(0, -0.4, 0);
   leftArm.rotation.z = Math.PI * 0.1;
@@ -916,13 +926,15 @@ function createStickman(color) {
   leftFist.scale.set(1.1, 1, 1.12);
   leftFist.castShadow = true;
   leftArm.add(leftFist);
-  leftShoulder.add(leftArm);
-  group.add(leftShoulder);
+  leftShoulderPivot.add(leftArm);
+  group.add(leftShoulderPivot);
 
-  const rightShoulder = new THREE.Mesh(shoulderGeo, material);
-  rightShoulder.position.set(0.6, 0.75, 0);
-  rightShoulder.scale.set(1.15, 0.9, 1.0);
-  rightShoulder.castShadow = true;
+  const rightShoulderPivot = new THREE.Group();
+  rightShoulderPivot.position.set(0.6, 0.75, 0);
+  const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
+  rightShoulderMesh.scale.set(1.15, 0.9, 1.0);
+  rightShoulderMesh.castShadow = true;
+  rightShoulderPivot.add(rightShoulderMesh);
   const rightArm = new THREE.Mesh(armGeo, darkMaterial);
   rightArm.position.set(0, -0.4, 0);
   rightArm.rotation.z = -Math.PI * 0.1;
@@ -932,13 +944,15 @@ function createStickman(color) {
   rightFist.scale.set(1.1, 1, 1.12);
   rightFist.castShadow = true;
   rightArm.add(rightFist);
-  rightShoulder.add(rightArm);
-  group.add(rightShoulder);
+  rightShoulderPivot.add(rightArm);
+  group.add(rightShoulderPivot);
 
-  const leftThigh = new THREE.Mesh(thighGeo, material);
-  leftThigh.position.set(-0.24, -0.55, 0);
-  leftThigh.scale.set(1.1, 0.85, 1.0);
-  leftThigh.castShadow = true;
+  const leftThighPivot = new THREE.Group();
+  leftThighPivot.position.set(-0.24, -0.55, 0);
+  const leftThighMesh = new THREE.Mesh(thighGeo, material);
+  leftThighMesh.scale.set(1.1, 0.85, 1.0);
+  leftThighMesh.castShadow = true;
+  leftThighPivot.add(leftThighMesh);
   const leftLeg = new THREE.Mesh(legGeo, darkMaterial);
   leftLeg.position.set(0, -0.6, 0);
   leftLeg.castShadow = true;
@@ -947,13 +961,15 @@ function createStickman(color) {
   leftFoot.scale.set(1.18, 0.7, 1.55);
   leftFoot.castShadow = true;
   leftLeg.add(leftFoot);
-  leftThigh.add(leftLeg);
-  group.add(leftThigh);
+  leftThighPivot.add(leftLeg);
+  group.add(leftThighPivot);
 
-  const rightThigh = new THREE.Mesh(thighGeo, material);
-  rightThigh.position.set(0.24, -0.55, 0);
-  rightThigh.scale.set(1.1, 0.85, 1.0);
-  rightThigh.castShadow = true;
+  const rightThighPivot = new THREE.Group();
+  rightThighPivot.position.set(0.24, -0.55, 0);
+  const rightThighMesh = new THREE.Mesh(thighGeo, material);
+  rightThighMesh.scale.set(1.1, 0.85, 1.0);
+  rightThighMesh.castShadow = true;
+  rightThighPivot.add(rightThighMesh);
   const rightLeg = new THREE.Mesh(legGeo, darkMaterial);
   rightLeg.position.set(0, -0.6, 0);
   rightLeg.castShadow = true;
@@ -962,19 +978,19 @@ function createStickman(color) {
   rightFoot.scale.set(1.18, 0.7, 1.55);
   rightFoot.castShadow = true;
   rightLeg.add(rightFoot);
-  rightThigh.add(rightLeg);
-  group.add(rightThigh);
+  rightThighPivot.add(rightLeg);
+  group.add(rightThighPivot);
 
   group.userData = {
     body,
     neck,
     head,
-    leftShoulder,
-    rightShoulder,
+    leftShoulder: leftShoulderPivot,
+    rightShoulder: rightShoulderPivot,
     leftArm,
     rightArm,
-    leftThigh,
-    rightThigh,
+    leftThigh: leftThighPivot,
+    rightThigh: rightThighPivot,
     leftLeg,
     rightLeg,
     bodyMaterials: [material, darkMaterial],
@@ -2861,7 +2877,7 @@ function updateProjectiles(dt) {
         const isFar = proj.distTraveled > proj.farThreshold;
         const dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
         applyDamage(target, dmg, attacker ?? null);
-        if (proj.ownerId === 0) {
+        if (attacker && attacker.isPlayer) {
           flashHitMarker();
           audio.play("hit");
         }
@@ -3448,7 +3464,7 @@ function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
-    } else if (charType === "orange" || charType === "cyan") {
+    } else if (charType === "orange" || charType === "cyan" || charType === "yellow") {
       const windup = pulse(t, 0.00, 0.10, 0.18);
       const throwRelease = pulse(t, 0.18, 0.24, 0.32);
       const recover = pulse(t, 0.32, 0.50, 0.60);
@@ -3891,6 +3907,7 @@ function updateChopWoodRespawn() {
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;
       fighter.respawnAt = 0;
+      fighter.shockUntil = 0;
       fighter.axeLevel = 0;
       fighter.chopTimer = 0;
       fighter.isChopping = false;
