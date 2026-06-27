@@ -932,7 +932,7 @@ function createStickman(color) {
   group.add(rightShoulder);
 
   const leftArm = new THREE.Mesh(upperArmGeo, darkMaterial);
-  leftArm.position.set(-0.48, 0.22, 0);
+  leftArm.position.set(-0.48, 0.30, 0.20);
   leftArm.rotation.z = Math.PI * 0.04;
   leftArm.castShadow = true;
   const leftElbow = new THREE.Mesh(elbowGeo, darkMaterial);
@@ -951,7 +951,7 @@ function createStickman(color) {
   group.add(leftArm);
 
   const rightArm = new THREE.Mesh(upperArmGeo, darkMaterial);
-  rightArm.position.set(0.48, 0.22, 0);
+  rightArm.position.set(0.48, 0.30, 0.20);
   rightArm.rotation.z = -Math.PI * 0.04;
   rightArm.castShadow = true;
   const rightElbow = new THREE.Mesh(elbowGeo, darkMaterial);
