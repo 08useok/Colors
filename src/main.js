@@ -897,12 +897,12 @@ function createStickman(color) {
   group.add(body);
 
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.16, 12), darkMaterial);
-  neck.position.y = 1.1;
+  neck.position.y = 2.1;
   neck.castShadow = true;
   group.add(neck);
 
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.72, 18, 18), material);
-  head.position.y = 1.9;
+  head.position.y = 2.9;
   head.castShadow = true;
   group.add(head);
 
