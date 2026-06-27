@@ -912,7 +912,7 @@ function createStickman(color) {
   const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
 
   const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.6, 0.75, 0);
+  leftShoulder.position.set(-0.6, 0.5, 0);
   const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   leftShoulderMesh.position.set(0, -0.05, 0);
   leftShoulderMesh.scale.set(1.1, 0.85, 1.0);
@@ -921,7 +921,7 @@ function createStickman(color) {
   group.add(leftShoulder);
 
   const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.6, 0.75, 0);
+  rightShoulder.position.set(0.6, 0.5, 0);
   const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   rightShoulderMesh.position.set(0, -0.05, 0);
   rightShoulderMesh.scale.set(1.1, 0.85, 1.0);
@@ -952,7 +952,7 @@ function createStickman(color) {
   group.add(rightArm);
 
   const leftThigh = new THREE.Group();
-  leftThigh.position.set(-0.24, -0.55, 0);
+  leftThigh.position.set(-0.24, -0.75, 0);
   const leftThighMesh = new THREE.Mesh(thighGeo, material);
   leftThighMesh.position.set(0, -0.05, 0);
   leftThighMesh.scale.set(1.1, 0.85, 1.0);
@@ -961,7 +961,7 @@ function createStickman(color) {
   group.add(leftThigh);
 
   const rightThigh = new THREE.Group();
-  rightThigh.position.set(0.24, -0.55, 0);
+  rightThigh.position.set(0.24, -0.75, 0);
   const rightThighMesh = new THREE.Mesh(thighGeo, material);
   rightThighMesh.position.set(0, -0.05, 0);
   rightThighMesh.scale.set(1.1, 0.85, 1.0);
