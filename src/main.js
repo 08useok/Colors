@@ -912,7 +912,7 @@ function createStickman(color) {
   const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
 
   const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.6, 0.5, 0);
+  leftShoulder.position.set(-0.6, 0.78, 0);
   const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   leftShoulderMesh.position.set(0, -0.05, 0);
   leftShoulderMesh.scale.set(1.1, 0.85, 1.0);
@@ -921,7 +921,7 @@ function createStickman(color) {
   group.add(leftShoulder);
 
   const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.6, 0.5, 0);
+  rightShoulder.position.set(0.6, 0.78, 0);
   const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   rightShoulderMesh.position.set(0, -0.05, 0);
   rightShoulderMesh.scale.set(1.1, 0.85, 1.0);
@@ -3450,6 +3450,15 @@ function updateFighterAnimation(fighter, dt) {
   let headX = 0;
   let headY = 0;
 
+  if (charType === "red") {
+    leftArmX += -0.35 + Math.sin(state.gameTime * 2.5) * 0.04;
+    rightArmX += -0.35 + Math.sin(state.gameTime * 2.5 + 1) * 0.04;
+    leftArmZ += 0.15;
+    rightArmZ -= 0.15;
+    bodyZ += Math.sin(walkCycle) * 0.02 * swing;
+    headX += -0.06;
+  }
+
   if (fighter.attackAnimTime >= 0) {
     fighter.attackAnimTime += dt;
     const t = fighter.attackAnimTime;
@@ -3485,8 +3494,23 @@ function updateFighterAnimation(fighter, dt) {
       headY += windup * 0.05;
       leftLeg += -windup * 0.05 + recover * 0.08;
       rightLeg += windup * 0.05 - recover * 0.08;
+    } else if (charType === "red") {
+      // Red 더블 펀치 — 몸 전체로 치는 강펀치
+      const punchOne = pulse(t, 0.02, 0.10, 0.18);
+      const punchTwo = pulse(t, 0.20, 0.30, 0.40);
+      const recover = pulse(t, 0.40, 0.50, 0.6);
+      rightArmX += -fighter.attackSwing * 0.5 - punchOne * 1.8 + recover * 0.3;
+      leftArmX += -fighter.attackSwing * 0.3 - punchTwo * 1.7 + recover * 0.25;
+      rightArmZ += -punchOne * 0.25;
+      leftArmZ += punchTwo * 0.25;
+      leftLeg += -punchOne * 0.15 + punchTwo * 0.25;
+      rightLeg += punchOne * 0.25 - punchTwo * 0.15;
+      bodyY += -punchOne * 0.30 + punchTwo * 0.30;
+      bodyZ += punchOne * 0.08 - punchTwo * 0.07;
+      headY += -punchOne * 0.18 + punchTwo * 0.18;
+      headX += punchOne * 0.06 + punchTwo * 0.04;
     } else {
-      // 더블 펀치 콤보
+      // 기본 더블 펀치 콤보
       const punchOne = pulse(t, 0.02, 0.11, 0.2);
       const punchTwo = pulse(t, 0.2, 0.31, 0.43);
       const recover = pulse(t, 0.43, 0.5, 0.6);
@@ -4057,6 +4081,8 @@ document.addEventListener("visibilitychange", () => {
   } else {
     inBackground = false;
     if (bgInterval) { clearInterval(bgInterval); bgInterval = null; }
+    clock.getDelta();
+    requestAnimationFrame(animate);
   }
 });
 
