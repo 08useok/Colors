@@ -299,7 +299,7 @@ const CHARACTERS = {
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
   purple: {
-    color: 0x9C27B0,
+    color: 0x800080,
     maxHealth: 4800,
     attackType: "poison",
     reloadDuration: 1.1,
@@ -3024,7 +3024,7 @@ function beginSpreadLineAttack(fighter) {
 function createNeedleMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.ConeGeometry(0.08, 0.5, 6),
-    new THREE.MeshBasicMaterial({ color: 0x9C27B0 }),
+    new THREE.MeshBasicMaterial({ color: 0x800080 }),
   );
   mesh.position.set(
     position.x + Math.sin(yaw) * 0.9,
@@ -3040,7 +3040,7 @@ function createNeedleMesh(position, yaw) {
 function createVialMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.22, 8, 6),
-    new THREE.MeshStandardMaterial({ color: 0x7B1FA2, roughness: 0.4, metalness: 0.2 }),
+    new THREE.MeshStandardMaterial({ color: 0x660066, roughness: 0.4, metalness: 0.2 }),
   );
   mesh.position.set(
     position.x + Math.sin(yaw) * 0.9,
@@ -3118,7 +3118,7 @@ function createVialSplashEffect(x, z) {
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(splashR * 0.3, splashR * 0.35, 32),
     new THREE.MeshBasicMaterial({
-      color: 0x9C27B0,
+      color: 0x800080,
       transparent: true,
       opacity: 0.6,
       side: THREE.DoubleSide,
@@ -3133,7 +3133,7 @@ function createVialSplashEffect(x, z) {
   const fill = new THREE.Mesh(
     new THREE.CircleGeometry(splashR, 32),
     new THREE.MeshBasicMaterial({
-      color: 0x7B1FA2,
+      color: 0x660066,
       transparent: true,
       opacity: 0.25,
       depthWrite: false,

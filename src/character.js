@@ -81,7 +81,7 @@ export const CHARACTERS = {
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
   purple: {
-    color: 0x9C27B0,
+    color: 0x800080,
     maxHealth: 4800,
     attackType: "poison",
     reloadDuration: 1.1,

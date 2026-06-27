@@ -1047,8 +1047,8 @@ body {
 }
 
 .char-icon-purple {
-  background: radial-gradient(circle at 35% 35%, #ce93d8, #7b1fa2 70%);
-  box-shadow: 0 6px 18px rgba(156, 39, 176, 0.45);
+  background: radial-gradient(circle at 35% 35%, #bb66bb, #660066 70%);
+  box-shadow: 0 6px 18px rgba(128, 0, 128, 0.45);
 }
 
 .char-name {
@@ -1377,7 +1377,7 @@ body {
 .mu-orange { color: #ffb347; }
 .mu-yellow { color: #ffff66; }
 .mu-cyan { color: #0ff0fe; }
-.mu-purple { color: #ce93d8; }
+.mu-purple { color: #bb66bb; }
 
 .matchup-desc {
   font-size: 11px;
