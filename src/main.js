@@ -142,8 +142,8 @@ const SEASONS = {
   alpha3: "알파 시즌 3",
 };
 
-const LEVEL_UP_COST = [0, 200, 500, 1000, 2000];
-const MAX_CHAR_LEVEL = 5;
+const LEVEL_UP_COST = [0, 200, 500, 1000, 2000, 4000];
+const MAX_CHAR_LEVEL = 6;
 const LEVEL_BONUS_PER_LEVEL = 0.02;
 
 const MASTERY_TIERS = [
