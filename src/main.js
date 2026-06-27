@@ -1076,17 +1076,32 @@ function renderPreview(dt) {
 
   const w = charDef.walk;
   const cycle = Math.sin(previewTime * w.cycleSpeed * 0.4);
-  parts.leftArm.rotation.x = cycle * w.armAmp * 0.5;
-  parts.rightArm.rotation.x = -cycle * w.armAmp * 0.5;
-  parts.leftArm.rotation.z = w.armRestZ;
-  parts.rightArm.rotation.z = -w.armRestZ;
+  let leftArmX = cycle * w.armAmp * 0.5;
+  let rightArmX = -cycle * w.armAmp * 0.5;
+  let leftArmZ = w.armRestZ;
+  let rightArmZ = -w.armRestZ;
+  let headX = 0;
+
+  if (previewChar === "red") {
+    leftArmX += -0.35 + Math.sin(previewTime * 2.5) * 0.04;
+    rightArmX += -0.35 + Math.sin(previewTime * 2.5 + 1) * 0.04;
+    leftArmZ += 0.15;
+    rightArmZ -= 0.15;
+    headX = -0.06;
+  }
+
+  parts.leftArm.rotation.x = leftArmX;
+  parts.rightArm.rotation.x = rightArmX;
+  parts.leftArm.rotation.z = leftArmZ;
+  parts.rightArm.rotation.z = rightArmZ;
   parts.leftLeg.rotation.x = -cycle * w.legAmp * 0.4;
   parts.rightLeg.rotation.x = cycle * w.legAmp * 0.4;
-  parts.leftShoulder.rotation.x = cycle * w.armAmp * 0.18;
-  parts.rightShoulder.rotation.x = -cycle * w.armAmp * 0.18;
+  parts.leftShoulder.rotation.x = leftArmX * 0.35;
+  parts.rightShoulder.rotation.x = rightArmX * 0.35;
   parts.leftThigh.rotation.x = -cycle * w.legAmp * 0.18;
   parts.rightThigh.rotation.x = cycle * w.legAmp * 0.18;
   parts.body.rotation.z = Math.sin(previewTime * 1.2) * 0.02;
+  parts.head.rotation.x = headX;
 
   previewRenderer.render(previewScene, previewCamera);
 }
