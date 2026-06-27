@@ -312,7 +312,7 @@ const CHARACTERS = {
     vialRange: 12,
     vialSpeed: 18,
     vialDamage: 2292,
-    vialSplashRadius: 2.0,
+    vialSplashRadius: 6.0,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
   },
@@ -3112,11 +3112,44 @@ function beginPoisonAttack(fighter) {
   return true;
 }
 
+function createVialSplashEffect(x, z) {
+  const splashR = CHARACTERS.purple.vialSplashRadius;
+
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(splashR * 0.3, splashR * 0.35, 32),
+    new THREE.MeshBasicMaterial({
+      color: 0x9C27B0,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(x, 0.15, z);
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.5, maxLife: 0.5, type: "vialRing", targetScale: splashR });
+
+  const fill = new THREE.Mesh(
+    new THREE.CircleGeometry(splashR, 32),
+    new THREE.MeshBasicMaterial({
+      color: 0x7B1FA2,
+      transparent: true,
+      opacity: 0.25,
+      depthWrite: false,
+    }),
+  );
+  fill.rotation.x = -Math.PI / 2;
+  fill.position.set(x, 0.12, z);
+  scene.add(fill);
+  state.effects.push({ mesh: fill, life: 0.4, maxLife: 0.4, type: "vialFill" });
+}
+
 function spawnVialSplash(x, z, ownerId) {
   const charDef = CHARACTERS.purple;
+  const attacker = state.players.find((p) => p.id === ownerId);
   for (const target of state.players) {
     if (target.id === ownerId || target.dead) continue;
-    const attacker = state.players.find((p) => p.id === ownerId);
     if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
     const dx = target.mesh.position.x - x;
     const dz = target.mesh.position.z - z;
@@ -3128,6 +3161,7 @@ function spawnVialSplash(x, z, ownerId) {
       }
     }
   }
+  createVialSplashEffect(x, z);
 }
 
 function updateProjectiles(dt) {
@@ -3472,6 +3506,12 @@ function updateEffects(dt) {
       effect.mesh.scale.x = 1 + (1 - alpha) * 1.8;
       effect.mesh.scale.y = 1.0;
       effect.mesh.material.opacity = alpha * alpha;
+    } else if (effect.type === "vialRing") {
+      const expand = 1 + (1 - alpha) * 2.0;
+      effect.mesh.scale.setScalar(expand);
+      effect.mesh.material.opacity = alpha * 0.6;
+    } else if (effect.type === "vialFill") {
+      effect.mesh.material.opacity = alpha * 0.25;
     } else if (effect.type === "damagePopup") {
       effect.mesh.position.y += dt * 1.4;
       effect.mesh.material.opacity = alpha;
