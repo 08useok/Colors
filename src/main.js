@@ -891,7 +891,7 @@ function createStickman(color) {
   const darkMaterial = material.clone();
   darkMaterial.color.offsetHSL(0, 0, -0.08);
 
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.46, 1.45, 8, 14), material);
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 1.45, 8, 14), material);
   body.position.y = 0.05;
   body.castShadow = true;
   group.add(body);
@@ -912,7 +912,7 @@ function createStickman(color) {
   const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
 
   const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.6, 0.78, 0);
+  leftShoulder.position.set(-0.48, 0.65, 0);
   const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   leftShoulderMesh.position.set(0, -0.05, 0);
   leftShoulderMesh.scale.set(1.1, 0.85, 1.0);
@@ -921,7 +921,7 @@ function createStickman(color) {
   group.add(leftShoulder);
 
   const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.6, 0.78, 0);
+  rightShoulder.position.set(0.48, 0.65, 0);
   const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   rightShoulderMesh.position.set(0, -0.05, 0);
   rightShoulderMesh.scale.set(1.1, 0.85, 1.0);
@@ -930,7 +930,7 @@ function createStickman(color) {
   group.add(rightShoulder);
 
   const leftArm = new THREE.Mesh(armGeo, darkMaterial);
-  leftArm.position.set(-0.6, 0.35, 0);
+  leftArm.position.set(-0.48, 0.30, 0);
   leftArm.rotation.z = Math.PI * 0.1;
   leftArm.castShadow = true;
   const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
@@ -941,7 +941,7 @@ function createStickman(color) {
   group.add(leftArm);
 
   const rightArm = new THREE.Mesh(armGeo, darkMaterial);
-  rightArm.position.set(0.6, 0.35, 0);
+  rightArm.position.set(0.48, 0.30, 0);
   rightArm.rotation.z = -Math.PI * 0.1;
   rightArm.castShadow = true;
   const rightFist = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
