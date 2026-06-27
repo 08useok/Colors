@@ -940,7 +940,7 @@ function createStickman(color) {
   leftElbow.castShadow = true;
   leftArm.add(leftElbow);
   const leftForeArm = new THREE.Mesh(foreArmGeo, darkMaterial);
-  leftForeArm.position.set(0, 0.05, 0);
+  leftForeArm.position.set(0, -0.35, 0);
   leftForeArm.castShadow = true;
   const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), darkMaterial);
   leftFist.position.set(0, -0.38, 0.02);
@@ -959,7 +959,7 @@ function createStickman(color) {
   rightElbow.castShadow = true;
   rightArm.add(rightElbow);
   const rightForeArm = new THREE.Mesh(foreArmGeo, darkMaterial);
-  rightForeArm.position.set(0, 0.05, 0);
+  rightForeArm.position.set(0, -0.35, 0);
   rightForeArm.castShadow = true;
   const rightFist = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), darkMaterial);
   rightFist.position.set(0, -0.38, 0.02);
@@ -1056,7 +1056,7 @@ function createNameLabel(name, hexColor) {
 const previewCanvas = document.getElementById("char-preview-canvas");
 const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
 previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-previewRenderer.setSize(180, 180);
+previewRenderer.setSize(340, 340);
 previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const previewScene = new THREE.Scene();
