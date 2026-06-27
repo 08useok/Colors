@@ -1103,10 +1103,10 @@ function renderPreview(dt) {
   let headX = 0;
 
   if (previewChar === "red") {
-    leftArmX += -0.15 + Math.sin(previewTime * 1.8) * 0.03;
-    rightArmX += -0.15 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
-    leftArmZ += 0.25;
-    rightArmZ -= 0.25;
+    leftArmX += -0.7 + Math.sin(previewTime * 1.8) * 0.03;
+    rightArmX += -0.7 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
+    leftArmZ = 0.05;
+    rightArmZ = -0.05;
     headX = -0.04;
   }
 
@@ -3497,12 +3497,12 @@ function updateFighterAnimation(fighter, dt) {
   let rightElbowX = -0.15 - swing * 0.1;
 
   if (charType === "red") {
-    leftArmX += -0.35 + Math.sin(state.gameTime * 2.5) * 0.04;
-    rightArmX += -0.35 + Math.sin(state.gameTime * 2.5 + 1) * 0.04;
-    leftArmZ += 0.15;
-    rightArmZ -= 0.15;
-    leftElbowX = -0.6 + Math.sin(state.gameTime * 2.5) * 0.05;
-    rightElbowX = -0.6 + Math.sin(state.gameTime * 2.5 + 1) * 0.05;
+    leftArmX += -0.7 + Math.sin(state.gameTime * 2.5) * 0.04;
+    rightArmX += -0.7 + Math.sin(state.gameTime * 2.5 + 1) * 0.04;
+    leftArmZ = 0.05;
+    rightArmZ = -0.05;
+    leftElbowX = -1.0 + Math.sin(state.gameTime * 2.5) * 0.05;
+    rightElbowX = -1.0 + Math.sin(state.gameTime * 2.5 + 1) * 0.05;
     bodyZ += Math.sin(walkCycle) * 0.02 * swing;
     headX += -0.06;
   }
