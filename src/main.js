@@ -891,8 +891,8 @@ function createStickman(color) {
   const darkMaterial = material.clone();
   darkMaterial.color.offsetHSL(0, 0, -0.08);
 
-  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.32, 1.2, 14), material);
-  body.position.y = 0.05;
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 1.2, 8, 14), material);
+  body.position.y = 0.55;
   body.castShadow = true;
   group.add(body);
 
