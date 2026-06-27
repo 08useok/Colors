@@ -116,6 +116,7 @@
                 <tr><td class="mu-orange">🟠 Orange</td><td class="mu-red">🔴 Red</td><td>🟢 🟡 🩵</td><td class="mu-blue">🔵 Blue</td></tr>
                 <tr><td class="mu-yellow">🟡 Yellow</td><td>🔴 🟠</td><td>🔵 🩵</td><td class="mu-green">🟢 Green</td></tr>
                 <tr><td class="mu-cyan">🩵 Cyan</td><td>🔴 🟢</td><td>🟠 🟡</td><td class="mu-blue">🔵 Blue</td></tr>
+                <tr><td class="mu-purple">🟣 Purple</td><td>🔴 🟠</td><td>🟢 🩵</td><td>🔵 🟡</td></tr>
               </tbody>
             </table>
           </div>
@@ -146,7 +147,8 @@
               <div class="patch-version">v1.4.0 — 2026.06.25</div>
               <ul>
                 <li data-i18n="pv140a">Cyan 캐릭터 추가 — 컨트롤 파이터 (알약 6연발, 넓은 범위 제압)</li>
-                <li data-i18n="pv140b">상성표 6캐릭터로 갱신</li>
+                <li data-i18n="pv140e">Purple 캐릭터 추가 — 포이즌 컨트롤러 (독침/독병 교대 공격)</li>
+                <li data-i18n="pv140b">상성표 7캐릭터로 갱신</li>
                 <li data-i18n="pv140c">찹 우드 맵 세로 레이아웃으로 변경</li>
                 <li data-i18n="pv140d">전체 캐릭터 색상 통일</li>
               </ul>
@@ -382,6 +384,7 @@
             <button class="color-dot" data-char="orange" style="background:#ffa500" type="button"></button>
             <button class="color-dot" data-char="yellow" style="background:#ffff00" type="button"></button>
             <button class="color-dot" data-char="cyan" style="background:#0ff0fe" type="button"></button>
+          <button class="color-dot" data-char="purple" style="background:#9C27B0" type="button"></button>
           </div>
           <div id="color-info" class="color-info"></div>
         </div>
@@ -391,7 +394,7 @@
           <div class="season-info">
             <span>배틀로얄</span>
             <span>해골천</span>
-            <span data-i18n="charCount">캐릭터 6종</span>
+            <span data-i18n="charCount">캐릭터 7종</span>
           </div>
           <div class="lobby-header">
             <div class="lobby-left">
@@ -460,6 +463,12 @@
               <div class="char-name">Cyan</div>
               <div class="char-winrate" id="winrate-cyan"></div>
             </button>
+            <button id="select-purple" class="char-btn" type="button" data-char="purple">
+              <div class="selected-badge">선택됨</div>
+              <div class="char-icon char-icon-purple">P</div>
+              <div class="char-name">Purple</div>
+              <div class="char-winrate" id="winrate-purple"></div>
+            </button>
           </div>
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
@@ -511,6 +520,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.4.2"></script>
+  <script type="module" src="./src/main.js?v=1.4.3"></script>
 </body>
 </html>
