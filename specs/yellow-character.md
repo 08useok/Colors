@@ -15,8 +15,8 @@ Red의 내구력, Green의 폭딜, Blue의 장거리, Orange의 폭발과 차별
 | 사거리 | 8 | Orange와 동일 |
 | 탄약 | 3 | |
 | 재장전 | 1.0초 | Orange와 동일 |
-| 공격 쿨다운 | 0.7초 | Orange와 동일 |
-| 데미지 | 4,400 | Red 더블펀치 총합과 동일 |
+| 공격 쿨다운 | 0.35초 | Orange와 동일 |
+| 데미지 | 3,400 | |
 | 투사체 속도 | 16 | Orange와 동일 |
 
 ---
@@ -42,7 +42,7 @@ Red의 내구력, Green의 폭딜, Blue의 장거리, Orange의 폭발과 차별
 
 ### 효과
 - 이동속도 40% 감소
-- 지속 시간: 2초
+- 지속 시간: 1.5초
 - 추가 데미지 없음
 - 재히트 시 지속 시간 갱신 (중첩 아님)
 
@@ -74,16 +74,16 @@ Yellow: ✅ Blue    ❌ Red
 
 ```js
 yellow: {
-  color: 0xFFDD00,
+  color: 0xFFFF00,
   maxHealth: 5800,
   attackType: "electric",
   reloadDuration: 1.0,
-  attackCooldown: 0.7,
-  electricDamage: 4400,
+  attackCooldown: 0.35,
+  electricDamage: 3400,
   electricRange: 8,
   electricSpeed: 16,
   shockSlowPercent: 0.4,
-  shockDuration: 2.0,
+  shockDuration: 1.5,
   moveSpeedMultiplier: 1.0,
   walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
 },
@@ -119,7 +119,7 @@ yellow: {
 
 ## Acceptance Criteria
 - [ ] Yellow 선택 후 전투에서 전기 투사체 발사됨
-- [ ] 피격 시 적 이동속도 40% 감소, 2초 지속
+- [ ] 피격 시 적 이동속도 40% 감소, 1.5초 지속
 - [ ] 재히트 시 Shock 지속 시간 갱신
 - [ ] 로비에서 Yellow 카드 표시 + 선택 가능
 - [ ] 상성표 5캐릭터로 업데이트됨

@@ -56,6 +56,13 @@ export function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
+    } else if (charType === "purple") {
+      const raise = Math.min(1, t / 0.08) * (t > 0.5 ? Math.max(0, 1 - (t - 0.5) / 0.1) : 1);
+      const recoil = pulse(t, 0.08, 0.14, 0.3);
+      rightArmX += -raise * 1.2 + recoil * 0.4;
+      leftArmX += -raise * 0.6 + recoil * 0.15;
+      bodyZ += -recoil * 0.04;
+      headX += recoil * 0.03;
     } else if (charType === "cyan") {
       const windup = pulse(t, 0.00, 0.10, 0.18);
       const throwRelease = pulse(t, 0.18, 0.24, 0.32);

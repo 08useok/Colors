@@ -22,16 +22,29 @@
 {
   // ... 기존 필드 유지 ...
   charStats: {
-    red:   { wins: 0, games: 0 },
-    green: { wins: 0, games: 0 },
-    blue:  { wins: 0, games: 0 },
+    showdown: {
+      red:    { wins: 0, games: 0 },
+      green:  { wins: 0, games: 0 },
+      blue:   { wins: 0, games: 0 },
+      orange: { wins: 0, games: 0 },
+      yellow: { wins: 0, games: 0 },
+      cyan:   { wins: 0, games: 0 },
+    },
+    chopWood: {
+      red:    { wins: 0, games: 0 },
+      green:  { wins: 0, games: 0 },
+      blue:   { wins: 0, games: 0 },
+      orange: { wins: 0, games: 0 },
+      yellow: { wins: 0, games: 0 },
+      cyan:   { wins: 0, games: 0 },
+    },
   },
   winStreak: 0,       // 현재 연승 횟수
   bestStreak: 0,      // 역대 최고 연승
 }
 ```
 
-- `charStats`가 없는 기존 계정은 `loadAccount()` 시 기본값으로 초기화 (마이그레이션)
+- `charStats`가 없거나 구조가 이전 버전인 기존 계정은 `loadAccount()` 시 모드별 구조로 마이그레이션
 - 승리 기준: `rank <= 4` (기존 `wins` 카운트와 동일 기준)
 
 ---
@@ -57,10 +70,11 @@ function streakBonus(streak) {
 
 ```js
 // 기존 로직 유지 + 아래 추가
-const char = account.selectedCharacter;  // 'red' | 'green' | 'blue'
-account.charStats[char].games += 1;
+const char = account.selectedCharacter;  // 'red' | 'green' | 'blue' | 'orange' | 'yellow' | 'cyan'
+const mode = state.chopWoodMode ? 'chopWood' : 'showdown';
+account.charStats[mode][char].games += 1;
 if (rank <= 4) {
-  account.charStats[char].wins += 1;
+  account.charStats[mode][char].wins += 1;
   account.winStreak += 1;
   if (account.winStreak > account.bestStreak) {
     account.bestStreak = account.winStreak;
@@ -127,10 +141,13 @@ HP 10,000
 ## 5. HTML 추가 요소
 
 ```html
-<!-- char-btn 내부 char-desc 다음 -->
+<!-- char-btn 내부 char-desc 다음 (각 캐릭터별) -->
 <div class="char-winrate" id="winrate-red"></div>
 <div class="char-winrate" id="winrate-green"></div>
 <div class="char-winrate" id="winrate-blue"></div>
+<div class="char-winrate" id="winrate-orange"></div>
+<div class="char-winrate" id="winrate-yellow"></div>
+<div class="char-winrate" id="winrate-cyan"></div>
 
 <!-- 로비 우측 상단 계정 영역 내 -->
 <div id="streak-display" class="hidden"></div>
@@ -144,11 +161,12 @@ HP 10,000
 function loadAccount() {
   const account = JSON.parse(localStorage.getItem(ACCOUNT_KEY));
   if (!account.charStats) {
-    account.charStats = {
-      red:   { wins: 0, games: 0 },
-      green: { wins: 0, games: 0 },
-      blue:  { wins: 0, games: 0 },
-    };
+    const defaultStats = () => ({
+      red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
+      blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
+      yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+    });
+    account.charStats = { showdown: defaultStats(), chopWood: defaultStats() };
   }
   if (account.winStreak === undefined) account.winStreak = 0;
   if (account.bestStreak === undefined) account.bestStreak = 0;

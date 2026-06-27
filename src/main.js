@@ -3056,12 +3056,18 @@ function beginPoisonAttack(fighter) {
     });
   } else {
     const mesh = createVialMesh(fighter.mesh.position, yaw);
+    const flightTime = charDef.vialRange / charDef.vialSpeed;
+    const gravity = 20;
+    const vy0 = gravity * flightTime * 0.5;
     state.projectiles.push({
       ownerId: fighter.id,
       x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
       z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+      y: 1.3,
       vx: Math.sin(yaw) * charDef.vialSpeed,
       vz: Math.cos(yaw) * charDef.vialSpeed,
+      vy: vy0,
+      gravity,
       damage: charDef.vialDamage,
       range: charDef.vialRange,
       farThreshold: Infinity,
@@ -3107,9 +3113,24 @@ function updateProjectiles(dt) {
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
     proj.distTraveled += step;
-    proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2, proj.z);
-    if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle) {
-      proj.mesh.rotation.z += dt * 10;
+    if (proj.isVial) {
+      proj.vy -= proj.gravity * dt;
+      proj.y += proj.vy * dt;
+      proj.mesh.position.set(proj.x, proj.y, proj.z);
+      proj.mesh.rotation.z += dt * 6;
+      if (proj.y <= 0.2) {
+        spawnVialSplash(proj.x, proj.z, proj.ownerId);
+        tempVec3.set(proj.x, 0.5, proj.z);
+        createHitSpark(tempVec3);
+        scene.remove(proj.mesh);
+        state.projectiles.splice(i, 1);
+        continue;
+      }
+    } else {
+      proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2, proj.z);
+      if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle) {
+        proj.mesh.rotation.z += dt * 10;
+      }
     }
 
     let hit = false;
@@ -3123,6 +3144,13 @@ function updateProjectiles(dt) {
       const dz = target.mesh.position.z - proj.z;
       const hitDist = target.radius + (proj.projRadius || 0);
       if (dx * dx + dz * dz < hitDist * hitDist) {
+        if (proj.isVial) {
+          spawnVialSplash(proj.x, proj.z, proj.ownerId);
+          tempVec3.set(proj.x, 0.5, proj.z);
+          createHitSpark(tempVec3);
+          hit = true;
+          break;
+        }
         const isFar = proj.distTraveled > proj.farThreshold;
         const dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
         applyDamage(target, dmg, attacker ?? null);
@@ -3142,9 +3170,6 @@ function updateProjectiles(dt) {
           if (!target.poisonNextTick || target.poisonNextTick < state.gameTime) {
             target.poisonNextTick = state.gameTime + 1;
           }
-        }
-        if (proj.isVial) {
-          spawnVialSplash(proj.x, proj.z, proj.ownerId);
         }
         hit = true;
         break;

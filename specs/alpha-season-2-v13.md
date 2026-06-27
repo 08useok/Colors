@@ -69,11 +69,13 @@ Focus: **Remote balance retuning + New character (Orange) + Battle structure div
 - Each split projectile deals ~1000 base damage
 - Position-dependent threat (area control)
 
-### Stats (TBD during implementation)
-- HP: ~6500-7000 (medium-tanky)
-- Attack Cooldown: ~0.6-0.8s (medium fire rate)
-- Range: ~6-7 (between Green and Blue)
-- Move Speed: Normal or slightly slower
+### Stats (Finalized)
+- HP: 5,800
+- Attack Cooldown: 0.35s
+- Range: 8
+- Reload: 1.3s
+- Bomb Damage: 850 (direct) + 300×5 (splash)
+- Move Speed: Normal (1.0)
 
 ---
 

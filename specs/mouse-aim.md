@@ -18,7 +18,7 @@
 - 터치 환경: 조이스틱 이동 방향 = 조준 방향 (기존 동작 유지)
 
 ## 영향 범위
-- `updatePlayerControls` (main.js:1019) — yaw 결정 로직 교체
+- `updatePlayerControls` — yaw 결정 로직 교체
 - `attackAimIndicator` — `player.yaw` 그대로 사용하므로 자동 반영
 - `resolveAttack` — `attacker.yaw` 그대로 사용하므로 자동 반영
 

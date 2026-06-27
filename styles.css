@@ -1046,6 +1046,11 @@ body {
   box-shadow: 0 6px 18px rgba(15, 240, 254, 0.45);
 }
 
+.char-icon-purple {
+  background: radial-gradient(circle at 35% 35%, #ce93d8, #7b1fa2 70%);
+  box-shadow: 0 6px 18px rgba(156, 39, 176, 0.45);
+}
+
 .char-name {
   font-size: 16px;
   font-weight: 800;
@@ -1372,6 +1377,7 @@ body {
 .mu-orange { color: #ffb347; }
 .mu-yellow { color: #ffff66; }
 .mu-cyan { color: #0ff0fe; }
+.mu-purple { color: #ce93d8; }
 
 .matchup-desc {
   font-size: 11px;
