@@ -891,7 +891,7 @@ function createStickman(color) {
   const darkMaterial = material.clone();
   darkMaterial.color.offsetHSL(0, 0, -0.08);
 
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.38, 1.2, 8, 14), material);
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.32, 1.2, 14), material);
   body.position.y = 0.05;
   body.castShadow = true;
   group.add(body);
@@ -909,7 +909,9 @@ function createStickman(color) {
   const upperArmGeo = new THREE.CapsuleGeometry(0.18, 0.35, 6, 10);
   const foreArmGeo = new THREE.CapsuleGeometry(0.16, 0.35, 6, 10);
   const elbowGeo = new THREE.SphereGeometry(0.17, 8, 8);
-  const legGeo = new THREE.CapsuleGeometry(0.2, 1.15, 6, 10);
+  const upperLegGeo = new THREE.CapsuleGeometry(0.2, 0.35, 6, 10);
+  const lowerLegGeo = new THREE.CapsuleGeometry(0.18, 0.35, 6, 10);
+  const kneeGeo = new THREE.SphereGeometry(0.19, 8, 8);
   const shoulderGeo = new THREE.SphereGeometry(0.20, 10, 10);
   const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
 
@@ -987,24 +989,40 @@ function createStickman(color) {
   rightThigh.add(rightThighMesh);
   group.add(rightThigh);
 
-  const leftLeg = new THREE.Mesh(legGeo, darkMaterial);
-  leftLeg.position.set(-0.24, -1.15, 0);
+  const leftLeg = new THREE.Mesh(upperLegGeo, darkMaterial);
+  leftLeg.position.set(-0.24, -1.0, 0);
   leftLeg.castShadow = true;
-  const leftFoot = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 12), darkMaterial);
-  leftFoot.position.set(0, -0.72, 0.14);
+  const leftKnee = new THREE.Mesh(kneeGeo, darkMaterial);
+  leftKnee.position.set(0, -0.35, 0);
+  leftKnee.castShadow = true;
+  leftLeg.add(leftKnee);
+  const leftShin = new THREE.Mesh(lowerLegGeo, darkMaterial);
+  leftShin.position.set(0, -0.7, 0);
+  leftShin.castShadow = true;
+  const leftFoot = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
+  leftFoot.position.set(0, -0.38, 0.12);
   leftFoot.scale.set(1.18, 0.7, 1.55);
   leftFoot.castShadow = true;
-  leftLeg.add(leftFoot);
+  leftShin.add(leftFoot);
+  leftLeg.add(leftShin);
   group.add(leftLeg);
 
-  const rightLeg = new THREE.Mesh(legGeo, darkMaterial);
-  rightLeg.position.set(0.24, -1.15, 0);
+  const rightLeg = new THREE.Mesh(upperLegGeo, darkMaterial);
+  rightLeg.position.set(0.24, -1.0, 0);
   rightLeg.castShadow = true;
-  const rightFoot = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 12), darkMaterial);
-  rightFoot.position.set(0, -0.72, 0.14);
+  const rightKnee = new THREE.Mesh(kneeGeo, darkMaterial);
+  rightKnee.position.set(0, -0.35, 0);
+  rightKnee.castShadow = true;
+  rightLeg.add(rightKnee);
+  const rightShin = new THREE.Mesh(lowerLegGeo, darkMaterial);
+  rightShin.position.set(0, -0.7, 0);
+  rightShin.castShadow = true;
+  const rightFoot = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
+  rightFoot.position.set(0, -0.38, 0.12);
   rightFoot.scale.set(1.18, 0.7, 1.55);
   rightFoot.castShadow = true;
-  rightLeg.add(rightFoot);
+  rightShin.add(rightFoot);
+  rightLeg.add(rightShin);
   group.add(rightLeg);
 
   group.userData = {
@@ -1021,6 +1039,8 @@ function createStickman(color) {
     rightThigh,
     leftLeg,
     rightLeg,
+    leftShin,
+    rightShin,
     bodyMaterials: [material, darkMaterial],
   };
 
@@ -1123,8 +1143,12 @@ function renderPreview(dt) {
   parts.rightArm.rotation.z = rightArmZ;
   parts.leftForeArm.rotation.x = leftElbowX;
   parts.rightForeArm.rotation.x = rightElbowX;
-  parts.leftLeg.rotation.x = -cycle * w.legAmp * 0.4;
-  parts.rightLeg.rotation.x = cycle * w.legAmp * 0.4;
+  const leftLegX = -cycle * w.legAmp * 0.4;
+  const rightLegX = cycle * w.legAmp * 0.4;
+  parts.leftLeg.rotation.x = leftLegX;
+  parts.rightLeg.rotation.x = rightLegX;
+  parts.leftShin.rotation.x = Math.max(0, leftLegX * 0.5);
+  parts.rightShin.rotation.x = Math.max(0, rightLegX * 0.5);
   parts.leftShoulder.rotation.x = leftArmX * 0.35;
   parts.rightShoulder.rotation.x = rightArmX * 0.35;
   parts.leftThigh.rotation.x = -cycle * w.legAmp * 0.18;
@@ -3589,6 +3613,8 @@ function updateFighterAnimation(fighter, dt) {
   body.rightForeArm.rotation.x = rightElbowX;
   body.leftLeg.rotation.x = leftLeg;
   body.rightLeg.rotation.x = rightLeg;
+  body.leftShin.rotation.x = Math.max(0, leftLeg * 0.5);
+  body.rightShin.rotation.x = Math.max(0, rightLeg * 0.5);
   body.leftShoulder.rotation.x = leftArmX * 0.35;
   body.leftShoulder.rotation.z = (leftArmZ - Math.PI * 0.1) * 0.3;
   body.rightShoulder.rotation.x = rightArmX * 0.35;
