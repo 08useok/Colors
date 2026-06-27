@@ -298,6 +298,24 @@ const CHARACTERS = {
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
+  purple: {
+    color: 0x9C27B0,
+    maxHealth: 4800,
+    attackType: "poison",
+    reloadDuration: 1.1,
+    attackCooldown: 0.45,
+    needleRange: 12,
+    needleSpeed: 18,
+    needleDamage: 0,
+    poisonDPS: 568,
+    poisonDuration: 4,
+    vialRange: 12,
+    vialSpeed: 18,
+    vialDamage: 2292,
+    vialSplashRadius: 2.0,
+    moveSpeedMultiplier: 1.0,
+    walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
+  },
 };
 
 // ── 계정 관리 ──────────────────────────────────────────────────────────────
@@ -319,6 +337,7 @@ function loadAccount() {
     if (!account.charStats.orange) account.charStats.orange = { wins: 0, games: 0 };
     if (!account.charStats.yellow) account.charStats.yellow = { wins: 0, games: 0 };
     if (!account.charStats.cyan) account.charStats.cyan = { wins: 0, games: 0 };
+    if (!account.charStats.purple) account.charStats.purple = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (!account.lang) account.lang = "ko";
@@ -339,12 +358,13 @@ function loadAccount() {
       account.seasonCharStats[CURRENT_SEASON] = {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 },
       };
     }
     for (const s of Object.values(account.seasonCharStats)) {
       if (!s.yellow) s.yellow = { wins: 0, games: 0 };
       if (!s.cyan) s.cyan = { wins: 0, games: 0 };
+      if (!s.purple) s.purple = { wins: 0, games: 0 };
     }
     let migrated = false;
     if (account.coins === undefined) { account.coins = 0; migrated = true; }
@@ -404,6 +424,7 @@ function createAccount(id, nickname) {
       orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 },
       cyan:   { wins: 0, games: 0 },
+      purple: { wins: 0, games: 0 },
     },
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1,
@@ -416,7 +437,7 @@ function createAccount(id, nickname) {
       [CURRENT_SEASON]: {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 },
       },
     },
   };
@@ -447,7 +468,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
@@ -891,18 +912,18 @@ function createStickman(color) {
   const darkMaterial = material.clone();
   darkMaterial.color.offsetHSL(0, 0, -0.08);
 
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 2.2, 8, 14), material);
-  body.position.y = 0.55;
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 1.2, 8, 14), material);
+  body.position.y = 0.05;
   body.castShadow = true;
   group.add(body);
 
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.16, 12), darkMaterial);
-  neck.position.y = 2.1;
+  neck.position.y = 1.1;
   neck.castShadow = true;
   group.add(neck);
 
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.72, 18, 18), material);
-  head.position.y = 2.9;
+  head.position.y = 1.9;
   head.castShadow = true;
   group.add(head);
 
@@ -1224,6 +1245,10 @@ function makeFighter(options) {
     chopDamageDealt: 0,
     bestAxeLevel: 0,
     cwKills: 0,
+    attackIndex: 0,
+    poisonUntil: 0,
+    poisonSourceId: -1,
+    poisonNextTick: 0,
   };
 
   fighter.mesh = createStickman(charDef.color);
@@ -1699,7 +1724,7 @@ function initChopWoodPlayers() {
   });
   state.players = [];
 
-  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan"];
+  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple"];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
 
@@ -2045,6 +2070,46 @@ function createCyanAimIndicator() {
 
 const cyanAimIndicator = createCyanAimIndicator();
 
+function createPurpleAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.purple.needleRange;
+
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.6, range),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.2,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+    }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, range);
+  group.add(dot);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, dot };
+  scene.add(group);
+  return group;
+}
+
+const purpleAimIndicator = createPurpleAimIndicator();
+
 function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
@@ -2200,7 +2265,7 @@ function initPlayers() {
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan"];
+    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
@@ -2594,6 +2659,9 @@ function beginAttack(fighter) {
   if (fighter.characterType === "cyan") {
     return beginSpreadLineAttack(fighter);
   }
+  if (fighter.characterType === "purple") {
+    return beginPoisonAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -2626,6 +2694,7 @@ function getAttackRange(fighter) {
   if (fighter.characterType === "orange") return CHARACTERS.orange.bombRange;
   if (fighter.characterType === "yellow") return CHARACTERS.yellow.electricRange;
   if (fighter.characterType === "cyan") return CHARACTERS.cyan.spreadLineRange;
+  if (fighter.characterType === "purple") return CHARACTERS.purple.needleRange;
   return attackDepth;
 }
 
@@ -2922,6 +2991,109 @@ function beginSpreadLineAttack(fighter) {
   return true;
 }
 
+function createNeedleMesh(position, yaw) {
+  const mesh = new THREE.Mesh(
+    new THREE.ConeGeometry(0.08, 0.5, 6),
+    new THREE.MeshBasicMaterial({ color: 0x9C27B0 }),
+  );
+  mesh.position.set(
+    position.x + Math.sin(yaw) * 0.9,
+    1.3,
+    position.z + Math.cos(yaw) * 0.9,
+  );
+  mesh.rotation.z = Math.PI / 2;
+  mesh.rotation.y = -yaw;
+  scene.add(mesh);
+  return mesh;
+}
+
+function createVialMesh(position, yaw) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.22, 8, 6),
+    new THREE.MeshStandardMaterial({ color: 0x7B1FA2, roughness: 0.4, metalness: 0.2 }),
+  );
+  mesh.position.set(
+    position.x + Math.sin(yaw) * 0.9,
+    1.3,
+    position.z + Math.cos(yaw) * 0.9,
+  );
+  scene.add(mesh);
+  return mesh;
+}
+
+function beginPoisonAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.purple;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.06);
+  fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+
+  const yaw = fighter.yaw;
+  const isNeedle = fighter.attackIndex % 2 === 0;
+  fighter.attackIndex += 1;
+
+  if (isNeedle) {
+    const mesh = createNeedleMesh(fighter.mesh.position, yaw);
+    state.projectiles.push({
+      ownerId: fighter.id,
+      x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+      z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+      vx: Math.sin(yaw) * charDef.needleSpeed,
+      vz: Math.cos(yaw) * charDef.needleSpeed,
+      damage: charDef.needleDamage,
+      range: charDef.needleRange,
+      farThreshold: Infinity,
+      farMultiplier: 1,
+      distTraveled: 0,
+      launchAt: state.gameTime,
+      mesh,
+      isNeedle: true,
+    });
+  } else {
+    const mesh = createVialMesh(fighter.mesh.position, yaw);
+    state.projectiles.push({
+      ownerId: fighter.id,
+      x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+      z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+      vx: Math.sin(yaw) * charDef.vialSpeed,
+      vz: Math.cos(yaw) * charDef.vialSpeed,
+      damage: charDef.vialDamage,
+      range: charDef.vialRange,
+      farThreshold: Infinity,
+      farMultiplier: 1,
+      distTraveled: 0,
+      launchAt: state.gameTime,
+      mesh,
+      isVial: true,
+    });
+  }
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
+function spawnVialSplash(x, z, ownerId) {
+  const charDef = CHARACTERS.purple;
+  for (const target of state.players) {
+    if (target.id === ownerId || target.dead) continue;
+    const attacker = state.players.find((p) => p.id === ownerId);
+    if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
+    const dx = target.mesh.position.x - x;
+    const dz = target.mesh.position.z - z;
+    if (dx * dx + dz * dz < charDef.vialSplashRadius * charDef.vialSplashRadius) {
+      applyDamage(target, charDef.vialDamage, attacker ?? null);
+      if (ownerId === 0) {
+        flashHitMarker();
+        audio.play("hit");
+      }
+    }
+  }
+}
+
 function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
@@ -2935,8 +3107,8 @@ function updateProjectiles(dt) {
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
     proj.distTraveled += step;
-    proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric || proj.isSpreadLine) ? 1.3 : 1.2, proj.z);
-    if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine) {
+    proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2, proj.z);
+    if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle) {
       proj.mesh.rotation.z += dt * 10;
     }
 
@@ -2964,6 +3136,16 @@ function updateProjectiles(dt) {
         if (proj.isElectric) {
           target.shockUntil = state.gameTime + CHARACTERS.yellow.shockDuration;
         }
+        if (proj.isNeedle) {
+          target.poisonUntil = state.gameTime + CHARACTERS.purple.poisonDuration;
+          target.poisonSourceId = proj.ownerId;
+          if (!target.poisonNextTick || target.poisonNextTick < state.gameTime) {
+            target.poisonNextTick = state.gameTime + 1;
+          }
+        }
+        if (proj.isVial) {
+          spawnVialSplash(proj.x, proj.z, proj.ownerId);
+        }
         hit = true;
         break;
       }
@@ -2974,6 +3156,7 @@ function updateProjectiles(dt) {
       for (const solid of state.solids) {
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
           if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
+          if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
           hit = true;
           break;
         }
@@ -2982,8 +3165,24 @@ function updateProjectiles(dt) {
 
     if (hit || proj.distTraveled >= proj.range) {
       if (proj.isBomb && !hit) spawnBombSplash(proj.x, proj.z, proj.ownerId);
+      if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
       state.projectiles.splice(i, 1);
+    }
+  }
+}
+
+function updatePoisonTicks() {
+  const purpleDef = CHARACTERS.purple;
+  for (const fighter of state.players) {
+    if (fighter.dead || !fighter.poisonUntil || state.gameTime >= fighter.poisonUntil) {
+      fighter.poisonUntil = 0;
+      continue;
+    }
+    if (state.gameTime >= fighter.poisonNextTick) {
+      const attacker = state.players.find((p) => p.id === fighter.poisonSourceId) ?? null;
+      applyDamage(fighter, purpleDef.poisonDPS, attacker);
+      fighter.poisonNextTick = state.gameTime + 1;
     }
   }
 }
@@ -3391,7 +3590,7 @@ function updateBot(bot, dt, zone) {
     const distance = Math.hypot(toTargetX, toTargetZ);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
-    const isRanged = ["green", "blue", "orange", "yellow", "cyan"].includes(bot.characterType);
+    const isRanged = ["green", "blue", "orange", "yellow", "cyan", "purple"].includes(bot.characterType);
     const ct = bot.characterType;
     let idealDist;
     if (ct === "green") idealDist = 1.5;
@@ -3400,6 +3599,7 @@ function updateBot(bot, dt, zone) {
     else if (ct === "blue") idealDist = 12;
     else if (ct === "yellow") idealDist = 7;
     else if (ct === "cyan") idealDist = 6;
+    else if (ct === "purple") idealDist = 10;
     else idealDist = atkRange * 0.6;
 
     if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
@@ -3726,6 +3926,7 @@ function updateAttackAimIndicator() {
     orangeAimIndicator.visible = false;
     yellowAimIndicator.visible = false;
     cyanAimIndicator.visible = false;
+    purpleAimIndicator.visible = false;
     return;
   }
 
@@ -3739,6 +3940,7 @@ function updateAttackAimIndicator() {
   orangeAimIndicator.visible = false;
   yellowAimIndicator.visible = false;
   cyanAimIndicator.visible = false;
+  purpleAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -3781,6 +3983,13 @@ function updateAttackAimIndicator() {
     cyanAimIndicator.userData.beam.scale.set(1, 1, 1);
     cyanAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     cyanAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
+  } else if (charType === "purple") {
+    purpleAimIndicator.visible = true;
+    purpleAimIndicator.position.set(pos.x, 0, pos.z);
+    purpleAimIndicator.rotation.y = yaw;
+    purpleAimIndicator.userData.beam.scale.set(1, 1, 1);
+    purpleAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+    purpleAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   }
 }
 
@@ -3843,6 +4052,7 @@ function updateHud() {
   player.characterType === "orange" ? t("bombAttack") :
   player.characterType === "yellow" ? t("electricAttack") :
   player.characterType === "cyan" ? t("spreadLineAttack") :
+  player.characterType === "purple" ? t("poisonAttack") :
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
@@ -4185,6 +4395,7 @@ function animate() {
       updateChopping(dt);
       updateScheduledHits();
       updateProjectiles(dt);
+      updatePoisonTicks();
       if (!state.chopWoodMode) {
         updateZoneDamage(dt, zone);
       }
@@ -4237,7 +4448,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
         html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
         html += `<div class="stats-divider"></div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -4257,7 +4468,7 @@ function setupInput() {
           html += `<div class="stats-char" style="font-weight:600">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -4577,6 +4788,14 @@ function setupInput() {
     updateLobbyUI(account);
   });
 
+  document.getElementById("select-purple").addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "purple";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
   document.querySelectorAll(".color-dot").forEach((dot) => {
     dot.addEventListener("click", () => {
       const account = loadAccount();
@@ -4632,7 +4851,7 @@ function setupInput() {
   function renderShopLevelUp() {
     const account = loadAccount();
     if (!account) return;
-    const chars = ["red", "green", "blue", "orange", "yellow", "cyan"];
+    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple"];
     const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
