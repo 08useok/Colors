@@ -4635,9 +4635,11 @@ function setupInput() {
 
   function attackOnRelease() {
     if (state.mouseHeld && state.running) {
+      state.mouseHeld = false;
       beginAttack(getPlayer());
+    } else {
+      state.mouseHeld = false;
     }
-    state.mouseHeld = false;
   }
 
   const releaseHold = () => { state.mouseHeld = false; };
@@ -5028,8 +5030,12 @@ function setupInput() {
     if (state.running) state.mouseHeld = true;
   });
   mobileAttackButton.addEventListener("pointerup", () => {
-    if (state.mouseHeld && state.running) beginAttack(getPlayer());
-    state.mouseHeld = false;
+    if (state.mouseHeld && state.running) {
+      state.mouseHeld = false;
+      beginAttack(getPlayer());
+    } else {
+      state.mouseHeld = false;
+    }
   });
   mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
 }
