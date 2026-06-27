@@ -1083,11 +1083,11 @@ function renderPreview(dt) {
   let headX = 0;
 
   if (previewChar === "red") {
-    leftArmX += -0.35 + Math.sin(previewTime * 2.5) * 0.04;
-    rightArmX += -0.35 + Math.sin(previewTime * 2.5 + 1) * 0.04;
-    leftArmZ += 0.15;
-    rightArmZ -= 0.15;
-    headX = -0.06;
+    leftArmX += -0.15 + Math.sin(previewTime * 1.8) * 0.03;
+    rightArmX += -0.15 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
+    leftArmZ += 0.25;
+    rightArmZ -= 0.25;
+    headX = -0.04;
   }
 
   parts.leftArm.rotation.x = leftArmX;
