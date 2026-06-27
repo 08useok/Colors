@@ -940,7 +940,7 @@ function createStickman(color) {
   leftElbow.castShadow = true;
   leftArm.add(leftElbow);
   const leftForeArm = new THREE.Mesh(foreArmGeo, darkMaterial);
-  leftForeArm.position.set(0.6, -0.3, 0);
+  leftForeArm.position.set(-0.6, -0.3, 0);
   leftForeArm.castShadow = true;
   const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), darkMaterial);
   leftFist.position.set(0, -0.38, 0.02);
