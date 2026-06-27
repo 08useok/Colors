@@ -2117,9 +2117,23 @@ function createPurpleAimIndicator() {
   fill.position.set(0, 0.07, range);
   group.add(fill);
 
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.45,
+      depthWrite: false,
+    }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.08, range);
+  dot.visible = false;
+  group.add(dot);
+
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { beam, ring, fill };
+  group.userData = { beam, ring, fill, dot };
   scene.add(group);
   return group;
 }
@@ -4032,12 +4046,20 @@ function updateAttackAimIndicator() {
     cyanAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     cyanAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   } else if (charType === "purple") {
+    const isNeedle = (player.attackIndex ?? 0) % 2 === 0;
     purpleAimIndicator.visible = true;
     purpleAimIndicator.position.set(pos.x, 0, pos.z);
     purpleAimIndicator.rotation.y = yaw;
     purpleAimIndicator.userData.beam.material.opacity = unavailable ? 0.04 : 0.15;
-    purpleAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.4;
-    purpleAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.08;
+    purpleAimIndicator.userData.ring.visible = !isNeedle;
+    purpleAimIndicator.userData.fill.visible = !isNeedle;
+    purpleAimIndicator.userData.dot.visible = isNeedle;
+    if (isNeedle) {
+      purpleAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
+    } else {
+      purpleAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.4;
+      purpleAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.08;
+    }
   }
 }
 
