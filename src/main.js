@@ -1056,7 +1056,7 @@ function createNameLabel(name, hexColor) {
 const previewCanvas = document.getElementById("char-preview-canvas");
 const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
 previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-previewRenderer.setSize(340, 340);
+previewRenderer.setSize(480, 480);
 previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const previewScene = new THREE.Scene();
