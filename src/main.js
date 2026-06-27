@@ -2073,13 +2073,14 @@ const cyanAimIndicator = createCyanAimIndicator();
 function createPurpleAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.purple.needleRange;
+  const splashR = CHARACTERS.purple.vialSplashRadius;
 
   const beam = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.6, range),
+    new THREE.PlaneGeometry(0.4, range),
     new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.15,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
@@ -2088,22 +2089,37 @@ function createPurpleAimIndicator() {
   beam.position.set(0, 0.08, range * 0.5);
   group.add(beam);
 
-  const dot = new THREE.Mesh(
-    new THREE.CircleGeometry(0.3, 12),
+  const ringGeo = new THREE.RingGeometry(splashR - 0.12, splashR, 24);
+  const ring = new THREE.Mesh(
+    ringGeo,
     new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.4,
+      side: THREE.DoubleSide,
       depthWrite: false,
     }),
   );
-  dot.rotation.x = -Math.PI / 2;
-  dot.position.set(0, 0.08, range);
-  group.add(dot);
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(0, 0.08, range);
+  group.add(ring);
+
+  const fill = new THREE.Mesh(
+    new THREE.CircleGeometry(splashR, 24),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.08,
+      depthWrite: false,
+    }),
+  );
+  fill.rotation.x = -Math.PI / 2;
+  fill.position.set(0, 0.07, range);
+  group.add(fill);
 
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { beam, dot };
+  group.userData = { beam, ring, fill };
   scene.add(group);
   return group;
 }
@@ -4019,9 +4035,9 @@ function updateAttackAimIndicator() {
     purpleAimIndicator.visible = true;
     purpleAimIndicator.position.set(pos.x, 0, pos.z);
     purpleAimIndicator.rotation.y = yaw;
-    purpleAimIndicator.userData.beam.scale.set(1, 1, 1);
-    purpleAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
-    purpleAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
+    purpleAimIndicator.userData.beam.material.opacity = unavailable ? 0.04 : 0.15;
+    purpleAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.4;
+    purpleAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.08;
   }
 }
 
