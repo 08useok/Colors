@@ -3206,8 +3206,8 @@ function updateProjectiles(dt) {
       }
     }
 
-    // 벽 충돌 시 소멸 (폭탄은 벽에 맞아도 폭발)
-    if (!hit) {
+    // 벽 충돌 시 소멸 (폭탄은 벽에 맞아도 폭발, 독병은 공중이면 무시)
+    if (!hit && !(proj.isVial && proj.y > 1.5)) {
       for (const solid of state.solids) {
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
           if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
