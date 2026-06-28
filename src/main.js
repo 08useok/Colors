@@ -3476,17 +3476,17 @@ function updatePoisonTicks() {
       const attacker = state.players.find((p) => p.id === fighter.poisonSourceId) ?? null;
       applyDamage(fighter, purpleDef.poisonDPS, attacker);
       fighter.poisonNextTick = state.gameTime + 1;
-      for (let pi = 0; pi < 5; pi++) {
+      for (let pi = 0; pi < 6; pi++) {
         const pa = Math.random() * Math.PI * 2;
-        const pr = 0.15 + Math.random() * 0.35;
-        const size = 0.12 + Math.random() * 0.12;
+        const pr = 0.4 + Math.random() * 0.8;
+        const size = 0.18 + Math.random() * 0.14;
         const pp = new THREE.Mesh(
           new THREE.SphereGeometry(size, 6, 6),
           new THREE.MeshBasicMaterial({ color: pi % 2 === 0 ? 0x88ff44 : 0x66cc22, transparent: true, opacity: 0.85, depthWrite: false }),
         );
         pp.position.set(
           fighter.mesh.position.x + Math.cos(pa) * pr,
-          0.6 + Math.random() * 0.5,
+          0.5 + Math.random() * 1.5,
           fighter.mesh.position.z + Math.sin(pa) * pr,
         );
         scene.add(pp);
@@ -3824,9 +3824,9 @@ function updatePlayerControls(dt) {
     tempVec3.set(inputX / inputLength, 0, -inputZ / inputLength).multiplyScalar(getMoveSpeed(player));
   }
 
-  // 오토에임: 클릭(공격) 중일 때만 사거리 내 가장 가까운 적을 자동 추적
+  // 오토에임: 모바일 조이스틱에서만 사거리 내 가장 가까운 적을 자동 추적
   let autoTarget = null;
-  if (state.mouseHeld) {
+  if (state.mouseHeld && state.mobileMove.active) {
     const autoAimRange = Math.max(15, getAttackRange(player));
     let autoTargetDist = autoAimRange;
     for (const fighter of state.players) {
@@ -4230,18 +4230,18 @@ function updateFighterAnimation(fighter, dt) {
       fighter.nextShockVfx = state.gameTime + 0.5;
       const fx = fighter.mesh.position.x;
       const fz = fighter.mesh.position.z;
-      for (let ci = 0; ci < 3; ci++) {
+      for (let ci = 0; ci < 4; ci++) {
         const crystal = new THREE.Mesh(
-          new THREE.OctahedronGeometry(0.30, 0),
+          new THREE.OctahedronGeometry(0.5, 0),
           new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.8, depthWrite: false }),
         );
-        const baseAngle = (ci / 3) * Math.PI * 2;
-        crystal.position.set(fx + Math.cos(baseAngle) * 0.8, 0.4, fz + Math.sin(baseAngle) * 0.8);
+        const baseAngle = (ci / 4) * Math.PI * 2;
+        crystal.position.set(fx + Math.cos(baseAngle) * 1.5, 1.2, fz + Math.sin(baseAngle) * 1.5);
         scene.add(crystal);
-        state.effects.push({ mesh: crystal, life: 0.5, maxLife: 0.5, type: "iceCrystal", cx: fx, cz: fz, angle: baseAngle, radius: 0.8 });
+        state.effects.push({ mesh: crystal, life: 0.5, maxLife: 0.5, type: "iceCrystal", cx: fx, cz: fz, angle: baseAngle, radius: 1.5 });
       }
       const frost = new THREE.Mesh(
-        new THREE.RingGeometry(0.9, 1.05, 6),
+        new THREE.RingGeometry(1.4, 1.65, 6),
         new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false }),
       );
       frost.rotation.x = -Math.PI / 2;
