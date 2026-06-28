@@ -105,6 +105,7 @@ const shopOverlay = document.getElementById("shop-overlay");
 const shopCoins = document.getElementById("shop-coins");
 const shopCloseBtn = document.getElementById("shop-close-btn");
 const shopContent = document.getElementById("shop-levelup");
+const shopSkinsContent = document.getElementById("shop-skins");
 const openShopBtn = document.getElementById("open-shop-btn");
 
 const renderer = new THREE.WebGLRenderer({
@@ -169,6 +170,49 @@ function getCharLevel(account, charKey) {
 
 function getLevelMultiplier(level) {
   return 1 + (level - 1) * LEVEL_BONUS_PER_LEVEL;
+}
+
+const SKINS = {
+  alpha_red: {
+    name: "Alpha Red",
+    character: "red",
+    season: "alpha3",
+    cost: 1000,
+    desc: "Alpha Season 한정 왕관 스킨",
+  },
+};
+
+function createCrown() {
+  const crownMat = new THREE.MeshStandardMaterial({
+    color: 0xffd700,
+    roughness: 0.3,
+    metalness: 0.6,
+  });
+  const crown = new THREE.Group();
+  const base = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.42, 0.46, 0.18, 8),
+    crownMat,
+  );
+  crown.add(base);
+  const pointGeo = new THREE.ConeGeometry(0.1, 0.22, 4);
+  const pointCount = 5;
+  for (let i = 0; i < pointCount; i++) {
+    const angle = (i / pointCount) * Math.PI * 2;
+    const point = new THREE.Mesh(pointGeo, crownMat);
+    point.position.set(Math.cos(angle) * 0.36, 0.18, Math.sin(angle) * 0.36);
+    crown.add(point);
+  }
+  return crown;
+}
+
+function applySkin(group, skinId) {
+  if (!skinId || !SKINS[skinId]) return;
+  if (skinId === "alpha_red") {
+    const crown = createCrown();
+    crown.position.set(0, 2.7, 0);
+    group.add(crown);
+    group.userData.crown = crown;
+  }
 }
 
 const COIN_REWARDS = {
@@ -374,6 +418,8 @@ function loadAccount() {
     }
     if (!account.charLevels.yellow) { account.charLevels.yellow = 1; migrated = true; }
     if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
+    if (!account.ownedSkins) { account.ownedSkins = []; migrated = true; }
+    if (!account.selectedSkins) { account.selectedSkins = {}; migrated = true; }
     if (migrated) saveAccount(account);
     return account;
   } catch {
@@ -429,6 +475,8 @@ function createAccount(id, nickname) {
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1,
     },
+    ownedSkins: [],
+    selectedSkins: {},
     winStreak: 0,
     bestStreak: 0,
     lang: currentLang,
@@ -900,7 +948,7 @@ function createGround(group = scene) {
   group.add(grid);
 }
 
-function createStickman(color) {
+function createStickman(color, skinId) {
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
     color,
@@ -1067,6 +1115,8 @@ function createStickman(color) {
     bodyMaterials: [material, darkMaterial],
   };
 
+  if (skinId) applySkin(group, skinId);
+
   return group;
 }
 
@@ -1114,16 +1164,20 @@ const previewRimLight = new THREE.DirectionalLight(0xffe0c0, 0.4);
 previewRimLight.position.set(-3, 2, -3);
 previewScene.add(previewRimLight);
 
-let previewModel, previewChar;
+let previewModel, previewChar, previewCharType;
 let previewTime = 0;
 
 function setPreviewCharacter(charType) {
-  if (previewChar === charType && previewModel) return;
+  const acc = loadAccount();
+  const skinId = acc?.selectedSkins?.[charType] || null;
+  const key = charType + (skinId || "");
+  if (previewChar === key && previewModel) return;
   if (previewModel) previewScene.remove(previewModel);
-  previewChar = charType;
+  previewChar = key;
+  previewCharType = charType;
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
-  previewModel = createStickman(charDef.color);
+  previewModel = createStickman(charDef.color, skinId);
   previewModel.position.y = 0;
   previewScene.add(previewModel);
 }
@@ -1132,7 +1186,7 @@ function renderPreview(dt) {
   if (!previewModel) return;
   previewTime += dt;
   const parts = previewModel.userData;
-  const charDef = CHARACTERS[previewChar];
+  const charDef = CHARACTERS[previewCharType];
   if (!charDef) return;
 
   previewModel.rotation.y = previewTime * 0.6;
@@ -1145,7 +1199,7 @@ function renderPreview(dt) {
   let rightArmZ = -w.armRestZ;
   let headX = 0;
 
-  if (previewChar === "red") {
+  if (previewCharType === "red") {
     leftArmX += -0.7 + Math.sin(previewTime * 1.8) * 0.03;
     rightArmX += -0.7 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
     leftArmZ = 0.05;
@@ -1155,7 +1209,7 @@ function renderPreview(dt) {
 
   let leftElbowX = -0.15;
   let rightElbowX = -0.15;
-  if (previewChar === "red") {
+  if (previewCharType === "red") {
     leftElbowX = -0.6 + Math.sin(previewTime * 1.8) * 0.05;
     rightElbowX = -0.6 + Math.sin(previewTime * 1.8 + 1.5) * 0.05;
   }
@@ -1202,9 +1256,13 @@ function createHealthBarMesh() {
 function makeFighter(options) {
   const charDef = CHARACTERS[options.characterType ?? "red"];
   let levelMult = 1;
+  let skinId = null;
   if (options.isPlayer) {
     const acc = loadAccount();
-    if (acc) levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
+    if (acc) {
+      levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
+      skinId = acc.selectedSkins?.[options.characterType ?? "red"] || null;
+    }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
   const fighter = {
@@ -1253,7 +1311,7 @@ function makeFighter(options) {
     poisonNextTick: 0,
   };
 
-  fighter.mesh = createStickman(charDef.color);
+  fighter.mesh = createStickman(charDef.color, skinId);
   fighter.mesh.position.set(options.position.x, 1.85, options.position.z);
   fighter.mesh.rotation.y = fighter.yaw;
   scene.add(fighter.mesh);
@@ -5266,15 +5324,85 @@ function setupInput() {
     });
   }
 
+  function renderShopSkins() {
+    const account = loadAccount();
+    if (!account) return;
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe" };
+    let html = '<div class="shop-grid">';
+    for (const [skinId, skin] of Object.entries(SKINS)) {
+      const owned = account.ownedSkins.includes(skinId);
+      const equipped = account.selectedSkins[skin.character] === skinId;
+      const canBuy = !owned && account.coins >= skin.cost;
+      const seasonOk = skin.season === CURRENT_SEASON;
+      const borderColor = colorMap[skin.character] || "#fff";
+      html += `<div class="shop-card" style="border-color:${borderColor}">`;
+      html += `<div class="shop-card-name" style="color:${borderColor}">${skin.name}</div>`;
+      html += `<div class="shop-card-effect">${skin.desc}</div>`;
+      if (!seasonOk && !owned) {
+        html += `<div class="shop-card-mastery">시즌 종료 — 획득 불가</div>`;
+      } else if (equipped) {
+        html += `<button class="shop-buy-btn shop-skin-unequip" data-skin="${skinId}" type="button">장착 해제</button>`;
+      } else if (owned) {
+        html += `<button class="shop-buy-btn shop-skin-equip" data-skin="${skinId}" type="button">장착</button>`;
+      } else {
+        html += `<button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-skin="${skinId}" data-cost="${skin.cost}" type="button"${canBuy ? "" : " disabled"}>🪙 ${skin.cost}</button>`;
+      }
+      html += `</div>`;
+    }
+    html += "</div>";
+    shopSkinsContent.innerHTML = html;
+
+    shopSkinsContent.querySelectorAll(".shop-buy-btn[data-cost]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const acc = loadAccount();
+        if (!acc) return;
+        const sid = btn.dataset.skin;
+        const cost = parseInt(btn.dataset.cost);
+        if (acc.ownedSkins.includes(sid) || acc.coins < cost) return;
+        acc.coins -= cost;
+        acc.ownedSkins.push(sid);
+        acc.selectedSkins[SKINS[sid].character] = sid;
+        saveAccount(acc);
+        renderShopSkins();
+        if (shopCoins) shopCoins.textContent = acc.coins;
+      });
+    });
+    shopSkinsContent.querySelectorAll(".shop-skin-equip").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const acc = loadAccount();
+        if (!acc) return;
+        const sid = btn.dataset.skin;
+        acc.selectedSkins[SKINS[sid].character] = sid;
+        saveAccount(acc);
+        renderShopSkins();
+      });
+    });
+    shopSkinsContent.querySelectorAll(".shop-skin-unequip").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const acc = loadAccount();
+        if (!acc) return;
+        const sid = btn.dataset.skin;
+        delete acc.selectedSkins[SKINS[sid].character];
+        saveAccount(acc);
+        renderShopSkins();
+      });
+    });
+  }
+
   openShopBtn.addEventListener("click", () => {
     shopOverlay.classList.remove("hidden");
     renderShopLevelUp();
+    renderShopSkins();
   });
 
   shopCloseBtn.addEventListener("click", () => {
     shopOverlay.classList.add("hidden");
     const acc = loadAccount();
-    if (acc) updateLobbyUI(acc);
+    if (acc) {
+      updateLobbyUI(acc);
+      previewChar = null;
+      setPreviewCharacter(acc.selectedCharacter);
+    }
   });
 
   document.querySelectorAll(".shop-tab").forEach((tab) => {
@@ -5283,6 +5411,7 @@ function setupInput() {
       tab.classList.add("active");
       const target = tab.dataset.tab;
       document.getElementById("shop-levelup").classList.toggle("hidden", target !== "levelup");
+      document.getElementById("shop-skins").classList.toggle("hidden", target !== "skins");
       document.getElementById("shop-coming").classList.toggle("hidden", target !== "coming");
     });
   });
