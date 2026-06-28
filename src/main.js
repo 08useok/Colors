@@ -2280,14 +2280,54 @@ function createBombExplosionEffect(x, z) {
 }
 
 function createElectricHitEffect(x, z) {
-  const bolt = new THREE.Mesh(
-    new THREE.RingGeometry(0.2, 0.4, 6),
-    new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
+  const flash = new THREE.Mesh(
+    new THREE.CircleGeometry(0.6, 12),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthWrite: false }),
   );
-  bolt.rotation.x = -Math.PI / 2;
-  bolt.position.set(x, 0.2, z);
-  scene.add(bolt);
-  state.effects.push({ mesh: bolt, life: 0.25, maxLife: 0.25, type: "electricHit" });
+  flash.rotation.x = -Math.PI / 2;
+  flash.position.set(x, 0.25, z);
+  scene.add(flash);
+  state.effects.push({ mesh: flash, life: 0.08, maxLife: 0.08, type: "electricFlash" });
+
+  for (let i = 0; i < 4; i++) {
+    const angle = (i / 4) * Math.PI * 2 + Math.random() * 0.5;
+    const points = [new THREE.Vector3(0, 0, 0)];
+    const len = 0.8 + Math.random() * 0.6;
+    const segs = 3 + Math.floor(Math.random() * 2);
+    for (let s = 1; s <= segs; s++) {
+      const t = s / segs;
+      const jx = (Math.random() - 0.5) * 0.4;
+      const jz = (Math.random() - 0.5) * 0.4;
+      points.push(new THREE.Vector3(
+        Math.cos(angle) * len * t + jx,
+        0,
+        Math.sin(angle) * len * t + jz,
+      ));
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(
+      geo,
+      new THREE.LineBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.9, linewidth: 2 }),
+    );
+    line.position.set(x, 1.3, z);
+    scene.add(line);
+    state.effects.push({ mesh: line, life: 0.18, maxLife: 0.18, type: "electricBolt" });
+  }
+
+  for (let i = 0; i < 5; i++) {
+    const spark = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 4, 4),
+      new THREE.MeshBasicMaterial({ color: 0xffff88, transparent: true, opacity: 0.9, depthWrite: false }),
+    );
+    const a = Math.random() * Math.PI * 2;
+    const r = 0.3 + Math.random() * 0.5;
+    spark.position.set(x + Math.cos(a) * r, 1.0 + Math.random() * 0.6, z + Math.sin(a) * r);
+    scene.add(spark);
+    state.effects.push({
+      mesh: spark, life: 0.2 + Math.random() * 0.1, maxLife: 0.3, type: "electricSpark",
+      vx: Math.cos(a) * 3, vy: 2 + Math.random() * 2, vz: Math.sin(a) * 3,
+    });
+  }
 }
 
 function createBoomerangHitEffect(x, z) {
@@ -3624,6 +3664,18 @@ function updateEffects(dt) {
     } else if (effect.type === "bombFlash") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.5);
       effect.mesh.material.opacity = alpha * alpha * 0.5;
+    } else if (effect.type === "electricFlash") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
+      effect.mesh.material.opacity = alpha * 0.9;
+    } else if (effect.type === "electricBolt") {
+      effect.mesh.material.opacity = alpha * 0.9;
+    } else if (effect.type === "electricSpark") {
+      effect.mesh.position.x += (effect.vx ?? 0) * dt;
+      effect.mesh.position.y += (effect.vy ?? 0) * dt;
+      effect.mesh.position.z += (effect.vz ?? 0) * dt;
+      if (effect.vy !== undefined) effect.vy -= 12 * dt;
+      effect.mesh.scale.setScalar(alpha);
+      effect.mesh.material.opacity = alpha * 0.9;
     } else if (effect.type === "electricHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.5);
       effect.mesh.rotation.z += dt * 15;
