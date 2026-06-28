@@ -965,7 +965,7 @@ function createStickman(color) {
   leftElbow.castShadow = true;
   leftArm.add(leftElbow);
   const leftForeArm = new THREE.Mesh(foreArmGeo, darkMaterial);
-  leftForeArm.position.set(0, -0.35, 0.1);
+  leftForeArm.position.set(0, -0.35, 0);
   leftForeArm.castShadow = true;
   const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), darkMaterial);
   leftFist.position.set(0, -0.38, 0.02);
@@ -1104,8 +1104,8 @@ previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const previewScene = new THREE.Scene();
 const previewCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-previewCamera.position.set(0, 1.0, 9.0);
-previewCamera.lookAt(0, 0.4, 0);
+previewCamera.position.set(0, 0.6, 9.0);
+previewCamera.lookAt(0, 0.1, 0);
 previewScene.add(new THREE.AmbientLight(0xffffff, 0.7));
 const previewDirLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
 previewDirLight.position.set(3, 6, 4);
