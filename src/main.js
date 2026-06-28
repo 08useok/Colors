@@ -910,7 +910,9 @@ function createStickman(color) {
     depthWrite: true,
   });
   const darkMaterial = material.clone();
-  darkMaterial.color.offsetHSL(0, 0, -0.08);
+  const hsl = {};
+  darkMaterial.color.getHSL(hsl);
+  darkMaterial.color.offsetHSL(0, 0, hsl.l < 0.25 ? 0.08 : -0.08);
 
   const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 1.2, 8, 14), material);
   body.position.y = 0.05;
