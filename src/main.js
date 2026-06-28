@@ -3416,20 +3416,27 @@ function updatePoisonTicks() {
       const attacker = state.players.find((p) => p.id === fighter.poisonSourceId) ?? null;
       applyDamage(fighter, purpleDef.poisonDPS, attacker);
       fighter.poisonNextTick = state.gameTime + 1;
-      for (let pi = 0; pi < 4; pi++) {
+      for (let pi = 0; pi < 5; pi++) {
         const pa = Math.random() * Math.PI * 2;
-        const pr = 0.2 + Math.random() * 0.4;
+        const pr = 0.15 + Math.random() * 0.35;
+        const size = 0.06 + Math.random() * 0.06;
         const pp = new THREE.Mesh(
-          new THREE.SphereGeometry(0.08, 4, 4),
-          new THREE.MeshBasicMaterial({ color: 0x88ff44, transparent: true, opacity: 0.8, depthWrite: false }),
+          new THREE.SphereGeometry(size, 6, 6),
+          new THREE.MeshBasicMaterial({ color: pi % 2 === 0 ? 0x88ff44 : 0x66cc22, transparent: true, opacity: 0.85, depthWrite: false }),
         );
         pp.position.set(
           fighter.mesh.position.x + Math.cos(pa) * pr,
-          0.5 + Math.random() * 0.8,
+          0.6 + Math.random() * 0.5,
           fighter.mesh.position.z + Math.sin(pa) * pr,
         );
         scene.add(pp);
-        state.effects.push({ mesh: pp, life: 0.6, maxLife: 0.6, type: "poisonBubble", vy: 1.0 + Math.random() * 0.8 });
+        state.effects.push({
+          mesh: pp, life: 0.8, maxLife: 0.8, type: "poisonBubble",
+          vy: 0.8 + Math.random() * 0.6,
+          wobbleSpeed: 4 + Math.random() * 4,
+          wobbleAmp: 0.3 + Math.random() * 0.3,
+          wobblePhase: Math.random() * Math.PI * 2,
+        });
       }
     }
   }
@@ -3699,17 +3706,25 @@ function updateEffects(dt) {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
       effect.mesh.rotation.z += dt * 12;
       effect.mesh.material.opacity = alpha * 0.7;
-    } else if (effect.type === "slowRing") {
-      effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.5);
-      effect.mesh.material.opacity = alpha * 0.6;
-    } else if (effect.type === "slowParticle") {
-      effect.mesh.position.y += (effect.vy ?? 1.5) * dt;
-      effect.mesh.scale.setScalar(alpha);
+    } else if (effect.type === "iceCrystal") {
+      const elapsed = effect.maxLife - effect.life;
+      const a = effect.angle + elapsed * 5;
+      effect.mesh.position.set(
+        effect.cx + Math.cos(a) * effect.radius,
+        0.3 + Math.sin(elapsed * 8) * 0.15,
+        effect.cz + Math.sin(a) * effect.radius,
+      );
+      effect.mesh.rotation.y += dt * 6;
+      effect.mesh.rotation.x += dt * 4;
       effect.mesh.material.opacity = alpha * 0.8;
+    } else if (effect.type === "frostRing") {
+      effect.mesh.material.opacity = alpha * 0.4;
     } else if (effect.type === "poisonBubble") {
-      effect.mesh.position.y += (effect.vy ?? 1.0) * dt;
-      effect.mesh.scale.setScalar(0.5 + alpha * 0.5);
-      effect.mesh.material.opacity = alpha * 0.8;
+      effect.mesh.position.y += (effect.vy ?? 0.8) * dt;
+      const elapsed = effect.maxLife - effect.life;
+      effect.mesh.position.x += Math.sin(elapsed * (effect.wobbleSpeed ?? 5) + (effect.wobblePhase ?? 0)) * (effect.wobbleAmp ?? 0.3) * dt;
+      effect.mesh.scale.setScalar(0.6 + alpha * 0.6);
+      effect.mesh.material.opacity = alpha * 0.85;
     } else if (effect.type === "trail") {
       effect.mesh.scale.setScalar(alpha);
       effect.mesh.material.opacity = alpha * 0.5;
@@ -4152,26 +4167,27 @@ function updateFighterAnimation(fighter, dt) {
     fighter.flashMaterial.emissive = new THREE.Color(0x7f6e00);
     fighter.flashMaterial.emissiveIntensity = pulse;
     if (!fighter.nextShockVfx || state.gameTime >= fighter.nextShockVfx) {
-      fighter.nextShockVfx = state.gameTime + 0.35;
-      const ring = new THREE.Mesh(
-        new THREE.RingGeometry(0.6, 0.75, 16),
-        new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }),
-      );
-      ring.rotation.x = -Math.PI / 2;
-      ring.position.set(fighter.mesh.position.x, 0.15, fighter.mesh.position.z);
-      scene.add(ring);
-      state.effects.push({ mesh: ring, life: 0.35, maxLife: 0.35, type: "slowRing" });
-      for (let si = 0; si < 3; si++) {
-        const sa = Math.random() * Math.PI * 2;
-        const sr = 0.3 + Math.random() * 0.3;
-        const sp = new THREE.Mesh(
-          new THREE.SphereGeometry(0.05, 4, 4),
-          new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.8, depthWrite: false }),
+      fighter.nextShockVfx = state.gameTime + 0.5;
+      const fx = fighter.mesh.position.x;
+      const fz = fighter.mesh.position.z;
+      for (let ci = 0; ci < 3; ci++) {
+        const crystal = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.15, 0),
+          new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.8, depthWrite: false }),
         );
-        sp.position.set(fighter.mesh.position.x + Math.cos(sa) * sr, 0.3 + Math.random() * 0.4, fighter.mesh.position.z + Math.sin(sa) * sr);
-        scene.add(sp);
-        state.effects.push({ mesh: sp, life: 0.4, maxLife: 0.4, type: "slowParticle", vy: 1.5 + Math.random() });
+        const baseAngle = (ci / 3) * Math.PI * 2;
+        crystal.position.set(fx + Math.cos(baseAngle) * 0.8, 0.4, fz + Math.sin(baseAngle) * 0.8);
+        scene.add(crystal);
+        state.effects.push({ mesh: crystal, life: 0.5, maxLife: 0.5, type: "iceCrystal", cx: fx, cz: fz, angle: baseAngle, radius: 0.8 });
       }
+      const frost = new THREE.Mesh(
+        new THREE.RingGeometry(0.9, 1.05, 6),
+        new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false }),
+      );
+      frost.rotation.x = -Math.PI / 2;
+      frost.position.set(fx, 0.1, fz);
+      scene.add(frost);
+      state.effects.push({ mesh: frost, life: 0.5, maxLife: 0.5, type: "frostRing" });
     }
   } else if (fighter.poisonUntil && state.gameTime < fighter.poisonUntil) {
     const pulse = Math.sin(state.gameTime * 8) * 0.25 + 0.4;
