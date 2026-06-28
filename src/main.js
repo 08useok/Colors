@@ -1154,8 +1154,8 @@ previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const previewScene = new THREE.Scene();
 const previewCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
-previewCamera.position.set(0, 0.6, 9.0);
-previewCamera.lookAt(0, 0.1, 0);
+previewCamera.position.set(0, 0.8, 12.0);
+previewCamera.lookAt(0, 0.2, 0);
 previewScene.add(new THREE.AmbientLight(0xffffff, 0.7));
 const previewDirLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
 previewDirLight.position.set(3, 6, 4);
