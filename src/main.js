@@ -2197,43 +2197,51 @@ function showDamageTakenIndicator(amount) {
 }
 
 function createAttackEffect(attacker, hitIndex) {
-  // 위치: 바라보는 방향(attacker.yaw) 정면 기준으로 고정
-  // 회전(각도): X자 기울기(tilt) 적용
   const tilt = (hitIndex === 0 ? -20 : 20) * (Math.PI / 180);
   const effectYaw = attacker.yaw + tilt;
-  const color0 = hitIndex === 0 ? 0xffcb66 : 0xff8d57;
 
-  // 정면 기준 위치 (side offset 제거 — 바라보는 방향 정중앙)
-  const fwdDist = attackDepth * 0.5;
+  const fwdDist = attackDepth * 0.55;
   const cx = attacker.mesh.position.x + Math.sin(attacker.yaw) * fwdDist;
   const cz = attacker.mesh.position.z + Math.cos(attacker.yaw) * fwdDist;
 
-  // 토러스 고리 — 기울기 방향으로 회전
-  const torusMesh = new THREE.Mesh(
-    new THREE.TorusGeometry(0.72 + hitIndex * 0.08, 0.08, 8, 20, Math.PI * 0.78),
-    new THREE.MeshBasicMaterial({ color: color0, transparent: true, opacity: 0.85 }),
+  const fist = new THREE.Mesh(
+    new THREE.SphereGeometry(0.4, 8, 6),
+    new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9 }),
   );
-  torusMesh.rotation.y = effectYaw - Math.PI / 2;
-  torusMesh.rotation.x = Math.PI / 2;
-  torusMesh.position.set(cx, 1.25, cz);
-  scene.add(torusMesh);
-  state.effects.push({ mesh: torusMesh, life: 0.22, maxLife: 0.22, type: "attack" });
+  fist.position.set(cx, 1.2, cz);
+  scene.add(fist);
+  state.effects.push({ mesh: fist, life: 0.18, maxLife: 0.18, type: "fist" });
 
-  // 슬래시 라인 — 기울기 방향으로 세운 수직 평면
-  const slashMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.26, attackDepth * 0.9),
+  const impact = new THREE.Mesh(
+    new THREE.RingGeometry(0.3, 0.6, 12),
     new THREE.MeshBasicMaterial({
-      color: hitIndex === 0 ? 0xfff2bb : 0xffd4aa,
+      color: hitIndex === 0 ? 0xffcb66 : 0xff8d57,
       transparent: true,
-      opacity: 1.0,
+      opacity: 0.85,
       side: THREE.DoubleSide,
       depthWrite: false,
     }),
   );
-  slashMesh.rotation.set(0, effectYaw, 0);
-  slashMesh.position.set(cx, 0.9, cz);
-  scene.add(slashMesh);
-  state.effects.push({ mesh: slashMesh, life: 0.13, maxLife: 0.13, type: "slash" });
+  impact.rotation.y = effectYaw;
+  impact.rotation.x = Math.PI / 2;
+  impact.position.set(cx, 1.2, cz);
+  scene.add(impact);
+  state.effects.push({ mesh: impact, life: 0.25, maxLife: 0.25, type: "punchImpact" });
+
+  const burst = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.6, 1.6),
+    new THREE.MeshBasicMaterial({
+      color: 0xffee88,
+      transparent: true,
+      opacity: 0.7,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  burst.rotation.set(0, effectYaw, (hitIndex === 0 ? -1 : 1) * 0.4);
+  burst.position.set(cx, 1.2, cz);
+  scene.add(burst);
+  state.effects.push({ mesh: burst, life: 0.12, maxLife: 0.12, type: "punchBurst" });
 }
 
 function createHitSpark(position) {
@@ -3582,11 +3590,19 @@ function updateEffects(dt) {
       continue;
     }
     const alpha = effect.life / effect.maxLife;
-    if (effect.type === "attack") {
+    if (effect.type === "fist") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.5);
+      effect.mesh.material.opacity = alpha * 0.9;
+    } else if (effect.type === "punchImpact") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 3.0);
+      effect.mesh.material.opacity = alpha * 0.85;
+    } else if (effect.type === "punchBurst") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
+      effect.mesh.material.opacity = alpha * alpha * 0.7;
+    } else if (effect.type === "attack") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.28);
       effect.mesh.material.opacity = alpha * 0.85;
     } else if (effect.type === "slash") {
-      // 너비는 빠르게 퍼지고, 투명도는 제곱으로 빠르게 사라짐
       effect.mesh.scale.x = 1 + (1 - alpha) * 1.8;
       effect.mesh.scale.y = 1.0;
       effect.mesh.material.opacity = alpha * alpha;
