@@ -4223,8 +4223,8 @@ function updateFighterAnimation(fighter, dt) {
     fighter.flashMaterial.emissive = new THREE.Color(0x7f0f0f);
     fighter.flashMaterial.emissiveIntensity = fighter.flashTimer > 0 ? 0.75 : 0;
   } else if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
-    const pulse = Math.sin(state.gameTime * 12) * 0.3 + 0.5;
-    fighter.flashMaterial.emissive = new THREE.Color(0x7f6e00);
+    const pulse = Math.sin(state.gameTime * 12) * 0.15 + 0.3;
+    fighter.flashMaterial.emissive = new THREE.Color(0x2299cc);
     fighter.flashMaterial.emissiveIntensity = pulse;
     if (!fighter.nextShockVfx || state.gameTime >= fighter.nextShockVfx) {
       fighter.nextShockVfx = state.gameTime + 0.5;
@@ -4250,8 +4250,8 @@ function updateFighterAnimation(fighter, dt) {
       state.effects.push({ mesh: frost, life: 0.5, maxLife: 0.5, type: "frostRing" });
     }
   } else if (fighter.poisonUntil && state.gameTime < fighter.poisonUntil) {
-    const pulse = Math.sin(state.gameTime * 8) * 0.25 + 0.4;
-    fighter.flashMaterial.emissive = new THREE.Color(0x2a6e00);
+    const pulse = Math.sin(state.gameTime * 8) * 0.15 + 0.25;
+    fighter.flashMaterial.emissive = new THREE.Color(0x44aa22);
     fighter.flashMaterial.emissiveIntensity = pulse;
   } else {
     fighter.flashMaterial.emissiveIntensity = 0;
