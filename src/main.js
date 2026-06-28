@@ -2316,7 +2316,7 @@ function createElectricHitEffect(x, z) {
 
   for (let i = 0; i < 5; i++) {
     const spark = new THREE.Mesh(
-      new THREE.SphereGeometry(0.06, 4, 4),
+      new THREE.SphereGeometry(0.12, 4, 4),
       new THREE.MeshBasicMaterial({ color: 0xffff88, transparent: true, opacity: 0.9, depthWrite: false }),
     );
     const a = Math.random() * Math.PI * 2;
@@ -3323,7 +3323,7 @@ function updateProjectiles(dt) {
 
     if (proj.isBullet || proj.isElectric || proj.isNeedle) {
       const color = proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
-      const size = proj.isBullet ? 0.12 : proj.isElectric ? 0.14 : 0.1;
+      const size = proj.isBullet ? 0.24 : proj.isElectric ? 0.28 : 0.2;
       const trail = new THREE.Mesh(
         new THREE.SphereGeometry(size, 4, 4),
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }),
@@ -3419,7 +3419,7 @@ function updatePoisonTicks() {
       for (let pi = 0; pi < 5; pi++) {
         const pa = Math.random() * Math.PI * 2;
         const pr = 0.15 + Math.random() * 0.35;
-        const size = 0.06 + Math.random() * 0.06;
+        const size = 0.12 + Math.random() * 0.12;
         const pp = new THREE.Mesh(
           new THREE.SphereGeometry(size, 6, 6),
           new THREE.MeshBasicMaterial({ color: pi % 2 === 0 ? 0x88ff44 : 0x66cc22, transparent: true, opacity: 0.85, depthWrite: false }),
@@ -4172,7 +4172,7 @@ function updateFighterAnimation(fighter, dt) {
       const fz = fighter.mesh.position.z;
       for (let ci = 0; ci < 3; ci++) {
         const crystal = new THREE.Mesh(
-          new THREE.OctahedronGeometry(0.15, 0),
+          new THREE.OctahedronGeometry(0.30, 0),
           new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.8, depthWrite: false }),
         );
         const baseAngle = (ci / 3) * Math.PI * 2;
