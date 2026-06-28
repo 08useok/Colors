@@ -3416,6 +3416,21 @@ function updatePoisonTicks() {
       const attacker = state.players.find((p) => p.id === fighter.poisonSourceId) ?? null;
       applyDamage(fighter, purpleDef.poisonDPS, attacker);
       fighter.poisonNextTick = state.gameTime + 1;
+      for (let pi = 0; pi < 4; pi++) {
+        const pa = Math.random() * Math.PI * 2;
+        const pr = 0.2 + Math.random() * 0.4;
+        const pp = new THREE.Mesh(
+          new THREE.SphereGeometry(0.08, 4, 4),
+          new THREE.MeshBasicMaterial({ color: 0x88ff44, transparent: true, opacity: 0.8, depthWrite: false }),
+        );
+        pp.position.set(
+          fighter.mesh.position.x + Math.cos(pa) * pr,
+          0.5 + Math.random() * 0.8,
+          fighter.mesh.position.z + Math.sin(pa) * pr,
+        );
+        scene.add(pp);
+        state.effects.push({ mesh: pp, life: 0.6, maxLife: 0.6, type: "poisonBubble", vy: 1.0 + Math.random() * 0.8 });
+      }
     }
   }
 }
@@ -3684,6 +3699,17 @@ function updateEffects(dt) {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
       effect.mesh.rotation.z += dt * 12;
       effect.mesh.material.opacity = alpha * 0.7;
+    } else if (effect.type === "slowRing") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.5);
+      effect.mesh.material.opacity = alpha * 0.6;
+    } else if (effect.type === "slowParticle") {
+      effect.mesh.position.y += (effect.vy ?? 1.5) * dt;
+      effect.mesh.scale.setScalar(alpha);
+      effect.mesh.material.opacity = alpha * 0.8;
+    } else if (effect.type === "poisonBubble") {
+      effect.mesh.position.y += (effect.vy ?? 1.0) * dt;
+      effect.mesh.scale.setScalar(0.5 + alpha * 0.5);
+      effect.mesh.material.opacity = alpha * 0.8;
     } else if (effect.type === "trail") {
       effect.mesh.scale.setScalar(alpha);
       effect.mesh.material.opacity = alpha * 0.5;
@@ -4124,6 +4150,32 @@ function updateFighterAnimation(fighter, dt) {
   } else if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
     const pulse = Math.sin(state.gameTime * 12) * 0.3 + 0.5;
     fighter.flashMaterial.emissive = new THREE.Color(0x7f6e00);
+    fighter.flashMaterial.emissiveIntensity = pulse;
+    if (!fighter.nextShockVfx || state.gameTime >= fighter.nextShockVfx) {
+      fighter.nextShockVfx = state.gameTime + 0.35;
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(0.6, 0.75, 16),
+        new THREE.MeshBasicMaterial({ color: 0x88ddff, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }),
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.set(fighter.mesh.position.x, 0.15, fighter.mesh.position.z);
+      scene.add(ring);
+      state.effects.push({ mesh: ring, life: 0.35, maxLife: 0.35, type: "slowRing" });
+      for (let si = 0; si < 3; si++) {
+        const sa = Math.random() * Math.PI * 2;
+        const sr = 0.3 + Math.random() * 0.3;
+        const sp = new THREE.Mesh(
+          new THREE.SphereGeometry(0.05, 4, 4),
+          new THREE.MeshBasicMaterial({ color: 0xaaeeff, transparent: true, opacity: 0.8, depthWrite: false }),
+        );
+        sp.position.set(fighter.mesh.position.x + Math.cos(sa) * sr, 0.3 + Math.random() * 0.4, fighter.mesh.position.z + Math.sin(sa) * sr);
+        scene.add(sp);
+        state.effects.push({ mesh: sp, life: 0.4, maxLife: 0.4, type: "slowParticle", vy: 1.5 + Math.random() });
+      }
+    }
+  } else if (fighter.poisonUntil && state.gameTime < fighter.poisonUntil) {
+    const pulse = Math.sin(state.gameTime * 8) * 0.25 + 0.4;
+    fighter.flashMaterial.emissive = new THREE.Color(0x2a6e00);
     fighter.flashMaterial.emissiveIntensity = pulse;
   } else {
     fighter.flashMaterial.emissiveIntensity = 0;
