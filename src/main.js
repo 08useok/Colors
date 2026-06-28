@@ -3281,6 +3281,18 @@ function updateProjectiles(dt) {
       }
     }
 
+    if (proj.isBullet || proj.isElectric || proj.isNeedle) {
+      const color = proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
+      const size = proj.isBullet ? 0.12 : proj.isElectric ? 0.14 : 0.1;
+      const trail = new THREE.Mesh(
+        new THREE.SphereGeometry(size, 4, 4),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }),
+      );
+      trail.position.set(proj.x, proj.mesh.position.y, proj.z);
+      scene.add(trail);
+      state.effects.push({ mesh: trail, life: 0.15, maxLife: 0.15, type: "trail" });
+    }
+
     let hit = false;
     const attacker = state.players.find((p) => p.id === proj.ownerId);
     for (const target of state.players) {
@@ -3620,6 +3632,9 @@ function updateEffects(dt) {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
       effect.mesh.rotation.z += dt * 12;
       effect.mesh.material.opacity = alpha * 0.7;
+    } else if (effect.type === "trail") {
+      effect.mesh.scale.setScalar(alpha);
+      effect.mesh.material.opacity = alpha * 0.5;
     } else if (effect.type === "bulletHit" || effect.type === "spreadHit" || effect.type === "needleHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.8);
       effect.mesh.material.opacity = alpha * alpha;
