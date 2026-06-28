@@ -2766,6 +2766,74 @@ function isWallAhead(fighter, dirX, dirZ, lookahead) {
   return false;
 }
 
+function isPathBlocked(ax, az, bx, bz, radius) {
+  const dx = bx - ax;
+  const dz = bz - az;
+  const len = Math.hypot(dx, dz);
+  if (len < 0.1) return false;
+  const steps = Math.ceil(len / radius);
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const cx = ax + dx * t;
+    const cz = az + dz * t;
+    for (const solid of state.solids) {
+      if (intersectsRect(cx, cz, radius, solid)) return true;
+    }
+    for (const rect of state.lakeRects) {
+      if (intersectsRect(cx, cz, radius, rect)) return true;
+    }
+  }
+  return false;
+}
+
+function findNavTarget(fighter, targetX, targetZ) {
+  if (!isPathBlocked(fighter.mesh.position.x, fighter.mesh.position.z, targetX, targetZ, fighter.radius)) {
+    return { x: targetX, z: targetZ };
+  }
+  const pad = fighter.radius + 0.5;
+  let bestCorner = null;
+  let bestScore = Infinity;
+  for (const solid of state.solids) {
+    const corners = [
+      { x: solid.minX - pad, z: solid.minZ - pad },
+      { x: solid.maxX + pad, z: solid.minZ - pad },
+      { x: solid.minX - pad, z: solid.maxZ + pad },
+      { x: solid.maxX + pad, z: solid.maxZ + pad },
+    ];
+    for (const c of corners) {
+      const distToCorner = Math.hypot(c.x - fighter.mesh.position.x, c.z - fighter.mesh.position.z);
+      const cornerToTarget = Math.hypot(c.x - targetX, c.z - targetZ);
+      if (distToCorner < 1) continue;
+      if (isPathBlocked(fighter.mesh.position.x, fighter.mesh.position.z, c.x, c.z, fighter.radius)) continue;
+      const score = distToCorner + cornerToTarget;
+      if (score < bestScore) {
+        bestScore = score;
+        bestCorner = c;
+      }
+    }
+  }
+  for (const rect of state.lakeRects) {
+    const corners = [
+      { x: rect.minX - pad, z: rect.minZ - pad },
+      { x: rect.maxX + pad, z: rect.minZ - pad },
+      { x: rect.minX - pad, z: rect.maxZ + pad },
+      { x: rect.maxX + pad, z: rect.maxZ + pad },
+    ];
+    for (const c of corners) {
+      const distToCorner = Math.hypot(c.x - fighter.mesh.position.x, c.z - fighter.mesh.position.z);
+      const cornerToTarget = Math.hypot(c.x - targetX, c.z - targetZ);
+      if (distToCorner < 1) continue;
+      if (isPathBlocked(fighter.mesh.position.x, fighter.mesh.position.z, c.x, c.z, fighter.radius)) continue;
+      const score = distToCorner + cornerToTarget;
+      if (score < bestScore) {
+        bestScore = score;
+        bestCorner = c;
+      }
+    }
+  }
+  return bestCorner || { x: targetX, z: targetZ };
+}
+
 function findWallEscapeDir(fighter, dirX, dirZ, lookahead) {
   if (!isWallAhead(fighter, dirX, dirZ, lookahead)) {
     return null;
@@ -2899,6 +2967,22 @@ function beginAttack(fighter) {
     audio.play("attack");
   }
   return true;
+}
+
+function findAutoAimTarget(player) {
+  const range = Math.max(15, getAttackRange(player));
+  let best = null;
+  let bestDist = range;
+  for (const fighter of state.players) {
+    if (fighter.id === player.id || fighter.dead) continue;
+    if (state.chopWoodMode && fighter.team === player.team) continue;
+    if (!isFighterVisible(player, fighter)) continue;
+    const dx = fighter.mesh.position.x - player.mesh.position.x;
+    const dz = fighter.mesh.position.z - player.mesh.position.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist < bestDist) { bestDist = dist; best = fighter; }
+  }
+  return best;
 }
 
 function getAttackRange(fighter) {
@@ -3965,9 +4049,10 @@ function updateBot(bot, dt, zone) {
       beginAttack(bot);
     }
   } else if (target) {
-    const toTargetX = target.mesh.position.x - botPos.x;
-    const toTargetZ = target.mesh.position.z - botPos.z;
-    const distance = Math.hypot(toTargetX, toTargetZ);
+    const nav = findNavTarget(bot, target.mesh.position.x, target.mesh.position.z);
+    const toTargetX = nav.x - botPos.x;
+    const toTargetZ = nav.z - botPos.z;
+    const distance = Math.hypot(target.mesh.position.x - botPos.x, target.mesh.position.z - botPos.z);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
     const isRanged = ["green", "blue", "orange", "yellow", "cyan", "purple"].includes(bot.characterType);
@@ -4002,11 +4087,10 @@ function updateBot(bot, dt, zone) {
   } else if (state.chopWoodMode) {
     const enemyTree = getChopWoodEnemyTree(bot);
     if (enemyTree) {
-      const toTreeX = enemyTree.x - botPos.x;
-      const toTreeZ = enemyTree.z - botPos.z;
-      const treeDist = Math.hypot(toTreeX, toTreeZ);
+      const treeDist = Math.hypot(enemyTree.x - botPos.x, enemyTree.z - botPos.z);
       if (treeDist > 2.5) {
-        bot.yaw = Math.atan2(toTreeX, toTreeZ);
+        const treeNav = findNavTarget(bot, enemyTree.x, enemyTree.z);
+        bot.yaw = Math.atan2(treeNav.x - botPos.x, treeNav.z - botPos.z);
         tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.75);
       } else {
         tempVec3.set(0, 0, 0);
@@ -4024,7 +4108,8 @@ function updateBot(bot, dt, zone) {
       );
     }
 
-    tempVec3.set(bot.botMoveTarget.x - botPos.x, 0, bot.botMoveTarget.z - botPos.z);
+    const wanderNav = findNavTarget(bot, bot.botMoveTarget.x, bot.botMoveTarget.z);
+    tempVec3.set(wanderNav.x - botPos.x, 0, wanderNav.z - botPos.z);
     if (tempVec3.lengthSq() > 1) {
       bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
       tempVec3.normalize().multiplyScalar(botSpeed * 0.62);
@@ -4036,8 +4121,9 @@ function updateBot(bot, dt, zone) {
   if (!state.chopWoodMode) {
     const distFromCenter = Math.hypot(botPos.x - state.safeCenter.x, botPos.z - state.safeCenter.y);
     if (distFromCenter > zone.radius - 4) {
-      const toCenterX = state.safeCenter.x - botPos.x;
-      const toCenterZ = state.safeCenter.y - botPos.z;
+      const zoneNav = findNavTarget(bot, state.safeCenter.x, state.safeCenter.y);
+      const toCenterX = zoneNav.x - botPos.x;
+      const toCenterZ = zoneNav.z - botPos.z;
       const len = Math.hypot(toCenterX, toCenterZ) || 1;
       tempVec3.set((toCenterX / len) * botSpeed, 0, (toCenterZ / len) * botSpeed);
       bot.yaw = Math.atan2(tempVec3.x, tempVec3.z);
@@ -4979,15 +5065,29 @@ function setupInput() {
     event.preventDefault();
   });
 
+  let mouseDownAt = 0;
   function startAiming(event) {
     if (event.button !== 0 && event.button !== 2) return;
     event.preventDefault();
-    if (state.running) state.mouseHeld = true;
+    if (state.running) {
+      state.mouseHeld = true;
+      mouseDownAt = performance.now();
+    }
   }
 
   function attackOnRelease() {
     if (state.mouseHeld && state.running) {
       state.mouseHeld = false;
+      const player = getPlayer();
+      if (player && !player.dead && performance.now() - mouseDownAt < 500) {
+        const target = findAutoAimTarget(player);
+        if (target) {
+          const dx = target.mesh.position.x - player.mesh.position.x;
+          const dz = target.mesh.position.z - player.mesh.position.z;
+          player.yaw = Math.atan2(dx, dz);
+          player.mesh.rotation.y = player.yaw;
+        }
+      }
       beginAttack(getPlayer());
     } else {
       state.mouseHeld = false;
