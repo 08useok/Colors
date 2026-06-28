@@ -4143,7 +4143,7 @@ function updateFighterAnimation(fighter, dt) {
   fighter.recoilKick = Math.max(0, fighter.recoilKick - dt * 3.4);
   fighter.pitchKick = Math.max(0, fighter.pitchKick - dt * 4.2);
 
-  if (fighter.flashTimer) {
+  if (fighter.flashTimer > 0) {
     fighter.flashTimer -= dt;
     fighter.flashMaterial.emissive = new THREE.Color(0x7f0f0f);
     fighter.flashMaterial.emissiveIntensity = fighter.flashTimer > 0 ? 0.75 : 0;
