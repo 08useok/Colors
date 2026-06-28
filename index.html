@@ -117,11 +117,19 @@
                 <tr><td class="mu-yellow">🟡 Yellow</td><td>🔴 🟠</td><td>🔵 🩵</td><td class="mu-green">🟢 Green</td></tr>
                 <tr><td class="mu-cyan">🩵 Cyan</td><td>🔴 🟢</td><td>🟠 🟡</td><td class="mu-blue">🔵 Blue</td></tr>
                 <tr><td class="mu-purple">🟣 Purple</td><td>🔴 🟠</td><td>🟢 🩵</td><td>🔵 🟡</td></tr>
+                <tr><td class="mu-pink">🩷 Pink</td><td>🟢 🟡</td><td>🔴 🟠</td><td>🔵 🩵 🟣</td></tr>
               </tbody>
             </table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
+            <div class="patch-entry">
+              <div class="patch-version">v1.4.6 — 2026.06.28</div>
+              <ul>
+                <li data-i18n="pv146a">Pink 캐릭터 추가 — 탱크/서포터 (원형 범위 공격 + 아군 회복)</li>
+                <li data-i18n="pv146b">상성표 8캐릭터로 갱신</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.4.5 — 2026.06.28</div>
               <ul>
@@ -419,6 +427,7 @@
             <button class="color-dot" data-char="yellow" style="background:#ffff00" type="button"></button>
             <button class="color-dot" data-char="cyan" style="background:#0ff0fe" type="button"></button>
           <button class="color-dot" data-char="purple" style="background:#800080" type="button"></button>
+          <button class="color-dot" data-char="pink" style="background:#FF69B4" type="button"></button>
           </div>
           <div id="color-info" class="color-info"></div>
         </div>
@@ -428,7 +437,7 @@
           <div class="season-info">
             <span>배틀로얄</span>
             <span>해골천</span>
-            <span data-i18n="charCount">캐릭터 7종</span>
+            <span data-i18n="charCount">캐릭터 8종</span>
           </div>
           <div class="lobby-header">
             <div class="lobby-left">
@@ -502,6 +511,12 @@
               <div class="char-icon char-icon-purple">P</div>
               <div class="char-name">Purple</div>
               <div class="char-winrate" id="winrate-purple"></div>
+            </button>
+            <button id="select-pink" class="char-btn" type="button" data-char="pink">
+              <div class="selected-badge">선택됨</div>
+              <div class="char-icon char-icon-pink">Pi</div>
+              <div class="char-name">Pink</div>
+              <div class="char-winrate" id="winrate-pink"></div>
             </button>
           </div>
 

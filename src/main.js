@@ -360,6 +360,18 @@ const CHARACTERS = {
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
   },
+  pink: {
+    color: 0xFF69B4,
+    maxHealth: 11500,
+    attackType: "heal_circle",
+    reloadDuration: 1.0,
+    attackCooldown: 0.7,
+    healCircleRange: 4.5,
+    healCircleDamage: 2400,
+    healCircleHeal: 1800,
+    moveSpeedMultiplier: 1.4,
+    walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
+  },
 };
 
 // ── 계정 관리 ──────────────────────────────────────────────────────────────
@@ -382,6 +394,7 @@ function loadAccount() {
     if (!account.charStats.yellow) account.charStats.yellow = { wins: 0, games: 0 };
     if (!account.charStats.cyan) account.charStats.cyan = { wins: 0, games: 0 };
     if (!account.charStats.purple) account.charStats.purple = { wins: 0, games: 0 };
+    if (!account.charStats.pink) account.charStats.pink = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (!account.lang) account.lang = "ko";
@@ -402,13 +415,14 @@ function loadAccount() {
       account.seasonCharStats[CURRENT_SEASON] = {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
       };
     }
     for (const s of Object.values(account.seasonCharStats)) {
       if (!s.yellow) s.yellow = { wins: 0, games: 0 };
       if (!s.cyan) s.cyan = { wins: 0, games: 0 };
       if (!s.purple) s.purple = { wins: 0, games: 0 };
+      if (!s.pink) s.pink = { wins: 0, games: 0 };
     }
     let migrated = false;
     if (account.coins === undefined) { account.coins = 0; migrated = true; }
@@ -471,6 +485,7 @@ function createAccount(id, nickname) {
       yellow: { wins: 0, games: 0 },
       cyan:   { wins: 0, games: 0 },
       purple: { wins: 0, games: 0 },
+      pink:   { wins: 0, games: 0 },
     },
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1,
@@ -485,7 +500,7 @@ function createAccount(id, nickname) {
       [CURRENT_SEASON]: {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
       },
     },
   };
@@ -516,7 +531,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
@@ -1784,7 +1799,7 @@ function initChopWoodPlayers() {
   });
   state.players = [];
 
-  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple"];
+  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
 
@@ -2200,6 +2215,35 @@ function createPurpleAimIndicator() {
 
 const purpleAimIndicator = createPurpleAimIndicator();
 
+function createPinkAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.pink.healCircleRange;
+
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(range - 0.12, range, 32),
+    new THREE.MeshBasicMaterial({ color: 0xFF69B4, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(0, 0.08, 0);
+  group.add(ring);
+
+  const fill = new THREE.Mesh(
+    new THREE.CircleGeometry(range, 32),
+    new THREE.MeshBasicMaterial({ color: 0xFF88CC, transparent: true, opacity: 0.06, depthWrite: false }),
+  );
+  fill.rotation.x = -Math.PI / 2;
+  fill.position.set(0, 0.07, 0);
+  group.add(fill);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { ring, fill };
+  scene.add(group);
+  return group;
+}
+
+const pinkAimIndicator = createPinkAimIndicator();
+
 function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
@@ -2478,7 +2522,7 @@ function initPlayers() {
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple"];
+    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
@@ -2771,7 +2815,8 @@ function isPathBlocked(ax, az, bx, bz, radius) {
   const dz = bz - az;
   const len = Math.hypot(dx, dz);
   if (len < 0.1) return false;
-  const steps = Math.ceil(len / radius);
+  const step = Math.max(radius, 2);
+  const steps = Math.ceil(len / step);
   for (let i = 1; i <= steps; i++) {
     const t = i / steps;
     const cx = ax + dx * t;
@@ -2787,48 +2832,47 @@ function isPathBlocked(ax, az, bx, bz, radius) {
 }
 
 function findNavTarget(fighter, targetX, targetZ) {
-  if (!isPathBlocked(fighter.mesh.position.x, fighter.mesh.position.z, targetX, targetZ, fighter.radius)) {
+  if (fighter._navUntil && state.gameTime < fighter._navUntil &&
+      fighter._navGoalX === targetX && fighter._navGoalZ === targetZ) {
+    return fighter._navResult;
+  }
+  const result = _computeNavTarget(fighter, targetX, targetZ);
+  fighter._navUntil = state.gameTime + 0.4;
+  fighter._navGoalX = targetX;
+  fighter._navGoalZ = targetZ;
+  fighter._navResult = result;
+  return result;
+}
+
+function _computeNavTarget(fighter, targetX, targetZ) {
+  const fx = fighter.mesh.position.x;
+  const fz = fighter.mesh.position.z;
+  if (!isPathBlocked(fx, fz, targetX, targetZ, fighter.radius)) {
     return { x: targetX, z: targetZ };
   }
   const pad = fighter.radius + 0.5;
+  const searchRange = 25;
   let bestCorner = null;
   let bestScore = Infinity;
-  for (const solid of state.solids) {
+  const obstacles = state.solids.concat(state.lakeRects);
+  for (const ob of obstacles) {
+    if (Math.abs(ob.x - fx) > searchRange && Math.abs(ob.x - targetX) > searchRange) continue;
+    if (Math.abs(ob.z - fz) > searchRange && Math.abs(ob.z - targetZ) > searchRange) continue;
     const corners = [
-      { x: solid.minX - pad, z: solid.minZ - pad },
-      { x: solid.maxX + pad, z: solid.minZ - pad },
-      { x: solid.minX - pad, z: solid.maxZ + pad },
-      { x: solid.maxX + pad, z: solid.maxZ + pad },
+      { x: ob.minX - pad, z: ob.minZ - pad },
+      { x: ob.maxX + pad, z: ob.minZ - pad },
+      { x: ob.minX - pad, z: ob.maxZ + pad },
+      { x: ob.maxX + pad, z: ob.maxZ + pad },
     ];
     for (const c of corners) {
-      const distToCorner = Math.hypot(c.x - fighter.mesh.position.x, c.z - fighter.mesh.position.z);
+      const distToCorner = Math.hypot(c.x - fx, c.z - fz);
+      if (distToCorner < 1 || distToCorner > searchRange) continue;
       const cornerToTarget = Math.hypot(c.x - targetX, c.z - targetZ);
-      if (distToCorner < 1) continue;
-      if (isPathBlocked(fighter.mesh.position.x, fighter.mesh.position.z, c.x, c.z, fighter.radius)) continue;
       const score = distToCorner + cornerToTarget;
-      if (score < bestScore) {
-        bestScore = score;
-        bestCorner = c;
-      }
-    }
-  }
-  for (const rect of state.lakeRects) {
-    const corners = [
-      { x: rect.minX - pad, z: rect.minZ - pad },
-      { x: rect.maxX + pad, z: rect.minZ - pad },
-      { x: rect.minX - pad, z: rect.maxZ + pad },
-      { x: rect.maxX + pad, z: rect.maxZ + pad },
-    ];
-    for (const c of corners) {
-      const distToCorner = Math.hypot(c.x - fighter.mesh.position.x, c.z - fighter.mesh.position.z);
-      const cornerToTarget = Math.hypot(c.x - targetX, c.z - targetZ);
-      if (distToCorner < 1) continue;
-      if (isPathBlocked(fighter.mesh.position.x, fighter.mesh.position.z, c.x, c.z, fighter.radius)) continue;
-      const score = distToCorner + cornerToTarget;
-      if (score < bestScore) {
-        bestScore = score;
-        bestCorner = c;
-      }
+      if (score >= bestScore) continue;
+      if (isPathBlocked(fx, fz, c.x, c.z, fighter.radius)) continue;
+      bestScore = score;
+      bestCorner = c;
     }
   }
   return bestCorner || { x: targetX, z: targetZ };
@@ -2943,6 +2987,9 @@ function beginAttack(fighter) {
   if (fighter.characterType === "purple") {
     return beginPoisonAttack(fighter);
   }
+  if (fighter.characterType === "pink") {
+    return beginHealCircleAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -2992,6 +3039,7 @@ function getAttackRange(fighter) {
   if (fighter.characterType === "yellow") return CHARACTERS.yellow.electricRange;
   if (fighter.characterType === "cyan") return CHARACTERS.cyan.spreadLineRange;
   if (fighter.characterType === "purple") return CHARACTERS.purple.needleRange;
+  if (fighter.characterType === "pink") return CHARACTERS.pink.healCircleRange;
   return attackDepth;
 }
 
@@ -3317,6 +3365,76 @@ function createVialMesh(position, yaw) {
   );
   scene.add(mesh);
   return mesh;
+}
+
+function beginHealCircleAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.pink;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.06);
+  fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+
+  const fx = fighter.mesh.position.x;
+  const fz = fighter.mesh.position.z;
+  const r2 = charDef.healCircleRange * charDef.healCircleRange;
+
+  for (const target of state.players) {
+    if (target.dead || target.id === fighter.id) continue;
+    const dx = target.mesh.position.x - fx;
+    const dz = target.mesh.position.z - fz;
+    if (dx * dx + dz * dz > r2) continue;
+
+    const isAlly = state.chopWoodMode && target.team === fighter.team;
+    if (isAlly) {
+      target.health = Math.min(target.maxHealth, target.health + charDef.healCircleHeal);
+      createHealEffect(target.mesh.position.x, target.mesh.position.z);
+    } else if (!state.chopWoodMode || target.team !== fighter.team) {
+      applyDamage(target, charDef.healCircleDamage, fighter);
+      if (fighter.isPlayer) {
+        flashHitMarker();
+        audio.play("hit");
+      }
+    }
+  }
+
+  createHealCircleEffect(fx, fz, charDef.healCircleRange);
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
+function createHealCircleEffect(x, z, radius) {
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(radius * 0.3, radius * 0.35, 32),
+    new THREE.MeshBasicMaterial({ color: 0xFF69B4, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(x, 0.15, z);
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.4, maxLife: 0.4, type: "healRing", targetScale: radius });
+
+  const fill = new THREE.Mesh(
+    new THREE.CircleGeometry(radius, 32),
+    new THREE.MeshBasicMaterial({ color: 0xFF88CC, transparent: true, opacity: 0.15, depthWrite: false }),
+  );
+  fill.rotation.x = -Math.PI / 2;
+  fill.position.set(x, 0.12, z);
+  scene.add(fill);
+  state.effects.push({ mesh: fill, life: 0.35, maxLife: 0.35, type: "healFill" });
+}
+
+function createHealEffect(x, z) {
+  const cross = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.5, 0.5),
+    new THREE.MeshBasicMaterial({ color: 0x44ff88, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  cross.position.set(x, 2.5, z);
+  scene.add(cross);
+  state.effects.push({ mesh: cross, life: 0.6, maxLife: 0.6, type: "healPopup", vy: 1.2 });
 }
 
 function beginPoisonAttack(fighter) {
@@ -3875,6 +3993,15 @@ function updateEffects(dt) {
     } else if (effect.type === "bulletHit" || effect.type === "spreadHit" || effect.type === "needleHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.8);
       effect.mesh.material.opacity = alpha * alpha;
+    } else if (effect.type === "healRing") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
+      effect.mesh.material.opacity = alpha * 0.6;
+    } else if (effect.type === "healFill") {
+      effect.mesh.material.opacity = alpha * 0.15;
+    } else if (effect.type === "healPopup") {
+      effect.mesh.position.y += (effect.vy ?? 1.2) * dt;
+      effect.mesh.scale.setScalar(0.7 + alpha * 0.3);
+      effect.mesh.material.opacity = alpha * 0.9;
     } else if (effect.type === "vialRing") {
       const expand = 1 + (1 - alpha) * 2.0;
       effect.mesh.scale.setScalar(expand);
@@ -4065,6 +4192,7 @@ function updateBot(bot, dt, zone) {
     else if (ct === "yellow") idealDist = 7;
     else if (ct === "cyan") idealDist = 6;
     else if (ct === "purple") idealDist = 10;
+    else if (ct === "pink") idealDist = 3;
     else idealDist = atkRange * 0.6;
 
     if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
@@ -4220,6 +4348,15 @@ function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
+    } else if (charType === "pink") {
+      const slam = pulse(t, 0.02, 0.12, 0.25);
+      const recover = pulse(t, 0.25, 0.4, 0.55);
+      leftArmX += -slam * 1.2 + recover * 0.3;
+      rightArmX += -slam * 1.2 + recover * 0.3;
+      leftArmZ += slam * 0.4;
+      rightArmZ += -slam * 0.4;
+      bodyZ += slam * 0.06 - recover * 0.02;
+      bodyY += -slam * 0.08;
     } else if (charType === "purple") {
       const raise = Math.min(1, t / 0.08) * (t > 0.5 ? Math.max(0, 1 - (t - 0.5) / 0.1) : 1);
       const recoil = pulse(t, 0.08, 0.14, 0.3);
@@ -4427,6 +4564,7 @@ function updateAttackAimIndicator() {
     yellowAimIndicator.visible = false;
     cyanAimIndicator.visible = false;
     purpleAimIndicator.visible = false;
+    pinkAimIndicator.visible = false;
     return;
   }
 
@@ -4441,6 +4579,7 @@ function updateAttackAimIndicator() {
   yellowAimIndicator.visible = false;
   cyanAimIndicator.visible = false;
   purpleAimIndicator.visible = false;
+  pinkAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -4498,6 +4637,11 @@ function updateAttackAimIndicator() {
       purpleAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.4;
       purpleAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.08;
     }
+  } else if (charType === "pink") {
+    pinkAimIndicator.visible = true;
+    pinkAimIndicator.position.set(pos.x, 0, pos.z);
+    pinkAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.35;
+    pinkAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.06;
   }
 }
 
@@ -4561,6 +4705,7 @@ function updateHud() {
   player.characterType === "yellow" ? t("electricAttack") :
   player.characterType === "cyan" ? t("spreadLineAttack") :
   player.characterType === "purple" ? t("poisonAttack") :
+  player.characterType === "pink" ? t("healCircleAttack") :
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
@@ -4956,7 +5101,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
         html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
         html += `<div class="stats-divider"></div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -4976,7 +5121,7 @@ function setupInput() {
           html += `<div class="stats-char" style="font-weight:600">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -5320,6 +5465,14 @@ function setupInput() {
     updateLobbyUI(account);
   });
 
+  document.getElementById("select-pink")?.addEventListener("click", () => {
+    const account = loadAccount();
+    if (!account) return;
+    account.selectedCharacter = "pink";
+    saveAccount(account);
+    updateLobbyUI(account);
+  });
+
   document.querySelectorAll(".color-dot").forEach((dot) => {
     dot.addEventListener("click", () => {
       const account = loadAccount();
@@ -5375,7 +5528,7 @@ function setupInput() {
   function renderShopLevelUp() {
     const account = loadAccount();
     if (!account) return;
-    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple"];
+    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
     const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {

@@ -98,4 +98,16 @@ export const CHARACTERS = {
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
   },
+  pink: {
+    color: 0xFF69B4,
+    maxHealth: 11500,
+    attackType: "heal_circle",
+    reloadDuration: 1.0,
+    attackCooldown: 0.7,
+    healCircleRange: 4.5,
+    healCircleDamage: 2400,
+    healCircleHeal: 1800,
+    moveSpeedMultiplier: 1.4,
+    walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
+  },
 };

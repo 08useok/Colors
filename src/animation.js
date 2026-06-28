@@ -56,6 +56,14 @@ export function updateFighterAnimation(fighter, dt) {
       leftArmX += -raise * 1.1 + recoil * 0.2;
       bodyZ += -recoil * 0.05;
       headX += recoil * 0.04;
+    } else if (charType === "pink") {
+      const punchOne = pulse(t, 0.02, 0.11, 0.2);
+      const recover = pulse(t, 0.2, 0.35, 0.5);
+      leftArmX += -punchOne * 1.0 + recover * 0.3;
+      rightArmX += -punchOne * 1.0 + recover * 0.3;
+      leftArmZ += punchOne * 0.3;
+      rightArmZ += -punchOne * 0.3;
+      bodyZ += punchOne * 0.04;
     } else if (charType === "purple") {
       const raise = Math.min(1, t / 0.08) * (t > 0.5 ? Math.max(0, 1 - (t - 0.5) / 0.1) : 1);
       const recoil = pulse(t, 0.08, 0.14, 0.3);
