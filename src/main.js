@@ -190,16 +190,16 @@ function createCrown() {
   });
   const crown = new THREE.Group();
   const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.42, 0.46, 0.18, 8),
+    new THREE.CylinderGeometry(0.62, 0.68, 0.25, 8),
     crownMat,
   );
   crown.add(base);
-  const pointGeo = new THREE.ConeGeometry(0.1, 0.22, 4);
+  const pointGeo = new THREE.ConeGeometry(0.14, 0.32, 4);
   const pointCount = 5;
   for (let i = 0; i < pointCount; i++) {
     const angle = (i / pointCount) * Math.PI * 2;
     const point = new THREE.Mesh(pointGeo, crownMat);
-    point.position.set(Math.cos(angle) * 0.36, 0.18, Math.sin(angle) * 0.36);
+    point.position.set(Math.cos(angle) * 0.54, 0.25, Math.sin(angle) * 0.54);
     crown.add(point);
   }
   return crown;
