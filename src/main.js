@@ -939,19 +939,19 @@ function createStickman(color) {
   const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
 
   const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.48, 0.60, 0);
+  leftShoulder.position.set(-0.42, 0.60, 0.05);
   const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   leftShoulderMesh.position.set(0, -0.05, 0);
-  leftShoulderMesh.scale.set(1.1, 0.85, 1.0);
+  leftShoulderMesh.scale.set(1.0, 0.8, 0.9);
   leftShoulderMesh.castShadow = true;
   leftShoulder.add(leftShoulderMesh);
   group.add(leftShoulder);
 
   const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.48, 0.60, 0);
+  rightShoulder.position.set(0.42, 0.60, 0.05);
   const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
   rightShoulderMesh.position.set(0, -0.05, 0);
-  rightShoulderMesh.scale.set(1.1, 0.85, 1.0);
+  rightShoulderMesh.scale.set(1.0, 0.8, 0.9);
   rightShoulderMesh.castShadow = true;
   rightShoulder.add(rightShoulderMesh);
   group.add(rightShoulder);
