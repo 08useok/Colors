@@ -94,7 +94,7 @@ export const CHARACTERS = {
     vialRange: 12,
     vialSpeed: 18,
     vialDamage: 2292,
-    vialSplashRadius: 2.0,
+    vialSplashRadius: 5.0,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
   },
