@@ -2251,6 +2251,81 @@ function createHitSpark(position) {
   });
 }
 
+function createBombExplosionEffect(x, z) {
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.3, 0.5, 24),
+    new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(x, 0.2, z);
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.35, maxLife: 0.35, type: "bombRing" });
+
+  const flash = new THREE.Mesh(
+    new THREE.CircleGeometry(1.2, 16),
+    new THREE.MeshBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.5, depthWrite: false }),
+  );
+  flash.rotation.x = -Math.PI / 2;
+  flash.position.set(x, 0.15, z);
+  scene.add(flash);
+  state.effects.push({ mesh: flash, life: 0.2, maxLife: 0.2, type: "bombFlash" });
+}
+
+function createElectricHitEffect(x, z) {
+  const bolt = new THREE.Mesh(
+    new THREE.RingGeometry(0.2, 0.4, 6),
+    new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  bolt.rotation.x = -Math.PI / 2;
+  bolt.position.set(x, 0.2, z);
+  scene.add(bolt);
+  state.effects.push({ mesh: bolt, life: 0.25, maxLife: 0.25, type: "electricHit" });
+}
+
+function createBoomerangHitEffect(x, z) {
+  const slash = new THREE.Mesh(
+    new THREE.RingGeometry(0.3, 0.5, 4),
+    new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  slash.rotation.x = -Math.PI / 2;
+  slash.position.set(x, 0.2, z);
+  scene.add(slash);
+  state.effects.push({ mesh: slash, life: 0.2, maxLife: 0.2, type: "boomerangHit" });
+}
+
+function createBulletHitEffect(x, z) {
+  const flash = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3, 8),
+    new THREE.MeshBasicMaterial({ color: 0x6666ff, transparent: true, opacity: 0.8, depthWrite: false }),
+  );
+  flash.rotation.x = -Math.PI / 2;
+  flash.position.set(x, 0.2, z);
+  scene.add(flash);
+  state.effects.push({ mesh: flash, life: 0.15, maxLife: 0.15, type: "bulletHit" });
+}
+
+function createSpreadLineHitEffect(x, z) {
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.15, 0.3, 8),
+    new THREE.MeshBasicMaterial({ color: 0x0ff0fe, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(x, 0.2, z);
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.18, maxLife: 0.18, type: "spreadHit" });
+}
+
+function createNeedleHitEffect(x, z) {
+  const puff = new THREE.Mesh(
+    new THREE.CircleGeometry(0.35, 8),
+    new THREE.MeshBasicMaterial({ color: 0x800080, transparent: true, opacity: 0.6, depthWrite: false }),
+  );
+  puff.rotation.x = -Math.PI / 2;
+  puff.position.set(x, 0.2, z);
+  scene.add(puff);
+  state.effects.push({ mesh: puff, life: 0.3, maxLife: 0.3, type: "needleHit" });
+}
+
 function createDamagePopup(position, amount, color = "#ffd27a") {
   const canvas = document.createElement("canvas");
   canvas.width = 128;
@@ -2835,6 +2910,7 @@ function beginBoomerangAttack(fighter) {
       launchAt: state.gameTime + index * 0.08,
       mesh,
       projRadius: 0.34,
+      isBoomerang: true,
     });
   });
 
@@ -3224,11 +3300,19 @@ function updateProjectiles(dt) {
         }
         tempVec3.set(proj.x, 1.6, proj.z);
         createHitSpark(tempVec3);
-        if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
+        if (proj.isBomb) {
+          spawnBombSplash(proj.x, proj.z, proj.ownerId);
+          createBombExplosionEffect(proj.x, proj.z);
+        }
         if (proj.isElectric) {
           target.shockUntil = state.gameTime + CHARACTERS.yellow.shockDuration;
+          createElectricHitEffect(proj.x, proj.z);
         }
+        if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
+        if (proj.isBoomerang) createBoomerangHitEffect(proj.x, proj.z);
+        if (proj.isSpreadLine) createSpreadLineHitEffect(proj.x, proj.z);
         if (proj.isNeedle) {
+          createNeedleHitEffect(proj.x, proj.z);
           target.poisonUntil = state.gameTime + CHARACTERS.purple.poisonDuration;
           target.poisonSourceId = proj.ownerId;
           if (!target.poisonNextTick || target.poisonNextTick < state.gameTime) {
@@ -3244,7 +3328,7 @@ function updateProjectiles(dt) {
     if (!hit && !(proj.isVial && proj.y > 1.5)) {
       for (const solid of state.solids) {
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
-          if (proj.isBomb) spawnBombSplash(proj.x, proj.z, proj.ownerId);
+          if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); }
           if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
           hit = true;
           break;
@@ -3253,7 +3337,7 @@ function updateProjectiles(dt) {
     }
 
     if (hit || proj.distTraveled >= proj.range) {
-      if (proj.isBomb && !hit) spawnBombSplash(proj.x, proj.z, proj.ownerId);
+      if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); }
       if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
       state.projectiles.splice(i, 1);
@@ -3505,6 +3589,23 @@ function updateEffects(dt) {
       // 너비는 빠르게 퍼지고, 투명도는 제곱으로 빠르게 사라짐
       effect.mesh.scale.x = 1 + (1 - alpha) * 1.8;
       effect.mesh.scale.y = 1.0;
+      effect.mesh.material.opacity = alpha * alpha;
+    } else if (effect.type === "bombRing") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 3.0);
+      effect.mesh.material.opacity = alpha * 0.8;
+    } else if (effect.type === "bombFlash") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.5);
+      effect.mesh.material.opacity = alpha * alpha * 0.5;
+    } else if (effect.type === "electricHit") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.5);
+      effect.mesh.rotation.z += dt * 15;
+      effect.mesh.material.opacity = alpha * 0.9;
+    } else if (effect.type === "boomerangHit") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
+      effect.mesh.rotation.z += dt * 12;
+      effect.mesh.material.opacity = alpha * 0.7;
+    } else if (effect.type === "bulletHit" || effect.type === "spreadHit" || effect.type === "needleHit") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.8);
       effect.mesh.material.opacity = alpha * alpha;
     } else if (effect.type === "vialRing") {
       const expand = 1 + (1 - alpha) * 2.0;
