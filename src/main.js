@@ -1128,7 +1128,45 @@ function createStickman(color, skinId) {
     leftShin,
     rightShin,
     bodyMaterials: [material, darkMaterial],
+    guitar: null,
   };
+
+  if (color === 0xFF69B4) {
+    const guitarGroup = new THREE.Group();
+    const gBodyMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.3 });
+    const gAccentMat = new THREE.MeshStandardMaterial({ color: 0xFF69B4, roughness: 0.4, metalness: 0.4 });
+    const gStringMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.3, metalness: 0.6 });
+
+    const gBody = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.18, 0.5), gBodyMat);
+    gBody.position.set(0, 0, 0);
+    guitarGroup.add(gBody);
+    const gPickguard = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.19, 0.28), gAccentMat);
+    gPickguard.position.set(-0.1, 0, -0.05);
+    guitarGroup.add(gPickguard);
+
+    const gNeck = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.1, 0.14), gBodyMat);
+    gNeck.position.set(0.75, 0.02, 0);
+    guitarGroup.add(gNeck);
+    const gFretboard = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.11, 0.10), new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.7 }));
+    gFretboard.position.set(0.75, 0.02, 0);
+    guitarGroup.add(gFretboard);
+
+    const gHeadstock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.16), gBodyMat);
+    gHeadstock.position.set(1.28, 0.02, 0);
+    guitarGroup.add(gHeadstock);
+
+    for (let i = 0; i < 6; i++) {
+      const s = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.6, 4), gStringMat);
+      s.rotation.z = Math.PI / 2;
+      s.position.set(0.5, 0.06, -0.04 + i * 0.016);
+      guitarGroup.add(s);
+    }
+
+    guitarGroup.position.set(0.1, -0.2, 0.35);
+    guitarGroup.rotation.set(0.1, 0.3, -0.15);
+    group.add(guitarGroup);
+    group.userData.guitar = guitarGroup;
+  }
 
   if (skinId) applySkin(group, skinId);
 
@@ -1220,6 +1258,12 @@ function renderPreview(dt) {
     leftArmZ = 0.05;
     rightArmZ = -0.05;
     headX = -0.04;
+  } else if (previewCharType === "pink") {
+    leftArmX = -0.9;
+    leftArmZ = 0.3;
+    rightArmX = -0.5 + Math.sin(previewTime * 3) * 0.08;
+    rightArmZ = -0.15;
+    headX = -0.05;
   }
 
   let leftElbowX = -0.15;
@@ -1227,6 +1271,9 @@ function renderPreview(dt) {
   if (previewCharType === "red") {
     leftElbowX = -0.6 + Math.sin(previewTime * 1.8) * 0.05;
     rightElbowX = -0.6 + Math.sin(previewTime * 1.8 + 1.5) * 0.05;
+  } else if (previewCharType === "pink") {
+    leftElbowX = -1.2;
+    rightElbowX = -0.8 + Math.sin(previewTime * 3) * 0.1;
   }
 
   parts.leftArm.rotation.x = leftArmX;
@@ -4323,6 +4370,14 @@ function updateFighterAnimation(fighter, dt) {
     rightElbowX = -1.0 + Math.sin(state.gameTime * 2.5 + 1) * 0.05;
     bodyZ += Math.sin(walkCycle) * 0.02 * swing;
     headX += -0.06;
+  } else if (charType === "pink") {
+    leftArmX = -0.9;
+    leftArmZ = 0.3;
+    leftElbowX = -1.2;
+    rightArmX = -0.5 + Math.sin(state.gameTime * 3) * 0.08;
+    rightArmZ = -0.15;
+    rightElbowX = -0.8 + Math.sin(state.gameTime * 3) * 0.1;
+    headX = -0.05;
   }
 
   if (fighter.attackAnimTime >= 0) {
