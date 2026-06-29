@@ -1752,6 +1752,58 @@ body {
   opacity: 0.35;
   cursor: default;
 }
+/* 레벨 도트 */
+.shop-lv-dots {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 6px 0;
+}
+.shop-lv-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 200ms;
+}
+.shop-lv-dot.filled {
+  border-color: transparent;
+  box-shadow: 0 0 4px currentColor;
+}
+.shop-card-stat {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.shop-stat-up {
+  color: var(--safe);
+  font-weight: 700;
+}
+.shop-max-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #2f1909;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  margin-left: 4px;
+}
+.shop-coin-short {
+  color: #ff6a4f;
+  font-size: 11px;
+  font-weight: 600;
+}
+@keyframes shopBought {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 204, 102, 0.6); }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+.shop-card-bought {
+  animation: shopBought 400ms ease forwards;
+  pointer-events: none;
+}
+
 .shop-coming-msg {
   text-align: center;
   color: var(--muted);

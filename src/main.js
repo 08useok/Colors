@@ -5688,30 +5688,45 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#ff69b4" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
+      if (!CHARACTERS[c]) continue;
       const lv = getCharLevel(account, c);
       const name = c.charAt(0).toUpperCase() + c.slice(1);
       const wins = account.charStats[c]?.wins ?? 0;
       const mastery = getMasteryTier(wins);
       const masteryText = mastery ? `${mastery.emoji} ${mastery.name}` : "";
+      const charDef = CHARACTERS[c];
+      const curMult = getLevelMultiplier(lv);
+      const curHp = Math.round(charDef.maxHealth * curMult);
+      const lvPct = ((lv - 1) / (MAX_CHAR_LEVEL - 1)) * 100;
+      const lvDots = Array.from({length: MAX_CHAR_LEVEL}, (_, i) =>
+        `<span class="shop-lv-dot${i < lv ? " filled" : ""}" style="background:${i < lv ? colorMap[c] || "#fff" : "rgba(255,255,255,0.15)"}"></span>`
+      ).join("");
+
       if (lv >= MAX_CHAR_LEVEL) {
         html += `<div class="shop-card shop-card-max" style="border-color:${colorMap[c]}">
           <div class="shop-card-name" style="color:${colorMap[c]}">${name}</div>
-          <div class="shop-card-level">Lv.${lv} MAX</div>
+          <div class="shop-card-level">Lv.${lv} <span class="shop-max-badge">MAX</span></div>
+          <div class="shop-lv-dots">${lvDots}</div>
+          <div class="shop-card-stat">HP ${curHp.toLocaleString()} · +${Math.round((curMult - 1) * 100)}%</div>
           ${masteryText ? `<div class="shop-card-mastery">${masteryText}</div>` : ""}
         </div>`;
       } else {
         const cost = LEVEL_UP_COST[lv];
         const canBuy = account.coins >= cost;
+        const nextMult = getLevelMultiplier(lv + 1);
+        const nextHp = Math.round(charDef.maxHealth * nextMult);
         html += `<div class="shop-card" style="border-color:${colorMap[c]}">
           <div class="shop-card-name" style="color:${colorMap[c]}">${name}</div>
           <div class="shop-card-level">Lv.${lv} → Lv.${lv + 1}</div>
+          <div class="shop-lv-dots">${lvDots}</div>
+          <div class="shop-card-stat">HP ${curHp.toLocaleString()} → <span class="shop-stat-up">${nextHp.toLocaleString()}</span></div>
           <div class="shop-card-effect">체력·공격력 +2%</div>
           ${masteryText ? `<div class="shop-card-mastery">${masteryText}</div>` : ""}
           <button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-char="${c}" data-cost="${cost}" type="button"${canBuy ? "" : " disabled"}>
-            🪙 ${cost}
+            🪙 ${cost}${!canBuy ? ` <span class="shop-coin-short">(부족)</span>` : ""}
           </button>
         </div>`;
       }
@@ -5731,7 +5746,13 @@ function setupInput() {
         acc.coins -= cost;
         acc.charLevels[char] = curLv + 1;
         saveAccount(acc);
-        renderShopLevelUp();
+        const card = btn.closest(".shop-card");
+        if (card) {
+          card.classList.add("shop-card-bought");
+          setTimeout(() => renderShopLevelUp(), 400);
+        } else {
+          renderShopLevelUp();
+        }
       });
     });
   }
