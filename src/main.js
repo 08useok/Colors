@@ -1218,7 +1218,7 @@ function createStickman(color, skinId) {
     guitarGroup.add(strap);
 
     guitarGroup.position.set(0.15, -0.05, 0.50);
-    guitarGroup.rotation.set(0.05, -0.15, 0.75);
+    guitarGroup.rotation.set(0.05, -0.15, -0.75);
     guitarGroup.scale.set(1.15, 1.15, 1.15);
     group.add(guitarGroup);
     group.userData.guitar = guitarGroup;
