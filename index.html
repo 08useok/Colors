@@ -93,6 +93,18 @@
         <div class="cw-respawn hidden" id="cw-respawn"></div>
       </div>
 
+      <div id="takedown-hud" class="hidden">
+        <div class="td-boss-bar">
+          <div class="td-boss-label">💀 BOSS</div>
+          <div class="td-boss-hp-outer"><div class="td-boss-hp-fill" id="td-boss-hp-fill"></div></div>
+          <div class="td-boss-hp-text" id="td-boss-hp-text">120000 / 120000</div>
+        </div>
+        <div class="td-timer" id="td-timer">2:00</div>
+        <div class="td-my-rank" id="td-my-rank">내 순위: -</div>
+        <div class="td-my-score" id="td-my-score">내 점수: 0</div>
+        <div class="td-ranking" id="td-ranking"></div>
+      </div>
+
       <div id="warning" class="hidden" data-i18n="zoneWarning">자기장 밖입니다</div>
       <div id="kill-feed"></div>
 
@@ -545,6 +557,10 @@
             <button id="mode-chopwood" class="mode-btn mode-chopwood" type="button">
               <span class="mode-icon-text">🪓</span>
               <span data-i18n="modeChopWood">찹 우드</span>
+            </button>
+            <button id="mode-takedown" class="mode-btn mode-takedown" type="button">
+              <span class="mode-icon-text">💀</span>
+              <span>테이크 다운</span>
             </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>

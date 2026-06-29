@@ -1984,6 +1984,367 @@ function initChopWoodPlayers() {
   }
 }
 
+// ── Take Down ─────────────────────────────────────────────────────────
+const TD_BOSS_HP = 120000;
+const TD_TIME_LIMIT = 120;
+const TD_RESPAWN_TIME = 5;
+const TD_SCORE_DAMAGE = 1;
+const TD_SCORE_LAST_HIT = 500;
+const TD_SCORE_KILL = 200;
+
+const tdHud = document.getElementById("takedown-hud");
+const tdBossHpFill = document.getElementById("td-boss-hp-fill");
+const tdBossHpText = document.getElementById("td-boss-hp-text");
+const tdTimer = document.getElementById("td-timer");
+const tdMyRank = document.getElementById("td-my-rank");
+const tdMyScore = document.getElementById("td-my-score");
+const tdRanking = document.getElementById("td-ranking");
+
+function createBossMesh() {
+  const bossGroup = createStickman(0x880000);
+  bossGroup.scale.set(2.5, 2.5, 2.5);
+  const crownMat = new THREE.MeshStandardMaterial({ color: 0xff2200, roughness: 0.4, metalness: 0.5 });
+  const horns = new THREE.Group();
+  const hornGeo = new THREE.ConeGeometry(0.15, 0.5, 6);
+  const lh = new THREE.Mesh(hornGeo, crownMat);
+  lh.position.set(-0.4, 2.4, 0);
+  lh.rotation.z = 0.3;
+  horns.add(lh);
+  const rh = new THREE.Mesh(hornGeo, crownMat);
+  rh.position.set(0.4, 2.4, 0);
+  rh.rotation.z = -0.3;
+  horns.add(rh);
+  bossGroup.add(horns);
+  return bossGroup;
+}
+
+function initTakeDownPlayers() {
+  state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
+  state.players = [];
+
+  const mapData = MAP_POOL[state.currentMapId];
+  const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+
+  for (let i = 0; i < Math.min(8, spawns.length); i++) {
+    const isPlayer = i === 0;
+    const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
+    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
+    const name = isPlayer ? label : randomBotName();
+    const fighter = makeFighter({
+      id: i,
+      name,
+      characterType,
+      isPlayer,
+      position: spawns[i],
+      yaw: Math.random() * Math.PI * 2,
+    });
+    if (!isPlayer) fighter.botDifficulty = Math.floor(Math.random() * 3);
+    fighter.tdScore = 0;
+    fighter.tdBossDmg = 0;
+    fighter.tdKills = 0;
+    fighter.tdRespawnAt = 0;
+    state.players.push(fighter);
+  }
+
+  // 보스
+  const boss = makeFighter({
+    id: 99,
+    name: "BOSS",
+    characterType: "red",
+    isPlayer: false,
+    position: new THREE.Vector3(0, 0, 0),
+    yaw: 0,
+  });
+  scene.remove(boss.mesh);
+  scene.remove(boss.shadow);
+  boss.mesh = createBossMesh();
+  boss.mesh.position.set(0, 1.85 * 2.5, 0);
+  scene.add(boss.mesh);
+  boss.shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(2.4, 16),
+    new THREE.MeshBasicMaterial({ color: 0x20140f, transparent: true, opacity: 0.3 }),
+  );
+  boss.shadow.rotation.x = -Math.PI / 2;
+  boss.shadow.position.set(0, 0.04, 0);
+  scene.add(boss.shadow);
+  boss.health = TD_BOSS_HP;
+  boss.maxHealth = TD_BOSS_HP;
+  boss.radius = 2.5;
+  boss.isBoss = true;
+  boss.isDummy = false;
+  boss.bossAttackCd = 0;
+  boss.bossNextSlam = 0;
+  boss.bossNextCharge = 0;
+  boss.bossNextWave = 0;
+  boss.bossChargeTarget = null;
+  boss.bossCharging = false;
+  boss.bossRage = false;
+  boss.bodyMaterials = boss.mesh.userData.bodyMaterials || [];
+  boss.healthBar = createHealthBarMesh();
+  boss.healthBar.position.set(0, 1.5, 0);
+  boss.mesh.add(boss.healthBar);
+  state.tdBoss = boss;
+  state.players.push(boss);
+}
+
+function startTakeDown() {
+  clock.getDelta();
+  battleMapGroup.visible = true;
+  trainingMapGroup.visible = false;
+  chopWoodMapGroup.visible = false;
+  state.chopWoodMode = false;
+  state.teams = null;
+  state.playerTeam = null;
+  state.trainingMode = false;
+  state.takedownMode = true;
+  state.mode = "takedown";
+  state.solids = state.battleSolids;
+  state.lakeRects = state.battleLakeRects;
+  state.bushes = state.battleBushes;
+
+  state.currentMapId = Math.floor(Math.random() * MAP_POOL.length);
+  createMap(MAP_POOL[state.currentMapId]);
+  mapNameEl.textContent = "Take Down";
+  mapNameEl.classList.remove("hidden");
+
+  state.gameTime = 0;
+  state.freezeUntil = 3;
+  state.running = true;
+  state.gameOver = false;
+  state.winner = "";
+  state.mouseHeld = false;
+  state.scheduledHits = [];
+  state.projectiles.forEach((p) => scene.remove(p.mesh));
+  state.projectiles = [];
+  state.deathOrder = [];
+  state.effects.forEach((e) => scene.remove(e.mesh));
+  state.effects = [];
+  state.feedback.hitFlashUntil = 0;
+  state.feedback.warningPulseUntil = 0;
+  state.mouse.yaw = Math.PI;
+  state.mouse.pitch = 0.26;
+  state.mobileMove.x = 0;
+  state.mobileMove.y = 0;
+  state.mobileMove.active = false;
+  state.mobileMove.pointerId = null;
+  mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
+  state.safeCenter.set(0, 0);
+  state.tdTimeLeft = TD_TIME_LIMIT;
+
+  initTakeDownPlayers();
+  rebuildAmmoPips();
+  updateHud();
+  tdHud.classList.remove("hidden");
+  cwHud.classList.add("hidden");
+  resultOverlay.style.display = "none";
+  messageOverlay.style.display = "none";
+}
+
+function updateTakeDownHud() {
+  if (!state.takedownMode || !state.tdBoss) return;
+  const boss = state.tdBoss;
+  const hpPct = Math.max(0, boss.health / boss.maxHealth) * 100;
+  tdBossHpFill.style.width = `${hpPct}%`;
+  tdBossHpText.textContent = `${Math.round(Math.max(0, boss.health))} / ${boss.maxHealth}`;
+
+  const timeLeft = Math.max(0, state.tdTimeLeft);
+  const mins = Math.floor(timeLeft / 60);
+  const secs = Math.floor(timeLeft % 60);
+  tdTimer.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+
+  const fighters = state.players.filter((f) => !f.isBoss);
+  fighters.sort((a, b) => b.tdScore - a.tdScore);
+  const player = getPlayer();
+  const playerRank = fighters.findIndex((f) => f.isPlayer) + 1;
+  tdMyRank.textContent = `내 순위: ${playerRank}위`;
+  tdMyScore.textContent = `내 점수: ${player ? player.tdScore : 0}`;
+
+  let rankHtml = "";
+  for (let i = 0; i < Math.min(5, fighters.length); i++) {
+    const f = fighters[i];
+    const isMe = f.isPlayer;
+    rankHtml += `<div class="td-rank-row${isMe ? " me" : ""}">
+      <span class="td-rank-pos">${i + 1}</span>
+      <span class="td-rank-name">${f.name}</span>
+      <span class="td-rank-score">${f.tdScore}</span>
+    </div>`;
+  }
+  tdRanking.innerHTML = rankHtml;
+}
+
+function updateBossAI(dt) {
+  const boss = state.tdBoss;
+  if (!boss || boss.dead) return;
+
+  if (boss.health <= boss.maxHealth * 0.3 && !boss.bossRage) {
+    boss.bossRage = true;
+  }
+  const speedMult = boss.bossRage ? 1.5 : 1.0;
+  const cdMult = boss.bossRage ? 0.6 : 1.0;
+  const dmgMult = boss.bossRage ? 1.4 : 1.0;
+
+  const alivePlayers = state.players.filter((f) => !f.dead && !f.isBoss);
+  if (alivePlayers.length === 0) return;
+
+  let nearest = null;
+  let nearDist = Infinity;
+  for (const f of alivePlayers) {
+    const d = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
+    if (d < nearDist) { nearDist = d; nearest = f; }
+  }
+  if (!nearest) return;
+
+  // 돌진 중
+  if (boss.bossCharging && boss.bossChargeTarget) {
+    const tx = boss.bossChargeTarget.x;
+    const tz = boss.bossChargeTarget.z;
+    const dx = tx - boss.mesh.position.x;
+    const dz = tz - boss.mesh.position.z;
+    const dist = Math.hypot(dx, dz);
+    if (dist < 2) {
+      boss.bossCharging = false;
+      // 돌진 도착 — 근처 플레이어에게 피해
+      for (const f of alivePlayers) {
+        const fd = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
+        if (fd < 4) applyDamage(f, Math.round(2000 * dmgMult), boss);
+      }
+    } else {
+      const speed = 18 * speedMult;
+      const mx = (dx / dist) * speed * dt;
+      const mz = (dz / dist) * speed * dt;
+      boss.mesh.position.x += mx;
+      boss.mesh.position.z += mz;
+      boss.shadow.position.x = boss.mesh.position.x;
+      boss.shadow.position.z = boss.mesh.position.z;
+      boss.mesh.rotation.y = Math.atan2(dx, dz);
+    }
+    return;
+  }
+
+  // 보스 이동 (느리게 가장 가까운 플레이어 추적)
+  const dx = nearest.mesh.position.x - boss.mesh.position.x;
+  const dz = nearest.mesh.position.z - boss.mesh.position.z;
+  if (nearDist > 3) {
+    const speed = 5 * speedMult;
+    const nx = (dx / nearDist) * speed * dt;
+    const nz = (dz / nearDist) * speed * dt;
+    boss.mesh.position.x += nx;
+    boss.mesh.position.z += nz;
+    boss.shadow.position.x = boss.mesh.position.x;
+    boss.shadow.position.z = boss.mesh.position.z;
+  }
+  boss.mesh.rotation.y = Math.atan2(dx, dz);
+
+  // ① 근접 내려찍기
+  if (state.gameTime >= boss.bossNextSlam && nearDist < 5) {
+    boss.bossNextSlam = state.gameTime + 3 * cdMult;
+    for (const f of alivePlayers) {
+      const fd = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
+      if (fd < 5) applyDamage(f, Math.round(3000 * dmgMult), boss);
+    }
+    // 이펙트
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.5, 5, 24),
+      new THREE.MeshBasicMaterial({ color: 0xff4400, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(boss.mesh.position.x, 0.15, boss.mesh.position.z);
+    scene.add(ring);
+    state.effects.push({ mesh: ring, life: 0.5, maxLife: 0.5, type: "frostRing" });
+  }
+
+  // ② 돌진
+  if (state.gameTime >= boss.bossNextCharge && nearDist > 8) {
+    boss.bossNextCharge = state.gameTime + 6 * cdMult;
+    boss.bossCharging = true;
+    boss.bossChargeTarget = nearest.mesh.position.clone();
+  }
+
+  // ③ 충격파
+  if (state.gameTime >= boss.bossNextWave) {
+    boss.bossNextWave = state.gameTime + 4.5 * cdMult;
+    const dir = new THREE.Vector3(dx, 0, dz).normalize();
+    const waveMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false });
+    const wave = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 8), waveMat);
+    wave.position.set(boss.mesh.position.x + dir.x * 3, 2, boss.mesh.position.z + dir.z * 3);
+    scene.add(wave);
+    state.projectiles.push({
+      mesh: wave,
+      x: wave.position.x,
+      z: wave.position.z,
+      dx: dir.x,
+      dz: dir.z,
+      speed: 14,
+      range: 20,
+      distTravelled: 0,
+      damage: Math.round(1500 * dmgMult),
+      ownerId: boss.id,
+      ownerTeam: null,
+      type: "bossWave",
+      radius: 1.5,
+    });
+  }
+}
+
+function updateTakeDownRespawn() {
+  if (!state.takedownMode) return;
+  for (const fighter of state.players) {
+    if (!fighter.dead || fighter.isBoss) continue;
+    if (fighter.tdRespawnAt && state.gameTime >= fighter.tdRespawnAt) {
+      fighter.dead = false;
+      fighter.health = fighter.maxHealth;
+      fighter.mesh.visible = true;
+      fighter.shadow.visible = true;
+      fighter.healthBar.visible = true;
+      const angle = Math.random() * Math.PI * 2;
+      const r = worldRadius * 0.8;
+      fighter.mesh.position.set(Math.cos(angle) * r, 1.85, Math.sin(angle) * r);
+      fighter.shadow.position.set(fighter.mesh.position.x, 0.04, fighter.mesh.position.z);
+      fighter.tdRespawnAt = 0;
+    }
+  }
+}
+
+function checkTakeDownEnd() {
+  if (!state.takedownMode || state.gameOver) return;
+
+  const boss = state.tdBoss;
+  const bossKilled = boss && boss.dead;
+  const timeUp = state.tdTimeLeft <= 0;
+
+  if (bossKilled || timeUp) {
+    state.gameOver = true;
+    state.running = false;
+
+    const fighters = state.players.filter((f) => !f.isBoss);
+    fighters.sort((a, b) => b.tdScore - a.tdScore);
+    const player = getPlayer();
+    const playerRank = fighters.findIndex((f) => f.isPlayer) + 1;
+
+    const coinRewards = [150, 100, 80, 60, 40, 30, 20, 10];
+    const coinsEarned = coinRewards[playerRank - 1] || 10;
+    const account = loadAccount();
+    if (account) {
+      account.coins = (account.coins || 0) + coinsEarned;
+      saveAccount(account);
+    }
+
+    resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : "⏰ 시간 종료";
+    resultBody.textContent = `${playerRank}위  |  점수: ${player ? player.tdScore : 0}  |  🪙 +${coinsEarned}`;
+    const statsLines = [];
+    if (player) {
+      statsLines.push(`보스 피해: ${player.tdBossDmg}`);
+      statsLines.push(`처치: ${player.tdKills}`);
+    }
+    resultStats.textContent = statsLines.join("  |  ");
+    resultStreak.style.display = "none";
+    resultOverlay.style.display = "flex";
+    tdHud.classList.add("hidden");
+    document.exitPointerLock?.();
+  }
+}
+
 function startChopWood() {
   clock.getDelta();
   battleMapGroup.visible = false;
@@ -2814,6 +3175,9 @@ function resetGame() {
   trainingMapGroup.visible = false;
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
+  state.takedownMode = false;
+  state.tdBoss = null;
+  tdHud.classList.add("hidden");
   state.teams = null;
   state.playerTeam = null;
   state.solids = state.battleSolids;
@@ -4021,6 +4385,10 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
   if (attacker) {
     attacker.lastCombatTime = state.gameTime;
     attacker.damageDealt += dealt;
+    if (state.takedownMode && target.isBoss && !attacker.isBoss && dealt > 0) {
+      attacker.tdScore = (attacker.tdScore || 0) + Math.round(dealt * TD_SCORE_DAMAGE);
+      attacker.tdBossDmg = (attacker.tdBossDmg || 0) + dealt;
+    }
     if (attacker.isPlayer && target.id !== attacker.id) {
       tempVec3.copy(target.mesh.position);
       createDamagePopup(tempVec3, dealt);
@@ -4043,6 +4411,22 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     target.healthBar.visible = false;
     if (state.trainingMode && target.isDummy) {
       target.respawnAt = state.gameTime + 3;
+    } else if (state.takedownMode) {
+      if (target.isBoss) {
+        if (attacker && !attacker.isBoss) {
+          attacker.tdScore = (attacker.tdScore || 0) + TD_SCORE_LAST_HIT;
+          addKillFeed(`💀 ${attacker.name} 보스 처치!`);
+          if (attacker.isPlayer) audio.play("kill");
+        }
+      } else {
+        target.tdRespawnAt = state.gameTime + TD_RESPAWN_TIME;
+        if (attacker && !attacker.isBoss && attacker.id !== target.id) {
+          attacker.tdScore = (attacker.tdScore || 0) + TD_SCORE_KILL;
+          attacker.tdKills = (attacker.tdKills || 0) + 1;
+          addKillFeed(t("killFeed", attacker.name, target.name));
+          if (attacker.isPlayer || target.isPlayer) audio.play("kill");
+        }
+      }
     } else if (state.chopWoodMode) {
       target.respawnAt = state.gameTime + 5;
       target.axeLevel = 0;
@@ -4269,6 +4653,29 @@ function updatePlayerControls(dt) {
 }
 
 function chooseBotTarget(bot) {
+  if (state.takedownMode && !bot.isBoss) {
+    const boss = state.tdBoss;
+    let nearPlayer = null;
+    let nearPlayerDist = Infinity;
+    for (const f of state.players) {
+      if (f.id === bot.id || f.dead || f.isBoss) continue;
+      const d = Math.hypot(f.mesh.position.x - bot.mesh.position.x, f.mesh.position.z - bot.mesh.position.z);
+      if (d < 8 && f.health < f.maxHealth * 0.4 && d < nearPlayerDist) {
+        nearPlayerDist = d;
+        nearPlayer = f;
+      }
+    }
+    if (nearPlayer && Math.random() < 0.4) return nearPlayer;
+    if (boss && !boss.dead) {
+      if (boss.bossRage && bot.health < bot.maxHealth * 0.3) {
+        const bDist = Math.hypot(boss.mesh.position.x - bot.mesh.position.x, boss.mesh.position.z - bot.mesh.position.z);
+        if (bDist < 8) return nearPlayer || null;
+      }
+      return boss;
+    }
+    return nearPlayer;
+  }
+
   let best = null;
   let bestScore = Infinity;
   const playerDead = getPlayer()?.dead ?? false;
@@ -4904,7 +5311,15 @@ function updateHud() {
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
 
-  if (state.chopWoodMode) {
+  if (state.takedownMode) {
+    survivorsPanel.style.display = "none";
+    zonePanel.classList.add("is-hidden-panel");
+    warning.classList.add("hidden");
+    zoneRing.ring.visible = false;
+    zoneRing.wall.visible = false;
+    exitTrainingBtn.classList.add("hidden");
+    cwHud.classList.add("hidden");
+  } else if (state.chopWoodMode) {
     survivorsPanel.style.display = "none";
     zonePanel.classList.add("is-hidden-panel");
     warning.classList.add("hidden");
@@ -5107,6 +5522,8 @@ function checkEndState() {
     return;
   }
 
+  if (state.takedownMode) return;
+
   if (state.chopWoodMode && state.teams) {
     const player = getPlayer();
     const allyTeam = state.playerTeam || "a";
@@ -5238,15 +5655,22 @@ function animate() {
       updateNaturalRegen(dt);
       updateTrainingRespawn();
       updateChopWoodRespawn();
+      updateTakeDownRespawn();
+      if (state.takedownMode) {
+        updateBossAI(dt);
+        state.tdTimeLeft -= dt;
+        updateTakeDownHud();
+        checkTakeDownEnd();
+      }
       updateChopping(dt);
       updateScheduledHits();
       updateProjectiles(dt);
       updatePoisonTicks();
-      if (!state.chopWoodMode) {
+      if (!state.chopWoodMode && !state.takedownMode) {
         updateZoneDamage(dt, zone);
       }
     }
-    if (!state.chopWoodMode) {
+    if (!state.chopWoodMode && !state.takedownMode) {
       updateZoneVisual(zone);
     }
     updateEffects(dt);
@@ -5706,6 +6130,13 @@ function setupInput() {
     startChopWood();
   });
 
+  document.getElementById("mode-takedown").addEventListener("click", async () => {
+    await initAudio();
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("hidden");
+    startTakeDown();
+  });
+
   // 훈련장 시작
   startTrainingBtn.addEventListener("click", async () => {
     await initAudio();
@@ -5885,7 +6316,9 @@ function setupInput() {
 
   // 다시 시작
   playAgainButton.addEventListener("click", () => {
-    if (state.chopWoodMode) {
+    if (state.takedownMode) {
+      startTakeDown();
+    } else if (state.chopWoodMode) {
       startChopWood();
     } else if (state.trainingMode) {
       startTraining();
@@ -5896,7 +6329,19 @@ function setupInput() {
 
   // 재시작 → 로비
   restartButton.addEventListener("click", () => {
-    if (state.chopWoodMode) {
+    if (state.takedownMode) {
+      state.takedownMode = false;
+      state.tdBoss = null;
+      tdHud.classList.add("hidden");
+      state.running = false;
+      state.gameOver = true;
+      state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
+      state.players = [];
+      state.projectiles.forEach((p) => scene.remove(p.mesh));
+      state.projectiles = [];
+      state.effects.forEach((e) => { scene.remove(e.mesh); });
+      state.effects = [];
+    } else if (state.chopWoodMode) {
       state.chopWoodMode = false;
       state.teams = null;
       state.playerTeam = null;
