@@ -1242,8 +1242,8 @@ function renderPreview(dt) {
     headX = -0.05;
   }
 
-  let leftElbowX = -0.15;
-  let rightElbowX = -0.15;
+  let leftElbowX = 0;
+  let rightElbowX = 0;
   if (previewCharType === "red") {
     leftElbowX = -0.6 + Math.sin(previewTime * 1.8) * 0.05;
     rightElbowX = -0.6 + Math.sin(previewTime * 1.8 + 1.5) * 0.05;
@@ -4334,8 +4334,8 @@ function updateFighterAnimation(fighter, dt) {
   let bodyY = 0;
   let headX = 0;
   let headY = 0;
-  let leftElbowX = -0.15 - swing * 0.1;
-  let rightElbowX = -0.15 - swing * 0.1;
+  let leftElbowX = 0;
+  let rightElbowX = 0;
 
   if (charType === "red") {
     leftArmX += -0.7 + Math.sin(state.gameTime * 2.5) * 0.04;
