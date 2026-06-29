@@ -3510,24 +3510,57 @@ function beginHealCircleAttack(fighter) {
   return true;
 }
 
+function createNoteShape() {
+  const shape = new THREE.Shape();
+  shape.ellipse(0, 0, 0.12, 0.15, 0, Math.PI * 2, false, -0.3);
+  shape.moveTo(0.12, 0);
+  shape.lineTo(0.12, 0.5);
+  shape.lineTo(0.10, 0.5);
+  shape.lineTo(0.10, 0);
+  const geo = new THREE.ShapeGeometry(shape);
+  return geo;
+}
+
 function createHealCircleEffect(x, z, radius) {
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(radius * 0.3, radius * 0.35, 32),
-    new THREE.MeshBasicMaterial({ color: 0xFF69B4, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false }),
-  );
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.set(x, 0.15, z);
-  scene.add(ring);
-  state.effects.push({ mesh: ring, life: 0.4, maxLife: 0.4, type: "healRing", targetScale: radius });
+  for (let w = 0; w < 2; w++) {
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.5, 0.7, 32),
+      new THREE.MeshBasicMaterial({ color: 0xFF69B4, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(x, 0.15 + w * 0.5, z);
+    scene.add(ring);
+    state.effects.push({ mesh: ring, life: 0.5 + w * 0.1, maxLife: 0.5 + w * 0.1, type: "sonicWave", targetRadius: radius });
+  }
 
   const fill = new THREE.Mesh(
     new THREE.CircleGeometry(radius, 32),
-    new THREE.MeshBasicMaterial({ color: 0xFF88CC, transparent: true, opacity: 0.15, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color: 0xFF88CC, transparent: true, opacity: 0.18, depthWrite: false }),
   );
   fill.rotation.x = -Math.PI / 2;
-  fill.position.set(x, 0.12, z);
+  fill.position.set(x, 0.1, z);
   scene.add(fill);
-  state.effects.push({ mesh: fill, life: 0.35, maxLife: 0.35, type: "healFill" });
+  state.effects.push({ mesh: fill, life: 0.4, maxLife: 0.4, type: "healFill" });
+
+  const noteGeo = createNoteShape();
+  for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * Math.PI * 2 + Math.random() * 0.5;
+    const colors = [0xFF69B4, 0xFF88CC, 0xFFAADD, 0xFF55AA, 0xFFCCEE];
+    const note = new THREE.Mesh(
+      noteGeo,
+      new THREE.MeshBasicMaterial({ color: colors[i], transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    const dist = 0.8 + Math.random() * 0.5;
+    note.position.set(x + Math.cos(angle) * dist, 1.0 + Math.random() * 0.5, z + Math.sin(angle) * dist);
+    note.rotation.z = (Math.random() - 0.5) * 0.6;
+    note.scale.setScalar(1.5 + Math.random() * 1.0);
+    scene.add(note);
+    state.effects.push({
+      mesh: note, life: 0.7 + Math.random() * 0.3, maxLife: 1.0, type: "musicNote",
+      vx: Math.cos(angle) * (2 + Math.random()), vy: 1.5 + Math.random() * 1.5, vz: Math.sin(angle) * (2 + Math.random()),
+      wobblePhase: Math.random() * Math.PI * 2,
+    });
+  }
 }
 
 function createHealEffect(x, z) {
@@ -4096,11 +4129,21 @@ function updateEffects(dt) {
     } else if (effect.type === "bulletHit" || effect.type === "spreadHit" || effect.type === "needleHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.8);
       effect.mesh.material.opacity = alpha * alpha;
-    } else if (effect.type === "healRing") {
-      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
-      effect.mesh.material.opacity = alpha * 0.6;
+    } else if (effect.type === "sonicWave") {
+      const expand = (1 - alpha) * effect.targetRadius / 0.6;
+      effect.mesh.scale.setScalar(1 + expand);
+      effect.mesh.material.opacity = alpha * 0.7;
     } else if (effect.type === "healFill") {
-      effect.mesh.material.opacity = alpha * 0.15;
+      effect.mesh.material.opacity = alpha * 0.18;
+    } else if (effect.type === "musicNote") {
+      effect.mesh.position.x += (effect.vx ?? 0) * dt;
+      effect.mesh.position.y += (effect.vy ?? 1.5) * dt;
+      effect.mesh.position.z += (effect.vz ?? 0) * dt;
+      if (effect.vy !== undefined) effect.vy -= 2.0 * dt;
+      const elapsed = effect.maxLife - effect.life;
+      effect.mesh.rotation.z += Math.sin(elapsed * 6 + (effect.wobblePhase ?? 0)) * dt * 2;
+      effect.mesh.scale.setScalar((1.5 + Math.random() * 0.3) * (0.5 + alpha * 0.5));
+      effect.mesh.material.opacity = alpha * 0.9;
     } else if (effect.type === "healPopup") {
       effect.mesh.position.y += (effect.vy ?? 1.2) * dt;
       effect.mesh.scale.setScalar(0.7 + alpha * 0.3);
