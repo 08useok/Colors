@@ -1193,9 +1193,9 @@ function createStickman(color, skinId) {
       guitarGroup.add(s);
     }
 
-    guitarGroup.position.set(0.0, -0.25, 0.55);
-    guitarGroup.rotation.set(Math.PI * 0.5, 0, 0.3);
-    guitarGroup.scale.set(1.3, 1.3, 1.3);
+    guitarGroup.position.set(0.15, -0.2, 0.5);
+    guitarGroup.rotation.set(0.15, -0.2, -0.5);
+    guitarGroup.scale.set(1.2, 1.2, 1.2);
     group.add(guitarGroup);
     group.userData.guitar = guitarGroup;
   }
@@ -1291,11 +1291,11 @@ function renderPreview(dt) {
     rightArmZ = -0.05;
     headX = -0.04;
   } else if (previewCharType === "pink") {
-    leftArmX = -0.9;
-    leftArmZ = 0.3;
-    rightArmX = -0.5 + Math.sin(previewTime * 3) * 0.08;
-    rightArmZ = -0.15;
-    headX = -0.05;
+    leftArmX = -0.6;
+    leftArmZ = 0.35;
+    rightArmX = -0.3 + Math.sin(previewTime * 3) * 0.06;
+    rightArmZ = -0.2;
+    headX = -0.08;
   }
 
   let leftElbowX = 0;
@@ -1304,8 +1304,8 @@ function renderPreview(dt) {
     leftElbowX = -0.6 + Math.sin(previewTime * 1.8) * 0.05;
     rightElbowX = -0.6 + Math.sin(previewTime * 1.8 + 1.5) * 0.05;
   } else if (previewCharType === "pink") {
-    leftElbowX = -1.2;
-    rightElbowX = -0.8 + Math.sin(previewTime * 3) * 0.1;
+    leftElbowX = -0.8;
+    rightElbowX = -0.5 + Math.sin(previewTime * 3) * 0.08;
   }
 
   parts.leftArm.rotation.x = leftArmX;
@@ -4403,11 +4403,12 @@ function updateFighterAnimation(fighter, dt) {
     bodyZ += Math.sin(walkCycle) * 0.02 * swing;
     headX += -0.06;
   } else if (charType === "pink") {
-    leftArmX = -0.9;
-    leftArmZ = 0.3;
-    leftElbowX = -1.2;
-    rightArmX = -0.5 + Math.sin(state.gameTime * 3) * 0.08;
-    rightArmZ = -0.15;
+    leftArmX = -0.6;
+    leftArmZ = 0.35;
+    leftElbowX = -0.8;
+    rightArmX = -0.3 + Math.sin(state.gameTime * 3) * 0.06;
+    rightArmZ = -0.2;
+    rightElbowX = -0.5 + Math.sin(state.gameTime * 3) * 0.08;
     rightElbowX = -0.8 + Math.sin(state.gameTime * 3) * 0.1;
     headX = -0.05;
   }
