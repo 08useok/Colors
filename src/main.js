@@ -1137,9 +1137,9 @@ function createStickman(color, skinId) {
     strap.rotation.set(0.3, 0, 0.6);
     guitarGroup.add(strap);
 
-    guitarGroup.position.set(0.1, -0.1, 0.45);
-    guitarGroup.rotation.set(-0.15, 0.3, -0.35);
-    guitarGroup.scale.set(1.1, 1.1, 1.1);
+    guitarGroup.position.set(0.0, -0.3, 0.55);
+    guitarGroup.rotation.set(Math.PI * 0.5, 0, 0.35);
+    guitarGroup.scale.set(1.4, 1.4, 1.4);
     group.add(guitarGroup);
     group.userData.guitar = guitarGroup;
   }
