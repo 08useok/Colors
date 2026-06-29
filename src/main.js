@@ -1123,8 +1123,12 @@ function createStickman(color, skinId) {
     guitarGroup.add(gPG);
 
     const puGeo = new THREE.BoxGeometry(0.12, 0.025, 0.04);
-    guitarGroup.add(Object.assign(new THREE.Mesh(puGeo, gBlackMat), { position: new THREE.Vector3(0, 0.06, -0.03) }));
-    guitarGroup.add(Object.assign(new THREE.Mesh(puGeo, gBlackMat), { position: new THREE.Vector3(0, 0.06, 0.03) }));
+    const pu1 = new THREE.Mesh(puGeo, gBlackMat);
+    pu1.position.set(0, 0.06, -0.03);
+    guitarGroup.add(pu1);
+    const pu2 = new THREE.Mesh(puGeo, gBlackMat);
+    pu2.position.set(0, 0.06, 0.03);
+    guitarGroup.add(pu2);
 
     const gNeck = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 1.0), gBlackMat);
     gNeck.position.set(0, 0.02, 0.65);
