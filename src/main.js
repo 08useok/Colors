@@ -4062,6 +4062,10 @@ function updateEffects(dt) {
       continue;
     }
     const alpha = effect.life / effect.maxLife;
+    const groundTypes = ["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit"];
+    if (!groundTypes.includes(effect.type)) {
+      effect.mesh.quaternion.copy(camera.quaternion);
+    }
     if (effect.type === "fist") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.5);
       effect.mesh.material.opacity = alpha * 0.9;
