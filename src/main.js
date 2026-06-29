@@ -606,6 +606,21 @@ function updateColorInfo(charKey, account) {
   const mult = getLevelMultiplier(charLevel);
   const effectiveHp = Math.round(charDef.maxHealth * mult).toLocaleString();
 
+  let skinHtml = "";
+  if (account) {
+    const ownedForChar = Object.entries(SKINS).filter(([, sk]) => sk.character === charKey && account.ownedSkins.includes(Object.keys(SKINS).find(id => SKINS[id] === sk)));
+    for (const [skinId, skin] of Object.entries(SKINS)) {
+      if (skin.character !== charKey) continue;
+      if (!account.ownedSkins.includes(skinId)) continue;
+      const equipped = account.selectedSkins[charKey] === skinId;
+      skinHtml += `<div class="ci-skin-row">`
+        + `<span class="ci-skin-name">${skin.name}</span>`
+        + `<button class="ci-skin-btn${equipped ? " ci-skin-active" : ""}" data-skin="${skinId}" data-char="${charKey}" type="button">`
+        + (equipped ? "장착 중" : "장착")
+        + `</button></div>`;
+    }
+  }
+
   el.innerHTML = `<div class="ci-name">${name}</div>`
     + `<div class="ci-hp">HP ${effectiveHp}</div>`
     + `<div class="ci-desc">${desc}</div>`
@@ -619,7 +634,26 @@ function updateColorInfo(charKey, account) {
     + `<span class="ci-level">${levelText}</span>`
     + (masteryText ? `<span class="ci-mastery">${masteryText}</span>` : "")
     + `</div>`
+    + (skinHtml ? `<div class="ci-skins">${skinHtml}</div>` : "")
     + `<div class="ci-winrate">${winrateText}</div>`;
+
+  el.querySelectorAll(".ci-skin-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const acc = loadAccount();
+      if (!acc) return;
+      const sid = btn.dataset.skin;
+      const ch = btn.dataset.char;
+      if (acc.selectedSkins[ch] === sid) {
+        delete acc.selectedSkins[ch];
+      } else {
+        acc.selectedSkins[ch] = sid;
+      }
+      saveAccount(acc);
+      updateColorInfo(ch, acc);
+      previewChar = null;
+      setPreviewCharacter(ch);
+    });
+  });
 }
 
 function showDailyLogin(account) {
