@@ -977,135 +977,91 @@ function createStickman(color, skinId) {
   darkMaterial.color.getHSL(hsl);
   darkMaterial.color.offsetHSL(0, 0, hsl.l < 0.25 ? 0.08 : -0.08);
 
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.36, 1.2, 8, 14), material);
-  body.position.y = 0.05;
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.40, 1.0, 8, 14), material);
+  body.position.y = 0.1;
   body.castShadow = true;
   group.add(body);
 
-  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.16, 12), darkMaterial);
-  neck.position.y = 1.1;
+  const neck = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.08, 6, 8), material);
+  neck.position.y = 0.9;
   neck.castShadow = true;
   group.add(neck);
 
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.72, 18, 18), material);
-  head.position.y = 1.9;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.68, 18, 18), material);
+  head.position.y = 1.7;
   head.castShadow = true;
   group.add(head);
 
-  const upperArmGeo = new THREE.CapsuleGeometry(0.18, 0.35, 6, 10);
-  const foreArmGeo = new THREE.CapsuleGeometry(0.16, 0.35, 6, 10);
-  const elbowGeo = new THREE.SphereGeometry(0.17, 8, 8);
-  const upperLegGeo = new THREE.CapsuleGeometry(0.2, 0.35, 6, 10);
-  const lowerLegGeo = new THREE.CapsuleGeometry(0.18, 0.35, 6, 10);
-  const kneeGeo = new THREE.SphereGeometry(0.19, 8, 8);
-  const shoulderGeo = new THREE.SphereGeometry(0.20, 10, 10);
-  const thighGeo = new THREE.SphereGeometry(0.22, 10, 10);
+  const upperArmGeo = new THREE.CapsuleGeometry(0.16, 0.40, 6, 10);
+  const foreArmGeo = new THREE.CapsuleGeometry(0.14, 0.36, 6, 10);
+  const upperLegGeo = new THREE.CapsuleGeometry(0.19, 0.42, 6, 10);
+  const lowerLegGeo = new THREE.CapsuleGeometry(0.17, 0.38, 6, 10);
 
   const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.42, 0.60, 0.05);
-  const leftShoulderMesh = new THREE.Mesh(shoulderGeo, material);
-  leftShoulderMesh.position.set(0, -0.05, 0);
-  leftShoulderMesh.scale.set(1.0, 0.8, 0.9);
-  leftShoulderMesh.castShadow = true;
-  leftShoulder.add(leftShoulderMesh);
+  leftShoulder.position.set(-0.42, 0.55, 0);
   group.add(leftShoulder);
-
   const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.42, 0.60, 0.05);
-  const rightShoulderMesh = new THREE.Mesh(shoulderGeo, material);
-  rightShoulderMesh.position.set(0, -0.05, 0);
-  rightShoulderMesh.scale.set(1.0, 0.8, 0.9);
-  rightShoulderMesh.castShadow = true;
-  rightShoulder.add(rightShoulderMesh);
+  rightShoulder.position.set(0.42, 0.55, 0);
   group.add(rightShoulder);
 
-  const leftArm = new THREE.Mesh(upperArmGeo, darkMaterial);
-  leftArm.position.set(-0.48, 0.30, 0.20);
-  leftArm.rotation.z = Math.PI * 0.04;
+  const leftArm = new THREE.Mesh(upperArmGeo, material);
+  leftArm.position.set(-0.44, 0.20, 0);
   leftArm.castShadow = true;
-  const leftElbow = new THREE.Mesh(elbowGeo, darkMaterial);
-  leftElbow.position.set(0, -0.35, 0);
-  leftElbow.castShadow = true;
-  leftArm.add(leftElbow);
-  const leftForeArm = new THREE.Mesh(foreArmGeo, darkMaterial);
-  leftForeArm.position.set(0, -0.35, 0);
+  const leftForeArm = new THREE.Mesh(foreArmGeo, material);
+  leftForeArm.position.set(0, -0.42, 0);
   leftForeArm.castShadow = true;
-  const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), darkMaterial);
-  leftFist.position.set(0, -0.38, 0.02);
-  leftFist.scale.set(1.1, 1, 1.12);
+  const leftFist = new THREE.Mesh(new THREE.SphereGeometry(0.20, 12, 12), material);
+  leftFist.position.set(0, -0.34, 0.02);
+  leftFist.scale.set(1.15, 0.95, 1.1);
   leftFist.castShadow = true;
   leftForeArm.add(leftFist);
   leftArm.add(leftForeArm);
   group.add(leftArm);
 
-  const rightArm = new THREE.Mesh(upperArmGeo, darkMaterial);
-  rightArm.position.set(0.48, 0.30, 0.20);
-  rightArm.rotation.z = -Math.PI * 0.04;
+  const rightArm = new THREE.Mesh(upperArmGeo, material);
+  rightArm.position.set(0.44, 0.20, 0);
   rightArm.castShadow = true;
-  const rightElbow = new THREE.Mesh(elbowGeo, darkMaterial);
-  rightElbow.position.set(0, -0.35, 0);
-  rightElbow.castShadow = true;
-  rightArm.add(rightElbow);
-  const rightForeArm = new THREE.Mesh(foreArmGeo, darkMaterial);
-  rightForeArm.position.set(0, -0.35, 0.1);
+  const rightForeArm = new THREE.Mesh(foreArmGeo, material);
+  rightForeArm.position.set(0, -0.42, 0);
   rightForeArm.castShadow = true;
-  const rightFist = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), darkMaterial);
-  rightFist.position.set(0, -0.38, 0.02);
-  rightFist.scale.set(1.1, 1, 1.12);
+  const rightFist = new THREE.Mesh(new THREE.SphereGeometry(0.20, 12, 12), material);
+  rightFist.position.set(0, -0.34, 0.02);
+  rightFist.scale.set(1.15, 0.95, 1.1);
   rightFist.castShadow = true;
   rightForeArm.add(rightFist);
   rightArm.add(rightForeArm);
   group.add(rightArm);
 
   const leftThigh = new THREE.Group();
-  leftThigh.position.set(-0.24, -0.75, 0);
-  const leftThighMesh = new THREE.Mesh(thighGeo, material);
-  leftThighMesh.position.set(0, -0.05, 0);
-  leftThighMesh.scale.set(1.1, 0.85, 1.0);
-  leftThighMesh.castShadow = true;
-  leftThigh.add(leftThighMesh);
+  leftThigh.position.set(-0.18, -0.60, 0);
   group.add(leftThigh);
-
   const rightThigh = new THREE.Group();
-  rightThigh.position.set(0.24, -0.75, 0);
-  const rightThighMesh = new THREE.Mesh(thighGeo, material);
-  rightThighMesh.position.set(0, -0.05, 0);
-  rightThighMesh.scale.set(1.1, 0.85, 1.0);
-  rightThighMesh.castShadow = true;
-  rightThigh.add(rightThighMesh);
+  rightThigh.position.set(0.18, -0.60, 0);
   group.add(rightThigh);
 
-  const leftLeg = new THREE.Mesh(upperLegGeo, darkMaterial);
-  leftLeg.position.set(-0.24, -1.0, 0);
+  const leftLeg = new THREE.Mesh(upperLegGeo, material);
+  leftLeg.position.set(-0.18, -0.90, 0);
   leftLeg.castShadow = true;
-  const leftKnee = new THREE.Mesh(kneeGeo, darkMaterial);
-  leftKnee.position.set(0, -0.35, 0);
-  leftKnee.castShadow = true;
-  leftLeg.add(leftKnee);
-  const leftShin = new THREE.Mesh(lowerLegGeo, darkMaterial);
-  leftShin.position.set(0, -0.7, 0);
+  const leftShin = new THREE.Mesh(lowerLegGeo, material);
+  leftShin.position.set(0, -0.52, 0);
   leftShin.castShadow = true;
-  const leftFoot = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
-  leftFoot.position.set(0, -0.38, 0.12);
-  leftFoot.scale.set(1.18, 0.7, 1.55);
+  const leftFoot = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), material);
+  leftFoot.position.set(0, -0.36, 0.10);
+  leftFoot.scale.set(1.1, 0.65, 1.45);
   leftFoot.castShadow = true;
   leftShin.add(leftFoot);
   leftLeg.add(leftShin);
   group.add(leftLeg);
 
-  const rightLeg = new THREE.Mesh(upperLegGeo, darkMaterial);
-  rightLeg.position.set(0.24, -1.0, 0);
+  const rightLeg = new THREE.Mesh(upperLegGeo, material);
+  rightLeg.position.set(0.18, -0.90, 0);
   rightLeg.castShadow = true;
-  const rightKnee = new THREE.Mesh(kneeGeo, darkMaterial);
-  rightKnee.position.set(0, -0.35, 0);
-  rightKnee.castShadow = true;
-  rightLeg.add(rightKnee);
-  const rightShin = new THREE.Mesh(lowerLegGeo, darkMaterial);
-  rightShin.position.set(0, -0.7, 0);
+  const rightShin = new THREE.Mesh(lowerLegGeo, material);
+  rightShin.position.set(0, -0.52, 0);
   rightShin.castShadow = true;
-  const rightFoot = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 12), darkMaterial);
-  rightFoot.position.set(0, -0.38, 0.12);
-  rightFoot.scale.set(1.18, 0.7, 1.55);
+  const rightFoot = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), material);
+  rightFoot.position.set(0, -0.36, 0.10);
+  rightFoot.scale.set(1.1, 0.65, 1.45);
   rightFoot.castShadow = true;
   rightShin.add(rightFoot);
   rightLeg.add(rightShin);
@@ -1133,37 +1089,50 @@ function createStickman(color, skinId) {
 
   if (color === 0xFF69B4) {
     const guitarGroup = new THREE.Group();
-    const gBodyMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.3 });
-    const gAccentMat = new THREE.MeshStandardMaterial({ color: 0xFF69B4, roughness: 0.4, metalness: 0.4 });
-    const gStringMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.3, metalness: 0.6 });
+    const gBodyMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.4, metalness: 0.3 });
+    const gAccentMat = new THREE.MeshStandardMaterial({ color: 0xFF69B4, roughness: 0.35, metalness: 0.5 });
+    const gStringMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.2, metalness: 0.8 });
 
-    const gBody = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.18, 0.5), gBodyMat);
-    gBody.position.set(0, 0, 0);
+    const vShape = new THREE.Shape();
+    vShape.moveTo(0, 0);
+    vShape.lineTo(-0.45, -0.35);
+    vShape.lineTo(-0.35, -0.35);
+    vShape.lineTo(-0.05, -0.08);
+    vShape.lineTo(0.05, -0.08);
+    vShape.lineTo(0.35, -0.35);
+    vShape.lineTo(0.45, -0.35);
+    vShape.lineTo(0, 0);
+    const vGeo = new THREE.ExtrudeGeometry(vShape, { depth: 0.10, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 });
+    const gBody = new THREE.Mesh(vGeo, gBodyMat);
+    gBody.rotation.x = -Math.PI / 2;
+    gBody.position.set(0, 0, 0.05);
     guitarGroup.add(gBody);
-    const gPickguard = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.19, 0.28), gAccentMat);
-    gPickguard.position.set(-0.1, 0, -0.05);
+
+    const gPickguard = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 0.12), gAccentMat);
+    gPickguard.position.set(0, 0.01, -0.02);
     guitarGroup.add(gPickguard);
 
-    const gNeck = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.1, 0.14), gBodyMat);
-    gNeck.position.set(0.75, 0.02, 0);
+    const gNeck = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.08, 0.85), gBodyMat);
+    gNeck.position.set(0, 0.02, 0.58);
     guitarGroup.add(gNeck);
-    const gFretboard = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.11, 0.10), new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.7 }));
-    gFretboard.position.set(0.75, 0.02, 0);
+    const gFretboard = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.83), new THREE.MeshStandardMaterial({ color: 0x5C3317, roughness: 0.7 }));
+    gFretboard.position.set(0, 0.02, 0.58);
     guitarGroup.add(gFretboard);
 
-    const gHeadstock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.16), gBodyMat);
-    gHeadstock.position.set(1.28, 0.02, 0);
+    const gHeadstock = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.08, 0.18), gBodyMat);
+    gHeadstock.position.set(0, 0.02, 1.08);
     guitarGroup.add(gHeadstock);
 
     for (let i = 0; i < 6; i++) {
-      const s = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.6, 4), gStringMat);
-      s.rotation.z = Math.PI / 2;
-      s.position.set(0.5, 0.06, -0.04 + i * 0.016);
+      const s = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 1.4, 4), gStringMat);
+      s.rotation.x = Math.PI / 2;
+      s.position.set(-0.025 + i * 0.01, 0.05, 0.4);
       guitarGroup.add(s);
     }
 
-    guitarGroup.position.set(0.1, -0.2, 0.35);
-    guitarGroup.rotation.set(0.1, 0.3, -0.15);
+    guitarGroup.position.set(0.15, -0.15, 0.30);
+    guitarGroup.rotation.set(-0.2, 0.4, -0.25);
+    guitarGroup.scale.set(0.9, 0.9, 0.9);
     group.add(guitarGroup);
     group.userData.guitar = guitarGroup;
   }
