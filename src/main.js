@@ -253,7 +253,7 @@ if (!leaderboardBots) {
 }
 
 const maxAmmo = 3;
-const reloadDuration = 0.5;
+const reloadDuration = 0.17;
 const attackCooldown = 0.62;
 const attackEvents = [
   { delay: 0.12, damage: 2200 },
@@ -265,7 +265,7 @@ const CHARACTERS = {
     color: 0xff0000,
     maxHealth: 9800,
     attackType: "punch",
-    reloadDuration: 0.5,
+    reloadDuration: 0.17,
     attackCooldown: 0.55,
     moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
@@ -274,7 +274,7 @@ const CHARACTERS = {
     color: 0x00ff00,
     maxHealth: 8400,
     attackType: "boomerang",
-    reloadDuration: 1.0,
+    reloadDuration: 0.33,
     attackCooldown: 0.45,
     moveSpeedMultiplier: 1.2,
     boomerangCount: 4,
@@ -290,7 +290,7 @@ const CHARACTERS = {
     color: 0x0000ff,
     maxHealth: 4800,
     attackType: "bullet",
-    reloadDuration: 0.35,
+    reloadDuration: 0.12,
     attackCooldown: 0.3,
     bulletDamage: 1000,
     bulletRange: 16,
@@ -302,7 +302,7 @@ const CHARACTERS = {
     color: 0xffa500,
     maxHealth: 5800,
     attackType: "bomb",
-    reloadDuration: 1.3,
+    reloadDuration: 0.43,
     attackCooldown: 0.35,
     bombDamage: 750,
     bombSplashDamage: 300,
@@ -318,7 +318,7 @@ const CHARACTERS = {
     color: 0xffff00,
     maxHealth: 5800,
     attackType: "electric",
-    reloadDuration: 1.0,
+    reloadDuration: 0.33,
     attackCooldown: 0.35,
     electricDamage: 2400,
     electricRange: 12,
@@ -332,7 +332,7 @@ const CHARACTERS = {
     color: 0x0ff0fe,
     maxHealth: 6200,
     attackType: "spreadLine",
-    reloadDuration: 1.0,
+    reloadDuration: 0.33,
     attackCooldown: 0.35,
     spreadLineDamage: 450,
     spreadLineRange: 8.33,
@@ -346,7 +346,7 @@ const CHARACTERS = {
     color: 0x800080,
     maxHealth: 4800,
     attackType: "poison",
-    reloadDuration: 1.1,
+    reloadDuration: 0.37,
     attackCooldown: 0.45,
     needleRange: 12,
     needleSpeed: 18,
@@ -364,8 +364,8 @@ const CHARACTERS = {
     color: 0xFF69B4,
     maxHealth: 11500,
     attackType: "heal_circle",
-    reloadDuration: 1.0,
-    attackCooldown: 0.7,
+    reloadDuration: 0.33,
+    attackCooldown: 0.2,
     healCircleRange: 4.5,
     healCircleDamage: 2400,
     healCircleHeal: 1800,
@@ -3002,7 +3002,7 @@ function getCurrentZone() {
 
 function getReloadInterval(fighter) {
   const reloadDur = CHARACTERS[fighter.characterType]?.reloadDuration ?? reloadDuration;
-  return reloadDur / fighter.maxAmmo;
+  return reloadDur;
 }
 
 function queueAttackHit(attacker, hitIndex, damage, executeAt) {
