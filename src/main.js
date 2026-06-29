@@ -1094,45 +1094,52 @@ function createStickman(color, skinId) {
     const gStringMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.2, metalness: 0.8 });
 
     const vShape = new THREE.Shape();
-    vShape.moveTo(0, 0);
-    vShape.lineTo(-0.45, -0.35);
-    vShape.lineTo(-0.35, -0.35);
-    vShape.lineTo(-0.05, -0.08);
-    vShape.lineTo(0.05, -0.08);
-    vShape.lineTo(0.35, -0.35);
-    vShape.lineTo(0.45, -0.35);
-    vShape.lineTo(0, 0);
-    const vGeo = new THREE.ExtrudeGeometry(vShape, { depth: 0.10, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2 });
+    vShape.moveTo(0, 0.15);
+    vShape.lineTo(-0.55, -0.45);
+    vShape.lineTo(-0.42, -0.50);
+    vShape.lineTo(-0.06, -0.10);
+    vShape.lineTo(0.06, -0.10);
+    vShape.lineTo(0.42, -0.50);
+    vShape.lineTo(0.55, -0.45);
+    vShape.lineTo(0, 0.15);
+    const vGeo = new THREE.ExtrudeGeometry(vShape, { depth: 0.12, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 2 });
     const gBody = new THREE.Mesh(vGeo, gBodyMat);
     gBody.rotation.x = -Math.PI / 2;
-    gBody.position.set(0, 0, 0.05);
+    gBody.position.set(0, 0, -0.06);
     guitarGroup.add(gBody);
 
-    const gPickguard = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.02, 0.12), gAccentMat);
-    gPickguard.position.set(0, 0.01, -0.02);
+    const gPickguard = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.03, 0.16), gAccentMat);
+    gPickguard.position.set(0, 0.04, 0.08);
     guitarGroup.add(gPickguard);
 
-    const gNeck = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.08, 0.85), gBodyMat);
-    gNeck.position.set(0, 0.02, 0.58);
+    const gNeck = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 1.1, 6, 8), gBodyMat);
+    gNeck.rotation.x = Math.PI / 2;
+    gNeck.position.set(0, 0.02, 0.75);
     guitarGroup.add(gNeck);
-    const gFretboard = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.09, 0.83), new THREE.MeshStandardMaterial({ color: 0x5C3317, roughness: 0.7 }));
-    gFretboard.position.set(0, 0.02, 0.58);
+    const gFretboard = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.06, 1.05), new THREE.MeshStandardMaterial({ color: 0x5C3317, roughness: 0.7 }));
+    gFretboard.position.set(0, 0.04, 0.72);
     guitarGroup.add(gFretboard);
 
-    const gHeadstock = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.08, 0.18), gBodyMat);
-    gHeadstock.position.set(0, 0.02, 1.08);
+    const gHeadstock = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.06, 0.22), gBodyMat);
+    gHeadstock.position.set(0, 0.02, 1.38);
     guitarGroup.add(gHeadstock);
 
     for (let i = 0; i < 6; i++) {
-      const s = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 1.4, 4), gStringMat);
+      const s = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 1.7, 4), gStringMat);
       s.rotation.x = Math.PI / 2;
-      s.position.set(-0.025 + i * 0.01, 0.05, 0.4);
+      s.position.set(-0.03 + i * 0.012, 0.07, 0.5);
       guitarGroup.add(s);
     }
 
-    guitarGroup.position.set(0.15, -0.15, 0.30);
-    guitarGroup.rotation.set(-0.2, 0.4, -0.25);
-    guitarGroup.scale.set(0.9, 0.9, 0.9);
+    const strapMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+    const strap = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.02, 1.8), strapMat);
+    strap.position.set(0.15, 0.0, 0.3);
+    strap.rotation.set(0.3, 0, 0.6);
+    guitarGroup.add(strap);
+
+    guitarGroup.position.set(0.1, -0.1, 0.45);
+    guitarGroup.rotation.set(-0.15, 0.3, -0.35);
+    guitarGroup.scale.set(1.1, 1.1, 1.1);
     group.add(guitarGroup);
     group.userData.guitar = guitarGroup;
   }
