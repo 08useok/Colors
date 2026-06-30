@@ -1840,7 +1840,9 @@ const TD_RAIL_SEGMENTS = (() => {
 const TD_SPOKE_WALLS = [
   ...TD_RAIL_SEGMENTS,
   [-2.5, 18, 2, 2],
-  [2.5, 30, 2, 2],
+  [2.5, 26, 2, 2],
+  [-2.5, 34, 2, 2],
+  [2.5, 40, 2, 2],
 ];
 const TD_SPOKE_BUSHES = [[-4.5, 17], [4.5, 31]];
 const TD_SPOKE_TREES = [[6, 21]];
