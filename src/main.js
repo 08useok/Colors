@@ -2369,6 +2369,7 @@ function updateTakeDownHud() {
 function updateBossAI(dt) {
   const boss = state.tdBoss;
   if (!boss || boss.dead) return;
+  if (state.gameTime < 5) return;
 
   if (boss.health <= boss.maxHealth * 0.3 && !boss.bossRage) {
     boss.bossRage = true;
@@ -2419,7 +2420,7 @@ function updateBossAI(dt) {
   const dx = nearest.mesh.position.x - boss.mesh.position.x;
   const dz = nearest.mesh.position.z - boss.mesh.position.z;
   if (nearDist > 3) {
-    const speed = 5 * speedMult;
+    const speed = 1 * speedMult;
     const nx = (dx / nearDist) * speed * dt;
     const nz = (dz / nearDist) * speed * dt;
     boss.mesh.position.x += nx;
