@@ -1815,10 +1815,10 @@ const TD_CORRIDOR_MID_Z = (TD_ARENA_RADIUS + TD_SPAWN_DIST) / 2;
 const TD_SPOKE_WALLS = [
   [-7, TD_CORRIDOR_MID_Z, 1.4, TD_CORRIDOR_LENGTH],
   [7, TD_CORRIDOR_MID_Z, 1.4, TD_CORRIDOR_LENGTH],
-  [-4, 18, 3, 3],
-  [4, 30, 3, 3],
+  [-2.5, 18, 2, 2],
+  [2.5, 30, 2, 2],
 ];
-const TD_SPOKE_BUSHES = [[-5, 17], [5, 31]];
+const TD_SPOKE_BUSHES = [[-4.5, 17], [4.5, 31]];
 const TD_SPOKE_TREES = [[0, 24]];
 
 const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
