@@ -4943,7 +4943,7 @@ function updateBot(bot, dt, zone) {
   const dxZone = botPos.x - state.safeCenter.x;
   const dzZone = botPos.z - state.safeCenter.y;
   const distToZoneCenter = Math.hypot(dxZone, dzZone);
-  const outsideZone = !state.chopWoodMode && zone && distToZoneCenter > zone.radius * 0.85;
+  const outsideZone = !state.chopWoodMode && !state.takedownMode && zone && distToZoneCenter > zone.radius * 0.85;
 
   if (outsideZone && zone.damage > 0) {
     const toCenter = Math.atan2(-dxZone, -dzZone);
