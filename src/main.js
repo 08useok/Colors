@@ -2277,6 +2277,7 @@ function initTakeDownPlayers() {
   boss.bossChargeTarget = null;
   boss.bossCharging = false;
   boss.bossRage = false;
+  boss.bossRestUntil = 0;
   boss.bodyMaterials = boss.mesh.userData.bodyMaterials || [];
   boss.healthBar = createHealthBarMesh();
   boss.healthBar.position.set(0, 1.5, 0);
@@ -2373,6 +2374,7 @@ function updateBossAI(dt) {
   const boss = state.tdBoss;
   if (!boss || boss.dead) return;
   if (state.gameTime < 10) return;
+  if (state.gameTime < (boss.bossRestUntil || 0)) return;
 
   if (boss.health <= boss.maxHealth * 0.3 && !boss.bossRage) {
     boss.bossRage = true;
@@ -2401,6 +2403,7 @@ function updateBossAI(dt) {
     const dist = Math.hypot(dx, dz);
     if (dist < 2) {
       boss.bossCharging = false;
+      boss.bossRestUntil = state.gameTime + 1.5 * cdMult;
       // 돌진 도착 — 근처 플레이어에게 피해
       for (const f of alivePlayers) {
         const fd = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
@@ -2436,6 +2439,7 @@ function updateBossAI(dt) {
   // ① 근접 내려찍기
   if (state.gameTime >= boss.bossNextSlam && nearDist < 5) {
     boss.bossNextSlam = state.gameTime + 3 * cdMult;
+    boss.bossRestUntil = state.gameTime + 1.2 * cdMult;
     for (const f of alivePlayers) {
       const fd = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
       if (fd < 5) applyDamage(f, Math.round(3000 * dmgMult), boss);
@@ -2461,6 +2465,7 @@ function updateBossAI(dt) {
   // ③ 충격파
   if (state.gameTime >= boss.bossNextWave) {
     boss.bossNextWave = state.gameTime + 4.5 * cdMult;
+    boss.bossRestUntil = state.gameTime + 0.8 * cdMult;
     const dir = new THREE.Vector3(dx, 0, dz).normalize();
     const waveMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false });
     const wave = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 8), waveMat);
