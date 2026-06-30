@@ -2499,9 +2499,8 @@ function updateTakeDownRespawn() {
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;
-      const angle = Math.random() * Math.PI * 2;
-      const r = worldRadius * 0.8;
-      fighter.mesh.position.set(Math.cos(angle) * r, 1.85, Math.sin(angle) * r);
+      const spawn = TD_SPAWNS[Math.floor(Math.random() * TD_SPAWNS.length)];
+      fighter.mesh.position.set(spawn[0], 1.85, spawn[2]);
       fighter.shadow.position.set(fighter.mesh.position.x, 0.04, fighter.mesh.position.z);
       fighter.tdRespawnAt = 0;
     }
@@ -3634,7 +3633,7 @@ function moveFighter(fighter, desiredMove, dt) {
   const next = tempVec32.copy(pos);
   next.x += desiredMove.x * dt;
   next.z += desiredMove.z * dt;
-  const zone = (fighter.isPlayer && !state.chopWoodMode && !state.trainingMode) ? getCurrentZone() : null;
+  const zone = (fighter.isPlayer && !state.chopWoodMode && !state.trainingMode && !state.takedownMode) ? getCurrentZone() : null;
   resolveMovementCollision(next, fighter.radius, zone ? zone.radius : null);
 
   pos.x = next.x;
@@ -5064,7 +5063,7 @@ function updateBot(bot, dt, zone) {
     }
   }
 
-  if (!state.chopWoodMode) {
+  if (!state.chopWoodMode && !state.takedownMode) {
     const distFromCenter = Math.hypot(botPos.x - state.safeCenter.x, botPos.z - state.safeCenter.y);
     if (distFromCenter > zone.radius - 4) {
       const zoneNav = findNavTarget(bot, state.safeCenter.x, state.safeCenter.y);
@@ -5636,7 +5635,7 @@ function updateHud() {
 
 function updateNaturalRegen(dt) {
   for (const fighter of state.players) {
-    if (fighter.dead || fighter.isDummy || fighter.health >= fighter.maxHealth) continue;
+    if (fighter.dead || fighter.isDummy || fighter.isBoss || fighter.health >= fighter.maxHealth) continue;
     const regenDelay = fighter.isPlayer ? 3 : 5;
     if (state.gameTime - fighter.lastCombatTime >= regenDelay && state.gameTime >= fighter.nextRegenAt) {
       fighter.health = Math.min(fighter.maxHealth, fighter.health + fighter.maxHealth * 0.25);
