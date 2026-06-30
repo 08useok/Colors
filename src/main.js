@@ -2372,7 +2372,7 @@ function updateTakeDownHud() {
 function updateBossAI(dt) {
   const boss = state.tdBoss;
   if (!boss || boss.dead) return;
-  if (state.gameTime < 5) return;
+  if (state.gameTime < 10) return;
 
   if (boss.health <= boss.maxHealth * 0.3 && !boss.bossRage) {
     boss.bossRage = true;
