@@ -1810,9 +1810,11 @@ const TD_CORRIDOR_LENGTH = 30;
 const TD_SPAWN_DIST = TD_ARENA_RADIUS + TD_CORRIDOR_LENGTH;
 
 // 북쪽(+Z) 기준 통로 템플릿 — 8방향으로 회전 복제된다
+// 측벽은 아레나 가장자리부터 스폰 지점까지 통로 전체 길이를 덮는다
+const TD_CORRIDOR_MID_Z = (TD_ARENA_RADIUS + TD_SPAWN_DIST) / 2;
 const TD_SPOKE_WALLS = [
-  [-7, 22, 1.4, 18],
-  [7, 22, 1.4, 18],
+  [-7, TD_CORRIDOR_MID_Z, 1.4, TD_CORRIDOR_LENGTH],
+  [7, TD_CORRIDOR_MID_Z, 1.4, TD_CORRIDOR_LENGTH],
   [-4, 18, 3, 3],
   [4, 30, 3, 3],
 ];
@@ -3533,10 +3535,11 @@ function findNavTarget(fighter, targetX, targetZ) {
 function _computeNavTarget(fighter, targetX, targetZ) {
   const fx = fighter.mesh.position.x;
   const fz = fighter.mesh.position.z;
-  if (!isPathBlocked(fx, fz, targetX, targetZ, fighter.radius)) {
+  const navRadius = fighter.radius * 0.85;
+  if (!isPathBlocked(fx, fz, targetX, targetZ, navRadius)) {
     return { x: targetX, z: targetZ };
   }
-  const pad = fighter.radius + 0.5;
+  const pad = fighter.radius + 0.6;
   const searchRange = 25;
   let bestCorner = null;
   let bestScore = Infinity;
@@ -3556,7 +3559,7 @@ function _computeNavTarget(fighter, targetX, targetZ) {
       const cornerToTarget = Math.hypot(c.x - targetX, c.z - targetZ);
       const score = distToCorner + cornerToTarget;
       if (score >= bestScore) continue;
-      if (isPathBlocked(fx, fz, c.x, c.z, fighter.radius)) continue;
+      if (isPathBlocked(fx, fz, c.x, c.z, navRadius)) continue;
       bestScore = score;
       bestCorner = c;
     }
@@ -5036,7 +5039,7 @@ function updateBot(bot, dt, zone) {
 
   const moveSpeed = Math.hypot(tempVec3.x, tempVec3.z);
   if (moveSpeed > 0.0001) {
-    const lookahead = bot.radius + 1.5;
+    const lookahead = bot.radius + 0.35;
     const dirX = tempVec3.x / moveSpeed;
     const dirZ = tempVec3.z / moveSpeed;
     const escapeDir = findWallEscapeDir(bot, dirX, dirZ, lookahead);
