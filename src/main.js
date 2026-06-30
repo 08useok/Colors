@@ -143,11 +143,12 @@ const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
-const CURRENT_SEASON = "alpha3";
+const CURRENT_SEASON = "alpha4";
 const SEASONS = {
   alpha1: "알파 시즌 1",
   alpha2: "알파 시즌 2",
   alpha3: "알파 시즌 3",
+  alpha4: "알파 시즌 4",
 };
 
 const LEVEL_UP_COST = [0, 200, 500, 1000, 2000, 4000];
