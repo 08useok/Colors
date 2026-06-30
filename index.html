@@ -566,6 +566,7 @@
           </div>
           <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
           <button id="open-shop-btn" class="lobby-start-btn lobby-shop-btn" type="button">🪙 상점</button>
+          <button id="open-rotation-btn" class="lobby-start-btn lobby-rotation-btn" type="button">🔄 Rotation</button>
         </div>
       </div>
 
@@ -600,6 +601,26 @@
           <p class="shop-coming-msg">이모트, 프로필 꾸미기 — 준비 중입니다!</p>
         </div>
       </div>
+    </div>
+  </div>
+  <div id="rotation-overlay" class="hidden">
+    <div class="rotation-screen">
+      <div class="rotation-header">
+        <h2>🔄 Rotation Mode</h2>
+        <button id="rotation-close-btn" class="shop-close-btn" type="button">✕</button>
+      </div>
+      <div id="rotation-champion-banner" class="rotation-champion-banner hidden"></div>
+      <div class="rotation-summary">
+        <div class="rotation-summary-item">
+          <div class="rotation-summary-label">남은 캐릭터</div>
+          <div class="rotation-summary-value" id="rotation-remaining-count">8</div>
+        </div>
+        <div class="rotation-summary-item">
+          <div class="rotation-summary-label">다음 탈락까지</div>
+          <div class="rotation-summary-value" id="rotation-next-elim">-</div>
+        </div>
+      </div>
+      <div id="rotation-list" class="rotation-list"></div>
     </div>
   </div>
   <script type="module" src="./src/main.js?v=1.4.4"></script>

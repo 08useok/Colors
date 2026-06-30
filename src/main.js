@@ -107,6 +107,13 @@ const shopCloseBtn = document.getElementById("shop-close-btn");
 const shopContent = document.getElementById("shop-levelup");
 const shopSkinsContent = document.getElementById("shop-skins");
 const openShopBtn = document.getElementById("open-shop-btn");
+const rotationOverlay = document.getElementById("rotation-overlay");
+const rotationCloseBtn = document.getElementById("rotation-close-btn");
+const openRotationBtn = document.getElementById("open-rotation-btn");
+const rotationChampionBanner = document.getElementById("rotation-champion-banner");
+const rotationRemainingCount = document.getElementById("rotation-remaining-count");
+const rotationNextElim = document.getElementById("rotation-next-elim");
+const rotationList = document.getElementById("rotation-list");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -223,6 +230,95 @@ const COIN_REWARDS = {
   streak5: 50,
   streak10: 100,
 };
+
+// ── Rotation Mode ──────────────────────────────────────────────────────
+const ROTATION_CHAR_ORDER = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+const ROTATION_ROUND_DAYS = 3;
+
+const ROTATION_NEW_ABILITIES = {
+  red: { name: "분노의 질주", desc: "체력 30% 이하 시 이동속도 증가" },
+  green: { name: "더블 바운스", desc: "부메랑 추가 튕김" },
+  blue: { name: "관통탄", desc: "탄환이 적을 관통" },
+  orange: { name: "광역 폭발", desc: "폭발 범위 증가" },
+  yellow: { name: "과부하 감전", desc: "감전 효과 강화" },
+  cyan: { name: "정밀 사격", desc: "집탄률 증가" },
+  purple: { name: "맹독 확산", desc: "독 효과 확산" },
+  pink: { name: "광역 치유", desc: "회복 범위 증가" },
+};
+
+const ROTATION_PARTICIPATION_REWARD = { coins: 100, trophies: 20 };
+const ROTATION_CHAMPION_REWARD = { coins: 1000, trophies: 200 };
+
+function initRotationState(account) {
+  if (!account.rotation) {
+    account.rotation = {
+      startDate: getTodayString(),
+      remaining: [...ROTATION_CHAR_ORDER],
+      eliminated: [],
+      newAbilityChars: [],
+      champion: null,
+      stats: Object.fromEntries(ROTATION_CHAR_ORDER.map((c) => [c, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }])),
+      lastRoundProcessedAt: 0,
+    };
+    return true;
+  }
+  return false;
+}
+
+function daysSince(dateStr) {
+  const start = new Date(dateStr + "T00:00:00");
+  const now = new Date(getTodayString() + "T00:00:00");
+  return Math.floor((now - start) / 86400000);
+}
+
+function getRotationRoundIndex(account) {
+  if (!account.rotation) return 0;
+  return Math.floor(daysSince(account.rotation.startDate) / ROTATION_ROUND_DAYS);
+}
+
+function rankRotationChars(stats, chars) {
+  return [...chars].sort((a, b) => {
+    const sa = stats[a];
+    const sb = stats[b];
+    if (sa.wins !== sb.wins) return sa.wins - sb.wins;
+    const wra = sa.games > 0 ? sa.wins / sa.games : 0;
+    const wrb = sb.games > 0 ? sb.wins / sb.games : 0;
+    if (wra !== wrb) return wra - wrb;
+    if (sa.mvp !== sb.mvp) return sa.mvp - sb.mvp;
+    return sa.bossDmg - sb.bossDmg;
+  });
+}
+
+function processRotationRounds(account) {
+  if (!account.rotation) return;
+  const targetRound = getRotationRoundIndex(account);
+  while (account.rotation.lastRoundProcessedAt < targetRound && account.rotation.remaining.length > 1) {
+    const ranked = rankRotationChars(account.rotation.stats, account.rotation.remaining);
+    const lastPlace = ranked[0];
+    account.rotation.remaining = account.rotation.remaining.filter((c) => c !== lastPlace);
+    account.rotation.eliminated.push(lastPlace);
+    if (!account.rotation.newAbilityChars.includes(lastPlace)) {
+      account.rotation.newAbilityChars.push(lastPlace);
+    }
+    account.rotation.lastRoundProcessedAt += 1;
+    if (account.rotation.remaining.length === 1) {
+      account.rotation.champion = account.rotation.remaining[0];
+      if (!account.rotation.newAbilityChars.includes(account.rotation.champion)) {
+        account.rotation.newAbilityChars.push(account.rotation.champion);
+      }
+      account.coins = (account.coins || 0) + ROTATION_CHAMPION_REWARD.coins;
+      account.trophies = (account.trophies || 0) + ROTATION_CHAMPION_REWARD.trophies;
+    }
+  }
+}
+
+function getRotationNextEliminationDate(account) {
+  if (!account.rotation) return null;
+  const round = account.rotation.lastRoundProcessedAt + 1;
+  const start = new Date(account.rotation.startDate + "T00:00:00");
+  start.setDate(start.getDate() + round * ROTATION_ROUND_DAYS);
+  return start;
+}
 
 const BOT_NAMES_KO = ["하늘", "별빛", "소금", "달콤", "번개", "구름", "바람", "눈꽃", "폭풍", "태양",
   "은하", "수박", "딸기", "감자", "당근", "호랑이", "토끼", "펭귄", "고양이", "강아지",
@@ -434,6 +530,12 @@ function loadAccount() {
     if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
     if (!account.ownedSkins) { account.ownedSkins = []; migrated = true; }
     if (!account.selectedSkins) { account.selectedSkins = {}; migrated = true; }
+    if (initRotationState(account)) migrated = true;
+    if (account.rotation) {
+      const beforeRound = account.rotation.lastRoundProcessedAt;
+      processRotationRounds(account);
+      if (account.rotation.lastRoundProcessedAt !== beforeRound) migrated = true;
+    }
     if (migrated) saveAccount(account);
     return account;
   } catch {
@@ -504,6 +606,7 @@ function createAccount(id, nickname) {
       },
     },
   };
+  initRotationState(account);
   saveAccount(account);
   return account;
 }
@@ -2325,13 +2428,32 @@ function checkTakeDownEnd() {
     const coinRewards = [150, 100, 80, 60, 40, 30, 20, 10];
     const coinsEarned = coinRewards[playerRank - 1] || 10;
     const account = loadAccount();
+    let rotationMsg = "";
     if (account) {
       account.coins = (account.coins || 0) + coinsEarned;
+
+      if (account.rotation && player) {
+        const charKey = player.characterType;
+        if (account.rotation.stats[charKey]) {
+          const cs = account.rotation.stats[charKey];
+          cs.games += 1;
+          if (playerRank === 1) cs.wins += 1;
+          if (playerRank === 1) cs.mvp += 1;
+          cs.bossDmg += player.tdBossDmg || 0;
+        }
+        account.coins += ROTATION_PARTICIPATION_REWARD.coins;
+        account.trophies = (account.trophies || 0) + ROTATION_PARTICIPATION_REWARD.trophies;
+        const beforeChampion = account.rotation.champion;
+        processRotationRounds(account);
+        if (!beforeChampion && account.rotation.champion) {
+          rotationMsg = `  |  🏆 Rotation 우승: ${account.rotation.champion}`;
+        }
+      }
       saveAccount(account);
     }
 
     resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : "⏰ 시간 종료";
-    resultBody.textContent = `${playerRank}위  |  점수: ${player ? player.tdScore : 0}  |  🪙 +${coinsEarned}`;
+    resultBody.textContent = `${playerRank}위  |  점수: ${player ? player.tdScore : 0}  |  🪙 +${coinsEarned}${rotationMsg}`;
     const statsLines = [];
     if (player) {
       statsLines.push(`보스 피해: ${player.tdBossDmg}`);
@@ -6291,6 +6413,70 @@ function setupInput() {
     shopOverlay.classList.remove("hidden");
     renderShopLevelUp();
     renderShopSkins();
+  });
+
+  function renderRotationScreen() {
+    const account = loadAccount();
+    if (!account || !account.rotation) return;
+    processRotationRounds(account);
+    saveAccount(account);
+
+    const rot = account.rotation;
+    rotationRemainingCount.textContent = rot.remaining.length;
+
+    if (rot.champion) {
+      const champName = rot.champion.charAt(0).toUpperCase() + rot.champion.slice(1);
+      rotationChampionBanner.textContent = `🏆 Rotation Champion: ${champName}`;
+      rotationChampionBanner.classList.remove("hidden");
+      rotationNextElim.textContent = "종료";
+    } else {
+      rotationChampionBanner.classList.add("hidden");
+      const nextDate = getRotationNextEliminationDate(account);
+      if (nextDate) {
+        const now = new Date();
+        const diffMs = nextDate - now;
+        const diffDays = Math.max(0, Math.ceil(diffMs / 86400000));
+        rotationNextElim.textContent = diffDays > 0 ? `${diffDays}일` : "오늘";
+      }
+    }
+
+    const ranked = rankRotationChars(rot.stats, ROTATION_CHAR_ORDER).reverse();
+    let html = "";
+    ranked.forEach((charKey, idx) => {
+      const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
+      const s = rot.stats[charKey];
+      const isEliminated = rot.eliminated.includes(charKey);
+      const isChampion = rot.champion === charKey;
+      const hasNewAbility = rot.newAbilityChars.includes(charKey);
+      const winRate = s.games > 0 ? Math.round((s.wins / s.games) * 100) : 0;
+
+      let rowClass = "rotation-row";
+      if (isEliminated && !isChampion) rowClass += " eliminated";
+      if (isChampion) rowClass += " champion";
+
+      let badges = "";
+      if (isChampion) badges += `<span class="rotation-champion-badge">🏆 CHAMPION</span> `;
+      if (hasNewAbility) badges += `<span class="rotation-new-ability-badge">NEW ABILITY</span>`;
+
+      const ability = ROTATION_NEW_ABILITIES[charKey];
+      const abilityText = hasNewAbility && ability ? `<div class="rotation-char-stats">${ability.name}: ${ability.desc}</div>` : "";
+
+      html += `<div class="${rowClass}">
+        <div class="rotation-rank">${idx + 1}</div>
+        <div class="rotation-char-name">${name} ${badges}${abilityText}</div>
+        <div class="rotation-char-stats">${s.wins}승 / ${s.games}판 (${winRate}%)</div>
+      </div>`;
+    });
+    rotationList.innerHTML = html;
+  }
+
+  openRotationBtn.addEventListener("click", () => {
+    rotationOverlay.classList.remove("hidden");
+    renderRotationScreen();
+  });
+
+  rotationCloseBtn.addEventListener("click", () => {
+    rotationOverlay.classList.add("hidden");
   });
 
   shopCloseBtn.addEventListener("click", () => {
