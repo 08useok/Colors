@@ -1844,8 +1844,9 @@ const TD_SPOKE_WALLS = [
 ];
 const TD_SPOKE_BUSHES = [[-4.5, 17], [4.5, 31]];
 const TD_SPOKE_TREES = [[6, 21]];
-// 통로 양쪽 측벽 사이에 놓이는 호수 — 정사각형이라 8방향 회전해도 모양이 동일하다
-const TD_SPOKE_LAKES = [[0, 24, 4, 4]];
+// 통로 측벽 바깥쪽 열린 공간에 놓이는 호수 — 통로 진행을 막지 않는다
+// 정사각형이라 8방향 회전해도 모양이 동일하다
+const TD_SPOKE_LAKES = [[11, 24, 4, 4], [-11, 24, 4, 4]];
 
 const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
   const [x, z] = rotateXZ(0, TD_SPAWN_DIST, i * 45);
