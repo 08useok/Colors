@@ -1796,6 +1796,61 @@ const MAP_POOL = [
   },
 ];
 
+// ── Take Down 전용 8방향 대칭 맵 ──────────────────────────────────────
+function rotateXZ(x, z, angleDeg) {
+  const rad = angleDeg * (Math.PI / 180);
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+  return [x * cos - z * sin, x * sin + z * cos];
+}
+
+const TD_ARENA_RADIUS = 14;
+const TD_CORRIDOR_LENGTH = 30;
+const TD_SPAWN_DIST = TD_ARENA_RADIUS + TD_CORRIDOR_LENGTH;
+
+// 북쪽(+Z) 기준 통로 템플릿 — 8방향으로 회전 복제된다
+const TD_SPOKE_WALLS = [
+  [-7, 22, 1.4, 18],
+  [7, 22, 1.4, 18],
+  [-4, 18, 3, 3],
+  [4, 30, 3, 3],
+];
+const TD_SPOKE_BUSHES = [[-5, 17], [5, 31]];
+const TD_SPOKE_TREES = [[0, 24]];
+
+const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
+  const [x, z] = rotateXZ(0, TD_SPAWN_DIST, i * 45);
+  return [x, 0, z];
+});
+
+function createTakeDownMap() {
+  clearBattleMap();
+  createGround(battleMapGroup);
+
+  for (let i = 0; i < 8; i += 1) {
+    const angle = i * 45;
+    const swapDims = angle === 90 || angle === 270;
+
+    TD_SPOKE_WALLS.forEach(([x, z, w, d]) => {
+      const [rx, rz] = rotateXZ(x, z, angle);
+      const [rw, rd] = swapDims ? [d, w] : [w, d];
+      createWall(rx, rz, rw, rd, undefined, battleMapGroup, state.battleSolids);
+    });
+    TD_SPOKE_BUSHES.forEach(([x, z]) => {
+      const [rx, rz] = rotateXZ(x, z, angle);
+      createBush(rx, rz, 1.45, battleMapGroup, state.battleBushes);
+    });
+    TD_SPOKE_TREES.forEach(([x, z]) => {
+      const [rx, rz] = rotateXZ(x, z, angle);
+      createSkullCluster(rx, rz, 8, battleMapGroup);
+    });
+  }
+
+  state.solids = state.battleSolids;
+  state.lakeRects = state.battleLakeRects;
+  state.bushes = state.battleBushes;
+}
+
 function clearBattleMap() {
   battleMapGroup.traverse((obj) => {
     if (obj.geometry && obj.geometry !== bushClumpGeo) obj.geometry.dispose();
@@ -2125,8 +2180,7 @@ function initTakeDownPlayers() {
   state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
   state.players = [];
 
-  const mapData = MAP_POOL[state.currentMapId];
-  const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  const spawns = TD_SPAWNS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
   const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
   const botTypes = allTypes.filter((c) => c !== state.selectedCharacter);
   for (let i = botTypes.length - 1; i > 0; i--) {
@@ -2212,8 +2266,7 @@ function startTakeDown() {
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
 
-  state.currentMapId = Math.floor(Math.random() * MAP_POOL.length);
-  createMap(MAP_POOL[state.currentMapId]);
+  createTakeDownMap();
   mapNameEl.textContent = "Take Down";
   mapNameEl.classList.remove("hidden");
 
