@@ -114,6 +114,10 @@ const rotationChampionBanner = document.getElementById("rotation-champion-banner
 const rotationRemainingCount = document.getElementById("rotation-remaining-count");
 const rotationNextElim = document.getElementById("rotation-next-elim");
 const rotationList = document.getElementById("rotation-list");
+const tdMapInfoBtn = document.getElementById("td-map-info-btn");
+const tdMapOverlay = document.getElementById("td-map-overlay");
+const tdMapCloseBtn = document.getElementById("td-map-close-btn");
+const tdMapCanvas = document.getElementById("td-map-canvas");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -137,6 +141,17 @@ const listener = new THREE.AudioListener();
 camera.add(listener);
 
 const worldRadius = 52;
+
+const tdMapRenderer = new THREE.WebGLRenderer({ canvas: tdMapCanvas, antialias: true, preserveDrawingBuffer: true });
+tdMapRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+tdMapRenderer.setSize(480, 480);
+tdMapRenderer.outputColorSpace = THREE.SRGBColorSpace;
+const tdMapCamera = new THREE.OrthographicCamera(-58, 58, 58, -58, 0.1, 200);
+tdMapCamera.up.set(0, 0, -1);
+tdMapCamera.position.set(0, 100, 0);
+tdMapCamera.lookAt(0, 0, 0);
+let tdMapOpen = false;
+
 const attackDepth = 5;
 const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
@@ -1828,7 +1843,9 @@ const TD_SPOKE_WALLS = [
   [2.5, 30, 2, 2],
 ];
 const TD_SPOKE_BUSHES = [[-4.5, 17], [4.5, 31]];
-const TD_SPOKE_TREES = [[0, 24]];
+const TD_SPOKE_TREES = [[6, 21]];
+// 통로 양쪽 측벽 사이에 놓이는 호수 — 정사각형이라 8방향 회전해도 모양이 동일하다
+const TD_SPOKE_LAKES = [[0, 24, 4, 4]];
 
 const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
   const [x, z] = rotateXZ(0, TD_SPAWN_DIST, i * 45);
@@ -1853,6 +1870,10 @@ function createTakeDownMap() {
     TD_SPOKE_TREES.forEach(([x, z]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
       createSkullCluster(rx, rz, 8, battleMapGroup);
+    });
+    TD_SPOKE_LAKES.forEach(([x, z, w, d]) => {
+      const [rx, rz] = rotateXZ(x, z, angle);
+      createLake(rx, rz, w, d, battleMapGroup, state.battleLakeRects);
     });
   }
 
@@ -2535,6 +2556,8 @@ function checkTakeDownEnd() {
     resultStreak.style.display = "none";
     resultOverlay.style.display = "flex";
     tdHud.classList.add("hidden");
+    tdMapOverlay.classList.add("hidden");
+    tdMapOpen = false;
     document.exitPointerLock?.();
   }
 }
@@ -5891,6 +5914,10 @@ function animate() {
 
   renderer.render(scene, camera);
 
+  if (tdMapOpen && state.takedownMode) {
+    tdMapRenderer.render(scene, tdMapCamera);
+  }
+
   if (!state.running) {
     renderPreview(dt);
   }
@@ -6552,6 +6579,16 @@ function setupInput() {
     rotationOverlay.classList.add("hidden");
   });
 
+  tdMapInfoBtn.addEventListener("click", () => {
+    tdMapOverlay.classList.remove("hidden");
+    tdMapOpen = true;
+  });
+
+  tdMapCloseBtn.addEventListener("click", () => {
+    tdMapOverlay.classList.add("hidden");
+    tdMapOpen = false;
+  });
+
   shopCloseBtn.addEventListener("click", () => {
     shopOverlay.classList.add("hidden");
     const acc = loadAccount();
@@ -6592,6 +6629,8 @@ function setupInput() {
       state.takedownMode = false;
       state.tdBoss = null;
       tdHud.classList.add("hidden");
+      tdMapOverlay.classList.add("hidden");
+      tdMapOpen = false;
       state.running = false;
       state.gameOver = true;
       state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });

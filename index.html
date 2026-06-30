@@ -94,6 +94,7 @@
       </div>
 
       <div id="takedown-hud" class="hidden">
+        <button id="td-map-info-btn" class="td-info-btn" type="button">ℹ️</button>
         <div class="td-boss-bar">
           <div class="td-boss-label">💀 BOSS</div>
           <div class="td-boss-hp-outer"><div class="td-boss-hp-fill" id="td-boss-hp-fill"></div></div>
@@ -591,6 +592,16 @@
           <button id="restart-button" class="lobby-recovery-btn" type="button" data-i18n="exit">나가기</button>
         </div>
       </div>
+    </div>
+  </div>
+  <div id="td-map-overlay" class="hidden">
+    <div class="td-map-screen">
+      <div class="td-map-header">
+        <h2>🗺️ 맵 정보</h2>
+        <button id="td-map-close-btn" class="shop-close-btn" type="button">✕</button>
+      </div>
+      <canvas id="td-map-canvas" width="480" height="480"></canvas>
+      <p class="td-map-desc">중앙 보스 전장에서 8방향 통로가 방사형으로 뻗어 있습니다.</p>
     </div>
   </div>
   <div id="shop-overlay" class="hidden">
