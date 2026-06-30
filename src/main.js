@@ -2127,11 +2127,17 @@ function initTakeDownPlayers() {
 
   const mapData = MAP_POOL[state.currentMapId];
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
-  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+  const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+  const botTypes = allTypes.filter((c) => c !== state.selectedCharacter);
+  for (let i = botTypes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [botTypes[i], botTypes[j]] = [botTypes[j], botTypes[i]];
+  }
+  let botTypeIdx = 0;
 
   for (let i = 0; i < Math.min(8, spawns.length); i++) {
     const isPlayer = i === 0;
-    const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
+    const characterType = isPlayer ? state.selectedCharacter : botTypes[botTypeIdx++ % botTypes.length];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = isPlayer ? label : randomBotName();
     const fighter = makeFighter({
