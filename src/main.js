@@ -2439,10 +2439,8 @@ function checkTakeDownEnd() {
           const cs = account.rotation.stats[charKey];
           if (!cs) return;
           cs.games += 1;
-          if (rank === 1) {
-            cs.wins += 1;
-            cs.mvp += 1;
-          }
+          if (rank <= 4) cs.wins += 1;
+          if (rank === 1) cs.mvp += 1;
           cs.bossDmg += f.tdBossDmg || 0;
         });
         account.coins += ROTATION_PARTICIPATION_REWARD.coins;
@@ -2456,8 +2454,9 @@ function checkTakeDownEnd() {
       saveAccount(account);
     }
 
+    const resultTag = playerRank <= 4 ? "🏅 승리" : "패배";
     resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : "⏰ 시간 종료";
-    resultBody.textContent = `${playerRank}위  |  점수: ${player ? player.tdScore : 0}  |  🪙 +${coinsEarned}${rotationMsg}`;
+    resultBody.textContent = `${resultTag}  |  ${playerRank}위  |  점수: ${player ? player.tdScore : 0}  |  🪙 +${coinsEarned}${rotationMsg}`;
     const statsLines = [];
     if (player) {
       statsLines.push(`보스 피해: ${player.tdBossDmg}`);
