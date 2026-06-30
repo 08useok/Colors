@@ -2432,15 +2432,19 @@ function checkTakeDownEnd() {
     if (account) {
       account.coins = (account.coins || 0) + coinsEarned;
 
-      if (account.rotation && player) {
-        const charKey = player.characterType;
-        if (account.rotation.stats[charKey]) {
+      if (account.rotation) {
+        fighters.forEach((f, idx) => {
+          const rank = idx + 1;
+          const charKey = f.characterType;
           const cs = account.rotation.stats[charKey];
+          if (!cs) return;
           cs.games += 1;
-          if (playerRank === 1) cs.wins += 1;
-          if (playerRank === 1) cs.mvp += 1;
-          cs.bossDmg += player.tdBossDmg || 0;
-        }
+          if (rank === 1) {
+            cs.wins += 1;
+            cs.mvp += 1;
+          }
+          cs.bossDmg += f.tdBossDmg || 0;
+        });
         account.coins += ROTATION_PARTICIPATION_REWARD.coins;
         account.trophies = (account.trophies || 0) + ROTATION_PARTICIPATION_REWARD.trophies;
         const beforeChampion = account.rotation.champion;
