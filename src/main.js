@@ -1810,11 +1810,20 @@ const TD_CORRIDOR_LENGTH = 30;
 const TD_SPAWN_DIST = TD_ARENA_RADIUS + TD_CORRIDOR_LENGTH;
 
 // 북쪽(+Z) 기준 통로 템플릿 — 8방향으로 회전 복제된다
-// 측벽은 아레나 가장자리부터 스폰 지점까지 통로 전체 길이를 덮는다
-const TD_CORRIDOR_MID_Z = (TD_ARENA_RADIUS + TD_SPAWN_DIST) / 2;
+// 측벽은 정사각형 블록을 이어붙여 구성한다 — 정사각형은 가로/세로가 같아서
+// 어떤 각도(0°~315°)로 회전해도 모양이 동일하게 유지되어 8방향이 완벽히 대칭된다
+const TD_RAIL_X = 7;
+const TD_RAIL_SEG = 3;
+const TD_RAIL_SEGMENTS = (() => {
+  const segs = [];
+  for (let z = TD_ARENA_RADIUS + TD_RAIL_SEG / 2; z <= TD_SPAWN_DIST - TD_RAIL_SEG / 2 + 0.01; z += TD_RAIL_SEG) {
+    segs.push([-TD_RAIL_X, z, TD_RAIL_SEG, TD_RAIL_SEG]);
+    segs.push([TD_RAIL_X, z, TD_RAIL_SEG, TD_RAIL_SEG]);
+  }
+  return segs;
+})();
 const TD_SPOKE_WALLS = [
-  [-7, TD_CORRIDOR_MID_Z, 1.4, TD_CORRIDOR_LENGTH],
-  [7, TD_CORRIDOR_MID_Z, 1.4, TD_CORRIDOR_LENGTH],
+  ...TD_RAIL_SEGMENTS,
   [-2.5, 18, 2, 2],
   [2.5, 30, 2, 2],
 ];
@@ -1832,12 +1841,10 @@ function createTakeDownMap() {
 
   for (let i = 0; i < 8; i += 1) {
     const angle = i * 45;
-    const swapDims = angle === 90 || angle === 270;
 
     TD_SPOKE_WALLS.forEach(([x, z, w, d]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
-      const [rw, rd] = swapDims ? [d, w] : [w, d];
-      createWall(rx, rz, rw, rd, undefined, battleMapGroup, state.battleSolids);
+      createWall(rx, rz, w, d, undefined, battleMapGroup, state.battleSolids);
     });
     TD_SPOKE_BUSHES.forEach(([x, z]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
