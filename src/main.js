@@ -5182,7 +5182,7 @@ function updateBot(bot, dt, zone) {
     let idealDist;
     if (ct === "green") idealDist = 1.5;
     else if (ct === "red") idealDist = 3.5;
-    else if (ct === "orange") idealDist = 6;
+    else if (ct === "orange") idealDist = 7;
     else if (ct === "blue") idealDist = 12;
     else if (ct === "yellow") idealDist = 7;
     else if (ct === "cyan") idealDist = 6;
@@ -5213,7 +5213,33 @@ function updateBot(bot, dt, zone) {
         .multiplyScalar(botSpeed * 0.3 * bot.botStrafeDir);
     }
 
+    // 오렌지: 매 프레임 상대 위치 기록 (선조준용)
+    if (ct === "orange") {
+      bot.prevTargetX = target.mesh.position.x;
+      bot.prevTargetZ = target.mesh.position.z;
+      bot.prevTargetTime = state.gameTime;
+    }
+
     if (distance <= atkRange * diff.aimMult && Math.random() > diff.reactDelay) {
+      // 오렌지: 폭탄 비행시간 × 상대 속도로 선조준
+      if (ct === "orange") {
+        const bombSpd = CHARACTERS.orange.bombSpeed;
+        const travelTime = distance / bombSpd;
+        const prevX = bot.prevPrevTargetX ?? target.mesh.position.x;
+        const prevZ = bot.prevPrevTargetZ ?? target.mesh.position.z;
+        const prevT = bot.prevPrevTargetTime ?? state.gameTime;
+        const dtPrev = state.gameTime - prevT;
+        if (dtPrev > 0.02) {
+          const tvx = (bot.prevTargetX - prevX) / dtPrev;
+          const tvz = (bot.prevTargetZ - prevZ) / dtPrev;
+          const predX = target.mesh.position.x + tvx * travelTime;
+          const predZ = target.mesh.position.z + tvz * travelTime;
+          bot.yaw = Math.atan2(predX - botPos.x, predZ - botPos.z);
+        }
+        bot.prevPrevTargetX = bot.prevTargetX;
+        bot.prevPrevTargetZ = bot.prevTargetZ;
+        bot.prevPrevTargetTime = bot.prevTargetTime;
+      }
       beginAttack(bot);
     }
   } else if (state.chopWoodMode) {
