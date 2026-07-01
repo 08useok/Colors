@@ -1,6 +1,6 @@
 // ── Colors Multiplayer Module ────────────────────────────────────────────
 // 배포 후 WS_PROD_URL 을 실제 Railway/Render URL로 교체
-const WS_PROD_URL = "wss://colors-server.railway.app";
+const WS_PROD_URL = "wss://colors-production-fc7f.up.railway.app";
 const WS_URL =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
     ? "ws://localhost:3000"
