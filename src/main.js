@@ -6763,10 +6763,6 @@ function setupInput() {
     enterMatchmaking();
   });
 
-  document.getElementById("rotation-takedown-solo-btn").addEventListener("click", () => {
-    rotationOverlay.classList.add("hidden");
-    startTakeDown();
-  });
 
   matchmakingCancelBtn.addEventListener("click", () => {
     mp.disconnect();

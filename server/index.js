@@ -10,7 +10,7 @@ const wss = new WebSocketServer({ server });
 server.listen(PORT, () => console.log(`Colors WS server on port ${PORT}`));
 
 const ROOM_MAX = 8;
-const COUNTDOWN_SEC = 30;
+const COUNTDOWN_SEC = 5;
 
 let nextId = 1;
 const rooms = {};       // roomId → room
