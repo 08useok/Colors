@@ -5183,8 +5183,8 @@ function updateBot(bot, dt, zone) {
     if (ct === "green") idealDist = 1.5;
     else if (ct === "red") idealDist = 3.5;
     else if (ct === "orange") idealDist = 7;
-    else if (ct === "blue") idealDist = 12;
-    else if (ct === "yellow") idealDist = 7;
+    else if (ct === "blue") idealDist = 14;
+    else if (ct === "yellow") idealDist = 9;
     else if (ct === "cyan") idealDist = 6;
     else if (ct === "purple") idealDist = 11;
     else if (ct === "pink") idealDist = 3;
@@ -5193,10 +5193,42 @@ function updateBot(bot, dt, zone) {
     let purpleIsVialTurn = false;
     if (ct === "purple") {
       purpleIsVialTurn = ((bot.attackIndex || 0) % 2) === 1;
-      idealDist = purpleIsVialTurn ? 8 : 11;
+      if (!purpleIsVialTurn) {
+        idealDist = 11; // 침 턴: 최대 사거리 유지
+      } else if (state.gameTime < bot.nextAttackAt) {
+        idealDist = 14; // 침 발사 직후: 독 틱 동안 후퇴
+      } else {
+        idealDist = 8;  // 약병 준비됨: 접근
+      }
     }
 
-    if (ct === "purple" && !purpleIsVialTurn && distance >= idealDist - 1.5) {
+    if (ct === "pink" && state.chopWoodMode) {
+      // 체력 낮은 아군 근처에서 싸우기
+      let lowestAlly = null, lowestHpPct = 0.7;
+      for (const f of state.players) {
+        if (f.dead || f.id === bot.id || f.team !== bot.team) continue;
+        const hpPct = f.health / f.maxHealth;
+        if (hpPct < lowestHpPct) { lowestHpPct = hpPct; lowestAlly = f; }
+      }
+      if (lowestAlly) {
+        const allyDist = Math.hypot(lowestAlly.mesh.position.x - botPos.x, lowestAlly.mesh.position.z - botPos.z);
+        if (allyDist > CHARACTERS.pink.healCircleRange + 1) {
+          const allyNav = findNavTarget(bot, lowestAlly.mesh.position.x, lowestAlly.mesh.position.z);
+          bot.yaw = Math.atan2(allyNav.x - botPos.x, allyNav.z - botPos.z);
+          tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed);
+        } else {
+          tempVec3.set(Math.sin(bot.yaw + Math.PI / 2), 0, Math.cos(bot.yaw + Math.PI / 2)).multiplyScalar(botSpeed * 0.3 * bot.botStrafeDir);
+        }
+      }
+    } else if (ct === "blue" && distance < 8) {
+      // 적이 반사거리 이내로 접근하면 전속력 후퇴
+      const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed);
+    } else if (ct === "yellow" && state.gameTime < (bot.yellowKiteUntil || 0)) {
+      // 감전 후 키팅: 거리 벌리며 계속 견제
+      const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed * 0.75);
+    } else if (ct === "purple" && !purpleIsVialTurn && distance >= idealDist - 1.5) {
       const sYaw = bot.yaw + Math.PI / 2 * bot.botStrafeDir;
       tempVec3.set(Math.sin(sYaw), 0, Math.cos(sYaw)).multiplyScalar(botSpeed * 0.55);
     } else if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
@@ -5240,6 +5272,7 @@ function updateBot(bot, dt, zone) {
         bot.prevPrevTargetZ = bot.prevTargetZ;
         bot.prevPrevTargetTime = bot.prevTargetTime;
       }
+      if (ct === "yellow") bot.yellowKiteUntil = state.gameTime + 1.5;
       beginAttack(bot);
     }
   } else if (state.chopWoodMode) {
