@@ -431,7 +431,7 @@ const CHARACTERS = {
     bombDamage: 750,
     bombSplashDamage: 300,
     bombRange: 8,
-    bombSpeed: 16,
+    bombSpeed: 22,
     bombSplashCount: 5,
     bombSplashSpeed: 10,
     bombSplashRange: 3.5,
@@ -4104,7 +4104,7 @@ function beginBombAttack(fighter) {
     launchAt: state.gameTime,
     mesh,
     isBomb: true,
-    projRadius: 0.52,
+    projRadius: 0.70,
   });
   if (fighter.isPlayer) audio.play("attack");
   return true;
