@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 import { LANGS } from "./LANGS/langs.js";
+import { mp } from "./multiplayer.js";
 // CHARACTERS는 아래 인라인 정의 사용
 
 // ── i18n ────────────────────────────────────────────────────────────────
@@ -116,6 +117,17 @@ const rotationNextElim = document.getElementById("rotation-next-elim");
 const rotationList = document.getElementById("rotation-list");
 const tdMapInfoBtn = document.getElementById("td-map-info-btn");
 const tdMapOverlay = document.getElementById("td-map-overlay");
+const matchmakingOverlay = document.getElementById("matchmaking-overlay");
+const matchmakingStatus = document.getElementById("matchmaking-status");
+const matchmakingCountdown = document.getElementById("matchmaking-countdown");
+const matchmakingPlayersList = document.getElementById("matchmaking-players");
+const matchmakingCancelBtn = document.getElementById("matchmaking-cancel-btn");
+
+// ── Multiplayer state ────────────────────────────────────────────────────
+let mpConfig = null;           // null = solo, { players, isHost, hostId }
+const mpNetFighters = {};      // networkId → fighter
+let mpLastSync = 0;
+const MP_SYNC_INTERVAL = 0.05; // 20 Hz
 const tdMapCloseBtn = document.getElementById("td-map-close-btn");
 const tdMapCanvas = document.getElementById("td-map-canvas");
 
@@ -2213,35 +2225,67 @@ function createBossMesh() {
 function initTakeDownPlayers() {
   state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
   state.players = [];
+  Object.keys(mpNetFighters).forEach((k) => delete mpNetFighters[k]);
 
   const spawns = TD_SPAWNS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
   const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-  const botTypes = allTypes.filter((c) => c !== state.selectedCharacter);
+
+  // 멀티 기준: 원격 플레이어 목록
+  const remotePlayers = mpConfig
+    ? mpConfig.players.filter((p) => p.id !== mp.myId)
+    : [];
+  const usedTypes = new Set([state.selectedCharacter, ...remotePlayers.map((p) => p.charType)]);
+  const botTypes = allTypes.filter((c) => !usedTypes.has(c));
   for (let i = botTypes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [botTypes[i], botTypes[j]] = [botTypes[j], botTypes[i]];
   }
   let botTypeIdx = 0;
+  let spawnIdx = 0;
 
-  for (let i = 0; i < Math.min(8, spawns.length); i++) {
-    const isPlayer = i === 0;
-    const characterType = isPlayer ? state.selectedCharacter : botTypes[botTypeIdx++ % botTypes.length];
-    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
-    const name = isPlayer ? label : randomBotName();
-    const fighter = makeFighter({
-      id: i,
-      name,
-      characterType,
-      isPlayer,
-      position: spawns[i],
+  function addFighter(opts) {
+    const f = makeFighter({ ...opts, position: spawns[spawnIdx % spawns.length] });
+    f.tdScore = 0; f.tdBossDmg = 0; f.tdKills = 0; f.tdRespawnAt = 0;
+    state.players.push(f);
+    spawnIdx++;
+    return f;
+  }
+
+  // 로컬 플레이어
+  addFighter({
+    id: spawnIdx,
+    name: state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1),
+    characterType: state.selectedCharacter,
+    isPlayer: true,
+    yaw: Math.random() * Math.PI * 2,
+  });
+
+  // 원격 플레이어
+  for (const rp of remotePlayers) {
+    const f = addFighter({
+      id: spawnIdx,
+      name: rp.nickname,
+      characterType: rp.charType,
+      isPlayer: false,
       yaw: Math.random() * Math.PI * 2,
     });
-    if (!isPlayer) fighter.botDifficulty = Math.floor(Math.random() * 3);
-    fighter.tdScore = 0;
-    fighter.tdBossDmg = 0;
-    fighter.tdKills = 0;
-    fighter.tdRespawnAt = 0;
-    state.players.push(fighter);
+    f.isNetworkPlayer = true;
+    f.networkId = rp.id;
+    mpNetFighters[rp.id] = f;
+  }
+
+  // 봇 (8명 - 실제 플레이어 수)
+  const botCount = Math.max(0, 7 - remotePlayers.length);
+  for (let i = 0; i < botCount; i++) {
+    const characterType = botTypes[botTypeIdx++ % botTypes.length];
+    const f = addFighter({
+      id: spawnIdx,
+      name: randomBotName(),
+      characterType,
+      isPlayer: false,
+      yaw: Math.random() * Math.PI * 2,
+    });
+    f.botDifficulty = Math.floor(Math.random() * 3);
   }
 
   // 보스
@@ -2567,7 +2611,141 @@ function checkTakeDownEnd() {
     tdMapOverlay.classList.add("hidden");
     tdMapOpen = false;
     document.exitPointerLock?.();
+    // 멀티플레이어 종료 정리
+    if (mpConfig) {
+      mp.disconnect();
+      mpConfig = null;
+    }
   }
+}
+
+// ── Multiplayer sync ─────────────────────────────────────────────────────
+function syncMp(dt) {
+  mpLastSync += dt;
+  if (mpLastSync < MP_SYNC_INTERVAL) return;
+  mpLastSync = 0;
+
+  const player = getPlayer();
+  if (player) {
+    mp.relay("PSTATE", {
+      x: player.mesh.position.x,
+      z: player.mesh.position.z,
+      yaw: player.mesh.rotation.y,
+      health: player.health,
+      dead: !!player.dead,
+    });
+  }
+  if (mpConfig.isHost && state.tdBoss) {
+    const b = state.tdBoss;
+    mp.relay("BSTATE", {
+      x: b.mesh.position.x,
+      z: b.mesh.position.z,
+      health: b.health,
+      dead: !!b.dead,
+    });
+  }
+}
+
+function setupMpHandlers() {
+  mp.on("RELAY", (msg) => {
+    if (msg.relayType === "PSTATE") {
+      const f = mpNetFighters[msg.fromId];
+      if (!f) return;
+      f.mesh.position.x = msg.x;
+      f.mesh.position.z = msg.z;
+      f.mesh.position.y = 1.85;
+      f.shadow.position.x = msg.x;
+      f.shadow.position.z = msg.z;
+      f.mesh.rotation.y = msg.yaw;
+      f.health = msg.health;
+      if (msg.dead && !f.dead) { f.dead = true; f.mesh.visible = false; f.shadow.visible = false; if (f.healthBar) f.healthBar.visible = false; }
+      if (!msg.dead && f.dead) { f.dead = false; f.mesh.visible = true; f.shadow.visible = true; if (f.healthBar) f.healthBar.visible = true; }
+    } else if (msg.relayType === "BSTATE" && !mpConfig?.isHost) {
+      const b = state.tdBoss;
+      if (!b) return;
+      b.mesh.position.x = msg.x;
+      b.mesh.position.z = msg.z;
+      b.shadow.position.x = msg.x;
+      b.shadow.position.z = msg.z;
+      b.health = msg.health;
+      if (msg.dead && !b.dead) { b.dead = true; }
+    }
+  });
+
+  mp.on("PLAYER_LEFT", ({ playerId }) => {
+    const f = mpNetFighters[playerId];
+    if (f) {
+      f.isNetworkPlayer = false;
+      f.botDifficulty = 1;
+    }
+    delete mpNetFighters[playerId];
+  });
+
+  mp.on("DISCONNECTED", () => {
+    Object.values(mpNetFighters).forEach((f) => { f.isNetworkPlayer = false; f.botDifficulty = 1; });
+    Object.keys(mpNetFighters).forEach((k) => delete mpNetFighters[k]);
+    mpConfig = null;
+  });
+}
+
+function updateMatchmakingUI() {
+  const list = mp.roomPlayers;
+  matchmakingStatus.textContent = `${list.length}명 대기 중 (2명 이상이면 카운트다운 시작)`;
+  matchmakingPlayersList.innerHTML = list.map((p) => `
+    <div class="mm-player-row${p.id === mp.myId ? " me" : ""}">
+      <span class="mm-player-name">${p.nickname}${p.id === mp.myId ? " (나)" : ""}</span>
+      <span class="mm-player-char">${p.charType}</span>
+    </div>`).join("");
+}
+
+async function enterMatchmaking() {
+  const account = loadAccount();
+  if (!account) return;
+
+  matchmakingOverlay.classList.remove("hidden");
+  matchmakingStatus.textContent = "서버에 연결 중...";
+  matchmakingCountdown.classList.add("hidden");
+  matchmakingCountdown.textContent = "";
+  matchmakingPlayersList.innerHTML = "";
+
+  try {
+    await mp.connect(account.nickname, state.selectedCharacter);
+  } catch (e) {
+    matchmakingStatus.textContent = `연결 실패: ${e.message}`;
+    return;
+  }
+
+  updateMatchmakingUI();
+
+  mp.on("ROOM_JOINED", () => updateMatchmakingUI());
+  mp.on("PLAYER_JOINED", () => updateMatchmakingUI());
+  mp.on("PLAYER_LEFT", () => updateMatchmakingUI());
+
+  mp.on("COUNTDOWN", ({ seconds }) => {
+    matchmakingCountdown.classList.remove("hidden");
+    matchmakingCountdown.textContent = seconds > 0 ? `${seconds}초 후 시작` : "게임 시작!";
+  });
+
+  mp.on("COUNTDOWN_CANCELLED", () => {
+    matchmakingCountdown.classList.add("hidden");
+    matchmakingCountdown.textContent = "";
+    updateMatchmakingUI();
+  });
+
+  mp.on("GAME_START", async (data) => {
+    matchmakingOverlay.classList.add("hidden");
+    mpConfig = { players: data.players, isHost: data.isHost, hostId: data.hostId };
+    setupMpHandlers();
+    await initAudio();
+    rotationOverlay.classList.add("hidden");
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("hidden");
+    startTakeDown();
+  });
+
+  mp.on("DISCONNECTED", () => {
+    matchmakingStatus.textContent = "서버 연결이 끊어졌습니다. 잠시 후 다시 시도해 주세요.";
+  });
 }
 
 function startChopWood() {
@@ -4937,7 +5115,7 @@ const BOT_DIFF = [
 ];
 
 function updateBot(bot, dt, zone) {
-  if (bot.dead || bot.isDummy || bot.isBoss) {
+  if (bot.dead || bot.isDummy || bot.isBoss || bot.isNetworkPlayer) {
     return;
   }
 
@@ -5883,10 +6061,11 @@ function animate() {
       updateChopWoodRespawn();
       updateTakeDownRespawn();
       if (state.takedownMode) {
-        updateBossAI(dt);
+        if (!mpConfig || mpConfig.isHost) updateBossAI(dt);
         state.tdTimeLeft -= dt;
         updateTakeDownHud();
         checkTakeDownEnd();
+        if (mpConfig) syncMp(dt);
       }
       updateChopping(dt);
       updateScheduledHits();
@@ -6580,12 +6759,14 @@ function setupInput() {
     rotationOverlay.classList.add("hidden");
   });
 
-  document.getElementById("rotation-takedown-btn").addEventListener("click", async () => {
-    await initAudio();
-    rotationOverlay.classList.add("hidden");
-    modeSelector.classList.add("hidden");
-    startBattleBtn.classList.remove("hidden");
-    startTakeDown();
+  document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
+    enterMatchmaking();
+  });
+
+  matchmakingCancelBtn.addEventListener("click", () => {
+    mp.disconnect();
+    mpConfig = null;
+    matchmakingOverlay.classList.add("hidden");
   });
 
   tdMapInfoBtn.addEventListener("click", () => {
@@ -6622,7 +6803,8 @@ function setupInput() {
   // 다시 시작
   playAgainButton.addEventListener("click", () => {
     if (state.takedownMode) {
-      startTakeDown();
+      resultOverlay.style.display = "none";
+      enterMatchmaking();
     } else if (state.chopWoodMode) {
       startChopWood();
     } else if (state.trainingMode) {
