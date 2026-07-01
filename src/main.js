@@ -4937,7 +4937,7 @@ const BOT_DIFF = [
 ];
 
 function updateBot(bot, dt, zone) {
-  if (bot.dead || bot.isDummy) {
+  if (bot.dead || bot.isDummy || bot.isBoss) {
     return;
   }
 
