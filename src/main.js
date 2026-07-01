@@ -5186,11 +5186,20 @@ function updateBot(bot, dt, zone) {
     else if (ct === "blue") idealDist = 12;
     else if (ct === "yellow") idealDist = 7;
     else if (ct === "cyan") idealDist = 6;
-    else if (ct === "purple") idealDist = 10;
+    else if (ct === "purple") idealDist = 11;
     else if (ct === "pink") idealDist = 3;
     else idealDist = atkRange * 0.6;
 
-    if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
+    let purpleIsVialTurn = false;
+    if (ct === "purple") {
+      purpleIsVialTurn = ((bot.attackIndex || 0) % 2) === 1;
+      idealDist = purpleIsVialTurn ? 8 : 11;
+    }
+
+    if (ct === "purple" && !purpleIsVialTurn && distance >= idealDist - 1.5) {
+      const sYaw = bot.yaw + Math.PI / 2 * bot.botStrafeDir;
+      tempVec3.set(Math.sin(sYaw), 0, Math.cos(sYaw)).multiplyScalar(botSpeed * 0.55);
+    } else if (ct === "green" && distance > idealDist + 1.5 && getAttackRange(target) > atkRange) {
       const zigzag = Math.sin(state.gameTime * 4 + bot.id) * 0.8;
       const rushYaw = bot.yaw + zigzag;
       tempVec3.set(Math.sin(rushYaw), 0, Math.cos(rushYaw)).multiplyScalar(botSpeed);
