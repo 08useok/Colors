@@ -1,6 +1,13 @@
+const http = require("http");
 const { WebSocketServer } = require("ws");
 const PORT = process.env.PORT || 3000;
-const wss = new WebSocketServer({ port: PORT });
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Colors WS Server OK");
+});
+const wss = new WebSocketServer({ server });
+server.listen(PORT, () => console.log(`Colors WS server on port ${PORT}`));
 
 const ROOM_MAX = 8;
 const COUNTDOWN_SEC = 30;
