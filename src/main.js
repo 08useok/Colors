@@ -6360,13 +6360,6 @@ function setupInput() {
     startChopWood();
   });
 
-  document.getElementById("mode-takedown").addEventListener("click", async () => {
-    await initAudio();
-    modeSelector.classList.add("hidden");
-    startBattleBtn.classList.remove("hidden");
-    startTakeDown();
-  });
-
   // 훈련장 시작
   startTrainingBtn.addEventListener("click", async () => {
     await initAudio();
@@ -6585,6 +6578,14 @@ function setupInput() {
 
   rotationCloseBtn.addEventListener("click", () => {
     rotationOverlay.classList.add("hidden");
+  });
+
+  document.getElementById("rotation-takedown-btn").addEventListener("click", async () => {
+    await initAudio();
+    rotationOverlay.classList.add("hidden");
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("hidden");
+    startTakeDown();
   });
 
   tdMapInfoBtn.addEventListener("click", () => {

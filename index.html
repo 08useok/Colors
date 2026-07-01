@@ -576,10 +576,6 @@
               <span class="mode-icon-text">🪓</span>
               <span data-i18n="modeChopWood">찹 우드</span>
             </button>
-            <button id="mode-takedown" class="mode-btn mode-takedown" type="button">
-              <span class="mode-icon-text">💀</span>
-              <span>테이크 다운</span>
-            </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>
           <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
@@ -649,6 +645,11 @@
         </div>
       </div>
       <div id="rotation-list" class="rotation-list"></div>
+      <div class="rotation-takedown-section">
+        <div class="rotation-takedown-label">💀 Take Down 이벤트</div>
+        <p class="rotation-takedown-desc">보스를 처치하거나 시간 내 1~4위를 달성하면 승리!</p>
+        <button id="rotation-takedown-btn" class="rotation-takedown-btn" type="button">테이크 다운 플레이</button>
+      </div>
     </div>
   </div>
   <script type="module" src="./src/main.js?v=1.4.4"></script>
