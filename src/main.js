@@ -474,7 +474,7 @@ const CHARACTERS = {
     attackCooldown: 0.45,
     needleRange: 12,
     needleSpeed: 18,
-    needleDamage: 0,
+    needleDamage: 600,
     poisonDPS: 568,
     poisonDuration: 4,
     vialRange: 12,
