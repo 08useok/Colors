@@ -426,11 +426,11 @@ const CHARACTERS = {
     color: 0xffa500,
     maxHealth: 5800,
     attackType: "bomb",
-    reloadDuration: 0.6,
+    reloadDuration: 0.5,
     attackCooldown: 0.35,
     bombDamage: 750,
     bombSplashDamage: 300,
-    bombRange: 8,
+    bombRange: 9,
     bombSpeed: 22,
     bombSplashCount: 5,
     bombSplashSpeed: 10,
@@ -5184,7 +5184,7 @@ function updateBot(bot, dt, zone) {
     let idealDist;
     if (ct === "green") idealDist = 1.5;
     else if (ct === "red") idealDist = 3.5;
-    else if (ct === "orange") idealDist = 7;
+    else if (ct === "orange") idealDist = 8;
     else if (ct === "blue") idealDist = 14;
     else if (ct === "yellow") idealDist = 9;
     else if (ct === "cyan") idealDist = 6;
