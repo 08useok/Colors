@@ -4296,7 +4296,8 @@ function beginHealCircleAttack(fighter) {
 
     const isAlly = state.chopWoodMode && target.team === fighter.team;
     if (isAlly) {
-      target.health = Math.min(target.maxHealth, target.health + charDef.healCircleHeal);
+      const healDebuff = (target.poisonUntil && target.poisonUntil > state.gameTime) ? 0.5 : 1;
+      target.health = Math.min(target.maxHealth, target.health + charDef.healCircleHeal * healDebuff);
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
     } else if (!state.chopWoodMode || target.team !== fighter.team) {
       applyDamage(target, charDef.healCircleDamage, fighter);
@@ -4575,6 +4576,7 @@ function updateProjectiles(dt) {
           createNeedleHitEffect(proj.x, proj.z);
           target.poisonUntil = state.gameTime + CHARACTERS.purple.poisonDuration;
           target.poisonSourceId = proj.ownerId;
+          target.revealedUntil = state.gameTime + CHARACTERS.purple.poisonDuration;
           if (!target.poisonNextTick || target.poisonNextTick < state.gameTime) {
             target.poisonNextTick = state.gameTime + 1;
           }
@@ -5273,6 +5275,9 @@ function updateBot(bot, dt, zone) {
         bot.prevPrevTargetTime = bot.prevTargetTime;
       }
       if (ct === "yellow") bot.yellowKiteUntil = state.gameTime + 1.5;
+      if (ct === "purple" && target.health < target.maxHealth * 0.3) {
+        if ((bot.attackIndex || 0) % 2 === 0) bot.attackIndex = (bot.attackIndex || 0) + 1;
+      }
       beginAttack(bot);
     }
   } else if (state.chopWoodMode) {
