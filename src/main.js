@@ -5230,6 +5230,14 @@ function updateBot(bot, dt, zone) {
       // 적이 반사거리 이내로 접근하면 전속력 후퇴 (탱커 견제용 거리 유지)
       const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
       tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed);
+    } else if (ct === "cyan" && distance < 8) {
+      // 적이 반사거리 이내로 접근하면 전속력 후퇴
+      const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed);
+    } else if (ct === "yellow" && distance < 8) {
+      // 적이 반사거리 이내로 접근하면 전속력 후퇴
+      const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
+      tempVec3.set(Math.sin(fleeYaw), 0, Math.cos(fleeYaw)).multiplyScalar(botSpeed);
     } else if (ct === "yellow" && state.gameTime < (bot.yellowKiteUntil || 0)) {
       // 감전 후 키팅: 거리 벌리며 계속 견제
       const fleeYaw = Math.atan2(-toTargetX, -toTargetZ);
