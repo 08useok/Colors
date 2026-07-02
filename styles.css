@@ -1383,7 +1383,7 @@ body {
 
 .matchup-table {
   margin: 0;
-  max-width: 280px;
+  max-width: 340px;
   padding: 10px 14px;
   background: rgba(31, 20, 10, 0.9);
   border: 1px solid rgba(255, 210, 158, 0.2);
@@ -1398,11 +1398,12 @@ body {
 }
 
 .matchup-table th {
-  padding: 5px 8px;
+  padding: 5px 4px;
   color: var(--accent);
   font-weight: 800;
   border-bottom: 1px solid rgba(255, 210, 158, 0.25);
   text-align: center;
+  white-space: nowrap;
 }
 
 .matchup-table td {
