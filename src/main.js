@@ -479,7 +479,7 @@ const CHARACTERS = {
     poisonDuration: 4,
     vialRange: 12,
     vialSpeed: 18,
-    vialDamage: 2292,
+    vialDamage: 3040,
     vialSplashRadius: 5.0,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
@@ -4616,17 +4616,7 @@ function updatePoisonTicks() {
     }
     if (state.gameTime >= fighter.poisonNextTick) {
       const attacker = state.players.find((p) => p.id === fighter.poisonSourceId) ?? null;
-      const splashR2 = purpleDef.vialSplashRadius * purpleDef.vialSplashRadius;
-      const fx = fighter.mesh.position.x, fz = fighter.mesh.position.z;
-      for (const target of state.players) {
-        if (target.dead || target.id === fighter.poisonSourceId) continue;
-        if (state.chopWoodMode && target.team === (attacker ? attacker.team : -1)) continue;
-        const dx = target.mesh.position.x - fx, dz = target.mesh.position.z - fz;
-        if (dx * dx + dz * dz <= splashR2) {
-          applyDamage(target, purpleDef.poisonDPS, attacker);
-        }
-      }
-      createVialSplashEffect(fx, fz);
+      applyDamage(fighter, purpleDef.poisonDPS, attacker);
       fighter.poisonNextTick = state.gameTime + 1;
       for (let pi = 0; pi < 6; pi++) {
         const pa = Math.random() * Math.PI * 2;

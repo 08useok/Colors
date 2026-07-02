@@ -93,7 +93,7 @@ export const CHARACTERS = {
     poisonDuration: 4,
     vialRange: 12,
     vialSpeed: 18,
-    vialDamage: 2292,
+    vialDamage: 3040,
     vialSplashRadius: 5.0,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
