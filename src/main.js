@@ -165,7 +165,7 @@ tdMapCamera.lookAt(0, 0, 0);
 let tdMapOpen = false;
 
 const attackDepth = 5;
-const attackWidth = 4.3;
+const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
