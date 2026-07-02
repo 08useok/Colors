@@ -611,10 +611,10 @@
   <div id="matchmaking-overlay" class="hidden">
     <div class="matchmaking-screen">
       <div class="matchmaking-header">
-        <h2>💀 Take Down — 매칭 중</h2>
+        <h2 data-i18n="mmTitle">💀 Take Down — 매칭 중</h2>
         <button id="matchmaking-cancel-btn" class="shop-close-btn" type="button">✕</button>
       </div>
-      <div id="matchmaking-status" class="matchmaking-status">서버에 연결 중...</div>
+      <div id="matchmaking-status" class="matchmaking-status" data-i18n="mmConnecting">서버에 연결 중...</div>
       <div id="matchmaking-countdown" class="matchmaking-countdown hidden"></div>
       <div id="matchmaking-players" class="matchmaking-players"></div>
     </div>
@@ -623,11 +623,11 @@
   <div id="td-map-overlay" class="hidden">
     <div class="td-map-screen">
       <div class="td-map-header">
-        <h2>🗺️ 맵 정보</h2>
+        <h2 data-i18n="tdMapTitle">🗺️ 맵 정보</h2>
         <button id="td-map-close-btn" class="shop-close-btn" type="button">✕</button>
       </div>
       <canvas id="td-map-canvas" width="480" height="480"></canvas>
-      <p class="td-map-desc">중앙 보스 전장에서 8방향 통로가 방사형으로 뻗어 있습니다.</p>
+      <p class="td-map-desc" data-i18n="tdMapDesc">중앙 보스 전장에서 8방향 통로가 방사형으로 뻗어 있습니다.</p>
     </div>
   </div>
   <div id="shop-overlay" class="hidden">
@@ -670,11 +670,11 @@
       </div>
       <div id="rotation-list" class="rotation-list"></div>
       <div class="rotation-takedown-section">
-        <div class="rotation-takedown-label">💀 Take Down 이벤트</div>
-        <p class="rotation-takedown-desc">보스를 처치하거나 시간 내 1~4위를 달성하면 승리!</p>
+        <div class="rotation-takedown-label" data-i18n="tdEventLabel">💀 Take Down 이벤트</div>
+        <p class="rotation-takedown-desc" data-i18n="tdEventDesc">보스를 처치하거나 시간 내 1~4위를 달성하면 승리!</p>
         <div class="rotation-takedown-buttons">
-          <button id="rotation-takedown-btn" class="rotation-takedown-btn" type="button">🌐 멀티 플레이</button>
-          <button id="rotation-takedown-solo-btn" class="rotation-takedown-btn rotation-takedown-solo" type="button">혼자 플레이하기</button>
+          <button id="rotation-takedown-btn" class="rotation-takedown-btn" type="button" data-i18n="tdEventBtnMulti">🌐 멀티 플레이</button>
+          <button id="rotation-takedown-solo-btn" class="rotation-takedown-btn rotation-takedown-solo" type="button" data-i18n="tdEventBtnSolo">혼자 플레이하기</button>
         </div>
       </div>
     </div>

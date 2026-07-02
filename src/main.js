@@ -213,7 +213,7 @@ const SKINS = {
     character: "red",
     season: "alpha3",
     cost: 1000,
-    desc: "Alpha Season 한정 왕관 스킨",
+    desc: "skinAlphaRedDesc",
   },
 };
 
@@ -2398,8 +2398,8 @@ function updateTakeDownHud() {
   fighters.sort((a, b) => b.tdScore - a.tdScore);
   const player = getPlayer();
   const playerRank = fighters.findIndex((f) => f.isPlayer) + 1;
-  tdMyRank.textContent = `내 순위: ${playerRank}위`;
-  tdMyScore.textContent = `내 점수: ${player ? player.tdScore : 0}`;
+  tdMyRank.textContent = t("tdRank", playerRank);
+  tdMyScore.textContent = t("tdScore", player ? player.tdScore : 0);
 
   let rankHtml = "";
   for (let i = 0; i < Math.min(5, fighters.length); i++) {
@@ -2590,19 +2590,19 @@ function checkTakeDownEnd() {
         const beforeChampion = account.rotation.champion;
         processRotationRounds(account);
         if (!beforeChampion && account.rotation.champion) {
-          rotationMsg = `  |  🏆 Rotation 우승: ${account.rotation.champion}`;
+          rotationMsg = t("rotationWinMsg", account.rotation.champion);
         }
       }
       saveAccount(account);
     }
 
-    const resultTag = playerRank <= 4 ? "🏅 승리" : "패배";
-    resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : "⏰ 시간 종료";
-    resultBody.textContent = `${resultTag}  |  ${playerRank}위  |  점수: ${player ? player.tdScore : 0}  |  🪙 +${coinsEarned}${rotationMsg}`;
+    const resultTag = playerRank <= 4 ? t("tdWin") : t("tdLose");
+    resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : t("tdTimeUp");
+    resultBody.textContent = t("tdResultBody", resultTag, playerRank, player ? player.tdScore : 0, coinsEarned, rotationMsg);
     const statsLines = [];
     if (player) {
-      statsLines.push(`보스 피해: ${player.tdBossDmg}`);
-      statsLines.push(`처치: ${player.tdKills}`);
+      statsLines.push(t("tdBossDmg", player.tdBossDmg));
+      statsLines.push(t("tdKills", player.tdKills));
     }
     resultStats.textContent = statsLines.join("  |  ");
     resultStreak.style.display = "none";
@@ -2690,10 +2690,10 @@ function setupMpHandlers() {
 
 function updateMatchmakingUI() {
   const list = mp.roomPlayers;
-  matchmakingStatus.textContent = `${list.length}명 대기 중 (2명 이상이면 카운트다운 시작)`;
+  matchmakingStatus.textContent = t("mmWaiting", list.length);
   matchmakingPlayersList.innerHTML = list.map((p) => `
     <div class="mm-player-row${p.id === mp.myId ? " me" : ""}">
-      <span class="mm-player-name">${p.nickname}${p.id === mp.myId ? " (나)" : ""}</span>
+      <span class="mm-player-name">${p.nickname}${p.id === mp.myId ? ` ${t("mmMe")}` : ""}</span>
       <span class="mm-player-char">${p.charType}</span>
     </div>`).join("");
 }
@@ -2703,7 +2703,7 @@ async function enterMatchmaking() {
   if (!account) return;
 
   matchmakingOverlay.classList.remove("hidden");
-  matchmakingStatus.textContent = "서버에 연결 중...";
+  matchmakingStatus.textContent = t("mmConnecting");
   matchmakingCountdown.classList.add("hidden");
   matchmakingCountdown.textContent = "";
   matchmakingPlayersList.innerHTML = "";
@@ -2711,7 +2711,7 @@ async function enterMatchmaking() {
   try {
     await mp.connect(account.nickname, state.selectedCharacter);
   } catch (e) {
-    matchmakingStatus.textContent = `연결 실패: ${e.message}`;
+    matchmakingStatus.textContent = t("mmConnFail", e.message);
     return;
   }
 
@@ -2723,7 +2723,7 @@ async function enterMatchmaking() {
 
   mp.on("COUNTDOWN", ({ seconds }) => {
     matchmakingCountdown.classList.remove("hidden");
-    matchmakingCountdown.textContent = seconds > 0 ? `${seconds}초 후 시작` : "게임 시작!";
+    matchmakingCountdown.textContent = seconds > 0 ? t("mmCountdown", seconds) : t("mmCountdownGo");
   });
 
   mp.on("COUNTDOWN_CANCELLED", () => {
@@ -2744,7 +2744,7 @@ async function enterMatchmaking() {
   });
 
   mp.on("DISCONNECTED", () => {
-    matchmakingStatus.textContent = "서버 연결이 끊어졌습니다. 잠시 후 다시 시도해 주세요.";
+    matchmakingStatus.textContent = t("mmDisconnected");
   });
 }
 
@@ -4821,7 +4821,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
       if (target.isBoss) {
         if (attacker && !attacker.isBoss) {
           attacker.tdScore = (attacker.tdScore || 0) + TD_SCORE_LAST_HIT;
-          addKillFeed(`💀 ${attacker.name} 보스 처치!`);
+          addKillFeed(t("tdBossKill", attacker.name));
           if (attacker.isPlayer) audio.play("kill");
         }
       } else {
@@ -6671,10 +6671,10 @@ function setupInput() {
           <div class="shop-card-level">Lv.${lv} → Lv.${lv + 1}</div>
           <div class="shop-lv-dots">${lvDots}</div>
           <div class="shop-card-stat">HP ${curHp.toLocaleString()} → <span class="shop-stat-up">${nextHp.toLocaleString()}</span></div>
-          <div class="shop-card-effect">체력·공격력 +2%</div>
+          <div class="shop-card-effect">${t("shopCardEffect")}</div>
           ${masteryText ? `<div class="shop-card-mastery">${masteryText}</div>` : ""}
           <button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-char="${c}" data-cost="${cost}" type="button"${canBuy ? "" : " disabled"}>
-            🪙 ${cost}${!canBuy ? ` <span class="shop-coin-short">(부족)</span>` : ""}
+            🪙 ${cost}${!canBuy ? ` <span class="shop-coin-short">${t("shopCoinShort")}</span>` : ""}
           </button>
         </div>`;
       }
@@ -6718,13 +6718,13 @@ function setupInput() {
       const borderColor = colorMap[skin.character] || "#fff";
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
       html += `<div class="shop-card-name" style="color:${borderColor}">${skin.name}</div>`;
-      html += `<div class="shop-card-effect">${skin.desc}</div>`;
+      html += `<div class="shop-card-effect">${t(skin.desc)}</div>`;
       if (!seasonOk && !owned) {
-        html += `<div class="shop-card-mastery">시즌 종료 — 획득 불가</div>`;
+        html += `<div class="shop-card-mastery">${t("shopSeasonEnded")}</div>`;
       } else if (equipped) {
-        html += `<button class="shop-buy-btn shop-skin-unequip" data-skin="${skinId}" type="button">장착 해제</button>`;
+        html += `<button class="shop-buy-btn shop-skin-unequip" data-skin="${skinId}" type="button">${t("skinUnequip")}</button>`;
       } else if (owned) {
-        html += `<button class="shop-buy-btn shop-skin-equip" data-skin="${skinId}" type="button">장착</button>`;
+        html += `<button class="shop-buy-btn shop-skin-equip" data-skin="${skinId}" type="button">${t("skinEquip")}</button>`;
       } else {
         html += `<button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-skin="${skinId}" data-cost="${skin.cost}" type="button"${canBuy ? "" : " disabled"}>🪙 ${skin.cost}</button>`;
       }
@@ -6789,7 +6789,7 @@ function setupInput() {
       const champName = rot.champion.charAt(0).toUpperCase() + rot.champion.slice(1);
       rotationChampionBanner.textContent = `🏆 Rotation Champion: ${champName}`;
       rotationChampionBanner.classList.remove("hidden");
-      rotationNextElim.textContent = "종료";
+      rotationNextElim.textContent = t("rotationEnd");
     } else {
       rotationChampionBanner.classList.add("hidden");
       const nextDate = getRotationNextEliminationDate(account);
@@ -6797,7 +6797,7 @@ function setupInput() {
         const now = new Date();
         const diffMs = nextDate - now;
         const diffDays = Math.max(0, Math.ceil(diffMs / 86400000));
-        rotationNextElim.textContent = diffDays > 0 ? `${diffDays}일` : "오늘";
+        rotationNextElim.textContent = diffDays > 0 ? `${diffDays}${t("rotationDays")}` : t("rotationToday");
       }
     }
 
@@ -6825,7 +6825,7 @@ function setupInput() {
       html += `<div class="${rowClass}">
         <div class="rotation-rank">${idx + 1}</div>
         <div class="rotation-char-name">${name} ${badges}${abilityText}</div>
-        <div class="rotation-char-stats">${s.wins}승 / ${s.games}판 (${winRate}%)</div>
+        <div class="rotation-char-stats">${t("rotationRecord", s.wins, s.games, winRate)}</div>
       </div>`;
     });
     rotationList.innerHTML = html;

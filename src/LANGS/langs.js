@@ -207,6 +207,26 @@ export const LANGS = {
     pv137e: "캐릭터 카드 실제 인게임 수치 동기화",
     pv137f: "리더보드 봇 이름 고정", pv137g: "Blue 아이콘 색상 수정",
     pv137c: "로비 왼쪽 캐릭터 컬러 버튼 추가",
+    // Shop
+    shopCardEffect: "체력·공격력 +2%", shopCoinShort: "(부족)", shopSeasonEnded: "시즌 종료 — 획득 불가",
+    skinEquip: "장착", skinUnequip: "장착 해제", skinAlphaRedDesc: "Alpha Season 한정 왕관 스킨",
+    // Rotation screen
+    rotationEnd: "종료", rotationDays: "일", rotationToday: "오늘",
+    rotationRecord: "{0}승 / {1}판 ({2}%)", rotationWinMsg: "  |  🏆 Rotation 우승: {0}",
+    tdEventLabel: "💀 Take Down 이벤트", tdEventDesc: "보스를 처치하거나 시간 내 1~4위를 달성하면 승리!",
+    tdEventBtnMulti: "🌐 멀티 플레이", tdEventBtnSolo: "혼자 플레이하기",
+    // Take Down in-game
+    tdRank: "내 순위: {0}위", tdScore: "내 점수: {0}",
+    tdWin: "🏅 승리", tdLose: "패배", tdTimeUp: "⏰ 시간 종료",
+    tdResultBody: "{0}  |  {1}위  |  점수: {2}  |  🪙 +{3}{4}",
+    tdBossDmg: "보스 피해: {0}", tdKills: "처치: {0}", tdBossKill: "💀 {0} 보스 처치!",
+    // Matchmaking
+    mmTitle: "💀 Take Down — 매칭 중", mmConnecting: "서버에 연결 중...",
+    mmWaiting: "{0}명 대기 중 (2명 이상이면 카운트다운 시작)", mmMe: "(나)",
+    mmConnFail: "연결 실패: {0}", mmCountdown: "{0}초 후 시작", mmCountdownGo: "게임 시작!",
+    mmDisconnected: "서버 연결이 끊어졌습니다. 잠시 후 다시 시도해 주세요.",
+    // Map info
+    tdMapTitle: "🗺️ 맵 정보", tdMapDesc: "중앙 보스 전장에서 8방향 통로가 방사형으로 뻗어 있습니다.",
   },
   en: {
     exitTraining: "Leave Training", survivorsLabel: "Survivors", zoneLabel: "Zone",
@@ -416,5 +436,25 @@ export const LANGS = {
     pv137e: "Character card stats synced with in-game values",
     pv137f: "Leaderboard bot names fixed", pv137g: "Blue icon color fix",
     pv137c: "Character color buttons added to lobby left side",
+    // Shop
+    shopCardEffect: "HP & ATK +2%", shopCoinShort: "(Short)", shopSeasonEnded: "Season ended",
+    skinEquip: "Equip", skinUnequip: "Unequip", skinAlphaRedDesc: "Alpha Season exclusive crown skin",
+    // Rotation screen
+    rotationEnd: "Ended", rotationDays: "d", rotationToday: "Today",
+    rotationRecord: "{0}W / {1}G ({2}%)", rotationWinMsg: "  |  🏆 Rotation Champion: {0}",
+    tdEventLabel: "💀 Take Down Event", tdEventDesc: "Defeat the boss or rank 1st–4th to win!",
+    tdEventBtnMulti: "🌐 Multiplayer", tdEventBtnSolo: "Solo Play",
+    // Take Down in-game
+    tdRank: "Rank: #{0}", tdScore: "Score: {0}",
+    tdWin: "🏅 Win", tdLose: "Lose", tdTimeUp: "⏰ Time Up",
+    tdResultBody: "{0}  |  #{1}  |  Score: {2}  |  🪙 +{3}{4}",
+    tdBossDmg: "Boss Damage: {0}", tdKills: "Kills: {0}", tdBossKill: "💀 {0} took down the boss!",
+    // Matchmaking
+    mmTitle: "💀 Take Down — Matchmaking", mmConnecting: "Connecting to server...",
+    mmWaiting: "{0} waiting (countdown starts at 2+)", mmMe: "(me)",
+    mmConnFail: "Connection failed: {0}", mmCountdown: "Starting in {0}s", mmCountdownGo: "Starting!",
+    mmDisconnected: "Disconnected. Please try again.",
+    // Map info
+    tdMapTitle: "🗺️ Map Info", tdMapDesc: "8 radial corridors branch out from the central boss arena.",
   },
 };
