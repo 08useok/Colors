@@ -1541,11 +1541,13 @@ function makeFighter(options) {
   const charDef = CHARACTERS[options.characterType ?? "red"];
   let levelMult = 1;
   let skinId = null;
+  let hasOrangeBlastAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
       levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
       skinId = acc.selectedSkins?.[options.characterType ?? "red"] || null;
+      hasOrangeBlastAbility = (options.characterType === "orange") && !!acc.rotation?.newAbilityChars?.includes("orange");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1555,6 +1557,7 @@ function makeFighter(options) {
     characterType: options.characterType ?? "red",
     isPlayer: options.isPlayer,
     levelMult,
+    hasOrangeBlastAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -4113,6 +4116,8 @@ function beginBombAttack(fighter) {
 
 function spawnBombSplash(x, z, ownerId) {
   const charDef = CHARACTERS.orange;
+  const owner = state.players.find((p) => p.id === ownerId);
+  const blastMult = owner?.hasOrangeBlastAbility ? 1.2 : 1;
   for (let i = 0; i < charDef.bombSplashCount; i++) {
     const angle = (i / charDef.bombSplashCount) * Math.PI * 2;
     const splashMesh = new THREE.Mesh(
@@ -4127,14 +4132,14 @@ function spawnBombSplash(x, z, ownerId) {
       vx: Math.sin(angle) * charDef.bombSplashSpeed,
       vz: Math.cos(angle) * charDef.bombSplashSpeed,
       damage: charDef.bombSplashDamage,
-      range: charDef.bombSplashRange,
+      range: charDef.bombSplashRange * blastMult,
       farThreshold: Infinity,
       farMultiplier: 1,
       distTraveled: 0,
       launchAt: state.gameTime,
       mesh: splashMesh,
       isSplash: true,
-      projRadius: charDef.bombSplashHitRadius,
+      projRadius: charDef.bombSplashHitRadius * blastMult,
     });
   }
 }
