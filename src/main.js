@@ -434,7 +434,8 @@ const CHARACTERS = {
     bombSpeed: 22,
     bombSplashCount: 5,
     bombSplashSpeed: 10,
-    bombSplashRange: 3.5,
+    bombSplashRange: 4.4,
+    bombSplashHitRadius: 0.60,
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
@@ -4133,7 +4134,7 @@ function spawnBombSplash(x, z, ownerId) {
       launchAt: state.gameTime,
       mesh: splashMesh,
       isSplash: true,
-      projRadius: 0.52,
+      projRadius: charDef.bombSplashHitRadius,
     });
   }
 }
