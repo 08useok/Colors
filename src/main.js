@@ -2235,17 +2235,36 @@ function initTakeDownPlayers() {
   Object.keys(mpNetFighters).forEach((k) => delete mpNetFighters[k]);
 
   const spawns = TD_SPAWNS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
-  const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+  // 탈락 캐릭터 제외
+  const _tdAccount = loadAccount();
+  const _tdEliminated = new Set(_tdAccount?.rotation?.eliminated ?? []);
+  const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]
+    .filter((c) => !_tdEliminated.has(c));
 
   // 멀티 기준: 원격 플레이어 목록
   const remotePlayers = mpConfig
     ? mpConfig.players.filter((p) => p.id !== mp.myId)
     : [];
+
+  // 봇 타입 풀: 미사용 타입 1개씩 → 나머지 슬롯은 랜덤(중복 없이)
+  const botCount = Math.max(0, 7 - remotePlayers.length);
   const usedTypes = new Set([state.selectedCharacter, ...remotePlayers.map((p) => p.charType)]);
-  const botTypes = allTypes.filter((c) => !usedTypes.has(c));
-  for (let i = botTypes.length - 1; i > 0; i--) {
+  const unusedTypes = allTypes.filter((c) => !usedTypes.has(c));
+  for (let i = unusedTypes.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [botTypes[i], botTypes[j]] = [botTypes[j], botTypes[i]];
+    [unusedTypes[i], unusedTypes[j]] = [unusedTypes[j], unusedTypes[i]];
+  }
+  // 남은 슬롯: allTypes에서 아직 한 번도 안 나온 타입 우선, 그 다음 랜덤
+  const botTypePool = [...unusedTypes];
+  const extraPool = [...allTypes].filter((c) => !usedTypes.has(c) && !unusedTypes.includes(c));
+  for (let i = extraPool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [extraPool[i], extraPool[j]] = [extraPool[j], extraPool[i]];
+  }
+  while (botTypePool.length < botCount) {
+    botTypePool.push(extraPool.length > 0
+      ? extraPool.shift()
+      : allTypes[Math.floor(Math.random() * allTypes.length)]);
   }
   let botTypeIdx = 0;
   let spawnIdx = 0;
@@ -2282,9 +2301,8 @@ function initTakeDownPlayers() {
   }
 
   // 봇 (8명 - 실제 플레이어 수)
-  const botCount = Math.max(0, 7 - remotePlayers.length);
   for (let i = 0; i < botCount; i++) {
-    const characterType = botTypes[botTypeIdx++ % botTypes.length];
+    const characterType = botTypePool[botTypeIdx++];
     const f = addFighter({
       id: spawnIdx,
       name: randomBotName(),
