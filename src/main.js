@@ -2256,14 +2256,15 @@ function initTakeDownPlayers() {
   }
   // 남은 슬롯: allTypes에서 아직 한 번도 안 나온 타입 우선, 그 다음 랜덤
   const botTypePool = [...unusedTypes];
-  const extraPool = [...allTypes].filter((c) => !usedTypes.has(c) && !unusedTypes.includes(c));
-  for (let i = extraPool.length - 1; i > 0; i--) {
+  // 남은 슬롯: usedTypes 포함 전체에서 아직 botTypePool에 없는 타입 우선, 그 다음 무작위
+  const notInPool = allTypes.filter((c) => !botTypePool.includes(c));
+  for (let i = notInPool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [extraPool[i], extraPool[j]] = [extraPool[j], extraPool[i]];
+    [notInPool[i], notInPool[j]] = [notInPool[j], notInPool[i]];
   }
   while (botTypePool.length < botCount) {
-    botTypePool.push(extraPool.length > 0
-      ? extraPool.shift()
+    botTypePool.push(notInPool.length > 0
+      ? notInPool.shift()
       : allTypes[Math.floor(Math.random() * allTypes.length)]);
   }
   let botTypeIdx = 0;
@@ -6912,7 +6913,10 @@ function setupInput() {
   });
 
   document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
-    openTdCharSelect(() => enterMatchmaking());
+    openTdCharSelect(() => {
+      rotationOverlay.classList.add("hidden");
+      enterMatchmaking();
+    });
   });
 
   document.getElementById("rotation-takedown-solo-btn").addEventListener("click", () => {
@@ -6964,7 +6968,7 @@ function setupInput() {
   playAgainButton.addEventListener("click", () => {
     if (state.takedownMode) {
       resultOverlay.style.display = "none";
-      enterMatchmaking();
+      openTdCharSelect(() => enterMatchmaking());
     } else if (state.chopWoodMode) {
       startChopWood();
     } else if (state.trainingMode) {
