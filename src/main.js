@@ -117,6 +117,9 @@ const rotationNextElim = document.getElementById("rotation-next-elim");
 const rotationList = document.getElementById("rotation-list");
 const tdMapInfoBtn = document.getElementById("td-map-info-btn");
 const tdMapOverlay = document.getElementById("td-map-overlay");
+const tdCharSelectOverlay = document.getElementById("td-char-select-overlay");
+const tdCharSelectGrid = document.getElementById("td-char-select-grid");
+const tdCharSelectCloseBtn = document.getElementById("td-char-select-close-btn");
 const matchmakingOverlay = document.getElementById("matchmaking-overlay");
 const matchmakingStatus = document.getElementById("matchmaking-status");
 const matchmakingCountdown = document.getElementById("matchmaking-countdown");
@@ -6846,13 +6849,59 @@ function setupInput() {
     rotationOverlay.classList.add("hidden");
   });
 
+  const TD_CHAR_COLORS = {
+    red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500",
+    yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#ff69b4",
+  };
+  const TD_CHAR_EMOJIS = {
+    red: "🔴", green: "🟢", blue: "🔵", orange: "🟠",
+    yellow: "🟡", cyan: "🩵", purple: "🟣", pink: "🩷",
+  };
+
+  function openTdCharSelect(onSelect) {
+    const account = loadAccount();
+    const eliminated = account?.rotation?.eliminated ?? [];
+    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+
+    tdCharSelectGrid.innerHTML = chars.map((c) => {
+      const isElim = eliminated.includes(c);
+      const name = c.charAt(0).toUpperCase() + c.slice(1);
+      const color = TD_CHAR_COLORS[c];
+      const emoji = TD_CHAR_EMOJIS[c];
+      return `<button class="td-char-btn${isElim ? " eliminated" : ""}"
+        data-char="${c}" style="color:${color}; border-color:${isElim ? "transparent" : color}22"
+        ${isElim ? "disabled" : ""}>
+        ${emoji}<br>${name}
+        ${isElim ? `<span class="td-elim-badge">OUT</span>` : ""}
+      </button>`;
+    }).join("");
+
+    tdCharSelectGrid.querySelectorAll(".td-char-btn:not(.eliminated)").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.selectedCharacter = btn.dataset.char;
+        const acc = loadAccount();
+        if (acc) { acc.selectedCharacter = btn.dataset.char; saveAccount(acc); }
+        tdCharSelectOverlay.classList.add("hidden");
+        onSelect();
+      });
+    });
+
+    tdCharSelectOverlay.classList.remove("hidden");
+  }
+
+  tdCharSelectCloseBtn.addEventListener("click", () => {
+    tdCharSelectOverlay.classList.add("hidden");
+  });
+
   document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
-    enterMatchmaking();
+    openTdCharSelect(() => enterMatchmaking());
   });
 
   document.getElementById("rotation-takedown-solo-btn").addEventListener("click", () => {
-    rotationOverlay.classList.add("hidden");
-    startTakeDown();
+    openTdCharSelect(() => {
+      rotationOverlay.classList.add("hidden");
+      startTakeDown();
+    });
   });
 
 

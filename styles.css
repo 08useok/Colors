@@ -2078,6 +2078,32 @@ body {
   background: linear-gradient(135deg, #555, #777);
 }
 
+/* ── Take Down 캐릭터 선택 ── */
+#td-char-select-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center; z-index: 320;
+}
+.td-char-select-screen {
+  background: #1a1230; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 24px; width: min(480px, 92vw);
+}
+.td-char-select-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px;
+}
+.td-char-btn {
+  padding: 12px 6px; border-radius: 10px; border: 2px solid transparent;
+  background: rgba(255,255,255,0.06); color: #fff; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.15s, border-color 0.15s; text-align: center;
+}
+.td-char-btn:hover:not(.eliminated) { opacity: 0.85; border-color: currentColor; }
+.td-char-btn.eliminated {
+  opacity: 0.35; cursor: not-allowed; position: relative;
+}
+.td-char-btn .td-elim-badge {
+  display: block; font-size: 10px; font-weight: 800; color: #e74c3c;
+  margin-top: 3px; letter-spacing: 0.5px;
+}
+
 /* ── Matchmaking 오버레이 ── */
 #matchmaking-overlay {
   position: fixed; inset: 0; z-index: 200;
