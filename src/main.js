@@ -1208,6 +1208,40 @@ function createStickman(color, skinId) {
   head.castShadow = true;
   group.add(head);
 
+  // 눈
+  const eyeBlackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
+  const isFemale = (color === 0xFF69B4 || color === 0x800080);
+  if (isFemale) {
+    const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+    const eyeHlMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.4 });
+    for (const sx of [-1, 1]) {
+      const ex = sx * 0.22;
+      const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), eyeWhiteMat);
+      sclera.scale.set(1.0, 1.1, 0.55);
+      sclera.position.set(ex, 0.15, 0.61);
+      head.add(sclera);
+      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.085, 8, 8), eyeBlackMat);
+      pupil.scale.set(1.0, 1.1, 0.55);
+      pupil.position.set(ex, 0.12, 0.64);
+      head.add(pupil);
+      const hl = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), eyeHlMat);
+      hl.position.set(ex + sx * 0.03, 0.20, 0.66);
+      head.add(hl);
+      for (let i = 0; i < 3; i++) {
+        const lash = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.10, 0.015), eyeBlackMat);
+        lash.position.set(ex + (i - 1) * 0.09, 0.29, 0.62);
+        lash.rotation.z = (i - 1) * 0.28;
+        head.add(lash);
+      }
+    }
+  } else {
+    for (const sx of [-1, 1]) {
+      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), eyeBlackMat);
+      eye.position.set(sx * 0.22, 0.12, 0.62);
+      head.add(eye);
+    }
+  }
+
   const upperArmGeo = new THREE.CapsuleGeometry(0.16, 0.40, 6, 10);
   const foreArmGeo = new THREE.CapsuleGeometry(0.14, 0.36, 6, 10);
   const upperLegGeo = new THREE.CapsuleGeometry(0.19, 0.42, 6, 10);
