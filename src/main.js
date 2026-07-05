@@ -5141,14 +5141,37 @@ function updateEffects(dt) {
     }
     if (effect.type === "emote") {
       const player = getPlayer();
+      const elapsed = effect.maxLife - effect.life;
+
+      // 팝인: easeOutBack (0~0.35s)
+      let scale = 3.0;
+      if (elapsed < 0.35) {
+        const t = elapsed / 0.35;
+        const c1 = 1.70158, c3 = c1 + 1;
+        const eob = 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+        scale = 3.0 * Math.max(0, eob);
+      }
+
+      // 팝아웃: 마지막 0.4s — 축소 + 페이드
+      let opacity = 1;
+      if (effect.life < 0.4) {
+        const t = effect.life / 0.4;
+        opacity = t;
+        scale *= 0.5 + t * 0.5;
+      }
+
+      // 위로 살짝 떠오름
+      const floatY = elapsed * 0.4;
+
       if (player) {
         effect.mesh.position.set(
           player.mesh.position.x,
-          player.mesh.position.y + 4.5,
+          player.mesh.position.y + 4.5 + floatY,
           player.mesh.position.z,
         );
       }
-      effect.mesh.material.opacity = Math.min(1, effect.life / 0.3);
+      effect.mesh.scale.set(scale, scale, 1);
+      effect.mesh.material.opacity = opacity;
       continue;
     }
     const alpha = effect.life / effect.maxLife;
