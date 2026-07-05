@@ -1413,6 +1413,28 @@ function createStickman(color, skinId) {
     group.userData.hairPin = pinGroup;
   }
 
+  if (color === 0x800080) {
+    // 퍼플 머리핀 (나비 리본)
+    const purplePinGroup = new THREE.Group();
+    const purplePinMat = new THREE.MeshStandardMaterial({ color: 0x6a0dad, roughness: 0.4, metalness: 0.15 });
+    const purplePinCenterMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.3, metalness: 0.7 });
+    const pLeftWing = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 6), purplePinMat);
+    pLeftWing.scale.set(1.0, 0.6, 0.4);
+    pLeftWing.position.set(-0.22, 0, 0);
+    pLeftWing.rotation.z = 0.3;
+    purplePinGroup.add(pLeftWing);
+    const pRightWing = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 6), purplePinMat);
+    pRightWing.scale.set(1.0, 0.6, 0.4);
+    pRightWing.position.set(0.22, 0, 0);
+    pRightWing.rotation.z = -0.3;
+    purplePinGroup.add(pRightWing);
+    const pKnot = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), purplePinCenterMat);
+    purplePinGroup.add(pKnot);
+    purplePinGroup.position.set(0, 2.32, 0.1);
+    group.add(purplePinGroup);
+    group.userData.hairPin = purplePinGroup;
+  }
+
   if (skinId) applySkin(group, skinId);
 
   return group;
