@@ -1547,6 +1547,7 @@ function makeFighter(options) {
   let hasOrangeBlastAbility = false;
   let hasPurpleFanAbility = false;
   let hasYellowOverloadAbility = false;
+  let hasCyanPrecisionAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
@@ -1555,6 +1556,7 @@ function makeFighter(options) {
       hasOrangeBlastAbility = (options.characterType === "orange") && !!acc.rotation?.newAbilityChars?.includes("orange");
       hasPurpleFanAbility = (options.characterType === "purple") && !!acc.rotation?.newAbilityChars?.includes("purple");
       hasYellowOverloadAbility = (options.characterType === "yellow") && !!acc.rotation?.newAbilityChars?.includes("yellow");
+      hasCyanPrecisionAbility = (options.characterType === "cyan") && !!acc.rotation?.newAbilityChars?.includes("cyan");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1567,6 +1569,7 @@ function makeFighter(options) {
     hasOrangeBlastAbility,
     hasPurpleFanAbility,
     hasYellowOverloadAbility,
+    hasCyanPrecisionAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -4249,7 +4252,7 @@ function beginSpreadLineAttack(fighter) {
 
   const yaw = fighter.yaw;
   const count = charDef.spreadLineCount;
-  const spacing = charDef.spreadLineSpacing;
+  const spacing = fighter.hasCyanPrecisionAbility ? charDef.spreadLineSpacing * 0.4 : charDef.spreadLineSpacing;
   const halfWidth = (count - 1) * spacing * 0.5;
 
   for (let j = 0; j < count; j++) {
