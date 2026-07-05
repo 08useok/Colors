@@ -271,7 +271,7 @@ const ROTATION_NEW_ABILITIES = {
   green: { name: "더블 바운스", desc: "부메랑 추가 튕김" },
   blue: { name: "관통탄", desc: "탄환이 적을 관통" },
   orange: { name: "광역 폭발", desc: "폭발 범위 증가" },
-  yellow: { name: "과부하 감전", desc: "감전 효과 강화" },
+  yellow: { name: "과부하 감전", desc: "감전 지속 2배 + 이동 감속 65%" },
   cyan: { name: "정밀 사격", desc: "집탄률 증가" },
   purple: { name: "쌍독침", desc: "독침 2발 부채꼴(11도) 발사" },
   pink: { name: "광역 치유", desc: "회복 범위 증가" },
@@ -1546,6 +1546,7 @@ function makeFighter(options) {
   let skinId = null;
   let hasOrangeBlastAbility = false;
   let hasPurpleFanAbility = false;
+  let hasYellowOverloadAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
@@ -1553,6 +1554,7 @@ function makeFighter(options) {
       skinId = acc.selectedSkins?.[options.characterType ?? "red"] || null;
       hasOrangeBlastAbility = (options.characterType === "orange") && !!acc.rotation?.newAbilityChars?.includes("orange");
       hasPurpleFanAbility = (options.characterType === "purple") && !!acc.rotation?.newAbilityChars?.includes("purple");
+      hasYellowOverloadAbility = (options.characterType === "yellow") && !!acc.rotation?.newAbilityChars?.includes("yellow");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1564,6 +1566,7 @@ function makeFighter(options) {
     levelMult,
     hasOrangeBlastAbility,
     hasPurpleFanAbility,
+    hasYellowOverloadAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -3981,7 +3984,8 @@ function getMoveSpeed(fighter) {
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
   let speed = baseMoveSpeed * multiplier;
   if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
-    speed *= (1 - CHARACTERS.yellow.shockSlowPercent);
+    const slowPercent = fighter.shockSlowOverride ?? CHARACTERS.yellow.shockSlowPercent;
+    speed *= (1 - slowPercent);
   }
   return speed;
 }
@@ -4602,7 +4606,13 @@ function updateProjectiles(dt) {
           createBombExplosionEffect(proj.x, proj.z);
         }
         if (proj.isElectric) {
-          target.shockUntil = state.gameTime + CHARACTERS.yellow.shockDuration;
+          const shooter = state.players.find((p) => p.id === proj.ownerId);
+          const shockDur = shooter?.hasYellowOverloadAbility
+            ? CHARACTERS.yellow.shockDuration * 2
+            : CHARACTERS.yellow.shockDuration;
+          const shockSlow = shooter?.hasYellowOverloadAbility ? 0.65 : CHARACTERS.yellow.shockSlowPercent;
+          target.shockUntil = state.gameTime + shockDur;
+          target.shockSlowOverride = shooter?.hasYellowOverloadAbility ? shockSlow : null;
           createElectricHitEffect(proj.x, proj.z);
         }
         if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
