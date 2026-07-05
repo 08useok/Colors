@@ -1551,6 +1551,7 @@ function makeFighter(options) {
   let hasPinkAreaHealAbility = false;
   let hasRedRageAbility = false;
   let hasGreenBounceAbility = false;
+  let hasBlueArmorPierceAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
@@ -1563,6 +1564,7 @@ function makeFighter(options) {
       hasPinkAreaHealAbility = (options.characterType === "pink") && !!acc.rotation?.newAbilityChars?.includes("pink");
       hasRedRageAbility = (options.characterType === "red") && !!acc.rotation?.newAbilityChars?.includes("red");
       hasGreenBounceAbility = (options.characterType === "green") && !!acc.rotation?.newAbilityChars?.includes("green");
+      hasBlueArmorPierceAbility = (options.characterType === "blue") && !!acc.rotation?.newAbilityChars?.includes("blue");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1579,6 +1581,7 @@ function makeFighter(options) {
     hasPinkAreaHealAbility,
     hasRedRageAbility,
     hasGreenBounceAbility,
+    hasBlueArmorPierceAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -4049,6 +4052,7 @@ function beginBulletAttack(fighter) {
     launchAt: state.gameTime,
     mesh,
     isBullet: true,
+    isPenetrating: !!fighter.hasBlueArmorPierceAbility,
   });
 
   if (fighter.isPlayer) {
@@ -4681,7 +4685,7 @@ function updateProjectiles(dt) {
           }
         }
         hit = true;
-        break;
+        if (!proj.isPenetrating) break;
       }
     }
 
