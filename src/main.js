@@ -1210,31 +1210,25 @@ function createStickman(color, skinId) {
 
   // 눈
   const eyeBlackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
+  const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
   const isFemale = (color === 0xFF69B4 || color === 0x800080);
   if (isFemale) {
-    const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
-    const eyeHlMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.4 });
+    // 여자: 아몬드형 큰 흰 눈 + 검정 동공
     for (const sx of [-1, 1]) {
-      const ex = sx * 0.22;
-      const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 10), eyeWhiteMat);
-      sclera.scale.set(1.0, 1.1, 0.55);
-      sclera.position.set(ex, 0.15, 0.61);
+      const ex = sx * 0.23;
+      // 흰 공막 (넓고 납작한 타원)
+      const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), eyeWhiteMat);
+      sclera.scale.set(1.5, 1.1, 0.45);
+      sclera.position.set(ex, 0.13, 0.61);
       head.add(sclera);
-      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.085, 8, 8), eyeBlackMat);
-      pupil.scale.set(1.0, 1.1, 0.55);
-      pupil.position.set(ex, 0.12, 0.64);
+      // 검정 동공 (공막보다 살짝 앞에)
+      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), eyeBlackMat);
+      pupil.scale.set(1.2, 1.3, 0.5);
+      pupil.position.set(ex, 0.10, 0.64);
       head.add(pupil);
-      const hl = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), eyeHlMat);
-      hl.position.set(ex + sx * 0.03, 0.20, 0.66);
-      head.add(hl);
-      for (let i = 0; i < 3; i++) {
-        const lash = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.10, 0.015), eyeBlackMat);
-        lash.position.set(ex + (i - 1) * 0.09, 0.29, 0.62);
-        lash.rotation.z = (i - 1) * 0.28;
-        head.add(lash);
-      }
     }
   } else {
+    // 남자: 단순 작은 검정 점
     for (const sx of [-1, 1]) {
       const eye = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), eyeBlackMat);
       eye.position.set(sx * 0.22, 0.12, 0.62);
