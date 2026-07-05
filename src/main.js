@@ -1548,6 +1548,7 @@ function makeFighter(options) {
   let hasPurpleFanAbility = false;
   let hasYellowOverloadAbility = false;
   let hasCyanPrecisionAbility = false;
+  let hasPinkAreaHealAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
@@ -1557,6 +1558,7 @@ function makeFighter(options) {
       hasPurpleFanAbility = (options.characterType === "purple") && !!acc.rotation?.newAbilityChars?.includes("purple");
       hasYellowOverloadAbility = (options.characterType === "yellow") && !!acc.rotation?.newAbilityChars?.includes("yellow");
       hasCyanPrecisionAbility = (options.characterType === "cyan") && !!acc.rotation?.newAbilityChars?.includes("cyan");
+      hasPinkAreaHealAbility = (options.characterType === "pink") && !!acc.rotation?.newAbilityChars?.includes("pink");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1570,6 +1572,7 @@ function makeFighter(options) {
     hasPurpleFanAbility,
     hasYellowOverloadAbility,
     hasCyanPrecisionAbility,
+    hasPinkAreaHealAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -4324,7 +4327,10 @@ function beginHealCircleAttack(fighter) {
 
   const fx = fighter.mesh.position.x;
   const fz = fighter.mesh.position.z;
-  const r2 = charDef.healCircleRange * charDef.healCircleRange;
+  const effectiveRange = fighter.hasPinkAreaHealAbility
+    ? charDef.healCircleRange * 1.75
+    : charDef.healCircleRange;
+  const r2 = effectiveRange * effectiveRange;
 
   for (const target of state.players) {
     if (target.dead || target.id === fighter.id) continue;
@@ -4346,7 +4352,7 @@ function beginHealCircleAttack(fighter) {
     }
   }
 
-  createHealCircleEffect(fx, fz, charDef.healCircleRange);
+  createHealCircleEffect(fx, fz, effectiveRange);
   if (fighter.isPlayer) audio.play("attack");
   return true;
 }
@@ -5774,6 +5780,7 @@ function updateAttackAimIndicator() {
   } else if (charType === "pink") {
     pinkAimIndicator.visible = true;
     pinkAimIndicator.position.set(pos.x, 0, pos.z);
+    pinkAimIndicator.scale.setScalar(player.hasPinkAreaHealAbility ? 1.75 : 1);
     pinkAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.35;
     pinkAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.06;
   }
