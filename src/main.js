@@ -273,7 +273,7 @@ const ROTATION_NEW_ABILITIES = {
   orange: { name: "광역 폭발", desc: "폭발 범위 증가" },
   yellow: { name: "과부하 감전", desc: "감전 효과 강화" },
   cyan: { name: "정밀 사격", desc: "집탄률 증가" },
-  purple: { name: "맹독 확산", desc: "독 효과 확산" },
+  purple: { name: "쌍독침", desc: "독침 2발 부채꼴(11도) 발사" },
   pink: { name: "광역 치유", desc: "회복 범위 증가" },
 };
 
@@ -1545,12 +1545,14 @@ function makeFighter(options) {
   let levelMult = 1;
   let skinId = null;
   let hasOrangeBlastAbility = false;
+  let hasPurpleFanAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
       levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
       skinId = acc.selectedSkins?.[options.characterType ?? "red"] || null;
       hasOrangeBlastAbility = (options.characterType === "orange") && !!acc.rotation?.newAbilityChars?.includes("orange");
+      hasPurpleFanAbility = (options.characterType === "purple") && !!acc.rotation?.newAbilityChars?.includes("purple");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1561,6 +1563,7 @@ function makeFighter(options) {
     isPlayer: options.isPlayer,
     levelMult,
     hasOrangeBlastAbility,
+    hasPurpleFanAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -4421,22 +4424,27 @@ function beginPoisonAttack(fighter) {
   fighter.attackIndex += 1;
 
   if (isNeedle) {
-    const mesh = createNeedleMesh(fighter.mesh.position, yaw);
-    state.projectiles.push({
-      ownerId: fighter.id,
-      x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
-      z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
-      vx: Math.sin(yaw) * charDef.needleSpeed,
-      vz: Math.cos(yaw) * charDef.needleSpeed,
-      damage: charDef.needleDamage,
-      range: charDef.needleRange,
-      farThreshold: Infinity,
-      farMultiplier: 1,
-      distTraveled: 0,
-      launchAt: state.gameTime,
-      mesh,
-      isNeedle: true,
-    });
+    const fanAngles = fighter.hasPurpleFanAbility
+      ? [yaw - 0.096, yaw + 0.096]  // 11도 부채꼴 (±5.5도)
+      : [yaw];
+    for (const angle of fanAngles) {
+      const mesh = createNeedleMesh(fighter.mesh.position, angle);
+      state.projectiles.push({
+        ownerId: fighter.id,
+        x: fighter.mesh.position.x + Math.sin(angle) * 0.9,
+        z: fighter.mesh.position.z + Math.cos(angle) * 0.9,
+        vx: Math.sin(angle) * charDef.needleSpeed,
+        vz: Math.cos(angle) * charDef.needleSpeed,
+        damage: charDef.needleDamage,
+        range: charDef.needleRange,
+        farThreshold: Infinity,
+        farMultiplier: 1,
+        distTraveled: 0,
+        launchAt: state.gameTime,
+        mesh,
+        isNeedle: true,
+      });
+    }
   } else {
     const mesh = createVialMesh(fighter.mesh.position, yaw);
     const flightTime = charDef.vialRange / charDef.vialSpeed;
