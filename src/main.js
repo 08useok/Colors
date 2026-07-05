@@ -1216,15 +1216,15 @@ function createStickman(color, skinId) {
     // 여자: 아몬드형 큰 흰 눈 + 검정 동공
     for (const sx of [-1, 1]) {
       const ex = sx * 0.23;
-      // 흰 공막 (넓고 납작한 타원)
+      // 흰 공막 (납작하게 표면에 밀착)
       const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), eyeWhiteMat);
-      sclera.scale.set(1.5, 1.1, 0.45);
-      sclera.position.set(ex, 0.13, 0.61);
+      sclera.scale.set(1.5, 1.1, 0.18);
+      sclera.position.set(ex, 0.13, 0.60);
       head.add(sclera);
-      // 검정 동공 (공막보다 살짝 앞에)
+      // 검정 동공 (공막과 같은 z, 살짝 앞)
       const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), eyeBlackMat);
-      pupil.scale.set(1.2, 1.3, 0.5);
-      pupil.position.set(ex, 0.10, 0.64);
+      pupil.scale.set(1.2, 1.3, 0.18);
+      pupil.position.set(ex, 0.10, 0.61);
       head.add(pupil);
     }
   } else {
