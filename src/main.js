@@ -1208,33 +1208,38 @@ function createStickman(color, skinId) {
   head.castShadow = true;
   group.add(head);
 
-  // 눈
-  const eyeBlackMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.4 });
-  const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+  // 눈 (캔버스 텍스처 → 얼굴 평면)
   const isFemale = (color === 0xFF69B4 || color === 0x800080);
+  const faceCanvas = document.createElement('canvas');
+  faceCanvas.width = 256; faceCanvas.height = 256;
+  const fctx = faceCanvas.getContext('2d');
   if (isFemale) {
-    // 여자: 아몬드형 큰 흰 눈 + 검정 동공
-    for (const sx of [-1, 1]) {
-      const ex = sx * 0.23;
-      // 흰 공막 (납작하게 표면에 밀착)
-      const sclera = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), eyeWhiteMat);
-      sclera.scale.set(1.5, 1.1, 0.18);
-      sclera.position.set(ex, 0.13, 0.60);
-      head.add(sclera);
-      // 검정 동공 (공막과 같은 z, 살짝 앞)
-      const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), eyeBlackMat);
-      pupil.scale.set(1.2, 1.3, 0.18);
-      pupil.position.set(ex, 0.10, 0.61);
-      head.add(pupil);
+    for (const cx of [78, 178]) {
+      // 흰 공막 (아몬드형)
+      fctx.fillStyle = '#ffffff';
+      fctx.beginPath();
+      fctx.ellipse(cx, 122, 38, 27, 0, 0, Math.PI * 2);
+      fctx.fill();
+      // 검정 동공
+      fctx.fillStyle = '#111111';
+      fctx.beginPath();
+      fctx.ellipse(cx, 126, 23, 25, 0, 0, Math.PI * 2);
+      fctx.fill();
     }
   } else {
-    // 남자: 단순 작은 검정 점
-    for (const sx of [-1, 1]) {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 8), eyeBlackMat);
-      eye.position.set(sx * 0.22, 0.12, 0.62);
-      head.add(eye);
+    for (const cx of [82, 174]) {
+      fctx.fillStyle = '#111111';
+      fctx.beginPath();
+      fctx.arc(cx, 122, 14, 0, Math.PI * 2);
+      fctx.fill();
     }
   }
+  const faceTex = new THREE.CanvasTexture(faceCanvas);
+  const facePlaneMat = new THREE.MeshStandardMaterial({ map: faceTex, transparent: true, depthWrite: false, roughness: 0.8 });
+  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.90, 0.90), facePlaneMat);
+  facePlane.position.set(0, 0.08, 0.685);
+  facePlane.renderOrder = 1;
+  head.add(facePlane);
 
   const upperArmGeo = new THREE.CapsuleGeometry(0.16, 0.40, 6, 10);
   const foreArmGeo = new THREE.CapsuleGeometry(0.14, 0.36, 6, 10);
