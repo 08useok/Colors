@@ -5085,7 +5085,7 @@ function updateEmoteBtn(account) {
 }
 
 function triggerEmote() {
-  if (!state.gameStarted || state.gameOver) return;
+  if ((!state.gameStarted && !state.trainingMode) || state.gameOver) return;
   if (state.gameTime < emoteCooldownUntil) return;
   const player = getPlayer();
   if (!player) return;
