@@ -5110,10 +5110,10 @@ function triggerEmote() {
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   const sprite = new THREE.Sprite(mat);
   sprite.renderOrder = 999;
-  sprite.scale.set(1.4, 1.4, 1);
+  sprite.scale.set(3.0, 3.0, 1);
   sprite.position.set(
     player.mesh.position.x,
-    player.mesh.position.y + 3.0,
+    player.mesh.position.y + 4.5,
     player.mesh.position.z,
   );
   scene.add(sprite);
@@ -5144,7 +5144,7 @@ function updateEffects(dt) {
       if (player) {
         effect.mesh.position.set(
           player.mesh.position.x,
-          player.mesh.position.y + 3.0,
+          player.mesh.position.y + 4.5,
           player.mesh.position.z,
         );
       }
