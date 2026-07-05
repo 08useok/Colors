@@ -4187,6 +4187,17 @@ function spawnBombSplash(x, z, ownerId) {
   const charDef = CHARACTERS.orange;
   const owner = state.players.find((p) => p.id === ownerId);
   const blastMult = owner?.hasOrangeBlastAbility ? 1.2 : 1;
+  const blastR2 = 3 * 3;
+  for (const target of state.players) {
+    if (target.dead || target.id === ownerId) continue;
+    if (state.chopWoodMode && owner && target.team === owner.team) continue;
+    const dx = target.mesh.position.x - x;
+    const dz = target.mesh.position.z - z;
+    if (dx * dx + dz * dz <= blastR2) {
+      applyDamage(target, charDef.bombDamage, owner ?? null);
+      if (owner?.isPlayer) { flashHitMarker(); audio.play("hit"); }
+    }
+  }
   for (let i = 0; i < charDef.bombSplashCount; i++) {
     const angle = (i / charDef.bombSplashCount) * Math.PI * 2;
     const splashMesh = new THREE.Mesh(
