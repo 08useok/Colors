@@ -1901,6 +1901,106 @@ body {
   padding: 40px 0;
 }
 
+/* ── 꾸미기 상점 ── */
+.cosmetics-subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.cosmetics-subtab {
+  flex: 1;
+  padding: 6px 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.cosmetics-subtab.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.cosmetics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.cosmetics-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+.cosmetics-card .cosmetics-preview {
+  font-size: 32px;
+  line-height: 1;
+}
+.cosmetics-card .cosmetics-bg-preview {
+  width: 56px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.cosmetics-card .cosmetics-name {
+  font-size: 12px;
+  color: var(--fg);
+}
+.cosmetics-card .cosmetics-price {
+  font-size: 11px;
+  color: var(--muted);
+}
+.cosmetics-card .cosmetics-btn {
+  margin-top: 2px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  transition: background 0.15s;
+}
+.cosmetics-card .cosmetics-btn:hover:not(:disabled) { background: var(--accent); color: #fff; }
+.cosmetics-card .cosmetics-btn.equipped { background: var(--accent); color: #fff; cursor: default; }
+.cosmetics-card .cosmetics-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--muted); color: var(--muted); }
+
+/* ── 이모트 HUD 버튼 ── */
+.emote-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  border: 2px solid rgba(255,255,255,0.25);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: opacity 0.2s;
+}
+.emote-btn.cooldown { opacity: 0.4; cursor: not-allowed; }
+.emote-btn .emote-cd-label {
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #fff;
+  white-space: nowrap;
+}
+
 /* ── Rotation 버튼 ── */
 .lobby-rotation-btn {
   background: linear-gradient(135deg, #6a3de8, #9b6dff) !important;

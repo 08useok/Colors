@@ -56,6 +56,8 @@
         </div>
       </div>
 
+      <button id="emote-btn" class="emote-btn hidden" type="button"></button>
+
       <div id="crosshair">
         <div class="crosshair-line horizontal"></div>
         <div class="crosshair-line vertical"></div>
@@ -649,13 +651,20 @@
       <div class="shop-category-tabs">
         <button class="shop-tab active" data-tab="levelup" type="button">캐릭터 레벨업</button>
         <button class="shop-tab" data-tab="skins" type="button">스킨</button>
-        <button class="shop-tab" data-tab="coming" type="button">준비 중</button>
+        <button class="shop-tab" data-tab="cosmetics" type="button" data-i18n="shopTabCosmetics">꾸미기</button>
       </div>
       <div id="shop-content" class="shop-content">
         <div id="shop-levelup" class="shop-tab-content"></div>
         <div id="shop-skins" class="shop-tab-content hidden"></div>
-        <div id="shop-coming" class="shop-tab-content hidden">
-          <p class="shop-coming-msg">이모트, 프로필 꾸미기 — 준비 중입니다!</p>
+        <div id="shop-cosmetics" class="shop-tab-content hidden">
+          <div class="cosmetics-subtabs">
+            <button class="cosmetics-subtab active" data-subtab="emote" data-i18n="shopSubEmote">이모트</button>
+            <button class="cosmetics-subtab" data-subtab="bg" data-i18n="shopSubBg">배경</button>
+            <button class="cosmetics-subtab" data-subtab="badge" data-i18n="shopSubBadge">뱃지</button>
+          </div>
+          <div id="cosmetics-emote-grid" class="cosmetics-grid"></div>
+          <div id="cosmetics-bg-grid" class="cosmetics-grid hidden"></div>
+          <div id="cosmetics-badge-grid" class="cosmetics-grid hidden"></div>
         </div>
       </div>
     </div>

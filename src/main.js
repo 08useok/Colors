@@ -253,6 +253,34 @@ function applySkin(group, skinId) {
   }
 }
 
+const EMOTES = {
+  emote_thumbs: { emoji: "👍", name: "엄지척", price: 300 },
+  emote_laugh:  { emoji: "😂", name: "웃음",   price: 300 },
+  emote_cool:   { emoji: "😎", name: "선글라스", price: 300 },
+  emote_fire:   { emoji: "🔥", name: "불꽃",   price: 300 },
+  emote_skull:  { emoji: "💀", name: "해골",   price: 300 },
+};
+
+const PROFILE_BGS = {
+  bg_default: { name: "기본",   css: "#2a2a2a",                                          price: 0 },
+  bg_flame:   { name: "불꽃",   css: "linear-gradient(135deg,#ff6b00,#cc0000)",          price: 200 },
+  bg_ocean:   { name: "바다",   css: "linear-gradient(135deg,#0066ff,#00ccbb)",          price: 200 },
+  bg_night:   { name: "밤하늘", css: "linear-gradient(135deg,#1a0066,#6600cc)",          price: 200 },
+  bg_forest:  { name: "숲",     css: "linear-gradient(135deg,#1a5c00,#5c6600)",          price: 200 },
+  bg_gold:    { name: "황금",   css: "linear-gradient(135deg,#cc8800,#ffee00)",          price: 400 },
+};
+
+const BADGES = {
+  badge_none:  { emoji: "",   name: "없음",  price: 0 },
+  badge_star:  { emoji: "⭐", name: "스타",  price: 150 },
+  badge_crown: { emoji: "👑", name: "왕관",  price: 150 },
+  badge_sword: { emoji: "⚔️", name: "검",    price: 150 },
+  badge_skull: { emoji: "💀", name: "해골",  price: 150 },
+  badge_fire:  { emoji: "🔥", name: "불꽃",  price: 150 },
+  badge_bolt:  { emoji: "⚡", name: "번개",  price: 150 },
+  badge_gem:   { emoji: "💎", name: "보석",  price: 300 },
+};
+
 const COIN_REWARDS = {
   win: 50,
   lose: 20,
@@ -562,6 +590,14 @@ function loadAccount() {
     if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
     if (!account.ownedSkins) { account.ownedSkins = []; migrated = true; }
     if (!account.selectedSkins) { account.selectedSkins = {}; migrated = true; }
+    if (!account.cosmetics) {
+      account.cosmetics = {
+        ownedEmotes: [], equippedEmote: null,
+        ownedBgs: ["bg_default"], equippedBg: "bg_default",
+        ownedBadges: ["badge_none"], equippedBadge: "badge_none",
+      };
+      migrated = true;
+    }
     if (initRotationState(account)) migrated = true;
     if (account.rotation) {
       const beforeRound = account.rotation.lastRoundProcessedAt;
@@ -647,6 +683,16 @@ function calcLevel(trophies) {
   return Math.floor(trophies / 300) + 1;
 }
 
+function applyProfileCosmetics(account) {
+  const c = account.cosmetics;
+  if (!c) return;
+  const header = document.querySelector(".lobby-header");
+  if (header) header.style.background = PROFILE_BGS[c.equippedBg]?.css ?? "#2a2a2a";
+  const badge = BADGES[c.equippedBadge];
+  const badgeEmoji = badge?.emoji ? badge.emoji + " " : "";
+  lobbyNickname.textContent = badgeEmoji + account.nickname;
+}
+
 function updateLobbyUI(account) {
   lobbyNickname.textContent = account.nickname;
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
@@ -699,6 +745,7 @@ function updateLobbyUI(account) {
   updateColorInfo(account.selectedCharacter, account);
   state.selectedCharacter = account.selectedCharacter;
   setPreviewCharacter(account.selectedCharacter);
+  applyProfileCosmetics(account);
 }
 
 const CHAR_STAT_BARS = {
@@ -5026,17 +5073,77 @@ function updateScheduledHits() {
   }
 }
 
+const emoteBtn = document.getElementById("emote-btn");
+let emoteCooldownUntil = 0;
+
+function updateEmoteBtn(account) {
+  if (!emoteBtn) return;
+  const eq = account?.cosmetics?.equippedEmote;
+  if (!eq) { emoteBtn.classList.add("hidden"); return; }
+  emoteBtn.textContent = EMOTES[eq]?.emoji ?? "";
+  emoteBtn.classList.remove("hidden");
+}
+
+function triggerEmote() {
+  if (!state.gameStarted || state.gameOver) return;
+  if (state.gameTime < emoteCooldownUntil) return;
+  const player = getPlayer();
+  if (!player) return;
+  const acc = loadAccount();
+  const eq = acc?.cosmetics?.equippedEmote;
+  if (!eq) return;
+  const emoji = EMOTES[eq]?.emoji ?? "😊";
+  emoteCooldownUntil = state.gameTime + 5;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 128; canvas.height = 128;
+  const ctx = canvas.getContext("2d");
+  ctx.font = "80px serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(emoji, 64, 64);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(1.2, 1.2, 1);
+  sprite.position.set(
+    player.mesh.position.x,
+    player.mesh.position.y + 3.0,
+    player.mesh.position.z,
+  );
+  scene.add(sprite);
+  state.effects.push({ mesh: sprite, life: 2.5, maxLife: 2.5, type: "emote" });
+}
+
+if (emoteBtn) {
+  emoteBtn.addEventListener("click", triggerEmote);
+  const acc = loadAccount();
+  updateEmoteBtn(acc);
+}
+
 function updateEffects(dt) {
   for (let i = state.effects.length - 1; i >= 0; i -= 1) {
     const effect = state.effects[i];
     effect.life -= dt;
     if (effect.life <= 0) {
       scene.remove(effect.mesh);
-      if (effect.type === "damagePopup") {
-        effect.mesh.material.map.dispose();
+      if (effect.type === "damagePopup" || effect.type === "emote") {
+        effect.mesh.material.map?.dispose();
         effect.mesh.material.dispose();
       }
       state.effects.splice(i, 1);
+      continue;
+    }
+    if (effect.type === "emote") {
+      const player = getPlayer();
+      if (player) {
+        effect.mesh.position.set(
+          player.mesh.position.x,
+          player.mesh.position.y + 3.0,
+          player.mesh.position.z,
+        );
+      }
+      effect.mesh.material.opacity = Math.min(1, effect.life / 0.3);
       continue;
     }
     const alpha = effect.life / effect.maxLife;
@@ -5951,6 +6058,19 @@ function updateHud() {
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
 
+  if (emoteBtn && !emoteBtn.classList.contains("hidden")) {
+    const cdLeft = Math.ceil(emoteCooldownUntil - state.gameTime);
+    let cdLabel = emoteBtn.querySelector(".emote-cd-label");
+    if (cdLeft > 0) {
+      emoteBtn.classList.add("cooldown");
+      if (!cdLabel) { cdLabel = document.createElement("span"); cdLabel.className = "emote-cd-label"; emoteBtn.appendChild(cdLabel); }
+      cdLabel.textContent = `${cdLeft}s`;
+    } else {
+      emoteBtn.classList.remove("cooldown");
+      if (cdLabel) cdLabel.remove();
+    }
+  }
+
   if (state.takedownMode) {
     survivorsPanel.style.display = "none";
     zonePanel.classList.add("is-hidden-panel");
@@ -6454,6 +6574,7 @@ function setupInput() {
     if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
+    if (event.code === "KeyQ") triggerEmote();
     state.keyState[event.code] = true;
   });
 
@@ -7087,9 +7208,143 @@ function setupInput() {
       const target = tab.dataset.tab;
       document.getElementById("shop-levelup").classList.toggle("hidden", target !== "levelup");
       document.getElementById("shop-skins").classList.toggle("hidden", target !== "skins");
-      document.getElementById("shop-coming").classList.toggle("hidden", target !== "coming");
+      document.getElementById("shop-cosmetics").classList.toggle("hidden", target !== "cosmetics");
+      if (target === "cosmetics") renderCosmeticsShop();
     });
   });
+
+  // 꾸미기 서브탭
+  document.querySelectorAll(".cosmetics-subtab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".cosmetics-subtab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      const sub = tab.dataset.subtab;
+      document.getElementById("cosmetics-emote-grid").classList.toggle("hidden", sub !== "emote");
+      document.getElementById("cosmetics-bg-grid").classList.toggle("hidden", sub !== "bg");
+      document.getElementById("cosmetics-badge-grid").classList.toggle("hidden", sub !== "badge");
+    });
+  });
+
+  function renderCosmeticsShop() {
+    const acc = loadAccount();
+    if (!acc) return;
+    const c = acc.cosmetics;
+
+    function makeCard(preview, name, price, owned, equipped, onBuy, onEquip) {
+      const card = document.createElement("div");
+      card.className = "cosmetics-card";
+      card.innerHTML = `<div class="cosmetics-preview">${preview}</div>
+        <div class="cosmetics-name">${name}</div>
+        <div class="cosmetics-price">${price === 0 ? "무료" : `🪙 ${price}`}</div>`;
+      const btn = document.createElement("button");
+      btn.className = "cosmetics-btn";
+      if (equipped) {
+        btn.textContent = "장착됨";
+        btn.classList.add("equipped");
+        btn.disabled = true;
+      } else if (owned) {
+        btn.textContent = "장착";
+        btn.addEventListener("click", () => { onEquip(); renderCosmeticsShop(); });
+      } else {
+        btn.textContent = `구매 🪙${price}`;
+        if ((acc.coins ?? 0) < price) btn.disabled = true;
+        btn.addEventListener("click", () => { onBuy(); renderCosmeticsShop(); });
+      }
+      card.appendChild(btn);
+      return card;
+    }
+
+    function toast(msg) {
+      const el = document.createElement("div");
+      el.textContent = msg;
+      el.style.cssText = "position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;z-index:9999;pointer-events:none";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }
+
+    // 이모트
+    const emoteGrid = document.getElementById("cosmetics-emote-grid");
+    emoteGrid.innerHTML = "";
+    for (const [id, em] of Object.entries(EMOTES)) {
+      const owned = c.ownedEmotes.includes(id);
+      const equipped = c.equippedEmote === id;
+      emoteGrid.appendChild(makeCard(em.emoji, em.name, em.price, owned, equipped,
+        () => {
+          const a = loadAccount();
+          if ((a.coins ?? 0) < em.price) return toast("코인이 부족합니다");
+          a.coins -= em.price;
+          a.cosmetics.ownedEmotes.push(id);
+          a.cosmetics.equippedEmote = id;
+          saveAccount(a);
+          updateEmoteBtn(a);
+          if (document.getElementById("shop-coins")) document.getElementById("shop-coins").textContent = a.coins;
+          if (typeof lobbyCoins !== "undefined" && lobbyCoins) lobbyCoins.textContent = a.coins;
+        },
+        () => {
+          const a = loadAccount();
+          a.cosmetics.equippedEmote = id;
+          saveAccount(a);
+          updateEmoteBtn(a);
+        }
+      ));
+    }
+
+    // 배경
+    const bgGrid = document.getElementById("cosmetics-bg-grid");
+    bgGrid.innerHTML = "";
+    for (const [id, bg] of Object.entries(PROFILE_BGS)) {
+      const owned = c.ownedBgs.includes(id);
+      const equipped = c.equippedBg === id;
+      const preview = `<div class="cosmetics-bg-preview" style="background:${bg.css}"></div>`;
+      bgGrid.appendChild(makeCard(preview, bg.name, bg.price, owned, equipped,
+        () => {
+          const a = loadAccount();
+          if ((a.coins ?? 0) < bg.price) return toast("코인이 부족합니다");
+          a.coins -= bg.price;
+          a.cosmetics.ownedBgs.push(id);
+          a.cosmetics.equippedBg = id;
+          saveAccount(a);
+          applyProfileCosmetics(a);
+          if (document.getElementById("shop-coins")) document.getElementById("shop-coins").textContent = a.coins;
+          if (typeof lobbyCoins !== "undefined" && lobbyCoins) lobbyCoins.textContent = a.coins;
+        },
+        () => {
+          const a = loadAccount();
+          a.cosmetics.equippedBg = id;
+          saveAccount(a);
+          applyProfileCosmetics(a);
+        }
+      ));
+    }
+
+    // 뱃지
+    const badgeGrid = document.getElementById("cosmetics-badge-grid");
+    badgeGrid.innerHTML = "";
+    for (const [id, badge] of Object.entries(BADGES)) {
+      const owned = c.ownedBadges.includes(id);
+      const equipped = c.equippedBadge === id;
+      const preview = badge.emoji || "—";
+      badgeGrid.appendChild(makeCard(preview, badge.name, badge.price, owned, equipped,
+        () => {
+          const a = loadAccount();
+          if ((a.coins ?? 0) < badge.price) return toast("코인이 부족합니다");
+          a.coins -= badge.price;
+          a.cosmetics.ownedBadges.push(id);
+          a.cosmetics.equippedBadge = id;
+          saveAccount(a);
+          applyProfileCosmetics(a);
+          if (document.getElementById("shop-coins")) document.getElementById("shop-coins").textContent = a.coins;
+          if (typeof lobbyCoins !== "undefined" && lobbyCoins) lobbyCoins.textContent = a.coins;
+        },
+        () => {
+          const a = loadAccount();
+          a.cosmetics.equippedBadge = id;
+          saveAccount(a);
+          applyProfileCosmetics(a);
+        }
+      ));
+    }
+  }
 
   // 다시 시작
   playAgainButton.addEventListener("click", () => {
