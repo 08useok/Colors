@@ -1549,6 +1549,7 @@ function makeFighter(options) {
   let hasYellowOverloadAbility = false;
   let hasCyanPrecisionAbility = false;
   let hasPinkAreaHealAbility = false;
+  let hasRedRageAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
@@ -1559,6 +1560,7 @@ function makeFighter(options) {
       hasYellowOverloadAbility = (options.characterType === "yellow") && !!acc.rotation?.newAbilityChars?.includes("yellow");
       hasCyanPrecisionAbility = (options.characterType === "cyan") && !!acc.rotation?.newAbilityChars?.includes("cyan");
       hasPinkAreaHealAbility = (options.characterType === "pink") && !!acc.rotation?.newAbilityChars?.includes("pink");
+      hasRedRageAbility = (options.characterType === "red") && !!acc.rotation?.newAbilityChars?.includes("red");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1573,6 +1575,7 @@ function makeFighter(options) {
     hasYellowOverloadAbility,
     hasCyanPrecisionAbility,
     hasPinkAreaHealAbility,
+    hasRedRageAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -3989,6 +3992,9 @@ function getAttackRange(fighter) {
 function getMoveSpeed(fighter) {
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
   let speed = baseMoveSpeed * multiplier;
+  if (fighter.hasRedRageAbility && fighter.health < fighter.maxHealth * 0.3) {
+    speed *= 1.5;
+  }
   if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
     const slowPercent = fighter.shockSlowOverride ?? CHARACTERS.yellow.shockSlowPercent;
     speed *= (1 - slowPercent);
