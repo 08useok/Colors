@@ -686,8 +686,8 @@ function calcLevel(trophies) {
 function applyProfileCosmetics(account) {
   const c = account.cosmetics;
   if (!c) return;
-  const header = document.querySelector("#lobby-main .lobby-header");
-  if (header) header.style.background = PROFILE_BGS[c.equippedBg]?.css ?? "#2a2a2a";
+  const lobbyMain = document.getElementById("lobby-main");
+  if (lobbyMain) lobbyMain.style.background = PROFILE_BGS[c.equippedBg]?.css ?? "#2a2a2a";
   const badge = BADGES[c.equippedBadge];
   const badgeEmoji = badge?.emoji ? badge.emoji + " " : "";
   lobbyNickname.textContent = badgeEmoji + account.nickname;
