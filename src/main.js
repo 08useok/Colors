@@ -1407,7 +1407,7 @@ function createStickman(color, skinId) {
     const knot = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), pinCenterMat);
     pinGroup.add(knot);
     pinGroup.position.set(-0.35, 2.32, 0.1);
-    pinGroup.rotation.z = -0.3;
+    pinGroup.rotation.z = -Math.PI / 4;
     group.add(pinGroup);
     group.userData.hairPin = pinGroup;
   }
@@ -1428,7 +1428,7 @@ function createStickman(color, skinId) {
     const pKnot = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), purplePinCenterMat);
     purplePinGroup.add(pKnot);
     purplePinGroup.position.set(-0.35, 2.32, 0.1);
-    purplePinGroup.rotation.z = -0.3;
+    purplePinGroup.rotation.z = -Math.PI / 4;
     group.add(purplePinGroup);
     group.userData.hairPin = purplePinGroup;
   }
