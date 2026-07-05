@@ -262,7 +262,7 @@ const EMOTES = {
 };
 
 const PROFILE_BGS = {
-  bg_default: { name: "기본",   css: "#2a2a2a",                                          price: 0 },
+  bg_default: { name: "기본",   css: "linear-gradient(160deg,#1a1a2e,#16213e,#0f3460)",   price: 0 },
   bg_flame:   { name: "불꽃",   css: "linear-gradient(135deg,#ff6b00,#cc0000)",          price: 200 },
   bg_ocean:   { name: "바다",   css: "linear-gradient(135deg,#0066ff,#00ccbb)",          price: 200 },
   bg_night:   { name: "밤하늘", css: "linear-gradient(135deg,#1a0066,#6600cc)",          price: 200 },
@@ -5098,14 +5098,19 @@ function triggerEmote() {
   const canvas = document.createElement("canvas");
   canvas.width = 128; canvas.height = 128;
   const ctx = canvas.getContext("2d");
-  ctx.font = "80px serif";
+  ctx.fillStyle = "rgba(0,0,0,0.45)";
+  ctx.beginPath();
+  ctx.arc(64, 64, 58, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.font = "72px serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(emoji, 64, 64);
+  ctx.fillText(emoji, 64, 66);
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(1.2, 1.2, 1);
+  sprite.renderOrder = 999;
+  sprite.scale.set(1.4, 1.4, 1);
   sprite.position.set(
     player.mesh.position.x,
     player.mesh.position.y + 3.0,
