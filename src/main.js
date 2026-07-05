@@ -1394,21 +1394,20 @@ function createStickman(color, skinId) {
 
     // 머리핀 (나비 리본)
     const pinGroup = new THREE.Group();
-    const pinMat = new THREE.MeshStandardMaterial({ color: 0xff1493, roughness: 0.4, metalness: 0.1 });
-    const pinCenterMat = new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.3, metalness: 0.6 });
+    const pinMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.4, metalness: 0.3 });
+    const pinCenterMat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.3, metalness: 0.2 });
     const leftWing = new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 6), pinMat);
-    leftWing.scale.set(1.0, 0.6, 0.4);
+    leftWing.scale.set(1.2, 1.2, 0.4);
     leftWing.position.set(-0.33, 0, 0);
-    leftWing.rotation.z = 0.3;
     pinGroup.add(leftWing);
     const rightWing = new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 6), pinMat);
-    rightWing.scale.set(1.0, 0.6, 0.4);
+    rightWing.scale.set(1.2, 1.2, 0.4);
     rightWing.position.set(0.33, 0, 0);
-    rightWing.rotation.z = -0.3;
     pinGroup.add(rightWing);
     const knot = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), pinCenterMat);
     pinGroup.add(knot);
     pinGroup.position.set(-0.35, 2.32, 0.1);
+    pinGroup.rotation.z = -0.3;
     group.add(pinGroup);
     group.userData.hairPin = pinGroup;
   }
@@ -1416,21 +1415,20 @@ function createStickman(color, skinId) {
   if (color === 0x800080) {
     // 퍼플 머리핀 (나비 리본)
     const purplePinGroup = new THREE.Group();
-    const purplePinMat = new THREE.MeshStandardMaterial({ color: 0x6a0dad, roughness: 0.4, metalness: 0.15 });
-    const purplePinCenterMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, roughness: 0.3, metalness: 0.7 });
+    const purplePinMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.4, metalness: 0.3 });
+    const purplePinCenterMat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.3, metalness: 0.2 });
     const pLeftWing = new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 6), purplePinMat);
-    pLeftWing.scale.set(1.0, 0.6, 0.4);
+    pLeftWing.scale.set(1.2, 1.2, 0.4);
     pLeftWing.position.set(-0.33, 0, 0);
-    pLeftWing.rotation.z = 0.3;
     purplePinGroup.add(pLeftWing);
     const pRightWing = new THREE.Mesh(new THREE.SphereGeometry(0.27, 8, 6), purplePinMat);
-    pRightWing.scale.set(1.0, 0.6, 0.4);
+    pRightWing.scale.set(1.2, 1.2, 0.4);
     pRightWing.position.set(0.33, 0, 0);
-    pRightWing.rotation.z = -0.3;
     purplePinGroup.add(pRightWing);
     const pKnot = new THREE.Mesh(new THREE.SphereGeometry(0.13, 8, 8), purplePinCenterMat);
     purplePinGroup.add(pKnot);
     purplePinGroup.position.set(-0.35, 2.32, 0.1);
+    purplePinGroup.rotation.z = -0.3;
     group.add(purplePinGroup);
     group.userData.hairPin = purplePinGroup;
   }
