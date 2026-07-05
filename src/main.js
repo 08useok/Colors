@@ -1550,6 +1550,7 @@ function makeFighter(options) {
   let hasCyanPrecisionAbility = false;
   let hasPinkAreaHealAbility = false;
   let hasRedRageAbility = false;
+  let hasGreenBounceAbility = false;
   if (options.isPlayer) {
     const acc = loadAccount();
     if (acc) {
@@ -1561,6 +1562,7 @@ function makeFighter(options) {
       hasCyanPrecisionAbility = (options.characterType === "cyan") && !!acc.rotation?.newAbilityChars?.includes("cyan");
       hasPinkAreaHealAbility = (options.characterType === "pink") && !!acc.rotation?.newAbilityChars?.includes("pink");
       hasRedRageAbility = (options.characterType === "red") && !!acc.rotation?.newAbilityChars?.includes("red");
+      hasGreenBounceAbility = (options.characterType === "green") && !!acc.rotation?.newAbilityChars?.includes("green");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -1576,6 +1578,7 @@ function makeFighter(options) {
     hasCyanPrecisionAbility,
     hasPinkAreaHealAbility,
     hasRedRageAbility,
+    hasGreenBounceAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -4101,6 +4104,7 @@ function beginBoomerangAttack(fighter) {
       mesh,
       projRadius: 0.34,
       isBoomerang: true,
+      bounceCount: 0,
     });
   });
 
@@ -4631,7 +4635,41 @@ function updateProjectiles(dt) {
           createElectricHitEffect(proj.x, proj.z);
         }
         if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
-        if (proj.isBoomerang) createBoomerangHitEffect(proj.x, proj.z);
+        if (proj.isBoomerang) {
+          createBoomerangHitEffect(proj.x, proj.z);
+          if (attacker?.hasGreenBounceAbility && proj.bounceCount < 1) {
+            const nextTarget = state.players
+              .filter((p) => !p.dead && p.id !== proj.ownerId && p.id !== target.id)
+              .sort((a, b) => {
+                const da = (a.mesh.position.x - proj.x) ** 2 + (a.mesh.position.z - proj.z) ** 2;
+                const db = (b.mesh.position.x - proj.x) ** 2 + (b.mesh.position.z - proj.z) ** 2;
+                return da - db;
+              })[0];
+            if (nextTarget) {
+              const bx = nextTarget.mesh.position.x - proj.x;
+              const bz = nextTarget.mesh.position.z - proj.z;
+              const bLen = Math.sqrt(bx * bx + bz * bz) || 1;
+              const charDef = CHARACTERS.green;
+              const bounceMesh = createBoomerangMesh({ x: proj.x, y: 1.3, z: proj.z }, Math.atan2(bx, bz));
+              state.projectiles.push({
+                ownerId: proj.ownerId,
+                x: proj.x, z: proj.z,
+                vx: (bx / bLen) * charDef.boomerangSpeed,
+                vz: (bz / bLen) * charDef.boomerangSpeed,
+                damage: proj.damage,
+                range: charDef.boomerangRange,
+                farThreshold: Infinity,
+                farMultiplier: 1,
+                distTraveled: 0,
+                launchAt: state.gameTime,
+                mesh: bounceMesh,
+                projRadius: 0.34,
+                isBoomerang: true,
+                bounceCount: 1,
+              });
+            }
+          }
+        }
         if (proj.isSpreadLine) createSpreadLineHitEffect(proj.x, proj.z);
         if (proj.isNeedle) {
           createNeedleHitEffect(proj.x, proj.z);
