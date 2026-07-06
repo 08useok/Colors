@@ -583,11 +583,13 @@ function loadAccount() {
     let migrated = false;
     if (account.coins === undefined) { account.coins = 0; migrated = true; }
     if (!account.charLevels) {
-      account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1 };
+      account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1 };
       migrated = true;
     }
     if (!account.charLevels.yellow) { account.charLevels.yellow = 1; migrated = true; }
     if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
+    if (!account.charLevels.purple) { account.charLevels.purple = 1; migrated = true; }
+    if (!account.charLevels.pink) { account.charLevels.pink = 1; migrated = true; }
     if (!account.ownedSkins) { account.ownedSkins = []; migrated = true; }
     if (!account.selectedSkins) { account.selectedSkins = {}; migrated = true; }
     if (!account.cosmetics) {
@@ -664,10 +666,15 @@ function createAccount(id, nickname) {
       pink:   { wins: 0, games: 0 },
     },
     charLevels: {
-      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1,
+      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1,
     },
     ownedSkins: [],
     selectedSkins: {},
+    cosmetics: {
+      ownedEmotes: [], equippedEmotes: [null, null, null],
+      ownedBgs: ["bg_default"], equippedBg: "bg_default",
+      ownedBadges: ["badge_none"], equippedBadge: "badge_none",
+    },
     winStreak: 0,
     bestStreak: 0,
     lang: currentLang,
@@ -761,6 +768,8 @@ const CHAR_STAT_BARS = {
   orange: { hp: 5,  atk: 6, range: 5, speed: 6 },
   yellow: { hp: 5,  atk: 7, range: 5, speed: 6 },
   cyan:   { hp: 6,  atk: 6, range: 5, speed: 6 },
+  purple: { hp: 6,  atk: 8, range: 5, speed: 6 },
+  pink:   { hp: 10, atk: 7, range: 3, speed: 10 },
 };
 
 function statBar(label, value) {
@@ -5073,6 +5082,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     if (!attacker || target.id !== attacker.id) {
       tempVec3.copy(target.mesh.position);
       createDamagePopup(tempVec3, dealt, "#ff5c5c");
+      showDamageTakenIndicator(dealt);
     }
   }
 
