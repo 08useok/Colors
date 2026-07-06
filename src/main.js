@@ -1220,9 +1220,14 @@ function createStickman(color, skinId) {
   faceCanvas.width = 512; faceCanvas.height = 512;
   const fctx = faceCanvas.getContext('2d');
   if (isFemale) {
+    const isPurple = (color === 0x800080);
+    const browCol  = isPurple ? '#5a0878' : '#c0184a';
+    const blushCol = isPurple ? 'rgba(130, 40, 175, 0.38)' : 'rgba(215, 60, 100, 0.38)';
+    const mouthOut = isPurple ? '#3a0050' : '#7a1040';
+    const mouthIn  = isPurple ? '#a030d0' : '#ff4480';
     const eyes = [[155, 195], [357, 195]];
     // 눈썹
-    fctx.strokeStyle = '#c0184a'; fctx.lineWidth = 13; fctx.lineCap = 'round';
+    fctx.strokeStyle = browCol; fctx.lineWidth = 13; fctx.lineCap = 'round';
     fctx.beginPath(); fctx.moveTo(112, 138); fctx.quadraticCurveTo(155, 116, 198, 136); fctx.stroke();
     fctx.beginPath(); fctx.moveTo(314, 136); fctx.quadraticCurveTo(357, 116, 400, 138); fctx.stroke();
     // 흰 공막
@@ -1246,13 +1251,13 @@ function createStickman(color, skinId) {
       }
     }
     // 볼터치
-    fctx.fillStyle = 'rgba(215, 60, 100, 0.38)';
+    fctx.fillStyle = blushCol;
     fctx.beginPath(); fctx.ellipse(100, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
     fctx.beginPath(); fctx.ellipse(412, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
     // 입
-    fctx.fillStyle = '#7a1040';
+    fctx.fillStyle = mouthOut;
     fctx.beginPath(); fctx.arc(256, 378, 58, 0, Math.PI); fctx.closePath(); fctx.fill();
-    fctx.fillStyle = '#ff4480';
+    fctx.fillStyle = mouthIn;
     fctx.beginPath(); fctx.arc(256, 374, 48, 0, Math.PI); fctx.closePath(); fctx.fill();
   } else {
     for (const cx of [155, 357]) {
