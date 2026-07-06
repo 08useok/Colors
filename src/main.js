@@ -1266,7 +1266,6 @@ function createStickman(color, skinId) {
     }
   }
   const faceTex = new THREE.CanvasTexture(faceCanvas);
-  faceTex.flipY = false;
   const faceMat = new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthWrite: false });
   // 머리 곡면에 밀착되는 구형 캡 (phiStart=0.698, phiLen=1.745, thetaStart=0.524, thetaLen=2.094)
   const faceCapGeo = new THREE.SphereGeometry(0.69, 20, 16, 0.698, 1.745, 0.524, 2.094);
