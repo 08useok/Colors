@@ -1381,6 +1381,20 @@ body {
   padding-left: 8px;
 }
 
+.stats-panel .season-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.stats-panel .season-toggle:hover {
+  color: var(--accent);
+}
+
+.stats-panel .season-arrow {
+  display: inline-block;
+  width: 12px;
+}
+
 .matchup-table {
   margin: 0;
   max-width: 340px;

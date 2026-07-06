@@ -6597,7 +6597,11 @@ function setupInput() {
           const sg = ss.wins + ss.losses;
           const sr = sg === 0 ? 0 : Math.round((ss.wins / sg) * 100);
           const current = key === CURRENT_SEASON ? " ⬅" : "";
-          html += `<div class="stats-char" style="font-weight:600">${label}: ${sr}% (${ss.wins}W/${sg}G)${current}</div>`;
+          const expanded = key === CURRENT_SEASON;
+          html += `<div class="stats-char season-toggle" data-season="${key}" style="font-weight:600">`;
+          html += `<span class="season-arrow">${expanded ? "▼" : "▶"}</span> ${label}: ${sr}% (${ss.wins}W/${sg}G)${current}`;
+          html += `</div>`;
+          html += `<div class="season-detail${expanded ? "" : " hidden"}" data-season-detail="${key}">`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
             for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
@@ -6610,8 +6614,19 @@ function setupInput() {
               }
             }
           }
+          html += `</div>`;
         }
         panel.innerHTML = html;
+        panel.querySelectorAll(".season-toggle").forEach((row) => {
+          row.addEventListener("click", () => {
+            const detail = panel.querySelector(`.season-detail[data-season-detail="${row.dataset.season}"]`);
+            const arrow = row.querySelector(".season-arrow");
+            if (!detail) return;
+            const willShow = detail.classList.contains("hidden");
+            detail.classList.toggle("hidden");
+            if (arrow) arrow.textContent = willShow ? "▼" : "▶";
+          });
+        });
       }
     }
   });
