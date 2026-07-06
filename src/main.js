@@ -1220,27 +1220,27 @@ function createStickman(color, skinId) {
   faceCanvas.width = 256; faceCanvas.height = 256;
   const fctx = faceCanvas.getContext('2d');
   if (isFemale) {
-    for (const cx of [78, 178]) {
+    for (const cx of [58, 198]) {
       fctx.fillStyle = '#ffffff';
       fctx.beginPath();
-      fctx.ellipse(cx, 96, 38, 27, 0, 0, Math.PI * 2);
+      fctx.ellipse(cx, 128, 55, 40, 0, 0, Math.PI * 2);
       fctx.fill();
       fctx.fillStyle = '#111111';
       fctx.beginPath();
-      fctx.ellipse(cx, 100, 23, 25, 0, 0, Math.PI * 2);
+      fctx.ellipse(cx, 133, 34, 37, 0, 0, Math.PI * 2);
       fctx.fill();
     }
   } else {
-    for (const cx of [82, 174]) {
+    for (const cx of [62, 194]) {
       fctx.fillStyle = '#111111';
       fctx.beginPath();
-      fctx.arc(cx, 96, 14, 0, Math.PI * 2);
+      fctx.arc(cx, 128, 20, 0, Math.PI * 2);
       fctx.fill();
     }
   }
   const faceTex = new THREE.CanvasTexture(faceCanvas);
   const facePlaneMat = new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthTest: false, depthWrite: false });
-  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.46), facePlaneMat);
+  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.80, 0.60), facePlaneMat);
   facePlane.position.set(0, 0.22, 0.60);
   facePlane.renderOrder = 2;
   head.add(facePlane);
