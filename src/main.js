@@ -1214,34 +1214,56 @@ function createStickman(color, skinId) {
   head.castShadow = true;
   group.add(head);
 
-  // 눈 (캔버스 텍스처 → 얼굴 평면)
+  // 얼굴 (캔버스 텍스처)
   const isFemale = (color === 0xFF69B4 || color === 0x800080);
   const faceCanvas = document.createElement('canvas');
-  faceCanvas.width = 256; faceCanvas.height = 256;
+  faceCanvas.width = 512; faceCanvas.height = 512;
   const fctx = faceCanvas.getContext('2d');
   if (isFemale) {
-    for (const cx of [58, 198]) {
-      fctx.fillStyle = '#ffffff';
-      fctx.beginPath();
-      fctx.ellipse(cx, 128, 55, 40, 0, 0, Math.PI * 2);
-      fctx.fill();
-      fctx.fillStyle = '#111111';
-      fctx.beginPath();
-      fctx.ellipse(cx, 133, 34, 37, 0, 0, Math.PI * 2);
-      fctx.fill();
+    const eyes = [[155, 195], [357, 195]];
+    // 눈썹
+    fctx.strokeStyle = '#c0184a'; fctx.lineWidth = 13; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(112, 138); fctx.quadraticCurveTo(155, 116, 198, 136); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(314, 136); fctx.quadraticCurveTo(357, 116, 400, 138); fctx.stroke();
+    // 흰 공막
+    fctx.fillStyle = '#ffffff';
+    for (const [ex, ey] of eyes) { fctx.beginPath(); fctx.ellipse(ex, ey, 75, 70, 0, 0, Math.PI * 2); fctx.fill(); }
+    // 검정 동공
+    fctx.fillStyle = '#111111';
+    for (const [ex, ey] of eyes) { fctx.beginPath(); fctx.ellipse(ex, ey + 4, 54, 58, 0, 0, Math.PI * 2); fctx.fill(); }
+    // 흰 하이라이트
+    fctx.fillStyle = '#ffffff';
+    for (const [ex, ey] of eyes) { fctx.beginPath(); fctx.arc(ex - 22, ey - 16, 18, 0, Math.PI * 2); fctx.fill(); }
+    // 속눈썹
+    fctx.strokeStyle = '#111111'; fctx.lineWidth = 7; fctx.lineCap = 'round';
+    for (const [[ex, ey], side] of [[[155, 195], -1], [[357, 195], 1]]) {
+      for (let i = 0; i < 3; i++) {
+        const a = (side < 0 ? -Math.PI * 0.82 : -Math.PI * 0.18) + side * i * 0.18;
+        const sx = ex + Math.cos(a) * 73, sy = ey + Math.sin(a) * 68;
+        fctx.beginPath(); fctx.moveTo(sx, sy);
+        fctx.lineTo(sx + Math.cos(a - side * 0.35) * 22, sy + Math.sin(a - side * 0.35) * 22);
+        fctx.stroke();
+      }
     }
+    // 볼터치
+    fctx.fillStyle = 'rgba(215, 60, 100, 0.38)';
+    fctx.beginPath(); fctx.ellipse(100, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
+    fctx.beginPath(); fctx.ellipse(412, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
+    // 입
+    fctx.fillStyle = '#7a1040';
+    fctx.beginPath(); fctx.arc(256, 378, 58, 0, Math.PI); fctx.closePath(); fctx.fill();
+    fctx.fillStyle = '#ff4480';
+    fctx.beginPath(); fctx.arc(256, 374, 48, 0, Math.PI); fctx.closePath(); fctx.fill();
   } else {
-    for (const cx of [62, 194]) {
+    for (const cx of [155, 357]) {
       fctx.fillStyle = '#111111';
-      fctx.beginPath();
-      fctx.arc(cx, 128, 20, 0, Math.PI * 2);
-      fctx.fill();
+      fctx.beginPath(); fctx.arc(cx, 200, 22, 0, Math.PI * 2); fctx.fill();
     }
   }
   const faceTex = new THREE.CanvasTexture(faceCanvas);
   const facePlaneMat = new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthTest: false, depthWrite: false });
-  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.80, 0.60), facePlaneMat);
-  facePlane.position.set(0, 0.22, 0.60);
+  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(1.10, 1.10), facePlaneMat);
+  facePlane.position.set(0, 0.05, 0.68);
   facePlane.renderOrder = 2;
   head.add(facePlane);
 
