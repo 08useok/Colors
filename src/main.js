@@ -1239,10 +1239,10 @@ function createStickman(color, skinId) {
     }
   }
   const faceTex = new THREE.CanvasTexture(faceCanvas);
-  const facePlaneMat = new THREE.MeshStandardMaterial({ map: faceTex, transparent: true, depthWrite: false, roughness: 0.8 });
-  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.90, 0.90), facePlaneMat);
-  facePlane.position.set(0, 0.22, 0.685);
-  facePlane.renderOrder = 1;
+  const facePlaneMat = new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthTest: false, depthWrite: false });
+  const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.46), facePlaneMat);
+  facePlane.position.set(0, 0.22, 0.60);
+  facePlane.renderOrder = 2;
   head.add(facePlane);
 
   const upperArmGeo = new THREE.CapsuleGeometry(0.16, 0.40, 6, 10);
