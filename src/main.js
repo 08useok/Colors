@@ -592,10 +592,16 @@ function loadAccount() {
     if (!account.selectedSkins) { account.selectedSkins = {}; migrated = true; }
     if (!account.cosmetics) {
       account.cosmetics = {
-        ownedEmotes: [], equippedEmote: null,
+        ownedEmotes: [], equippedEmotes: [null, null, null],
         ownedBgs: ["bg_default"], equippedBg: "bg_default",
         ownedBadges: ["badge_none"], equippedBadge: "badge_none",
       };
+      migrated = true;
+    }
+    if (!account.cosmetics.equippedEmotes) {
+      const old = account.cosmetics.equippedEmote ?? null;
+      account.cosmetics.equippedEmotes = [old, null, null];
+      delete account.cosmetics.equippedEmote;
       migrated = true;
     }
     if (initRotationState(account)) migrated = true;
@@ -1215,29 +1221,27 @@ function createStickman(color, skinId) {
   const fctx = faceCanvas.getContext('2d');
   if (isFemale) {
     for (const cx of [78, 178]) {
-      // 흰 공막 (아몬드형)
       fctx.fillStyle = '#ffffff';
       fctx.beginPath();
-      fctx.ellipse(cx, 122, 38, 27, 0, 0, Math.PI * 2);
+      fctx.ellipse(cx, 96, 38, 27, 0, 0, Math.PI * 2);
       fctx.fill();
-      // 검정 동공
       fctx.fillStyle = '#111111';
       fctx.beginPath();
-      fctx.ellipse(cx, 126, 23, 25, 0, 0, Math.PI * 2);
+      fctx.ellipse(cx, 100, 23, 25, 0, 0, Math.PI * 2);
       fctx.fill();
     }
   } else {
     for (const cx of [82, 174]) {
       fctx.fillStyle = '#111111';
       fctx.beginPath();
-      fctx.arc(cx, 122, 14, 0, Math.PI * 2);
+      fctx.arc(cx, 96, 14, 0, Math.PI * 2);
       fctx.fill();
     }
   }
   const faceTex = new THREE.CanvasTexture(faceCanvas);
   const facePlaneMat = new THREE.MeshStandardMaterial({ map: faceTex, transparent: true, depthWrite: false, roughness: 0.8 });
   const facePlane = new THREE.Mesh(new THREE.PlaneGeometry(0.90, 0.90), facePlaneMat);
-  facePlane.position.set(0, 0.08, 0.685);
+  facePlane.position.set(0, 0.22, 0.685);
   facePlane.renderOrder = 1;
   head.add(facePlane);
 
@@ -5106,27 +5110,31 @@ function updateScheduledHits() {
   }
 }
 
-const emoteBtn = document.getElementById("emote-btn");
-let emoteCooldownUntil = 0;
+const EMOTE_KEYS = ["emote-btn-0", "emote-btn-1", "emote-btn-2"];
+const emoteBtns = EMOTE_KEYS.map(id => document.getElementById(id));
+const emoteCooldownUntil = [0, 0, 0];
 
-function updateEmoteBtn(account) {
-  if (!emoteBtn) return;
-  const eq = account?.cosmetics?.equippedEmote;
-  if (!eq) { emoteBtn.classList.add("hidden"); return; }
-  emoteBtn.textContent = EMOTES[eq]?.emoji ?? "";
-  emoteBtn.classList.remove("hidden");
+function updateEmoteBtns(account) {
+  const slots = account?.cosmetics?.equippedEmotes ?? [null, null, null];
+  emoteBtns.forEach((btn, i) => {
+    if (!btn) return;
+    const id = slots[i];
+    if (!id) { btn.classList.add("hidden"); return; }
+    btn.textContent = EMOTES[id]?.emoji ?? "";
+    btn.classList.remove("hidden");
+  });
 }
 
-function triggerEmote() {
+function triggerEmote(slot = 0) {
   if ((!state.gameStarted && !state.trainingMode) || state.gameOver) return;
-  if (state.gameTime < emoteCooldownUntil) return;
+  if (state.gameTime < emoteCooldownUntil[slot]) return;
   const player = getPlayer();
   if (!player) return;
   const acc = loadAccount();
-  const eq = acc?.cosmetics?.equippedEmote;
+  const eq = acc?.cosmetics?.equippedEmotes?.[slot];
   if (!eq) return;
   const emoji = EMOTES[eq]?.emoji ?? "😊";
-  emoteCooldownUntil = state.gameTime + 5;
+  emoteCooldownUntil[slot] = state.gameTime + 5;
 
   const canvas = document.createElement("canvas");
   canvas.width = 128; canvas.height = 128;
@@ -5153,11 +5161,10 @@ function triggerEmote() {
   state.effects.push({ mesh: sprite, life: 2.5, maxLife: 2.5, type: "emote" });
 }
 
-if (emoteBtn) {
-  emoteBtn.addEventListener("click", triggerEmote);
-  const acc = loadAccount();
-  updateEmoteBtn(acc);
-}
+emoteBtns.forEach((btn, i) => {
+  if (btn) btn.addEventListener("click", () => triggerEmote(i));
+});
+updateEmoteBtns(loadAccount());
 
 function updateEffects(dt) {
   for (let i = state.effects.length - 1; i >= 0; i -= 1) {
@@ -6119,18 +6126,19 @@ function updateHud() {
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
 
-  if (emoteBtn && !emoteBtn.classList.contains("hidden")) {
-    const cdLeft = Math.ceil(emoteCooldownUntil - state.gameTime);
-    let cdLabel = emoteBtn.querySelector(".emote-cd-label");
+  emoteBtns.forEach((btn, i) => {
+    if (!btn || btn.classList.contains("hidden")) return;
+    const cdLeft = Math.ceil(emoteCooldownUntil[i] - state.gameTime);
+    let cdLabel = btn.querySelector(".emote-cd-label");
     if (cdLeft > 0) {
-      emoteBtn.classList.add("cooldown");
-      if (!cdLabel) { cdLabel = document.createElement("span"); cdLabel.className = "emote-cd-label"; emoteBtn.appendChild(cdLabel); }
+      btn.classList.add("cooldown");
+      if (!cdLabel) { cdLabel = document.createElement("span"); cdLabel.className = "emote-cd-label"; btn.appendChild(cdLabel); }
       cdLabel.textContent = `${cdLeft}s`;
     } else {
-      emoteBtn.classList.remove("cooldown");
+      btn.classList.remove("cooldown");
       if (cdLabel) cdLabel.remove();
     }
-  }
+  });
 
   if (state.takedownMode) {
     survivorsPanel.style.display = "none";
@@ -6635,7 +6643,9 @@ function setupInput() {
     if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
-    if (event.code === "KeyQ") triggerEmote();
+    if (event.code === "KeyQ") triggerEmote(0);
+    if (event.code === "KeyE") triggerEmote(1);
+    if (event.code === "KeyT") triggerEmote(2);
     state.keyState[event.code] = true;
   });
 
@@ -7328,24 +7338,36 @@ function setupInput() {
     emoteGrid.innerHTML = "";
     for (const [id, em] of Object.entries(EMOTES)) {
       const owned = c.ownedEmotes.includes(id);
-      const equipped = c.equippedEmote === id;
+      const slots = c.equippedEmotes ?? [null, null, null];
+      const equippedSlot = slots.indexOf(id);
+      const equipped = equippedSlot !== -1;
       emoteGrid.appendChild(makeCard(em.emoji, em.name, em.price, owned, equipped,
         () => {
           const a = loadAccount();
           if ((a.coins ?? 0) < em.price) return toast("코인이 부족합니다");
           a.coins -= em.price;
           a.cosmetics.ownedEmotes.push(id);
-          a.cosmetics.equippedEmote = id;
+          const firstEmpty = a.cosmetics.equippedEmotes.indexOf(null);
+          a.cosmetics.equippedEmotes[firstEmpty !== -1 ? firstEmpty : 0] = id;
           saveAccount(a);
-          updateEmoteBtn(a);
+          updateEmoteBtns(a);
           if (document.getElementById("shop-coins")) document.getElementById("shop-coins").textContent = a.coins;
           if (typeof lobbyCoins !== "undefined" && lobbyCoins) lobbyCoins.textContent = a.coins;
+          renderCosmeticsShop();
         },
         () => {
           const a = loadAccount();
-          a.cosmetics.equippedEmote = id;
+          const s = a.cosmetics.equippedEmotes;
+          const idx = s.indexOf(id);
+          if (idx !== -1) {
+            s[idx] = null; // 해제
+          } else {
+            const empty = s.indexOf(null);
+            s[empty !== -1 ? empty : 0] = id; // 빈 슬롯 or 슬롯0 교체
+          }
           saveAccount(a);
-          updateEmoteBtn(a);
+          updateEmoteBtns(a);
+          renderCosmeticsShop();
         }
       ));
     }
