@@ -5199,7 +5199,7 @@ function updateEffects(dt) {
       if (player) {
         effect.mesh.position.set(
           player.mesh.position.x,
-          player.mesh.position.y + 4.5 + floatY,
+          player.mesh.position.y + 6.0 + floatY,
           player.mesh.position.z,
         );
       }
