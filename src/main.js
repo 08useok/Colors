@@ -5162,7 +5162,7 @@ function triggerEmote(slot = 0) {
   const eq = acc?.cosmetics?.equippedEmotes?.[slot];
   if (!eq) return;
   const emoji = EMOTES[eq]?.emoji ?? "😊";
-  emoteCooldownUntil[slot] = state.gameTime + 5;
+  emoteCooldownUntil.fill(state.gameTime + 5);
 
   const canvas = document.createElement("canvas");
   canvas.width = 128; canvas.height = 128;
