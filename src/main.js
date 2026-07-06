@@ -7234,6 +7234,7 @@ function setupInput() {
   document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
     openTdCharSelect(() => {
       rotationOverlay.classList.add("hidden");
+      state.tdSolo = false;
       enterMatchmaking();
     });
   });
@@ -7241,6 +7242,7 @@ function setupInput() {
   document.getElementById("rotation-takedown-solo-btn").addEventListener("click", () => {
     openTdCharSelect(() => {
       rotationOverlay.classList.add("hidden");
+      state.tdSolo = true;
       startTakeDown();
     });
   });
@@ -7433,7 +7435,11 @@ function setupInput() {
   playAgainButton.addEventListener("click", () => {
     if (state.takedownMode) {
       resultOverlay.style.display = "none";
-      openTdCharSelect(() => enterMatchmaking());
+      if (state.tdSolo) {
+        openTdCharSelect(() => startTakeDown());
+      } else {
+        openTdCharSelect(() => enterMatchmaking());
+      }
     } else if (state.chopWoodMode) {
       startChopWood();
     } else if (state.trainingMode) {
