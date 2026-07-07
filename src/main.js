@@ -461,7 +461,7 @@ const CHARACTERS = {
     reloadDuration: 0.5,
     attackCooldown: 0.35,
     bombDamage: 750,
-    bombSplashDamage: 300,
+    bombSplashDamage: 700,
     bombRange: 9,
     bombSpeed: 22,
     bombSplashCount: 5,
