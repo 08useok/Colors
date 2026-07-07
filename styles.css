@@ -410,13 +410,24 @@ body {
 }
 
 .damage-indicator.damage-taken {
+  position: absolute;
+  left: 50%;
   top: 34px;
+  width: auto;
+  height: auto;
+  background: none;
+  opacity: 0;
   color: #ff5c5c;
+  font-size: 20px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
   text-shadow: 0 0 12px rgba(255, 92, 92, 0.95);
+  transform: translateX(-50%);
 }
 
 .damage-indicator.damage-taken.flash {
-  animation: damagePopDown 900ms ease-out;
+  animation: damagePopDown 900ms ease-out forwards;
 }
 
 @keyframes damagePopDown {

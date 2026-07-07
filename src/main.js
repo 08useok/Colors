@@ -84,6 +84,7 @@ const ammoPips = document.getElementById("ammo-fan");
 const killFeed = document.getElementById("kill-feed");
 const hitMarker = document.getElementById("hit-marker");
 const damageTakenIndicator = document.getElementById("damage-taken-indicator");
+const crosshairEl = document.getElementById("crosshair");
 const mobileJoystick = document.getElementById("mobile-joystick");
 const mobileJoystickThumb = document.getElementById("mobile-joystick-thumb");
 const mobileAttackButton = document.getElementById("mobile-attack-button");
@@ -881,6 +882,7 @@ function showDailyLogin(account) {
 }
 
 function showLobby() {
+  crosshairEl.classList.add("hidden");
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   mapNameEl.classList.add("hidden");
@@ -3771,6 +3773,7 @@ function exitTraining() {
 }
 
 function resetGame() {
+  crosshairEl.classList.remove("hidden");
   clock.getDelta();
   battleMapGroup.visible = true;
   trainingMapGroup.visible = false;
