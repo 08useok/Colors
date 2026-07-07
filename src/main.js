@@ -5097,7 +5097,6 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       showDamageTakenIndicator(dealt);
     }
   }
-  return dealt;
 
   if (target.health <= 0) {
     target.dead = true;
@@ -5147,6 +5146,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       }
     }
   }
+  return dealt;
 }
 
 function updateScheduledHits() {
