@@ -1784,6 +1784,7 @@ function makeFighter(options) {
   fighter.mesh = createStickman(charDef.color, skinId);
   fighter.mesh.position.set(options.position.x, 1.85, options.position.z);
   fighter.mesh.rotation.y = fighter.yaw;
+  if (fighter.mesh.userData.guitar) fighter.mesh.userData.guitar.visible = false;
   scene.add(fighter.mesh);
 
   fighter.shadow = new THREE.Mesh(
