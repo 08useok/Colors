@@ -1036,6 +1036,7 @@ const state = {
   safeCenter: new THREE.Vector2(0, 0),
   scheduledHits: [],
   effects: [],
+  splashAccum: {},
   keyState: {},
   mode: "battle",
   mouse: {
@@ -2569,6 +2570,7 @@ function startTakeDown() {
   state.deathOrder = [];
   state.effects.forEach((e) => scene.remove(e.mesh));
   state.effects = [];
+  state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
   state.mobileMove.x = 0;
@@ -2976,6 +2978,7 @@ function startChopWood() {
   state.deathOrder = [];
   state.effects.forEach((effect) => scene.remove(effect.mesh));
   state.effects = [];
+  state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
   state.mobileMove.x = 0;
@@ -3727,6 +3730,7 @@ function startTraining() {
   state.deathOrder = [];
   state.effects.forEach((effect) => scene.remove(effect.mesh));
   state.effects = [];
+  state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
   state.mobileMove.x = 0;
@@ -3767,6 +3771,7 @@ function exitTraining() {
     }
   });
   state.effects = [];
+  state.splashAccum = {};
 
   document.exitPointerLock?.();
   showLobby();
@@ -3802,6 +3807,7 @@ function resetGame() {
   state.deathOrder = [];
   state.effects.forEach((effect) => scene.remove(effect.mesh));
   state.effects = [];
+  state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
   state.mobileMove.x = 0;
@@ -4326,8 +4332,17 @@ function spawnBombSplash(x, z, ownerId) {
     const dx = target.mesh.position.x - x;
     const dz = target.mesh.position.z - z;
     if (dx * dx + dz * dz <= blastR2) {
-      applyDamage(target, charDef.bombDamage, owner ?? null);
-      if (owner?.isPlayer) { flashHitMarker(); audio.play("hit"); }
+      const dealt = applyDamage(target, charDef.bombDamage, owner ?? null, true, true);
+      if (owner?.isPlayer) {
+        flashHitMarker();
+        audio.play("hit");
+        if (dealt > 0) {
+          const key = `${ownerId}_${target.id}`;
+          if (!state.splashAccum[key]) state.splashAccum[key] = { damage: 0, pos: target.mesh.position.clone(), expireAt: 0 };
+          state.splashAccum[key].damage += dealt;
+          state.splashAccum[key].expireAt = state.gameTime + 0.6;
+        }
+      }
     }
   }
   for (let i = 0; i < charDef.bombSplashCount; i++) {
@@ -4780,10 +4795,16 @@ function updateProjectiles(dt) {
         }
         const isFar = proj.distTraveled > proj.farThreshold;
         const dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
-        applyDamage(target, dmg, attacker ?? null);
+        const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
         if (attacker && attacker.isPlayer) {
           flashHitMarker();
           audio.play("hit");
+          if (proj.isSplash && dealt > 0) {
+            const key = `${attacker.id}_${target.id}`;
+            if (!state.splashAccum[key]) state.splashAccum[key] = { damage: 0, pos: target.mesh.position.clone(), expireAt: 0 };
+            state.splashAccum[key].damage += dealt;
+            state.splashAccum[key].expireAt = state.gameTime + 0.4;
+          }
         }
         tempVec3.set(proj.x, 1.6, proj.z);
         createHitSpark(tempVec3);
@@ -5038,9 +5059,9 @@ function resolveAttack(attacker, hitIndex, damage) {
   }
 }
 
-function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
+function applyDamage(target, amount, attacker = null, updateCombatTime = true, noPopup = false) {
   if (target.dead) {
-    return;
+    return 0;
   }
 
   const finalAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
@@ -5061,7 +5082,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
       attacker.tdScore = (attacker.tdScore || 0) + Math.round(dealt * TD_SCORE_DAMAGE);
       attacker.tdBossDmg = (attacker.tdBossDmg || 0) + dealt;
     }
-    if (attacker.isPlayer && target.id !== attacker.id) {
+    if (attacker.isPlayer && target.id !== attacker.id && !noPopup) {
       tempVec3.copy(target.mesh.position);
       createDamagePopup(tempVec3, dealt);
     }
@@ -5072,10 +5093,11 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true) {
     audio.play("hit");
     if (!attacker || target.id !== attacker.id) {
       tempVec3.copy(target.mesh.position);
-      createDamagePopup(tempVec3, dealt, "#ff5c5c");
+      if (!noPopup) createDamagePopup(tempVec3, dealt, "#ff5c5c");
       showDamageTakenIndicator(dealt);
     }
   }
+  return dealt;
 
   if (target.health <= 0) {
     target.dead = true;
@@ -5196,6 +5218,13 @@ emoteBtns.forEach((btn, i) => {
 updateEmoteBtns(loadAccount());
 
 function updateEffects(dt) {
+  for (const key of Object.keys(state.splashAccum)) {
+    const entry = state.splashAccum[key];
+    if (entry.expireAt <= state.gameTime) {
+      createDamagePopup(entry.pos, entry.damage);
+      delete state.splashAccum[key];
+    }
+  }
   for (let i = state.effects.length - 1; i >= 0; i -= 1) {
     const effect = state.effects[i];
     effect.life -= dt;
@@ -7509,6 +7538,7 @@ function setupInput() {
       state.projectiles = [];
       state.effects.forEach((e) => { scene.remove(e.mesh); });
       state.effects = [];
+  state.splashAccum = {};
     } else if (state.chopWoodMode) {
       state.chopWoodMode = false;
       state.teams = null;
@@ -7523,6 +7553,7 @@ function setupInput() {
       state.projectiles = [];
       state.effects.forEach((e) => { scene.remove(e.mesh); });
       state.effects = [];
+  state.splashAccum = {};
     }
     showLobby();
   });
