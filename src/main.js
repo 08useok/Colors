@@ -4317,8 +4317,9 @@ function beginBombAttack(fighter) {
 function spawnBombSplash(x, z, ownerId) {
   const charDef = CHARACTERS.orange;
   const owner = state.players.find((p) => p.id === ownerId);
-  const blastMult = owner?.hasOrangeBlastAbility ? 1.2 : 1;
-  const blastR2 = 3 * 3;
+  const blastMult = owner?.hasOrangeBlastAbility ? 2.5 : 1;
+  const blastR = 3 * blastMult;
+  const blastR2 = blastR * blastR;
   for (const target of state.players) {
     if (target.dead || target.id === ownerId) continue;
     if (state.chopWoodMode && owner && target.team === owner.team) continue;
