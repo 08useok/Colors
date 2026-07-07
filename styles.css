@@ -1173,7 +1173,7 @@ body {
 }
 
 .color-info {
-  min-width: 160px;
+  width: 200px;
   padding: 10px 14px;
   background: rgba(31, 20, 10, 0.9);
   border: 1px solid rgba(255, 210, 158, 0.2);
