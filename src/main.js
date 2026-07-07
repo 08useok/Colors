@@ -1020,9 +1020,7 @@ const zonePhases = [
 const state = {
   gameTime: 0,
   running: false,
-  pointerLocked: false,
   gameOver: false,
-  winner: "",
   players: [],
   projectiles: [],
   deathOrder: [],
@@ -2561,7 +2559,6 @@ function startTakeDown() {
   state.freezeUntil = 3;
   state.running = true;
   state.gameOver = false;
-  state.winner = "";
   state.mouseHeld = false;
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
@@ -2571,8 +2568,6 @@ function startTakeDown() {
   state.effects = [];
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
-  state.mouse.yaw = Math.PI;
-  state.mouse.pitch = 0.26;
   state.mobileMove.x = 0;
   state.mobileMove.y = 0;
   state.mobileMove.active = false;
@@ -2971,7 +2966,6 @@ function startChopWood() {
   state.freezeUntil = 5;
   state.running = true;
   state.gameOver = false;
-  state.winner = "";
   state.mouseHeld = false;
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
@@ -2981,8 +2975,6 @@ function startChopWood() {
   state.effects = [];
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
-  state.mouse.yaw = Math.PI;
-  state.mouse.pitch = 0.26;
   state.mobileMove.x = 0;
   state.mobileMove.y = 0;
   state.mobileMove.active = false;
@@ -3725,7 +3717,6 @@ function startTraining() {
   state.freezeUntil = 0;
   state.running = true;
   state.gameOver = false;
-  state.winner = "";
   state.mouseHeld = false;
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
@@ -3735,8 +3726,6 @@ function startTraining() {
   state.effects = [];
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
-  state.mouse.yaw = Math.PI;
-  state.mouse.pitch = 0.26;
   state.mobileMove.x = 0;
   state.mobileMove.y = 0;
   state.mobileMove.active = false;
@@ -3802,7 +3791,6 @@ function resetGame() {
   state.freezeUntil = 5;
   state.running = true;
   state.gameOver = false;
-  state.winner = "";
   state.mouseHeld = false;
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
@@ -3812,8 +3800,6 @@ function resetGame() {
   state.effects = [];
   state.feedback.hitFlashUntil = 0;
   state.feedback.warningPulseUntil = 0;
-  state.mouse.yaw = Math.PI;
-  state.mouse.pitch = 0.26;
   state.mobileMove.x = 0;
   state.mobileMove.y = 0;
   state.mobileMove.active = false;

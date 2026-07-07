@@ -176,24 +176,22 @@ Umbrella spec: `specs/beta-season-transition.md` — 2026-07-06 target date.
 
 ---
 
-## Priority 4 — Dead Code & Vestigial Cleanup
+## Priority 4 — Dead Code & Vestigial Cleanup — ✅ Done (2026-07-07)
 
-### 4.1 Dead Modules (not imported by main.js)
-Files exist but are NOT used at runtime — `main.js` only imports `langs.js` and `multiplayer.js`:
-- `src/character.js` — divergent stats from main.js CHARACTERS (8 chars, no crimson)
-- `src/hud.js` — missing attack labels for yellow/cyan/purple/pink; imports non-existent `shared.js`/`combat.js`
-- `src/animation.js` — missing Yellow/Crimson animation branches
-- `src/LANGS/dom-core.js` — missing many newer element IDs; `DOM.survivorsPanel` targets non-existent `id="survivors-panel"`
+### 4.1 Dead Modules (not imported by main.js) — ✅ Deleted
+Decision: delete (not sync) — confirmed zero runtime imports anywhere outside the modules' own mutual references, and the project is committed to a single-file `main.js` architecture (no bundler).
+- [x] Deleted `src/character.js`
+- [x] Deleted `src/hud.js`
+- [x] Deleted `src/animation.js`
+- [x] Deleted `src/LANGS/dom-core.js`
 
-Decision needed: sync all modules to match main.js, OR delete as dead code.
+### 4.2 Vestigial State Fields — ✅ Removed
+- [x] `state.pointerLocked`: removed from initial state (was declared, never set `true`, never read)
+- [x] `state.mouse.yaw` / `state.mouse.pitch`: removed from all 4 reset locations (never declared in initial `state.mouse`, never read)
+- [x] `state.winner`: removed from initial state and all 4 reset locations (never read after being set)
 
-### 4.2 Vestigial State Fields
-- [ ] `state.pointerLocked` (line 1014): declared `false`, never set `true` — remove
-- [ ] `state.mouse.yaw` / `state.mouse.pitch`: set in 4 reset locations but never declared in initial state, never read — remove
-- [ ] `state.winner`: set to `""` on reset but never updated after — remove or wire up
-
-### 4.3 Stale Comments
-- [ ] `src/LANGS/dom-core.js` line 1: comment says `// src/core/dom.js` — stale path
+### 4.3 Stale Comments — ✅ Moot
+- Resolved automatically — the file (`src/LANGS/dom-core.js`) containing the stale comment was deleted in 4.1
 
 ---
 
@@ -203,6 +201,5 @@ Decision needed: sync all modules to match main.js, OR delete as dead code.
 - **Translations**: `src/LANGS/langs.js` (flat key-value, ko + en — imported by main.js)
 - **Multiplayer**: `src/multiplayer.js` (WebSocket client for Take Down mode — imported by main.js)
 - **Entry point**: `index.html` → `src/main.js?v=1.4.9`
-- **Dead modules**: `character.js`, `hud.js`, `animation.js`, `dom-core.js` — exist but not wired into main.js
 - **No `src/lib/`** — no shared utility library
 - **No bundler** — vanilla ES modules, Three.js r165 via CDN
