@@ -518,7 +518,7 @@ const CHARACTERS = {
     walk: { cycleSpeed: 7, armAmp: 0.22, legAmp: 0.34, armRestZ: Math.PI * 0.04 },
   },
   pink: {
-    color: 0xFFC0CB,
+    color: 0xF4CDD3,
     maxHealth: 11500,
     attackType: "heal_circle",
     reloadDuration: 0.4,
@@ -1225,7 +1225,7 @@ function createStickman(color, skinId) {
   group.add(head);
 
   // 얼굴 (캔버스 텍스처)
-  const isFemale = (color === 0xFFC0CB || color === 0x800080);
+  const isFemale = (color === 0xF4CDD3 || color === 0x800080);
   const faceCanvas = document.createElement('canvas');
   faceCanvas.width = 512; faceCanvas.height = 512;
   const fctx = faceCanvas.getContext('2d');
@@ -1378,9 +1378,9 @@ function createStickman(color, skinId) {
     guitar: null,
   };
 
-  if (color === 0xFFC0CB) {
+  if (color === 0xF4CDD3) {
     const guitarGroup = new THREE.Group();
-    const gPinkMat = new THREE.MeshStandardMaterial({ color: 0xFFC0CB, roughness: 0.35, metalness: 0.3 });
+    const gPinkMat = new THREE.MeshStandardMaterial({ color: 0xF4CDD3, roughness: 0.35, metalness: 0.3 });
     const gBlackMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.4, metalness: 0.2 });
     const gWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.5, metalness: 0.1 });
     const gSilverMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.2, metalness: 0.8 });
@@ -3328,7 +3328,7 @@ function createPinkAimIndicator() {
 
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(range - 0.12, range, 32),
-    new THREE.MeshBasicMaterial({ color: 0xFFC0CB, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color: 0xF4CDD3, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }),
   );
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(0, 0.08, 0);
@@ -4564,7 +4564,7 @@ function createHealCircleEffect(x, z, radius) {
   for (let w = 0; w < 2; w++) {
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(0.5, 0.7, 32),
-      new THREE.MeshBasicMaterial({ color: 0xFFC0CB, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+      new THREE.MeshBasicMaterial({ color: 0xF4CDD3, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
     );
     ring.rotation.x = -Math.PI / 2;
     ring.position.set(x, 0.15 + w * 0.5, z);
@@ -4584,7 +4584,7 @@ function createHealCircleEffect(x, z, radius) {
   const noteGeo = createNoteShape();
   for (let i = 0; i < 5; i++) {
     const angle = (i / 5) * Math.PI * 2 + Math.random() * 0.5;
-    const colors = [0xFFC0CB, 0xFF88CC, 0xFFAADD, 0xFF55AA, 0xFFCCEE];
+    const colors = [0xF4CDD3, 0xFF88CC, 0xFFAADD, 0xFF55AA, 0xFFCCEE];
     const note = new THREE.Mesh(
       noteGeo,
       new THREE.MeshBasicMaterial({ color: colors[i], transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }),
@@ -7056,7 +7056,7 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#ffc0cb" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
@@ -7262,7 +7262,7 @@ function setupInput() {
 
   const TD_CHAR_COLORS = {
     red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500",
-    yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#ffc0cb",
+    yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3",
   };
   const TD_CHAR_EMOJIS = {
     red: "🔴", green: "🟢", blue: "🔵", orange: "🟠",
