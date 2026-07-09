@@ -1224,56 +1224,132 @@ function createStickman(color, skinId) {
   head.castShadow = true;
   group.add(head);
 
-  // 얼굴 (캔버스 텍스처)
-  const isFemale = (color === 0xF4CDD3 || color === 0x800080);
+  // 얼굴 (캔버스 텍스처 — 캐릭터별 표정)
   const faceCanvas = document.createElement('canvas');
   faceCanvas.width = 512; faceCanvas.height = 512;
   const fctx = faceCanvas.getContext('2d');
-  if (isFemale) {
-    const isPurple = (color === 0x800080);
-    const browCol  = isPurple ? '#5a0878' : '#c0184a';
-    const blushCol = isPurple ? 'rgba(130, 40, 175, 0.38)' : 'rgba(215, 60, 100, 0.38)';
-    const mouthOut = isPurple ? '#3a0050' : '#7a1040';
-    const mouthIn  = isPurple ? '#a030d0' : '#ff4480';
-    const eyes = [[155, 195], [357, 195]];
-    // 눈썹
-    fctx.strokeStyle = browCol; fctx.lineWidth = 13; fctx.lineCap = 'round';
+
+  // 공통: 눈 그리기 (흰 공막 + 검정 동공 + 하이라이트)
+  const drawEye = (cx, cy, r) => {
+    fctx.fillStyle = '#ffffff';
+    fctx.beginPath(); fctx.arc(cx, cy, r, 0, Math.PI * 2); fctx.fill();
+    fctx.fillStyle = '#111111';
+    fctx.beginPath(); fctx.arc(cx, cy + 3, r * 0.65, 0, Math.PI * 2); fctx.fill();
+    fctx.fillStyle = '#ffffff';
+    fctx.beginPath(); fctx.arc(cx - r * 0.28, cy - r * 0.28, r * 0.22, 0, Math.PI * 2); fctx.fill();
+  };
+
+  if (color === 0xF4CDD3) {
+    // Pink — 귀여운 큰 눈 + 볼터치 + 미소
+    fctx.strokeStyle = '#c0184a'; fctx.lineWidth = 13; fctx.lineCap = 'round';
     fctx.beginPath(); fctx.moveTo(112, 138); fctx.quadraticCurveTo(155, 116, 198, 136); fctx.stroke();
     fctx.beginPath(); fctx.moveTo(314, 136); fctx.quadraticCurveTo(357, 116, 400, 138); fctx.stroke();
-    // 흰 공막
-    fctx.fillStyle = '#ffffff';
-    for (const [ex, ey] of eyes) { fctx.beginPath(); fctx.ellipse(ex, ey, 75, 70, 0, 0, Math.PI * 2); fctx.fill(); }
-    // 검정 동공
-    fctx.fillStyle = '#111111';
-    for (const [ex, ey] of eyes) { fctx.beginPath(); fctx.ellipse(ex, ey + 4, 54, 58, 0, 0, Math.PI * 2); fctx.fill(); }
-    // 흰 하이라이트
-    fctx.fillStyle = '#ffffff';
-    for (const [ex, ey] of eyes) { fctx.beginPath(); fctx.arc(ex - 22, ey - 16, 18, 0, Math.PI * 2); fctx.fill(); }
-    // 속눈썹
-    fctx.strokeStyle = '#111111'; fctx.lineWidth = 7; fctx.lineCap = 'round';
-    for (const [[ex, ey], side] of [[[155, 195], -1], [[357, 195], 1]]) {
+    for (const [ex, ey] of [[155, 195], [357, 195]]) {
+      fctx.fillStyle = '#ffffff'; fctx.beginPath(); fctx.ellipse(ex, ey, 75, 70, 0, 0, Math.PI * 2); fctx.fill();
+      fctx.fillStyle = '#111111'; fctx.beginPath(); fctx.ellipse(ex, ey + 4, 54, 58, 0, 0, Math.PI * 2); fctx.fill();
+      fctx.fillStyle = '#ffffff'; fctx.beginPath(); fctx.arc(ex - 22, ey - 16, 18, 0, Math.PI * 2); fctx.fill();
+    }
+    fctx.strokeStyle = '#111111'; fctx.lineWidth = 7;
+    for (const [[ex, ey], s] of [[[155, 195], -1], [[357, 195], 1]]) {
       for (let i = 0; i < 3; i++) {
-        const a = (side < 0 ? -Math.PI * 0.82 : -Math.PI * 0.18) + side * i * 0.18;
+        const a = (s < 0 ? -Math.PI * 0.82 : -Math.PI * 0.18) + s * i * 0.18;
         const sx = ex + Math.cos(a) * 73, sy = ey + Math.sin(a) * 68;
-        fctx.beginPath(); fctx.moveTo(sx, sy);
-        fctx.lineTo(sx + Math.cos(a - side * 0.35) * 22, sy + Math.sin(a - side * 0.35) * 22);
-        fctx.stroke();
+        fctx.beginPath(); fctx.moveTo(sx, sy); fctx.lineTo(sx + Math.cos(a - s * 0.35) * 22, sy + Math.sin(a - s * 0.35) * 22); fctx.stroke();
       }
     }
-    // 볼터치
-    fctx.fillStyle = blushCol;
+    fctx.fillStyle = 'rgba(215,60,100,0.38)';
     fctx.beginPath(); fctx.ellipse(100, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
     fctx.beginPath(); fctx.ellipse(412, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
-    // 입
-    fctx.fillStyle = mouthOut;
-    fctx.beginPath(); fctx.arc(256, 378, 58, 0, Math.PI); fctx.closePath(); fctx.fill();
-    fctx.fillStyle = mouthIn;
-    fctx.beginPath(); fctx.arc(256, 374, 48, 0, Math.PI); fctx.closePath(); fctx.fill();
-  } else {
-    for (const cx of [155, 357]) {
-      fctx.fillStyle = '#111111';
-      fctx.beginPath(); fctx.arc(cx, 200, 22, 0, Math.PI * 2); fctx.fill();
+    fctx.fillStyle = '#7a1040'; fctx.beginPath(); fctx.arc(256, 378, 58, 0, Math.PI); fctx.closePath(); fctx.fill();
+    fctx.fillStyle = '#ff4480'; fctx.beginPath(); fctx.arc(256, 374, 48, 0, Math.PI); fctx.closePath(); fctx.fill();
+
+  } else if (color === 0x800080) {
+    // Purple — 우아한 미소
+    fctx.strokeStyle = '#5a0878'; fctx.lineWidth = 13; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(112, 138); fctx.quadraticCurveTo(155, 116, 198, 136); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(314, 136); fctx.quadraticCurveTo(357, 116, 400, 138); fctx.stroke();
+    for (const [ex, ey] of [[155, 195], [357, 195]]) {
+      fctx.fillStyle = '#ffffff'; fctx.beginPath(); fctx.ellipse(ex, ey, 75, 70, 0, 0, Math.PI * 2); fctx.fill();
+      fctx.fillStyle = '#111111'; fctx.beginPath(); fctx.ellipse(ex, ey + 4, 54, 58, 0, 0, Math.PI * 2); fctx.fill();
+      fctx.fillStyle = '#ffffff'; fctx.beginPath(); fctx.arc(ex - 22, ey - 16, 18, 0, Math.PI * 2); fctx.fill();
     }
+    fctx.strokeStyle = '#111111'; fctx.lineWidth = 7;
+    for (const [[ex, ey], s] of [[[155, 195], -1], [[357, 195], 1]]) {
+      for (let i = 0; i < 3; i++) {
+        const a = (s < 0 ? -Math.PI * 0.82 : -Math.PI * 0.18) + s * i * 0.18;
+        const sx = ex + Math.cos(a) * 73, sy = ey + Math.sin(a) * 68;
+        fctx.beginPath(); fctx.moveTo(sx, sy); fctx.lineTo(sx + Math.cos(a - s * 0.35) * 22, sy + Math.sin(a - s * 0.35) * 22); fctx.stroke();
+      }
+    }
+    fctx.fillStyle = 'rgba(130,40,175,0.38)';
+    fctx.beginPath(); fctx.ellipse(100, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
+    fctx.beginPath(); fctx.ellipse(412, 348, 62, 36, 0, 0, Math.PI * 2); fctx.fill();
+    fctx.fillStyle = '#3a0050'; fctx.beginPath(); fctx.arc(256, 378, 58, 0, Math.PI); fctx.closePath(); fctx.fill();
+    fctx.fillStyle = '#a030d0'; fctx.beginPath(); fctx.arc(256, 374, 48, 0, Math.PI); fctx.closePath(); fctx.fill();
+
+  } else if (color === 0xff0000) {
+    // Red — 분노 (V자 눈썹, 굳은 입)
+    fctx.strokeStyle = '#880000'; fctx.lineWidth = 16; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(108, 148); fctx.lineTo(198, 172); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(404, 148); fctx.lineTo(314, 172); fctx.stroke();
+    drawEye(155, 215, 42); drawEye(357, 215, 42);
+    fctx.strokeStyle = '#880000'; fctx.lineWidth = 12; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(190, 395); fctx.quadraticCurveTo(256, 368, 322, 395); fctx.stroke();
+
+  } else if (color === 0x00ff00) {
+    // Green — 쿨한 스머크 (한쪽 눈썹 높음)
+    fctx.strokeStyle = '#005500'; fctx.lineWidth = 12; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(112, 148); fctx.quadraticCurveTo(155, 124, 198, 148); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(314, 162); fctx.quadraticCurveTo(357, 152, 400, 162); fctx.stroke();
+    drawEye(155, 210, 42); drawEye(357, 210, 42);
+    fctx.strokeStyle = '#005500'; fctx.lineWidth = 11;
+    fctx.beginPath(); fctx.moveTo(195, 388); fctx.quadraticCurveTo(285, 375, 342, 358); fctx.stroke();
+
+  } else if (color === 0x0000ff) {
+    // Blue — 차분 (일자 눈썹, 살짝 미소)
+    fctx.strokeStyle = '#000077'; fctx.lineWidth = 12; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(113, 158); fctx.lineTo(197, 155); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(315, 155); fctx.lineTo(399, 158); fctx.stroke();
+    drawEye(155, 210, 40); drawEye(357, 210, 40);
+    fctx.strokeStyle = '#000077'; fctx.lineWidth = 10;
+    fctx.beginPath(); fctx.moveTo(200, 388); fctx.quadraticCurveTo(256, 402, 312, 388); fctx.stroke();
+
+  } else if (color === 0xffa500) {
+    // Orange — 에너지 넘침 (높은 눈썹, 활짝 웃음)
+    fctx.strokeStyle = '#884400'; fctx.lineWidth = 13; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(108, 138); fctx.quadraticCurveTo(155, 112, 202, 138); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(310, 138); fctx.quadraticCurveTo(357, 112, 404, 138); fctx.stroke();
+    drawEye(155, 208, 46); drawEye(357, 208, 46);
+    fctx.fillStyle = '#884400'; fctx.beginPath(); fctx.arc(256, 385, 62, 0, Math.PI); fctx.closePath(); fctx.fill();
+    fctx.fillStyle = '#ffcc44'; fctx.beginPath(); fctx.arc(256, 380, 52, 0, Math.PI); fctx.closePath(); fctx.fill();
+
+  } else if (color === 0xffff00) {
+    // Yellow — 쾌활 (초승달 눈, 활짝)
+    fctx.strokeStyle = '#886600'; fctx.lineWidth = 12; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(110, 145); fctx.quadraticCurveTo(155, 122, 200, 145); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(312, 145); fctx.quadraticCurveTo(357, 122, 402, 145); fctx.stroke();
+    fctx.strokeStyle = '#111111'; fctx.lineWidth = 20;
+    fctx.beginPath(); fctx.arc(155, 222, 44, Math.PI * 1.1, Math.PI * 1.9); fctx.stroke();
+    fctx.beginPath(); fctx.arc(357, 222, 44, Math.PI * 1.1, Math.PI * 1.9); fctx.stroke();
+    fctx.fillStyle = '#886600'; fctx.beginPath(); fctx.arc(256, 385, 64, 0, Math.PI); fctx.closePath(); fctx.fill();
+    fctx.fillStyle = '#ffee44'; fctx.beginPath(); fctx.arc(256, 380, 54, 0, Math.PI); fctx.closePath(); fctx.fill();
+
+  } else if (color === 0x0ff0fe) {
+    // Cyan — 신비로움 (반감긴 눈, 옅은 스머크)
+    fctx.strokeStyle = '#005566'; fctx.lineWidth = 12; fctx.lineCap = 'round';
+    fctx.beginPath(); fctx.moveTo(113, 162); fctx.lineTo(197, 162); fctx.stroke();
+    fctx.beginPath(); fctx.moveTo(314, 155); fctx.quadraticCurveTo(357, 138, 400, 155); fctx.stroke();
+    // 반감긴 눈 (아래쪽 반원만)
+    for (const cx of [155, 357]) {
+      fctx.save();
+      fctx.beginPath(); fctx.rect(cx - 50, 210, 100, 55); fctx.clip();
+      fctx.fillStyle = '#ffffff'; fctx.beginPath(); fctx.arc(cx, 210, 44, 0, Math.PI * 2); fctx.fill();
+      fctx.fillStyle = '#111111'; fctx.beginPath(); fctx.arc(cx, 213, 29, 0, Math.PI * 2); fctx.fill();
+      fctx.fillStyle = '#ffffff'; fctx.beginPath(); fctx.arc(cx - 12, 202, 9, 0, Math.PI * 2); fctx.fill();
+      fctx.restore();
+    }
+    fctx.strokeStyle = '#005566'; fctx.lineWidth = 10;
+    fctx.beginPath(); fctx.moveTo(200, 388); fctx.quadraticCurveTo(290, 376, 345, 362); fctx.stroke();
   }
   const faceTex = new THREE.CanvasTexture(faceCanvas);
   const faceMat = new THREE.MeshBasicMaterial({ map: faceTex, transparent: true, depthWrite: false });
