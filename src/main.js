@@ -1629,6 +1629,133 @@ function createStickman(color, skinId) {
     purplePinGroup.rotation.z = Math.PI / 4;
     group.add(purplePinGroup);
     group.userData.hairPin = purplePinGroup;
+
+    // 독침 (syringe)
+    const syringeGroup = new THREE.Group();
+    const sClearMat = new THREE.MeshStandardMaterial({ color: 0xdde0ff, roughness: 0.1, metalness: 0.1, transparent: true, opacity: 0.72 });
+    const sFluidMat = new THREE.MeshStandardMaterial({ color: 0x9b30ff, roughness: 0.2, transparent: true, opacity: 0.85, emissive: 0x4400aa, emissiveIntensity: 0.45 });
+    const sMetalMat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.15, metalness: 0.9 });
+    const sBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.55, 10), sClearMat);
+    syringeGroup.add(sBarrel);
+    const sFluid = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.28, 10), sFluidMat);
+    sFluid.position.y = -0.06;
+    syringeGroup.add(sFluid);
+    const sNeedle = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.002, 0.18, 8), sMetalMat);
+    sNeedle.position.y = -0.365;
+    syringeGroup.add(sNeedle);
+    const sPlunger = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.048, 0.06, 10), sMetalMat);
+    sPlunger.position.y = 0.305;
+    syringeGroup.add(sPlunger);
+    const sHandle = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.025, 0.025), sMetalMat);
+    sHandle.position.y = 0.345;
+    syringeGroup.add(sHandle);
+    const sRing = new THREE.Mesh(new THREE.CylinderGeometry(0.070, 0.070, 0.018, 12), sMetalMat);
+    sRing.position.y = 0.26;
+    syringeGroup.add(sRing);
+    syringeGroup.position.set(0.02, -0.42, 0.10);
+    syringeGroup.rotation.set(-0.15, 0, 0.08);
+    rightForeArm.add(syringeGroup);
+    group.userData.prop = syringeGroup;
+  }
+
+  // Green - 부메랑
+  if (color === 0x00ff00) {
+    const bGroup = new THREE.Group();
+    const bMat = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.6, metalness: 0.05 });
+    const bHighMat = new THREE.MeshStandardMaterial({ color: 0xb05a1a, roughness: 0.4, metalness: 0.1 });
+    const ba1 = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.055, 0.52), bMat);
+    ba1.position.set(0, 0, 0.18);
+    bGroup.add(ba1);
+    const ba2 = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.055, 0.52), bMat);
+    ba2.rotation.y = Math.PI * 0.58;
+    ba2.position.set(-0.15, 0, 0.10);
+    bGroup.add(ba2);
+    const bCenter = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 5), bHighMat);
+    bGroup.add(bCenter);
+    bGroup.position.set(0.02, -0.40, 0.10);
+    bGroup.rotation.set(-0.5, 0.25, 0.55);
+    rightForeArm.add(bGroup);
+    group.userData.prop = bGroup;
+  }
+
+  // Orange - 오렌지 과일
+  if (color === 0xffa500) {
+    const oGroup = new THREE.Group();
+    const oFruitMat = new THREE.MeshStandardMaterial({ color: 0xff8c00, roughness: 0.45, metalness: 0.0 });
+    const oLeafMat = new THREE.MeshStandardMaterial({ color: 0x228B22, roughness: 0.7 });
+    const oFruit = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 10), oFruitMat);
+    oGroup.add(oFruit);
+    const oLeaf = new THREE.Mesh(new THREE.SphereGeometry(0.09, 6, 4), oLeafMat);
+    oLeaf.scale.set(1.5, 0.5, 0.8);
+    oLeaf.position.set(0.04, 0.20, 0);
+    oGroup.add(oLeaf);
+    const oStem = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.10, 5), oLeafMat);
+    oStem.position.set(0, 0.24, 0);
+    oGroup.add(oStem);
+    oGroup.position.set(0.02, -0.42, 0.08);
+    rightForeArm.add(oGroup);
+    group.userData.prop = oGroup;
+  }
+
+  // Yellow - 저격총 (sniper rifle)
+  if (color === 0xffff00) {
+    const rGroup = new THREE.Group();
+    const rYellowMat = new THREE.MeshStandardMaterial({ color: 0xffff00, roughness: 0.4, metalness: 0.2 });
+    const rDarkMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5, metalness: 0.5 });
+    const rSilverMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.2, metalness: 0.8 });
+    const rStock = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.10, 0.48), rYellowMat);
+    rStock.position.z = -0.24;
+    rGroup.add(rStock);
+    const rRecv = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.13, 0.28), rDarkMat);
+    rRecv.position.z = 0.10;
+    rGroup.add(rRecv);
+    const rBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.92, 8), rSilverMat);
+    rBarrel.rotation.x = Math.PI / 2;
+    rBarrel.position.z = 0.70;
+    rGroup.add(rBarrel);
+    const rScope = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.030, 0.36, 8), rDarkMat);
+    rScope.rotation.x = Math.PI / 2;
+    rScope.position.set(0, 0.10, 0.10);
+    rGroup.add(rScope);
+    const rGrip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.20, 0.08), rYellowMat);
+    rGrip.position.set(0, -0.14, 0.06);
+    rGrip.rotation.x = 0.3;
+    rGroup.add(rGrip);
+    rGroup.position.set(0.08, 0.18, 0.50);
+    rGroup.rotation.set(-0.05, 0, 0.04);
+    group.add(rGroup);
+    group.userData.prop = rGroup;
+  }
+
+  // Cyan - SF 레이건
+  if (color === 0x0ff0fe) {
+    const rgGroup = new THREE.Group();
+    const rgBodyMat = new THREE.MeshStandardMaterial({ color: 0x1a2a3a, roughness: 0.4, metalness: 0.6 });
+    const rgCyanMat = new THREE.MeshStandardMaterial({ color: 0x0ff0fe, roughness: 0.2, metalness: 0.5 });
+    const rgGlowMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00aaff, emissiveIntensity: 1.2, roughness: 0.1 });
+    const rgBody = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.13, 0.30), rgBodyMat);
+    rgGroup.add(rgBody);
+    const rgBarrel = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.042, 0.22, 8), rgCyanMat);
+    rgBarrel.rotation.x = Math.PI / 2;
+    rgBarrel.position.z = 0.26;
+    rgGroup.add(rgBarrel);
+    const rgMuzzle = new THREE.Mesh(new THREE.CircleGeometry(0.042, 10), rgGlowMat);
+    rgMuzzle.position.z = 0.375;
+    rgGroup.add(rgMuzzle);
+    const rgCell = new THREE.Mesh(new THREE.SphereGeometry(0.052, 8, 8), rgGlowMat);
+    rgCell.scale.set(1, 0.7, 1);
+    rgCell.position.set(0, 0.06, 0.02);
+    rgGroup.add(rgCell);
+    const rgGrip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.18, 0.08), rgBodyMat);
+    rgGrip.position.set(0, -0.15, -0.04);
+    rgGroup.add(rgGrip);
+    const rgFin = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.04, 0.16), rgCyanMat);
+    rgFin.position.set(0, -0.06, 0.04);
+    rgGroup.add(rgFin);
+    rgGroup.position.set(0.02, -0.42, 0.15);
+    rgGroup.rotation.set(0.1, 0, 0);
+    rightForeArm.add(rgGroup);
+    group.userData.prop = rgGroup;
   }
 
   if (skinId) applySkin(group, skinId);
@@ -1715,28 +1842,48 @@ function renderPreview(dt) {
   let rightArmZ = -w.armRestZ;
   let headX = 0;
 
-  if (previewCharType === "red") {
-    leftArmX += -0.7 + Math.sin(previewTime * 1.8) * 0.03;
-    rightArmX += -0.7 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
-    leftArmZ = 0.05;
-    rightArmZ = -0.05;
-    headX = -0.04;
-  } else if (previewCharType === "pink") {
-    leftArmX = -0.55;
-    leftArmZ = 0.20;
-    rightArmX = -0.25 + Math.sin(previewTime * 2.5) * 0.04;
-    rightArmZ = -0.10;
-    headX = -0.06;
-  }
-
   let leftElbowX = 0;
   let rightElbowX = 0;
   if (previewCharType === "red") {
+    leftArmX += -0.7 + Math.sin(previewTime * 1.8) * 0.03;
+    rightArmX += -0.7 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
+    leftArmZ = 0.05; rightArmZ = -0.05; headX = -0.04;
     leftElbowX = -0.6 + Math.sin(previewTime * 1.8) * 0.05;
     rightElbowX = -0.6 + Math.sin(previewTime * 1.8 + 1.5) * 0.05;
   } else if (previewCharType === "pink") {
+    leftArmX = -0.55; leftArmZ = 0.20;
+    rightArmX = -0.25 + Math.sin(previewTime * 2.5) * 0.04; rightArmZ = -0.10;
+    headX = -0.06;
     leftElbowX = -0.7;
     rightElbowX = -0.4 + Math.sin(previewTime * 2.5) * 0.06;
+  } else if (previewCharType === "green") {
+    rightArmX = -1.05 + Math.sin(previewTime * 1.5) * 0.04; rightArmZ = -0.22;
+    rightElbowX = 0.25;
+    leftArmX = -0.15; leftArmZ = 0.08;
+    headX = -0.05;
+  } else if (previewCharType === "blue") {
+    leftArmX = -0.80; leftArmZ = -0.32;
+    rightArmX = -0.80; rightArmZ = 0.32;
+    leftElbowX = -0.55; rightElbowX = -0.55;
+    headX = -0.10 + Math.sin(previewTime * 0.7) * 0.02;
+  } else if (previewCharType === "orange") {
+    rightArmX = -0.15 + Math.sin(previewTime * 1.2) * 0.02; rightArmZ = -0.50;
+    rightElbowX = 0.85;
+    leftArmX = -0.10; headX = -0.04;
+  } else if (previewCharType === "yellow") {
+    leftArmX = -1.10; leftArmZ = 0.10;
+    rightArmX = -0.95; rightArmZ = -0.10;
+    leftElbowX = -0.22; rightElbowX = -0.30;
+    headX = -0.18;
+  } else if (previewCharType === "cyan") {
+    rightArmX = -0.65 + Math.sin(previewTime * 0.9) * 0.02; rightArmZ = -0.12;
+    rightElbowX = -0.10;
+    leftArmX = -0.15; leftArmZ = 0.08; headX = -0.06;
+  } else if (previewCharType === "purple") {
+    rightArmX = -0.90; rightArmZ = -0.18;
+    rightElbowX = -0.75;
+    leftArmX = -0.20;
+    headX = -0.04 + Math.sin(previewTime * 1.3) * 0.02;
   }
 
   parts.leftArm.rotation.x = leftArmX;
@@ -4492,21 +4639,39 @@ function beginElectricAttack(fighter) {
 }
 
 function createSpreadLineMesh(position, yaw, offsetX) {
-  const mesh = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.12, 0.28, 4, 6),
-    new THREE.MeshBasicMaterial({ color: 0x0ff0fe }),
-  );
+  const r = 0.12, halfLen = 0.14;
+  const matCyan  = new THREE.MeshBasicMaterial({ color: 0x0ff0fe });
+  const matWhite = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+  const group = new THREE.Group();
+
+  // 위쪽 반 — 시안
+  const topCap = new THREE.Mesh(new THREE.SphereGeometry(r, 6, 4, 0, Math.PI * 2, 0, Math.PI / 2), matCyan);
+  topCap.position.y = halfLen;
+  group.add(topCap);
+  const topCyl = new THREE.Mesh(new THREE.CylinderGeometry(r, r, halfLen, 6, 1, true), matCyan);
+  topCyl.position.y = halfLen / 2;
+  group.add(topCyl);
+
+  // 아래쪽 반 — 흰색
+  const botCyl = new THREE.Mesh(new THREE.CylinderGeometry(r, r, halfLen, 6, 1, true), matWhite);
+  botCyl.position.y = -halfLen / 2;
+  group.add(botCyl);
+  const botCap = new THREE.Mesh(new THREE.SphereGeometry(r, 6, 4, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), matWhite);
+  botCap.position.y = -halfLen;
+  group.add(botCap);
+
   const perpX = Math.cos(yaw);
   const perpZ = -Math.sin(yaw);
-  mesh.position.set(
+  group.position.set(
     position.x + Math.sin(yaw) * 0.9 + perpX * offsetX,
     1.3,
     position.z + Math.cos(yaw) * 0.9 + perpZ * offsetX,
   );
-  mesh.rotation.x = Math.PI / 2;
-  mesh.rotation.z = -yaw;
-  scene.add(mesh);
-  return mesh;
+  group.rotation.x = Math.PI / 2;
+  group.rotation.z = -yaw;
+  scene.add(group);
+  return group;
 }
 
 function beginSpreadLineAttack(fighter) {
@@ -5868,9 +6033,30 @@ function updateFighterAnimation(fighter, dt) {
     leftElbowX = -0.7;
     rightArmX = -0.25 + Math.sin(state.gameTime * 2.5) * 0.04;
     rightArmZ = -0.10;
-    rightElbowX = -0.4 + Math.sin(state.gameTime * 2.5) * 0.06;
     rightElbowX = -0.8 + Math.sin(state.gameTime * 3) * 0.1;
     headX = -0.05;
+  } else if (charType === "green") {
+    rightArmX = -1.05 + Math.sin(state.gameTime * 1.5) * 0.04; rightArmZ = -0.22;
+    rightElbowX = 0.25;
+    leftArmX += -0.15; leftArmZ = 0.08; headX = -0.05;
+  } else if (charType === "blue") {
+    leftArmX = -0.80; leftArmZ = -0.32;
+    rightArmX = -0.80; rightArmZ = 0.32;
+    leftElbowX = -0.55; rightElbowX = -0.55;
+    headX = -0.10 + Math.sin(state.gameTime * 0.7) * 0.02;
+  } else if (charType === "orange") {
+    rightArmX = -0.15 + Math.sin(state.gameTime * 1.2) * 0.02; rightArmZ = -0.50;
+    rightElbowX = 0.85; leftArmX += -0.10; headX = -0.04;
+  } else if (charType === "yellow") {
+    leftArmX = -1.10; leftArmZ = 0.10;
+    rightArmX = -0.95; rightArmZ = -0.10;
+    leftElbowX = -0.22; rightElbowX = -0.30; headX = -0.18;
+  } else if (charType === "cyan") {
+    rightArmX = -0.65 + Math.sin(state.gameTime * 0.9) * 0.03; rightArmZ = -0.12;
+    rightElbowX = -0.10; leftArmX += -0.15; leftArmZ = 0.08; headX = -0.06;
+  } else if (charType === "purple") {
+    rightArmX = -0.90; rightArmZ = -0.18;
+    rightElbowX = -0.75; leftArmX += -0.20; headX = -0.04;
   }
 
   if (fighter.attackAnimTime >= 0) {
