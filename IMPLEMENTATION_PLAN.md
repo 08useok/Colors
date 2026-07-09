@@ -193,6 +193,9 @@ Decision: delete (not sync) — confirmed zero runtime imports anywhere outside 
 ### 4.3 Stale Comments — ✅ Moot
 - Resolved automatically — the file (`src/LANGS/dom-core.js`) containing the stale comment was deleted in 4.1
 
+### 4.4 Unused Local Three.js Copy — ✅ Removed (2026-07-06)
+- [x] Deleted `src/three.module.js` (1.28MB local Three.js r165 copy) — never imported; `main.js:1` loads Three.js from the jsdelivr CDN instead
+
 ---
 
 ## Architecture Notes
