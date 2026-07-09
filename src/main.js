@@ -6019,7 +6019,7 @@ function updateCamera(dt) {
 
   const desired = target.clone();
   desired.y += 18.5;
-  desired.z += 1.24;
+  desired.z += 3.12;
   camera.up.set(0, 0, -1);
   camera.position.lerp(desired, 1 - Math.exp(-dt * 10));
   camera.lookAt(target);
