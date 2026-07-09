@@ -1365,14 +1365,14 @@ function createStickman(color, skinId) {
   const lowerLegGeo = new THREE.CapsuleGeometry(0.17, 0.38, 6, 10);
 
   const leftShoulder = new THREE.Group();
-  leftShoulder.position.set(-0.42, 0.55, 0);
+  leftShoulder.position.set(-0.58, 0.55, 0);
   group.add(leftShoulder);
   const rightShoulder = new THREE.Group();
-  rightShoulder.position.set(0.42, 0.55, 0);
+  rightShoulder.position.set(0.58, 0.55, 0);
   group.add(rightShoulder);
 
   const leftArm = new THREE.Mesh(upperArmGeo, material);
-  leftArm.position.set(-0.44, 0.20, 0);
+  leftArm.position.set(-0.60, 0.20, 0);
   leftArm.castShadow = true;
   const leftForeArm = new THREE.Mesh(foreArmGeo, material);
   leftForeArm.position.set(0, -0.42, 0);
@@ -1386,7 +1386,7 @@ function createStickman(color, skinId) {
   group.add(leftArm);
 
   const rightArm = new THREE.Mesh(upperArmGeo, material);
-  rightArm.position.set(0.44, 0.20, 0);
+  rightArm.position.set(0.60, 0.20, 0);
   rightArm.castShadow = true;
   const rightForeArm = new THREE.Mesh(foreArmGeo, material);
   rightForeArm.position.set(0, -0.42, 0);
