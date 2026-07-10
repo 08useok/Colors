@@ -80,6 +80,14 @@ const showdownAnnounceEl = document.getElementById("showdown-announce");
 const showdownMusic = new Audio("./assets/showdown-theme.mp3");
 const showdownBgm = new Audio("./assets/showdown-bgm.mp3");
 showdownBgm.loop = true;
+const lobbyBgm = new Audio("./assets/lobby-bgm.mp3");
+lobbyBgm.loop = true;
+
+function playLobbyBgm() {
+  if (!state.audioEnabled) return;
+  lobbyBgm.volume = 0.3;
+  lobbyBgm.play().catch(() => {});
+}
 const zonePanel = document.getElementById("zone-panel");
 const zoneState = document.getElementById("zone-state");
 const zoneTimer = document.getElementById("zone-timer");
@@ -892,6 +900,7 @@ function showLobby() {
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   showdownBgm.pause();
+  playLobbyBgm();
   mapNameEl.classList.add("hidden");
   const sidePanel = document.getElementById("lobby-side-panel");
   const colorButtons = document.getElementById("color-buttons");
@@ -2772,6 +2781,7 @@ function initTakeDownPlayers() {
 }
 
 function startTakeDown() {
+  lobbyBgm.pause();
   clock.getDelta();
   battleMapGroup.visible = true;
   trainingMapGroup.visible = false;
@@ -3140,6 +3150,7 @@ function updateMatchmakingUI() {
 async function enterMatchmaking() {
   const account = loadAccount();
   if (!account) return;
+  lobbyBgm.pause();
 
   matchmakingOverlay.classList.remove("hidden");
   matchmakingStatus.textContent = t("mmConnecting");
@@ -3188,6 +3199,7 @@ async function enterMatchmaking() {
 }
 
 function startChopWood() {
+  lobbyBgm.pause();
   clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
@@ -3942,6 +3954,7 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
+  lobbyBgm.pause();
   clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = true;
@@ -4009,6 +4022,7 @@ function exitTraining() {
 }
 
 function resetGame() {
+  lobbyBgm.pause();
   crosshairEl.classList.remove("hidden");
   clock.getDelta();
   battleMapGroup.visible = true;
@@ -7155,6 +7169,13 @@ function setupInput() {
       await state.audioContext.resume();
     }
   }
+
+  document.addEventListener("pointerdown", async () => {
+    await initAudio();
+    if (messageOverlay.style.display !== "none") {
+      playLobbyBgm();
+    }
+  }, { once: true });
 
   // 계정 생성 — 버튼 활성화 검사
   function validateCreateBtn() {
