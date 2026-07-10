@@ -4777,9 +4777,10 @@ function beginHealCircleAttack(fighter) {
 
   const fx = fighter.mesh.position.x;
   const fz = fighter.mesh.position.z;
-  const effectiveRange = fighter.hasPinkAreaHealAbility
+  let effectiveRange = fighter.hasPinkAreaHealAbility
     ? charDef.healCircleRange * 1.75
     : charDef.healCircleRange;
+  if (state.chopWoodMode) effectiveRange *= (1 + charDef.chopWoodRangeBonus);
   const r2 = effectiveRange * effectiveRange;
 
   for (const target of state.players) {
@@ -4791,7 +4792,8 @@ function beginHealCircleAttack(fighter) {
     const isAlly = state.chopWoodMode && target.team === fighter.team;
     if (isAlly) {
       const healDebuff = (target.poisonUntil && target.poisonUntil > state.gameTime) ? 0.5 : 1;
-      target.health = Math.min(target.maxHealth, target.health + charDef.healCircleHeal * healDebuff);
+      const healAmount = charDef.healCircleHeal * (1 + charDef.chopWoodHealBonus) * healDebuff;
+      target.health = Math.min(target.maxHealth, target.health + healAmount);
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
     } else if (!state.chopWoodMode || target.team !== fighter.team) {
       applyDamage(target, charDef.healCircleDamage, fighter);
