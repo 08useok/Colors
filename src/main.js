@@ -1079,6 +1079,10 @@ const state = {
   selectedCharacter: "red",
   currentMapId: 0,
   freezeUntil: 0,
+  lastCountdownRemain: null,
+  lastZonePhase: null,
+  lowHealthAlerted: false,
+  wasInBush: false,
   chopWoodMode: false,
   teams: null,
   playerTeam: null,
@@ -1173,6 +1177,57 @@ const audio = {
     } else if (type === "warning") {
       pulse({ wave: "square", from: 170, to: 210, duration: 0.13, peak: 0.05 });
       pulse({ wave: "triangle", from: 140, to: 170, duration: 0.18, peak: 0.02, delay: 0.02 });
+    } else if (type === "click") {
+      pulse({ wave: "sine", from: 900, to: 600, duration: 0.04, peak: 0.05 });
+    } else if (type === "hover") {
+      pulse({ wave: "sine", from: 700, to: 750, duration: 0.03, peak: 0.02 });
+    } else if (type === "open") {
+      pulse({ wave: "triangle", from: 300, to: 600, duration: 0.1, peak: 0.045 });
+    } else if (type === "close") {
+      pulse({ wave: "triangle", from: 500, to: 260, duration: 0.08, peak: 0.04 });
+    } else if (type === "purchase") {
+      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.08, peak: 0.05 });
+      pulse({ wave: "square", from: 660, to: 880, duration: 0.06, peak: 0.04, delay: 0.07 });
+    } else if (type === "purchaseFail") {
+      pulse({ wave: "sawtooth", from: 180, to: 120, duration: 0.1, peak: 0.05 });
+    } else if (type === "matchFound") {
+      pulse({ wave: "sine", from: 520, to: 780, duration: 0.15, peak: 0.05 });
+    } else if (type === "countdownTick") {
+      pulse({ wave: "square", from: 440, to: 440, duration: 0.08, peak: 0.06 });
+    } else if (type === "gameStart") {
+      pulse({ wave: "sawtooth", from: 200, to: 500, duration: 0.2, peak: 0.07 });
+      pulse({ wave: "triangle", from: 500, to: 700, duration: 0.15, peak: 0.05, delay: 0.05 });
+    } else if (type === "projectileFire") {
+      pulse({ wave: "sine", from: 800, to: 300, duration: 0.09, peak: 0.04 });
+    } else if (type === "explosion") {
+      pulse({ wave: "sawtooth", from: 90, to: 40, duration: 0.35, peak: 0.09 });
+      pulse({ wave: "square", from: 60, to: 30, duration: 0.3, peak: 0.06, delay: 0.02 });
+    } else if (type === "damaged") {
+      pulse({ wave: "triangle", from: 220, to: 120, duration: 0.12, peak: 0.07 });
+    } else if (type === "lowHealth") {
+      pulse({ wave: "square", from: 300, to: 260, duration: 0.15, peak: 0.06 });
+      pulse({ wave: "square", from: 260, to: 300, duration: 0.12, peak: 0.05, delay: 0.1 });
+    } else if (type === "heal") {
+      pulse({ wave: "sine", from: 500, to: 900, duration: 0.2, peak: 0.04 });
+      pulse({ wave: "sine", from: 700, to: 1100, duration: 0.18, peak: 0.03, delay: 0.06 });
+    } else if (type === "showdownStart") {
+      pulse({ wave: "sawtooth", from: 150, to: 300, duration: 0.3, peak: 0.08 });
+      pulse({ wave: "square", from: 300, to: 450, duration: 0.2, peak: 0.06, delay: 0.1 });
+    } else if (type === "zoneShrink") {
+      pulse({ wave: "triangle", from: 400, to: 150, duration: 0.4, peak: 0.05 });
+    } else if (type === "win") {
+      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.12, peak: 0.06 });
+      pulse({ wave: "triangle", from: 660, to: 880, duration: 0.15, peak: 0.06, delay: 0.1 });
+      pulse({ wave: "triangle", from: 880, to: 1100, duration: 0.18, peak: 0.05, delay: 0.25 });
+    } else if (type === "lose") {
+      pulse({ wave: "triangle", from: 440, to: 220, duration: 0.3, peak: 0.05 });
+      pulse({ wave: "triangle", from: 220, to: 110, duration: 0.35, peak: 0.04, delay: 0.2 });
+    } else if (type === "chopWood") {
+      pulse({ wave: "square", from: 220, to: 110, duration: 0.06, peak: 0.07 });
+    } else if (type === "bushEnter") {
+      pulse({ wave: "triangle", from: 350, to: 250, duration: 0.1, peak: 0.03 });
+    } else if (type === "bushExit") {
+      pulse({ wave: "triangle", from: 250, to: 350, duration: 0.1, peak: 0.03 });
     } else {
       return;
     }
@@ -2783,6 +2838,7 @@ function initTakeDownPlayers() {
 }
 
 function startTakeDown() {
+  audio.play("gameStart");
   lobbyBgm.pause();
   clock.getDelta();
   battleMapGroup.visible = true;
@@ -2804,6 +2860,9 @@ function startTakeDown() {
 
   state.gameTime = 0;
   state.freezeUntil = 3;
+  state.lowHealthAlerted = false;
+  state.lastZonePhase = null;
+  state.wasInBush = false;
   state.running = true;
   state.gameOver = false;
   state.mouseHeld = false;
@@ -3048,6 +3107,7 @@ function checkTakeDownEnd() {
     }
 
     const resultTag = playerRank <= 4 ? t("tdWin") : t("tdLose");
+    audio.play(playerRank <= 4 ? "win" : "lose");
     resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : t("tdTimeUp");
     resultBody.textContent = t("tdResultBody", resultTag, playerRank, player ? player.tdScore : 0, coinsEarned, rotationMsg);
     const statsLines = [];
@@ -3059,6 +3119,7 @@ function checkTakeDownEnd() {
     resultStreak.style.display = "none";
     resultOverlay.style.display = "flex";
     tdHud.classList.add("hidden");
+    audio.play("close");
     tdMapOverlay.classList.add("hidden");
     tdMapOpen = false;
     document.exitPointerLock?.();
@@ -3154,6 +3215,7 @@ async function enterMatchmaking() {
   if (!account) return;
   lobbyBgm.pause();
 
+  audio.play("open");
   matchmakingOverlay.classList.remove("hidden");
   matchmakingStatus.textContent = t("mmConnecting");
   matchmakingCountdown.classList.add("hidden");
@@ -3169,11 +3231,12 @@ async function enterMatchmaking() {
 
   updateMatchmakingUI();
 
-  mp.on("ROOM_JOINED", () => updateMatchmakingUI());
-  mp.on("PLAYER_JOINED", () => updateMatchmakingUI());
+  mp.on("ROOM_JOINED", () => { audio.play("matchFound"); updateMatchmakingUI(); });
+  mp.on("PLAYER_JOINED", () => { audio.play("matchFound"); updateMatchmakingUI(); });
   mp.on("PLAYER_LEFT", () => updateMatchmakingUI());
 
   mp.on("COUNTDOWN", ({ seconds }) => {
+    audio.play("countdownTick");
     matchmakingCountdown.classList.remove("hidden");
     matchmakingCountdown.textContent = seconds > 0 ? t("mmCountdown", seconds) : t("mmCountdownGo");
   });
@@ -3185,10 +3248,12 @@ async function enterMatchmaking() {
   });
 
   mp.on("GAME_START", async (data) => {
+    audio.play("close");
     matchmakingOverlay.classList.add("hidden");
     mpConfig = { players: data.players, isHost: data.isHost, hostId: data.hostId };
     setupMpHandlers();
     await initAudio();
+    audio.play("close");
     rotationOverlay.classList.add("hidden");
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("hidden");
@@ -3201,6 +3266,7 @@ async function enterMatchmaking() {
 }
 
 function startChopWood() {
+  audio.play("gameStart");
   lobbyBgm.pause();
   clock.getDelta();
   battleMapGroup.visible = false;
@@ -3214,6 +3280,9 @@ function startChopWood() {
 
   state.gameTime = 0;
   state.freezeUntil = 5;
+  state.lowHealthAlerted = false;
+  state.lastZonePhase = null;
+  state.wasInBush = false;
   state.running = true;
   state.gameOver = false;
   state.mouseHeld = false;
@@ -4024,6 +4093,7 @@ function exitTraining() {
 }
 
 function resetGame() {
+  audio.play("gameStart");
   lobbyBgm.pause();
   crosshairEl.classList.remove("hidden");
   clock.getDelta();
@@ -4045,6 +4115,9 @@ function resetGame() {
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
   state.freezeUntil = 5;
+  state.lowHealthAlerted = false;
+  state.lastZonePhase = null;
+  state.wasInBush = false;
   state.running = true;
   state.gameOver = false;
   state.mouseHeld = false;
@@ -4469,7 +4542,7 @@ function beginBulletAttack(fighter) {
   });
 
   if (fighter.isPlayer) {
-    audio.play("attack");
+    audio.play("projectileFire");
   }
   return true;
 }
@@ -4526,7 +4599,7 @@ function beginBoomerangAttack(fighter) {
   });
 
   if (fighter.isPlayer) {
-    audio.play("attack");
+    audio.play("projectileFire");
   }
   return true;
 }
@@ -4572,7 +4645,7 @@ function beginBombAttack(fighter) {
     isBomb: true,
     projRadius: 0.70,
   });
-  if (fighter.isPlayer) audio.play("attack");
+  if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
 
@@ -4667,7 +4740,7 @@ function beginElectricAttack(fighter) {
     mesh,
     isElectric: true,
   });
-  if (fighter.isPlayer) audio.play("attack");
+  if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
 
@@ -4745,7 +4818,7 @@ function beginSpreadLineAttack(fighter) {
       isSpreadLine: true,
     });
   }
-  if (fighter.isPlayer) audio.play("attack");
+  if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
 
@@ -4811,6 +4884,7 @@ function beginHealCircleAttack(fighter) {
       const healAmount = charDef.healCircleHeal * (1 + charDef.chopWoodHealBonus) * healDebuff;
       target.health = Math.min(target.maxHealth, target.health + healAmount);
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
+      if (fighter.isPlayer || target.isPlayer) audio.play("heal");
     } else if (!state.chopWoodMode || target.team !== fighter.team) {
       applyDamage(target, charDef.healCircleDamage, fighter);
       if (fighter.isPlayer) {
@@ -4950,7 +5024,7 @@ function beginPoisonAttack(fighter) {
       isVial: true,
     });
   }
-  if (fighter.isPlayer) audio.play("attack");
+  if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
 
@@ -5087,6 +5161,7 @@ function updateProjectiles(dt) {
         if (proj.isBomb) {
           spawnBombSplash(proj.x, proj.z, proj.ownerId);
           createBombExplosionEffect(proj.x, proj.z);
+          audio.play("explosion");
         }
         if (proj.isElectric) {
           const shooter = state.players.find((p) => p.id === proj.ownerId);
@@ -5153,7 +5228,7 @@ function updateProjectiles(dt) {
     if (!hit && !(proj.isVial && proj.y > 1.5)) {
       for (const solid of state.solids) {
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
-          if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); }
+          if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); audio.play("explosion"); }
           if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
           hit = true;
           break;
@@ -5162,7 +5237,7 @@ function updateProjectiles(dt) {
     }
 
     if (hit || proj.distTraveled >= proj.range) {
-      if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); }
+      if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); audio.play("explosion"); }
       if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
       state.projectiles.splice(i, 1);
@@ -5366,11 +5441,19 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
 
   if (target.isPlayer) {
     state.feedback.hitFlashUntil = state.gameTime + 0.18;
-    audio.play("hit");
+    audio.play("damaged");
     if (!attacker || target.id !== attacker.id) {
       tempVec3.copy(target.mesh.position);
       if (!noPopup) createDamagePopup(tempVec3, dealt, "#ff5c5c");
       showDamageTakenIndicator(dealt);
+    }
+    if (target.health / target.maxHealth < 0.3) {
+      if (!state.lowHealthAlerted) {
+        state.lowHealthAlerted = true;
+        audio.play("lowHealth");
+      }
+    } else {
+      state.lowHealthAlerted = false;
     }
   }
 
@@ -6420,6 +6503,12 @@ function updateBushVisuals() {
   const player = getPlayer();
   if (!player) return;
 
+  const inBushNow = isInBush(player);
+  if (inBushNow !== state.wasInBush) {
+    audio.play(inBushNow ? "bushEnter" : "bushExit");
+    state.wasInBush = inBushNow;
+  }
+
   for (const bush of state.bushes) {
     if (!bush.mesh) continue;
     const dx = player.mesh.position.x - bush.x;
@@ -6597,9 +6686,14 @@ function updateHud() {
     survivorsLabel.textContent = `${alive}`;
     if (alive === 2 && !state.showdownAnnounced && !state.gameOver) {
       state.showdownAnnounced = true;
+      audio.play("showdownStart");
       triggerShowdownAnnounce();
     }
     const zone = getCurrentZone();
+    if (state.lastZonePhase !== null && state.lastZonePhase !== zone.phaseEnd) {
+      audio.play("zoneShrink");
+    }
+    state.lastZonePhase = zone.phaseEnd;
     const showZoneEvent = state.gameTime >= zonePhases[1].start;
     zonePanel.classList.toggle("is-hidden-panel", !showZoneEvent);
     zoneState.textContent = t(zone.labelKey);
@@ -6658,7 +6752,7 @@ function updateChopping(dt) {
         tree.health = Math.max(0, tree.health - dmg);
         fighter.chopDamageDealt += dmg;
         if (fighter.isPlayer) {
-          audio.play("hit");
+          audio.play("chopWood");
         }
       }
     } else {
@@ -6738,8 +6832,10 @@ function checkEndState() {
       state.gameOver = true;
       state.running = false;
       if (winningTeam === allyTeam) {
+        audio.play("win");
         resultTitle.textContent = t("cwWin");
       } else {
+        audio.play("lose");
         resultTitle.textContent = t("cwLose");
       }
       resultBody.textContent = "";
@@ -6762,6 +6858,7 @@ function checkEndState() {
     if (player && player.dead) {
       state.gameOver = true;
       state.running = false;
+      audio.play("lose");
       resultTitle.textContent = t("resultKO");
       resultBody.textContent = t("trainingKO");
       resultStats.textContent = t("dmgDealt", Math.round(player.damageDealt));
@@ -6793,15 +6890,19 @@ function checkEndState() {
       const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
 
       if (playerDead && alive.length > 1) {
+        audio.play("lose");
         resultTitle.textContent = t("rankN", playerRank);
         resultBody.textContent = t("resultDead", deltaText, totalText);
       } else if (!winner) {
+        audio.play("lose");
         resultTitle.textContent = t("rankN", playerRank);
         resultBody.textContent = t("resultDraw", deltaText, totalText);
       } else if (winner.isPlayer) {
+        audio.play("win");
         resultTitle.textContent = t("rank1");
         resultBody.textContent = t("resultWin", deltaText, totalText);
       } else {
+        audio.play("lose");
         resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
         resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
       }
@@ -6893,6 +6994,12 @@ function animate() {
     if (frozen) {
       const remain = Math.ceil(state.freezeUntil - state.gameTime);
       mapNameEl.textContent = remain > 0 ? `${remain}` : "";
+      if (remain !== state.lastCountdownRemain) {
+        state.lastCountdownRemain = remain;
+        if (remain > 0) audio.play("countdownTick");
+      }
+    } else {
+      state.lastCountdownRemain = null;
     }
 
     checkEndState();
@@ -7181,6 +7288,19 @@ function setupInput() {
     }
   }, { once: true });
 
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (btn && !btn.disabled) audio.play("click");
+  });
+
+  let lastHoverBtn = null;
+  document.addEventListener("pointerover", (e) => {
+    const btn = e.target.closest("button:not(:disabled)");
+    if (btn === lastHoverBtn) return;
+    lastHoverBtn = btn;
+    if (btn) audio.play("hover");
+  });
+
   // 계정 생성 — 버튼 활성화 검사
   function validateCreateBtn() {
     createAccountBtn.disabled = !idInput.value.trim() || !nicknameInput.value.trim();
@@ -7436,6 +7556,7 @@ function setupInput() {
         const cost = parseInt(btn.dataset.cost);
         const curLv = getCharLevel(acc, char);
         if (curLv >= MAX_CHAR_LEVEL || acc.coins < cost) return;
+        audio.play("purchase");
         acc.coins -= cost;
         acc.charLevels[char] = curLv + 1;
         saveAccount(acc);
@@ -7485,6 +7606,7 @@ function setupInput() {
         const sid = btn.dataset.skin;
         const cost = parseInt(btn.dataset.cost);
         if (acc.ownedSkins.includes(sid) || acc.coins < cost) return;
+        audio.play("purchase");
         acc.coins -= cost;
         acc.ownedSkins.push(sid);
         acc.selectedSkins[SKINS[sid].character] = sid;
@@ -7516,6 +7638,7 @@ function setupInput() {
   }
 
   openShopBtn.addEventListener("click", () => {
+    audio.play("open");
     shopOverlay.classList.remove("hidden");
     renderShopLevelUp();
     renderShopSkins();
@@ -7577,11 +7700,13 @@ function setupInput() {
   }
 
   openRotationBtn.addEventListener("click", () => {
+    audio.play("open");
     rotationOverlay.classList.remove("hidden");
     renderRotationScreen();
   });
 
   rotationCloseBtn.addEventListener("click", () => {
+    audio.play("close");
     rotationOverlay.classList.add("hidden");
   });
 
@@ -7617,11 +7742,13 @@ function setupInput() {
         state.selectedCharacter = btn.dataset.char;
         const acc = loadAccount();
         if (acc) { acc.selectedCharacter = btn.dataset.char; saveAccount(acc); }
+        audio.play("close");
         tdCharSelectOverlay.classList.add("hidden");
         onSelect();
       });
     });
 
+    audio.play("open");
     tdCharSelectOverlay.classList.remove("hidden");
   }
 
@@ -7631,7 +7758,8 @@ function setupInput() {
 
   document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
     openTdCharSelect(() => {
-      rotationOverlay.classList.add("hidden");
+      audio.play("close");
+    rotationOverlay.classList.add("hidden");
       state.tdSolo = false;
       enterMatchmaking();
     });
@@ -7639,7 +7767,8 @@ function setupInput() {
 
   document.getElementById("rotation-takedown-solo-btn").addEventListener("click", () => {
     openTdCharSelect(() => {
-      rotationOverlay.classList.add("hidden");
+      audio.play("close");
+    rotationOverlay.classList.add("hidden");
       state.tdSolo = true;
       startTakeDown();
     });
@@ -7649,20 +7778,24 @@ function setupInput() {
   matchmakingCancelBtn.addEventListener("click", () => {
     mp.disconnect();
     mpConfig = null;
+    audio.play("close");
     matchmakingOverlay.classList.add("hidden");
   });
 
   tdMapInfoBtn.addEventListener("click", () => {
+    audio.play("open");
     tdMapOverlay.classList.remove("hidden");
     tdMapOpen = true;
   });
 
   tdMapCloseBtn.addEventListener("click", () => {
+    audio.play("close");
     tdMapOverlay.classList.add("hidden");
     tdMapOpen = false;
   });
 
   shopCloseBtn.addEventListener("click", () => {
+    audio.play("close");
     shopOverlay.classList.add("hidden");
     const acc = loadAccount();
     if (acc) {
@@ -7744,7 +7877,8 @@ function setupInput() {
       emoteGrid.appendChild(makeCard(em.emoji, em.name, em.price, owned, equipped,
         () => {
           const a = loadAccount();
-          if ((a.coins ?? 0) < em.price) return toast("코인이 부족합니다");
+          if ((a.coins ?? 0) < em.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }
+          audio.play("purchase");
           a.coins -= em.price;
           a.cosmetics.ownedEmotes.push(id);
           const firstEmpty = a.cosmetics.equippedEmotes.indexOf(null);
@@ -7782,7 +7916,8 @@ function setupInput() {
       bgGrid.appendChild(makeCard(preview, bg.name, bg.price, owned, equipped,
         () => {
           const a = loadAccount();
-          if ((a.coins ?? 0) < bg.price) return toast("코인이 부족합니다");
+          if ((a.coins ?? 0) < bg.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }
+          audio.play("purchase");
           a.coins -= bg.price;
           a.cosmetics.ownedBgs.push(id);
           a.cosmetics.equippedBg = id;
@@ -7810,7 +7945,8 @@ function setupInput() {
       badgeGrid.appendChild(makeCard(preview, badge.name, badge.price, owned, equipped,
         () => {
           const a = loadAccount();
-          if ((a.coins ?? 0) < badge.price) return toast("코인이 부족합니다");
+          if ((a.coins ?? 0) < badge.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }
+          audio.play("purchase");
           a.coins -= badge.price;
           a.cosmetics.ownedBadges.push(id);
           a.cosmetics.equippedBadge = id;
@@ -7853,7 +7989,8 @@ function setupInput() {
       state.takedownMode = false;
       state.tdBoss = null;
       tdHud.classList.add("hidden");
-      tdMapOverlay.classList.add("hidden");
+      audio.play("close");
+    tdMapOverlay.classList.add("hidden");
       tdMapOpen = false;
       state.running = false;
       state.gameOver = true;
