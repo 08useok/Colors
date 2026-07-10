@@ -78,6 +78,8 @@ const survivorsLabel = document.getElementById("survivors");
 const survivorsPanel = survivorsLabel.parentElement;
 const showdownAnnounceEl = document.getElementById("showdown-announce");
 const showdownMusic = new Audio("./assets/showdown-theme.mp3");
+const showdownBgm = new Audio("./assets/showdown-bgm.mp3");
+showdownBgm.loop = true;
 const zonePanel = document.getElementById("zone-panel");
 const zoneState = document.getElementById("zone-state");
 const zoneTimer = document.getElementById("zone-timer");
@@ -528,6 +530,8 @@ const CHARACTERS = {
     healCircleRange: 4.5,
     healCircleDamage: 2400,
     healCircleHeal: 1800,
+    chopWoodHealBonus: 0.3,
+    chopWoodRangeBonus: 0.2,
     moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
@@ -887,6 +891,7 @@ function showLobby() {
   crosshairEl.classList.add("hidden");
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
+  showdownBgm.pause();
   mapNameEl.classList.add("hidden");
   const sidePanel = document.getElementById("lobby-side-panel");
   const colorButtons = document.getElementById("color-buttons");
@@ -4035,6 +4040,11 @@ function resetGame() {
   showdownAnnounceEl.classList.add("hidden");
   showdownAnnounceEl.classList.remove("showdown-pop");
   showdownMusic.pause();
+  if (state.audioEnabled) {
+    showdownBgm.currentTime = 0;
+    showdownBgm.volume = 0.35;
+    showdownBgm.play().catch(() => {});
+  }
   state.effects.forEach((effect) => scene.remove(effect.mesh));
   state.effects = [];
   state.splashAccum = {};
@@ -6749,6 +6759,7 @@ function checkEndState() {
   if (alive.length <= 1 || playerDead) {
     state.gameOver = true;
     state.running = false;
+    showdownBgm.pause();
     try {
       const winner = alive[0];
       const playerRank = (!player || !player.dead)
