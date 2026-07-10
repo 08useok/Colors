@@ -78,6 +78,7 @@ const survivorsLabel = document.getElementById("survivors");
 const survivorsPanel = survivorsLabel.parentElement;
 const showdownAnnounceEl = document.getElementById("showdown-announce");
 const showdownMusic = new Audio("./assets/showdown-theme.mp3");
+showdownMusic.loop = true;
 const showdownBgm = new Audio("./assets/showdown-bgm.mp3");
 showdownBgm.loop = true;
 const lobbyBgm = new Audio("./assets/lobby-bgm.mp3");
@@ -900,6 +901,7 @@ function showLobby() {
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   showdownBgm.pause();
+  showdownMusic.pause();
   playLobbyBgm();
   mapNameEl.classList.add("hidden");
   const sidePanel = document.getElementById("lobby-side-panel");
@@ -6449,6 +6451,7 @@ function triggerShowdownAnnounce() {
   showdownAnnounceEl.classList.add("showdown-pop");
   setTimeout(() => showdownAnnounceEl.classList.add("hidden"), 1800);
   if (state.audioEnabled) {
+    showdownBgm.pause();
     showdownMusic.currentTime = 0;
     showdownMusic.volume = 0.6;
     showdownMusic.play().catch(() => {});
@@ -6776,6 +6779,7 @@ function checkEndState() {
     state.gameOver = true;
     state.running = false;
     showdownBgm.pause();
+    showdownMusic.pause();
     try {
       const winner = alive[0];
       const playerRank = (!player || !player.dead)
