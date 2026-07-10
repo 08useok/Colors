@@ -1857,8 +1857,8 @@ function renderPreview(dt) {
   const cycle = Math.sin(previewTime * w.cycleSpeed * 0.4);
   let leftArmX = cycle * w.armAmp * 0.5;
   let rightArmX = -cycle * w.armAmp * 0.5;
-  let leftArmZ = w.armRestZ;
-  let rightArmZ = -w.armRestZ;
+  let leftArmZ = -w.armRestZ;
+  let rightArmZ = w.armRestZ;
   let headX = 0;
 
   let leftElbowX = 0;
@@ -1866,40 +1866,40 @@ function renderPreview(dt) {
   if (previewCharType === "red") {
     leftArmX += -0.7 + Math.sin(previewTime * 1.8) * 0.03;
     rightArmX += -0.7 + Math.sin(previewTime * 1.8 + 1.5) * 0.03;
-    leftArmZ = 0.05; rightArmZ = -0.05; headX = -0.04;
+    leftArmZ = -0.05; rightArmZ = 0.05; headX = -0.04;
     leftElbowX = -0.6 + Math.sin(previewTime * 1.8) * 0.05;
     rightElbowX = -0.6 + Math.sin(previewTime * 1.8 + 1.5) * 0.05;
   } else if (previewCharType === "pink") {
-    leftArmX = -0.55; leftArmZ = 0.20;
-    rightArmX = -0.25 + Math.sin(previewTime * 2.5) * 0.04; rightArmZ = -0.10;
+    leftArmX = -0.55; leftArmZ = -0.20;
+    rightArmX = -0.25 + Math.sin(previewTime * 2.5) * 0.04; rightArmZ = 0.10;
     headX = -0.06;
     leftElbowX = -0.7;
     rightElbowX = -0.4 + Math.sin(previewTime * 2.5) * 0.06;
   } else if (previewCharType === "green") {
-    rightArmX = -1.05 + Math.sin(previewTime * 1.5) * 0.04; rightArmZ = -0.22;
+    rightArmX = -1.05 + Math.sin(previewTime * 1.5) * 0.04; rightArmZ = 0.22;
     rightElbowX = 0.25;
-    leftArmX = -0.15; leftArmZ = 0.08;
+    leftArmX = -0.15; leftArmZ = -0.08;
     headX = -0.05;
   } else if (previewCharType === "blue") {
-    leftArmX = -0.80; leftArmZ = -0.32;
-    rightArmX = -0.80; rightArmZ = 0.32;
+    leftArmX = -0.80; leftArmZ = 0.32;
+    rightArmX = -0.80; rightArmZ = -0.32;
     leftElbowX = -0.55; rightElbowX = -0.55;
     headX = -0.10 + Math.sin(previewTime * 0.7) * 0.02;
   } else if (previewCharType === "orange") {
-    rightArmX = -0.15 + Math.sin(previewTime * 1.2) * 0.02; rightArmZ = -0.50;
+    rightArmX = -0.15 + Math.sin(previewTime * 1.2) * 0.02; rightArmZ = 0.50;
     rightElbowX = 0.85;
     leftArmX = -0.10; headX = -0.04;
   } else if (previewCharType === "yellow") {
-    leftArmX = -1.10; leftArmZ = 0.10;
-    rightArmX = -0.95; rightArmZ = -0.10;
+    leftArmX = -1.10; leftArmZ = -0.10;
+    rightArmX = -0.95; rightArmZ = 0.10;
     leftElbowX = -0.22; rightElbowX = -0.30;
     headX = -0.18;
   } else if (previewCharType === "cyan") {
-    rightArmX = -0.65 + Math.sin(previewTime * 0.9) * 0.02; rightArmZ = -0.12;
+    rightArmX = -0.65 + Math.sin(previewTime * 0.9) * 0.02; rightArmZ = 0.12;
     rightElbowX = -0.10;
-    leftArmX = -0.15; leftArmZ = 0.08; headX = -0.06;
+    leftArmX = -0.15; leftArmZ = -0.08; headX = -0.06;
   } else if (previewCharType === "purple") {
-    rightArmX = -0.90; rightArmZ = -0.18;
+    rightArmX = -0.90; rightArmZ = 0.18;
     rightElbowX = -0.75;
     leftArmX = -0.20;
     headX = -0.04 + Math.sin(previewTime * 1.3) * 0.02;
@@ -6044,8 +6044,8 @@ function updateFighterAnimation(fighter, dt) {
   let rightLeg = -Math.sin(walkCycle) * walkStyle.legAmp * swing;
   let leftArmX = -Math.sin(walkCycle) * walkStyle.armAmp * swing;
   let rightArmX = Math.sin(walkCycle) * walkStyle.armAmp * swing;
-  let leftArmZ = walkStyle.armRestZ;
-  let rightArmZ = -walkStyle.armRestZ;
+  let leftArmZ = -walkStyle.armRestZ;
+  let rightArmZ = walkStyle.armRestZ;
   let bodyZ = Math.sin(walkCycle * 0.5) * 0.03;
   let bodyY = 0;
   let headX = 0;
@@ -6056,41 +6056,41 @@ function updateFighterAnimation(fighter, dt) {
   if (charType === "red") {
     leftArmX += -0.7 + Math.sin(state.gameTime * 2.5) * 0.04;
     rightArmX += -0.7 + Math.sin(state.gameTime * 2.5 + 1) * 0.04;
-    leftArmZ = 0.05;
-    rightArmZ = -0.05;
+    leftArmZ = -0.05;
+    rightArmZ = 0.05;
     leftElbowX = -1.0 + Math.sin(state.gameTime * 2.5) * 0.05;
     rightElbowX = -1.0 + Math.sin(state.gameTime * 2.5 + 1) * 0.05;
     bodyZ += Math.sin(walkCycle) * 0.02 * swing;
     headX += -0.06;
   } else if (charType === "pink") {
     leftArmX = -0.55;
-    leftArmZ = 0.20;
+    leftArmZ = -0.20;
     leftElbowX = -0.7;
     rightArmX = -0.25 + Math.sin(state.gameTime * 2.5) * 0.04;
-    rightArmZ = -0.10;
+    rightArmZ = 0.10;
     rightElbowX = -0.8 + Math.sin(state.gameTime * 3) * 0.1;
     headX = -0.05;
   } else if (charType === "green") {
-    rightArmX = -1.05 + Math.sin(state.gameTime * 1.5) * 0.04; rightArmZ = -0.22;
+    rightArmX = -1.05 + Math.sin(state.gameTime * 1.5) * 0.04; rightArmZ = 0.22;
     rightElbowX = 0.25;
-    leftArmX += -0.15; leftArmZ = 0.08; headX = -0.05;
+    leftArmX += -0.15; leftArmZ = -0.08; headX = -0.05;
   } else if (charType === "blue") {
-    leftArmX = -0.80; leftArmZ = -0.32;
-    rightArmX = -0.80; rightArmZ = 0.32;
+    leftArmX = -0.80; leftArmZ = 0.32;
+    rightArmX = -0.80; rightArmZ = -0.32;
     leftElbowX = -0.55; rightElbowX = -0.55;
     headX = -0.10 + Math.sin(state.gameTime * 0.7) * 0.02;
   } else if (charType === "orange") {
-    rightArmX = -0.15 + Math.sin(state.gameTime * 1.2) * 0.02; rightArmZ = -0.50;
+    rightArmX = -0.15 + Math.sin(state.gameTime * 1.2) * 0.02; rightArmZ = 0.50;
     rightElbowX = 0.85; leftArmX += -0.10; headX = -0.04;
   } else if (charType === "yellow") {
-    leftArmX = -1.10; leftArmZ = 0.10;
-    rightArmX = -0.95; rightArmZ = -0.10;
+    leftArmX = -1.10; leftArmZ = -0.10;
+    rightArmX = -0.95; rightArmZ = 0.10;
     leftElbowX = -0.22; rightElbowX = -0.30; headX = -0.18;
   } else if (charType === "cyan") {
-    rightArmX = -0.65 + Math.sin(state.gameTime * 0.9) * 0.03; rightArmZ = -0.12;
-    rightElbowX = -0.10; leftArmX += -0.15; leftArmZ = 0.08; headX = -0.06;
+    rightArmX = -0.65 + Math.sin(state.gameTime * 0.9) * 0.03; rightArmZ = 0.12;
+    rightElbowX = -0.10; leftArmX += -0.15; leftArmZ = -0.08; headX = -0.06;
   } else if (charType === "purple") {
-    rightArmX = -0.90; rightArmZ = -0.18;
+    rightArmX = -0.90; rightArmZ = 0.18;
     rightElbowX = -0.75; leftArmX += -0.20; headX = -0.04;
   }
 
@@ -6195,9 +6195,9 @@ function updateFighterAnimation(fighter, dt) {
   body.leftShin.rotation.x = Math.max(0, leftLeg * 0.5);
   body.rightShin.rotation.x = Math.max(0, rightLeg * 0.5);
   body.leftShoulder.rotation.x = leftArmX * 0.35;
-  body.leftShoulder.rotation.z = (leftArmZ - Math.PI * 0.1) * 0.3;
+  body.leftShoulder.rotation.z = (leftArmZ + Math.PI * 0.1) * 0.3;
   body.rightShoulder.rotation.x = rightArmX * 0.35;
-  body.rightShoulder.rotation.z = (rightArmZ + Math.PI * 0.1) * 0.3;
+  body.rightShoulder.rotation.z = (rightArmZ - Math.PI * 0.1) * 0.3;
   body.leftThigh.rotation.x = leftLeg * 0.45;
   body.rightThigh.rotation.x = rightLeg * 0.45;
   body.body.rotation.z = bodyZ;
