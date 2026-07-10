@@ -106,6 +106,7 @@ export const LANGS = {
     pv10c: "트로피 · 순위 시스템", pv10d: "수풀 은신 메커닉", pv10e: "훈련장",
     // Chop Wood
     modeShowdown: "쇼다운", modeChopWood: "찹 우드", modeBack: "뒤로",
+    showdownAnnounce: "쇼다운!",
     chopWood: "찹 우드", startChopWood: "찹 우드 시작",
     cwTreeHP: "나무 HP", cwAxeLabel: "도끼",
     cwChopping: "벌목 중...",
@@ -341,6 +342,7 @@ export const LANGS = {
     pv10c: "Trophy & ranking system", pv10d: "Bush stealth mechanic", pv10e: "Training mode",
     // Chop Wood
     modeShowdown: "Showdown", modeChopWood: "Chop Wood", modeBack: "Back",
+    showdownAnnounce: "Showdown!",
     chopWood: "Chop Wood", startChopWood: "Start Chop Wood",
     cwTreeHP: "Tree HP", cwAxeLabel: "Axe",
     cwChopping: "Chopping...",

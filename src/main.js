@@ -76,6 +76,8 @@ const spreadState = document.getElementById("spread-state");
 const reloadBar = document.getElementById("reload-bar");
 const survivorsLabel = document.getElementById("survivors");
 const survivorsPanel = survivorsLabel.parentElement;
+const showdownAnnounceEl = document.getElementById("showdown-announce");
+const showdownMusic = new Audio("./assets/showdown-theme.mp3");
 const zonePanel = document.getElementById("zone-panel");
 const zoneState = document.getElementById("zone-state");
 const zoneTimer = document.getElementById("zone-timer");
@@ -1064,6 +1066,7 @@ const state = {
   chopWoodMode: false,
   teams: null,
   playerTeam: null,
+  showdownAnnounced: false,
 };
 
 const battleMapGroup = new THREE.Group();
@@ -4028,6 +4031,10 @@ function resetGame() {
   state.projectiles.forEach((p) => scene.remove(p.mesh));
   state.projectiles = [];
   state.deathOrder = [];
+  state.showdownAnnounced = false;
+  showdownAnnounceEl.classList.add("hidden");
+  showdownAnnounceEl.classList.remove("showdown-pop");
+  showdownMusic.pause();
   state.effects.forEach((effect) => scene.remove(effect.mesh));
   state.effects = [];
   state.splashAccum = {};
@@ -6409,6 +6416,19 @@ function updateBushVisuals() {
   }
 }
 
+function triggerShowdownAnnounce() {
+  showdownAnnounceEl.classList.remove("showdown-pop");
+  void showdownAnnounceEl.offsetWidth;
+  showdownAnnounceEl.classList.remove("hidden");
+  showdownAnnounceEl.classList.add("showdown-pop");
+  setTimeout(() => showdownAnnounceEl.classList.add("hidden"), 1800);
+  if (state.audioEnabled) {
+    showdownMusic.currentTime = 0;
+    showdownMusic.volume = 0.6;
+    showdownMusic.play().catch(() => {});
+  }
+}
+
 function updateHud() {
   const player = getPlayer();
   if (!player) {
@@ -6546,6 +6566,10 @@ function updateHud() {
     survivorsPanel.style.display = "";
     const alive = state.players.filter((fighter) => !fighter.dead).length;
     survivorsLabel.textContent = `${alive}`;
+    if (alive === 2 && !state.showdownAnnounced && !state.gameOver) {
+      state.showdownAnnounced = true;
+      triggerShowdownAnnounce();
+    }
     const zone = getCurrentZone();
     const showZoneEvent = state.gameTime >= zonePhases[1].start;
     zonePanel.classList.toggle("is-hidden-panel", !showZoneEvent);
