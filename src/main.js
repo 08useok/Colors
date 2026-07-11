@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js";
 import { mp } from "./multiplayer.js";
 // CHARACTERS는 아래 인라인 정의 사용
@@ -1274,7 +1275,7 @@ function createStickman(color, skinId) {
   // Pink: 리깅된 GLB 모델
   if (color === 0xF4CDD3 && _pinkRiggedCache) {
     const group = new THREE.Group();
-    const scene = _pinkRiggedCache.scene.clone(true);
+    const scene = skeletonClone(_pinkRiggedCache.scene);
     const box = new THREE.Box3().setFromObject(scene);
     const sizeVec = box.getSize(new THREE.Vector3());
     const scale = 3.0 / sizeVec.y;
@@ -1284,7 +1285,10 @@ function createStickman(color, skinId) {
     group.add(scene);
 
     let skinnedMesh = null;
-    scene.traverse(c => { if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c; });
+    scene.traverse(c => {
+      if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c;
+      if (c.isMesh) c.frustumCulled = false;
+    });
     const sk = skinnedMesh?.skeleton ?? null;
     const gb = n => sk?.getBoneByName(n) ?? null;
 
