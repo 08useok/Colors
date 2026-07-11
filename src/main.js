@@ -1991,6 +1991,10 @@ function setupPinkFrontModel() {
 
 function renderPinkFront(dt) {
   if (!pinkFrontActive || !pinkFrontModel) return;
+  pinkFrontTime += dt;
+  const t = pinkFrontTime;
+  pinkFrontModel.position.y = Math.sin(t * 1.4) * 0.08;
+  pinkFrontModel.rotation.z = Math.sin(t * 0.9) * 0.015;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
 }
 
