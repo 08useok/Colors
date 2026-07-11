@@ -1943,7 +1943,7 @@ function setPreviewCharacter(charType) {
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-      const scale = 5.0 / size.y;
+      const scale = 3.5 / size.y;
       m.scale.setScalar(scale);
       m.position.x = -center.x * scale;
       m.position.y = -box.min.y * scale;
