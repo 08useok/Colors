@@ -1946,7 +1946,7 @@ function setPreviewCharacter(charType) {
       const scale = 3.5 / size.y;
       m.scale.setScalar(scale);
       m.position.x = -center.x * scale;
-      m.position.y = -box.min.y * scale;
+      m.position.y = -box.min.y * scale - size.y * scale * 0.12;
       m.position.z = -center.z * scale;
       m.userData = {}; // 빈 userData (renderPreview에서 스킵)
       previewModel = m;
