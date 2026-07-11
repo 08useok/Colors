@@ -1953,7 +1953,9 @@ pinkFrontScene.add(new THREE.AmbientLight(0xffffff, 0.8));
 const _pfl = new THREE.DirectionalLight(0xfff0f0, 1.2);
 _pfl.position.set(2, 5, 4);
 pinkFrontScene.add(_pfl);
-pinkFrontScene.add(Object.assign(new THREE.DirectionalLight(0xc0d8ff, 0.3), { position: new THREE.Vector3(-2, 1, -2) }));
+const _pfl2 = new THREE.DirectionalLight(0xc0d8ff, 0.3);
+_pfl2.position.set(-2, 1, -2);
+pinkFrontScene.add(_pfl2);
 
 let pinkFrontModel = null, pinkFrontSk = null, pinkFrontTime = 0, pinkFrontActive = false;
 
