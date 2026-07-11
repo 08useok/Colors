@@ -1,4 +1,5 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
+import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
 import { LANGS } from "./LANGS/langs.js";
 import { mp } from "./multiplayer.js";
 // CHARACTERS는 아래 인라인 정의 사용
@@ -1883,6 +1884,9 @@ previewScene.add(previewRimLight);
 
 let previewModel, previewChar, previewCharType;
 let previewTime = 0;
+let previewIsGlb = false;
+
+const _glbLoader = new GLTFLoader();
 
 function setPreviewCharacter(charType) {
   const acc = loadAccount();
@@ -1894,19 +1898,49 @@ function setPreviewCharacter(charType) {
   previewCharType = charType;
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
-  previewModel = createStickman(charDef.color, skinId);
-  previewModel.position.y = 0;
-  previewScene.add(previewModel);
+
+  if (charType === "pink") {
+    previewIsGlb = true;
+    _glbLoader.load("./assets/pink-model.glb", (gltf) => {
+      if (previewCharType !== "pink") return; // 중간에 다른 캐릭터 선택하면 무시
+      if (previewModel) previewScene.remove(previewModel);
+      const m = gltf.scene;
+      // 크기 자동 맞춤 (게임 스틱맨 기준 약 3.2 높이에 맞춤)
+      const box = new THREE.Box3().setFromObject(m);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+      const scale = 3.0 / size.y;
+      m.scale.setScalar(scale);
+      m.position.x = -center.x * scale;
+      m.position.y = -box.min.y * scale;
+      m.position.z = -center.z * scale;
+      m.userData = {}; // 빈 userData (renderPreview에서 스킵)
+      previewModel = m;
+      previewScene.add(previewModel);
+    });
+  } else {
+    previewIsGlb = false;
+    previewModel = createStickman(charDef.color, skinId);
+    previewModel.position.y = 0;
+    previewScene.add(previewModel);
+  }
 }
 
 function renderPreview(dt) {
   if (!previewModel) return;
   previewTime += dt;
-  const parts = previewModel.userData;
   const charDef = CHARACTERS[previewCharType];
   if (!charDef) return;
 
   previewModel.rotation.y = previewTime * 0.6;
+
+  // GLB 모델 (Pink)은 뼈대가 없으므로 회전만 하고 종료
+  if (previewIsGlb) {
+    previewRenderer.render(previewScene, previewCamera);
+    return;
+  }
+
+  const parts = previewModel.userData;
 
   const w = charDef.walk;
   const cycle = Math.sin(previewTime * w.cycleSpeed * 0.4);
