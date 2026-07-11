@@ -1973,6 +1973,7 @@ function setupPinkFrontModel() {
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
     pinkFrontSk = sm?.skeleton ?? null;
+    s.rotation.y = Math.PI;
     pinkFrontModel = s;
     // 캔버스 실제 크기로 렌더러 설정
     const w = pinkFrontCanvas.clientWidth || 200;
