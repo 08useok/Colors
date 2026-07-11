@@ -2019,13 +2019,14 @@ function setPreviewCharacter(charType) {
     const setupPinkPreview = (gltf) => {
       if (previewCharType !== "pink") return;
       if (previewModel) previewScene.remove(previewModel);
-      const m = gltf.scene.clone(true);
+      const m = skeletonClone(gltf.scene);
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
       const scale = 3.5 / size.y;
       m.scale.setScalar(scale);
       m.position.set(-center.x * scale, -box.min.y * scale - size.y * scale * 0.12, -center.z * scale);
+      m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
       previewModel = m;
       previewScene.add(previewModel);
