@@ -1271,6 +1271,39 @@ function createGround(group = scene) {
 }
 
 function createStickman(color, skinId) {
+  // Pink: GLB 모델 사용 (캐시가 준비된 경우)
+  if (color === 0xF4CDD3 && _pinkGlbCache) {
+    const group = new THREE.Group();
+    const model = _pinkGlbCache.clone(true);
+    const box = new THREE.Box3().setFromObject(model);
+    const sizeVec = box.getSize(new THREE.Vector3());
+    const scale = 3.0 / sizeVec.y;
+    const center = box.getCenter(new THREE.Vector3());
+    model.scale.setScalar(scale);
+    model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+    group.add(model);
+    const bMats = [];
+    model.traverse(c => {
+      if (c.isMesh) {
+        const ms = Array.isArray(c.material) ? c.material : [c.material];
+        ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m.clone()); });
+      }
+    });
+    const dummyBody = new THREE.Object3D();
+    const dummyHead = new THREE.Object3D();
+    dummyHead.position.set(0, 2.8, 0);
+    group.add(dummyHead);
+    group.userData = {
+      isGlbModel: true, glbMesh: model,
+      body: dummyBody, head: dummyHead, neck: dummyHead,
+      leftArm: null, rightArm: null, leftForeArm: null, rightForeArm: null,
+      leftLeg: null, rightLeg: null, leftShin: null, rightShin: null,
+      leftShoulder: null, rightShoulder: null, leftThigh: null, rightThigh: null,
+      bodyMaterials: bMats, guitar: null,
+    };
+    return group;
+  }
+
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
     color,
@@ -1887,6 +1920,8 @@ let previewTime = 0;
 let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
+let _pinkGlbCache = null;
+_glbLoader.load('./assets/pink-model.glb', (gltf) => { _pinkGlbCache = gltf.scene; });
 
 function setPreviewCharacter(charType) {
   const acc = loadAccount();
@@ -6301,26 +6336,37 @@ function updateFighterAnimation(fighter, dt) {
     }
   }
 
-  body.leftArm.rotation.x = leftArmX;
-  body.rightArm.rotation.x = rightArmX;
-  body.leftArm.rotation.z = leftArmZ;
-  body.rightArm.rotation.z = rightArmZ;
-  body.leftForeArm.rotation.x = leftElbowX;
-  body.rightForeArm.rotation.x = rightElbowX;
-  body.leftLeg.rotation.x = leftLeg;
-  body.rightLeg.rotation.x = rightLeg;
-  body.leftShin.rotation.x = Math.max(0, leftLeg * 0.5);
-  body.rightShin.rotation.x = Math.max(0, rightLeg * 0.5);
-  body.leftShoulder.rotation.x = leftArmX * 0.35;
-  body.leftShoulder.rotation.z = (leftArmZ + Math.PI * 0.1) * 0.3;
-  body.rightShoulder.rotation.x = rightArmX * 0.35;
-  body.rightShoulder.rotation.z = (rightArmZ - Math.PI * 0.1) * 0.3;
-  body.leftThigh.rotation.x = leftLeg * 0.45;
-  body.rightThigh.rotation.x = rightLeg * 0.45;
-  body.body.rotation.z = bodyZ;
-  body.body.rotation.y = bodyY;
-  body.head.rotation.y = headY;
-  body.head.rotation.x = headX;
+  if (body.isGlbModel) {
+    // GLB는 뼈대 없음 — 모델 전체로 바운스/기울기 애니메이션
+    const glb = body.glbMesh;
+    glb.position.y = Math.sin(walkCycle * 2) * 0.06 * swing;
+    glb.rotation.x = -swing * 0.05;
+    const atk = fighter.attackAnimTime;
+    const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
+    glb.position.z = lunge * 0.35;
+    glb.rotation.x -= lunge * 0.22;
+  } else {
+    body.leftArm.rotation.x = leftArmX;
+    body.rightArm.rotation.x = rightArmX;
+    body.leftArm.rotation.z = leftArmZ;
+    body.rightArm.rotation.z = rightArmZ;
+    body.leftForeArm.rotation.x = leftElbowX;
+    body.rightForeArm.rotation.x = rightElbowX;
+    body.leftLeg.rotation.x = leftLeg;
+    body.rightLeg.rotation.x = rightLeg;
+    body.leftShin.rotation.x = Math.max(0, leftLeg * 0.5);
+    body.rightShin.rotation.x = Math.max(0, rightLeg * 0.5);
+    body.leftShoulder.rotation.x = leftArmX * 0.35;
+    body.leftShoulder.rotation.z = (leftArmZ + Math.PI * 0.1) * 0.3;
+    body.rightShoulder.rotation.x = rightArmX * 0.35;
+    body.rightShoulder.rotation.z = (rightArmZ - Math.PI * 0.1) * 0.3;
+    body.leftThigh.rotation.x = leftLeg * 0.45;
+    body.rightThigh.rotation.x = rightLeg * 0.45;
+    body.body.rotation.z = bodyZ;
+    body.body.rotation.y = bodyY;
+    body.head.rotation.y = headY;
+    body.head.rotation.x = headX;
+  }
 
   fighter.attackSwing = Math.max(0, fighter.attackSwing - dt * 5);
   fighter.spread = Math.max(0, fighter.spread - dt * 0.13);
