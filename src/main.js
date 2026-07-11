@@ -1289,6 +1289,7 @@ function createStickman(color, skinId) {
       if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c;
       if (c.isMesh) c.frustumCulled = false;
     });
+    console.log('[Pink]', 'skinnedMesh:', skinnedMesh?.name, 'skeleton:', skinnedMesh?.skeleton, 'bones:', skinnedMesh?.skeleton?.bones?.length);
     const sk = skinnedMesh?.skeleton ?? null;
     const gb = n => sk?.getBoneByName(n) ?? null;
 
