@@ -6360,9 +6360,9 @@ function updateFighterAnimation(fighter, dt) {
       if (gb('forearm_R'))  gb('forearm_R').rotation.x  = rightElbowX;
       if (gb('thigh_L'))    gb('thigh_L').rotation.x    = leftLeg;
       if (gb('thigh_R'))    gb('thigh_R').rotation.x    = rightLeg;
-      if (gb('shin_L'))     gb('shin_L').rotation.x     = leftShin;
-      if (gb('shin_R'))     gb('shin_R').rotation.x     = rightShin;
-      if (gb('head'))       { gb('head').rotation.x = headX; gb('head').rotation.z = headZ; }
+      if (gb('shin_L'))     gb('shin_L').rotation.x     = Math.max(0, -leftLeg) * 0.6;
+      if (gb('shin_R'))     gb('shin_R').rotation.x     = Math.max(0, -rightLeg) * 0.6;
+      if (gb('head'))       { gb('head').rotation.x = headX; gb('head').rotation.z = 0; }
       if (gb('spine'))      gb('spine').rotation.z = Math.sin(walkCycle) * 0.02;
       const atk = fighter.attackAnimTime;
       const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
