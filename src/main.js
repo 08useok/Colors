@@ -1940,6 +1940,65 @@ const _glbLoader = new GLTFLoader();
 let _pinkRiggedCache = null;
 _glbLoader.load('./assets/3d/pink/pink_rigged.glb', (gltf) => { _pinkRiggedCache = gltf; });
 
+// Pink 앞모습 프리뷰
+const pinkFrontCanvas = document.getElementById("pink-front-canvas");
+const pinkFrontRenderer = new THREE.WebGLRenderer({ canvas: pinkFrontCanvas, antialias: true, alpha: true });
+pinkFrontRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+pinkFrontRenderer.outputColorSpace = THREE.SRGBColorSpace;
+const pinkFrontScene = new THREE.Scene();
+const pinkFrontCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+pinkFrontCamera.position.set(0, 0.8, 12.0);
+pinkFrontCamera.lookAt(0, 0.2, 0);
+pinkFrontScene.add(new THREE.AmbientLight(0xffffff, 0.8));
+const _pfl = new THREE.DirectionalLight(0xfff0f0, 1.2);
+_pfl.position.set(2, 5, 4);
+pinkFrontScene.add(_pfl);
+pinkFrontScene.add(Object.assign(new THREE.DirectionalLight(0xc0d8ff, 0.3), { position: new THREE.Vector3(-2, 1, -2) }));
+
+let pinkFrontModel = null, pinkFrontSk = null, pinkFrontTime = 0, pinkFrontActive = false;
+
+function setupPinkFrontModel() {
+  if (pinkFrontModel) return;
+  const setup = (gltf) => {
+    const s = skeletonClone(gltf.scene);
+    const box = new THREE.Box3().setFromObject(s);
+    const sz = box.getSize(new THREE.Vector3());
+    const sc = 3.0 / sz.y;
+    const ctr = box.getCenter(new THREE.Vector3());
+    s.scale.setScalar(sc);
+    s.position.set(-ctr.x * sc, -box.min.y * sc, -ctr.z * sc);
+    s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
+    let sm = null;
+    s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
+    pinkFrontSk = sm?.skeleton ?? null;
+    pinkFrontModel = s;
+    // 캔버스 실제 크기로 렌더러 설정
+    const w = pinkFrontCanvas.clientWidth || 200;
+    pinkFrontRenderer.setSize(w, Math.round(w * 1.1));
+    pinkFrontCamera.aspect = w / Math.round(w * 1.1);
+    pinkFrontCamera.updateProjectionMatrix();
+    pinkFrontScene.add(pinkFrontModel);
+  };
+  if (_pinkRiggedCache) setup(_pinkRiggedCache);
+  else _glbLoader.load('./assets/3d/pink/pink_rigged.glb', setup);
+}
+
+function renderPinkFront(dt) {
+  if (!pinkFrontActive || !pinkFrontModel) return;
+  pinkFrontTime += dt;
+  const walk = Math.sin(pinkFrontTime * 2.8);
+  const gb = n => pinkFrontSk?.getBoneByName(n);
+  if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = walk * 0.5;  gb('upper_arm_L').rotation.z = -0.15; }
+  if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = -walk * 0.5; gb('upper_arm_R').rotation.z = 0.15; }
+  if (gb('forearm_L'))   gb('forearm_L').rotation.x = Math.max(0, -walk) * 0.3;
+  if (gb('forearm_R'))   gb('forearm_R').rotation.x = Math.max(0, walk) * 0.3;
+  if (gb('thigh_L'))     gb('thigh_L').rotation.x = -walk * 0.45;
+  if (gb('thigh_R'))     gb('thigh_R').rotation.x = walk * 0.45;
+  if (gb('shin_L'))      gb('shin_L').rotation.x = Math.max(0, walk) * 0.35;
+  if (gb('shin_R'))      gb('shin_R').rotation.x = Math.max(0, -walk) * 0.35;
+  pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
+}
+
 function setPreviewCharacter(charType) {
   const acc = loadAccount();
   const skinId = acc?.selectedSkins?.[charType] || null;
@@ -7132,6 +7191,7 @@ function animate() {
 
   if (!state.running) {
     renderPreview(dt);
+    renderPinkFront(dt);
   }
 }
 
@@ -7238,6 +7298,13 @@ function setupInput() {
     const btn = document.getElementById("patchnotes-toggle");
     panel.classList.toggle("hidden");
     btn.textContent = panel.classList.contains("hidden") ? t("patchnotesBtn") : t("patchnotesBtnClose");
+  });
+
+  document.getElementById("pinkfront-toggle").addEventListener("click", () => {
+    const canvas = document.getElementById("pink-front-canvas");
+    pinkFrontActive = !pinkFrontActive;
+    canvas.classList.toggle("hidden", !pinkFrontActive);
+    if (pinkFrontActive) setupPinkFrontModel();
   });
 
   document.getElementById("lang-toggle").addEventListener("click", () => {
