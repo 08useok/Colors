@@ -1940,11 +1940,10 @@ function setPreviewCharacter(charType) {
       if (previewCharType !== "pink") return; // 중간에 다른 캐릭터 선택하면 무시
       if (previewModel) previewScene.remove(previewModel);
       const m = gltf.scene;
-      // 크기 자동 맞춤 (게임 스틱맨 기준 약 3.2 높이에 맞춤)
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-      const scale = 3.0 / size.y;
+      const scale = 5.0 / size.y;
       m.scale.setScalar(scale);
       m.position.x = -center.x * scale;
       m.position.y = -box.min.y * scale;
