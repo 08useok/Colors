@@ -1272,49 +1272,42 @@ function createGround(group = scene) {
 }
 
 function createStickman(color, skinId) {
-  // Pink: 리깅된 GLB 모델
-  if (color === 0xF4CDD3 && _pinkRiggedCache) {
+  // Pink: GLB 모델 (idle/walk 교체 방식)
+  if (color === 0xF4CDD3 && _pinkIdleCache) {
     const group = new THREE.Group();
-    const scene = skeletonClone(_pinkRiggedCache.scene);
-    const box = new THREE.Box3().setFromObject(scene);
-    const sizeVec = box.getSize(new THREE.Vector3());
-    const scale = 3.0 / sizeVec.y;
-    const center = box.getCenter(new THREE.Vector3());
-    scene.scale.setScalar(scale);
-    scene.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
-    group.add(scene);
-
-    let skinnedMesh = null;
-    scene.traverse(c => {
-      if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c;
-      if (c.isMesh) c.frustumCulled = false;
-    });
-    const sk = skinnedMesh?.skeleton ?? null;
-    const gb = n => sk?.getBoneByName(n) ?? null;
-
+    const setupGlb = (cache) => {
+      const m = cache.clone(true);
+      const box = new THREE.Box3().setFromObject(m);
+      const sizeVec = box.getSize(new THREE.Vector3());
+      const scale = 3.0 / sizeVec.y;
+      const center = box.getCenter(new THREE.Vector3());
+      m.scale.setScalar(scale);
+      m.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+      m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
+      return m;
+    };
+    const idleModel = setupGlb(_pinkIdleCache);
+    const walkModel = _pinkWalkCache ? setupGlb(_pinkWalkCache) : null;
+    if (walkModel) { walkModel.visible = false; group.add(walkModel); }
+    group.add(idleModel);
     const bMats = [];
-    if (skinnedMesh) {
-      const ms = Array.isArray(skinnedMesh.material) ? skinnedMesh.material : [skinnedMesh.material];
-      ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m); });
-    }
-
+    idleModel.traverse(c => {
+      if (c.isMesh) {
+        const ms = Array.isArray(c.material) ? c.material : [c.material];
+        ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m.clone()); });
+      }
+    });
+    const dummyBody = new THREE.Object3D();
+    const dummyHead = new THREE.Object3D();
+    dummyHead.position.set(0, 2.8, 0);
+    group.add(dummyHead);
     group.userData = {
-      isGlbModel: true, skeleton: sk, glbMesh: skinnedMesh,
-      body:         gb('spine'),
-      head:         gb('head'),
-      neck:         gb('neck'),
-      leftArm:      gb('upper_arm_L'),
-      rightArm:     gb('upper_arm_R'),
-      leftForeArm:  gb('forearm_L'),
-      rightForeArm: gb('forearm_R'),
-      leftShoulder: gb('shoulder_L'),
-      rightShoulder:gb('shoulder_R'),
-      leftThigh:    gb('thigh_L'),
-      rightThigh:   gb('thigh_R'),
-      leftLeg:      gb('thigh_L'),
-      rightLeg:     gb('thigh_R'),
-      leftShin:     gb('shin_L'),
-      rightShin:    gb('shin_R'),
+      isGlbModel: true, skeleton: null,
+      glbMesh: idleModel, glbIdle: idleModel, glbWalk: walkModel,
+      body: dummyBody, head: dummyHead, neck: dummyHead,
+      leftArm: null, rightArm: null, leftForeArm: null, rightForeArm: null,
+      leftLeg: null, rightLeg: null, leftShin: null, rightShin: null,
+      leftShoulder: null, rightShoulder: null, leftThigh: null, rightThigh: null,
       bodyMaterials: bMats, guitar: null,
     };
     return group;
@@ -1936,8 +1929,10 @@ let previewTime = 0;
 let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
-let _pinkRiggedCache = null;
-_glbLoader.load('./assets/3d/pink/pink_rigged.glb', (gltf) => { _pinkRiggedCache = gltf; });
+let _pinkIdleCache = null;
+let _pinkWalkCache = null;
+_glbLoader.load('./assets/3d/pink/pink_idle.glb', (gltf) => { _pinkIdleCache = gltf.scene; });
+_glbLoader.load('./assets/3d/pink/pink_walk.glb', (gltf) => { _pinkWalkCache = gltf.scene; });
 
 function setPreviewCharacter(charType) {
   const acc = loadAccount();
@@ -1966,10 +1961,10 @@ function setPreviewCharacter(charType) {
       previewModel = m;
       previewScene.add(previewModel);
     };
-    if (_pinkRiggedCache) {
-      setupPinkPreview(_pinkRiggedCache);
+    if (_pinkIdleCache) {
+      setupPinkPreview({ scene: _pinkIdleCache });
     } else {
-      _glbLoader.load("./assets/3d/pink/pink_rigged.glb", (gltf) => { setupPinkPreview(gltf); });
+      _glbLoader.load("./assets/3d/pink/pink_idle.glb", (gltf) => { setupPinkPreview(gltf); });
     }
   } else {
     previewIsGlb = false;
@@ -6355,32 +6350,20 @@ function updateFighterAnimation(fighter, dt) {
   }
 
   if (body.isGlbModel) {
-    if (body.skeleton) {
-      // 리깅 모델: 뼈대 회전으로 애니메이션
-      const gb = n => body.skeleton.getBoneByName(n);
-      if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = leftArmX; gb('upper_arm_L').rotation.z = leftArmZ; }
-      if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = rightArmX; gb('upper_arm_R').rotation.z = rightArmZ; }
-      if (gb('forearm_L'))  gb('forearm_L').rotation.x  = leftElbowX;
-      if (gb('forearm_R'))  gb('forearm_R').rotation.x  = rightElbowX;
-      if (gb('thigh_L'))    gb('thigh_L').rotation.x    = leftLeg;
-      if (gb('thigh_R'))    gb('thigh_R').rotation.x    = rightLeg;
-      if (gb('shin_L'))     gb('shin_L').rotation.x     = Math.max(0, -leftLeg) * 0.6;
-      if (gb('shin_R'))     gb('shin_R').rotation.x     = Math.max(0, -rightLeg) * 0.6;
-      if (gb('head'))       { gb('head').rotation.x = headX; gb('head').rotation.z = 0; }
-      if (gb('spine'))      gb('spine').rotation.z = Math.sin(walkCycle) * 0.02;
-      const atk = fighter.attackAnimTime;
-      const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
-      if (gb('spine'))      gb('spine').rotation.x = -lunge * 0.3;
-    } else {
-      // 비리깅 fallback: 전체 바운스
-      const glb = body.glbMesh;
-      glb.position.y = Math.sin(walkCycle * 2) * 0.06 * swing;
-      glb.rotation.x = -swing * 0.05;
-      const atk = fighter.attackAnimTime;
-      const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
-      glb.position.z = lunge * 0.35;
-      glb.rotation.x -= lunge * 0.22;
+    // idle/walk 모델 교체
+    const isMoving = swing > 0.05;
+    if (body.glbIdle && body.glbWalk) {
+      body.glbIdle.visible = !isMoving;
+      body.glbWalk.visible = isMoving;
+      body.glbMesh = isMoving ? body.glbWalk : body.glbIdle;
     }
+    const glb = body.glbMesh;
+    glb.position.y = Math.sin(walkCycle * 2) * 0.06 * swing;
+    glb.rotation.x = -swing * 0.05;
+    const atk = fighter.attackAnimTime;
+    const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
+    glb.position.z = lunge * 0.35;
+    glb.rotation.x -= lunge * 0.22;
   } else {
     body.leftArm.rotation.x = leftArmX;
     body.rightArm.rotation.x = rightArmX;
