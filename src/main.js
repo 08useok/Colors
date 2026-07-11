@@ -1272,18 +1272,24 @@ function createGround(group = scene) {
 
 function createStickman(color, skinId) {
   // Pink: GLB 모델 사용 (캐시가 준비된 경우)
-  if (color === 0xF4CDD3 && _pinkGlbCache) {
+  if (color === 0xF4CDD3 && _pinkIdleCache) {
     const group = new THREE.Group();
-    const model = _pinkGlbCache.clone(true);
-    const box = new THREE.Box3().setFromObject(model);
-    const sizeVec = box.getSize(new THREE.Vector3());
-    const scale = 3.0 / sizeVec.y;
-    const center = box.getCenter(new THREE.Vector3());
-    model.scale.setScalar(scale);
-    model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
-    group.add(model);
+    const setupGlb = (cache) => {
+      const m = cache.clone(true);
+      const box = new THREE.Box3().setFromObject(m);
+      const sizeVec = box.getSize(new THREE.Vector3());
+      const scale = 3.0 / sizeVec.y;
+      const center = box.getCenter(new THREE.Vector3());
+      m.scale.setScalar(scale);
+      m.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+      return m;
+    };
+    const idleModel = setupGlb(_pinkIdleCache);
+    const walkModel = _pinkWalkCache ? setupGlb(_pinkWalkCache) : null;
+    if (walkModel) { walkModel.visible = false; group.add(walkModel); }
+    group.add(idleModel);
     const bMats = [];
-    model.traverse(c => {
+    idleModel.traverse(c => {
       if (c.isMesh) {
         const ms = Array.isArray(c.material) ? c.material : [c.material];
         ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m.clone()); });
@@ -1294,7 +1300,7 @@ function createStickman(color, skinId) {
     dummyHead.position.set(0, 2.8, 0);
     group.add(dummyHead);
     group.userData = {
-      isGlbModel: true, glbMesh: model,
+      isGlbModel: true, glbMesh: idleModel, glbIdle: idleModel, glbWalk: walkModel,
       body: dummyBody, head: dummyHead, neck: dummyHead,
       leftArm: null, rightArm: null, leftForeArm: null, rightForeArm: null,
       leftLeg: null, rightLeg: null, leftShin: null, rightShin: null,
@@ -1920,8 +1926,10 @@ let previewTime = 0;
 let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
-let _pinkGlbCache = null;
-_glbLoader.load('./assets/pink-model.glb', (gltf) => { _pinkGlbCache = gltf.scene; });
+let _pinkIdleCache = null;
+let _pinkWalkCache = null;
+_glbLoader.load('./assets/3d/pink/pink_idle.glb', (gltf) => { _pinkIdleCache = gltf.scene; });
+_glbLoader.load('./assets/3d/pink/pink_walk.glb', (gltf) => { _pinkWalkCache = gltf.scene; });
 
 function setPreviewCharacter(charType) {
   const acc = loadAccount();
@@ -1936,7 +1944,7 @@ function setPreviewCharacter(charType) {
 
   if (charType === "pink") {
     previewIsGlb = true;
-    _glbLoader.load("./assets/pink-model.glb", (gltf) => {
+    _glbLoader.load("./assets/3d/pink/pink_idle.glb", (gltf) => {
       if (previewCharType !== "pink") return; // 중간에 다른 캐릭터 선택하면 무시
       if (previewModel) previewScene.remove(previewModel);
       const m = gltf.scene;
@@ -6336,7 +6344,13 @@ function updateFighterAnimation(fighter, dt) {
   }
 
   if (body.isGlbModel) {
-    // GLB는 뼈대 없음 — 모델 전체로 바운스/기울기 애니메이션
+    // idle/walk 모델 교체
+    const isMoving = swing > 0.05;
+    if (body.glbIdle && body.glbWalk) {
+      body.glbIdle.visible = !isMoving;
+      body.glbWalk.visible = isMoving;
+      body.glbMesh = isMoving ? body.glbWalk : body.glbIdle;
+    }
     const glb = body.glbMesh;
     glb.position.y = Math.sin(walkCycle * 2) * 0.06 * swing;
     glb.rotation.x = -swing * 0.05;
