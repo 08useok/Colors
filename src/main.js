@@ -1973,12 +1973,15 @@ function setupPinkFrontModel() {
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
     pinkFrontSk = sm?.skeleton ?? null;
-    s.rotation.y = Math.PI;
+    s.rotation.y = -Math.PI / 2;
     pinkFrontModel = s;
     // 캔버스 실제 크기로 렌더러 설정
     const w = pinkFrontCanvas.clientWidth || 200;
-    pinkFrontRenderer.setSize(w, Math.round(w * 1.1));
-    pinkFrontCamera.aspect = w / Math.round(w * 1.1);
+    const h = Math.round(w * 1.2);
+    pinkFrontRenderer.setSize(w, h);
+    pinkFrontCamera.aspect = w / h;
+    pinkFrontCamera.position.set(0, 1.5, 12.0);
+    pinkFrontCamera.lookAt(0, 1.5, 0);
     pinkFrontCamera.updateProjectionMatrix();
     pinkFrontScene.add(pinkFrontModel);
   };
