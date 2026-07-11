@@ -1991,15 +1991,6 @@ function setupPinkFrontModel() {
 
 function renderPinkFront(dt) {
   if (!pinkFrontActive || !pinkFrontModel) return;
-  pinkFrontTime += dt;
-  const walk = Math.sin(pinkFrontTime * 2.8);
-  const gb = n => pinkFrontSk?.getBoneByName(n);
-  if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = walk * 0.10;  gb('upper_arm_L').rotation.z = -0.04; }
-  if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = -walk * 0.10; gb('upper_arm_R').rotation.z = 0.04; }
-  if (gb('thigh_L'))     gb('thigh_L').rotation.x = -walk * 0.12;
-  if (gb('thigh_R'))     gb('thigh_R').rotation.x = walk * 0.12;
-  if (gb('shin_L'))      gb('shin_L').rotation.x = Math.max(0, walk) * 0.08;
-  if (gb('shin_R'))      gb('shin_R').rotation.x = Math.max(0, -walk) * 0.08;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
 }
 
