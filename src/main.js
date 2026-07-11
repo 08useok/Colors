@@ -1994,14 +1994,12 @@ function renderPinkFront(dt) {
   pinkFrontTime += dt;
   const walk = Math.sin(pinkFrontTime * 2.8);
   const gb = n => pinkFrontSk?.getBoneByName(n);
-  if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = walk * 0.5;  gb('upper_arm_L').rotation.z = -0.15; }
-  if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = -walk * 0.5; gb('upper_arm_R').rotation.z = 0.15; }
-  if (gb('forearm_L'))   gb('forearm_L').rotation.x = Math.max(0, -walk) * 0.3;
-  if (gb('forearm_R'))   gb('forearm_R').rotation.x = Math.max(0, walk) * 0.3;
-  if (gb('thigh_L'))     gb('thigh_L').rotation.x = -walk * 0.45;
-  if (gb('thigh_R'))     gb('thigh_R').rotation.x = walk * 0.45;
-  if (gb('shin_L'))      gb('shin_L').rotation.x = Math.max(0, walk) * 0.35;
-  if (gb('shin_R'))      gb('shin_R').rotation.x = Math.max(0, -walk) * 0.35;
+  if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = walk * 0.10;  gb('upper_arm_L').rotation.z = -0.04; }
+  if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = -walk * 0.10; gb('upper_arm_R').rotation.z = 0.04; }
+  if (gb('thigh_L'))     gb('thigh_L').rotation.x = -walk * 0.12;
+  if (gb('thigh_R'))     gb('thigh_R').rotation.x = walk * 0.12;
+  if (gb('shin_L'))      gb('shin_L').rotation.x = Math.max(0, walk) * 0.08;
+  if (gb('shin_R'))      gb('shin_R').rotation.x = Math.max(0, -walk) * 0.08;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
 }
 
@@ -6424,15 +6422,16 @@ function updateFighterAnimation(fighter, dt) {
     if (body.skeleton) {
       // 리깅 모델: 뼈대 회전으로 애니메이션
       const gb = n => body.skeleton.getBoneByName(n);
-      if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = leftArmX; gb('upper_arm_L').rotation.z = leftArmZ; }
-      if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = rightArmX; gb('upper_arm_R').rotation.z = rightArmZ; }
-      if (gb('forearm_L'))  gb('forearm_L').rotation.x  = leftElbowX;
-      if (gb('forearm_R'))  gb('forearm_R').rotation.x  = rightElbowX;
-      if (gb('thigh_L'))    gb('thigh_L').rotation.x    = leftLeg;
-      if (gb('thigh_R'))    gb('thigh_R').rotation.x    = rightLeg;
-      if (gb('shin_L'))     gb('shin_L').rotation.x     = Math.max(0, -leftLeg) * 0.6;
-      if (gb('shin_R'))     gb('shin_R').rotation.x     = Math.max(0, -rightLeg) * 0.6;
-      if (gb('head'))       { gb('head').rotation.x = headX; gb('head').rotation.z = 0; }
+      const glbAmp = 0.20;
+      if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = leftArmX * glbAmp; gb('upper_arm_L').rotation.z = leftArmZ * glbAmp; }
+      if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = rightArmX * glbAmp; gb('upper_arm_R').rotation.z = rightArmZ * glbAmp; }
+      if (gb('forearm_L'))  gb('forearm_L').rotation.x  = leftElbowX * glbAmp;
+      if (gb('forearm_R'))  gb('forearm_R').rotation.x  = rightElbowX * glbAmp;
+      if (gb('thigh_L'))    gb('thigh_L').rotation.x    = leftLeg * glbAmp;
+      if (gb('thigh_R'))    gb('thigh_R').rotation.x    = rightLeg * glbAmp;
+      if (gb('shin_L'))     gb('shin_L').rotation.x     = Math.max(0, -leftLeg) * 0.6 * glbAmp;
+      if (gb('shin_R'))     gb('shin_R').rotation.x     = Math.max(0, -rightLeg) * 0.6 * glbAmp;
+      if (gb('head'))       { gb('head').rotation.x = headX * glbAmp; gb('head').rotation.z = 0; }
       if (gb('spine'))      gb('spine').rotation.z = Math.sin(walkCycle) * 0.02;
       const atk = fighter.attackAnimTime;
       const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
