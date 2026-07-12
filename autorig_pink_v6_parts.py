@@ -84,11 +84,6 @@ def init_vgroups(obj):
 def assign(obj, vidx_list, bone, w=1.0):
     obj.vertex_groups[bone].add(vidx_list, w, 'REPLACE')
 
-def attach(obj):
-    mod = obj.modifiers.new("Armature", 'ARMATURE')
-    mod.object = arm_obj
-    obj.parent = arm_obj
-
 # ══════════════════════════════════════════════════════════════════════════════
 # 1. part_0 — 메인 몸통+왼팔 → 존 기반 하드 컷오프
 # ══════════════════════════════════════════════════════════════════════════════
@@ -130,7 +125,6 @@ if 'tripo_part_0' in mesh_objs:
     print("part_0 distribution:")
     for bn,c in sorted(counts.items(), key=lambda x:-x[1]):
         if c: print(f"  {bn}: {c}")
-    attach(o)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 2. part_1 — 머리 → 100% head
@@ -139,7 +133,6 @@ if 'tripo_part_1' in mesh_objs:
     o = mesh_objs['tripo_part_1']
     init_vgroups(o)
     assign(o, list(range(len(o.data.vertices))), 'head')
-    attach(o)
     print(f"part_1 → head ({len(o.data.vertices)}v)")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -153,7 +146,6 @@ for pname in ('tripo_part_2', 'tripo_part_3'):
     r_idx = [v.index for v in o.data.vertices if (o.matrix_world @ v.co).x >  0]
     if l_idx: assign(o, l_idx, 'foot_L')
     if r_idx: assign(o, r_idx, 'foot_R')
-    attach(o)
     print(f"{pname} → foot_L:{len(l_idx)} foot_R:{len(r_idx)}")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -163,14 +155,13 @@ for pname in ('tripo_part_4', 'tripo_part_5'):
     if pname not in mesh_objs: continue
     o = mesh_objs[pname]
     init_vgroups(o)
-    shin_z = pz(0.22)   # 이 높이 아래는 shin
+    shin_z = pz(0.22)
     for v in o.data.vertices:
         wco = o.matrix_world @ v.co
         left = wco.x <= 0
         bone = ('shin_L' if left else 'shin_R') if wco.z < shin_z else \
                ('thigh_L' if left else 'thigh_R')
         assign(o, [v.index], bone)
-    attach(o)
     print(f"{pname} → thigh+shin L/R")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -180,7 +171,6 @@ if 'tripo_part_6' in mesh_objs:
     o = mesh_objs['tripo_part_6']
     init_vgroups(o)
     assign(o, list(range(len(o.data.vertices))), 'hips')
-    attach(o)
     print(f"part_6 → hips ({len(o.data.vertices)}v)")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -190,7 +180,6 @@ if 'tripo_part_7' in mesh_objs:
     o = mesh_objs['tripo_part_7']
     init_vgroups(o)
     assign(o, list(range(len(o.data.vertices))), 'upper_arm_R')
-    attach(o)
     print(f"part_7 → upper_arm_R ({len(o.data.vertices)}v)")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -200,7 +189,6 @@ if 'tripo_part_8' in mesh_objs:
     o = mesh_objs['tripo_part_8']
     init_vgroups(o)
     assign(o, list(range(len(o.data.vertices))), 'forearm_R')
-    attach(o)
     print(f"part_8 → forearm_R ({len(o.data.vertices)}v)")
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -211,8 +199,17 @@ for pname in ('tripo_part_9','tripo_part_10','tripo_part_11','tripo_part_12','tr
     o = mesh_objs[pname]
     init_vgroups(o)
     assign(o, list(range(len(o.data.vertices))), 'shoulder_R')
-    attach(o)
     print(f"{pname} → shoulder_R ({len(o.data.vertices)}v)")
+
+# ── 한번에 parent_set(ARMATURE_NAME) → 올바른 bind matrix 생성 ───────────────
+print("\nParenting all meshes to armature...")
+bpy.ops.object.select_all(action='DESELECT')
+for o in mesh_objs.values():
+    o.select_set(True)
+arm_obj.select_set(True)
+bpy.context.view_layer.objects.active = arm_obj
+bpy.ops.object.parent_set(type='ARMATURE_NAME')
+print("Parented ✓")
 
 # ── Export ────────────────────────────────────────────────────────────────────
 print("\nExporting GLB...")
