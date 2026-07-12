@@ -20,8 +20,19 @@ print("=== Auto-rig Pink v6 hybrid ===")
 
 bpy.ops.wm.read_homefile(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=INPUT)
+
+# ParentNode에서 분리 (world transform 유지) → 좌표계 꼬임 방지
+bpy.ops.object.select_all(action='DESELECT')
+mesh_list = [o for o in bpy.context.scene.objects if o.type == 'MESH']
+for o in mesh_list:
+    o.select_set(True)
+if mesh_list:
+    bpy.context.view_layer.objects.active = mesh_list[0]
+    bpy.ops.object.parent_clear(type='CLEAR_KEEP_TRANSFORM')
+
+# 트랜스폼 적용 (v4 방식: location=False)
 bpy.ops.object.select_all(action='SELECT')
-bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
 
 mesh_objs = {o.name: o for o in bpy.context.scene.objects if o.type == 'MESH'}
 print(f"Parts loaded: {sorted(mesh_objs.keys())}")
