@@ -1938,7 +1938,8 @@ let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
 let _pinkRiggedCache = null;
-_glbLoader.load('./assets/3d/pink/pink_rigged.glb', (gltf) => { _pinkRiggedCache = gltf; });
+const _PINK_GLB_URL = './assets/3d/pink/pink_rigged.glb?v=7';
+_glbLoader.load(_PINK_GLB_URL, (gltf) => { _pinkRiggedCache = gltf; });
 
 // Pink 앞모습 프리뷰
 const pinkFrontCanvas = document.getElementById("pink-front-canvas");
@@ -1986,7 +1987,7 @@ function setupPinkFrontModel() {
     pinkFrontScene.add(pinkFrontModel);
   };
   if (_pinkRiggedCache) setup(_pinkRiggedCache);
-  else _glbLoader.load('./assets/3d/pink/pink_rigged.glb', setup);
+  else _glbLoader.load(_PINK_GLB_URL, setup);
 }
 
 function renderPinkFront(dt) {
@@ -2029,7 +2030,7 @@ function setPreviewCharacter(charType) {
     if (_pinkRiggedCache) {
       setupPinkPreview(_pinkRiggedCache);
     } else {
-      _glbLoader.load("./assets/3d/pink/pink_rigged.glb", (gltf) => { setupPinkPreview(gltf); });
+      _glbLoader.load(_PINK_GLB_URL, (gltf) => { setupPinkPreview(gltf); });
     }
   } else {
     previewIsGlb = false;
