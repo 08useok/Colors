@@ -2007,6 +2007,13 @@ function setupPinkFrontModel() {
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
     pinkFrontSk = sm?.skeleton ?? null;
+    // T-포즈 방지: 루프 애니메이션 첫 프레임 적용
+    if (gltf.animations?.length) {
+      const mx = new THREE.AnimationMixer(s);
+      const a = mx.clipAction(gltf.animations[0]);
+      a.play(); a.paused = true;
+      mx.update(0);
+    }
     const wrapper = new THREE.Group();
     wrapper.add(s);
     pinkFrontModel = wrapper;
@@ -2052,10 +2059,9 @@ function setPreviewCharacter(charType) {
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-      const scale = 4.3 / size.y;
+      const scale = 2.2 / size.y;
       m.scale.setScalar(scale);
-      // 스틱맨과 동일: 발=scene y≈-1.9, 머리=scene y≈2.4
-      m.position.set(-center.x * scale, -1.9, -center.z * scale);
+      m.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
       previewModel = m;
