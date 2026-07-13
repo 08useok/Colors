@@ -2060,7 +2060,7 @@ function setPreviewCharacter(charType) {
       const center = box.getCenter(new THREE.Vector3());
       const scale = 2.2 / size.y;
       m.scale.setScalar(scale);
-      m.position.set(-center.x * scale, -center.y * scale - 0.3, -center.z * scale);
+      m.position.set(-center.x * scale, -center.y * scale - 0.6, -center.z * scale);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
       previewModel = m;
