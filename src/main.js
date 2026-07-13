@@ -1272,51 +1272,66 @@ function createGround(group = scene) {
 }
 
 function createStickman(color, skinId) {
-  // Pink: 리깅된 GLB 모델
-  if (color === 0xF4CDD3 && _pinkRiggedCache) {
+  // Pink: start/loop/end 3개 GLB 상태머신
+  if (color === 0xF4CDD3 && _pinkGlb.loop) {
     const group = new THREE.Group();
-    const scene = skeletonClone(_pinkRiggedCache.scene);
-    const box = new THREE.Box3().setFromObject(scene);
-    const sizeVec = box.getSize(new THREE.Vector3());
-    const scale = 3.0 / sizeVec.y;
-    const center = box.getCenter(new THREE.Vector3());
-    scene.scale.setScalar(scale);
-    scene.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
-    group.add(scene);
 
+    // GLB 씬을 스케일/센터 맞춰서 추가하는 헬퍼
+    function addPinkScene(gltf, visible) {
+      const s = skeletonClone(gltf.scene);
+      const box = new THREE.Box3().setFromObject(s);
+      const sz = box.getSize(new THREE.Vector3());
+      const sc = 2.4 / sz.y;
+      const ctr = box.getCenter(new THREE.Vector3());
+      s.scale.setScalar(sc);
+      s.position.set(-ctr.x * sc, -box.min.y * sc, -ctr.z * sc);
+      s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
+      s.visible = visible;
+      group.add(s);
+      return s;
+    }
+
+    const scenes = {
+      start: _pinkGlb.start ? addPinkScene(_pinkGlb.start, false) : null,
+      loop:  addPinkScene(_pinkGlb.loop, true),
+      end:   _pinkGlb.end   ? addPinkScene(_pinkGlb.end,   false) : null,
+    };
+
+    // 각 씬에 대한 AnimationMixer
+    const mixers = {};
+    const actions = {};
+    for (const [key, sc] of Object.entries(scenes)) {
+      if (!sc) continue;
+      const gltf = _pinkGlb[key];
+      if (!gltf?.animations?.length) continue;
+      mixers[key] = new THREE.AnimationMixer(sc);
+      const a = mixers[key].clipAction(gltf.animations[0]);
+      a.setLoop(key === 'loop' ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
+      a.clampWhenFinished = true;
+      actions[key] = a;
+    }
+
+    // 첫 번째 스킨드메시에서 재질 추출
     let skinnedMesh = null;
-    scene.traverse(c => {
-      if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c;
-      if (c.isMesh) c.frustumCulled = false;
-    });
-    console.log('[Pink]', 'skinnedMesh:', skinnedMesh?.name, 'skeleton:', skinnedMesh?.skeleton, 'bones:', skinnedMesh?.skeleton?.bones?.length);
-    const sk = skinnedMesh?.skeleton ?? null;
-    const gb = n => sk?.getBoneByName(n) ?? null;
-
+    scenes.loop.traverse(c => { if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c; });
     const bMats = [];
     if (skinnedMesh) {
       const ms = Array.isArray(skinnedMesh.material) ? skinnedMesh.material : [skinnedMesh.material];
       ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m); });
     }
 
+    // 기본: loop 재생 대기 (이동 시 timeScale 조정)
+    if (actions.loop) { actions.loop.play(); actions.loop.paused = true; }
+
+    function showScene(key) {
+      for (const k of Object.keys(scenes)) { if (scenes[k]) scenes[k].visible = (k === key); }
+    }
+
     group.userData = {
-      isGlbModel: true, skeleton: sk, glbMesh: skinnedMesh,
-      body:         gb('spine'),
-      head:         gb('head'),
-      neck:         gb('neck'),
-      leftArm:      gb('upper_arm_L'),
-      rightArm:     gb('upper_arm_R'),
-      leftForeArm:  gb('forearm_L'),
-      rightForeArm: gb('forearm_R'),
-      leftShoulder: gb('shoulder_L'),
-      rightShoulder:gb('shoulder_R'),
-      leftThigh:    gb('thigh_L'),
-      rightThigh:   gb('thigh_R'),
-      leftLeg:      gb('thigh_L'),
-      rightLeg:     gb('thigh_R'),
-      leftShin:     gb('shin_L'),
-      rightShin:    gb('shin_R'),
-      bodyMaterials: bMats, guitar: null,
+      isGlbModel: true, skeleton: skinnedMesh?.skeleton ?? null,
+      glbMesh: skinnedMesh, bodyMaterials: bMats, guitar: null,
+      pinkScenes: scenes, pinkMixers: mixers, pinkActions: actions,
+      pinkWalkState: 'idle', pinkShowScene: showScene,
     };
     return group;
   }
@@ -1937,9 +1952,11 @@ let previewTime = 0;
 let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
-let _pinkRiggedCache = null;
-const _PINK_GLB_URL = './assets/3d/pink/pink_rigged.glb?v=7';
-_glbLoader.load(_PINK_GLB_URL, (gltf) => { _pinkRiggedCache = gltf; });
+// Pink: start/loop/end 3개 GLB (root motion 포함)
+const _pinkGlb = { start: null, loop: null, end: null };
+_glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = g; });
+_glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => { _pinkGlb.loop  = g; });
+_glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = g; });
 
 // Pink 앞모습 프리뷰
 const pinkFrontCanvas = document.getElementById("pink-front-canvas");
@@ -1966,28 +1983,28 @@ function setupPinkFrontModel() {
     const s = skeletonClone(gltf.scene);
     const box = new THREE.Box3().setFromObject(s);
     const sz = box.getSize(new THREE.Vector3());
-    const sc = 3.0 / sz.y;
+    const sc = 2.5 / sz.y;
     const ctr = box.getCenter(new THREE.Vector3());
     s.scale.setScalar(sc);
-    s.position.set(-ctr.x * sc, -box.min.y * sc, -ctr.z * sc);
+    s.position.set(-ctr.x * sc, -ctr.y * sc, -ctr.z * sc);
     s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
     pinkFrontSk = sm?.skeleton ?? null;
-    s.rotation.y = -Math.PI / 2;
-    pinkFrontModel = s;
-    // 캔버스 실제 크기로 렌더러 설정
+    const wrapper = new THREE.Group();
+    wrapper.add(s);
+    pinkFrontModel = wrapper;
     const w = pinkFrontCanvas.clientWidth || 200;
     const h = Math.round(w * 1.2);
     pinkFrontRenderer.setSize(w, h);
     pinkFrontCamera.aspect = w / h;
-    pinkFrontCamera.position.set(0, 1.5, 12.0);
-    pinkFrontCamera.lookAt(0, 1.5, 0);
+    pinkFrontCamera.position.set(0, 0, 5.0);
+    pinkFrontCamera.lookAt(0, 0, 0);
     pinkFrontCamera.updateProjectionMatrix();
     pinkFrontScene.add(pinkFrontModel);
   };
-  if (_pinkRiggedCache) setup(_pinkRiggedCache);
-  else _glbLoader.load(_PINK_GLB_URL, setup);
+  if (_pinkGlb.loop) setup(_pinkGlb.loop);
+  else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
 }
 
 function renderPinkFront(dt) {
@@ -1995,7 +2012,7 @@ function renderPinkFront(dt) {
   pinkFrontTime += dt;
   const t = pinkFrontTime;
   pinkFrontModel.position.y = Math.sin(t * 1.4) * 0.08;
-  pinkFrontModel.rotation.z = Math.sin(t * 0.9) * 0.015;
+  pinkFrontModel.rotation.y = t * 0.6;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
 }
 
@@ -2027,10 +2044,10 @@ function setPreviewCharacter(charType) {
       previewModel = m;
       previewScene.add(previewModel);
     };
-    if (_pinkRiggedCache) {
-      setupPinkPreview(_pinkRiggedCache);
+    if (_pinkGlb.loop) {
+      setupPinkPreview(_pinkGlb.loop);
     } else {
-      _glbLoader.load(_PINK_GLB_URL, (gltf) => { setupPinkPreview(gltf); });
+      _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setupPinkPreview);
     }
   } else {
     previewIsGlb = false;
@@ -2247,7 +2264,7 @@ function makeFighter(options) {
   fighter.healthBar.position.set(0, 3.05, 0);
   fighter.mesh.add(fighter.healthBar);
 
-  fighter.flashMaterial = fighter.mesh.userData.body.material;
+  fighter.flashMaterial = fighter.mesh.userData.body?.material ?? fighter.mesh.userData.bodyMaterials?.[0] ?? null;
   fighter.bodyMaterials = fighter.mesh.userData.bodyMaterials;
   const charDef2 = CHARACTERS[options.characterType ?? "red"];
   fighter.nameLabel = createNameLabel(options.name, charDef2.color);
@@ -6416,33 +6433,47 @@ function updateFighterAnimation(fighter, dt) {
   }
 
   if (body.isGlbModel) {
-    if (body.skeleton) {
-      // 리깅 모델: 뼈대 회전으로 애니메이션
-      const gb = n => body.skeleton.getBoneByName(n);
-      const glbAmp = 0.20;
-      if (gb('upper_arm_L')) { gb('upper_arm_L').rotation.x = leftArmX * glbAmp; gb('upper_arm_L').rotation.z = leftArmZ * glbAmp; }
-      if (gb('upper_arm_R')) { gb('upper_arm_R').rotation.x = rightArmX * glbAmp; gb('upper_arm_R').rotation.z = rightArmZ * glbAmp; }
-      if (gb('forearm_L'))  gb('forearm_L').rotation.x  = leftElbowX * glbAmp;
-      if (gb('forearm_R'))  gb('forearm_R').rotation.x  = rightElbowX * glbAmp;
-      if (gb('thigh_L'))    gb('thigh_L').rotation.x    = leftLeg * glbAmp;
-      if (gb('thigh_R'))    gb('thigh_R').rotation.x    = rightLeg * glbAmp;
-      if (gb('shin_L'))     gb('shin_L').rotation.x     = Math.max(0, -leftLeg) * 0.6 * glbAmp;
-      if (gb('shin_R'))     gb('shin_R').rotation.x     = Math.max(0, -rightLeg) * 0.6 * glbAmp;
-      if (gb('head'))       { gb('head').rotation.x = headX * glbAmp; gb('head').rotation.z = 0; }
-      if (gb('spine'))      gb('spine').rotation.z = Math.sin(walkCycle) * 0.02;
-      const atk = fighter.attackAnimTime;
-      const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
-      if (gb('spine'))      gb('spine').rotation.x = -lunge * 0.3;
-    } else {
-      // 비리깅 fallback: 전체 바운스
-      const glb = body.glbMesh;
-      glb.position.y = Math.sin(walkCycle * 2) * 0.06 * swing;
-      glb.rotation.x = -swing * 0.05;
-      const atk = fighter.attackAnimTime;
-      const lunge = (atk >= 0 && atk < 0.5) ? pulse(atk, 0, 0.12, 0.45) : 0;
-      glb.position.z = lunge * 0.35;
-      glb.rotation.x -= lunge * 0.22;
+    const moving = speed > 0.5;
+    const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
+    let state = body.pinkWalkState;
+
+    if (state === 'idle' && moving) {
+      // idle → start → loop
+      if (ac.start) {
+        show('start'); ac.start.reset().play();
+        state = 'starting';
+        mx.start.addEventListener('finished', function onDone() {
+          mx.start.removeEventListener('finished', onDone);
+          show('loop'); ac.loop.paused = false;
+          body.pinkWalkState = 'looping';
+        });
+      } else {
+        show('loop'); ac.loop.paused = false; state = 'looping';
+      }
+    } else if (state === 'looping' && !moving) {
+      // loop → end → idle
+      if (ac.end) {
+        show('end'); ac.end.reset().play();
+        ac.loop.paused = true;
+        state = 'stopping';
+        mx.end.addEventListener('finished', function onDone() {
+          mx.end.removeEventListener('finished', onDone);
+          show('loop'); ac.loop.paused = true;
+          body.pinkWalkState = 'idle';
+        });
+      } else {
+        ac.loop.paused = true; state = 'idle';
+      }
+    } else if (state === 'stopping' && moving) {
+      // 멈추는 도중 다시 움직이면 loop로 복귀
+      mx.end.removeEventListener('finished', () => {});
+      show('loop'); ac.loop.paused = false; state = 'looping';
     }
+
+    body.pinkWalkState = state;
+    if (mx.start) mx.start.update(dt);
+    if (mx.loop)  mx.loop.update(dt);
+    if (mx.end)   mx.end.update(dt);
   } else {
     body.leftArm.rotation.x = leftArmX;
     body.rightArm.rotation.x = rightArmX;
