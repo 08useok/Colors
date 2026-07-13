@@ -1999,30 +1999,27 @@ function setupPinkFrontModel() {
     const s = skeletonClone(gltf.scene);
     const box = new THREE.Box3().setFromObject(s);
     const sz = box.getSize(new THREE.Vector3());
-    const sc = 1.2 / sz.y;
+    const sc = 2.2 / sz.y;
     const ctr = box.getCenter(new THREE.Vector3());
     s.scale.setScalar(sc);
-    s.position.set(-ctr.x * sc, -ctr.y * sc, -ctr.z * sc);
+    s.position.set(-ctr.x * sc, -ctr.y * sc - 2.2, -ctr.z * sc);
     s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
     pinkFrontSk = sm?.skeleton ?? null;
-    // T-포즈 방지: 루프 애니메이션 중간 프레임으로 standing 포즈
     if (gltf.animations?.length) {
       const mx = new THREE.AnimationMixer(s);
       const a = mx.clipAction(gltf.animations[0]);
       a.play(); a.paused = true;
       mx.update(0.3);
     }
-    const wrapper = new THREE.Group();
-    wrapper.add(s);
-    pinkFrontModel = wrapper;
+    pinkFrontModel = s;
     const w = pinkFrontCanvas.clientWidth || 200;
     const h = Math.round(w * 1.2);
     pinkFrontRenderer.setSize(w, h);
     pinkFrontCamera.aspect = w / h;
-    pinkFrontCamera.position.set(0, 0, 5.0);
-    pinkFrontCamera.lookAt(0, 0, 0);
+    pinkFrontCamera.position.set(0, 0.8, 12.0);
+    pinkFrontCamera.lookAt(0, 0.2, 0);
     pinkFrontCamera.updateProjectionMatrix();
     pinkFrontScene.add(pinkFrontModel);
   };
@@ -6299,10 +6296,12 @@ function updateFighterAnimation(fighter, dt) {
   };
 
   const body = fighter.mesh.userData;
-  const speed = Math.hypot(
-    fighter.mesh.position.x - (fighter.lastX ?? fighter.mesh.position.x),
-    fighter.mesh.position.z - (fighter.lastZ ?? fighter.mesh.position.z),
-  ) / Math.max(dt, 0.001);
+  const _mdx = fighter.mesh.position.x - (fighter.lastX ?? fighter.mesh.position.x);
+  const _mdz = fighter.mesh.position.z - (fighter.lastZ ?? fighter.mesh.position.z);
+  const speed = Math.hypot(_mdx, _mdz) / Math.max(dt, 0.001);
+  if (body.isGlbModel && _mdx * _mdx + _mdz * _mdz > 1e-6) {
+    body.pinkMoveYaw = Math.atan2(_mdx, _mdz);
+  }
   fighter.lastX = fighter.mesh.position.x;
   fighter.lastZ = fighter.mesh.position.z;
 
@@ -6500,6 +6499,18 @@ function updateFighterAnimation(fighter, dt) {
     for (const node of Object.values(body.pinkRootMotionNodes ?? {})) {
       node.position.x = 0;
       node.position.z = 0;
+    }
+    // 이동 방향으로 모델 회전 (group.rotation.y = fighter.yaw 기준 상대 오프셋)
+    if (body.pinkMoveYaw != null) {
+      let targetOffset = body.pinkMoveYaw - fighter.yaw;
+      let curOffset = body.pinkFacingOffset ?? targetOffset;
+      // 최단경로 각도 차이
+      let diff = ((targetOffset - curOffset + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
+      body.pinkFacingOffset = curOffset + diff * Math.min(1, dt * 12);
+    }
+    const faceOff = body.pinkFacingOffset ?? 0;
+    for (const sc of Object.values(body.pinkScenes ?? {})) {
+      if (sc) sc.rotation.y = faceOff;
     }
   } else {
     body.leftArm.rotation.x = leftArmX;
