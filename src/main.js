@@ -1999,7 +1999,7 @@ function setupPinkFrontModel() {
     const s = skeletonClone(gltf.scene);
     const box = new THREE.Box3().setFromObject(s);
     const sz = box.getSize(new THREE.Vector3());
-    const sc = 2.5 / sz.y;
+    const sc = 1.0 / sz.y;
     const ctr = box.getCenter(new THREE.Vector3());
     s.scale.setScalar(sc);
     s.position.set(-ctr.x * sc, -ctr.y * sc, -ctr.z * sc);
