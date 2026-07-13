@@ -2002,7 +2002,7 @@ function setupPinkFrontModel() {
     const sc = 1.0 / sz.y;
     const ctr = box.getCenter(new THREE.Vector3());
     s.scale.setScalar(sc);
-    s.position.set(-ctr.x * sc, -ctr.y * sc - 0.4, -ctr.z * sc);
+    s.position.set(-ctr.x * sc, -ctr.y * sc + 0.4, -ctr.z * sc);
     s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
