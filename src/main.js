@@ -1282,9 +1282,8 @@ function createStickman(color, skinId) {
       const box = new THREE.Box3().setFromObject(s);
       const sz = box.getSize(new THREE.Vector3());
       const sc = 2.4 / sz.y;
-      const ctr = box.getCenter(new THREE.Vector3());
       s.scale.setScalar(sc);
-      s.position.set(-ctr.x * sc, -box.min.y * sc, -ctr.z * sc);
+      s.position.set(0, -box.min.y * sc, 0);
       s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
       s.visible = visible;
       group.add(s);
@@ -1961,11 +1960,17 @@ let previewTime = 0;
 let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
-// Pink: start/loop/end 3개 GLB (root motion 포함)
+// Pink: start/loop/end 3개 GLB (root motion 트랙 제거 후 사용)
+function _stripRootMotion(gltf) {
+  for (const clip of (gltf.animations ?? [])) {
+    clip.tracks = clip.tracks.filter(t => !/^RootMotion\.position/.test(t.name));
+  }
+  return gltf;
+}
 const _pinkGlb = { start: null, loop: null, end: null };
-_glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = g; });
-_glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => { _pinkGlb.loop  = g; });
-_glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = g; });
+_glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => { _pinkGlb.loop  = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
 
 // Pink 앞모습 프리뷰
 const pinkFrontCanvas = document.getElementById("pink-front-canvas");
