@@ -1999,10 +1999,10 @@ function setupPinkFrontModel() {
     const s = skeletonClone(gltf.scene);
     const box = new THREE.Box3().setFromObject(s);
     const sz = box.getSize(new THREE.Vector3());
-    const sc = 1.0 / sz.y;
+    const sc = 0.5 / sz.y;
     const ctr = box.getCenter(new THREE.Vector3());
     s.scale.setScalar(sc);
-    s.position.set(-ctr.x * sc, -ctr.y * sc + 0.4, -ctr.z * sc);
+    s.position.set(-ctr.x * sc, -ctr.y * sc, -ctr.z * sc);
     s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
@@ -2052,9 +2052,10 @@ function setPreviewCharacter(charType) {
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-      const scale = 3.5 / size.y;
+      const scale = 4.3 / size.y;
       m.scale.setScalar(scale);
-      m.position.set(-center.x * scale, -box.min.y * scale - size.y * scale * 0.12, -center.z * scale);
+      // 스틱맨과 동일: 발=scene y≈-1.9, 머리=scene y≈2.4
+      m.position.set(-center.x * scale, -1.9, -center.z * scale);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
       previewModel = m;
