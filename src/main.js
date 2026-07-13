@@ -2034,7 +2034,6 @@ function renderPinkFront(dt) {
   if (!pinkFrontActive || !pinkFrontModel) return;
   pinkFrontTime += dt;
   const t = pinkFrontTime;
-  pinkFrontModel.position.y = Math.sin(t * 1.4) * 0.08;
   pinkFrontModel.rotation.y = t * 0.6;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
 }
@@ -2061,7 +2060,7 @@ function setPreviewCharacter(charType) {
       const center = box.getCenter(new THREE.Vector3());
       const scale = 2.2 / size.y;
       m.scale.setScalar(scale);
-      m.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+      m.position.set(-center.x * scale, -center.y * scale - 0.3, -center.z * scale);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
       previewModel = m;
