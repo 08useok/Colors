@@ -1327,11 +1327,20 @@ function createStickman(color, skinId) {
       for (const k of Object.keys(scenes)) { if (scenes[k]) scenes[k].visible = (k === key); }
     }
 
+    // RootMotion 노드: 게임 자체 이동 시스템 사용하므로 매 프레임 위치 리셋 필요
+    const rootMotionNodes = {};
+    for (const [key, sc] of Object.entries(scenes)) {
+      if (!sc) continue;
+      const rmNode = sc.getObjectByName('RootMotion');
+      if (rmNode) rootMotionNodes[key] = rmNode;
+    }
+
     group.userData = {
       isGlbModel: true, skeleton: skinnedMesh?.skeleton ?? null,
       glbMesh: skinnedMesh, bodyMaterials: bMats, guitar: null,
       pinkScenes: scenes, pinkMixers: mixers, pinkActions: actions,
       pinkWalkState: 'idle', pinkShowScene: showScene,
+      pinkRootMotionNodes: rootMotionNodes,
     };
     return group;
   }
@@ -6474,6 +6483,11 @@ function updateFighterAnimation(fighter, dt) {
     if (mx.start) mx.start.update(dt);
     if (mx.loop)  mx.loop.update(dt);
     if (mx.end)   mx.end.update(dt);
+    // root motion 리셋: 게임이 직접 이동 처리하므로 x/z 오프셋 제거
+    for (const node of Object.values(body.pinkRootMotionNodes ?? {})) {
+      node.position.x = 0;
+      node.position.z = 0;
+    }
   } else {
     body.leftArm.rotation.x = leftArmX;
     body.rightArm.rotation.x = rightArmX;
