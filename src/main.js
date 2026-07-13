@@ -1281,9 +1281,11 @@ function createStickman(color, skinId) {
       const s = skeletonClone(gltf.scene);
       const box = new THREE.Box3().setFromObject(s);
       const sz = box.getSize(new THREE.Vector3());
-      const sc = 2.4 / sz.y;
+      // 스틱맨과 동일 비율: 발=ground(world y≈0), 머리=world y≈4.2
+      // 파이터 group은 항상 world y=1.85 → 발은 group local y=-1.85
+      const sc = 4.3 / sz.y;
       s.scale.setScalar(sc);
-      s.position.set(0, -box.min.y * sc, 0);
+      s.position.set(0, -1.85, 0);
       s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
       s.visible = visible;
       group.add(s);
