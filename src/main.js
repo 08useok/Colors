@@ -1999,7 +1999,7 @@ function setupPinkFrontModel() {
     const s = skeletonClone(gltf.scene);
     const box = new THREE.Box3().setFromObject(s);
     const sz = box.getSize(new THREE.Vector3());
-    const sc = 0.5 / sz.y;
+    const sc = 1.2 / sz.y;
     const ctr = box.getCenter(new THREE.Vector3());
     s.scale.setScalar(sc);
     s.position.set(-ctr.x * sc, -ctr.y * sc, -ctr.z * sc);
@@ -2007,12 +2007,12 @@ function setupPinkFrontModel() {
     let sm = null;
     s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
     pinkFrontSk = sm?.skeleton ?? null;
-    // T-포즈 방지: 루프 애니메이션 첫 프레임 적용
+    // T-포즈 방지: 루프 애니메이션 중간 프레임으로 standing 포즈
     if (gltf.animations?.length) {
       const mx = new THREE.AnimationMixer(s);
       const a = mx.clipAction(gltf.animations[0]);
       a.play(); a.paused = true;
-      mx.update(0);
+      mx.update(0.3);
     }
     const wrapper = new THREE.Group();
     wrapper.add(s);
