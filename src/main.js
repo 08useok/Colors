@@ -776,6 +776,9 @@ function updateLobbyUI(account) {
   updateColorInfo(account.selectedCharacter, account);
   state.selectedCharacter = account.selectedCharacter;
   setPreviewCharacter(account.selectedCharacter);
+  if (pinkFrontActive && frontModelCharType !== account.selectedCharacter) {
+    setupFrontModel(account.selectedCharacter);
+  }
   applyProfileCosmetics(account);
 }
 
@@ -1286,6 +1289,7 @@ function createStickman(color, skinId) {
       const sc = 1.5 / sz.y;
       s.scale.setScalar(sc);
       s.position.set(0, -1.85, 0);
+      _applyPinkToon(s);
       s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
       s.visible = visible;
       group.add(s);
@@ -1969,6 +1973,47 @@ function _stripRootMotion(gltf) {
   }
   return gltf;
 }
+let _pinkToonGrad = null;
+function _getPinkToonGrad() {
+  if (_pinkToonGrad) return _pinkToonGrad;
+  const canvas = document.createElement('canvas');
+  canvas.width = 3; canvas.height = 1;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'rgb(50,50,50)';    ctx.fillRect(0, 0, 1, 1);
+  ctx.fillStyle = 'rgb(155,155,155)'; ctx.fillRect(1, 0, 1, 1);
+  ctx.fillStyle = 'rgb(255,255,255)'; ctx.fillRect(2, 0, 1, 1);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.minFilter = THREE.NearestFilter;
+  tex.magFilter = THREE.NearestFilter;
+  return (_pinkToonGrad = tex);
+}
+
+function _applyPinkToon(scene) {
+  const grad = _getPinkToonGrad();
+  scene.traverse(c => {
+    if (!c.isMesh) return;
+    const mats = Array.isArray(c.material) ? c.material : [c.material];
+    const toonMats = mats.map(m => new THREE.MeshToonMaterial({
+      map: m.map ?? null,
+      color: m.color?.clone() ?? new THREE.Color(1, 1, 1),
+      gradientMap: grad,
+      transparent: m.transparent ?? false,
+      alphaTest: m.alphaTest ?? 0,
+    }));
+    c.material = toonMats.length === 1 ? toonMats[0] : toonMats;
+    if (c.isSkinnedMesh) {
+      const ol = new THREE.SkinnedMesh(
+        c.geometry,
+        new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.BackSide })
+      );
+      ol.bind(c.skeleton, c.bindMatrix);
+      ol.scale.setScalar(1.07);
+      ol.frustumCulled = false;
+      c.parent.add(ol);
+    }
+  });
+}
+
 const _pinkGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => { _pinkGlb.loop  = _stripRootMotion(g); });
@@ -1992,28 +2037,13 @@ _pfl2.position.set(-2, 1, -2);
 pinkFrontScene.add(_pfl2);
 
 let pinkFrontModel = null, pinkFrontSk = null, pinkFrontTime = 0, pinkFrontActive = false;
+let frontModelCharType = null;
 
-function setupPinkFrontModel() {
-  if (pinkFrontModel) return;
-  const setup = (gltf) => {
-    const s = skeletonClone(gltf.scene);
-    const box = new THREE.Box3().setFromObject(s);
-    const sz = box.getSize(new THREE.Vector3());
-    const sc = 2.2 / sz.y;
-    const ctr = box.getCenter(new THREE.Vector3());
-    s.scale.setScalar(sc);
-    s.position.set(-ctr.x * sc, -ctr.y * sc - 2.2, -ctr.z * sc);
-    s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
-    let sm = null;
-    s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
-    pinkFrontSk = sm?.skeleton ?? null;
-    if (gltf.animations?.length) {
-      const mx = new THREE.AnimationMixer(s);
-      const a = mx.clipAction(gltf.animations[0]);
-      a.play(); a.paused = true;
-      mx.update(0.3);
-    }
-    pinkFrontModel = s;
+function setupFrontModel(charType) {
+  if (pinkFrontModel) { pinkFrontScene.remove(pinkFrontModel); pinkFrontModel = null; }
+  frontModelCharType = charType;
+
+  const _applyCamera = () => {
     const w = pinkFrontCanvas.clientWidth || 200;
     const h = Math.round(w * 1.2);
     pinkFrontRenderer.setSize(w, h);
@@ -2021,10 +2051,47 @@ function setupPinkFrontModel() {
     pinkFrontCamera.position.set(0, 0.8, 12.0);
     pinkFrontCamera.lookAt(0, 0.2, 0);
     pinkFrontCamera.updateProjectionMatrix();
-    pinkFrontScene.add(pinkFrontModel);
   };
-  if (_pinkGlb.loop) setup(_pinkGlb.loop);
-  else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
+
+  if (charType === 'pink') {
+    const setup = (gltf) => {
+      if (frontModelCharType !== 'pink') return;
+      const s = skeletonClone(gltf.scene);
+      const box = new THREE.Box3().setFromObject(s);
+      const sz = box.getSize(new THREE.Vector3());
+      const sc = 2.2 / sz.y;
+      const ctr = box.getCenter(new THREE.Vector3());
+      s.scale.setScalar(sc);
+      s.position.set(-ctr.x * sc, -ctr.y * sc - 2.2, -ctr.z * sc);
+      _applyPinkToon(s);
+      s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
+      let sm = null;
+      s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
+      pinkFrontSk = sm?.skeleton ?? null;
+      if (gltf.animations?.length) {
+        const mx = new THREE.AnimationMixer(s);
+        const a = mx.clipAction(gltf.animations[0]);
+        a.play(); a.paused = true;
+        mx.update(0.3);
+      }
+      pinkFrontModel = s;
+      _applyCamera();
+      pinkFrontScene.add(pinkFrontModel);
+    };
+    if (_pinkGlb.loop) setup(_pinkGlb.loop);
+    else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
+  } else {
+    const charDef = CHARACTERS[charType];
+    if (!charDef) return;
+    const acc = loadAccount();
+    const skinId = acc?.selectedSkins?.[charType] || null;
+    const m = createStickman(charDef.color, skinId);
+    m.position.y = 0;
+    pinkFrontModel = m;
+    pinkFrontSk = null;
+    _applyCamera();
+    pinkFrontScene.add(pinkFrontModel);
+  }
 }
 
 function renderPinkFront(dt) {
@@ -2058,6 +2125,7 @@ function setPreviewCharacter(charType) {
       const scale = 2.2 / size.y;
       m.scale.setScalar(scale);
       m.position.set(-center.x * scale, -center.y * scale - 2.2, -center.z * scale);
+      _applyPinkToon(m);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
       previewModel = m;
@@ -7375,7 +7443,7 @@ function setupInput() {
     const canvas = document.getElementById("pink-front-canvas");
     pinkFrontActive = !pinkFrontActive;
     canvas.classList.toggle("hidden", !pinkFrontActive);
-    if (pinkFrontActive) setupPinkFrontModel();
+    if (pinkFrontActive) setupFrontModel(state.selectedCharacter);
   });
 
   document.getElementById("lang-toggle").addEventListener("click", () => {
