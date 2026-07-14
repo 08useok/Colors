@@ -1183,56 +1183,56 @@ const audio = {
       pulse({ wave: "square", from: 170, to: 210, duration: 0.13, peak: 0.05 });
       pulse({ wave: "triangle", from: 140, to: 170, duration: 0.18, peak: 0.02, delay: 0.02 });
     } else if (type === "click") {
-      pulse({ wave: "sine", from: 900, to: 600, duration: 0.04, peak: 0.09 });
+      pulse({ wave: "sine", from: 900, to: 600, duration: 0.04, peak: 0.22 });
     } else if (type === "hover") {
-      pulse({ wave: "sine", from: 700, to: 750, duration: 0.03, peak: 0.035 });
+      pulse({ wave: "sine", from: 700, to: 750, duration: 0.03, peak: 0.12 });
     } else if (type === "open") {
-      pulse({ wave: "triangle", from: 300, to: 600, duration: 0.1, peak: 0.08 });
+      pulse({ wave: "triangle", from: 300, to: 600, duration: 0.1, peak: 0.2 });
     } else if (type === "close") {
-      pulse({ wave: "triangle", from: 500, to: 260, duration: 0.08, peak: 0.07 });
+      pulse({ wave: "triangle", from: 500, to: 260, duration: 0.08, peak: 0.18 });
     } else if (type === "purchase") {
-      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.08, peak: 0.08 });
-      pulse({ wave: "square", from: 660, to: 880, duration: 0.06, peak: 0.07, delay: 0.07 });
+      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.08, peak: 0.22 });
+      pulse({ wave: "square", from: 660, to: 880, duration: 0.06, peak: 0.2, delay: 0.07 });
     } else if (type === "purchaseFail") {
-      pulse({ wave: "sawtooth", from: 180, to: 120, duration: 0.1, peak: 0.09 });
+      pulse({ wave: "sawtooth", from: 180, to: 120, duration: 0.1, peak: 0.22 });
     } else if (type === "matchFound") {
-      pulse({ wave: "sine", from: 520, to: 780, duration: 0.15, peak: 0.09 });
+      pulse({ wave: "sine", from: 520, to: 780, duration: 0.15, peak: 0.22 });
     } else if (type === "countdownTick") {
-      pulse({ wave: "square", from: 440, to: 440, duration: 0.08, peak: 0.1 });
+      pulse({ wave: "square", from: 440, to: 440, duration: 0.08, peak: 0.25 });
     } else if (type === "gameStart") {
-      pulse({ wave: "sawtooth", from: 200, to: 500, duration: 0.2, peak: 0.1 });
-      pulse({ wave: "triangle", from: 500, to: 700, duration: 0.15, peak: 0.08, delay: 0.05 });
+      pulse({ wave: "sawtooth", from: 200, to: 500, duration: 0.2, peak: 0.25 });
+      pulse({ wave: "triangle", from: 500, to: 700, duration: 0.15, peak: 0.2, delay: 0.05 });
     } else if (type === "projectileFire") {
-      pulse({ wave: "sine", from: 800, to: 300, duration: 0.09, peak: 0.075 });
+      pulse({ wave: "sine", from: 800, to: 300, duration: 0.09, peak: 0.2 });
     } else if (type === "explosion") {
-      pulse({ wave: "sawtooth", from: 90, to: 40, duration: 0.35, peak: 0.12 });
-      pulse({ wave: "square", from: 60, to: 30, duration: 0.3, peak: 0.09, delay: 0.02 });
+      pulse({ wave: "sawtooth", from: 90, to: 40, duration: 0.35, peak: 0.3 });
+      pulse({ wave: "square", from: 60, to: 30, duration: 0.3, peak: 0.22, delay: 0.02 });
     } else if (type === "damaged") {
-      pulse({ wave: "triangle", from: 220, to: 120, duration: 0.12, peak: 0.1 });
+      pulse({ wave: "triangle", from: 220, to: 120, duration: 0.12, peak: 0.25 });
     } else if (type === "lowHealth") {
-      pulse({ wave: "square", from: 300, to: 260, duration: 0.15, peak: 0.09 });
-      pulse({ wave: "square", from: 260, to: 300, duration: 0.12, peak: 0.08, delay: 0.1 });
+      pulse({ wave: "square", from: 300, to: 260, duration: 0.15, peak: 0.22 });
+      pulse({ wave: "square", from: 260, to: 300, duration: 0.12, peak: 0.2, delay: 0.1 });
     } else if (type === "heal") {
-      pulse({ wave: "sine", from: 500, to: 900, duration: 0.2, peak: 0.07 });
-      pulse({ wave: "sine", from: 700, to: 1100, duration: 0.18, peak: 0.06, delay: 0.06 });
+      pulse({ wave: "sine", from: 500, to: 900, duration: 0.2, peak: 0.18 });
+      pulse({ wave: "sine", from: 700, to: 1100, duration: 0.18, peak: 0.15, delay: 0.06 });
     } else if (type === "showdownStart") {
-      pulse({ wave: "sawtooth", from: 150, to: 300, duration: 0.3, peak: 0.11 });
-      pulse({ wave: "square", from: 300, to: 450, duration: 0.2, peak: 0.09, delay: 0.1 });
+      pulse({ wave: "sawtooth", from: 150, to: 300, duration: 0.3, peak: 0.28 });
+      pulse({ wave: "square", from: 300, to: 450, duration: 0.2, peak: 0.22, delay: 0.1 });
     } else if (type === "zoneShrink") {
-      pulse({ wave: "triangle", from: 400, to: 150, duration: 0.4, peak: 0.08 });
+      pulse({ wave: "triangle", from: 400, to: 150, duration: 0.4, peak: 0.2 });
     } else if (type === "win") {
-      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.12, peak: 0.09 });
-      pulse({ wave: "triangle", from: 660, to: 880, duration: 0.15, peak: 0.09, delay: 0.1 });
-      pulse({ wave: "triangle", from: 880, to: 1100, duration: 0.18, peak: 0.08, delay: 0.25 });
+      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.12, peak: 0.22 });
+      pulse({ wave: "triangle", from: 660, to: 880, duration: 0.15, peak: 0.22, delay: 0.1 });
+      pulse({ wave: "triangle", from: 880, to: 1100, duration: 0.18, peak: 0.2, delay: 0.25 });
     } else if (type === "lose") {
-      pulse({ wave: "triangle", from: 440, to: 220, duration: 0.3, peak: 0.08 });
-      pulse({ wave: "triangle", from: 220, to: 110, duration: 0.35, peak: 0.07, delay: 0.2 });
+      pulse({ wave: "triangle", from: 440, to: 220, duration: 0.3, peak: 0.2 });
+      pulse({ wave: "triangle", from: 220, to: 110, duration: 0.35, peak: 0.18, delay: 0.2 });
     } else if (type === "chopWood") {
-      pulse({ wave: "square", from: 220, to: 110, duration: 0.06, peak: 0.1 });
+      pulse({ wave: "square", from: 220, to: 110, duration: 0.06, peak: 0.25 });
     } else if (type === "bushEnter") {
-      pulse({ wave: "triangle", from: 350, to: 250, duration: 0.1, peak: 0.055 });
+      pulse({ wave: "triangle", from: 350, to: 250, duration: 0.1, peak: 0.15 });
     } else if (type === "bushExit") {
-      pulse({ wave: "triangle", from: 250, to: 350, duration: 0.1, peak: 0.055 });
+      pulse({ wave: "triangle", from: 250, to: 350, duration: 0.1, peak: 0.15 });
     } else {
       return;
     }
