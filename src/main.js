@@ -7223,20 +7223,17 @@ function checkEndState() {
       const totalText = account ? t("totalTrophy", account.trophies) : "";
       const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
 
+      audio.play(playerRank <= 4 ? "win" : "lose");
       if (playerDead && alive.length > 1) {
-        audio.play("lose");
         resultTitle.textContent = t("rankN", playerRank);
         resultBody.textContent = t("resultDead", deltaText, totalText);
       } else if (!winner) {
-        audio.play("lose");
         resultTitle.textContent = t("rankN", playerRank);
         resultBody.textContent = t("resultDraw", deltaText, totalText);
       } else if (winner.isPlayer) {
-        audio.play("win");
         resultTitle.textContent = t("rank1");
         resultBody.textContent = t("resultWin", deltaText, totalText);
       } else {
-        audio.play("lose");
         resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
         resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
       }
