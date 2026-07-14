@@ -1546,6 +1546,39 @@ body {
   }
 }
 
+.game-title-announce {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 60;
+  transform: translate(-50%, -50%) scale(0.6);
+  font-size: 88px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-shadow: 0 0 22px rgba(255, 255, 255, 0.65), 0 0 50px rgba(120, 180, 255, 0.55), 0 4px 0 rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.game-title-announce.title-pop {
+  animation: gameTitlePop 2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes gameTitlePop {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; letter-spacing: -4px; }
+  20% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; letter-spacing: 10px; }
+  30% { transform: translate(-50%, -50%) scale(1); opacity: 1; letter-spacing: 8px; }
+  75% { transform: translate(-50%, -50%) scale(1); opacity: 1; letter-spacing: 8px; }
+  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; letter-spacing: 14px; }
+}
+
+@media (max-width: 900px) {
+  .game-title-announce {
+    font-size: 44px;
+  }
+}
+
 @media (max-width: 900px) {
   .top-left,
   .top-center,

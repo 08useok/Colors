@@ -79,6 +79,7 @@ const reloadBar = document.getElementById("reload-bar");
 const survivorsLabel = document.getElementById("survivors");
 const survivorsPanel = survivorsLabel.parentElement;
 const showdownAnnounceEl = document.getElementById("showdown-announce");
+const gameTitleAnnounceEl = document.getElementById("game-title-announce");
 const showdownMusic = new Audio("./assets/showdown-theme.mp3");
 showdownMusic.loop = true;
 const showdownBgm = new Audio("./assets/showdown-bgm.mp3");
@@ -6857,6 +6858,14 @@ function updateBushVisuals() {
   }
 }
 
+function triggerGameTitleAnnounce() {
+  gameTitleAnnounceEl.classList.remove("title-pop");
+  void gameTitleAnnounceEl.offsetWidth;
+  gameTitleAnnounceEl.classList.remove("hidden");
+  gameTitleAnnounceEl.classList.add("title-pop");
+  setTimeout(() => gameTitleAnnounceEl.classList.add("hidden"), 2000);
+}
+
 function triggerShowdownAnnounce() {
   showdownAnnounceEl.classList.remove("showdown-pop");
   void showdownAnnounceEl.offsetWidth;
@@ -7324,6 +7333,9 @@ function animate() {
         if (remain > 0) audio.play("countdownTick");
       }
     } else {
+      if (state.lastCountdownRemain !== null && !state.chopWoodMode && !state.takedownMode && !state.trainingMode) {
+        triggerGameTitleAnnounce();
+      }
       state.lastCountdownRemain = null;
     }
 
