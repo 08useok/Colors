@@ -86,8 +86,16 @@ showdownBgm.loop = true;
 const lobbyBgm = new Audio("./assets/lobby-bgm.mp3");
 lobbyBgm.loop = true;
 
+function stopAllBgm() {
+  lobbyBgm.pause();
+  showdownBgm.pause();
+  showdownMusic.pause();
+}
+
 function playLobbyBgm() {
   if (!state.audioEnabled) return;
+  showdownBgm.pause();
+  showdownMusic.pause();
   lobbyBgm.volume = 0.3;
   lobbyBgm.play().catch(() => {});
 }
@@ -3091,7 +3099,7 @@ function initTakeDownPlayers() {
 
 function startTakeDown() {
   audio.play("gameStart");
-  lobbyBgm.pause();
+  stopAllBgm();
   clock.getDelta();
   battleMapGroup.visible = true;
   trainingMapGroup.visible = false;
@@ -3519,7 +3527,7 @@ async function enterMatchmaking() {
 
 function startChopWood() {
   audio.play("gameStart");
-  lobbyBgm.pause();
+  stopAllBgm();
   clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
@@ -4346,7 +4354,7 @@ function exitTraining() {
 
 function resetGame() {
   audio.play("gameStart");
-  lobbyBgm.pause();
+  stopAllBgm();
   crosshairEl.classList.remove("hidden");
   clock.getDelta();
   battleMapGroup.visible = true;
@@ -4381,6 +4389,7 @@ function resetGame() {
   showdownAnnounceEl.classList.add("hidden");
   showdownAnnounceEl.classList.remove("showdown-pop");
   showdownMusic.pause();
+  lobbyBgm.pause();
   if (state.audioEnabled) {
     showdownBgm.currentTime = 0;
     showdownBgm.volume = 0.35;
@@ -6856,6 +6865,7 @@ function triggerShowdownAnnounce() {
   setTimeout(() => showdownAnnounceEl.classList.add("hidden"), 1800);
   if (state.audioEnabled) {
     showdownBgm.pause();
+    lobbyBgm.pause();
     showdownMusic.currentTime = 0;
     showdownMusic.volume = 0.6;
     showdownMusic.play().catch(() => {});
