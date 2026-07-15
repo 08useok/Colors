@@ -58,6 +58,7 @@ const switchIdInput = document.getElementById("switch-id-input");
 const switchNicknameInput = document.getElementById("switch-nickname-input");
 const accountSwitchError = document.getElementById("account-switch-error");
 const startBattleBtn = document.getElementById("start-battle-btn");
+const lobbyEventMap = document.getElementById("lobby-event-map");
 const modeSelector = document.getElementById("mode-selector");
 const characterPanel = document.getElementById("character-panel");
 const characterToggle = document.getElementById("character-toggle");
@@ -857,6 +858,7 @@ function showLobby() {
 
   if (!account || !account.id) {
     startBattleBtn.classList.add("hidden");
+    lobbyEventMap.classList.add("hidden");
     accountCreation.classList.remove("hidden");
     lobbyMain.classList.add("hidden");
     dailyLogin.classList.add("hidden");
@@ -868,6 +870,7 @@ function showLobby() {
     setTimeout(() => idInput.focus(), 50);
   } else if (isLoginDoneToday(account)) {
     startBattleBtn.classList.remove("hidden");
+    lobbyEventMap.classList.remove("hidden");
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     dailyLogin.classList.add("hidden");
@@ -877,6 +880,7 @@ function showLobby() {
     updateLobbyUI(account);
   } else {
     startBattleBtn.classList.add("hidden");
+    lobbyEventMap.classList.add("hidden");
     accountCreation.classList.add("hidden");
     lobbyMain.classList.add("hidden");
     dailyLogin.classList.remove("hidden");
@@ -7650,6 +7654,7 @@ function setupInput() {
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     startBattleBtn.classList.remove("hidden");
+    lobbyEventMap.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     updateLobbyUI(account);
   });
@@ -7664,6 +7669,7 @@ function setupInput() {
     lobbyMain.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     startBattleBtn.classList.remove("hidden");
+    lobbyEventMap.classList.remove("hidden");
     accountSwitchError.classList.add("hidden");
     accountSwitchError.textContent = "";
   }
@@ -7672,6 +7678,7 @@ function setupInput() {
     lobbyMain.classList.add("hidden");
     document.getElementById("lobby-side-panel").classList.add("hidden");
     startBattleBtn.classList.add("hidden");
+    lobbyEventMap.classList.add("hidden");
     accountSwitch.classList.remove("hidden");
     switchIdInput.value = "";
     switchNicknameInput.value = "";
@@ -7748,6 +7755,7 @@ function setupInput() {
       dailyLogin.classList.add("hidden");
       lobbyMain.classList.remove("hidden");
       startBattleBtn.classList.remove("hidden");
+      lobbyEventMap.classList.remove("hidden");
       document.getElementById("lobby-side-panel").classList.remove("hidden");
       if (account.lang && account.lang !== currentLang) setLanguage(account.lang);
       updateLobbyUI(account);
