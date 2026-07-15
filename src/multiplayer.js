@@ -32,6 +32,14 @@ export const mp = {
 
   connect(nickname, charType) {
     return new Promise((resolve, reject) => {
+      if (this.ws) {
+        try { this.ws.close(); } catch (_) {}
+        this.ws = null;
+      }
+      this.myId = null;
+      this.isHost = false;
+      this.roomPlayers = [];
+
       try {
         this.ws = new PartySocket({
           host: PARTY_HOST,

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js";
-import { mp } from "./multiplayer.js";
+import { mp } from "./multiplayer.js?v=1.5.49";
 import { CHARACTERS } from "./config/characters.js";
 
 // ── i18n ────────────────────────────────────────────────────────────────
