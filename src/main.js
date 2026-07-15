@@ -2872,7 +2872,7 @@ function initTakeDownPlayers() {
     : [];
 
   // 봇 타입 풀: 미사용 타입 1개씩 → 나머지 슬롯은 랜덤(중복 없이)
-  const botCount = Math.max(0, 7 - remotePlayers.length);
+  const botCount = mpConfig ? 0 : 7;
   const usedTypes = new Set([state.selectedCharacter, ...remotePlayers.map((p) => p.charType)]);
   const unusedTypes = allTypes.filter((c) => !usedTypes.has(c));
   for (let i = unusedTypes.length - 1; i > 0; i--) {
@@ -2904,26 +2904,28 @@ function initTakeDownPlayers() {
   }
 
   // 로컬 플레이어
-  addFighter({
-    id: spawnIdx,
-    name: state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1),
-    characterType: state.selectedCharacter,
-    isPlayer: true,
-    yaw: Math.random() * Math.PI * 2,
-  });
-
-  // 원격 플레이어
-  for (const rp of remotePlayers) {
-    const f = addFighter({
+  if (mpConfig) {
+    for (const participant of mpConfig.players) {
+      const isLocal = participant.id === mp.myId;
+      const f = addFighter({
+        id: spawnIdx,
+        name: participant.nickname,
+        characterType: participant.charType,
+        isPlayer: isLocal,
+        yaw: 0,
+      });
+      f.networkId = participant.id;
+      f.isNetworkPlayer = !isLocal;
+      if (!isLocal) mpNetFighters[participant.id] = f;
+    }
+  } else {
+    addFighter({
       id: spawnIdx,
-      name: rp.nickname,
-      characterType: rp.charType,
-      isPlayer: false,
+      name: state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1),
+      characterType: state.selectedCharacter,
+      isPlayer: true,
       yaw: Math.random() * Math.PI * 2,
     });
-    f.isNetworkPlayer = true;
-    f.networkId = rp.id;
-    mpNetFighters[rp.id] = f;
   }
 
   // 봇 (8명 - 실제 플레이어 수)
@@ -3298,6 +3300,15 @@ function syncMp(dt) {
       z: b.mesh.position.z,
       health: b.health,
       dead: !!b.dead,
+      timeLeft: state.tdTimeLeft,
+      players: state.players.filter((f) => !f.isBoss && f.networkId).map((f) => ({
+        id: f.networkId,
+        health: f.health,
+        dead: !!f.dead,
+        score: f.tdScore,
+        bossDmg: f.tdBossDmg,
+        kills: f.tdKills,
+      })),
     });
   }
 }
@@ -3313,9 +3324,6 @@ function setupMpHandlers() {
       f.shadow.position.x = msg.x;
       f.shadow.position.z = msg.z;
       f.mesh.rotation.y = msg.yaw;
-      f.health = msg.health;
-      if (msg.dead && !f.dead) { f.dead = true; f.mesh.visible = false; f.shadow.visible = false; if (f.healthBar) f.healthBar.visible = false; }
-      if (!msg.dead && f.dead) { f.dead = false; f.mesh.visible = true; f.shadow.visible = true; if (f.healthBar) f.healthBar.visible = true; }
     } else if (msg.relayType === "BSTATE" && !mpConfig?.isHost) {
       const b = state.tdBoss;
       if (!b) return;
@@ -3325,6 +3333,30 @@ function setupMpHandlers() {
       b.shadow.position.z = msg.z;
       b.health = msg.health;
       if (msg.dead && !b.dead) { b.dead = true; }
+      state.tdTimeLeft = msg.timeLeft;
+      for (const playerState of msg.players || []) {
+        const f = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        if (!f) continue;
+        f.health = playerState.health;
+        f.tdScore = playerState.score;
+        f.tdBossDmg = playerState.bossDmg;
+        f.tdKills = playerState.kills;
+        if (playerState.dead !== f.dead) {
+          f.dead = playerState.dead;
+          f.mesh.visible = !f.dead;
+          f.shadow.visible = !f.dead;
+          if (f.healthBar) f.healthBar.visible = !f.dead;
+        }
+      }
+    } else if (msg.relayType === "TD_DAMAGE" && mpConfig?.isHost) {
+      const attacker = mpNetFighters[msg.fromId];
+      if (!attacker || attacker.dead) return;
+      const target = msg.target === "boss"
+        ? state.tdBoss
+        : state.players.find((f) => f.networkId === msg.target);
+      if (!target || target.dead || target.networkId === msg.fromId) return;
+      const maxDamage = Math.max(3500, CHARACTERS[attacker.characterType]?.healCircleDamage || 0);
+      applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
     }
   });
 
@@ -3394,7 +3426,7 @@ async function enterMatchmaking() {
   mp.on("GAME_START", async (data) => {
     audio.play("close");
     matchmakingOverlay.classList.add("hidden");
-    mpConfig = { players: data.players, isHost: data.isHost, hostId: data.hostId };
+    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId };
     setupMpHandlers();
     await initAudio();
     audio.play("close");
@@ -5557,6 +5589,15 @@ function resolveAttack(attacker, hitIndex, damage) {
 
 function applyDamage(target, amount, attacker = null, updateCombatTime = true, noPopup = false) {
   if (target.dead) {
+    return 0;
+  }
+
+  if (state.takedownMode && mpConfig && !mpConfig.isHost && attacker?.isPlayer && (target.isBoss || target.networkId)) {
+    mp.relay("TD_DAMAGE", {
+      target: target.isBoss ? "boss" : target.networkId,
+      amount,
+    });
+    if (!noPopup) flashHitMarker();
     return 0;
   }
 
