@@ -1,10 +1,13 @@
 // ── Colors Multiplayer Module ────────────────────────────────────────────
 // 배포 후 WS_PROD_URL 을 실제 Railway/Render URL로 교체
-const WS_PROD_URL = "wss://colors-production-fc7f.up.railway.app";
-const WS_URL =
+import PartySocket from "partysocket";
+
+const PARTY_HOST =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
-    ? "ws://localhost:3000"
-    : WS_PROD_URL;
+    ? "localhost:8787"
+    : globalThis.PARTYKIT_HOST || "colors-multiplayer.useok-jeju.workers.dev";
+const PARTY_ROOM = "matchmaking";
+const PARTY_NAME = "colors-server";
 
 export const mp = {
   ws: null,
@@ -29,7 +32,15 @@ export const mp = {
 
   connect(nickname, charType) {
     return new Promise((resolve, reject) => {
-      try { this.ws = new WebSocket(WS_URL); } catch (e) { reject(e); return; }
+      try {
+        this.ws = new PartySocket({
+          host: PARTY_HOST,
+          party: PARTY_NAME,
+          room: PARTY_ROOM,
+          connectionTimeout: 8000,
+          maxRetries: 5,
+        });
+      } catch (e) { reject(e); return; }
       const timeout = setTimeout(() => reject(new Error("연결 시간 초과")), 8000);
 
       this.ws.onopen = () => {

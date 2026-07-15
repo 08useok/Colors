@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "colors-multiplayer",
+  "main": "party/server.js",
+  "compatibility_date": "2026-06-18",
+  "workers_dev": true,
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ColorsServer",
+        "class_name": "ColorsServer"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["ColorsServer"]
+    }
+  ]
+}

@@ -11,6 +11,15 @@ py -m http.server 4173
 
 Open `http://localhost:4173`. Entry point: `index.html` → `src/main.js` (type="module").
 
+For multiplayer development, run the Cloudflare Worker in a second terminal:
+
+```powershell
+npm install
+npm run dev
+```
+
+Wrangler listens on `http://localhost:8787`; deploy with `npm run deploy`.
+
 ## Validation
 - Tests: none (no test framework configured)
 - Typecheck: none (plain JS, no TS)
