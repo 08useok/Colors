@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.56">
+  <link rel="stylesheet" href="./styles.css?v=1.5.57">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -129,10 +129,16 @@
 
       <div id="message-overlay">
         <div id="lobby-side-panel" class="lobby-side-panel hidden">
+          <div class="sidebar-profile-card">
+            <div id="sidebar-profile-nickname">플레이어</div>
+            <div class="sidebar-profile-meta">
+              <span id="sidebar-profile-level">Lv.1</span>
+              <span id="sidebar-profile-season">알파 시즌 4</span>
+            </div>
+          </div>
           <button id="lang-toggle" class="side-toggle-btn" type="button">EN</button>
           <div class="side-nav-divider"></div>
           <button id="character-toggle" class="side-nav-btn" type="button">🎨 캐릭터</button>
-          <button id="start-training-btn" class="side-nav-btn" type="button" data-i18n="training">🎯 훈련장</button>
           <button id="open-shop-btn" class="side-nav-btn" type="button">🪙 상점</button>
           <button id="open-rotation-btn" class="side-nav-btn" type="button">🔄 Rotation</button>
           <button id="open-account-switch-btn" class="side-nav-btn" type="button">👤 계정 전환</button>
@@ -527,18 +533,7 @@
           <div id="account-recovery-info" class="daily-recovery-info hidden"></div>
         </div>
 
-        <div id="color-buttons" class="color-buttons hidden">
-          <div class="color-dot-list">
-            <button class="color-dot" data-char="red" style="background:#ff0000" type="button"></button>
-            <button class="color-dot" data-char="green" style="background:#00ff00" type="button"></button>
-            <button class="color-dot" data-char="blue" style="background:#0000ff" type="button"></button>
-            <button class="color-dot" data-char="orange" style="background:#ffa500" type="button"></button>
-            <button class="color-dot" data-char="yellow" style="background:#ffff00" type="button"></button>
-            <button class="color-dot" data-char="cyan" style="background:#0ff0fe" type="button"></button>
-          <button class="color-dot" data-char="purple" style="background:#800080" type="button"></button>
-          <button class="color-dot" data-char="pink" style="background:#FF69B4" type="button"></button>
-          </div>
-        </div>
+        <div id="color-buttons" class="color-buttons hidden"></div>
 
         <div id="lobby-main" class="message-card hidden">
           <div class="season-badge" data-i18n="season">알파 시즌 3</div>
@@ -632,11 +627,12 @@
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
           <div id="character-actions" class="character-actions hidden">
-            <button id="try-character-btn" type="button">🎯 체험</button>
+            <button id="try-character-btn" type="button">🎯 훈련장 체험</button>
             <button id="confirm-character-btn" type="button">✓ 선택</button>
           </div>
           </div>
           <div id="mode-selector" class="mode-selector hidden">
+            <div class="map-select-title">맵 선택</div>
             <button id="mode-showdown" class="mode-btn mode-showdown" type="button">
               <img src="./assets/showdown.webp" class="mode-icon" alt="Showdown">
               <span data-i18n="modeShowdown">쇼다운</span>
@@ -750,6 +746,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.56"></script>
+  <script type="module" src="./src/main.js?v=1.5.57"></script>
 </body>
 </html>

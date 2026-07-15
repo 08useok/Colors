@@ -64,10 +64,11 @@ const characterToggle = document.getElementById("character-toggle");
 const characterActions = document.getElementById("character-actions");
 const tryCharacterBtn = document.getElementById("try-character-btn");
 const confirmCharacterBtn = document.getElementById("confirm-character-btn");
-const startTrainingBtn = document.getElementById("start-training-btn");
 const exitTrainingBtn = document.getElementById("exit-training-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
 const lobbyLevel = document.getElementById("lobby-level");
+const sidebarProfileNickname = document.getElementById("sidebar-profile-nickname");
+const sidebarProfileLevel = document.getElementById("sidebar-profile-level");
 const lobbyTrophies = document.getElementById("lobby-trophies");
 const lobbyRecord = document.getElementById("lobby-record");
 const lobbyWinrate = document.getElementById("lobby-winrate");
@@ -660,11 +661,14 @@ function applyProfileCosmetics(account) {
   const badge = BADGES[c.equippedBadge];
   const badgeEmoji = badge?.emoji ? badge.emoji + " " : "";
   lobbyNickname.textContent = badgeEmoji + account.nickname;
+  sidebarProfileNickname.textContent = badgeEmoji + account.nickname;
 }
 
 function updateLobbyUI(account) {
   lobbyNickname.textContent = account.nickname;
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
+  sidebarProfileNickname.textContent = account.nickname;
+  sidebarProfileLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   lobbyTrophies.textContent = account.trophies;
   if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
   lobbyRecord.textContent = t("record", account.wins, account.losses);
@@ -7853,11 +7857,6 @@ function setupInput() {
   });
 
   // 훈련장 시작
-  startTrainingBtn.addEventListener("click", async () => {
-    await initAudio();
-    startTraining();
-  });
-
   // 훈련장 나가기
   exitTrainingBtn.addEventListener("click", () => {
     exitTraining();
