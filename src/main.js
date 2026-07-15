@@ -7720,6 +7720,12 @@ function setupInput() {
   switchNicknameInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") document.getElementById("switch-account-btn").click();
   });
+  switchIdInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      switchNicknameInput.focus();
+    }
+  });
 
   function handleDailyLogin() {
     const account = loadAccount();
