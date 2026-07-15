@@ -969,16 +969,16 @@ body {
 }
 
 .char-select-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
-  justify-content: center;
   margin-top: 4px;
 }
 
 .char-btn {
   position: relative;
-  flex: 1;
-  max-width: 160px;
+  width: 100%;
+  max-width: none;
   padding: 14px 10px;
   border: 2px solid rgba(255, 210, 158, 0.2);
   border-radius: 14px;
