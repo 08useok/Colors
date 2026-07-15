@@ -61,6 +61,9 @@ const startBattleBtn = document.getElementById("start-battle-btn");
 const modeSelector = document.getElementById("mode-selector");
 const characterPanel = document.getElementById("character-panel");
 const characterToggle = document.getElementById("character-toggle");
+const characterActions = document.getElementById("character-actions");
+const tryCharacterBtn = document.getElementById("try-character-btn");
+const confirmCharacterBtn = document.getElementById("confirm-character-btn");
 const startTrainingBtn = document.getElementById("start-training-btn");
 const exitTrainingBtn = document.getElementById("exit-training-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
@@ -1907,6 +1910,7 @@ previewRimLight.position.set(-3, 2, -3);
 previewScene.add(previewRimLight);
 
 let previewModel, previewChar, previewCharType;
+let pendingCharacter = null;
 let previewTime = 0;
 let previewIsGlb = false;
 
@@ -7754,68 +7758,35 @@ function setupInput() {
   });
 
   // 캐릭터 선택 (선택만, 게임 시작은 전투 시작 버튼)
-  document.getElementById("select-red").addEventListener("click", () => {
+  document.querySelectorAll(".char-btn").forEach((btn) => btn.addEventListener("click", () => {
     const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "red";
-    saveAccount(account);
-    updateLobbyUI(account);
+    pendingCharacter = btn.dataset.char;
+    document.querySelectorAll(".char-btn").forEach((item) => {
+      item.classList.toggle("selected", item.dataset.char === pendingCharacter);
+    });
+    updateColorInfo(pendingCharacter, account);
+    setPreviewCharacter(pendingCharacter);
+    characterActions.classList.remove("hidden");
+  }));
+
+  tryCharacterBtn.addEventListener("click", async () => {
+    if (!pendingCharacter) return;
+    await initAudio();
+    state.selectedCharacter = pendingCharacter;
+    startTraining();
   });
 
-  document.getElementById("select-green").addEventListener("click", () => {
+  confirmCharacterBtn.addEventListener("click", () => {
+    if (!pendingCharacter) return;
     const account = loadAccount();
     if (!account) return;
-    account.selectedCharacter = "green";
+    account.selectedCharacter = pendingCharacter;
     saveAccount(account);
     updateLobbyUI(account);
-  });
-
-  document.getElementById("select-blue").addEventListener("click", () => {
-    const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "blue";
-    saveAccount(account);
-    updateLobbyUI(account);
-  });
-
-  document.getElementById("select-orange").addEventListener("click", () => {
-    const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "orange";
-    saveAccount(account);
-    updateLobbyUI(account);
-  });
-
-  document.getElementById("select-yellow").addEventListener("click", () => {
-    const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "yellow";
-    saveAccount(account);
-    updateLobbyUI(account);
-  });
-
-  document.getElementById("select-cyan").addEventListener("click", () => {
-    const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "cyan";
-    saveAccount(account);
-    updateLobbyUI(account);
-  });
-
-  document.getElementById("select-purple")?.addEventListener("click", () => {
-    const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "purple";
-    saveAccount(account);
-    updateLobbyUI(account);
-  });
-
-  document.getElementById("select-pink")?.addEventListener("click", () => {
-    const account = loadAccount();
-    if (!account) return;
-    account.selectedCharacter = "pink";
-    saveAccount(account);
-    updateLobbyUI(account);
+    characterPanel.classList.add("hidden");
+    characterActions.classList.add("hidden");
+    characterToggle.classList.remove("active");
+    pendingCharacter = null;
   });
 
   document.querySelectorAll(".color-dot").forEach((dot) => {
@@ -7831,6 +7802,12 @@ function setupInput() {
   // 전투 시작
   characterToggle.addEventListener("click", () => {
     const willShow = characterPanel.classList.contains("hidden");
+    if (willShow) {
+      const account = loadAccount();
+      pendingCharacter = null;
+      characterActions.classList.add("hidden");
+      if (account) updateLobbyUI(account);
+    }
     characterPanel.classList.toggle("hidden", !willShow);
     modeSelector.classList.add("hidden");
     characterToggle.classList.toggle("active", willShow);
@@ -7846,8 +7823,8 @@ function setupInput() {
 
   document.getElementById("mode-back").addEventListener("click", () => {
     modeSelector.classList.add("hidden");
-    characterPanel.classList.remove("hidden");
-    characterToggle.classList.add("active");
+    characterPanel.classList.add("hidden");
+    characterToggle.classList.remove("active");
     startBattleBtn.classList.remove("active");
   });
 
