@@ -54,6 +54,7 @@ const dailyLoginBtn = document.getElementById("daily-login-btn");
 const accountRecoveryBtn = document.getElementById("account-recovery-btn");
 const accountRecoveryInfo = document.getElementById("account-recovery-info");
 const startBattleBtn = document.getElementById("start-battle-btn");
+const modeSelector = document.getElementById("mode-selector");
 const startTrainingBtn = document.getElementById("start-training-btn");
 const exitTrainingBtn = document.getElementById("exit-training-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
@@ -7722,8 +7723,6 @@ function setupInput() {
   });
 
   // 전투 시작
-  const modeSelector = document.getElementById("mode-selector");
-
   startBattleBtn.addEventListener("click", () => {
     modeSelector.classList.toggle("hidden");
     startBattleBtn.classList.toggle("hidden");
