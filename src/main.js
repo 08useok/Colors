@@ -1131,6 +1131,16 @@ const audio = {
   },
 };
 
+async function initAudio() {
+  if (!state.audioContext) {
+    state.audioContext = new window.AudioContext();
+    state.audioEnabled = true;
+  }
+  if (state.audioContext.state === "suspended") {
+    await state.audioContext.resume();
+  }
+}
+
 function createLights() {
   const hemi = new THREE.HemisphereLight(0xfdeac4, 0x7d5131, 1.35);
   scene.add(hemi);
@@ -7536,16 +7546,6 @@ function setupInput() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
-
-  async function initAudio() {
-    if (!state.audioContext) {
-      state.audioContext = new window.AudioContext();
-      state.audioEnabled = true;
-    }
-    if (state.audioContext.state === "suspended") {
-      await state.audioContext.resume();
-    }
-  }
 
   document.addEventListener("pointerdown", async () => {
     await initAudio();
