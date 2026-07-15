@@ -7467,7 +7467,15 @@ function setupInput() {
   syncVirtualControlsVisibility();
   coarsePointerQuery.addEventListener?.("change", syncVirtualControlsVisibility);
 
+  const isTextInputEvent = (event) => {
+    const target = event.target;
+    return target instanceof HTMLInputElement
+      || target instanceof HTMLTextAreaElement
+      || target?.isContentEditable;
+  };
+
   window.addEventListener("keydown", (event) => {
+    if (isTextInputEvent(event)) return;
     if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
@@ -7478,6 +7486,7 @@ function setupInput() {
   });
 
   window.addEventListener("keyup", (event) => {
+    if (isTextInputEvent(event)) return;
     if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
