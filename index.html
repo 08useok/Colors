@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.3">
+  <link rel="stylesheet" href="./styles.css?v=1.5.51">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -130,6 +130,14 @@
       <div id="message-overlay">
         <div id="lobby-side-panel" class="lobby-side-panel hidden">
           <button id="lang-toggle" class="side-toggle-btn" type="button">EN</button>
+          <div class="side-nav-divider"></div>
+          <button id="character-toggle" class="side-nav-btn active" type="button">🎨 캐릭터</button>
+          <button id="start-battle-btn" class="side-nav-btn" type="button" data-i18n="startBattle">⚔️ 전투 시작</button>
+          <button id="start-training-btn" class="side-nav-btn" type="button" data-i18n="training">🎯 훈련장</button>
+          <button id="open-shop-btn" class="side-nav-btn" type="button">🪙 상점</button>
+          <button id="open-rotation-btn" class="side-nav-btn" type="button">🔄 Rotation</button>
+          <button id="open-account-switch-btn" class="side-nav-btn" type="button">👤 계정 전환</button>
+          <div class="side-nav-divider"></div>
           <button id="stats-toggle" class="side-toggle-btn" type="button" data-i18n="statsBtn">내 정보</button>
           <div id="stats-panel" class="stats-panel hidden"></div>
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
@@ -562,6 +570,7 @@
             </div>
           </div>
 
+          <div id="character-panel">
           <div class="lobby-divider"></div>
 
           <div id="char-preview-wrap" class="char-preview-wrap">
@@ -621,7 +630,7 @@
           </div>
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
-          <button id="start-battle-btn" class="lobby-start-btn" type="button" data-i18n="startBattle">전투 시작</button>
+          </div>
           <div id="mode-selector" class="mode-selector hidden">
             <button id="mode-showdown" class="mode-btn mode-showdown" type="button">
               <img src="./assets/showdown.webp" class="mode-icon" alt="Showdown">
@@ -633,10 +642,6 @@
             </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>
-          <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
-          <button id="open-shop-btn" class="lobby-start-btn lobby-shop-btn" type="button">🪙 상점</button>
-          <button id="open-rotation-btn" class="lobby-start-btn lobby-rotation-btn" type="button">🔄 Rotation</button>
-          <button id="open-account-switch-btn" class="lobby-start-btn lobby-recovery-btn" type="button">계정 전환</button>
         </div>
       </div>
 
@@ -740,6 +745,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.50"></script>
+  <script type="module" src="./src/main.js?v=1.5.51"></script>
 </body>
 </html>

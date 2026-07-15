@@ -59,6 +59,8 @@ const switchNicknameInput = document.getElementById("switch-nickname-input");
 const accountSwitchError = document.getElementById("account-switch-error");
 const startBattleBtn = document.getElementById("start-battle-btn");
 const modeSelector = document.getElementById("mode-selector");
+const characterPanel = document.getElementById("character-panel");
+const characterToggle = document.getElementById("character-toggle");
 const startTrainingBtn = document.getElementById("start-training-btn");
 const exitTrainingBtn = document.getElementById("exit-training-btn");
 const lobbyNickname = document.getElementById("lobby-nickname");
@@ -7639,12 +7641,14 @@ function setupInput() {
   function closeAccountSwitch() {
     accountSwitch.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
+    document.getElementById("lobby-side-panel").classList.remove("hidden");
     accountSwitchError.classList.add("hidden");
     accountSwitchError.textContent = "";
   }
 
   document.getElementById("open-account-switch-btn").addEventListener("click", () => {
     lobbyMain.classList.add("hidden");
+    document.getElementById("lobby-side-panel").classList.add("hidden");
     accountSwitch.classList.remove("hidden");
     switchIdInput.value = "";
     switchNicknameInput.value = "";
@@ -7825,20 +7829,32 @@ function setupInput() {
   });
 
   // 전투 시작
+  characterToggle.addEventListener("click", () => {
+    const willShow = characterPanel.classList.contains("hidden");
+    characterPanel.classList.toggle("hidden", !willShow);
+    modeSelector.classList.add("hidden");
+    characterToggle.classList.toggle("active", willShow);
+    startBattleBtn.classList.remove("active");
+  });
+
   startBattleBtn.addEventListener("click", () => {
-    modeSelector.classList.toggle("hidden");
-    startBattleBtn.classList.toggle("hidden");
+    characterPanel.classList.add("hidden");
+    modeSelector.classList.remove("hidden");
+    characterToggle.classList.remove("active");
+    startBattleBtn.classList.add("active");
   });
 
   document.getElementById("mode-back").addEventListener("click", () => {
     modeSelector.classList.add("hidden");
-    startBattleBtn.classList.remove("hidden");
+    characterPanel.classList.remove("hidden");
+    characterToggle.classList.add("active");
+    startBattleBtn.classList.remove("active");
   });
 
   document.getElementById("mode-showdown").addEventListener("click", async () => {
     await initAudio();
     modeSelector.classList.add("hidden");
-    startBattleBtn.classList.remove("hidden");
+    startBattleBtn.classList.remove("active");
     messageOverlay.style.display = "none";
     state.currentMapId = Math.floor(Math.random() * MAP_POOL.length);
     createMap(MAP_POOL[state.currentMapId]);
@@ -7848,7 +7864,7 @@ function setupInput() {
   document.getElementById("mode-chopwood").addEventListener("click", async () => {
     await initAudio();
     modeSelector.classList.add("hidden");
-    startBattleBtn.classList.remove("hidden");
+    startBattleBtn.classList.remove("active");
     startChopWood();
   });
 
