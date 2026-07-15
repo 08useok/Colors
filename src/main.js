@@ -53,6 +53,10 @@ const dailyLoginError = document.getElementById("daily-login-error");
 const dailyLoginBtn = document.getElementById("daily-login-btn");
 const accountRecoveryBtn = document.getElementById("account-recovery-btn");
 const accountRecoveryInfo = document.getElementById("account-recovery-info");
+const accountSwitch = document.getElementById("account-switch");
+const switchIdInput = document.getElementById("switch-id-input");
+const switchNicknameInput = document.getElementById("switch-nickname-input");
+const accountSwitchError = document.getElementById("account-switch-error");
 const startBattleBtn = document.getElementById("start-battle-btn");
 const modeSelector = document.getElementById("mode-selector");
 const startTrainingBtn = document.getElementById("start-training-btn");
@@ -443,12 +447,44 @@ const attackEvents = [
 
 // ── 계정 관리 ──────────────────────────────────────────────────────────────
 const ACCOUNT_KEY = "skullCreekAccount";
+const ACCOUNTS_KEY = "skullCreekAccounts";
+const ACTIVE_ACCOUNT_KEY = "skullCreekActiveAccountId";
+
+function loadAccountRegistry() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function findAccount(id, nickname) {
+  const account = loadAccountRegistry()[id];
+  return account && account.nickname === nickname ? account : null;
+}
+
+function activateAccount(account) {
+  sessionStorage.setItem(ACTIVE_ACCOUNT_KEY, account.id);
+  localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
+  return account;
+}
 
 function loadAccount() {
   try {
-    const raw = localStorage.getItem(ACCOUNT_KEY);
-    if (!raw) return null;
-    const account = JSON.parse(raw);
+    const accounts = loadAccountRegistry();
+    const activeId = sessionStorage.getItem(ACTIVE_ACCOUNT_KEY);
+    let account = activeId ? accounts[activeId] : null;
+    if (!account) {
+      const raw = localStorage.getItem(ACCOUNT_KEY);
+      if (!raw) return null;
+      account = JSON.parse(raw);
+      if (account?.id) {
+        accounts[account.id] = account;
+        localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+        sessionStorage.setItem(ACTIVE_ACCOUNT_KEY, account.id);
+      }
+    }
     if (!account.charStats) {
       account.charStats = {
         red:   { wins: 0, games: 0 },
@@ -532,6 +568,10 @@ function loadAccount() {
 
 function saveAccount(account) {
   try {
+    const accounts = loadAccountRegistry();
+    accounts[account.id] = account;
+    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+    sessionStorage.setItem(ACTIVE_ACCOUNT_KEY, account.id);
     localStorage.setItem(ACCOUNT_KEY, JSON.stringify(account));
   } catch {
     // storage unavailable — ignore
@@ -7580,7 +7620,11 @@ function setupInput() {
     const id = idInput.value.trim();
     const nick = nicknameInput.value.trim();
     if (!id || !nick) return;
-    const account = createAccount(id, nick);
+    const existing = loadAccountRegistry()[id];
+    const account = existing
+      ? (existing.nickname === nick ? activateAccount(existing) : null)
+      : createAccount(id, nick);
+    if (!account) return;
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
@@ -7592,6 +7636,64 @@ function setupInput() {
   });
 
   // 일일 아이디 인증
+  function closeAccountSwitch() {
+    accountSwitch.classList.add("hidden");
+    lobbyMain.classList.remove("hidden");
+    accountSwitchError.classList.add("hidden");
+    accountSwitchError.textContent = "";
+  }
+
+  document.getElementById("open-account-switch-btn").addEventListener("click", () => {
+    lobbyMain.classList.add("hidden");
+    accountSwitch.classList.remove("hidden");
+    switchIdInput.value = "";
+    switchNicknameInput.value = "";
+    accountSwitchError.classList.add("hidden");
+    switchIdInput.focus();
+  });
+
+  document.getElementById("cancel-account-switch-btn").addEventListener("click", closeAccountSwitch);
+
+  function readSwitchCredentials() {
+    return { id: switchIdInput.value.trim(), nickname: switchNicknameInput.value.trim() };
+  }
+
+  document.getElementById("switch-account-btn").addEventListener("click", () => {
+    const { id, nickname } = readSwitchCredentials();
+    const account = findAccount(id, nickname);
+    if (!account) {
+      accountSwitchError.textContent = "아이디 또는 닉네임이 일치하지 않습니다.";
+      accountSwitchError.classList.remove("hidden");
+      return;
+    }
+    mp.disconnect();
+    activateAccount(account);
+    closeAccountSwitch();
+    updateLobbyUI(loadAccount());
+  });
+
+  document.getElementById("add-account-btn").addEventListener("click", () => {
+    const { id, nickname } = readSwitchCredentials();
+    if (!id || !nickname) {
+      accountSwitchError.textContent = "아이디와 닉네임을 모두 입력하세요.";
+      accountSwitchError.classList.remove("hidden");
+      return;
+    }
+    if (loadAccountRegistry()[id]) {
+      accountSwitchError.textContent = "이미 사용 중인 아이디입니다.";
+      accountSwitchError.classList.remove("hidden");
+      return;
+    }
+    mp.disconnect();
+    const account = createAccount(id, nickname);
+    closeAccountSwitch();
+    updateLobbyUI(account);
+  });
+
+  switchNicknameInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("switch-account-btn").click();
+  });
+
   function handleDailyLogin() {
     const account = loadAccount();
     if (!account) return;

@@ -490,6 +490,19 @@
           <button id="create-account-btn" class="lobby-start-btn" type="button" disabled data-i18n="enterBattle">전장 입장</button>
         </div>
 
+        <div id="account-switch" class="message-card hidden">
+          <h2>계정 전환</h2>
+          <p class="lobby-intro">아이디와 닉네임을 모두 입력하세요.</p>
+          <p class="char-select-label">아이디</p>
+          <input id="switch-id-input" class="lobby-input" type="text" maxlength="16" placeholder="아이디 입력" autocomplete="off">
+          <p class="char-select-label">닉네임</p>
+          <input id="switch-nickname-input" class="lobby-input" type="text" maxlength="12" placeholder="닉네임 입력" autocomplete="off">
+          <div id="account-switch-error" class="daily-error hidden"></div>
+          <button id="switch-account-btn" class="lobby-start-btn" type="button">로그인</button>
+          <button id="add-account-btn" class="lobby-start-btn lobby-training-btn" type="button">새 계정 만들기</button>
+          <button id="cancel-account-switch-btn" class="lobby-start-btn lobby-recovery-btn" type="button">취소</button>
+        </div>
+
         <div id="daily-login" class="message-card hidden">
           <div class="lobby-header">
             <div class="lobby-left">
@@ -623,6 +636,7 @@
           <button id="start-training-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="training">훈련장</button>
           <button id="open-shop-btn" class="lobby-start-btn lobby-shop-btn" type="button">🪙 상점</button>
           <button id="open-rotation-btn" class="lobby-start-btn lobby-rotation-btn" type="button">🔄 Rotation</button>
+          <button id="open-account-switch-btn" class="lobby-start-btn lobby-recovery-btn" type="button">계정 전환</button>
         </div>
       </div>
 
@@ -726,6 +740,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.49"></script>
+  <script type="module" src="./src/main.js?v=1.5.50"></script>
 </body>
 </html>
