@@ -2215,27 +2215,20 @@ function makeFighter(options) {
   const charDef = CHARACTERS[options.characterType ?? "red"];
   let levelMult = 1;
   let skinId = null;
-  let hasOrangeBlastAbility = false;
-  let hasPurpleFanAbility = false;
-  let hasYellowOverloadAbility = false;
-  let hasCyanPrecisionAbility = false;
-  let hasPinkAreaHealAbility = false;
-  let hasRedRageAbility = false;
-  let hasGreenBounceAbility = false;
-  let hasBlueArmorPierceAbility = false;
+  const acc = loadAccount();
+  const newAbilityChars = new Set(options.newAbilityChars ?? acc?.rotation?.newAbilityChars ?? []);
+  const hasOrangeBlastAbility = options.characterType === "orange" && newAbilityChars.has("orange");
+  const hasPurpleFanAbility = options.characterType === "purple" && newAbilityChars.has("purple");
+  const hasYellowOverloadAbility = options.characterType === "yellow" && newAbilityChars.has("yellow");
+  const hasCyanPrecisionAbility = options.characterType === "cyan" && newAbilityChars.has("cyan");
+  const hasPinkAreaHealAbility = options.characterType === "pink" && newAbilityChars.has("pink");
+  const hasRedRageAbility = options.characterType === "red" && newAbilityChars.has("red");
+  const hasGreenBounceAbility = options.characterType === "green" && newAbilityChars.has("green");
+  const hasBlueArmorPierceAbility = options.characterType === "blue" && newAbilityChars.has("blue");
   if (options.isPlayer) {
-    const acc = loadAccount();
     if (acc) {
       levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
       skinId = acc.selectedSkins?.[options.characterType ?? "red"] || null;
-      hasOrangeBlastAbility = (options.characterType === "orange") && !!acc.rotation?.newAbilityChars?.includes("orange");
-      hasPurpleFanAbility = (options.characterType === "purple") && !!acc.rotation?.newAbilityChars?.includes("purple");
-      hasYellowOverloadAbility = (options.characterType === "yellow") && !!acc.rotation?.newAbilityChars?.includes("yellow");
-      hasCyanPrecisionAbility = (options.characterType === "cyan") && !!acc.rotation?.newAbilityChars?.includes("cyan");
-      hasPinkAreaHealAbility = (options.characterType === "pink") && !!acc.rotation?.newAbilityChars?.includes("pink");
-      hasRedRageAbility = (options.characterType === "red") && !!acc.rotation?.newAbilityChars?.includes("red");
-      hasGreenBounceAbility = (options.characterType === "green") && !!acc.rotation?.newAbilityChars?.includes("green");
-      hasBlueArmorPierceAbility = (options.characterType === "blue") && !!acc.rotation?.newAbilityChars?.includes("blue");
     }
   }
   const effectiveMaxHealth = Math.round(charDef.maxHealth * levelMult);
@@ -2549,8 +2542,20 @@ const TD_RAIL_SEGMENTS = (() => {
   }
   return segs;
 })();
+// The rail blocks remain axis-aligned after their centers are rotated around the
+// arena. Diagonal spokes therefore need small bridge blocks between consecutive
+// segments so their visible geometry and collision bounds stay connected.
+const TD_RAIL_CONNECTORS = (() => {
+  const connectors = [];
+  for (let z = TD_ARENA_RADIUS + TD_RAIL_SEG; z < TD_SPAWN_DIST - 0.01; z += TD_RAIL_SEG) {
+    connectors.push([-TD_RAIL_X, z, TD_RAIL_SEG * 0.5, TD_RAIL_SEG * 0.5]);
+    connectors.push([TD_RAIL_X, z, TD_RAIL_SEG * 0.5, TD_RAIL_SEG * 0.5]);
+  }
+  return connectors;
+})();
 const TD_SPOKE_WALLS = [
   ...TD_RAIL_SEGMENTS,
+  ...TD_RAIL_CONNECTORS,
   [-2.5, 18, 2, 2],
   [2.5, 26, 2, 2],
   [-2.5, 34, 2, 2],
@@ -2979,6 +2984,7 @@ function initTakeDownPlayers() {
         id: spawnIdx,
         name: participant.nickname,
         characterType: participant.charType,
+        newAbilityChars: participant.newAbilityChars,
         isPlayer: isLocal,
         yaw: 0,
       });
@@ -3014,6 +3020,7 @@ function initTakeDownPlayers() {
     id: 99,
     name: "BOSS",
     characterType: "red",
+    newAbilityChars: [],
     isPlayer: false,
     position: new THREE.Vector3(0, 0, 0),
     yaw: 0,
@@ -3467,7 +3474,7 @@ async function enterMatchmaking() {
   matchmakingPlayersList.innerHTML = "";
 
   try {
-    await mp.connect(account.nickname, state.selectedCharacter);
+    await mp.connect(account.nickname, state.selectedCharacter, account.rotation?.newAbilityChars ?? []);
   } catch (e) {
     matchmakingStatus.textContent = t("mmConnFail", e.message);
     return;

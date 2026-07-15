@@ -47,6 +47,7 @@ function startCountdown(room) {
           id: pid,
           nickname: players[pid]?.nickname || "플레이어",
           charType: players[pid]?.charType || "red",
+          newAbilityChars: players[pid]?.newAbilityChars || [],
         })),
       });
     }
@@ -76,6 +77,9 @@ wss.on("connection", (ws) => {
     if (msg.type === "JOIN_QUEUE") {
       player.nickname = msg.nickname || "플레이어";
       player.charType = msg.charType || "red";
+      player.newAbilityChars = Array.isArray(msg.newAbilityChars)
+        ? [...new Set(msg.newAbilityChars.filter((charType) => ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"].includes(charType)))]
+        : [];
 
       let room = Object.values(rooms).find(
         (r) => !r.started && r.playerIds.length < ROOM_MAX
@@ -91,7 +95,7 @@ wss.on("connection", (ws) => {
 
       roomBroadcast(room, {
         type: "PLAYER_JOINED",
-        player: { id: pid, nickname: player.nickname, charType: player.charType },
+        player: { id: pid, nickname: player.nickname, charType: player.charType, newAbilityChars: player.newAbilityChars },
       }, pid);
 
       ws.send(JSON.stringify({
@@ -101,6 +105,7 @@ wss.on("connection", (ws) => {
           id: p,
           nickname: players[p]?.nickname || "플레이어",
           charType: players[p]?.charType || "red",
+          newAbilityChars: players[p]?.newAbilityChars || [],
         })),
         countdownActive: room.countdownTimer !== null,
       }));

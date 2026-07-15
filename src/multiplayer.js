@@ -13,7 +13,7 @@ export const mp = {
   ws: null,
   myId: null,
   isHost: false,
-  roomPlayers: [], // [{ id, nickname, charType }]
+  roomPlayers: [], // [{ id, nickname, charType, newAbilityChars }]
   _listeners: {},
 
   on(type, fn) { this._listeners[type] = fn; },
@@ -30,7 +30,7 @@ export const mp = {
     this.send("RELAY", { relayType, ...data });
   },
 
-  connect(nickname, charType) {
+  connect(nickname, charType, newAbilityChars = []) {
     return new Promise((resolve, reject) => {
       if (this.ws) {
         try { this.ws.close(); } catch (_) {}
@@ -59,7 +59,7 @@ export const mp = {
         };
         this.ws.onclose = () => this._emit("DISCONNECTED", {});
         this.ws.onerror = () => {};
-        this.send("JOIN_QUEUE", { nickname, charType });
+        this.send("JOIN_QUEUE", { nickname, charType, newAbilityChars });
         resolve();
       };
       this.ws.onerror = () => {

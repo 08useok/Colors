@@ -4,6 +4,10 @@ const ROOM_MAX = 8;
 const COUNTDOWN_SEC = 5;
 const CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]);
 
+function cleanAbilityChars(value) {
+  return Array.isArray(value) ? [...new Set(value.filter((charType) => CHARACTERS.has(charType)))] : [];
+}
+
 export class ColorsServer extends Server {
   players = new Map();
   matches = new Map();
@@ -31,6 +35,7 @@ export class ColorsServer extends Server {
     if (!player) return;
     player.nickname = this.cleanNickname(data.nickname);
     player.charType = CHARACTERS.has(data.charType) ? data.charType : "red";
+    player.newAbilityChars = cleanAbilityChars(data.newAbilityChars);
 
     const previousMatchId = this.playerMatch.get(player.id);
     if (previousMatchId) this.leaveMatch(player.id, previousMatchId);
@@ -104,7 +109,9 @@ export class ColorsServer extends Server {
     return match.playerIds.map((id) => this.players.get(id)).filter(Boolean).map((player) => this.publicPlayer(player));
   }
 
-  publicPlayer(player) { return { id: player.id, nickname: player.nickname, charType: player.charType }; }
+  publicPlayer(player) {
+    return { id: player.id, nickname: player.nickname, charType: player.charType, newAbilityChars: player.newAbilityChars ?? [] };
+  }
 
   broadcastMatch(match, data, excludeId = null) {
     const payload = JSON.stringify(data);
