@@ -167,7 +167,11 @@ const matchmakingCancelBtn = document.getElementById("matchmaking-cancel-btn");
 let mpConfig = null;           // null = solo, { players, isHost, hostId }
 const mpNetFighters = {};      // networkId → fighter
 let mpLastSync = 0;
-const MP_SYNC_INTERVAL = 0.05; // 20 Hz
+let mpBossLastSync = 0;
+let mpLastSentPosition = null;
+const MP_SYNC_INTERVAL = 1 / 30; // 30 Hz player movement
+const MP_BOSS_SYNC_INTERVAL = 0.08; // 12.5 Hz larger authoritative snapshot
+const MP_MAX_PREDICTION = 0.1;
 const tdMapCloseBtn = document.getElementById("td-map-close-btn");
 const tdMapCanvas = document.getElementById("td-map-canvas");
 
@@ -2931,6 +2935,9 @@ function initTakeDownPlayers() {
   state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
   state.players = [];
   Object.keys(mpNetFighters).forEach((k) => delete mpNetFighters[k]);
+  mpLastSync = 0;
+  mpBossLastSync = 0;
+  mpLastSentPosition = null;
 
   const spawns = TD_SPAWNS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
   // 탈락 캐릭터 제외
@@ -3355,20 +3362,32 @@ function checkTakeDownEnd() {
 // ── Multiplayer sync ─────────────────────────────────────────────────────
 function syncMp(dt) {
   mpLastSync += dt;
-  if (mpLastSync < MP_SYNC_INTERVAL) return;
-  mpLastSync = 0;
+  mpBossLastSync += dt;
+  const sendPlayerState = mpLastSync >= MP_SYNC_INTERVAL;
+  const sendBossState = mpBossLastSync >= MP_BOSS_SYNC_INTERVAL;
+  if (!sendPlayerState && !sendBossState) return;
 
   const player = getPlayer();
-  if (player) {
+  if (player && sendPlayerState) {
+    const elapsed = Math.max(mpLastSync, MP_SYNC_INTERVAL);
+    const x = player.mesh.position.x;
+    const z = player.mesh.position.z;
+    const vx = mpLastSentPosition ? (x - mpLastSentPosition.x) / elapsed : 0;
+    const vz = mpLastSentPosition ? (z - mpLastSentPosition.z) / elapsed : 0;
+    mpLastSentPosition = { x, z };
+    mpLastSync %= MP_SYNC_INTERVAL;
     mp.relay("PSTATE", {
-      x: player.mesh.position.x,
-      z: player.mesh.position.z,
+      x,
+      z,
       yaw: player.mesh.rotation.y,
+      vx,
+      vz,
       health: player.health,
       dead: !!player.dead,
     });
   }
-  if (mpConfig.isHost && state.tdBoss) {
+  if (sendBossState) mpBossLastSync %= MP_BOSS_SYNC_INTERVAL;
+  if (sendBossState && mpConfig.isHost && state.tdBoss) {
     const b = state.tdBoss;
     mp.relay("BSTATE", {
       x: b.mesh.position.x,
@@ -3392,13 +3411,19 @@ function setupMpHandlers() {
   mp.on("RELAY", (msg) => {
     if (msg.relayType === "PSTATE") {
       const f = mpNetFighters[msg.fromId];
-      if (!f) return;
-      f.mesh.position.x = msg.x;
-      f.mesh.position.z = msg.z;
-      f.mesh.position.y = 1.85;
-      f.shadow.position.x = msg.x;
-      f.shadow.position.z = msg.z;
-      f.mesh.rotation.y = msg.yaw;
+      if (!f || !Number.isFinite(msg.x) || !Number.isFinite(msg.z) || !Number.isFinite(msg.yaw)) return;
+      f.netTargetX = msg.x;
+      f.netTargetZ = msg.z;
+      f.netTargetYaw = msg.yaw;
+      f.netVelocityX = Number.isFinite(msg.vx) ? msg.vx : 0;
+      f.netVelocityZ = Number.isFinite(msg.vz) ? msg.vz : 0;
+      f.netReceivedAt = performance.now() / 1000;
+      if (!f.netStateReady) {
+        f.netStateReady = true;
+        f.mesh.position.set(msg.x, 1.85, msg.z);
+        f.shadow.position.set(msg.x, f.shadow.position.y, msg.z);
+        f.mesh.rotation.y = msg.yaw;
+      }
     } else if (msg.relayType === "BSTATE" && !mpConfig?.isHost) {
       const b = state.tdBoss;
       if (!b) return;
@@ -3449,6 +3474,26 @@ function setupMpHandlers() {
     Object.keys(mpNetFighters).forEach((k) => delete mpNetFighters[k]);
     mpConfig = null;
   });
+}
+
+function updateNetworkPlayers(dt) {
+  const now = performance.now() / 1000;
+  for (const f of Object.values(mpNetFighters)) {
+    if (!f.netStateReady || f.dead) continue;
+    const age = Math.min(Math.max(0, now - f.netReceivedAt), MP_MAX_PREDICTION);
+    const targetX = f.netTargetX + f.netVelocityX * age;
+    const targetZ = f.netTargetZ + f.netVelocityZ * age;
+    const dx = targetX - f.mesh.position.x;
+    const dz = targetZ - f.mesh.position.z;
+    const distance = Math.hypot(dx, dz);
+    const blend = distance > 6 ? 1 : 1 - Math.exp(-24 * dt);
+    f.mesh.position.x += dx * blend;
+    f.mesh.position.z += dz * blend;
+    f.mesh.position.y = 1.85;
+    f.mesh.rotation.y = moveAngleToward(f.mesh.rotation.y, f.netTargetYaw, dt * 20);
+    f.shadow.position.x = f.mesh.position.x;
+    f.shadow.position.z = f.mesh.position.z;
+  }
 }
 
 function updateMatchmakingUI() {
@@ -7310,6 +7355,7 @@ function animate() {
     if (!state.chopWoodMode && !state.takedownMode) {
       updateZoneVisual(zone);
     }
+    if (mpConfig) updateNetworkPlayers(dt);
     updateEffects(dt);
 
     for (const fighter of state.players) {
