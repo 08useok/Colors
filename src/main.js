@@ -2559,7 +2559,29 @@ const TD_RAIL_CONNECTORS = (() => {
   }
   return connectors;
 })();
+// Extend each corridor's side walls into the boss arena while keeping the
+// center open. Short blocks preserve correct collision on all 8 rotations.
+const TD_INNER_RAIL_SEGMENTS = (() => {
+  const segments = [];
+  for (let z = 3.5; z < TD_ARENA_RADIUS; z += TD_RAIL_SEG) {
+    const depth = Math.min(TD_RAIL_SEG, TD_ARENA_RADIUS - z);
+    const centerZ = z + depth * 0.5;
+    segments.push([-TD_RAIL_X, centerZ, TD_RAIL_SEG, depth]);
+    segments.push([TD_RAIL_X, centerZ, TD_RAIL_SEG, depth]);
+  }
+  return segments;
+})();
+const TD_INNER_RAIL_CONNECTORS = (() => {
+  const connectors = [];
+  for (let z = 6.5; z < TD_ARENA_RADIUS; z += TD_RAIL_SEG) {
+    connectors.push([-TD_RAIL_X, z, TD_RAIL_SEG * 0.5, TD_RAIL_SEG * 0.5]);
+    connectors.push([TD_RAIL_X, z, TD_RAIL_SEG * 0.5, TD_RAIL_SEG * 0.5]);
+  }
+  return connectors;
+})();
 const TD_SPOKE_WALLS = [
+  ...TD_INNER_RAIL_SEGMENTS,
+  ...TD_INNER_RAIL_CONNECTORS,
   ...TD_RAIL_SEGMENTS,
   ...TD_RAIL_CONNECTORS,
   [-2.5, 18, 2, 2],
