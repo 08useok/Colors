@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.73">
+  <link rel="stylesheet" href="./styles.css?v=1.5.74">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -122,6 +122,11 @@
         <div class="td-my-rank" id="td-my-rank">내 순위: -</div>
         <div class="td-my-score" id="td-my-score">내 점수: 0</div>
         <div class="td-ranking" id="td-ranking"></div>
+      </div>
+      <div id="boss-direction-indicator" class="boss-direction-indicator hidden" aria-hidden="true">
+        <span id="boss-direction-arrow" class="boss-direction-arrow">▲</span>
+        <span class="boss-direction-icon">💀</span>
+        <span id="boss-direction-distance" class="boss-direction-distance"></span>
       </div>
 
       <div id="warning" class="hidden" data-i18n="zoneWarning">자기장 밖입니다</div>
@@ -774,6 +779,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.73"></script>
+  <script type="module" src="./src/main.js?v=1.5.74"></script>
 </body>
 </html>

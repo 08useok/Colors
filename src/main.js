@@ -2936,6 +2936,12 @@ const tdTimer = document.getElementById("td-timer");
 const tdMyRank = document.getElementById("td-my-rank");
 const tdMyScore = document.getElementById("td-my-score");
 const tdRanking = document.getElementById("td-ranking");
+const bossDirectionIndicator = document.getElementById("boss-direction-indicator");
+const bossDirectionArrow = document.getElementById("boss-direction-arrow");
+const bossDirectionDistance = document.getElementById("boss-direction-distance");
+const bossIndicatorWorld = new THREE.Vector3();
+const bossIndicatorCamera = new THREE.Vector3();
+const bossIndicatorProjected = new THREE.Vector3();
 
 function createBossMesh() {
   const bossGroup = createStickman(0x880000);
@@ -3177,6 +3183,53 @@ function updateTakeDownHud() {
     </div>`;
   }
   tdRanking.innerHTML = rankHtml;
+}
+
+function updateBossDirectionIndicator() {
+  const boss = state.tdBoss;
+  const player = getPlayer();
+  if (!state.takedownMode || !state.running || !boss || boss.dead || !player) {
+    bossDirectionIndicator.classList.add("hidden");
+    return;
+  }
+
+  camera.updateMatrixWorld();
+  bossIndicatorWorld.copy(boss.mesh.position);
+  bossIndicatorCamera.copy(bossIndicatorWorld).applyMatrix4(camera.matrixWorldInverse);
+  bossIndicatorProjected.copy(bossIndicatorWorld).project(camera);
+  const inFront = bossIndicatorCamera.z < 0;
+  const onScreen = inFront
+    && Math.abs(bossIndicatorProjected.x) <= 0.9
+    && Math.abs(bossIndicatorProjected.y) <= 0.84;
+  if (onScreen) {
+    bossDirectionIndicator.classList.add("hidden");
+    return;
+  }
+
+  let dirX = bossIndicatorProjected.x * window.innerWidth * 0.5;
+  let dirY = -bossIndicatorProjected.y * window.innerHeight * 0.5;
+  if (!inFront) {
+    dirX *= -1;
+    dirY *= -1;
+  }
+  if (!Number.isFinite(dirX) || !Number.isFinite(dirY) || Math.hypot(dirX, dirY) < 0.001) {
+    dirX = 0;
+    dirY = window.innerHeight * 0.5;
+  }
+  const halfWidth = Math.max(30, window.innerWidth * 0.5 - 58);
+  const halfHeight = Math.max(30, window.innerHeight * 0.5 - 68);
+  const edgeScale = Math.min(
+    halfWidth / Math.max(Math.abs(dirX), 0.001),
+    halfHeight / Math.max(Math.abs(dirY), 0.001),
+  );
+  const x = window.innerWidth * 0.5 + dirX * edgeScale;
+  const y = window.innerHeight * 0.5 + dirY * edgeScale;
+  const angle = Math.atan2(dirY, dirX) * (180 / Math.PI) + 90;
+  bossDirectionIndicator.style.left = `${x}px`;
+  bossDirectionIndicator.style.top = `${y}px`;
+  bossDirectionArrow.style.transform = `rotate(${angle}deg)`;
+  bossDirectionDistance.textContent = `${Math.round(player.mesh.position.distanceTo(boss.mesh.position))}m`;
+  bossDirectionIndicator.classList.remove("hidden");
 }
 
 function updateBossAI(dt) {
@@ -7713,6 +7766,7 @@ function animate() {
     }
 
     updateCamera(dt);
+    updateBossDirectionIndicator();
     updateAttackAimIndicator();
     updateBushVisuals();
     updateHud();

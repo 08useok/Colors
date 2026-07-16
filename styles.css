@@ -2001,6 +2001,24 @@ body {
 
 /* ── Take Down HUD ── */
 #takedown-hud { pointer-events: none; }
+.boss-direction-indicator {
+  position: fixed; left: 50%; top: 50%; width: 54px; height: 54px;
+  z-index: 35; pointer-events: none; border: 2px solid rgba(255,112,72,0.9);
+  border-radius: 50%; background: rgba(40,12,8,0.82);
+  box-shadow: 0 0 14px rgba(255,68,34,0.5);
+  transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center;
+}
+.boss-direction-icon { font-size: 25px; line-height: 1; }
+.boss-direction-arrow {
+  position: absolute; left: 18px; top: -17px; width: 18px; height: 18px;
+  color: #ff7048; font-size: 17px; line-height: 18px; text-align: center;
+  transform-origin: 9px 44px; text-shadow: 0 2px 6px #000;
+}
+.boss-direction-distance {
+  position: absolute; top: 57px; left: 50%; transform: translateX(-50%);
+  color: #fff2d6; font-size: 11px; font-weight: 800; white-space: nowrap;
+  text-shadow: 0 2px 5px #000;
+}
 .td-boss-bar {
   position: fixed; top: 18px; left: 50%; transform: translateX(-50%);
   width: 360px; z-index: 20;
