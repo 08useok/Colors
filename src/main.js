@@ -4405,7 +4405,7 @@ function resetGame() {
 }
 
 function getPlayer() {
-  return state.players[0];
+  return state.players.find((fighter) => fighter.isPlayer) ?? state.players[0];
 }
 
 function clampToWorld(position, radius) {
@@ -7284,8 +7284,8 @@ function animate() {
 
     if (!frozen) {
       updatePlayerControls(dt);
-      for (let i = 1; i < state.players.length; i += 1) {
-        updateBot(state.players[i], dt, zone);
+      for (const fighter of state.players) {
+        if (!fighter.isPlayer) updateBot(fighter, dt, zone);
       }
       updateAmmoRegen(dt);
       updateNaturalRegen(dt);
