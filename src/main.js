@@ -3599,10 +3599,25 @@ function setupMpHandlers() {
   mp.on("PLAYER_LEFT", ({ playerId }) => {
     const f = mpNetFighters[playerId];
     if (f) {
-      f.isNetworkPlayer = false;
-      f.botDifficulty = 1;
+      scene.remove(f.mesh);
+      scene.remove(f.shadow);
+      state.players = state.players.filter((fighter) => fighter !== f);
     }
     delete mpNetFighters[playerId];
+  });
+
+  mp.on("HOST_CHANGED", ({ hostId, players }) => {
+    if (!mpConfig) return;
+    const becameHost = hostId === mp.myId;
+    mpConfig.hostId = hostId;
+    mpConfig.isHost = becameHost;
+    if (Array.isArray(players)) mpConfig.players = players;
+    if (becameHost) {
+      mpLastSync = MP_SYNC_INTERVAL;
+      mpBossLastSync = MP_BOSS_SYNC_INTERVAL;
+      mpLastSentPosition = null;
+    }
+    showMultiplayerToast(becameHost ? "호스트를 이어받았습니다." : "새 호스트가 지정되었습니다.");
   });
 
   mp.on("DISCONNECTED", () => {
@@ -3610,6 +3625,14 @@ function setupMpHandlers() {
     Object.keys(mpNetFighters).forEach((k) => delete mpNetFighters[k]);
     mpConfig = null;
   });
+}
+
+function showMultiplayerToast(message) {
+  const el = document.createElement("div");
+  el.textContent = message;
+  el.style.cssText = "position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#24170f;color:#ffd37a;padding:10px 20px;border:1px solid #8a6336;border-radius:10px;font-weight:700;z-index:9999;pointer-events:none";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
 }
 
 function updateNetworkPlayers(dt) {

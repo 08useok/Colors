@@ -107,6 +107,11 @@ export const mp = {
         this.isHost = msg.hostId === this.myId;
         this._emit("GAME_START", msg);
         break;
+      case "HOST_CHANGED":
+        this.isHost = msg.hostId === this.myId;
+        if (Array.isArray(msg.players)) this.roomPlayers = msg.players;
+        this._emit("HOST_CHANGED", msg);
+        break;
       case "RELAY":
         this._emit("RELAY", msg);
         break;

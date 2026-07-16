@@ -96,8 +96,16 @@ export class ColorsServer extends Server {
     const match = this.matches.get(matchId);
     this.playerMatch.delete(playerId);
     if (!match) return;
+    const wasHost = match.started && match.playerIds[0] === playerId;
     match.playerIds = match.playerIds.filter((id) => id !== playerId);
     this.broadcastMatch(match, { type: "PLAYER_LEFT", playerId });
+    if (wasHost && match.playerIds.length > 0) {
+      this.broadcastMatch(match, {
+        type: "HOST_CHANGED",
+        hostId: match.playerIds[0],
+        players: this.matchPlayers(match),
+      });
+    }
     if (!match.started && match.playerIds.length < 2) this.cancelCountdown(match);
     if (match.playerIds.length === 0) {
       if (match.countdownTimer) clearInterval(match.countdownTimer);
