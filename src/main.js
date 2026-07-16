@@ -2575,7 +2575,7 @@ function createTakeDownMap() {
 
     for (const sideX of [-TD_RAIL_X, TD_RAIL_X]) {
       const [rx, rz] = rotateXZ(sideX, TD_RAIL_CENTER_Z, angle);
-      createWall(rx, rz, TD_RAIL_WIDTH, TD_RAIL_LENGTH, undefined, battleMapGroup, state.battleSolids, 0xb77658, angleRad);
+      createWall(rx, rz, TD_RAIL_WIDTH, TD_RAIL_LENGTH, undefined, battleMapGroup, state.battleSolids, 0xb77658, -angleRad);
     }
     TD_SPOKE_BLOCKS.forEach(([x, z, w, d]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
