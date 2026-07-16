@@ -3424,6 +3424,9 @@ function setupMpHandlers() {
         f.shadow.position.set(msg.x, f.shadow.position.y, msg.z);
         f.mesh.rotation.y = msg.yaw;
       }
+    } else if (msg.relayType === "ATTACK") {
+      const f = mpNetFighters[msg.fromId];
+      if (f) playNetworkAttack(f, msg);
     } else if (msg.relayType === "BSTATE" && !mpConfig?.isHost) {
       const b = state.tdBoss;
       if (!b) return;
@@ -3494,6 +3497,41 @@ function updateNetworkPlayers(dt) {
     f.shadow.position.x = f.mesh.position.x;
     f.shadow.position.z = f.mesh.position.z;
   }
+}
+
+function playNetworkAttack(fighter, msg) {
+  if (fighter.dead || !Number.isFinite(msg.yaw)) return;
+  fighter.yaw = msg.yaw;
+  fighter.netTargetYaw = msg.yaw;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.lastCombatTime = state.gameTime;
+
+  if (fighter.characterType === "pink") {
+    const charDef = CHARACTERS.pink;
+    const range = fighter.hasPinkAreaHealAbility ? charDef.healCircleRange * 1.75 : charDef.healCircleRange;
+    createHealCircleEffect(fighter.mesh.position.x, fighter.mesh.position.z, range);
+    audio.play("attack");
+    return;
+  }
+
+  const ammo = fighter.ammo;
+  const nextAttackAt = fighter.nextAttackAt;
+  const scheduledHitCount = state.scheduledHits.length;
+  const projectileCount = state.projectiles.length;
+  fighter.ammo = Math.max(1, fighter.ammo);
+  fighter.nextAttackAt = -Infinity;
+  if (fighter.characterType === "purple" && Number.isFinite(msg.attackIndex)) {
+    fighter.attackIndex = Math.max(0, msg.attackIndex - 1);
+  }
+  beginAttackCore(fighter);
+  state.scheduledHits.splice(scheduledHitCount);
+  for (let i = projectileCount; i < state.projectiles.length; i += 1) {
+    state.projectiles[i].networkVisualOnly = true;
+  }
+  fighter.ammo = ammo;
+  fighter.nextAttackAt = nextAttackAt;
+  audio.play(fighter.characterType === "red" ? "attack" : "projectileFire");
 }
 
 function updateMatchmakingUI() {
@@ -4702,7 +4740,7 @@ function queueAttackHit(attacker, hitIndex, damage, executeAt) {
   });
 }
 
-function beginAttack(fighter) {
+function beginAttackCore(fighter) {
   if (state.gameTime < state.freezeUntil) return false;
   if (fighter.characterType === "green") {
     return beginBoomerangAttack(fighter);
@@ -4749,6 +4787,17 @@ function beginAttack(fighter) {
     audio.play("attack");
   }
   return true;
+}
+
+function beginAttack(fighter) {
+  const started = beginAttackCore(fighter);
+  if (started && fighter.isPlayer && mpConfig) {
+    mp.relay("ATTACK", {
+      yaw: fighter.yaw,
+      attackIndex: fighter.attackIndex ?? 0,
+    });
+  }
+  return started;
 }
 
 function findAutoAimTarget(player) {
@@ -5396,7 +5445,8 @@ function updateProjectiles(dt) {
       proj.mesh.position.set(proj.x, proj.y, proj.z);
       proj.mesh.rotation.z += dt * 6;
       if (proj.y <= 0.2) {
-        spawnVialSplash(proj.x, proj.z, proj.ownerId);
+        if (proj.networkVisualOnly) createVialSplashEffect(proj.x, proj.z);
+        else spawnVialSplash(proj.x, proj.z, proj.ownerId);
         tempVec3.set(proj.x, 0.5, proj.z);
         createHitSpark(tempVec3);
         scene.remove(proj.mesh);
@@ -5420,6 +5470,20 @@ function updateProjectiles(dt) {
       trail.position.set(proj.x, proj.mesh.position.y, proj.z);
       scene.add(trail);
       state.effects.push({ mesh: trail, life: 0.15, maxLife: 0.15, type: "trail" });
+    }
+
+    if (proj.networkVisualOnly) {
+      if (proj.distTraveled >= proj.range) {
+        if (proj.isBomb) {
+          createBombExplosionEffect(proj.x, proj.z);
+          audio.play("explosion");
+        } else if (proj.isVial) {
+          createVialSplashEffect(proj.x, proj.z);
+        }
+        scene.remove(proj.mesh);
+        state.projectiles.splice(i, 1);
+      }
+      continue;
     }
 
     let hit = false;
