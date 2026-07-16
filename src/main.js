@@ -2334,7 +2334,7 @@ function addTeamMarker(fighter, team) {
   fighter.teamNameColor = nameColor;
 }
 
-function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr = state.solids, color = 0xb77658) {
+function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr = state.solids, color = 0xb77658, angle = 0) {
   const mesh = new THREE.Mesh(
     new THREE.BoxGeometry(width, height, depth),
     new THREE.MeshStandardMaterial({
@@ -2344,19 +2344,25 @@ function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr =
     }),
   );
   mesh.position.set(x, height * 0.5, z);
+  mesh.rotation.y = angle;
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   group.add(mesh);
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const aabbHalfX = Math.abs(cos) * width * 0.5 + Math.abs(sin) * depth * 0.5;
+  const aabbHalfZ = Math.abs(sin) * width * 0.5 + Math.abs(cos) * depth * 0.5;
   solidsArr.push({
     type: "wall",
     x,
     z,
     width,
     depth,
-    minX: x - width * 0.5,
-    maxX: x + width * 0.5,
-    minZ: z - depth * 0.5,
-    maxZ: z + depth * 0.5,
+    angle,
+    minX: x - aabbHalfX,
+    maxX: x + aabbHalfX,
+    minZ: z - aabbHalfZ,
+    maxZ: z + aabbHalfZ,
   });
 }
 
@@ -2539,37 +2545,14 @@ const TD_SPAWN_DIST = TD_ARENA_RADIUS + TD_CORRIDOR_LENGTH;
 // 측벽은 정사각형 블록을 이어붙여 구성한다 — 정사각형은 가로/세로가 같아서
 // 어떤 각도(0°~315°)로 회전해도 모양이 동일하게 유지되어 8방향이 완벽히 대칭된다
 const TD_RAIL_X = 7;
-const TD_RAIL_SEG = 3;
-const TD_RAIL_SEGMENTS = (() => {
-  const segs = [];
-  for (let z = TD_ARENA_RADIUS + TD_RAIL_SEG / 2; z <= TD_SPAWN_DIST - TD_RAIL_SEG / 2 + 0.01; z += TD_RAIL_SEG) {
-    segs.push([-TD_RAIL_X, z, TD_RAIL_SEG, TD_RAIL_SEG]);
-    segs.push([TD_RAIL_X, z, TD_RAIL_SEG, TD_RAIL_SEG]);
-  }
-  return segs;
-})();
-// The rail blocks remain axis-aligned after their centers are rotated around the
-// arena. Diagonal spokes therefore need small bridge blocks between consecutive
-// segments so their visible geometry and collision bounds stay connected.
-const TD_RAIL_CONNECTORS = (() => {
-  const connectors = [];
-  for (let z = TD_ARENA_RADIUS + TD_RAIL_SEG; z < TD_SPAWN_DIST - 0.01; z += TD_RAIL_SEG) {
-    connectors.push([-TD_RAIL_X, z, TD_RAIL_SEG * 0.5, TD_RAIL_SEG * 0.5]);
-    connectors.push([TD_RAIL_X, z, TD_RAIL_SEG * 0.5, TD_RAIL_SEG * 0.5]);
-  }
-  return connectors;
-})();
-const TD_SPOKE_WALLS = [
-  ...TD_RAIL_SEGMENTS,
-  ...TD_RAIL_CONNECTORS,
+const TD_RAIL_WIDTH = 2.4;
+const TD_RAIL_LENGTH = TD_SPAWN_DIST - TD_ARENA_RADIUS;
+const TD_RAIL_CENTER_Z = TD_ARENA_RADIUS + TD_RAIL_LENGTH * 0.5;
+const TD_SPOKE_BLOCKS = [
   [-2.5, 18, 2, 2],
   [2.5, 26, 2, 2],
   [-2.5, 34, 2, 2],
   [2.5, 40, 2, 2],
-];
-const TD_INNER_WALLS = [
-  [-TD_RAIL_X, 8.75, 2.4, 10.5],
-  [TD_RAIL_X, 8.75, 2.4, 10.5],
 ];
 const TD_SPOKE_BUSHES = [[-4.5, 17], [4.5, 31]];
 const TD_SPOKE_TREES = [[6, 21]];
@@ -2588,8 +2571,13 @@ function createTakeDownMap() {
 
   for (let i = 0; i < 8; i += 1) {
     const angle = i * 45;
+    const angleRad = angle * (Math.PI / 180);
 
-    TD_SPOKE_WALLS.forEach(([x, z, w, d]) => {
+    for (const sideX of [-TD_RAIL_X, TD_RAIL_X]) {
+      const [rx, rz] = rotateXZ(sideX, TD_RAIL_CENTER_Z, angle);
+      createWall(rx, rz, TD_RAIL_WIDTH, TD_RAIL_LENGTH, undefined, battleMapGroup, state.battleSolids, 0xb77658, angleRad);
+    }
+    TD_SPOKE_BLOCKS.forEach(([x, z, w, d]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
       createWall(rx, rz, w, d, undefined, battleMapGroup, state.battleSolids);
     });
@@ -2607,9 +2595,11 @@ function createTakeDownMap() {
     });
   }
 
-  TD_INNER_WALLS.forEach(([x, z, width, depth]) => {
-    createWall(x, z, width, depth, undefined, battleMapGroup, state.battleSolids);
-  });
+  const boundary = worldRadius + 1;
+  createWall(0, -worldRadius, boundary * 2, 2, undefined, battleMapGroup, state.battleSolids);
+  createWall(0, worldRadius, boundary * 2, 2, undefined, battleMapGroup, state.battleSolids);
+  createWall(-worldRadius, 0, 2, boundary * 2, undefined, battleMapGroup, state.battleSolids);
+  createWall(worldRadius, 0, 2, boundary * 2, undefined, battleMapGroup, state.battleSolids);
 
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
@@ -4737,6 +4727,17 @@ function clampToZone(position, radius, zoneRadius) {
 }
 
 function intersectsRect(x, z, radius, rect) {
+  if (rect.angle) {
+    const cos = Math.cos(rect.angle);
+    const sin = Math.sin(rect.angle);
+    const dx = x - rect.x;
+    const dz = z - rect.z;
+    const localX = dx * cos - dz * sin;
+    const localZ = dx * sin + dz * cos;
+    const closestX = THREE.MathUtils.clamp(localX, -rect.width * 0.5, rect.width * 0.5);
+    const closestZ = THREE.MathUtils.clamp(localZ, -rect.depth * 0.5, rect.depth * 0.5);
+    return (localX - closestX) ** 2 + (localZ - closestZ) ** 2 < radius * radius;
+  }
   const closestX = THREE.MathUtils.clamp(x, rect.minX, rect.maxX);
   const closestZ = THREE.MathUtils.clamp(z, rect.minZ, rect.maxZ);
   const dx = x - closestX;
@@ -4765,6 +4766,24 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
 
   for (const solid of state.solids) {
     if (!intersectsRect(position.x, position.z, radius, solid)) {
+      continue;
+    }
+
+    if (solid.angle) {
+      const cos = Math.cos(solid.angle);
+      const sin = Math.sin(solid.angle);
+      const dx = position.x - solid.x;
+      const dz = position.z - solid.z;
+      let localX = dx * cos - dz * sin;
+      let localZ = dx * sin + dz * cos;
+      const halfWidth = solid.width * 0.5 + radius;
+      const halfDepth = solid.depth * 0.5 + radius;
+      const pushX = halfWidth - Math.abs(localX);
+      const pushZ = halfDepth - Math.abs(localZ);
+      if (pushX < pushZ) localX = Math.sign(localX || 1) * halfWidth;
+      else localZ = Math.sign(localZ || 1) * halfDepth;
+      position.x = solid.x + localX * cos + localZ * sin;
+      position.z = solid.z - localX * sin + localZ * cos;
       continue;
     }
 
