@@ -3255,26 +3255,23 @@ function updateBossAI(dt) {
     boss.bossRestUntil = state.gameTime + 0.8 * cdMult;
     setBossAnimation(boss, "wave");
     const dir = new THREE.Vector3(dx, 0, dz).normalize();
-    const waveMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false });
-    const wave = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 8), waveMat);
-    wave.position.set(boss.mesh.position.x + dir.x * 3, 2, boss.mesh.position.z + dir.z * 3);
-    scene.add(wave);
-    state.projectiles.push({
-      mesh: wave,
-      x: wave.position.x,
-      z: wave.position.z,
-      vx: dir.x * 14,
-      vz: dir.z * 14,
-      range: 20,
-      distTraveled: 0,
-      farThreshold: Infinity,
-      farMultiplier: 1,
-      launchAt: state.gameTime,
-      damage: Math.round(1500 * dmgMult),
-      ownerId: boss.id,
-      projRadius: 1.5,
-      isBossWave: true,
-    });
+    for (let i = 0; i < 3; i += 1) {
+      const wave = new THREE.Mesh(
+        new THREE.SphereGeometry(0.8, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false }),
+      );
+      wave.position.set(boss.mesh.position.x + dir.x * 3, 2, boss.mesh.position.z + dir.z * 3);
+      wave.visible = i === 0;
+      scene.add(wave);
+      state.projectiles.push({
+        mesh: wave, x: wave.position.x, z: wave.position.z,
+        vx: dir.x * 7, vz: dir.z * 7,
+        range: 20, distTraveled: 0, farThreshold: Infinity, farMultiplier: 1,
+        launchAt: state.gameTime + i * 0.18,
+        damage: Math.round(1500 * dmgMult), ownerId: boss.id,
+        projRadius: 1.5, isBossWave: true,
+      });
+    }
   }
 }
 
@@ -3291,19 +3288,22 @@ function playNetworkBossAttackCue(boss) {
     const yaw = boss.mesh.rotation.y;
     const dirX = Math.sin(yaw);
     const dirZ = Math.cos(yaw);
-    const mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.8, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false }),
-    );
-    mesh.position.set(boss.mesh.position.x + dirX * 3, 2, boss.mesh.position.z + dirZ * 3);
-    scene.add(mesh);
-    state.projectiles.push({
-      mesh, x: mesh.position.x, z: mesh.position.z,
-      vx: dirX * 14, vz: dirZ * 14,
-      range: 20, distTraveled: 0, farThreshold: Infinity, farMultiplier: 1,
-      launchAt: state.gameTime, damage: 0, ownerId: boss.id,
-      projRadius: 1.5, isBossWave: true, networkVisualOnly: true,
-    });
+    for (let i = 0; i < 3; i += 1) {
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.8, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false }),
+      );
+      mesh.position.set(boss.mesh.position.x + dirX * 3, 2, boss.mesh.position.z + dirZ * 3);
+      mesh.visible = i === 0;
+      scene.add(mesh);
+      state.projectiles.push({
+        mesh, x: mesh.position.x, z: mesh.position.z,
+        vx: dirX * 7, vz: dirZ * 7,
+        range: 20, distTraveled: 0, farThreshold: Infinity, farMultiplier: 1,
+        launchAt: state.gameTime + i * 0.18, damage: 0, ownerId: boss.id,
+        projRadius: 1.5, isBossWave: true, networkVisualOnly: true,
+      });
+    }
     audio.play("projectileFire");
   } else if (boss.bossAnim === "slam" || boss.bossAnim === "chargeHit") {
     const radius = boss.bossAnim === "slam" ? 5 : 4;
@@ -3321,6 +3321,7 @@ function playNetworkBossAttackCue(boss) {
 
 function updateTakeDownRespawn() {
   if (!state.takedownMode) return;
+  if (mpConfig && !mpConfig.isHost) return;
   for (const fighter of state.players) {
     if (!fighter.dead || fighter.isBoss) continue;
     if (fighter.tdRespawnAt && state.gameTime >= fighter.tdRespawnAt) {
@@ -3333,6 +3334,13 @@ function updateTakeDownRespawn() {
       fighter.mesh.position.set(spawn[0], 1.85, spawn[2]);
       fighter.shadow.position.set(fighter.mesh.position.x, 0.04, fighter.mesh.position.z);
       fighter.tdRespawnAt = 0;
+      if (mpConfig?.isHost && fighter.networkId) {
+        mp.relay("RESPAWN", {
+          playerId: fighter.networkId,
+          x: fighter.mesh.position.x,
+          z: fighter.mesh.position.z,
+        });
+      }
     }
   }
 }
@@ -3449,6 +3457,8 @@ function syncMp(dt) {
       animTime: Math.max(0, state.gameTime - (b.bossAnimStartedAt || 0)),
       players: state.players.filter((f) => !f.isBoss && f.networkId).map((f) => ({
         id: f.networkId,
+        x: f.mesh.position.x,
+        z: f.mesh.position.z,
         health: f.health,
         dead: !!f.dead,
         score: f.tdScore,
@@ -3481,6 +3491,7 @@ function setupMpHandlers() {
     if (msg.relayType === "PSTATE") {
       const f = mpNetFighters[msg.fromId];
       if (!f || !Number.isFinite(msg.x) || !Number.isFinite(msg.z) || !Number.isFinite(msg.yaw)) return;
+      if (mpConfig?.isHost && msg.dead && !f.dead) return;
       f.netTargetX = msg.x;
       f.netTargetZ = msg.z;
       f.netTargetYaw = msg.yaw;
@@ -3515,6 +3526,22 @@ function setupMpHandlers() {
         f.tdBossDmg = playerState.bossDmg;
         f.tdKills = playerState.kills;
       }
+    } else if (msg.relayType === "RESPAWN" && !mpConfig?.isHost) {
+      const f = msg.playerId === mp.myId ? getPlayer() : mpNetFighters[msg.playerId];
+      if (!f || !Number.isFinite(msg.x) || !Number.isFinite(msg.z)) return;
+      f.dead = false;
+      f.health = f.maxHealth;
+      f.tdRespawnAt = 0;
+      f.mesh.visible = true;
+      f.shadow.visible = true;
+      if (f.healthBar) f.healthBar.visible = true;
+      f.mesh.position.set(msg.x, 1.85, msg.z);
+      f.shadow.position.set(msg.x, 0.04, msg.z);
+      if (f.isPlayer) {
+        mpLastSentPosition = { x: msg.x, z: msg.z };
+        state.feedback.hitFlashUntil = 0;
+        state.lowHealthAlerted = false;
+      }
     } else if (msg.relayType === "BSTATE" && !mpConfig?.isHost) {
       const b = state.tdBoss;
       if (!b) return;
@@ -3536,15 +3563,25 @@ function setupMpHandlers() {
       for (const playerState of msg.players || []) {
         const f = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
         if (!f) continue;
+        const wasDead = f.dead;
+        const previousHealth = f.health;
         f.health = playerState.health;
         f.tdScore = playerState.score;
         f.tdBossDmg = playerState.bossDmg;
         f.tdKills = playerState.kills;
+        if (f.isPlayer && playerState.health < previousHealth) {
+          audio.play("damaged");
+          state.feedback.hitFlashUntil = state.gameTime + 0.18;
+        }
         if (playerState.dead !== f.dead) {
           f.dead = playerState.dead;
           f.mesh.visible = !f.dead;
           f.shadow.visible = !f.dead;
           if (f.healthBar) f.healthBar.visible = !f.dead;
+          if (wasDead && !f.dead && Number.isFinite(playerState.x) && Number.isFinite(playerState.z)) {
+            f.mesh.position.set(playerState.x, 1.85, playerState.z);
+            f.shadow.position.set(playerState.x, 0.04, playerState.z);
+          }
         }
       }
     } else if (msg.relayType === "TD_DAMAGE" && mpConfig?.isHost) {
