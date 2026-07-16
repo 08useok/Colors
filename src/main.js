@@ -3155,7 +3155,6 @@ function updateTakeDownHud() {
 function updateBossAI(dt) {
   const boss = state.tdBoss;
   if (!boss || boss.dead) return;
-  if (state.tdTimeLeft > 110) return;
   if (state.gameTime < (boss.bossRestUntil || 0)) return;
 
   if (boss.health <= boss.maxHealth * 0.3 && !boss.bossRage) {
@@ -3407,6 +3406,23 @@ function syncMp(dt) {
   }
 }
 
+function broadcastBossDefeated() {
+  if (!mpConfig?.isHost || !state.tdBoss) return;
+  mp.relay("BOSS_DEFEATED", {
+    x: state.tdBoss.mesh.position.x,
+    z: state.tdBoss.mesh.position.z,
+    timeLeft: state.tdTimeLeft,
+    players: state.players.filter((f) => !f.isBoss && f.networkId).map((f) => ({
+      id: f.networkId,
+      health: f.health,
+      dead: !!f.dead,
+      score: f.tdScore,
+      bossDmg: f.tdBossDmg,
+      kills: f.tdKills,
+    })),
+  });
+}
+
 function setupMpHandlers() {
   mp.on("RELAY", (msg) => {
     if (msg.relayType === "PSTATE") {
@@ -3427,6 +3443,25 @@ function setupMpHandlers() {
     } else if (msg.relayType === "ATTACK") {
       const f = mpNetFighters[msg.fromId];
       if (f) playNetworkAttack(f, msg);
+    } else if (msg.relayType === "BOSS_DEFEATED" && !mpConfig?.isHost) {
+      const b = state.tdBoss;
+      if (!b) return;
+      b.health = 0;
+      b.dead = true;
+      b.mesh.position.x = Number.isFinite(msg.x) ? msg.x : b.mesh.position.x;
+      b.mesh.position.z = Number.isFinite(msg.z) ? msg.z : b.mesh.position.z;
+      b.mesh.visible = false;
+      b.shadow.visible = false;
+      if (b.healthBar) b.healthBar.visible = false;
+      if (Number.isFinite(msg.timeLeft)) state.tdTimeLeft = msg.timeLeft;
+      for (const playerState of msg.players || []) {
+        const f = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        if (!f) continue;
+        f.health = playerState.health;
+        f.tdScore = playerState.score;
+        f.tdBossDmg = playerState.bossDmg;
+        f.tdKills = playerState.kills;
+      }
     } else if (msg.relayType === "BSTATE" && !mpConfig?.isHost) {
       const b = state.tdBoss;
       if (!b) return;
@@ -5841,6 +5876,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
           addKillFeed(t("tdBossKill", attacker.name));
           if (attacker.isPlayer) audio.play("kill");
         }
+        broadcastBossDefeated();
       } else {
         target.tdRespawnAt = state.gameTime + TD_RESPAWN_TIME;
         if (attacker && !attacker.isBoss && attacker.id !== target.id) {
