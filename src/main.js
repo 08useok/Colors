@@ -3195,7 +3195,7 @@ function updateBossAI(dt) {
         if (fd < 4) applyDamage(f, Math.round(2000 * dmgMult), boss);
       }
     } else {
-      const speed = 18 * speedMult;
+      const speed = 9 * speedMult;
       const mx = (dx / dist) * speed * dt;
       const mz = (dz / dist) * speed * dt;
       boss.mesh.position.x += mx;
