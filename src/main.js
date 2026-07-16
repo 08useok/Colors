@@ -3057,6 +3057,9 @@ function initTakeDownPlayers() {
   boss.bossCharging = false;
   boss.bossRage = false;
   boss.bossRestUntil = 0;
+  boss.bossAnim = "idle";
+  boss.bossAnimStartedAt = 0;
+  boss.bossAnimSeq = 0;
   boss.bodyMaterials = boss.mesh.userData.bodyMaterials || [];
   boss.healthBar = createHealthBarMesh();
   boss.healthBar.position.set(0, 1.5, 0);
@@ -3185,6 +3188,7 @@ function updateBossAI(dt) {
     if (dist < 2) {
       boss.bossCharging = false;
       boss.bossRestUntil = state.gameTime + 1.5 * cdMult;
+      setBossAnimation(boss, "chargeHit");
       // 돌진 도착 — 근처 플레이어에게 피해
       for (const f of alivePlayers) {
         const fd = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
@@ -3221,6 +3225,7 @@ function updateBossAI(dt) {
   if (state.gameTime >= boss.bossNextSlam && nearDist < 5) {
     boss.bossNextSlam = state.gameTime + 3 * cdMult;
     boss.bossRestUntil = state.gameTime + 1.2 * cdMult;
+    setBossAnimation(boss, "slam");
     for (const f of alivePlayers) {
       const fd = Math.hypot(f.mesh.position.x - boss.mesh.position.x, f.mesh.position.z - boss.mesh.position.z);
       if (fd < 5) applyDamage(f, Math.round(3000 * dmgMult), boss);
@@ -3241,12 +3246,14 @@ function updateBossAI(dt) {
     boss.bossNextCharge = state.gameTime + 6 * cdMult;
     boss.bossCharging = true;
     boss.bossChargeTarget = nearest.mesh.position.clone();
+    setBossAnimation(boss, "charge");
   }
 
   // ③ 충격파
   if (state.gameTime >= boss.bossNextWave) {
     boss.bossNextWave = state.gameTime + 4.5 * cdMult;
     boss.bossRestUntil = state.gameTime + 0.8 * cdMult;
+    setBossAnimation(boss, "wave");
     const dir = new THREE.Vector3(dx, 0, dz).normalize();
     const waveMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false });
     const wave = new THREE.Mesh(new THREE.SphereGeometry(0.8, 8, 8), waveMat);
@@ -3256,17 +3263,59 @@ function updateBossAI(dt) {
       mesh: wave,
       x: wave.position.x,
       z: wave.position.z,
-      dx: dir.x,
-      dz: dir.z,
-      speed: 14,
+      vx: dir.x * 14,
+      vz: dir.z * 14,
       range: 20,
-      distTravelled: 0,
+      distTraveled: 0,
+      farThreshold: Infinity,
+      farMultiplier: 1,
+      launchAt: state.gameTime,
       damage: Math.round(1500 * dmgMult),
       ownerId: boss.id,
-      ownerTeam: null,
-      type: "bossWave",
-      radius: 1.5,
+      projRadius: 1.5,
+      isBossWave: true,
     });
+  }
+}
+
+function setBossAnimation(boss, type) {
+  boss.bossAnim = type;
+  boss.bossAnimStartedAt = state.gameTime;
+  boss.bossAnimSeq = (boss.bossAnimSeq || 0) + 1;
+  if (type === "slam" || type === "chargeHit") audio.play("explosion");
+  else if (type === "wave") audio.play("projectileFire");
+}
+
+function playNetworkBossAttackCue(boss) {
+  if (boss.bossAnim === "wave") {
+    const yaw = boss.mesh.rotation.y;
+    const dirX = Math.sin(yaw);
+    const dirZ = Math.cos(yaw);
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.8, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.6, depthWrite: false }),
+    );
+    mesh.position.set(boss.mesh.position.x + dirX * 3, 2, boss.mesh.position.z + dirZ * 3);
+    scene.add(mesh);
+    state.projectiles.push({
+      mesh, x: mesh.position.x, z: mesh.position.z,
+      vx: dirX * 14, vz: dirZ * 14,
+      range: 20, distTraveled: 0, farThreshold: Infinity, farMultiplier: 1,
+      launchAt: state.gameTime, damage: 0, ownerId: boss.id,
+      projRadius: 1.5, isBossWave: true, networkVisualOnly: true,
+    });
+    audio.play("projectileFire");
+  } else if (boss.bossAnim === "slam" || boss.bossAnim === "chargeHit") {
+    const radius = boss.bossAnim === "slam" ? 5 : 4;
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(0.5, radius, 24),
+      new THREE.MeshBasicMaterial({ color: 0xff4400, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.set(boss.mesh.position.x, 0.15, boss.mesh.position.z);
+    scene.add(ring);
+    state.effects.push({ mesh: ring, life: 0.5, maxLife: 0.5, type: "frostRing" });
+    audio.play("explosion");
   }
 }
 
@@ -3391,9 +3440,13 @@ function syncMp(dt) {
     mp.relay("BSTATE", {
       x: b.mesh.position.x,
       z: b.mesh.position.z,
+      yaw: b.mesh.rotation.y,
       health: b.health,
       dead: !!b.dead,
       timeLeft: state.tdTimeLeft,
+      anim: b.bossAnim,
+      animSeq: b.bossAnimSeq || 0,
+      animTime: Math.max(0, state.gameTime - (b.bossAnimStartedAt || 0)),
       players: state.players.filter((f) => !f.isBoss && f.networkId).map((f) => ({
         id: f.networkId,
         health: f.health,
@@ -3469,7 +3522,15 @@ function setupMpHandlers() {
       b.mesh.position.z = msg.z;
       b.shadow.position.x = msg.x;
       b.shadow.position.z = msg.z;
+      if (Number.isFinite(msg.yaw)) b.mesh.rotation.y = msg.yaw;
       b.health = msg.health;
+      if (Number.isFinite(msg.animSeq) && (msg.animSeq !== b.bossAnimSeq || msg.anim !== b.bossAnim)) {
+        const isNewAttack = msg.animSeq !== b.bossAnimSeq;
+        b.bossAnimSeq = msg.animSeq;
+        b.bossAnim = msg.anim || "idle";
+        b.bossAnimStartedAt = state.gameTime - (Number.isFinite(msg.animTime) ? msg.animTime : 0);
+        if (isNewAttack) playNetworkBossAttackCue(b);
+      }
       if (msg.dead && !b.dead) { b.dead = true; }
       state.tdTimeLeft = msg.timeLeft;
       for (const playerState of msg.players || []) {
@@ -5489,7 +5550,8 @@ function updateProjectiles(dt) {
         continue;
       }
     } else {
-      proj.mesh.position.set(proj.x, (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2, proj.z);
+      const projectileY = proj.isBossWave ? 2 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2;
+      proj.mesh.position.set(proj.x, projectileY, proj.z);
       if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle) {
         proj.mesh.rotation.z += dt * 10;
       }
@@ -6502,7 +6564,105 @@ function updateBot(bot, dt, zone) {
   moveFighter(bot, tempVec3, dt);
 }
 
+function updateBossAnimation(boss, dt) {
+  const parts = boss.mesh.userData;
+  if (!parts.leftArm || !parts.rightArm) return;
+  const t = Math.max(0, state.gameTime - (boss.bossAnimStartedAt || 0));
+  const dx = boss.mesh.position.x - (boss.bossAnimLastX ?? boss.mesh.position.x);
+  const dz = boss.mesh.position.z - (boss.bossAnimLastZ ?? boss.mesh.position.z);
+  const speed = Math.hypot(dx, dz) / Math.max(dt, 0.001);
+  boss.bossAnimLastX = boss.mesh.position.x;
+  boss.bossAnimLastZ = boss.mesh.position.z;
+
+  const cycle = state.gameTime * (boss.bossRage ? 11 : 7);
+  const walk = Math.min(1, speed / 5);
+  let leftArmX = Math.sin(cycle) * 0.45 * walk - 0.25;
+  let rightArmX = -Math.sin(cycle) * 0.45 * walk - 0.25;
+  let leftArmZ = -0.12;
+  let rightArmZ = 0.12;
+  let leftLegX = -Math.sin(cycle) * 0.55 * walk;
+  let rightLegX = Math.sin(cycle) * 0.55 * walk;
+  let bodyX = 0;
+  let bodyZ = Math.sin(cycle * 0.5) * 0.025 * walk;
+  let headX = 0;
+  let bodyScaleY = 1;
+
+  if (boss.bossAnim === "slam") {
+    if (t < 0.34) {
+      const p = t / 0.34;
+      leftArmX = rightArmX = -0.25 - p * 2.45;
+      leftArmZ = -0.35 * p;
+      rightArmZ = 0.35 * p;
+      bodyX = -0.18 * p;
+      headX = 0.15 * p;
+    } else if (t < 0.52) {
+      const p = (t - 0.34) / 0.18;
+      leftArmX = rightArmX = -2.7 + p * 3.75;
+      bodyX = -0.18 + p * 0.62;
+      bodyScaleY = 1 - p * 0.16;
+      leftLegX = rightLegX = -0.35 * p;
+    } else {
+      const p = Math.min(1, (t - 0.52) / 0.68);
+      leftArmX = rightArmX = 1.05 * (1 - p) - 0.25 * p;
+      bodyX = 0.44 * (1 - p);
+      bodyScaleY = 0.84 + p * 0.16;
+    }
+    if (t > 1.2) boss.bossAnim = "idle";
+  } else if (boss.bossAnim === "wave") {
+    const p = Math.min(1, t / 0.18);
+    const recover = t > 0.38 ? Math.min(1, (t - 0.38) / 0.42) : 0;
+    const pose = p * (1 - recover);
+    leftArmX = rightArmX = -1.55 * pose - 0.25 * (1 - pose);
+    leftArmZ = -0.45 * pose;
+    rightArmZ = 0.45 * pose;
+    bodyX = -0.22 * pose;
+    headX = 0.12 * pose;
+    if (t > 0.8) boss.bossAnim = "idle";
+  } else if (boss.bossAnim === "charge") {
+    bodyX = -0.42;
+    headX = 0.3;
+    leftArmX = 0.85 + Math.sin(cycle * 1.5) * 0.18;
+    rightArmX = 0.85 - Math.sin(cycle * 1.5) * 0.18;
+    leftLegX = -Math.sin(cycle * 1.5) * 0.85;
+    rightLegX = Math.sin(cycle * 1.5) * 0.85;
+  } else if (boss.bossAnim === "chargeHit") {
+    const p = Math.min(1, t / 0.18);
+    const recover = t > 0.3 ? Math.min(1, (t - 0.3) / 0.5) : 0;
+    const pose = p * (1 - recover);
+    bodyX = 0.5 * pose;
+    headX = -0.35 * pose;
+    leftArmX = rightArmX = -1.0 * pose;
+    leftArmZ = -0.5 * pose;
+    rightArmZ = 0.5 * pose;
+    bodyScaleY = 1 - 0.18 * pose;
+    if (t > 0.8) boss.bossAnim = "idle";
+  }
+
+  parts.leftArm.rotation.set(leftArmX, 0, leftArmZ);
+  parts.rightArm.rotation.set(rightArmX, 0, rightArmZ);
+  parts.leftForeArm.rotation.x = boss.bossAnim === "slam" ? -0.45 : 0;
+  parts.rightForeArm.rotation.x = boss.bossAnim === "slam" ? -0.45 : 0;
+  parts.leftLeg.rotation.x = leftLegX;
+  parts.rightLeg.rotation.x = rightLegX;
+  parts.leftShin.rotation.x = Math.max(0, leftLegX * 0.45);
+  parts.rightShin.rotation.x = Math.max(0, rightLegX * 0.45);
+  parts.body.rotation.set(bodyX, 0, bodyZ);
+  parts.body.scale.y = bodyScaleY;
+  parts.head.rotation.x = headX;
+  if (boss.healthBar) {
+    const fill = boss.healthBar.userData.fill;
+    const ratio = THREE.MathUtils.clamp(boss.health / boss.maxHealth, 0, 1);
+    fill.scale.x = ratio;
+    fill.position.x = (-1.31 * (1 - ratio)) * 0.5;
+    boss.healthBar.quaternion.copy(camera.quaternion);
+  }
+}
+
 function updateFighterAnimation(fighter, dt) {
+  if (fighter.isBoss) {
+    updateBossAnimation(fighter, dt);
+    return;
+  }
   if (fighter.dead) {
     return;
   }
