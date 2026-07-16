@@ -3894,7 +3894,7 @@ const attackAimIndicator = createAttackAimIndicator();
 function createGreenAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.green.boomerangRange * ATTACK_RANGE_MULTIPLIER;
-  const halfAngle = Math.PI / 6; // 30° = half of 60°
+  const halfAngle = 25 * (Math.PI / 180); // 25° = half of 50°
 
   // Fan fill (ShapeGeometry in XZ plane via rotation)
   const shape = new THREE.Shape();

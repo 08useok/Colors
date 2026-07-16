@@ -17,11 +17,11 @@ export const CHARACTERS = {
     moveSpeedMultiplier: 1.2,
     boomerangCount: 4,
     boomerangDamage: 950,
-    boomerangRange: 6,
+    boomerangRange: 6.5,
     boomerangSpeed: 20,
     boomerangFarThreshold: 3.5,
     boomerangFarMultiplier: 0.625,
-    boomerangAngles: [-30, -10, 10, 30].map((d) => d * (Math.PI / 180)),
+    boomerangAngles: [-25, -25 / 3, 25 / 3, 25].map((d) => d * (Math.PI / 180)),
     walk: { cycleSpeed: 8, armAmp: 0.30, legAmp: 0.38, armRestZ: Math.PI * 0.06 },
   },
   blue: {
