@@ -1267,13 +1267,20 @@ function createStickman(color, skinId) {
     });
     group.add(model);
 
-    const mixer = new THREE.AnimationMixer(model);
-    const walkClip = _pinkGlb.loop?.animations?.[0] ?? _blueGlb.animations?.[0];
-    const action = walkClip ? mixer.clipAction(walkClip) : null;
-    if (action) {
-      action.setLoop(THREE.LoopRepeat, Infinity);
-      action.play();
-      action.paused = true;
+    const blueBoneNames = [
+      'CC_Base_Hip', 'CC_Base_Spine01',
+      'CC_Base_L_Thigh', 'CC_Base_R_Thigh',
+      'CC_Base_L_Calf', 'CC_Base_R_Calf',
+      'CC_Base_L_Upperarm', 'CC_Base_R_Upperarm',
+      'CC_Base_L_Forearm', 'CC_Base_R_Forearm',
+    ];
+    const blueBones = {};
+    const blueBindQuaternions = {};
+    for (const name of blueBoneNames) {
+      const bone = model.getObjectByName(name);
+      if (!bone) continue;
+      blueBones[name] = bone;
+      blueBindQuaternions[name] = bone.quaternion.clone();
     }
     const bodyMaterials = [];
     model.traverse(c => {
@@ -1283,7 +1290,8 @@ function createStickman(color, skinId) {
     });
     group.userData = {
       isGlbModel: true, isBlueGlb: true, blueModel: model,
-      blueMixer: mixer, blueAction: action, bodyMaterials, guitar: null,
+      blueBones, blueBindQuaternions, blueWalkTime: 0,
+      bodyMaterials, guitar: null,
     };
     return group;
   }
@@ -2139,7 +2147,6 @@ function setupFrontModel(charType) {
     const skinId = acc?.selectedSkins?.[charType] || null;
     const m = createStickman(charDef.color, skinId);
     m.position.y = 0;
-    if (m.userData.isBlueGlb && m.userData.blueAction) m.userData.blueAction.paused = false;
     pinkFrontModel = m;
     pinkFrontSk = null;
     _applyCamera();
@@ -2150,7 +2157,6 @@ function setupFrontModel(charType) {
 function renderPinkFront(dt) {
   if (!pinkFrontActive || !pinkFrontModel) return;
   pinkFrontTime += dt;
-  pinkFrontModel.userData.blueMixer?.update(dt);
   const t = pinkFrontTime;
   pinkFrontModel.rotation.y = t * 0.6;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
@@ -2197,9 +2203,6 @@ function setPreviewCharacter(charType) {
   } else {
     previewModel = createStickman(charDef.color, skinId);
     previewIsGlb = Boolean(previewModel.userData.isGlbModel);
-    if (previewModel.userData.isBlueGlb && previewModel.userData.blueAction) {
-      previewModel.userData.blueAction.paused = false;
-    }
     previewModel.position.y = 0;
     previewScene.add(previewModel);
   }
@@ -2215,7 +2218,6 @@ function renderPreview(dt) {
 
   // GLB 모델 (Pink)은 뼈대가 없으므로 회전만 하고 종료
   if (previewIsGlb) {
-    previewModel.userData.blueMixer?.update(dt);
     previewRenderer.render(previewScene, previewCamera);
     return;
   }
@@ -7082,12 +7084,27 @@ function updateFighterAnimation(fighter, dt) {
   if (body.isGlbModel) {
     if (body.isBlueGlb) {
       const moving = speed > 0.5;
-      if (body.blueAction) {
-        body.blueAction.paused = !moving;
-        body.blueAction.timeScale = THREE.MathUtils.clamp(speed / 5, 0.65, 1.5);
-        if (!moving) body.blueAction.time = 0;
-      }
-      body.blueMixer?.update(dt);
+      if (moving) body.blueWalkTime += dt * THREE.MathUtils.clamp(speed / 5, 0.65, 1.5) * 7;
+      const phase = moving ? Math.sin(body.blueWalkTime) : 0;
+      const liftLeft = moving ? Math.max(0, -phase) : 0;
+      const liftRight = moving ? Math.max(0, phase) : 0;
+      const poseBone = (name, x = 0, z = 0) => {
+        const bone = body.blueBones?.[name];
+        const bind = body.blueBindQuaternions?.[name];
+        if (!bone || !bind) return;
+        bone.quaternion.copy(bind);
+        if (z) bone.rotateZ(z);
+        if (x) bone.rotateX(x);
+      };
+      poseBone('CC_Base_L_Thigh', phase * 0.48);
+      poseBone('CC_Base_R_Thigh', -phase * 0.48);
+      poseBone('CC_Base_L_Calf', liftLeft * 0.55);
+      poseBone('CC_Base_R_Calf', liftRight * 0.55);
+      poseBone('CC_Base_L_Upperarm', -phase * 0.38, -1.05);
+      poseBone('CC_Base_R_Upperarm', phase * 0.38, 1.05);
+      poseBone('CC_Base_L_Forearm', 0, -0.25);
+      poseBone('CC_Base_R_Forearm', 0, 0.25);
+      poseBone('CC_Base_Spine01', 0, moving ? phase * 0.025 : 0);
     } else {
     const moving = speed > 0.5;
     const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
