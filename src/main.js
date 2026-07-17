@@ -849,6 +849,30 @@ function showDailyLogin(account) {
   setTimeout(() => { if (!locked) dailyIdInput.focus(); }, 50);
 }
 
+function syncLobbyStartButton() {
+  const account = loadAccount();
+  const blockingPanels = [
+    characterPanel,
+    modeSelector,
+    shopOverlay,
+    accountSwitch,
+    document.getElementById("stats-panel"),
+    document.getElementById("leaderboard-panel"),
+    document.getElementById("matchup-table"),
+    document.getElementById("patchnotes"),
+    document.getElementById("pink-front-canvas"),
+  ];
+  const lobbyReady = Boolean(
+    account?.id
+    && isLoginDoneToday(account)
+    && !lobbyMain.classList.contains("hidden")
+    && messageOverlay.style.display !== "none"
+    && !state.running
+  );
+  const hasOpenPanel = blockingPanels.some(panel => panel && !panel.classList.contains("hidden"));
+  startBattleBtn.classList.toggle("hidden", !lobbyReady || hasOpenPanel);
+}
+
 function showLobby() {
   crosshairEl.classList.add("hidden");
   messageOverlay.style.display = "flex";
@@ -893,6 +917,7 @@ function showLobby() {
     colorButtons.classList.add("hidden");
     showDailyLogin(account);
   }
+  syncLobbyStartButton();
 }
 
 function calcTrophyChange(rank) {
@@ -8243,7 +8268,10 @@ function setupInput() {
 
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
-    if (btn && !btn.disabled) audio.play("click");
+    if (btn && !btn.disabled) {
+      audio.play("click");
+      syncLobbyStartButton();
+    }
   });
 
   let lastHoverBtn = null;
