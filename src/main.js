@@ -3204,7 +3204,7 @@ function initTakeDownPlayers() {
   boss.isDummy = false;
   boss.bossAttackCd = 0;
   boss.bossNextSlam = 0;
-  boss.bossNextCharge = 0;
+  boss.bossNextCharge = state.gameTime + 5;
   boss.bossNextWave = 0;
   boss.bossChargeTarget = null;
   boss.bossCharging = false;
