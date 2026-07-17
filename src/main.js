@@ -1250,7 +1250,7 @@ function createStickman(color, skinId) {
     for (const helper of rigHelpers) helper.removeFromParent();
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
-    // Blue는 세로로 긴 모델이라 Pink와 같은 화면상 가로 폭이 되도록 1.8 높이로 정규화한다.
+    // FBX에서 지정된 Blue 원본 배율을 그대로 사용한다.
     const scale = 1;
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
