@@ -101,7 +101,7 @@ scene.add(water);
 
 // 중앙 광장과 서로 다른 높이의 네 테스트 구역
 box(0, 0, 0, 22, 3, 22);
-box(0, 1.6, 0, 15, 0.35, 15, trimMaterial, false);
+box(0, 1.53, 0, 15, 0.06, 15, trimMaterial, false);
 box(0, 1.3, -22, 7, 1, 23, stoneMaterial);
 box(0, 1.3, 22, 7, 1, 23, stoneMaterial);
 box(-22, 1.3, 0, 23, 1, 7, stoneMaterial);
@@ -376,17 +376,19 @@ function createCrimsonSlash(hitIndex) {
     opacity: 0.72,
     side: THREE.DoubleSide,
     depthWrite: false,
+    depthTest: false,
   });
   const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
   mesh.rotation.x = Math.PI / 2;
   mesh.rotation.z = THREE.MathUtils.degToRad([-25, 0, 25][hitIndex]);
   const group = new THREE.Group();
   group.position.copy(player.position);
-  group.position.y += 0.12;
+  group.position.y += 0.22;
   group.rotation.y = player.rotation.y;
   group.add(mesh);
   scene.add(group);
-  crimsonSlashes.push({ group, mesh, life: 0.22, maxLife: 0.22 });
+  mesh.renderOrder = 20;
+  crimsonSlashes.push({ group, mesh, life: 0.65, maxLife: 0.65 });
   hitTargetsInFan(THREE.MathUtils.degToRad([-25, 0, 25][hitIndex]), CRIMSON_ATTACK_DAMAGE);
   attackComboState.textContent = `${hitIndex + 1}/3 · ${CRIMSON_ATTACK_DAMAGE} 피해`;
 }
@@ -421,7 +423,7 @@ document.getElementById("ultimate-btn").addEventListener("click", () => {
   );
   wave.rotation.x = -Math.PI / 2;
   wave.rotation.z = -player.rotation.y;
-  wave.position.set(player.position.x + forward.x * 2.5, player.position.y + 0.1, player.position.z + forward.y * 2.5);
+  wave.position.set(player.position.x + forward.x * 2.5, player.position.y + 0.22, player.position.z + forward.y * 2.5);
   scene.add(wave);
 
   let destroyedWalls = 0;
