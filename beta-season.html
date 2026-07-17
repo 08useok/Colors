@@ -23,8 +23,19 @@
       <h1>베타 시즌 1</h1>
       <p>부유 유적 섬 · 맵 동선 테스트</p>
     </div>
-    <a href="./index.html">현재 게임으로 돌아가기</a>
+    <nav class="beta-nav">
+      <button type="button" data-panel="characters">캐릭터</button>
+      <button type="button" data-panel="shop">시즌 상점</button>
+      <button type="button" data-panel="daily">일일 보상</button>
+      <a href="./index.html">현재 게임</a>
+    </nav>
   </header>
+
+  <div class="beta-wallet">
+    <span>β 크레딧</span>
+    <strong id="credit-value">1,500</strong>
+    <span class="rank-chip">시즌 테스트 1위</span>
+  </div>
 
   <aside class="test-panel">
     <strong>맵 테스트</strong>
@@ -42,6 +53,27 @@
   </div>
 
   <div class="beta-watermark">BETA MAP 0.1</div>
+
+  <button id="ultimate-btn" class="ultimate-btn" type="button">
+    <small>1위 궁극기</small>
+    <strong>시즌 브레이크</strong>
+    <span id="ultimate-state">사용 가능</span>
+  </button>
+
+  <div id="beta-modal" class="beta-modal hidden" role="dialog" aria-modal="true">
+    <section class="beta-modal-card">
+      <div class="modal-title-row">
+        <div>
+          <span class="test-chip">BETA SYSTEM</span>
+          <h2 id="modal-title">베타 시즌</h2>
+        </div>
+        <button id="modal-close" class="modal-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <div id="modal-content"></div>
+    </section>
+  </div>
+
+  <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
   <script type="module" src="./src/beta-season.js?v=0.1.0"></script>
 </body>
 </html>

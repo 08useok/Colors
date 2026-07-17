@@ -33,13 +33,16 @@ button, a { font: inherit; }
 
 .beta-header h1 { display: inline; margin: 0 0 0 10px; font-size: 20px; }
 .beta-header p { margin: 5px 0 0; color: #a8c1cd; font-size: 12px; }
-.beta-header a {
+.beta-header a, .beta-nav button {
   color: #e9fbff;
   text-decoration: none;
   padding: 9px 13px;
   border-radius: 11px;
   background: rgba(74, 196, 225, 0.15);
+  border: 0;
+  cursor: pointer;
 }
+.beta-nav { display: flex; align-items: center; gap: 7px; }
 
 .test-chip {
   padding: 5px 8px;
@@ -71,12 +74,47 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .location-card span { display: block; color: #8ba4ae; font-size: 10px; }
 .location-card strong { color: #78e1f4; font-size: 14px; }
 .beta-watermark { position: fixed; right: 24px; top: 104px; z-index: 2; color: rgba(220, 248, 255, .35); font-size: 10px; letter-spacing: .18em; }
+.beta-wallet { position: fixed; top: 104px; left: 18px; z-index: 2; display: flex; align-items: center; gap: 9px; padding: 10px 13px; border-radius: 13px; background: rgba(7,19,28,.82); border: 1px solid rgba(177,235,255,.2); }
+.beta-wallet span { color: #8ba9b6; font-size: 11px; }
+.beta-wallet strong { color: #78e1f4; }
+.beta-wallet .rank-chip { color: #ffe098; padding-left: 9px; border-left: 1px solid #41545d; }
+.ultimate-btn { position: fixed; z-index: 2; right: 18px; bottom: 86px; width: 190px; padding: 13px 15px; border: 1px solid rgba(255,215,116,.45); border-radius: 16px; color: #fff2c5; background: linear-gradient(145deg,rgba(79,42,88,.94),rgba(24,24,42,.94)); box-shadow: 0 12px 40px rgba(0,0,0,.3); cursor: pointer; text-align: left; }
+.ultimate-btn small, .ultimate-btn span { display: block; color: #cdb8d7; font-size: 10px; }
+.ultimate-btn strong { display: block; margin: 3px 0; }
+.ultimate-btn.cooldown { opacity: .55; }
+.beta-modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 20px; background: rgba(2,10,15,.68); backdrop-filter: blur(10px); }
+.beta-modal.hidden { display: none; }
+.beta-modal-card { width: min(880px, 94vw); max-height: 82vh; overflow: auto; border: 1px solid rgba(146,227,244,.25); border-radius: 24px; padding: 22px; background: #0c1b24; box-shadow: 0 30px 90px rgba(0,0,0,.45); }
+.modal-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.modal-title-row h2 { margin: 12px 0 0; }
+.modal-close { width: 38px; height: 38px; border: 0; border-radius: 50%; color: #fff; background: #20343e; font-size: 24px; cursor: pointer; }
+.beta-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.beta-card { position: relative; min-height: 150px; padding: 15px; border: 1px solid #29414b; border-radius: 16px; background: #122630; overflow: hidden; }
+.beta-card.selected { outline: 2px solid #70ddef; }
+.beta-card h3 { margin: 8px 0 4px; }
+.beta-card p { margin: 5px 0; color: #93aab4; font-size: 11px; line-height: 1.5; }
+.beta-card button { margin-top: 10px; border: 0; border-radius: 9px; padding: 8px 10px; color: #061218; background: #72dced; font-weight: 800; cursor: pointer; }
+.beta-card button:disabled { color: #718087; background: #263840; cursor: default; }
+.rarity { display: inline-block; border-radius: 999px; padding: 4px 7px; font-size: 9px; font-weight: 900; }
+.rarity.common { color: #d9e4e8; background: #46545a; }
+.rarity.rare { color: #bde9ff; background: #285777; }
+.rarity.epic { color: #efc8ff; background: #6c347f; }
+.rarity.legendary { color: #ffe89a; background: #80671f; }
+.drop-box { text-align: center; padding: 28px; border: 1px dashed #397084; border-radius: 18px; background: rgba(36,112,134,.1); }
+.drop-result { min-height: 28px; margin: 15px 0; color: #ffe095; font-weight: 800; }
+.beta-toast { position: fixed; left: 50%; bottom: 28px; z-index: 20; transform: translate(-50%,20px); padding: 10px 15px; border-radius: 11px; background: #d8f8ff; color: #0b1c24; opacity: 0; pointer-events: none; transition: .2s; }
+.beta-toast.show { transform: translate(-50%,0); opacity: 1; }
 
 @media (max-width: 640px) {
-  .beta-header { align-items: flex-start; }
+  .beta-header { align-items: flex-start; gap: 8px; }
   .beta-header p { display: none; }
-  .beta-header a { font-size: 11px; }
+  .beta-header h1 { font-size: 15px; }
+  .beta-nav { flex-wrap: wrap; justify-content: flex-end; }
+  .beta-nav button, .beta-header a { padding: 6px 7px; font-size: 9px; }
+  .beta-wallet { top: 112px; }
   .test-panel { width: calc(100% - 36px); }
   .location-card { top: 102px; bottom: auto; }
   .beta-watermark { display: none; }
+  .beta-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .ultimate-btn { bottom: 168px; width: 160px; }
 }
