@@ -2012,6 +2012,13 @@ function _stripRootMotion(gltf) {
   }
   return gltf;
 }
+
+function _stripBlueHipMotion(gltf) {
+  for (const clip of (gltf.animations ?? [])) {
+    clip.tracks = clip.tracks.filter(track => track.name !== 'CC_Base_Hip.position');
+  }
+  return gltf;
+}
 let _pinkToonGrad = null;
 function _getPinkToonGrad() {
   if (_pinkToonGrad) return _pinkToonGrad;
@@ -2056,7 +2063,7 @@ function _applyPinkToon(scene) {
 let _bluePreviewGlb = null;
 let _blueWalkGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
-_glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = g; });
+_glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
   _bluePreviewGlb = g;
   if (previewCharType === 'blue') {
