@@ -1246,7 +1246,7 @@ function createStickman(color, skinId) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const scale = 2.7 / Math.max(size.y, 0.001);
+    const scale = 1.5 / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
