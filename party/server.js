@@ -33,6 +33,17 @@ function publicRotationState(state) {
 }
 
 export class RotationStats extends DurableObject {
+  async restoreHistory() {
+    const state = await this.getState();
+    state.campaignVersion = 3;
+    state.remaining = [...ROTATION_SURVIVORS];
+    state.eliminated = [...ROTATION_ELIMINATION_HISTORY];
+    state.champion = null;
+    state.lastRoundProcessedAt = ROTATION_INITIAL_ROUND;
+    await this.ctx.storage.put("rotation-state", state);
+    return state;
+  }
+
   async getState() {
     let state = await this.ctx.storage.get("rotation-state");
     if (!state) {
@@ -254,10 +265,13 @@ export default {
     if (pathname === "/api/rotation") {
       const statsServer = env.RotationStats.getByName("global-event");
       try {
-        const state = request.method === "POST"
+        let state = request.method === "POST"
           ? await statsServer.recordResult(await request.json())
           : await statsServer.getState();
-        return Response.json(publicRotationState(state), { headers: corsHeaders });
+        if ((state.campaignVersion ?? 0) < 3) state = await statsServer.restoreHistory();
+        return Response.json(publicRotationState(state), {
+          headers: { ...corsHeaders, "x-colors-version": "1.5.116" },
+        });
       } catch {
         return Response.json({ error: "Invalid event request" }, { status: 400, headers: corsHeaders });
       }
