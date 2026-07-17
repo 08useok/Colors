@@ -1251,7 +1251,7 @@ function createStickman(color, skinId) {
     const box = new THREE.Box3().setFromObject(model);
     const center = box.getCenter(new THREE.Vector3());
     // 정규화된 Blue 스킨의 실제 렌더 크기에 맞춘 전투 배율이다.
-    const scale = 5;
+    const scale = 4;
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
