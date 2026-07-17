@@ -1240,9 +1240,9 @@ function createGround(group = scene) {
 }
 
 function createStickman(color, skinId) {
-  if (color === 0x0000ff && _blueGlb) {
+  if (color === 0x0000ff && _bluePreviewGlb) {
     const group = new THREE.Group();
-    const model = skeletonClone(_blueGlb.scene);
+    const model = _bluePreviewGlb.scene.clone(true);
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -1250,14 +1250,6 @@ function createStickman(color, skinId) {
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
-    model.traverse(c => {
-      if (!c.isMesh) return;
-      const mats = Array.isArray(c.material) ? c.material : [c.material];
-      for (const material of mats) {
-        material.map = null;
-        material.color?.set(0x165dff);
-      }
-    });
     _applyPinkToon(model);
     model.traverse(c => {
       if (!c.isMesh) return;
@@ -1267,21 +1259,6 @@ function createStickman(color, skinId) {
     });
     group.add(model);
 
-    const blueBoneNames = [
-      'CC_Base_Hip', 'CC_Base_Spine01',
-      'CC_Base_L_Thigh', 'CC_Base_R_Thigh',
-      'CC_Base_L_Calf', 'CC_Base_R_Calf',
-      'CC_Base_L_Upperarm', 'CC_Base_R_Upperarm',
-      'CC_Base_L_Forearm', 'CC_Base_R_Forearm',
-    ];
-    const blueBones = {};
-    const blueBindQuaternions = {};
-    for (const name of blueBoneNames) {
-      const bone = model.getObjectByName(name);
-      if (!bone) continue;
-      blueBones[name] = bone;
-      blueBindQuaternions[name] = bone.quaternion.clone();
-    }
     const bodyMaterials = [];
     model.traverse(c => {
       if (!c.isMesh) return;
@@ -1292,7 +1269,7 @@ function createStickman(color, skinId) {
     });
     group.userData = {
       isGlbModel: true, isBlueGlb: true, blueModel: model,
-      blueBones, blueBindQuaternions, blueWalkTime: 0,
+      blueBaseY: model.position.y, blueWalkTime: 0,
       bodyMaterials, guitar: null,
     };
     return group;
@@ -2038,7 +2015,6 @@ function _applyPinkToon(scene) {
   });
 }
 
-let _blueGlb = null;
 let _bluePreviewGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
@@ -2052,7 +2028,6 @@ _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
 _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
   _pinkGlb.loop = _stripRootMotion(g);
-  _glbLoader.load('./assets/3d/blue/blue_walk.glb', blue => { _blueGlb = _stripRootMotion(blue); });
 });
 _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
 
@@ -7088,25 +7063,8 @@ function updateFighterAnimation(fighter, dt) {
       const moving = speed > 0.5;
       if (moving) body.blueWalkTime += dt * THREE.MathUtils.clamp(speed / 5, 0.65, 1.5) * 7;
       const phase = moving ? Math.sin(body.blueWalkTime) : 0;
-      const liftLeft = moving ? Math.max(0, -phase) : 0;
-      const liftRight = moving ? Math.max(0, phase) : 0;
-      const poseBone = (name, x = 0, z = 0) => {
-        const bone = body.blueBones?.[name];
-        const bind = body.blueBindQuaternions?.[name];
-        if (!bone || !bind) return;
-        bone.quaternion.copy(bind);
-        if (z) bone.rotateZ(z);
-        if (x) bone.rotateX(x);
-      };
-      poseBone('CC_Base_L_Thigh', phase * 0.48);
-      poseBone('CC_Base_R_Thigh', -phase * 0.48);
-      poseBone('CC_Base_L_Calf', liftLeft * 0.55);
-      poseBone('CC_Base_R_Calf', liftRight * 0.55);
-      poseBone('CC_Base_L_Upperarm', -phase * 0.38, -1.05);
-      poseBone('CC_Base_R_Upperarm', phase * 0.38, 1.05);
-      poseBone('CC_Base_L_Forearm', 0, -0.25);
-      poseBone('CC_Base_R_Forearm', 0, 0.25);
-      poseBone('CC_Base_Spine01', 0, moving ? phase * 0.025 : 0);
+      body.blueModel.position.y = body.blueBaseY + (moving ? Math.abs(Math.cos(body.blueWalkTime)) * 0.05 : 0);
+      body.blueModel.rotation.z = phase * 0.035;
     } else {
     const moving = speed > 0.5;
     const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
