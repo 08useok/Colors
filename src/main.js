@@ -1246,7 +1246,7 @@ function createStickman(color, skinId) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const scale = 3.6 / Math.max(size.y, 0.001);
+    const scale = 2.7 / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
@@ -2029,13 +2029,42 @@ function _applyPinkToon(scene) {
 }
 
 let _blueGlb = null;
+let _bluePreviewGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
+_glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
+  _bluePreviewGlb = g;
+  if (previewCharType === 'blue') {
+    previewChar = null;
+    setPreviewCharacter('blue');
+  }
+  if (frontModelCharType === 'blue') setupFrontModel('blue');
+});
 _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
   _pinkGlb.loop = _stripRootMotion(g);
   _glbLoader.load('./assets/3d/blue/blue_walk.glb', blue => { _blueGlb = _stripRootMotion(blue); });
 });
 _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
+
+function createBluePreviewModel() {
+  if (!_bluePreviewGlb) return null;
+  const model = _bluePreviewGlb.scene.clone(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const scale = 4.0 / Math.max(size.y, 0.001);
+  model.scale.setScalar(scale);
+  model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+  model.rotation.y = Math.PI;
+  _applyPinkToon(model);
+  model.traverse(c => {
+    if (!c.isMesh) return;
+    c.frustumCulled = false;
+    c.castShadow = true;
+  });
+  model.userData.isBluePreview = true;
+  return model;
+}
 
 // Pink 앞모습 프리뷰
 const pinkFrontCanvas = document.getElementById("pink-front-canvas");
@@ -2098,6 +2127,11 @@ function setupFrontModel(charType) {
     };
     if (_pinkGlb.loop) setup(_pinkGlb.loop);
     else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
+  } else if (charType === 'blue' && _bluePreviewGlb) {
+    pinkFrontModel = createBluePreviewModel();
+    pinkFrontSk = null;
+    _applyCamera();
+    pinkFrontScene.add(pinkFrontModel);
   } else {
     const charDef = CHARACTERS[charType];
     if (!charDef) return;
@@ -2156,6 +2190,10 @@ function setPreviewCharacter(charType) {
     } else {
       _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setupPinkPreview);
     }
+  } else if (charType === "blue" && _bluePreviewGlb) {
+    previewIsGlb = true;
+    previewModel = createBluePreviewModel();
+    previewScene.add(previewModel);
   } else {
     previewModel = createStickman(charDef.color, skinId);
     previewIsGlb = Boolean(previewModel.userData.isGlbModel);
