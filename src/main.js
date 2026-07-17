@@ -1249,9 +1249,10 @@ function createStickman(color, skinId) {
     });
     for (const helper of rigHelpers) helper.removeFromParent();
     const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    // Blue 전투 모델은 원본 GLB 기준 2.5배 배율을 사용한다.
-    const scale = 2.5;
+    // Pink와 동일하게 전투 중 최종 모델 높이를 1.5로 정규화한다.
+    const scale = 1.5 / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
