@@ -870,7 +870,8 @@ function syncLobbyStartButton() {
     && !state.running
   );
   const hasOpenPanel = blockingPanels.some(panel => panel && !panel.classList.contains("hidden"));
-  startBattleBtn.classList.toggle("hidden", !lobbyReady || hasOpenPanel);
+  const mobileEventOpen = lobbyEventMap.classList.contains("mobile-open");
+  startBattleBtn.classList.toggle("hidden", !lobbyReady || hasOpenPanel || mobileEventOpen);
 }
 
 function showLobby() {
@@ -8494,6 +8495,13 @@ function setupInput() {
     modeSelector.classList.add("hidden");
     characterToggle.classList.toggle("active", willShow);
     startBattleBtn.classList.remove("active");
+  });
+
+  document.getElementById("mobile-event-toggle").addEventListener("click", (event) => {
+    const button = event.currentTarget;
+    const willOpen = !lobbyEventMap.classList.contains("mobile-open");
+    lobbyEventMap.classList.toggle("mobile-open", willOpen);
+    button.classList.toggle("active", willOpen);
   });
 
   startBattleBtn.addEventListener("click", () => {

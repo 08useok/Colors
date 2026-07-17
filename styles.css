@@ -1367,6 +1367,7 @@ body {
 }
 
 .side-nav-btn:active { transform: scale(0.97); }
+.mobile-event-toggle { display: none; }
 .side-nav-divider { height: 1px; background: rgba(255, 210, 158, 0.16); margin: 2px 0; }
 
 .sidebar-profile-card {
@@ -1588,8 +1589,8 @@ body {
 
 @media (max-width: 900px) {
   .lobby-side-panel {
-    top: auto;
-    bottom: 10px;
+    top: 10px;
+    bottom: auto;
     left: 10px;
     right: 10px;
     width: auto;
@@ -1608,9 +1609,10 @@ body {
     white-space: nowrap;
   }
 
+  .mobile-event-toggle { display: block; }
+
   .side-nav-divider,
   .sidebar-profile-card,
-  .lobby-event-map,
   .stats-panel,
   .leaderboard-panel,
   .matchup-table,
@@ -1618,11 +1620,24 @@ body {
     display: none;
   }
 
-  #message-overlay { padding-bottom: 76px; }
+  .lobby-event-map { display: none; }
+
+  .lobby-event-map.mobile-open {
+    display: block;
+    top: 92px;
+    right: 10px;
+    bottom: auto;
+    left: 10px;
+    width: auto;
+    max-height: calc(100vh - 172px);
+    overflow-y: auto;
+  }
+
+  #message-overlay { padding-top: 76px; padding-bottom: 0; }
 
   .lobby-start-fab {
     right: 14px;
-    bottom: 92px;
+    bottom: 14px;
     width: min(300px, calc(100vw - 28px));
     height: 68px;
     padding: 10px 18px;
@@ -1630,7 +1645,7 @@ body {
 
   #mode-selector {
     right: 14px;
-    bottom: 174px;
+    bottom: 96px;
     width: min(300px, calc(100vw - 28px));
   }
 }
