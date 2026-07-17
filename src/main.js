@@ -59,6 +59,7 @@ const switchNicknameInput = document.getElementById("switch-nickname-input");
 const accountSwitchError = document.getElementById("account-switch-error");
 const startBattleBtn = document.getElementById("start-battle-btn");
 const lobbyEventMap = document.getElementById("lobby-event-map");
+const eventCountdown = document.getElementById("event-countdown");
 const modeSelector = document.getElementById("mode-selector");
 const characterPanel = document.getElementById("character-panel");
 const characterToggle = document.getElementById("character-toggle");
@@ -847,6 +848,22 @@ function showDailyLogin(account) {
   }
 
   setTimeout(() => { if (!locked) dailyIdInput.focus(); }, 50);
+}
+
+const EVENT_END_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
+
+function updateEventCountdown() {
+  const remaining = Math.max(0, EVENT_END_AT - Date.now());
+  if (remaining <= 0) {
+    eventCountdown.textContent = "이벤트 종료";
+    return;
+  }
+  const totalSeconds = Math.floor(remaining / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  eventCountdown.textContent = `D-${days} (${String(hours).padStart(2, "0")}시 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초)`;
 }
 
 function syncLobbyStartButton() {
@@ -9090,3 +9107,5 @@ rebuildAmmoPips();
 updateHud();
 applyLanguage();
 showLobby();
+updateEventCountdown();
+setInterval(updateEventCountdown, 1000);

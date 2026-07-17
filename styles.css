@@ -1465,6 +1465,7 @@ body {
   background: rgba(255, 92, 72, 0.17);
   color: #ff8b78;
   font-size: 9px;
+  white-space: nowrap;
 }
 
 .event-map-body {
