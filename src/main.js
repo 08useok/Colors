@@ -336,8 +336,10 @@ const COIN_REWARDS = {
 // ── Rotation Mode ──────────────────────────────────────────────────────
 const ROTATION_CHAR_ORDER = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 const ROTATION_ROUND_DAYS = 1;
-const ROTATION_CAMPAIGN_VERSION = 2;
+const ROTATION_CAMPAIGN_VERSION = 3;
 const ROTATION_CAMPAIGN_START_DATE = "2026-07-12";
+const ROTATION_ELIMINATION_HISTORY = ["orange", "purple", "yellow", "blue", "red"];
+const ROTATION_SURVIVORS = ["green", "cyan", "pink"];
 const ROTATION_API_URL =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
     ? "http://localhost:8787/api/rotation"
@@ -431,20 +433,8 @@ function initRotationState(account) {
   for (const char of ROTATION_CHAR_ORDER) {
     rotation.stats[char] ??= { wins: 0, games: 0, mvp: 0, bossDmg: 0 };
   }
-  let remaining = (rotation.remaining ?? []).filter(char => ROTATION_CHAR_ORDER.includes(char));
-  if (remaining.length === 0) remaining = [...ROTATION_CHAR_ORDER];
-  while (remaining.length > 3) {
-    const lowest = rankRotationChars(rotation.stats, remaining)[0];
-    remaining = remaining.filter(char => char !== lowest);
-  }
-  if (remaining.length < 3) {
-    const candidates = rankRotationChars(rotation.stats, ROTATION_CHAR_ORDER)
-      .reverse()
-      .filter(char => !remaining.includes(char));
-    remaining.push(...candidates.slice(0, 3 - remaining.length));
-  }
-  rotation.remaining = remaining;
-  rotation.eliminated = ROTATION_CHAR_ORDER.filter(char => !remaining.includes(char));
+  rotation.remaining = [...ROTATION_SURVIVORS];
+  rotation.eliminated = [...ROTATION_ELIMINATION_HISTORY];
   rotation.newAbilityChars = [...new Set([...(rotation.newAbilityChars ?? []), ...rotation.eliminated])];
   rotation.champion = null;
   rotation.startDate = ROTATION_CAMPAIGN_START_DATE;

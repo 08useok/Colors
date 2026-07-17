@@ -7,6 +7,8 @@ const CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", 
 const CHARACTER_ORDER = [...CHARACTERS];
 const ROTATION_START_DATE = "2026-07-12";
 const ROTATION_INITIAL_ROUND = 5;
+const ROTATION_ELIMINATION_HISTORY = ["orange", "purple", "yellow", "blue", "red"];
+const ROTATION_SURVIVORS = ["green", "cyan", "pink"];
 
 function emptyRotationStats() {
   return Object.fromEntries(CHARACTER_ORDER.map((char) => [char, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }]));
@@ -35,16 +37,23 @@ export class RotationStats extends DurableObject {
     let state = await this.ctx.storage.get("rotation-state");
     if (!state) {
       state = {
-        campaignVersion: 2,
+        campaignVersion: 3,
         startDate: ROTATION_START_DATE,
         lastRoundProcessedAt: ROTATION_INITIAL_ROUND,
-        remaining: ["cyan", "purple", "pink"],
-        eliminated: ["red", "green", "blue", "orange", "yellow"],
+        remaining: [...ROTATION_SURVIVORS],
+        eliminated: [...ROTATION_ELIMINATION_HISTORY],
         champion: null,
         stats: emptyRotationStats(),
         submissions: [],
         legacyImports: [],
       };
+    }
+    if ((state.campaignVersion ?? 0) < 3) {
+      state.campaignVersion = 3;
+      state.remaining = [...ROTATION_SURVIVORS];
+      state.eliminated = [...ROTATION_ELIMINATION_HISTORY];
+      state.champion = null;
+      state.lastRoundProcessedAt = ROTATION_INITIAL_ROUND;
     }
 
     const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
