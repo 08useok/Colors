@@ -1286,7 +1286,9 @@ function createStickman(color, skinId) {
     model.traverse(c => {
       if (!c.isMesh) return;
       const mats = Array.isArray(c.material) ? c.material : [c.material];
-      for (const material of mats) if (!bodyMaterials.includes(material)) bodyMaterials.push(material);
+      for (const material of mats) {
+        if (material.emissive && !bodyMaterials.includes(material)) bodyMaterials.push(material);
+      }
     });
     group.userData = {
       isGlbModel: true, isBlueGlb: true, blueModel: model,
@@ -7194,7 +7196,11 @@ function updateFighterAnimation(fighter, dt) {
   fighter.pitchKick = Math.max(0, fighter.pitchKick - dt * 4.2);
 
   const setEmissive = (color, intensity) => {
-    for (const m of fighter.bodyMaterials) { m.emissive = color; m.emissiveIntensity = intensity; }
+    for (const material of fighter.bodyMaterials) {
+      if (!material.emissive) continue;
+      material.emissive.copy(color);
+      material.emissiveIntensity = intensity;
+    }
   };
   if (fighter.flashTimer > 0) {
     fighter.flashTimer -= dt;
