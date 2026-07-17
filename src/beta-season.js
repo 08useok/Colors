@@ -81,13 +81,13 @@ const platformMaterial = new THREE.MeshStandardMaterial({ color: 0x6a7773, rough
 const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x79d5d2, roughness: 0.42, metalness: 0.25 });
 const stoneMaterial = new THREE.MeshStandardMaterial({ color: 0x40545a, roughness: 0.92 });
 
-function box(x, y, z, width, height, depth, material = platformMaterial, solid = true) {
+function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   map.add(mesh);
-  if (solid) solids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: y + height / 2 });
+  if (solid) solids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: y + height / 2, mesh, destructible });
   return mesh;
 }
 
@@ -119,6 +119,30 @@ for (let i = 0; i < 8; i += 1) {
 for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[38,-7,4,2],[43,5,2,5],[-6,38,5,2],[7,42,3,4]]) {
   box(x, 5.5, z, w, 3, d, stoneMaterial);
 }
+
+// 크림슨 궁극기의 벽 파괴를 확인하는 중앙 시험 벽
+box(-1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
+box(1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
+
+const testTargets = [];
+function createTestTarget(x, z) {
+  const target = new THREE.Group();
+  const mesh = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.38, 0.75, 4, 8),
+    new THREE.MeshStandardMaterial({ color: 0xf4d36a, roughness: 0.65 }),
+  );
+  mesh.position.y = 0.78;
+  mesh.castShadow = true;
+  target.add(mesh);
+  target.position.set(x, 1.55, z);
+  target.userData.health = 6000;
+  target.userData.mesh = mesh;
+  scene.add(target);
+  testTargets.push(target);
+}
+createTestTarget(-1.4, -2.4);
+createTestTarget(0, -3.2);
+createTestTarget(1.4, -2.4);
 
 // 베타 시즌 포털
 const portal = new THREE.Group();
@@ -315,6 +339,28 @@ const CRIMSON_RELOAD_MS = 500;
 const crimsonSlashes = [];
 let crimsonAttackReady = true;
 
+function flashTarget(target) {
+  const material = target.userData.mesh.material;
+  const previous = material.emissive.getHex();
+  material.emissive.setHex(0xff4030);
+  setTimeout(() => material.emissive.setHex(previous), 110);
+}
+
+function hitTargetsInFan(angleOffset, damage) {
+  const facing = player.rotation.y + angleOffset;
+  const forward = new THREE.Vector2(Math.sin(facing), Math.cos(facing));
+  for (const target of testTargets) {
+    if (!target.visible) continue;
+    const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
+    const distanceToTarget = delta.length();
+    if (distanceToTarget > CRIMSON_ATTACK_RANGE || distanceToTarget < 0.01) continue;
+    if (forward.dot(delta.normalize()) < Math.cos(THREE.MathUtils.degToRad(42))) continue;
+    target.userData.health -= damage;
+    flashTarget(target);
+    if (target.userData.health <= 0) target.visible = false;
+  }
+}
+
 function createCrimsonSlash(hitIndex) {
   const halfAngle = THREE.MathUtils.degToRad(42);
   const shape = new THREE.Shape();
@@ -332,7 +378,7 @@ function createCrimsonSlash(hitIndex) {
     depthWrite: false,
   });
   const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
-  mesh.rotation.x = -Math.PI / 2;
+  mesh.rotation.x = Math.PI / 2;
   mesh.rotation.z = THREE.MathUtils.degToRad([-25, 0, 25][hitIndex]);
   const group = new THREE.Group();
   group.position.copy(player.position);
@@ -341,6 +387,7 @@ function createCrimsonSlash(hitIndex) {
   group.add(mesh);
   scene.add(group);
   crimsonSlashes.push({ group, mesh, life: 0.22, maxLife: 0.22 });
+  hitTargetsInFan(THREE.MathUtils.degToRad([-25, 0, 25][hitIndex]), CRIMSON_ATTACK_DAMAGE);
   attackComboState.textContent = `${hitIndex + 1}/3 · ${CRIMSON_ATTACK_DAMAGE} 피해`;
 }
 
@@ -366,17 +413,53 @@ document.getElementById("ultimate-btn").addEventListener("click", () => {
   ultimateReady = false;
   document.getElementById("ultimate-btn").classList.add("cooldown");
   document.getElementById("ultimate-state").textContent = "재충전 중 · 10초";
-  const wave = new THREE.Mesh(new THREE.RingGeometry(1, 1.35, 48), new THREE.MeshBasicMaterial({ color: 0xffd36b, side: THREE.DoubleSide, transparent: true, opacity: .9 }));
+  const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
+  const right = new THREE.Vector2(forward.y, -forward.x);
+  const wave = new THREE.Mesh(
+    new THREE.PlaneGeometry(5, 5),
+    new THREE.MeshBasicMaterial({ color: 0xff5a45, side: THREE.DoubleSide, transparent: true, opacity: .72, depthWrite: false }),
+  );
   wave.rotation.x = -Math.PI / 2;
-  wave.position.copy(player.position);
-  wave.position.y += .1;
+  wave.rotation.z = -player.rotation.y;
+  wave.position.set(player.position.x + forward.x * 2.5, player.position.y + 0.1, player.position.z + forward.y * 2.5);
   scene.add(wave);
+
+  let destroyedWalls = 0;
+  let hitTargets = 0;
+  for (let i = solids.length - 1; i >= 0; i -= 1) {
+    const solid = solids[i];
+    if (!solid.destructible) continue;
+    const delta = new THREE.Vector2(solid.x - player.position.x, solid.z - player.position.z);
+    const forwardDistance = forward.dot(delta);
+    const sideDistance = Math.abs(right.dot(delta));
+    if (forwardDistance >= 0 && forwardDistance <= 5 && sideDistance <= 2.5) {
+      map.remove(solid.mesh);
+      solid.mesh.geometry.dispose();
+      solids.splice(i, 1);
+      destroyedWalls += 1;
+    }
+  }
+  for (const target of testTargets) {
+    if (!target.visible) continue;
+    const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
+    const forwardDistance = forward.dot(delta);
+    const sideDistance = Math.abs(right.dot(delta));
+    if (forwardDistance < 0 || forwardDistance > 5 || sideDistance > 2.5) continue;
+    target.userData.health -= 2500;
+    target.position.x += forward.x;
+    target.position.z += forward.y;
+    flashTarget(target);
+    hitTargets += 1;
+    if (target.userData.health <= 0) target.visible = false;
+  }
+  canvas.dataset.lastUltimate = `walls:${destroyedWalls},targets:${hitTargets},damage:2500,knockback:1`;
   const started = clock.elapsedTime;
   function expandWave() {
     const elapsed = clock.elapsedTime - started;
-    wave.scale.setScalar(1 + elapsed * 10);
-    wave.material.opacity = Math.max(0, .9 - elapsed);
-    if (elapsed < 1) requestAnimationFrame(expandWave); else scene.remove(wave);
+    wave.scale.y = 0.25 + Math.min(1, elapsed * 5) * 0.75;
+    wave.material.opacity = Math.max(0, .72 - elapsed * 1.4);
+    if (elapsed < 0.52) requestAnimationFrame(expandWave);
+    else { scene.remove(wave); wave.geometry.dispose(); wave.material.dispose(); }
   }
   expandWave();
   setTimeout(() => {
@@ -417,7 +500,7 @@ canvas.addEventListener("pointermove", (event) => {
 });
 canvas.addEventListener("wheel", (event) => { distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 8, 24); }, { passive: true });
 
-function resetPlayer() { player.position.set(0, 1.7, 0); }
+function resetPlayer() { player.position.set(0, 1.7, 0); player.rotation.y = Math.PI; }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
 document.getElementById("overview-btn").addEventListener("click", (event) => {
