@@ -1240,6 +1240,54 @@ function createGround(group = scene) {
 }
 
 function createStickman(color, skinId) {
+  if (color === 0x0000ff && _blueGlb) {
+    const group = new THREE.Group();
+    const model = skeletonClone(_blueGlb.scene);
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const scale = 3.6 / Math.max(size.y, 0.001);
+    model.scale.setScalar(scale);
+    model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
+    model.rotation.y = Math.PI;
+    model.traverse(c => {
+      if (!c.isMesh) return;
+      const mats = Array.isArray(c.material) ? c.material : [c.material];
+      for (const material of mats) {
+        material.map = null;
+        material.color?.set(0x165dff);
+      }
+    });
+    _applyPinkToon(model);
+    model.traverse(c => {
+      if (!c.isMesh) return;
+      c.frustumCulled = false;
+      c.castShadow = true;
+      c.receiveShadow = true;
+    });
+    group.add(model);
+
+    const mixer = new THREE.AnimationMixer(model);
+    const walkClip = _pinkGlb.loop?.animations?.[0] ?? _blueGlb.animations?.[0];
+    const action = walkClip ? mixer.clipAction(walkClip) : null;
+    if (action) {
+      action.setLoop(THREE.LoopRepeat, Infinity);
+      action.play();
+      action.paused = true;
+    }
+    const bodyMaterials = [];
+    model.traverse(c => {
+      if (!c.isMesh) return;
+      const mats = Array.isArray(c.material) ? c.material : [c.material];
+      for (const material of mats) if (!bodyMaterials.includes(material)) bodyMaterials.push(material);
+    });
+    group.userData = {
+      isGlbModel: true, isBlueGlb: true, blueModel: model,
+      blueMixer: mixer, blueAction: action, bodyMaterials, guitar: null,
+    };
+    return group;
+  }
+
   // Pink: start/loop/end 3개 GLB 상태머신
   if (color === 0xF4CDD3 && _pinkGlb.loop) {
     const group = new THREE.Group();
@@ -1980,9 +2028,13 @@ function _applyPinkToon(scene) {
   });
 }
 
+let _blueGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => { _pinkGlb.loop  = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
+  _pinkGlb.loop = _stripRootMotion(g);
+  _glbLoader.load('./assets/3d/blue/blue_walk.glb', blue => { _blueGlb = _stripRootMotion(blue); });
+});
 _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
 
 // Pink 앞모습 프리뷰
@@ -2053,6 +2105,7 @@ function setupFrontModel(charType) {
     const skinId = acc?.selectedSkins?.[charType] || null;
     const m = createStickman(charDef.color, skinId);
     m.position.y = 0;
+    if (m.userData.isBlueGlb && m.userData.blueAction) m.userData.blueAction.paused = false;
     pinkFrontModel = m;
     pinkFrontSk = null;
     _applyCamera();
@@ -2063,6 +2116,7 @@ function setupFrontModel(charType) {
 function renderPinkFront(dt) {
   if (!pinkFrontActive || !pinkFrontModel) return;
   pinkFrontTime += dt;
+  pinkFrontModel.userData.blueMixer?.update(dt);
   const t = pinkFrontTime;
   pinkFrontModel.rotation.y = t * 0.6;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
@@ -2103,8 +2157,11 @@ function setPreviewCharacter(charType) {
       _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setupPinkPreview);
     }
   } else {
-    previewIsGlb = false;
     previewModel = createStickman(charDef.color, skinId);
+    previewIsGlb = Boolean(previewModel.userData.isGlbModel);
+    if (previewModel.userData.isBlueGlb && previewModel.userData.blueAction) {
+      previewModel.userData.blueAction.paused = false;
+    }
     previewModel.position.y = 0;
     previewScene.add(previewModel);
   }
@@ -2120,6 +2177,7 @@ function renderPreview(dt) {
 
   // GLB 모델 (Pink)은 뼈대가 없으므로 회전만 하고 종료
   if (previewIsGlb) {
+    previewModel.userData.blueMixer?.update(dt);
     previewRenderer.render(previewScene, previewCamera);
     return;
   }
@@ -6984,6 +7042,15 @@ function updateFighterAnimation(fighter, dt) {
   }
 
   if (body.isGlbModel) {
+    if (body.isBlueGlb) {
+      const moving = speed > 0.5;
+      if (body.blueAction) {
+        body.blueAction.paused = !moving;
+        body.blueAction.timeScale = THREE.MathUtils.clamp(speed / 5, 0.65, 1.5);
+        if (!moving) body.blueAction.time = 0;
+      }
+      body.blueMixer?.update(dt);
+    } else {
     const moving = speed > 0.5;
     const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
     let state = body.pinkWalkState;
@@ -7041,6 +7108,7 @@ function updateFighterAnimation(fighter, dt) {
     const faceOff = body.pinkFacingOffset ?? 0;
     for (const sc of Object.values(body.pinkScenes ?? {})) {
       if (sc) sc.rotation.y = faceOff;
+    }
     }
   } else {
     body.leftArm.rotation.x = leftArmX;
