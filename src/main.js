@@ -1249,10 +1249,9 @@ function createStickman(color, skinId) {
     });
     for (const helper of rigHelpers) helper.removeFromParent();
     const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    // Pink와 동일하게 전투 중 최종 모델 높이를 1.5로 정규화한다.
-    const scale = 1.5 / Math.max(size.y, 0.001);
+    // 실제 스킨 애니메이션 경계가 Pink와 같은 높이가 되도록 맞춘 배율이다.
+    const scale = 2.46;
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
