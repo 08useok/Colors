@@ -335,7 +335,9 @@ const COIN_REWARDS = {
 
 // ── Rotation Mode ──────────────────────────────────────────────────────
 const ROTATION_CHAR_ORDER = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-const ROTATION_ROUND_DAYS = 3;
+const ROTATION_ROUND_DAYS = 1;
+const ROTATION_CAMPAIGN_VERSION = 2;
+const ROTATION_CAMPAIGN_START_DATE = "2026-07-12";
 
 const ROTATION_NEW_ABILITIES = {
   red: { name: "분노의 질주", desc: "체력 30% 이하 시 이동속도 증가" },
@@ -354,17 +356,43 @@ const ROTATION_CHAMPION_REWARD = { coins: 1000, trophies: 200 };
 function initRotationState(account) {
   if (!account.rotation) {
     account.rotation = {
-      startDate: getTodayString(),
+      campaignVersion: 0,
+      startDate: ROTATION_CAMPAIGN_START_DATE,
       remaining: [...ROTATION_CHAR_ORDER],
       eliminated: [],
       newAbilityChars: [],
       champion: null,
       stats: Object.fromEntries(ROTATION_CHAR_ORDER.map((c) => [c, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }])),
-      lastRoundProcessedAt: 0,
+      lastRoundProcessedAt: 5,
     };
-    return true;
   }
-  return false;
+  const rotation = account.rotation;
+  if (rotation.campaignVersion === ROTATION_CAMPAIGN_VERSION) return false;
+
+  rotation.stats ??= Object.fromEntries(ROTATION_CHAR_ORDER.map((c) => [c, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }]));
+  for (const char of ROTATION_CHAR_ORDER) {
+    rotation.stats[char] ??= { wins: 0, games: 0, mvp: 0, bossDmg: 0 };
+  }
+  let remaining = (rotation.remaining ?? []).filter(char => ROTATION_CHAR_ORDER.includes(char));
+  if (remaining.length === 0) remaining = [...ROTATION_CHAR_ORDER];
+  while (remaining.length > 3) {
+    const lowest = rankRotationChars(rotation.stats, remaining)[0];
+    remaining = remaining.filter(char => char !== lowest);
+  }
+  if (remaining.length < 3) {
+    const candidates = rankRotationChars(rotation.stats, ROTATION_CHAR_ORDER)
+      .reverse()
+      .filter(char => !remaining.includes(char));
+    remaining.push(...candidates.slice(0, 3 - remaining.length));
+  }
+  rotation.remaining = remaining;
+  rotation.eliminated = ROTATION_CHAR_ORDER.filter(char => !remaining.includes(char));
+  rotation.newAbilityChars = [...new Set([...(rotation.newAbilityChars ?? []), ...rotation.eliminated])];
+  rotation.champion = null;
+  rotation.startDate = ROTATION_CAMPAIGN_START_DATE;
+  rotation.lastRoundProcessedAt = 5;
+  rotation.campaignVersion = ROTATION_CAMPAIGN_VERSION;
+  return true;
 }
 
 function daysSince(dateStr) {
