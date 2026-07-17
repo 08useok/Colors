@@ -24,12 +24,12 @@ const CHARACTERS = [
   { id: "crimson", name: "Crimson", rarity: "legendary", price: 900, color: 0xa00000 },
 ];
 const SKINS = [
-  { id: "red_orange", name: "Crimson Orange", character: "Orange", rarity: "rare", price: 1000 },
-  { id: "red_crimson", name: "Blood Crimson", character: "Crimson", rarity: "epic", price: 2500 },
-  { id: "red_red", name: "Scarlet Red", character: "Red", rarity: "legendary", price: 5000 },
-  { id: "crown_pink", name: "우승 왕관", character: "Pink", rarity: "rare", price: 1200 },
-  { id: "crown_green", name: "준우승 왕관", character: "Green", rarity: "rare", price: 1000 },
-  { id: "crown_cyan", name: "3위 왕관", character: "Cyan", rarity: "rare", price: 800 },
+  { id: "red_orange", name: "Crimson Orange", character: "Orange", characterId: "orange", rarity: "rare", price: 1000 },
+  { id: "red_crimson", name: "Blood Crimson", character: "Crimson", characterId: "crimson", rarity: "epic", price: 2500 },
+  { id: "red_red", name: "Scarlet Red", character: "Red", characterId: "red", rarity: "legendary", price: 5000 },
+  { id: "crown_pink", name: "우승 왕관", character: "Pink", characterId: "pink", rarity: "rare", price: 1200 },
+  { id: "crown_green", name: "준우승 왕관", character: "Green", characterId: "green", rarity: "rare", price: 1000 },
+  { id: "crown_cyan", name: "3위 왕관", character: "Cyan", characterId: "cyan", rarity: "rare", price: 800 },
 ];
 
 function loadBetaState() {
@@ -42,6 +42,7 @@ function loadBetaState() {
     selectedCharacter: saved.selectedCharacter || "red",
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
     ownedSkins: saved.ownedSkins || [],
+    selectedSkins: saved.selectedSkins || {},
     daily: saved.daily?.date === today ? { claimed: false, ...saved.daily } : { date: today, claimed: false, remaining: 6 },
   };
   return state;
@@ -137,6 +138,7 @@ function createTestTarget(x, z) {
   target.position.set(x, 1.55, z);
   target.userData.health = 6000;
   target.userData.mesh = mesh;
+  target.userData.kind = "jjajjal";
   scene.add(target);
   testTargets.push(target);
 }
@@ -151,6 +153,43 @@ portal.add(new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.35, 12, 40), portalMat)
 portal.position.set(0, 6.5, -40);
 map.add(portal);
 
+function createAlphaBoss() {
+  const boss = new THREE.Group();
+  const bossMaterial = new THREE.MeshStandardMaterial({ color: 0x74151b, roughness: 0.62 });
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(1.8, 3.2, 7, 12), bossMaterial);
+  torso.position.y = 3.1;
+  torso.castShadow = true;
+  boss.add(torso);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(2.05, 18, 14), bossMaterial);
+  head.position.y = 6.35;
+  head.castShadow = true;
+  boss.add(head);
+  for (const side of [-1, 1]) {
+    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.55, 2.6, 5, 9), bossMaterial);
+    arm.position.set(side * 2.15, 3.1, 0);
+    arm.rotation.z = side * -0.18;
+    arm.castShadow = true;
+    boss.add(arm);
+  }
+  const hornMaterial = new THREE.MeshStandardMaterial({ color: 0xff6848, emissive: 0x7e160c, emissiveIntensity: 1.2 });
+  for (const side of [-1, 1]) {
+    const horn = new THREE.Mesh(new THREE.ConeGeometry(0.38, 1.5, 7), hornMaterial);
+    horn.position.set(side * 0.9, 8.1, 0);
+    horn.rotation.z = side * -0.22;
+    boss.add(horn);
+  }
+  boss.position.set(0, 4.8, -40);
+  boss.scale.setScalar(0.72);
+  boss.userData.health = 120000;
+  boss.userData.mesh = torso;
+  boss.userData.kind = "alphaBoss";
+  scene.add(boss);
+  testTargets.push(boss);
+  return boss;
+}
+const alphaBoss = createAlphaBoss();
+canvas.dataset.alphaEnemies = "jjajjal:3,bossHp:120000";
+
 const player = new THREE.Group();
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef3c58, roughness: 0.55 });
 const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 1.2, 5, 10), bodyMat);
@@ -161,6 +200,21 @@ const visor = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.28, 0.18), new THREE.
 visor.position.set(0, 1.62, -0.64);
 player.add(visor);
 scene.add(player);
+const crown = new THREE.Group();
+const crownBand = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.52, 0.52, 0.24, 8),
+  new THREE.MeshStandardMaterial({ color: 0xffd84d, metalness: 0.55, roughness: 0.3 }),
+);
+crown.add(crownBand);
+for (let i = 0; i < 5; i += 1) {
+  const spike = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.48, 5), crownBand.material);
+  const angle = (i / 5) * Math.PI * 2;
+  spike.position.set(Math.sin(angle) * 0.38, 0.3, Math.cos(angle) * 0.38);
+  crown.add(spike);
+}
+crown.position.y = 2.85;
+crown.visible = false;
+player.add(crown);
 const characterLoader = new GLTFLoader();
 let activeCharacterModel = null;
 let activeCharacterMixer = null;
@@ -222,10 +276,28 @@ function selectCharacter(id) {
   betaState.selectedCharacter = id;
   bodyMat.color.setHex(character.color);
   setPlayerModel(id);
+  applySelectedSkinVisual();
   updateCrimsonControls();
   saveBetaState();
   renderCharacters();
   showToast(`${character.name} 선택 완료`);
+}
+
+function applySelectedSkinVisual() {
+  const character = CHARACTERS.find((item) => item.id === betaState.selectedCharacter);
+  const skinId = betaState.selectedSkins[betaState.selectedCharacter] || "";
+  const skinColors = { red_orange: 0xb3261e, red_crimson: 0x62000d, red_red: 0xff2135 };
+  bodyMat.color.setHex(skinColors[skinId] ?? character?.color ?? 0xef3c58);
+  crown.visible = skinId.startsWith("crown_");
+}
+
+function equipSkin(characterId, skinId) {
+  if (!betaState.ownedSkins.includes(skinId)) return;
+  betaState.selectedSkins[characterId] = skinId;
+  saveBetaState();
+  applySelectedSkinVisual();
+  renderCharacters();
+  showToast(`${SKINS.find((skin) => skin.id === skinId)?.name} 장착`);
 }
 
 function updateCrimsonControls() {
@@ -248,11 +320,16 @@ function renderCharacters() {
   modalContent.innerHTML = `<div class="beta-grid">${CHARACTERS.map((character) => {
     const owned = betaState.ownedCharacters.includes(character.id);
     const selected = betaState.selectedCharacter === character.id;
+    const ownedCharacterSkins = SKINS.filter((skin) => skin.characterId === character.id && betaState.ownedSkins.includes(skin.id));
+    const skinList = ownedCharacterSkins.length
+      ? `<div class="owned-skin-list">${ownedCharacterSkins.map((skin) => `<div class="owned-skin-row"><span>${skin.name}</span><button data-equip-skin="${skin.id}" data-skin-character="${character.id}" ${betaState.selectedSkins[character.id] === skin.id ? "disabled" : ""}>${betaState.selectedSkins[character.id] === skin.id ? "장착 중" : "장착"}</button></div>`).join("")}</div>`
+      : `<p>보유 스킨 없음</p>`;
     return `<article class="beta-card${selected ? " selected" : ""}">
       <span class="rarity ${character.rarity}">${rarityName(character.rarity)}</span>
       <h3>${character.name}</h3>
-      <p>${character.id === "crimson" ? "신규 근접 브루저 · 4연속 부채꼴 공격" : "베타 시즌 캐릭터 등급 테스트"}</p>
+      <p>${character.id === "crimson" ? "신규 근접 브루저 · 3연속 부채꼴 공격" : "베타 시즌 캐릭터 등급 테스트"}</p>
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
+      ${skinList}
     </article>`;
   }).join("")}</div>`;
 }
@@ -328,6 +405,8 @@ modalContent.addEventListener("click", (event) => {
   if (characterButton) characterButton.dataset.action === "buy" ? buyCharacter(characterButton.dataset.character) : selectCharacter(characterButton.dataset.character);
   const skinButton = event.target.closest("[data-skin]");
   if (skinButton) buySkin(skinButton.dataset.skin);
+  const equipSkinButton = event.target.closest("[data-equip-skin]");
+  if (equipSkinButton) equipSkin(equipSkinButton.dataset.skinCharacter, equipSkinButton.dataset.equipSkin);
   if (event.target.id === "daily-claim-btn") claimDailyReward();
   if (event.target.id === "drop-btn") openDailyDrop();
 });
@@ -472,6 +551,7 @@ document.getElementById("ultimate-btn").addEventListener("click", () => {
 });
 bodyMat.color.setHex(CHARACTERS.find((item) => item.id === betaState.selectedCharacter)?.color ?? 0xef3c58);
 setPlayerModel(betaState.selectedCharacter);
+applySelectedSkinVisual();
 updateCrimsonControls();
 updateWallet();
 
@@ -483,20 +563,35 @@ let overview = false;
 let dragging = false;
 let lastPointerX = 0;
 let lastPointerY = 0;
+let pointerTravel = 0;
 
 addEventListener("keydown", (event) => {
   keys.add(event.code);
   if (event.repeat || modal.classList.contains("hidden") === false) return;
-  if (event.code === "Space") { event.preventDefault(); performCrimsonAttack(); }
   if (event.code === "KeyR") document.getElementById("ultimate-btn").click();
 });
 addEventListener("keyup", (event) => keys.delete(event.code));
-canvas.addEventListener("pointerdown", (event) => { dragging = true; lastPointerX = event.clientX; lastPointerY = event.clientY; canvas.setPointerCapture(event.pointerId); });
-canvas.addEventListener("pointerup", () => { dragging = false; });
+canvas.addEventListener("pointerdown", (event) => {
+  dragging = true;
+  pointerTravel = 0;
+  lastPointerX = event.clientX;
+  lastPointerY = event.clientY;
+  canvas.setPointerCapture(event.pointerId);
+});
+canvas.addEventListener("pointerup", (event) => {
+  dragging = false;
+  if (event.button === 0 && pointerTravel < 6 && modal.classList.contains("hidden")) {
+    canvas.dataset.lastAttackInput = "mouse";
+    performCrimsonAttack();
+  }
+});
 canvas.addEventListener("pointermove", (event) => {
   if (!dragging || overview) return;
-  yaw -= (event.clientX - lastPointerX) * 0.006;
-  pitch = THREE.MathUtils.clamp(pitch + (event.clientY - lastPointerY) * 0.004, 0.25, 1.15);
+  const dx = event.clientX - lastPointerX;
+  const dy = event.clientY - lastPointerY;
+  pointerTravel += Math.hypot(dx, dy);
+  yaw -= dx * 0.006;
+  pitch = THREE.MathUtils.clamp(pitch + dy * 0.004, 0.25, 1.15);
   lastPointerX = event.clientX;
   lastPointerY = event.clientY;
 });
@@ -563,6 +658,13 @@ function animate() {
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
 
   portal.rotation.y += dt * 0.65;
+  alphaBoss.rotation.y = Math.sin(clock.elapsedTime * 0.45) * 0.16;
+  alphaBoss.position.y = 4.8 + Math.sin(clock.elapsedTime * 1.15) * 0.08;
+  for (const target of testTargets) {
+    if (target.userData.kind === "jjajjal" && target.visible) {
+      target.rotation.y += dt * 0.8;
+    }
+  }
   water.material.opacity = 0.84 + Math.sin(clock.elapsedTime * 0.7) * 0.04;
   if (overview) {
     camera.position.lerp(new THREE.Vector3(0, 82, 0.01), 1 - Math.exp(-4 * dt));
