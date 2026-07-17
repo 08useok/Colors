@@ -142,6 +142,7 @@ function createTestTarget(x, z) {
   target.userData.health = 6000;
   target.userData.mesh = mesh;
   target.userData.kind = "jjajjal";
+  target.userData.baseScale = 1;
   scene.add(target);
   testTargets.push(target);
 }
@@ -186,6 +187,7 @@ function createAlphaBoss() {
   boss.userData.health = 120000;
   boss.userData.mesh = torso;
   boss.userData.kind = "alphaBoss";
+  boss.userData.baseScale = 0.72;
   scene.add(boss);
   testTargets.push(boss);
   return boss;
@@ -438,6 +440,13 @@ let purpleAttackIndex = 0;
 function damageTarget(target, damage) {
   if (!target.visible) return;
   target.userData.health -= damage;
+  const pushX = target.position.x - player.position.x;
+  const pushZ = target.position.z - player.position.z;
+  const pushLength = Math.hypot(pushX, pushZ) || 1;
+  const pushStrength = target.userData.kind === "alphaBoss" ? 2.2 : 5.5;
+  target.userData.knockbackX = (pushX / pushLength) * pushStrength;
+  target.userData.knockbackZ = (pushZ / pushLength) * pushStrength;
+  target.userData.hitRecoil = 1;
   flashTarget(target);
   if (target.userData.health <= 0) target.visible = false;
 }
@@ -802,6 +811,25 @@ function animate() {
   for (const target of testTargets) {
     if (target.userData.kind === "jjajjal" && target.visible) {
       target.rotation.y += dt * 0.8;
+    }
+    const recoil = target.userData.hitRecoil || 0;
+    if (recoil > 0.001) {
+      target.position.x += (target.userData.knockbackX || 0) * dt;
+      target.position.z += (target.userData.knockbackZ || 0) * dt;
+      target.userData.knockbackX = THREE.MathUtils.damp(target.userData.knockbackX || 0, 0, 9, dt);
+      target.userData.knockbackZ = THREE.MathUtils.damp(target.userData.knockbackZ || 0, 0, 9, dt);
+      target.userData.hitRecoil = THREE.MathUtils.damp(recoil, 0, 11, dt);
+      const tilt = Math.sin(recoil * Math.PI) * (target.userData.kind === "alphaBoss" ? 0.06 : 0.2);
+      target.rotation.x = tilt;
+      const baseScale = target.userData.baseScale || 1;
+      target.scale.y = baseScale * (1 - Math.sin(recoil * Math.PI) * 0.08);
+      target.scale.x = baseScale * (1 + Math.sin(recoil * Math.PI) * 0.05);
+      target.scale.z = target.scale.x;
+    } else if (target.userData.hitRecoil !== undefined) {
+      target.userData.hitRecoil = 0;
+      target.rotation.x = 0;
+      const baseScale = target.userData.baseScale || 1;
+      target.scale.setScalar(baseScale);
     }
   }
   water.material.opacity = 0.84 + Math.sin(clock.elapsedTime * 0.7) * 0.04;
