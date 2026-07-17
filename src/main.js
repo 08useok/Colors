@@ -338,6 +338,38 @@ const ROTATION_CHAR_ORDER = ["red", "green", "blue", "orange", "yellow", "cyan",
 const ROTATION_ROUND_DAYS = 1;
 const ROTATION_CAMPAIGN_VERSION = 2;
 const ROTATION_CAMPAIGN_START_DATE = "2026-07-12";
+const ROTATION_API_URL =
+  location.hostname === "localhost" || location.hostname === "127.0.0.1"
+    ? "http://localhost:8787/api/rotation"
+    : "https://colors-multiplayer.useok-jeju.workers.dev/api/rotation";
+
+async function syncGlobalRotation(account) {
+  try {
+    const response = await fetch(ROTATION_API_URL, { cache: "no-store" });
+    if (!response.ok) return false;
+    const global = await response.json();
+    if (!global?.stats || !Array.isArray(global.remaining)) return false;
+    account.rotation.stats = global.stats;
+    account.rotation.remaining = global.remaining;
+    account.rotation.eliminated = global.eliminated ?? [];
+    account.rotation.newAbilityChars = [...new Set(global.eliminated ?? [])];
+    account.rotation.champion = global.champion ?? null;
+    account.rotation.startDate = global.startDate ?? ROTATION_CAMPAIGN_START_DATE;
+    account.rotation.lastRoundProcessedAt = global.lastRoundProcessedAt ?? 5;
+    saveAccount(account);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function submitGlobalRotationResult(result) {
+  fetch(ROTATION_API_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(result),
+  }).catch(() => {});
+}
 
 const ROTATION_NEW_ABILITIES = {
   red: { name: "분노의 질주", desc: "체력 30% 이하 시 이동속도 증가" },
@@ -3312,6 +3344,7 @@ function startTakeDown() {
   mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
   state.safeCenter.set(0, 0);
   state.tdTimeLeft = TD_TIME_LIMIT;
+  state.rotationResultId = crypto.randomUUID();
 
   initTakeDownPlayers();
   rebuildAmmoPips();
@@ -3638,6 +3671,17 @@ function checkTakeDownEnd() {
         }
       }
       saveAccount(account);
+    }
+
+    if (player && state.rotationResultId) {
+      submitGlobalRotationResult({
+        resultId: state.rotationResultId,
+        charType: player.characterType,
+        won: playerRank <= 4,
+        mvp: playerRank === 1,
+        bossDmg: player.tdBossDmg || 0,
+      });
+      state.rotationResultId = null;
     }
 
     const resultTag = playerRank <= 4 ? t("tdWin") : t("tdLose");
@@ -8734,11 +8778,14 @@ function setupInput() {
     renderShopSkins();
   });
 
-  function renderRotationScreen() {
+  async function renderRotationScreen() {
     const account = loadAccount();
     if (!account || !account.rotation) return;
-    processRotationRounds(account);
-    saveAccount(account);
+    const synced = await syncGlobalRotation(account);
+    if (!synced) {
+      processRotationRounds(account);
+      saveAccount(account);
+    }
 
     const rot = account.rotation;
     rotationRemainingCount.textContent = rot.remaining.length;

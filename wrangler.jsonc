@@ -9,6 +9,10 @@
       {
         "name": "ColorsServer",
         "class_name": "ColorsServer"
+      },
+      {
+        "name": "RotationStats",
+        "class_name": "RotationStats"
       }
     ]
   },
@@ -16,6 +20,10 @@
     {
       "tag": "v1",
       "new_sqlite_classes": ["ColorsServer"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["RotationStats"]
     }
   ]
 }
