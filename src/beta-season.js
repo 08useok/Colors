@@ -648,9 +648,11 @@ function animate() {
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);
     const cos = Math.cos(yaw);
-    player.position.x += input.x * cos + input.y * sin;
-    player.position.z += input.x * -sin + input.y * cos;
-    player.rotation.y = Math.atan2(input.x * cos + input.y * sin, input.x * -sin + input.y * cos);
+    const moveX = input.y * sin - input.x * cos;
+    const moveZ = input.y * cos + input.x * sin;
+    player.position.x += moveX;
+    player.position.z += moveZ;
+    player.rotation.y = Math.atan2(moveX, moveZ);
   }
   if (activeCharacterMixer) activeCharacterMixer.update(isMoving ? dt : 0);
   const ground = groundHeightAt(player.position.x, player.position.z);
