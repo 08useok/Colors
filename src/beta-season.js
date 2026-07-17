@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 const canvas = document.getElementById("beta-canvas");
 const locationName = document.getElementById("location-name");
@@ -133,12 +134,67 @@ const visor = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.28, 0.18), new THREE.
 visor.position.set(0, 1.62, -0.64);
 player.add(visor);
 scene.add(player);
+const characterLoader = new GLTFLoader();
+let activeCharacterModel = null;
+let activeCharacterMixer = null;
+let characterLoadToken = 0;
+
+function clearCharacterModel() {
+  if (activeCharacterModel) player.remove(activeCharacterModel);
+  activeCharacterModel = null;
+  activeCharacterMixer = null;
+  canvas.dataset.characterModel = "primitive";
+}
+
+function setPlayerModel(characterId) {
+  const token = ++characterLoadToken;
+  clearCharacterModel();
+  const modelPath = characterId === "blue"
+    ? "./assets/3d/blue/blue_walk.glb"
+    : characterId === "pink"
+      ? "./assets/3d/pink/walk-m2l.glb"
+      : null;
+  body.visible = !modelPath;
+  visor.visible = !modelPath;
+  if (!modelPath) return;
+
+  characterLoader.load(modelPath, (gltf) => {
+    if (token !== characterLoadToken || betaState.selectedCharacter !== characterId) return;
+    const model = gltf.scene;
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const scale = 2.7 / Math.max(size.y, 0.001);
+    model.scale.setScalar(scale);
+    model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+    model.rotation.y = Math.PI;
+    model.traverse((child) => {
+      if (!child.isMesh) return;
+      child.castShadow = true;
+      child.receiveShadow = true;
+      child.frustumCulled = false;
+    });
+    player.add(model);
+    activeCharacterModel = model;
+    canvas.dataset.characterModel = characterId;
+    if (gltf.animations.length) {
+      activeCharacterMixer = new THREE.AnimationMixer(model);
+      activeCharacterMixer.clipAction(gltf.animations[0]).play();
+    }
+  }, undefined, () => {
+    if (token !== characterLoadToken) return;
+    body.visible = true;
+    visor.visible = true;
+    showToast(`${characterId === "blue" ? "블루" : "핑크"} 모델을 불러오지 못했습니다.`);
+  });
+}
 
 function selectCharacter(id) {
   const character = CHARACTERS.find((item) => item.id === id);
   if (!character || !betaState.ownedCharacters.includes(id)) return;
   betaState.selectedCharacter = id;
   bodyMat.color.setHex(character.color);
+  setPlayerModel(id);
   saveBetaState();
   renderCharacters();
   showToast(`${character.name} 선택 완료`);
@@ -270,6 +326,7 @@ document.getElementById("ultimate-btn").addEventListener("click", () => {
   }, 10000);
 });
 bodyMat.color.setHex(CHARACTERS.find((item) => item.id === betaState.selectedCharacter)?.color ?? 0xef3c58);
+setPlayerModel(betaState.selectedCharacter);
 updateWallet();
 
 const keys = new Set();
@@ -327,7 +384,8 @@ function animate() {
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
-  if (input.lengthSq() > 0) {
+  const isMoving = input.lengthSq() > 0;
+  if (isMoving) {
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);
     const cos = Math.cos(yaw);
@@ -335,6 +393,7 @@ function animate() {
     player.position.z += input.x * -sin + input.y * cos;
     player.rotation.y = Math.atan2(input.x * cos + input.y * sin, input.x * -sin + input.y * cos);
   }
+  if (activeCharacterMixer) activeCharacterMixer.update(isMoving ? dt : 0);
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
