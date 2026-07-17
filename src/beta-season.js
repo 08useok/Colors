@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { CHARACTERS as ALPHA_CHARACTERS } from "./config/characters.js";
 
 const canvas = document.getElementById("beta-canvas");
 const locationName = document.getElementById("location-name");
@@ -11,6 +12,8 @@ const toast = document.getElementById("beta-toast");
 const crimsonControls = document.getElementById("crimson-controls");
 const crimsonAttackButton = document.getElementById("crimson-attack-btn");
 const attackComboState = document.getElementById("attack-combo-state");
+const attackTitle = crimsonAttackButton.querySelector("strong");
+const attackHint = crimsonAttackButton.querySelector("small");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
@@ -303,7 +306,16 @@ function equipSkin(characterId, skinId) {
 }
 
 function updateCrimsonControls() {
-  crimsonControls.classList.toggle("hidden", betaState.selectedCharacter !== "crimson");
+  crimsonControls.classList.remove("hidden");
+  const labels = {
+    red: "2연속 펀치", green: "4연속 부메랑", blue: "고속 탄환", orange: "분열 폭탄",
+    yellow: "전기 충격", cyan: "6갈래 일제 사격", purple: "독침 · 약병 교대", pink: "회복 원형 공격",
+    crimson: "3연속 부채꼴 타격",
+  };
+  attackHint.textContent = "마우스 좌클릭 · 일반 공격";
+  attackTitle.textContent = labels[betaState.selectedCharacter] || "일반 공격";
+  attackComboState.textContent = "준비";
+  document.getElementById("ultimate-btn").classList.toggle("hidden", betaState.selectedCharacter !== "crimson");
 }
 
 function buyCharacter(id) {
@@ -419,6 +431,93 @@ const CRIMSON_ATTACK_INTERVAL = 120;
 const CRIMSON_RELOAD_MS = 500;
 const crimsonSlashes = [];
 let crimsonAttackReady = true;
+const betaProjectiles = [];
+let generalAttackReady = true;
+let purpleAttackIndex = 0;
+
+function damageTarget(target, damage) {
+  if (!target.visible) return;
+  target.userData.health -= damage;
+  flashTarget(target);
+  if (target.userData.health <= 0) target.visible = false;
+}
+
+function fireBetaProjectile({ angle = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot" }) {
+  const yaw = player.rotation.y + angle;
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 10, 8),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.92 }),
+  );
+  mesh.position.set(player.position.x, player.position.y + 1.25, player.position.z);
+  scene.add(mesh);
+  betaProjectiles.push({ mesh, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, traveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set() });
+  canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
+}
+
+function hitFan(range, halfAngle, damage) {
+  const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
+  for (const target of testTargets) {
+    const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
+    if (target.visible && delta.length() <= range && forward.dot(delta.normalize()) >= Math.cos(halfAngle)) damageTarget(target, damage);
+  }
+}
+
+function createGroundPulse(radius, color, position = player.position) {
+  const pulse = new THREE.Mesh(
+    new THREE.RingGeometry(Math.max(0.15, radius - 0.22), radius, 40),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  pulse.rotation.x = -Math.PI / 2;
+  pulse.position.copy(position);
+  pulse.position.y += 0.12;
+  scene.add(pulse);
+  crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.38, maxLife: 0.38 });
+}
+
+function performCharacterAttack() {
+  const id = betaState.selectedCharacter;
+  canvas.dataset.lastCharacterAttack = id;
+  if (id === "crimson") return performCrimsonAttack();
+  if (!generalAttackReady) return;
+  const def = ALPHA_CHARACTERS[id];
+  if (!def) return;
+  generalAttackReady = false;
+  crimsonAttackButton.classList.add("cooldown");
+  attackComboState.textContent = "공격 중";
+  if (id === "red") {
+    hitFan(5, Math.PI / 4, 2200);
+    setTimeout(() => hitFan(5, Math.PI / 4, 2200), 240);
+    createGroundPulse(2.2, 0xff554b);
+  } else if (id === "green") {
+    def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang" }));
+  } else if (id === "blue") {
+    fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14 });
+  } else if (id === "orange") {
+    fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, splash: 2.2, type: "bomb" });
+  } else if (id === "yellow") {
+    fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
+  } else if (id === "cyan") {
+    for (let i = 0; i < def.spreadLineCount; i += 1) {
+      const offset = (i - (def.spreadLineCount - 1) / 2) * 0.095;
+      fireBetaProjectile({ angle: offset, speed: def.spreadLineSpeed, range: def.spreadLineRange, damage: def.spreadLineDamage, color: 0x32f4ff, radius: 0.13 });
+    }
+  } else if (id === "purple") {
+    const vial = purpleAttackIndex++ % 2 === 1;
+    fireBetaProjectile({ speed: vial ? def.vialSpeed : def.needleSpeed, range: vial ? def.vialRange : def.needleRange, damage: vial ? def.vialDamage : def.needleDamage, color: vial ? 0xc04cff : 0x8a25c7, radius: vial ? 0.3 : 0.11, splash: vial ? def.vialSplashRadius : 0, type: vial ? "vial" : "needle" });
+    attackComboState.textContent = vial ? "독 약병" : "독침";
+  } else if (id === "pink") {
+    createGroundPulse(def.healCircleRange, 0xff9fcf);
+    for (const target of testTargets) {
+      const distance = Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z);
+      if (target.visible && distance <= def.healCircleRange) damageTarget(target, def.healCircleDamage);
+    }
+  }
+  setTimeout(() => {
+    generalAttackReady = true;
+    crimsonAttackButton.classList.remove("cooldown");
+    attackComboState.textContent = "준비";
+  }, Math.max(200, def.attackCooldown * 1000));
+}
 
 function flashTarget(target) {
   const material = target.userData.mesh.material;
@@ -488,7 +587,7 @@ function performCrimsonAttack() {
     attackComboState.textContent = "준비";
   }, CRIMSON_ATTACK_INTERVAL * 2 + CRIMSON_RELOAD_MS);
 }
-crimsonAttackButton.addEventListener("click", performCrimsonAttack);
+crimsonAttackButton.addEventListener("click", performCharacterAttack);
 
 let ultimateReady = true;
 document.getElementById("ultimate-btn").addEventListener("click", () => {
@@ -584,7 +683,7 @@ canvas.addEventListener("pointerup", (event) => {
   dragging = false;
   if (event.button === 0 && pointerTravel < 6 && modal.classList.contains("hidden")) {
     canvas.dataset.lastAttackInput = "mouse";
-    performCrimsonAttack();
+    performCharacterAttack();
   }
 });
 canvas.addEventListener("pointermove", (event) => {
@@ -629,6 +728,42 @@ const cameraTarget = new THREE.Vector3();
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04);
+  for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
+    const projectile = betaProjectiles[i];
+    const step = Math.hypot(projectile.vx, projectile.vz) * dt;
+    projectile.mesh.position.x += projectile.vx * dt;
+    projectile.mesh.position.z += projectile.vz * dt;
+    projectile.traveled += step;
+    projectile.mesh.rotation.y += dt * 9;
+    let remove = false;
+    for (const target of testTargets) {
+      if (!target.visible || projectile.hit.has(target)) continue;
+      const distance = Math.hypot(target.position.x - projectile.mesh.position.x, target.position.z - projectile.mesh.position.z);
+      if (distance > 0.85 + projectile.hitRadius) continue;
+      projectile.hit.add(target);
+      damageTarget(target, projectile.damage);
+      if (projectile.splash > 0) {
+        createGroundPulse(projectile.splash, projectile.type === "bomb" ? 0xff9b32 : 0xb13cff, target.position);
+        for (const other of testTargets) {
+          if (other !== target && other.visible && Math.hypot(other.position.x - target.position.x, other.position.z - target.position.z) <= projectile.splash) damageTarget(other, projectile.damage);
+        }
+      }
+      if (projectile.type !== "boomerang") remove = true;
+    }
+    if (projectile.type === "boomerang" && !projectile.returned && projectile.traveled >= projectile.range) {
+      projectile.returned = true;
+      projectile.vx *= -1;
+      projectile.vz *= -1;
+    }
+    const maxTravel = projectile.type === "boomerang" ? projectile.range * 2 : projectile.range;
+    if (projectile.traveled >= maxTravel) remove = true;
+    if (remove) {
+      scene.remove(projectile.mesh);
+      projectile.mesh.geometry.dispose();
+      projectile.mesh.material.dispose();
+      betaProjectiles.splice(i, 1);
+    }
+  }
   for (let i = crimsonSlashes.length - 1; i >= 0; i -= 1) {
     const slash = crimsonSlashes[i];
     slash.life -= dt;
