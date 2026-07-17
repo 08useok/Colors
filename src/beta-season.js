@@ -248,7 +248,9 @@ function setPlayerModel(characterId) {
     const scale = 2.7 / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
-    model.rotation.y = Math.PI;
+    // Pink's exported forward axis already matches the game's +Z facing.
+    // Blue is authored in the opposite direction and still needs a half-turn.
+    model.rotation.y = characterId === "pink" ? 0 : Math.PI;
     model.traverse((child) => {
       if (!child.isMesh) return;
       child.castShadow = true;
