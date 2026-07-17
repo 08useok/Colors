@@ -345,6 +345,22 @@ const ROTATION_API_URL =
 
 async function syncGlobalRotation(account) {
   try {
+    const legacyGames = Object.values(account.rotation.stats ?? {})
+      .reduce((sum, stats) => sum + (Number(stats.games) || 0), 0);
+    if (!account.rotation.globalImported && legacyGames > 0) {
+      const importResponse = await fetch(ROTATION_API_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "legacy-import",
+          importId: getRotationImportId(account),
+          stats: account.rotation.stats,
+        }),
+      });
+      if (!importResponse.ok) return false;
+      account.rotation.globalImported = true;
+      saveAccount(account);
+    }
     const response = await fetch(ROTATION_API_URL, { cache: "no-store" });
     if (!response.ok) return false;
     const global = await response.json();
@@ -361,6 +377,16 @@ async function syncGlobalRotation(account) {
   } catch {
     return false;
   }
+}
+
+function getRotationImportId(account) {
+  const value = `${account.id}\u0000${account.nickname}`;
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `legacy-${(hash >>> 0).toString(16)}`;
 }
 
 function submitGlobalRotationResult(result) {

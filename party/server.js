@@ -26,7 +26,7 @@ function rankCharacters(stats, characters) {
 }
 
 function publicRotationState(state) {
-  const { submissions: _submissions, ...publicState } = state;
+  const { submissions: _submissions, legacyImports: _legacyImports, ...publicState } = state;
   return publicState;
 }
 
@@ -43,6 +43,7 @@ export class RotationStats extends DurableObject {
         champion: null,
         stats: emptyRotationStats(),
         submissions: [],
+        legacyImports: [],
       };
     }
 
@@ -61,6 +62,7 @@ export class RotationStats extends DurableObject {
 
   async recordResult(result) {
     const state = await this.getState();
+    if (result?.mode === "legacy-import") return this.importLegacyStats(state, result);
     const resultId = typeof result?.resultId === "string" ? result.resultId.slice(0, 80) : "";
     const charType = result?.charType;
     if (!resultId || !CHARACTERS.has(charType) || state.submissions.includes(resultId)) return state;
@@ -72,6 +74,26 @@ export class RotationStats extends DurableObject {
     stats.bossDmg += Math.max(0, Math.min(120000, Number(result.bossDmg) || 0));
     state.submissions.push(resultId);
     if (state.submissions.length > 5000) state.submissions.splice(0, state.submissions.length - 5000);
+    await this.ctx.storage.put("rotation-state", state);
+    return state;
+  }
+
+  async importLegacyStats(state, result) {
+    state.legacyImports ??= [];
+    const importId = typeof result?.importId === "string" ? result.importId.slice(0, 80) : "";
+    if (!importId || state.legacyImports.includes(importId) || !result?.stats) return state;
+
+    for (const char of CHARACTER_ORDER) {
+      const incoming = result.stats[char];
+      if (!incoming) continue;
+      const games = Math.max(0, Math.min(100000, Math.floor(Number(incoming.games) || 0)));
+      const wins = Math.max(0, Math.min(games, Math.floor(Number(incoming.wins) || 0)));
+      state.stats[char].games += games;
+      state.stats[char].wins += wins;
+      state.stats[char].mvp += Math.max(0, Math.min(games, Math.floor(Number(incoming.mvp) || 0)));
+      state.stats[char].bossDmg += Math.max(0, Math.min(1000000000, Number(incoming.bossDmg) || 0));
+    }
+    state.legacyImports.push(importId);
     await this.ctx.storage.put("rotation-state", state);
     return state;
   }
