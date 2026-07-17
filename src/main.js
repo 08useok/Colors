@@ -1273,6 +1273,16 @@ function createStickman(color, skinId) {
     });
     group.add(model);
 
+    const blueMixer = new THREE.AnimationMixer(model);
+    const blueWalkAction = _blueWalkGlb.animations?.length
+      ? blueMixer.clipAction(_blueWalkGlb.animations[0])
+      : null;
+    if (blueWalkAction) {
+      blueWalkAction.setLoop(THREE.LoopRepeat, Infinity);
+      blueWalkAction.play();
+      blueWalkAction.paused = true;
+    }
+
     const blueBoneNames = [
       'CC_Base_Spine01', 'CC_Base_L_Thigh', 'CC_Base_R_Thigh',
       'CC_Base_L_Calf', 'CC_Base_R_Calf',
@@ -1298,6 +1308,7 @@ function createStickman(color, skinId) {
     group.userData = {
       isGlbModel: true, isBlueGlb: true, blueModel: model,
       blueBones, blueBindQuaternions, blueWalkTime: 0,
+      blueMixer, blueWalkAction,
       bodyMaterials, guitar: null,
     };
     return group;
@@ -7090,6 +7101,12 @@ function updateFighterAnimation(fighter, dt) {
 
   if (body.isGlbModel) {
     if (body.isBlueGlb) {
+      if (body.blueWalkAction) {
+        const moving = speed > 0.5;
+        body.blueWalkAction.paused = !moving;
+        body.blueWalkAction.timeScale = THREE.MathUtils.clamp(speed / 5, 0.65, 1.5);
+        body.blueMixer.update(dt);
+      } else {
       const moving = speed > 0.5;
       if (moving) body.blueWalkTime += dt * THREE.MathUtils.clamp(speed / 5, 0.65, 1.5) * 7;
       const phase = moving ? Math.sin(body.blueWalkTime) : 0;
@@ -7112,6 +7129,7 @@ function updateFighterAnimation(fighter, dt) {
       poseBone('CC_Base_L_Forearm', 0, -0.25);
       poseBone('CC_Base_R_Forearm', 0, 0.25);
       poseBone('CC_Base_Spine01', 0, moving ? phase * 0.025 : 0);
+      }
     } else {
     const moving = speed > 0.5;
     const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
