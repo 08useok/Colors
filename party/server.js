@@ -9,6 +9,16 @@ const ROTATION_START_DATE = "2026-07-12";
 const ROTATION_INITIAL_ROUND = 5;
 const ROTATION_ELIMINATION_HISTORY = ["orange", "purple", "yellow", "blue", "red"];
 const ROTATION_SURVIVORS = ["green", "cyan", "pink"];
+const ROTATION_RESTORED_BASELINE = {
+  orange: { wins: 6, games: 28 },
+  purple: { wins: 14, games: 50 },
+  yellow: { wins: 20, games: 70 },
+  blue: { wins: 40, games: 100 },
+  red: { wins: 44, games: 100 },
+  green: { wins: 68, games: 150 },
+  cyan: { wins: 90, games: 150 },
+  pink: { wins: 75, games: 150 },
+};
 
 function emptyRotationStats() {
   return Object.fromEntries(CHARACTER_ORDER.map((char) => [char, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }]));
@@ -65,6 +75,13 @@ export class RotationStats extends DurableObject {
       state.eliminated = [...ROTATION_ELIMINATION_HISTORY];
       state.champion = null;
       state.lastRoundProcessedAt = ROTATION_INITIAL_ROUND;
+    }
+    if ((state.baselineVersion ?? 0) < 1) {
+      for (const [char, restored] of Object.entries(ROTATION_RESTORED_BASELINE)) {
+        state.stats[char].wins += restored.wins;
+        state.stats[char].games += restored.games;
+      }
+      state.baselineVersion = 1;
     }
 
     const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
