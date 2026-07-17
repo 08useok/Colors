@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colors - Beta Season Test</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./beta-season.css?v=0.1.0">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="beta-canvas"></canvas>
+
+  <header class="beta-header">
+    <div>
+      <span class="test-chip">TEST ONLY</span>
+      <h1>베타 시즌 1</h1>
+      <p>부유 유적 섬 · 맵 동선 테스트</p>
+    </div>
+    <a href="./index.html">현재 게임으로 돌아가기</a>
+  </header>
+
+  <aside class="test-panel">
+    <strong>맵 테스트</strong>
+    <p><kbd>WASD</kbd> 이동 · 마우스 드래그 시점 · 휠 확대</p>
+    <div class="test-actions">
+      <button id="overview-btn" type="button">전체 보기</button>
+      <button id="reset-btn" type="button">시작점 복귀</button>
+    </div>
+    <small>이 페이지의 플레이는 계정, 전적, 이벤트에 저장되지 않습니다.</small>
+  </aside>
+
+  <div class="location-card">
+    <span>현재 구역</span>
+    <strong id="location-name">베타 광장</strong>
+  </div>
+
+  <div class="beta-watermark">BETA MAP 0.1</div>
+  <script type="module" src="./src/beta-season.js?v=0.1.0"></script>
+</body>
+</html>
