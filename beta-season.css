@@ -6,6 +6,7 @@
 }
 
 * { box-sizing: border-box; }
+.hidden { display: none !important; }
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 button, a { font: inherit; }
 
@@ -78,10 +79,13 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .beta-wallet span { color: #8ba9b6; font-size: 11px; }
 .beta-wallet strong { color: #78e1f4; }
 .beta-wallet .rank-chip { color: #ffe098; padding-left: 9px; border-left: 1px solid #41545d; }
-.ultimate-btn { position: fixed; z-index: 2; right: 18px; bottom: 86px; width: 190px; padding: 13px 15px; border: 1px solid rgba(255,215,116,.45); border-radius: 16px; color: #fff2c5; background: linear-gradient(145deg,rgba(79,42,88,.94),rgba(24,24,42,.94)); box-shadow: 0 12px 40px rgba(0,0,0,.3); cursor: pointer; text-align: left; }
-.ultimate-btn small, .ultimate-btn span { display: block; color: #cdb8d7; font-size: 10px; }
-.ultimate-btn strong { display: block; margin: 3px 0; }
+.crimson-controls { position: fixed; z-index: 2; right: 18px; bottom: 86px; display: grid; gap: 8px; width: 210px; }
+.ultimate-btn, .attack-btn { width: 100%; padding: 13px 15px; border: 1px solid rgba(255,215,116,.45); border-radius: 16px; color: #fff2c5; background: linear-gradient(145deg,rgba(79,42,88,.94),rgba(24,24,42,.94)); box-shadow: 0 12px 40px rgba(0,0,0,.3); cursor: pointer; text-align: left; }
+.attack-btn { border-color: rgba(255,104,104,.45); background: linear-gradient(145deg,rgba(91,26,34,.95),rgba(35,18,26,.95)); }
+.ultimate-btn small, .ultimate-btn span, .attack-btn small, .attack-btn span { display: block; color: #cdb8d7; font-size: 10px; }
+.ultimate-btn strong, .attack-btn strong { display: block; margin: 3px 0; }
 .ultimate-btn.cooldown { opacity: .55; }
+.attack-btn.cooldown { opacity: .55; cursor: default; }
 .beta-modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 20px; background: rgba(2,10,15,.68); backdrop-filter: blur(10px); }
 .beta-modal.hidden { display: none; }
 .beta-modal-card { width: min(880px, 94vw); max-height: 82vh; overflow: auto; border: 1px solid rgba(146,227,244,.25); border-radius: 24px; padding: 22px; background: #0c1b24; box-shadow: 0 30px 90px rgba(0,0,0,.45); }
@@ -116,5 +120,5 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
   .location-card { top: 102px; bottom: auto; }
   .beta-watermark { display: none; }
   .beta-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .ultimate-btn { bottom: 168px; width: 160px; }
+  .crimson-controls { bottom: 168px; width: 180px; }
 }

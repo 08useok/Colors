@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.1.1">
+  <link rel="stylesheet" href="./beta-season.css?v=0.1.2">
   <script type="importmap">
   {
     "imports": {
@@ -35,7 +35,7 @@
   <div class="beta-wallet">
     <span>β 크레딧</span>
     <strong id="credit-value">1,500</strong>
-    <span class="rank-chip">시즌 테스트 1위</span>
+    <span class="rank-chip">베타 시즌 테스트</span>
   </div>
 
   <aside class="test-panel">
@@ -55,11 +55,18 @@
 
   <div class="beta-watermark">BETA MAP 0.1</div>
 
-  <button id="ultimate-btn" class="ultimate-btn" type="button">
-    <small>1위 궁극기</small>
-    <strong>시즌 브레이크</strong>
+  <div id="crimson-controls" class="crimson-controls hidden">
+    <button id="crimson-attack-btn" class="attack-btn" type="button">
+      <small>SPACE · 일반 공격</small>
+      <strong>3연속 부채꼴 타격</strong>
+      <span id="attack-combo-state">준비</span>
+    </button>
+    <button id="ultimate-btn" class="ultimate-btn" type="button">
+    <small>R · 크림슨 궁극기</small>
+    <strong>철거의 일격</strong>
     <span id="ultimate-state">사용 가능</span>
-  </button>
+    </button>
+  </div>
 
   <div id="beta-modal" class="beta-modal hidden" role="dialog" aria-modal="true">
     <section class="beta-modal-card">
@@ -75,6 +82,6 @@
   </div>
 
   <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
-  <script type="module" src="./src/beta-season.js?v=0.1.1"></script>
+  <script type="module" src="./src/beta-season.js?v=0.1.2"></script>
 </body>
 </html>

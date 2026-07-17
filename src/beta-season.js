@@ -8,6 +8,9 @@ const modal = document.getElementById("beta-modal");
 const modalTitle = document.getElementById("modal-title");
 const modalContent = document.getElementById("modal-content");
 const toast = document.getElementById("beta-toast");
+const crimsonControls = document.getElementById("crimson-controls");
+const crimsonAttackButton = document.getElementById("crimson-attack-btn");
+const attackComboState = document.getElementById("attack-combo-state");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
@@ -195,9 +198,14 @@ function selectCharacter(id) {
   betaState.selectedCharacter = id;
   bodyMat.color.setHex(character.color);
   setPlayerModel(id);
+  updateCrimsonControls();
   saveBetaState();
   renderCharacters();
   showToast(`${character.name} 선택 완료`);
+}
+
+function updateCrimsonControls() {
+  crimsonControls.classList.toggle("hidden", betaState.selectedCharacter !== "crimson");
 }
 
 function buyCharacter(id) {
@@ -300,9 +308,61 @@ modalContent.addEventListener("click", (event) => {
   if (event.target.id === "drop-btn") openDailyDrop();
 });
 
+const CRIMSON_ATTACK_RANGE = 2.5;
+const CRIMSON_ATTACK_DAMAGE = 900;
+const CRIMSON_ATTACK_INTERVAL = 120;
+const CRIMSON_RELOAD_MS = 500;
+const crimsonSlashes = [];
+let crimsonAttackReady = true;
+
+function createCrimsonSlash(hitIndex) {
+  const halfAngle = THREE.MathUtils.degToRad(42);
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  for (let i = 0; i <= 18; i += 1) {
+    const angle = -halfAngle + (i / 18) * halfAngle * 2;
+    shape.lineTo(Math.sin(angle) * CRIMSON_ATTACK_RANGE, Math.cos(angle) * CRIMSON_ATTACK_RANGE);
+  }
+  shape.lineTo(0, 0);
+  const material = new THREE.MeshBasicMaterial({
+    color: [0xff5d68, 0xff7a67, 0xffb15f][hitIndex],
+    transparent: true,
+    opacity: 0.72,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.rotation.z = THREE.MathUtils.degToRad([-25, 0, 25][hitIndex]);
+  const group = new THREE.Group();
+  group.position.copy(player.position);
+  group.position.y += 0.12;
+  group.rotation.y = player.rotation.y;
+  group.add(mesh);
+  scene.add(group);
+  crimsonSlashes.push({ group, mesh, life: 0.22, maxLife: 0.22 });
+  attackComboState.textContent = `${hitIndex + 1}/3 · ${CRIMSON_ATTACK_DAMAGE} 피해`;
+}
+
+function performCrimsonAttack() {
+  if (betaState.selectedCharacter !== "crimson" || !crimsonAttackReady) return;
+  crimsonAttackReady = false;
+  crimsonAttackButton.classList.add("cooldown");
+  [0, 1, 2].forEach((hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON_ATTACK_INTERVAL));
+  setTimeout(() => {
+    attackComboState.textContent = "재장전 중 · 0.5초";
+  }, CRIMSON_ATTACK_INTERVAL * 2 + 40);
+  setTimeout(() => {
+    crimsonAttackReady = true;
+    crimsonAttackButton.classList.remove("cooldown");
+    attackComboState.textContent = "준비";
+  }, CRIMSON_ATTACK_INTERVAL * 2 + CRIMSON_RELOAD_MS);
+}
+crimsonAttackButton.addEventListener("click", performCrimsonAttack);
+
 let ultimateReady = true;
 document.getElementById("ultimate-btn").addEventListener("click", () => {
-  if (!ultimateReady) return;
+  if (betaState.selectedCharacter !== "crimson" || !ultimateReady) return;
   ultimateReady = false;
   document.getElementById("ultimate-btn").classList.add("cooldown");
   document.getElementById("ultimate-state").textContent = "재충전 중 · 10초";
@@ -327,6 +387,7 @@ document.getElementById("ultimate-btn").addEventListener("click", () => {
 });
 bodyMat.color.setHex(CHARACTERS.find((item) => item.id === betaState.selectedCharacter)?.color ?? 0xef3c58);
 setPlayerModel(betaState.selectedCharacter);
+updateCrimsonControls();
 updateWallet();
 
 const keys = new Set();
@@ -338,7 +399,12 @@ let dragging = false;
 let lastPointerX = 0;
 let lastPointerY = 0;
 
-addEventListener("keydown", (event) => keys.add(event.code));
+addEventListener("keydown", (event) => {
+  keys.add(event.code);
+  if (event.repeat || modal.classList.contains("hidden") === false) return;
+  if (event.code === "Space") { event.preventDefault(); performCrimsonAttack(); }
+  if (event.code === "KeyR") document.getElementById("ultimate-btn").click();
+});
 addEventListener("keyup", (event) => keys.delete(event.code));
 canvas.addEventListener("pointerdown", (event) => { dragging = true; lastPointerX = event.clientX; lastPointerY = event.clientY; canvas.setPointerCapture(event.pointerId); });
 canvas.addEventListener("pointerup", () => { dragging = false; });
@@ -381,6 +447,19 @@ const cameraTarget = new THREE.Vector3();
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04);
+  for (let i = crimsonSlashes.length - 1; i >= 0; i -= 1) {
+    const slash = crimsonSlashes[i];
+    slash.life -= dt;
+    const progress = 1 - slash.life / slash.maxLife;
+    slash.mesh.material.opacity = Math.max(0, 0.72 * (1 - progress));
+    slash.mesh.scale.setScalar(0.86 + progress * 0.2);
+    if (slash.life <= 0) {
+      scene.remove(slash.group);
+      slash.mesh.geometry.dispose();
+      slash.mesh.material.dispose();
+      crimsonSlashes.splice(i, 1);
+    }
+  }
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
