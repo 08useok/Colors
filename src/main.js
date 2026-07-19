@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js";
+import { LANGS } from "./LANGS/langs.js?v=1.5.127";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js";
 
@@ -628,6 +628,7 @@ function loadAccount() {
         sessionStorage.setItem(ACTIVE_ACCOUNT_KEY, account.id);
       }
     }
+    let migrated = false;
     if (!account.charStats) {
       account.charStats = {
         red:   { wins: 0, games: 0 },
@@ -643,6 +644,8 @@ function loadAccount() {
     if (!account.charStats.pink) account.charStats.pink = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
+    if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
+    if (account.chopWoodWins === undefined) { account.chopWoodWins = 0; migrated = true; }
     if (!account.lang) account.lang = "ko";
     if (!account.seasonStats) {
       account.seasonStats = {
@@ -670,7 +673,6 @@ function loadAccount() {
       if (!s.purple) s.purple = { wins: 0, games: 0 };
       if (!s.pink) s.pink = { wins: 0, games: 0 };
     }
-    let migrated = false;
     if (account.coins === undefined) { account.coins = 0; migrated = true; }
     if (!account.charLevels) {
       account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1 };
@@ -772,6 +774,8 @@ function createAccount(id, nickname) {
     },
     winStreak: 0,
     bestStreak: 0,
+    showdownWins: 0,
+    chopWoodWins: 0,
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
     seasonCharStats: {
@@ -1141,6 +1145,7 @@ function recordGameResult(rank) {
   scs.games += 1;
   if (rank <= 4) {
     account.wins += 1;
+    account.showdownWins = (account.showdownWins || 0) + 1;
     account.charStats[char].wins += 1;
     ss.wins += 1;
     scs.wins += 1;
@@ -8171,8 +8176,9 @@ function checkEndState() {
       state.gameOver = true;
       state.running = false;
       const account = loadAccount();
-      if (account && CURRENT_SEASON.startsWith("alpha")) {
-        account.alphaSeasonParticipated = true;
+      if (account) {
+        if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
+        if (winningTeam === allyTeam) account.chopWoodWins = (account.chopWoodWins || 0) + 1;
         saveAccount(account);
       }
       if (winningTeam === allyTeam) {
@@ -8394,11 +8400,14 @@ function setupInput() {
       if (account) {
         const totalGames = account.wins + account.losses;
         const winRate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
-        let html = `<div class="stats-header">${account.nickname} · Lv.${calcLevel(account.trophies)}</div>`;
+        let html = `<div class="stats-header">👤 ${t("accountTitle")} · ${account.nickname}</div>`;
+        html += `<div class="stats-row">Lv.${calcLevel(account.trophies)}</div>`;
         html += `<div class="stats-row">🏆 ${t("trophyLabel")}: ${account.trophies}</div>`;
         html += `<div class="stats-row">${t("record", account.wins, account.losses)}</div>`;
         html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
         html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
+        html += `<div class="stats-row">${t("showdownWins", account.showdownWins || 0)}</div>`;
+        html += `<div class="stats-row">${t("chopWoodWins", account.chopWoodWins || 0)}</div>`;
         html += `<div class="stats-divider"></div>`;
         for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
           const s = account.charStats?.[char];

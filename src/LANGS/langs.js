@@ -118,7 +118,8 @@ export const LANGS = {
     axeDiamond: "다이아", axeEmerald: "에메랄드", axeSapphire: "사파이어",
     axeRuby: "루비", axeAmethyst: "아메시스트", axeRainbow: "무지개",
     // Leaderboard & Stats
-    statsBtn: "내 정보", statsBtnClose: "내 정보 닫기",
+    statsBtn: "👤 계정", statsBtnClose: "계정 닫기", accountTitle: "내 정보",
+    showdownWins: "쇼다운 승리: {0}회", chopWoodWins: "찹 우드 승리: {0}회",
     leaderboardBtn: "리더보드", leaderboardBtnClose: "리더보드 닫기",
     lbTrophy: "🏆 트로피: {0}", lbTotalWinrate: "📊 총 승률: {0}% ({1}승 / {2}판)",
     lbBestStreak: "🔥 최고 연승: {0}", lbCharBest: "캐릭터별 최고 승률:",
@@ -355,7 +356,8 @@ export const LANGS = {
     axeDiamond: "Diamond", axeEmerald: "Emerald", axeSapphire: "Sapphire",
     axeRuby: "Ruby", axeAmethyst: "Amethyst", axeRainbow: "Rainbow",
     // Leaderboard & Stats
-    statsBtn: "My Stats", statsBtnClose: "Close Stats",
+    statsBtn: "👤 Account", statsBtnClose: "Close Account", accountTitle: "My Info",
+    showdownWins: "Showdown wins: {0}", chopWoodWins: "Chop Wood wins: {0}",
     leaderboardBtn: "Leaderboard", leaderboardBtnClose: "Close Leaderboard",
     lbTrophy: "🏆 Trophies: {0}", lbTotalWinrate: "📊 Win Rate: {0}% ({1}W / {2}G)",
     lbBestStreak: "🔥 Best Streak: {0}", lbCharBest: "Best Win Rate by Character:",
