@@ -440,6 +440,8 @@ const ROTATION_NEW_ABILITIES = {
 
 const ROTATION_PARTICIPATION_REWARD = { coins: 100, trophies: 20 };
 const ROTATION_CHAMPION_REWARD = { coins: 1000, trophies: 200 };
+const PINK_AREA_HEAL_ABILITY_MULTIPLIER = 1.35;
+const ORANGE_BLAST_ABILITY_MULTIPLIER = 1.25;
 
 function initRotationState(account) {
   if (!account.rotation) {
@@ -4047,7 +4049,9 @@ function playNetworkAttack(fighter, msg) {
 
   if (fighter.characterType === "pink") {
     const charDef = CHARACTERS.pink;
-    const range = (fighter.hasPinkAreaHealAbility ? charDef.healCircleRange * 1.75 : charDef.healCircleRange) * ATTACK_RANGE_MULTIPLIER;
+    const range = (fighter.hasPinkAreaHealAbility
+      ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
+      : charDef.healCircleRange) * ATTACK_RANGE_MULTIPLIER;
     createHealCircleEffect(fighter.mesh.position.x, fighter.mesh.position.z, range);
     audio.play("attack");
     return;
@@ -5566,7 +5570,7 @@ function beginBombAttack(fighter) {
 function spawnBombSplash(x, z, ownerId) {
   const charDef = CHARACTERS.orange;
   const owner = state.players.find((p) => p.id === ownerId);
-  const blastMult = owner?.hasOrangeBlastAbility ? 2.5 : 1;
+  const blastMult = owner?.hasOrangeBlastAbility ? ORANGE_BLAST_ABILITY_MULTIPLIER : 1;
   const blastR = 3 * blastMult;
   const blastR2 = blastR * blastR;
   for (const target of state.players) {
@@ -5781,7 +5785,7 @@ function beginHealCircleAttack(fighter) {
   const fx = fighter.mesh.position.x;
   const fz = fighter.mesh.position.z;
   let effectiveRange = (fighter.hasPinkAreaHealAbility
-    ? charDef.healCircleRange * 1.75
+    ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
     : charDef.healCircleRange) * ATTACK_RANGE_MULTIPLIER;
   if (state.chopWoodMode) effectiveRange *= (1 + charDef.chopWoodRangeBonus);
   const r2 = effectiveRange * effectiveRange;
@@ -7631,7 +7635,7 @@ function updateAttackAimIndicator() {
   } else if (charType === "pink") {
     pinkAimIndicator.visible = true;
     pinkAimIndicator.position.set(pos.x, 0, pos.z);
-    pinkAimIndicator.scale.setScalar(player.hasPinkAreaHealAbility ? 1.75 : 1);
+    pinkAimIndicator.scale.setScalar(player.hasPinkAreaHealAbility ? PINK_AREA_HEAL_ABILITY_MULTIPLIER : 1);
     pinkAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.35;
     pinkAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.06;
   }
