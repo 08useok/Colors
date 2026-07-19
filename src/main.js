@@ -559,6 +559,7 @@ if (!leaderboardBots) {
 const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
+const AUTO_AIM_HOLD_MS = 500;
 const attackEvents = [
   { delay: 0.12, damage: 2200 },
   { delay: 0.36, damage: 2200 },
@@ -1213,6 +1214,7 @@ const state = {
     screenY: window.innerHeight * 0.5,
   },
   mouseHeld: false,
+  attackHoldStartedAt: 0,
   trainingMode: false,
   mobileMove: {
     x: 0,
@@ -8337,30 +8339,31 @@ function setupInput() {
     event.preventDefault();
   });
 
-  let mouseDownAt = 0;
   function startAiming(event) {
     if (event.button !== 0 && event.button !== 2) return;
     event.preventDefault();
     if (state.running) {
       state.mouseHeld = true;
-      mouseDownAt = performance.now();
+      state.attackHoldStartedAt = performance.now();
     }
+  }
+
+  function applyTapAutoAim(player) {
+    if (!player || player.dead || performance.now() - state.attackHoldStartedAt >= AUTO_AIM_HOLD_MS) return;
+    const target = findAutoAimTarget(player);
+    if (!target) return;
+    const dx = target.mesh.position.x - player.mesh.position.x;
+    const dz = target.mesh.position.z - player.mesh.position.z;
+    player.yaw = Math.atan2(dx, dz);
+    player.mesh.rotation.y = player.yaw;
   }
 
   function attackOnRelease() {
     if (state.mouseHeld && state.running) {
       state.mouseHeld = false;
       const player = getPlayer();
-      if (player && !player.dead && performance.now() - mouseDownAt < 500) {
-        const target = findAutoAimTarget(player);
-        if (target) {
-          const dx = target.mesh.position.x - player.mesh.position.x;
-          const dz = target.mesh.position.z - player.mesh.position.z;
-          player.yaw = Math.atan2(dx, dz);
-          player.mesh.rotation.y = player.yaw;
-        }
-      }
-      beginAttack(getPlayer());
+      applyTapAutoAim(player);
+      beginAttack(player);
     } else {
       state.mouseHeld = false;
     }
