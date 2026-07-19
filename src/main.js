@@ -8311,9 +8311,9 @@ function setupInput() {
     if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
-    if (event.code === "KeyQ") triggerEmote(0);
-    if (event.code === "KeyE") triggerEmote(1);
-    if (event.code === "KeyT") triggerEmote(2);
+    if (event.code === "Digit1" || event.code === "Numpad1") triggerEmote(0);
+    if (event.code === "Digit2" || event.code === "Numpad2") triggerEmote(1);
+    if (event.code === "Digit3" || event.code === "Numpad3") triggerEmote(2);
     state.keyState[event.code] = true;
   });
 
