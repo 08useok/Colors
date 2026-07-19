@@ -7779,7 +7779,10 @@ function updateCamera(dt) {
     return;
   }
 
-  const target = player.mesh.position.clone();
+  const spectatorTarget = player.dead && !mpConfig
+    ? state.players.find((fighter) => !fighter.dead) || player
+    : player;
+  const target = spectatorTarget.mesh.position.clone();
   target.y = 0.8;
 
   const desired = target.clone();
@@ -8280,6 +8283,8 @@ function checkEndState() {
   const alive = state.players.filter((fighter) => !fighter.dead);
   const player = getPlayer();
   const playerDead = !!player?.dead;
+  const soloPlayerWatchingAi = !mpConfig && playerDead && alive.length > 1;
+  if (soloPlayerWatchingAi) return;
   if (alive.length <= 1 || playerDead) {
     const playerWon = alive.length === 1 && alive[0]?.isPlayer && !playerDead;
     if (playerWon && !state.victoryCelebrating) {
