@@ -4693,8 +4693,7 @@ function addKillFeed(text, attackerColor, targetColor, tone = "") {
 
 function getPersonalKillTone(attacker, target) {
   if (attacker?.isPlayer && !target?.isPlayer) return "victory";
-  if (target?.isPlayer && !attacker?.isPlayer) return "defeat";
-  return "";
+  return "defeat";
 }
 
 function flashHitMarker() {
@@ -6588,7 +6587,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       if (target.isBoss) {
         if (attacker && !attacker.isBoss) {
           attacker.tdScore = (attacker.tdScore || 0) + TD_SCORE_LAST_HIT;
-          addKillFeed(t("tdBossKill", attacker.name));
+          addKillFeed(t("tdBossKill", attacker.name), null, null, getPersonalKillTone(attacker, target));
           if (attacker.isPlayer) audio.play("kill");
         }
         broadcastBossDefeated();
@@ -6597,7 +6596,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
         if (attacker && !attacker.isBoss && attacker.id !== target.id) {
           attacker.tdScore = (attacker.tdScore || 0) + TD_SCORE_KILL;
           attacker.tdKills = (attacker.tdKills || 0) + 1;
-          addKillFeed(t("killFeed", attacker.name, target.name));
+          addKillFeed(t("killFeed", attacker.name, target.name), null, null, getPersonalKillTone(attacker, target));
           if (attacker.isPlayer || target.isPlayer) audio.play("kill");
         }
       }
@@ -6611,7 +6610,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
         onChopWoodKill(attacker, target);
         const ac = attacker.teamNameColor || "#fff";
         const tc = target.teamNameColor || "#fff";
-        addKillFeed(`<span style="color:${ac}">${attacker.name}</span> 처치 → <span style="color:${tc}">${target.name}</span>`, ac, tc);
+        addKillFeed(`<span style="color:${ac}">${attacker.name}</span> 처치 → <span style="color:${tc}">${target.name}</span>`, ac, tc, getPersonalKillTone(attacker, target));
         if (attacker.isPlayer || target.isPlayer) audio.play("kill");
       }
     } else {
@@ -6624,7 +6623,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
           audio.play("kill");
         }
       } else {
-        addKillFeed(`${target.name} 사망`, null, null, target.isPlayer ? "defeat" : "");
+        addKillFeed(`${target.name} 사망`, null, null, "defeat");
         if (target.isPlayer) state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 3);
       }
       if (target.isPlayer && !state.outcomeSfxPlayed) {
