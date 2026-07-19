@@ -1127,7 +1127,7 @@ function streakBonus(streak) {
   return Math.min(streak - 1, 4);
 }
 
-function recordGameResult(rank) {
+function recordGameResult(rank, mode = "showdown") {
   const account = loadAccount();
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
 
@@ -1145,7 +1145,8 @@ function recordGameResult(rank) {
   scs.games += 1;
   if (rank <= 4) {
     account.wins += 1;
-    account.showdownWins = (account.showdownWins || 0) + 1;
+    if (mode === "chopwood") account.chopWoodWins = (account.chopWoodWins || 0) + 1;
+    else account.showdownWins = (account.showdownWins || 0) + 1;
     account.charStats[char].wins += 1;
     ss.wins += 1;
     scs.wins += 1;
@@ -3454,7 +3455,6 @@ function startTakeDown() {
   state.gameTime = 0;
   state.freezeUntil = 3;
   state.lowHealthAlerted = false;
-  state.lastZonePhase = null;
   state.wasInBush = false;
   state.running = true;
   state.gameOver = false;
@@ -3467,13 +3467,11 @@ function startTakeDown() {
   state.effects = [];
   state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
-  state.feedback.warningPulseUntil = 0;
   state.mobileMove.x = 0;
   state.mobileMove.y = 0;
   state.mobileMove.active = false;
   state.mobileMove.pointerId = null;
   mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
-  state.safeCenter.set(0, 0);
   state.tdTimeLeft = TD_TIME_LIMIT;
   state.rotationResultId = crypto.randomUUID();
 
@@ -7200,7 +7198,7 @@ function updateBot(bot, dt, zone) {
     }
   }
 
-  if (!state.chopWoodMode && !state.takedownMode) {
+  if (zone && !state.chopWoodMode && !state.takedownMode) {
     const distFromCenter = Math.hypot(botPos.x - state.safeCenter.x, botPos.z - state.safeCenter.y);
     if (distFromCenter > zone.radius - 4) {
       const zoneNav = findNavTarget(bot, state.safeCenter.x, state.safeCenter.y);
@@ -7693,7 +7691,7 @@ function updateAmmoRegen(dt) {
 }
 
 function updateZoneDamage(dt, zone) {
-  if (state.trainingMode || state.chopWoodMode) return;
+  if (state.trainingMode || state.chopWoodMode || state.takedownMode || !zone) return;
   state.playerOutsideZone = false;
   for (const fighter of state.players) {
     if (fighter.dead || zone.damage <= 0) {
@@ -8175,20 +8173,22 @@ function checkEndState() {
     if (winningTeam) {
       state.gameOver = true;
       state.running = false;
+      const playerWon = winningTeam === allyTeam;
+      const resultRank = playerWon ? 1 : 10;
+      const { bonus, coinsEarned } = recordGameResult(resultRank, "chopwood");
       const account = loadAccount();
-      if (account) {
-        if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
-        if (winningTeam === allyTeam) account.chopWoodWins = (account.chopWoodWins || 0) + 1;
-        saveAccount(account);
-      }
-      if (winningTeam === allyTeam) {
+      const trophyDelta = calcTrophyChange(resultRank) + bonus;
+      if (playerWon) {
         audio.play("win");
         resultTitle.textContent = t("cwWin");
       } else {
         audio.play("lose");
         resultTitle.textContent = t("cwLose");
       }
-      resultBody.textContent = "";
+      const deltaText = trophyDelta > 0 ? `+${trophyDelta}` : `${trophyDelta}`;
+      const totalText = account ? t("totalTrophy", account.trophies) : "";
+      const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
+      resultBody.textContent = `${deltaText} 🏆  ${totalText}${coinText}`;
       const statsLines = [];
       if (player) {
         statsLines.push(t("cwKills", player.cwKills));
@@ -8312,7 +8312,8 @@ function animate() {
 
   if (state.running) {
     state.gameTime += dt;
-    const zone = getCurrentZone();
+    const usesZone = !state.trainingMode && !state.chopWoodMode && !state.takedownMode;
+    const zone = usesZone ? getCurrentZone() : null;
     const countdownFrozen = state.gameTime < state.freezeUntil;
     const victoryFrozen = state.victoryCelebrating && state.gameTime < state.resultRevealAt;
     const frozen = countdownFrozen || victoryFrozen;
@@ -8337,12 +8338,12 @@ function animate() {
       updateScheduledHits();
       updateProjectiles(dt);
       updatePoisonTicks();
-      if (!state.chopWoodMode && !state.takedownMode) {
+      if (usesZone) {
         if (!mpConfig || mpConfig.isHost) updateZoneDamage(dt, zone);
       }
       if (mpConfig) syncMp(dt);
     }
-    if (!state.chopWoodMode && !state.takedownMode) {
+    if (usesZone) {
       updateZoneVisual(zone);
     }
     if (mpConfig) updateNetworkPlayers(dt);
