@@ -1225,6 +1225,7 @@ const state = {
   projectiles: [],
   deathOrder: [],
   resultRevealAt: 0,
+  victoryCelebrating: false,
   solids: [],
   bushes: [],
   lakeRects: [],
@@ -5146,6 +5147,7 @@ function resetGame() {
   state.projectiles = [];
   state.deathOrder = [];
   state.resultRevealAt = 0;
+  state.victoryCelebrating = false;
   state.showdownAnnounced = false;
   showdownAnnounceEl.classList.add("hidden");
   showdownAnnounceEl.classList.remove("showdown-pop");
@@ -7707,8 +7709,14 @@ function updateCamera(dt) {
   target.y = 0.8;
 
   const desired = target.clone();
-  desired.y += 18.5;
-  desired.z += 3.12;
+  if (state.victoryCelebrating) {
+    target.y = 1.5;
+    desired.y += 7.5;
+    desired.z += 1.3;
+  } else {
+    desired.y += 18.5;
+    desired.z += 3.12;
+  }
   camera.up.set(0, 0, -1);
   camera.position.lerp(desired, 1 - Math.exp(-dt * 10));
   camera.lookAt(target);
@@ -8196,7 +8204,15 @@ function checkEndState() {
   const player = getPlayer();
   const playerDead = !!player?.dead;
   if (alive.length <= 1 || playerDead) {
+    const playerWon = alive.length === 1 && alive[0]?.isPlayer && !playerDead;
+    if (playerWon && !state.victoryCelebrating) {
+      state.victoryCelebrating = true;
+      state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 2);
+      state.mouseHeld = false;
+      state.scheduledHits = [];
+    }
     if (state.gameTime < state.resultRevealAt) return;
+    state.victoryCelebrating = false;
     state.gameOver = true;
     state.running = false;
     showdownBgm.pause();
@@ -8271,7 +8287,9 @@ function animate() {
   if (state.running) {
     state.gameTime += dt;
     const zone = getCurrentZone();
-    const frozen = state.gameTime < state.freezeUntil;
+    const countdownFrozen = state.gameTime < state.freezeUntil;
+    const victoryFrozen = state.victoryCelebrating && state.gameTime < state.resultRevealAt;
+    const frozen = countdownFrozen || victoryFrozen;
 
     if (!frozen) {
       updatePlayerControls(dt);
@@ -8314,7 +8332,7 @@ function animate() {
     updateBushVisuals();
     updateHud();
 
-    if (frozen) {
+    if (countdownFrozen) {
       const remain = Math.ceil(state.freezeUntil - state.gameTime);
       mapNameEl.textContent = remain > 0 ? `${remain}` : "";
       if (remain !== state.lastCountdownRemain) {
