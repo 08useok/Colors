@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.123">
+  <link rel="stylesheet" href="./styles.css?v=1.5.124">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -151,7 +151,6 @@
           <button id="stats-toggle" class="side-toggle-btn" type="button" data-i18n="statsBtn">내 정보</button>
           <div id="stats-panel" class="stats-panel hidden"></div>
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
-          <div id="leaderboard-panel" class="leaderboard-panel hidden"></div>
           <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
           <div id="matchup-table" class="matchup-table hidden">
             <p class="matchup-desc" data-i18n="matchupDesc">가위바위보 상성 — 유리한 상대를 노려 승률을 높이세요!</p>
@@ -520,6 +519,8 @@
           <canvas id="pink-front-canvas" class="pink-front-canvas hidden"></canvas>
         </div>
 
+        <aside id="leaderboard-panel" class="leaderboard-panel lobby-right-leaderboard hidden" aria-live="polite"></aside>
+
         <button id="start-battle-btn" class="lobby-start-fab hidden" type="button" data-i18n="startBattle">⚔️ 전투 시작</button>
 
         <div id="lobby-event-map" class="lobby-event-map hidden">
@@ -793,6 +794,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.123"></script>
+  <script type="module" src="./src/main.js?v=1.5.124"></script>
 </body>
 </html>
