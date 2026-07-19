@@ -195,7 +195,7 @@ export class ColorsServer extends Server {
 
     let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.playerIds.length < ROOM_MAX);
     if (!match) {
-      match = { id: `match-${this.nextMatchId++}`, mode: player.mode, mapId: Math.floor(Math.random() * 3), playerIds: [], started: false, countdownTimer: null };
+      match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: Math.floor(Math.random() * 3), playerIds: [], started: false, countdownTimer: null };
       this.matches.set(match.id, match);
     }
     match.playerIds.push(player.id);
@@ -234,7 +234,7 @@ export class ColorsServer extends Server {
         clearInterval(match.countdownTimer);
         match.countdownTimer = null;
         match.started = true;
-        this.broadcastMatch(match, { type: "GAME_START", mode: match.mode, mapId: match.mapId, hostId: match.playerIds[0], players: this.matchPlayers(match) });
+        this.broadcastMatch(match, { type: "GAME_START", mode: match.mode, mapId: match.mapId, spawnSeed: match.spawnSeed, hostId: match.playerIds[0], players: this.matchPlayers(match) });
       }
     }, 1000);
   }

@@ -4290,7 +4290,7 @@ async function enterMatchmaking(mode = "takedown") {
   mp.on("GAME_START", async (data) => {
     audio.play("close");
     matchmakingOverlay.classList.add("hidden");
-    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId, mode: data.mode ?? mode };
+    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId, spawnSeed: data.spawnSeed, mode: data.mode ?? mode };
     setupMpHandlers();
     await initAudio();
     audio.play("close");
@@ -4991,9 +4991,31 @@ function initPlayers() {
   state.players = [];
 
   const mapData = MAP_POOL[state.currentMapId];
-  const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  let spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
   if (mpConfig?.mode === "showdown") {
+    let seed = 2166136261;
+    const seedText = mpConfig.spawnSeed || `${mpConfig.hostId}:${state.currentMapId}:${mpConfig.players.map((p) => p.id).join(",")}`;
+    for (let i = 0; i < seedText.length; i += 1) {
+      seed ^= seedText.charCodeAt(i);
+      seed = Math.imul(seed, 16777619);
+    }
+    const seededRandom = () => {
+      seed += 0x6d2b79f5;
+      let value = seed;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
+    const shuffle = (items) => {
+      const result = [...items];
+      for (let i = result.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(seededRandom() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    };
+    spawns = shuffle(spawns);
     Object.keys(mpNetFighters).forEach((key) => delete mpNetFighters[key]);
     mpLastSync = 0;
     mpBossLastSync = 0;
@@ -5014,9 +5036,11 @@ function initPlayers() {
       if (!isLocal) mpNetFighters[participant.id] = fighter;
       state.players.push(fighter);
     });
-    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+    const baseBotTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+    const botCount = spawns.length - mpConfig.players.length;
+    const botTypes = shuffle(Array.from({ length: botCount }, (_, index) => baseBotTypes[index % baseBotTypes.length]));
     for (let index = mpConfig.players.length; index < spawns.length; index += 1) {
-      const characterType = botTypes[index % botTypes.length];
+      const characterType = botTypes[index - mpConfig.players.length];
       const fighter = makeFighter({
         id: index,
         name: `AI ${index - mpConfig.players.length + 1}`,
