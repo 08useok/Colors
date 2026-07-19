@@ -176,15 +176,19 @@ const MP_BOSS_SYNC_INTERVAL = 0.08; // 12.5 Hz larger authoritative snapshot
 const MP_MAX_PREDICTION = 0.1;
 const tdMapCloseBtn = document.getElementById("td-map-close-btn");
 const tdMapCanvas = document.getElementById("td-map-canvas");
+const LOW_END_DEVICE = matchMedia("(pointer: coarse)").matches || (navigator.deviceMemory ?? 8) <= 4;
+const GAME_PIXEL_RATIO = Math.min(window.devicePixelRatio, LOW_END_DEVICE ? 1 : 1.5);
+const UI_PIXEL_RATIO = Math.min(GAME_PIXEL_RATIO, 1.25);
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
+  powerPreference: "high-performance",
 });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(GAME_PIXEL_RATIO);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = !LOW_END_DEVICE;
+renderer.shadowMap.type = LOW_END_DEVICE ? THREE.BasicShadowMap : THREE.PCFShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -200,8 +204,8 @@ camera.add(listener);
 
 const worldRadius = 52;
 
-const tdMapRenderer = new THREE.WebGLRenderer({ canvas: tdMapCanvas, antialias: true, preserveDrawingBuffer: true });
-tdMapRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const tdMapRenderer = new THREE.WebGLRenderer({ canvas: tdMapCanvas, antialias: true, powerPreference: "high-performance" });
+tdMapRenderer.setPixelRatio(UI_PIXEL_RATIO);
 tdMapRenderer.setSize(480, 480);
 tdMapRenderer.outputColorSpace = THREE.SRGBColorSpace;
 const tdMapCamera = new THREE.OrthographicCamera(-58, 58, 58, -58, 0.1, 200);
@@ -1337,6 +1341,8 @@ const state = {
   teams: null,
   playerTeam: null,
   showdownAnnounced: false,
+  lastHudUpdateAt: -Infinity,
+  lastBushUpdateAt: -Infinity,
 };
 
 const battleMapGroup = new THREE.Group();
@@ -1348,6 +1354,13 @@ trainingMapGroup.visible = false;
 const tempVec3 = new THREE.Vector3();
 const tempVec32 = new THREE.Vector3();
 const tempVec2 = new THREE.Vector2();
+const cameraTarget = new THREE.Vector3();
+const cameraDesired = new THREE.Vector3();
+const FLASH_EMISSIVE = new THREE.Color(0x7f0f0f);
+const SHOCK_EMISSIVE = new THREE.Color(0x2299cc);
+const POISON_EMISSIVE = new THREE.Color(0x44aa22);
+const NO_EMISSIVE = new THREE.Color(0x000000);
+const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit"]);
 
 function moveAngleToward(current, target, maxStep) {
   const delta = THREE.MathUtils.euclideanModulo(target - current + Math.PI, Math.PI * 2) - Math.PI;
@@ -2277,8 +2290,8 @@ function createNameLabel(name, hexColor) {
 
 // ── Lobby 3D character preview ──
 const previewCanvas = document.getElementById("char-preview-canvas");
-const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
-previewRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+previewRenderer.setPixelRatio(UI_PIXEL_RATIO);
 previewRenderer.setSize(480, 480);
 previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -2395,8 +2408,8 @@ function createBluePreviewModel() {
 
 // Pink 앞모습 프리뷰
 const pinkFrontCanvas = document.getElementById("pink-front-canvas");
-const pinkFrontRenderer = new THREE.WebGLRenderer({ canvas: pinkFrontCanvas, antialias: true, alpha: true });
-pinkFrontRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+const pinkFrontRenderer = new THREE.WebGLRenderer({ canvas: pinkFrontCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+pinkFrontRenderer.setPixelRatio(UI_PIXEL_RATIO);
 pinkFrontRenderer.outputColorSpace = THREE.SRGBColorSpace;
 const pinkFrontScene = new THREE.Scene();
 const pinkFrontCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
@@ -2528,7 +2541,7 @@ function setPreviewCharacter(charType) {
 }
 
 function renderPreview(dt) {
-  if (!previewModel) return;
+  if (!previewModel || previewCanvas.offsetParent === null) return;
   previewTime += dt;
   const charDef = CHARACTERS[previewCharType];
   if (!charDef) return;
@@ -6848,8 +6861,7 @@ function updateEffects(dt) {
       continue;
     }
     const alpha = effect.life / effect.maxLife;
-    const groundTypes = ["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit"];
-    if (!groundTypes.includes(effect.type)) {
+    if (!GROUND_EFFECT_TYPES.has(effect.type)) {
       effect.mesh.quaternion.copy(camera.quaternion);
     }
     if (effect.type === "fist") {
@@ -7711,10 +7723,10 @@ function updateFighterAnimation(fighter, dt) {
   };
   if (fighter.flashTimer > 0) {
     fighter.flashTimer -= dt;
-    setEmissive(new THREE.Color(0x7f0f0f), fighter.flashTimer > 0 ? 0.75 : 0);
+    setEmissive(FLASH_EMISSIVE, fighter.flashTimer > 0 ? 0.75 : 0);
   } else if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
     const pulse = Math.sin(state.gameTime * 12) * 0.15 + 0.3;
-    setEmissive(new THREE.Color(0x2299cc), pulse);
+    setEmissive(SHOCK_EMISSIVE, pulse);
     if (!fighter.nextShockVfx || state.gameTime >= fighter.nextShockVfx) {
       fighter.nextShockVfx = state.gameTime + 0.5;
       const fx = fighter.mesh.position.x;
@@ -7740,9 +7752,9 @@ function updateFighterAnimation(fighter, dt) {
     }
   } else if (fighter.poisonUntil && state.gameTime < fighter.poisonUntil) {
     const pulse = Math.sin(state.gameTime * 8) * 0.15 + 0.25;
-    setEmissive(new THREE.Color(0x44aa22), pulse);
+    setEmissive(POISON_EMISSIVE, pulse);
   } else {
-    setEmissive(new THREE.Color(0x000000), 0);
+    setEmissive(NO_EMISSIVE, 0);
   }
 
   const fill = fighter.healthBar.userData.fill;
@@ -7810,21 +7822,21 @@ function updateCamera(dt) {
   const spectatorTarget = player.dead
     ? state.players.find((fighter) => !fighter.dead) || player
     : player;
-  const target = spectatorTarget.mesh.position.clone();
-  target.y = 0.8;
+  cameraTarget.copy(spectatorTarget.mesh.position);
+  cameraTarget.y = 0.8;
 
-  const desired = target.clone();
+  cameraDesired.copy(cameraTarget);
   if (state.victoryCelebrating) {
-    target.y = 1.5;
-    desired.y += 7.5;
-    desired.z += 1.3;
+    cameraTarget.y = 1.5;
+    cameraDesired.y += 7.5;
+    cameraDesired.z += 1.3;
   } else {
-    desired.y += 18.5;
-    desired.z += 3.12;
+    cameraDesired.y += 18.5;
+    cameraDesired.z += 3.12;
   }
   camera.up.set(0, 0, -1);
-  camera.position.lerp(desired, 1 - Math.exp(-dt * 10));
-  camera.lookAt(target);
+  camera.position.lerp(cameraDesired, 1 - Math.exp(-dt * 10));
+  camera.lookAt(cameraTarget);
 }
 
 function updateAttackAimIndicator() {
@@ -7924,6 +7936,8 @@ function updateAttackAimIndicator() {
 function updateBushVisuals() {
   const player = getPlayer();
   if (!player) return;
+  if (state.gameTime >= state.lastBushUpdateAt && state.gameTime - state.lastBushUpdateAt < 0.067) return;
+  state.lastBushUpdateAt = state.gameTime;
 
   const inBushNow = isInBush(player);
   if (inBushNow !== state.wasInBush) {
@@ -7983,6 +7997,8 @@ function updateHud() {
   if (!player) {
     return;
   }
+  if (state.gameTime >= state.lastHudUpdateAt && state.gameTime - state.lastHudUpdateAt < 0.08) return;
+  state.lastHudUpdateAt = state.gameTime;
 
   const healthRatio = THREE.MathUtils.clamp(player.health / player.maxHealth, 0, 1);
   healthFill.style.width = `${healthRatio * 100}%`;
@@ -8388,6 +8404,7 @@ function checkEndState() {
 
 let bgInterval = null;
 let inBackground = false;
+let idleRenderAccumulator = 0;
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     inBackground = true;
@@ -8472,15 +8489,18 @@ function animate() {
     updateAttackAimIndicator();
   }
 
-  renderer.render(scene, camera);
-
-  if (tdMapOpen && state.takedownMode) {
-    tdMapRenderer.render(scene, tdMapCamera);
-  }
-
-  if (!state.running) {
-    renderPreview(dt);
-    renderPinkFront(dt);
+  if (state.running) {
+    renderer.render(scene, camera);
+    if (tdMapOpen && state.takedownMode) tdMapRenderer.render(scene, tdMapCamera);
+  } else {
+    idleRenderAccumulator += dt;
+    if (idleRenderAccumulator >= 1 / 30) {
+      const idleDt = idleRenderAccumulator;
+      idleRenderAccumulator %= 1 / 30;
+      renderer.render(scene, camera);
+      renderPreview(idleDt);
+      renderPinkFront(idleDt);
+    }
   }
 }
 
