@@ -43,6 +43,26 @@ function publicRotationState(state) {
 }
 
 export class RotationStats extends DurableObject {
+  async getLeaderboard() {
+    return await this.ctx.storage.get("global-leaderboard") ?? [];
+  }
+
+  async recordLeaderboard(entry) {
+    const playerId = typeof entry?.playerId === "string" ? entry.playerId.slice(0, 80) : "";
+    const nickname = typeof entry?.nickname === "string" ? entry.nickname.trim().slice(0, 20) : "";
+    const trophies = Math.max(0, Math.min(10000000, Math.floor(Number(entry?.trophies) || 0)));
+    if (!playerId || !nickname) return this.getLeaderboard();
+    const leaderboard = await this.getLeaderboard();
+    const existing = leaderboard.find((player) => player.playerId === playerId);
+    const next = { playerId, nickname, trophies, updatedAt: Date.now() };
+    if (existing) Object.assign(existing, next);
+    else leaderboard.push(next);
+    leaderboard.sort((a, b) => b.trophies - a.trophies || b.updatedAt - a.updatedAt);
+    leaderboard.splice(100);
+    await this.ctx.storage.put("global-leaderboard", leaderboard);
+    return leaderboard;
+  }
+
   async restoreHistory() {
     const state = await this.getState();
     state.campaignVersion = 3;
@@ -168,13 +188,14 @@ export class ColorsServer extends Server {
     player.nickname = this.cleanNickname(data.nickname);
     player.charType = CHARACTERS.has(data.charType) ? data.charType : "red";
     player.newAbilityChars = cleanAbilityChars(data.newAbilityChars);
+    player.mode = data.mode === "showdown" ? "showdown" : "takedown";
 
     const previousMatchId = this.playerMatch.get(player.id);
     if (previousMatchId) this.leaveMatch(player.id, previousMatchId);
 
-    let match = [...this.matches.values()].find((item) => !item.started && item.playerIds.length < ROOM_MAX);
+    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.playerIds.length < ROOM_MAX);
     if (!match) {
-      match = { id: `match-${this.nextMatchId++}`, playerIds: [], started: false, countdownTimer: null };
+      match = { id: `match-${this.nextMatchId++}`, mode: player.mode, mapId: Math.floor(Math.random() * 3), playerIds: [], started: false, countdownTimer: null };
       this.matches.set(match.id, match);
     }
     match.playerIds.push(player.id);
@@ -185,9 +206,11 @@ export class ColorsServer extends Server {
       type: "ROOM_JOINED",
       playerId: player.id,
       players: this.matchPlayers(match),
+      mode: match.mode,
       countdownActive: match.countdownTimer !== null,
     });
-    if (match.playerIds.length >= 2) this.startCountdown(match);
+    if (match.mode === "showdown") this.startCountdown(match, 3, true);
+    else if (match.playerIds.length >= 2) this.startCountdown(match);
   }
 
   relay(sender, data) {
@@ -195,9 +218,14 @@ export class ColorsServer extends Server {
     if (match?.started) this.broadcastMatch(match, { ...data, fromId: sender.id }, sender.id);
   }
 
-  startCountdown(match) {
-    if (match.countdownTimer || match.started) return;
-    let seconds = COUNTDOWN_SEC;
+  startCountdown(match, duration = COUNTDOWN_SEC, restart = false) {
+    if (match.started) return;
+    if (match.countdownTimer) {
+      if (!restart) return;
+      clearInterval(match.countdownTimer);
+      match.countdownTimer = null;
+    }
+    let seconds = duration;
     this.broadcastMatch(match, { type: "COUNTDOWN", seconds });
     match.countdownTimer = setInterval(() => {
       seconds -= 1;
@@ -206,7 +234,7 @@ export class ColorsServer extends Server {
         clearInterval(match.countdownTimer);
         match.countdownTimer = null;
         match.started = true;
-        this.broadcastMatch(match, { type: "GAME_START", hostId: match.playerIds[0], players: this.matchPlayers(match) });
+        this.broadcastMatch(match, { type: "GAME_START", mode: match.mode, mapId: match.mapId, hostId: match.playerIds[0], players: this.matchPlayers(match) });
       }
     }, 1000);
   }
@@ -238,7 +266,8 @@ export class ColorsServer extends Server {
         players: this.matchPlayers(match),
       });
     }
-    if (!match.started && match.playerIds.length < 2) this.cancelCountdown(match);
+    if (!match.started && match.mode !== "showdown" && match.playerIds.length < 2) this.cancelCountdown(match);
+    if (!match.started && match.mode === "showdown" && match.playerIds.length > 0) this.startCountdown(match, 3, true);
     if (match.playerIds.length === 0) {
       if (match.countdownTimer) clearInterval(match.countdownTimer);
       this.matches.delete(match.id);
@@ -276,7 +305,7 @@ export default {
       "access-control-allow-methods": "GET, POST, OPTIONS",
       "access-control-allow-headers": "content-type",
     };
-    if (request.method === "OPTIONS" && pathname.startsWith("/api/rotation")) {
+    if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
     if (pathname === "/api/rotation") {
@@ -291,6 +320,17 @@ export default {
         });
       } catch {
         return Response.json({ error: "Invalid event request" }, { status: 400, headers: corsHeaders });
+      }
+    }
+    if (pathname === "/api/leaderboard") {
+      const statsServer = env.RotationStats.getByName("global-event");
+      try {
+        const leaderboard = request.method === "POST"
+          ? await statsServer.recordLeaderboard(await request.json())
+          : await statsServer.getLeaderboard();
+        return Response.json({ leaderboard }, { headers: corsHeaders });
+      } catch {
+        return Response.json({ error: "Invalid leaderboard request" }, { status: 400, headers: corsHeaders });
       }
     }
 

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js";
-import { mp } from "./multiplayer.js?v=1.5.49";
+import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js";
 
 // ── i18n ────────────────────────────────────────────────────────────────
@@ -354,6 +354,29 @@ const ROTATION_API_URL =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
     ? "http://localhost:8787/api/rotation"
     : "https://colors-multiplayer.useok-jeju.workers.dev/api/rotation";
+const LEADERBOARD_API_URL = ROTATION_API_URL.replace("/api/rotation", "/api/leaderboard");
+let lastLeaderboardSyncKey = "";
+
+async function syncGlobalLeaderboard(account) {
+  const response = await fetch(LEADERBOARD_API_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      playerId: getRotationImportId(account),
+      nickname: account.nickname,
+      trophies: account.trophies,
+    }),
+  });
+  if (!response.ok) throw new Error("leaderboard sync failed");
+  const data = await response.json();
+  return Array.isArray(data.leaderboard) ? data.leaderboard : [];
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
+  })[char]);
+}
 
 async function syncGlobalRotation(account) {
   try {
@@ -780,6 +803,11 @@ function applyProfileCosmetics(account) {
 }
 
 function updateLobbyUI(account) {
+  const leaderboardSyncKey = `${account.id}:${account.nickname}:${account.trophies}`;
+  if (leaderboardSyncKey !== lastLeaderboardSyncKey) {
+    lastLeaderboardSyncKey = leaderboardSyncKey;
+    syncGlobalLeaderboard(account).catch(() => { lastLeaderboardSyncKey = ""; });
+  }
   lobbyNickname.textContent = account.nickname;
   lobbyLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   sidebarProfileNickname.textContent = account.nickname;
@@ -1196,6 +1224,7 @@ const state = {
   players: [],
   projectiles: [],
   deathOrder: [],
+  resultRevealAt: 0,
   solids: [],
   bushes: [],
   lakeRects: [],
@@ -3852,6 +3881,23 @@ function syncMp(dt) {
         kills: f.tdKills,
       })),
     });
+  } else if (sendBossState && mpConfig.isHost && mpConfig.mode === "showdown") {
+    mp.relay("SSTATE", {
+      players: state.players.map((f) => ({
+        id: f.networkId ?? f.syncId,
+        x: f.mesh.position.x,
+        z: f.mesh.position.z,
+        yaw: f.mesh.rotation.y,
+        health: f.health,
+        dead: !!f.dead,
+      })).filter((f) => f.id),
+      deathOrder: state.deathOrder
+        .map((fighterId) => {
+          const fighter = state.players.find((f) => f.id === fighterId);
+          return fighter?.networkId ?? fighter?.syncId;
+        })
+        .filter(Boolean),
+    });
   }
 }
 
@@ -3979,6 +4025,48 @@ function setupMpHandlers() {
       if (!target || target.dead || target.networkId === msg.fromId) return;
       const maxDamage = Math.max(3500, CHARACTERS[attacker.characterType]?.healCircleDamage || 0);
       applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
+    } else if (msg.relayType === "SD_DAMAGE" && mpConfig?.isHost && mpConfig.mode === "showdown") {
+      const attacker = mpNetFighters[msg.fromId];
+      const target = state.players.find((f) => (f.networkId ?? f.syncId) === msg.target);
+      if (!attacker || attacker.dead || !target || target.dead || (target.networkId ?? target.syncId) === msg.fromId) return;
+      const maxDamage = Math.max(3500, CHARACTERS[attacker.characterType]?.healCircleDamage || 0);
+      applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
+    } else if (msg.relayType === "SSTATE" && !mpConfig?.isHost && mpConfig?.mode === "showdown") {
+      for (const playerState of msg.players || []) {
+        const fighter = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        if (!fighter) continue;
+        const previousHealth = fighter.health;
+        const wasDead = fighter.dead;
+        fighter.health = Math.max(0, Math.min(fighter.maxHealth, Number(playerState.health) || 0));
+        fighter.dead = !!playerState.dead;
+        fighter.mesh.visible = !fighter.dead;
+        fighter.shadow.visible = !fighter.dead;
+        if (fighter.healthBar) fighter.healthBar.visible = !fighter.dead;
+        if (Number.isFinite(playerState.x) && Number.isFinite(playerState.z) && Number.isFinite(playerState.yaw)) {
+          fighter.netTargetX = playerState.x;
+          fighter.netTargetZ = playerState.z;
+          fighter.netTargetYaw = playerState.yaw;
+          fighter.netVelocityX = 0;
+          fighter.netVelocityZ = 0;
+          fighter.netReceivedAt = performance.now() / 1000;
+          fighter.netStateReady = true;
+        }
+        if (fighter.isPlayer && fighter.health < previousHealth) {
+          audio.play("damaged");
+          state.feedback.hitFlashUntil = state.gameTime + 0.18;
+        }
+        if (!wasDead && fighter.dead) {
+          const tone = fighter.isPlayer ? "defeat" : "victory";
+          addKillFeed(fighter.isPlayer ? "처치되었습니다" : `${fighter.name} 처치`, null, null, tone);
+          state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 3);
+          audio.play("kill");
+        }
+      }
+      if (Array.isArray(msg.deathOrder)) {
+        state.deathOrder = msg.deathOrder
+          .map((syncId) => state.players.find((f) => (f.networkId ?? f.syncId) === syncId)?.id)
+          .filter((id) => id !== undefined);
+      }
     }
   });
 
@@ -4088,20 +4176,21 @@ function updateMatchmakingUI() {
     </div>`).join("");
 }
 
-async function enterMatchmaking() {
+async function enterMatchmaking(mode = "takedown") {
   const account = loadAccount();
   if (!account) return;
   lobbyBgm.pause();
 
   audio.play("open");
   matchmakingOverlay.classList.remove("hidden");
+  document.querySelector("#matchmaking-overlay h2").textContent = mode === "showdown" ? t("mmShowdownTitle") : t("mmTitle");
   matchmakingStatus.textContent = t("mmConnecting");
   matchmakingCountdown.classList.add("hidden");
   matchmakingCountdown.textContent = "";
   matchmakingPlayersList.innerHTML = "";
 
   try {
-    await mp.connect(account.nickname, state.selectedCharacter, account.rotation?.newAbilityChars ?? []);
+    await mp.connect(account.nickname, state.selectedCharacter, account.rotation?.newAbilityChars ?? [], mode);
   } catch (e) {
     matchmakingStatus.textContent = t("mmConnFail", e.message);
     return;
@@ -4128,14 +4217,20 @@ async function enterMatchmaking() {
   mp.on("GAME_START", async (data) => {
     audio.play("close");
     matchmakingOverlay.classList.add("hidden");
-    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId };
+    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId, mode: data.mode ?? mode };
     setupMpHandlers();
     await initAudio();
     audio.play("close");
     rotationOverlay.classList.add("hidden");
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("hidden");
-    startTakeDown();
+    if (mpConfig.mode === "showdown") {
+      state.currentMapId = Number.isInteger(data.mapId) ? data.mapId % MAP_POOL.length : 0;
+      createMap(MAP_POOL[state.currentMapId]);
+      resetGame();
+    } else {
+      startTakeDown();
+    }
   });
 
   mp.on("DISCONNECTED", () => {
@@ -4571,9 +4666,9 @@ function formatTime(seconds) {
   return `${minutes}:${secs}`;
 }
 
-function addKillFeed(text, attackerColor, targetColor) {
+function addKillFeed(text, attackerColor, targetColor, tone = "") {
   const item = document.createElement("div");
-  item.className = "kill-item";
+  item.className = `kill-item${tone ? ` kill-item-${tone}` : ""}`;
   if (attackerColor || targetColor) {
     item.innerHTML = text;
   } else {
@@ -4584,6 +4679,12 @@ function addKillFeed(text, attackerColor, targetColor) {
     killFeed.lastChild?.remove();
   }
   window.setTimeout(() => item.remove(), 5200);
+}
+
+function getPersonalKillTone(attacker, target) {
+  if (attacker?.isPlayer && !target?.isPlayer) return "victory";
+  if (target?.isPlayer && !attacker?.isPlayer) return "defeat";
+  return "";
 }
 
 function flashHitMarker() {
@@ -4820,6 +4921,47 @@ function initPlayers() {
   const mapData = MAP_POOL[state.currentMapId];
   const spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
 
+  if (mpConfig?.mode === "showdown") {
+    Object.keys(mpNetFighters).forEach((key) => delete mpNetFighters[key]);
+    mpLastSync = 0;
+    mpBossLastSync = 0;
+    mpLastSentPosition = null;
+    mpConfig.players.forEach((participant, index) => {
+      const isLocal = participant.id === mp.myId;
+      const fighter = makeFighter({
+        id: index,
+        name: participant.nickname,
+        characterType: participant.charType,
+        newAbilityChars: participant.newAbilityChars,
+        isPlayer: isLocal,
+        position: spawns[index % spawns.length],
+        yaw: Math.random() * Math.PI * 2,
+      });
+      fighter.networkId = participant.id;
+      fighter.isNetworkPlayer = !isLocal;
+      if (!isLocal) mpNetFighters[participant.id] = fighter;
+      state.players.push(fighter);
+    });
+    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+    for (let index = mpConfig.players.length; index < spawns.length; index += 1) {
+      const characterType = botTypes[index % botTypes.length];
+      const fighter = makeFighter({
+        id: index,
+        name: `AI ${index - mpConfig.players.length + 1}`,
+        characterType,
+        isPlayer: false,
+        position: spawns[index],
+        yaw: (index / spawns.length) * Math.PI * 2,
+      });
+      fighter.syncId = `bot-${index}`;
+      fighter.isNetworkPlayer = !mpConfig.isHost;
+      fighter.botDifficulty = 1;
+      if (!mpConfig.isHost) mpNetFighters[fighter.syncId] = fighter;
+      state.players.push(fighter);
+    }
+    return;
+  }
+
   spawns.forEach((spawn, index) => {
     const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
@@ -5003,6 +5145,7 @@ function resetGame() {
   state.projectiles.forEach((p) => scene.remove(p.mesh));
   state.projectiles = [];
   state.deathOrder = [];
+  state.resultRevealAt = 0;
   state.showdownAnnounced = false;
   showdownAnnounceEl.classList.add("hidden");
   showdownAnnounceEl.classList.remove("showdown-pop");
@@ -6360,6 +6503,12 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
     if (!noPopup) flashHitMarker();
     return 0;
   }
+  const showdownTargetId = target.networkId ?? target.syncId;
+  if (!state.takedownMode && mpConfig?.mode === "showdown" && !mpConfig.isHost && attacker?.isPlayer && showdownTargetId) {
+    mp.relay("SD_DAMAGE", { target: showdownTargetId, amount });
+    if (!noPopup) flashHitMarker();
+    return 0;
+  }
 
   const finalAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
   const healthBefore = target.health;
@@ -6442,13 +6591,16 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       }
     } else {
       state.deathOrder.push(target.id);
+      const personalTone = getPersonalKillTone(attacker, target);
+      if (personalTone) state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 3);
       if (attacker) {
-        addKillFeed(t("killFeed", attacker.name, target.name));
+        addKillFeed(t("killFeed", attacker.name, target.name), null, null, personalTone);
         if (attacker.isPlayer || target.isPlayer) {
           audio.play("kill");
         }
       } else {
-        addKillFeed(`${target.name} 사망`);
+        addKillFeed(`${target.name} 사망`, null, null, target.isPlayer ? "defeat" : "");
+        if (target.isPlayer) state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 3);
       }
     }
   }
@@ -8031,6 +8183,7 @@ function checkEndState() {
   const player = getPlayer();
   const playerDead = !!player?.dead;
   if (alive.length <= 1 || playerDead) {
+    if (state.gameTime < state.resultRevealAt) return;
     state.gameOver = true;
     state.running = false;
     showdownBgm.pause();
@@ -8110,10 +8263,10 @@ function animate() {
     if (!frozen) {
       updatePlayerControls(dt);
       for (const fighter of state.players) {
-        if (!fighter.isPlayer) updateBot(fighter, dt, zone);
+        if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
       }
       updateAmmoRegen(dt);
-      updateNaturalRegen(dt);
+      if (!mpConfig || mpConfig.isHost) updateNaturalRegen(dt);
       updateTrainingRespawn();
       updateChopWoodRespawn();
       updateTakeDownRespawn();
@@ -8122,15 +8275,15 @@ function animate() {
         state.tdTimeLeft -= dt;
         updateTakeDownHud();
         checkTakeDownEnd();
-        if (mpConfig) syncMp(dt);
       }
       updateChopping(dt);
       updateScheduledHits();
       updateProjectiles(dt);
       updatePoisonTicks();
       if (!state.chopWoodMode && !state.takedownMode) {
-        updateZoneDamage(dt, zone);
+        if (!mpConfig || mpConfig.isHost) updateZoneDamage(dt, zone);
       }
+      if (mpConfig) syncMp(dt);
     }
     if (!state.chopWoodMode && !state.takedownMode) {
       updateZoneVisual(zone);
@@ -8247,7 +8400,7 @@ function setupInput() {
     }
   });
 
-  document.getElementById("leaderboard-toggle").addEventListener("click", () => {
+  document.getElementById("leaderboard-toggle").addEventListener("click", async () => {
     const panel = document.getElementById("leaderboard-panel");
     const btn = document.getElementById("leaderboard-toggle");
     panel.classList.toggle("hidden");
@@ -8255,15 +8408,30 @@ function setupInput() {
     if (!panel.classList.contains("hidden")) {
       const account = loadAccount();
       if (account) {
-        const entries = [];
-        entries.push({ name: account.nickname, trophies: account.trophies, isPlayer: true });
-        leaderboardBots.forEach((bot) => entries.push({ ...bot, isPlayer: false }));
-        entries.sort((a, b) => b.trophies - a.trophies);
+        panel.innerHTML = `<div class="stats-row">${t("mmConnecting")}</div>`;
+        let entries = [];
+        try {
+          entries = await syncGlobalLeaderboard(account);
+        } catch {
+          entries = [{ playerId: getRotationImportId(account), nickname: account.nickname, trophies: account.trophies }];
+        }
+        const myPlayerId = getRotationImportId(account);
         let html = `<div class="stats-row" style="font-weight:700;margin-bottom:6px">🏆 ${t("leaderboardBtn")}</div>`;
         entries.forEach((e, i) => {
           const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
-          const highlight = e.isPlayer ? ' style="color:#ffcc66;font-weight:700"' : '';
-          html += `<div class="stats-char"${highlight}>${medal} ${e.name} — ${e.trophies}</div>`;
+          const highlight = e.playerId === myPlayerId ? ' style="color:#ffcc66;font-weight:700"' : '';
+          html += `<div class="stats-char"${highlight}>${medal} ${escapeHtml(e.nickname)} — ${e.trophies}</div>`;
+        });
+        const characterRanking = Object.entries(account.charStats || {}).map(([id, stats]) => {
+          const games = Number(stats?.games) || 0;
+          const wins = Number(stats?.wins) || 0;
+          return { id, games, wins, winRate: games > 0 ? Math.round((wins / games) * 100) : 0 };
+        }).sort((a, b) => b.wins - a.wins || b.winRate - a.winRate || b.games - a.games);
+        html += `<div class="leaderboard-divider"></div><div class="leaderboard-section-title">캐릭터 랭킹</div>`;
+        html += `<div class="character-ranking-head"><span>순위 · 캐릭터</span><span>승리 / 승률</span></div>`;
+        characterRanking.forEach((entry, index) => {
+          const name = entry.id.charAt(0).toUpperCase() + entry.id.slice(1);
+          html += `<div class="character-ranking-row char-${entry.id}"><span><b>${index + 1}</b> ${name}</span><span>${entry.wins}승 · ${entry.winRate}%</span></div>`;
         });
         panel.innerHTML = html;
       }
@@ -8726,10 +8894,7 @@ function setupInput() {
     await initAudio();
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("active");
-    messageOverlay.style.display = "none";
-    state.currentMapId = Math.floor(Math.random() * MAP_POOL.length);
-    createMap(MAP_POOL[state.currentMapId]);
-    resetGame();
+    enterMatchmaking("showdown");
   });
 
   document.getElementById("mode-chopwood").addEventListener("click", async () => {
@@ -9219,7 +9384,12 @@ function setupInput() {
 
   // 다시 시작
   playAgainButton.addEventListener("click", () => {
-    if (state.takedownMode) {
+    if (mpConfig?.mode === "showdown") {
+      mp.disconnect();
+      mpConfig = null;
+      resultOverlay.style.display = "none";
+      enterMatchmaking("showdown");
+    } else if (state.takedownMode) {
       resultOverlay.style.display = "none";
       if (state.tdSolo) {
         openTdCharSelect(() => startTakeDown());
@@ -9237,7 +9407,10 @@ function setupInput() {
 
   // 재시작 → 로비
   restartButton.addEventListener("click", () => {
-    if (state.takedownMode) {
+    if (mpConfig?.mode === "showdown") {
+      mp.disconnect();
+      mpConfig = null;
+    } else if (state.takedownMode) {
       state.takedownMode = false;
       state.tdBoss = null;
       tdHud.classList.add("hidden");

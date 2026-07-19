@@ -229,7 +229,7 @@ export const LANGS = {
     tdResultBody: "{0}  |  {1}위  |  점수: {2}  |  🪙 +{3}{4}",
     tdBossDmg: "보스 피해: {0}", tdKills: "처치: {0}", tdBossKill: "💀 {0} 보스 처치!",
     // Matchmaking
-    mmTitle: "💀 Take Down — 매칭 중", mmConnecting: "서버에 연결 중...",
+    mmTitle: "💀 Take Down — 매칭 중", mmShowdownTitle: "🏆 쇼다운 — 매칭 중", mmConnecting: "서버에 연결 중...",
     mmWaiting: "{0}명 대기 중 (2명 이상이면 카운트다운 시작)", mmMe: "(나)",
     mmConnFail: "연결 실패: {0}", mmCountdown: "{0}초 후 시작", mmCountdownGo: "게임 시작!",
     mmDisconnected: "서버 연결이 끊어졌습니다. 잠시 후 다시 시도해 주세요.",
@@ -466,7 +466,7 @@ export const LANGS = {
     tdResultBody: "{0}  |  #{1}  |  Score: {2}  |  🪙 +{3}{4}",
     tdBossDmg: "Boss Damage: {0}", tdKills: "Kills: {0}", tdBossKill: "💀 {0} took down the boss!",
     // Matchmaking
-    mmTitle: "💀 Take Down — Matchmaking", mmConnecting: "Connecting to server...",
+    mmTitle: "💀 Take Down — Matchmaking", mmShowdownTitle: "🏆 Showdown — Matchmaking", mmConnecting: "Connecting to server...",
     mmWaiting: "{0} waiting (countdown starts at 2+)", mmMe: "(me)",
     mmConnFail: "Connection failed: {0}", mmCountdown: "Starting in {0}s", mmCountdownGo: "Starting!",
     mmDisconnected: "Disconnected. Please try again.",
