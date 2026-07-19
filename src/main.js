@@ -646,6 +646,16 @@ function loadAccount() {
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
     if (account.chopWoodWins === undefined) { account.chopWoodWins = 0; migrated = true; }
+    if (!account.chopWoodCharStats) {
+      account.chopWoodCharStats = {};
+      migrated = true;
+    }
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+      if (!account.chopWoodCharStats[char]) {
+        account.chopWoodCharStats[char] = { wins: 0, games: 0 };
+        migrated = true;
+      }
+    }
     if (!account.lang) account.lang = "ko";
     if (!account.seasonStats) {
       account.seasonStats = {
@@ -776,6 +786,12 @@ function createAccount(id, nickname) {
     bestStreak: 0,
     showdownWins: 0,
     chopWoodWins: 0,
+    chopWoodCharStats: {
+      red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
+      blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
+      yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+      purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
+    },
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
     seasonCharStats: {
@@ -1140,12 +1156,17 @@ function recordGameResult(rank, mode = "showdown") {
   let coinsEarned = 0;
 
   account.charStats[char].games += 1;
+  const chopWoodCharStat = mode === "chopwood" ? account.chopWoodCharStats[char] : null;
+  if (chopWoodCharStat) chopWoodCharStat.games += 1;
   const ss = account.seasonStats[CURRENT_SEASON];
   const scs = account.seasonCharStats[CURRENT_SEASON][char];
   scs.games += 1;
   if (rank <= 4) {
     account.wins += 1;
-    if (mode === "chopwood") account.chopWoodWins = (account.chopWoodWins || 0) + 1;
+    if (mode === "chopwood") {
+      account.chopWoodWins = (account.chopWoodWins || 0) + 1;
+      chopWoodCharStat.wins += 1;
+    }
     else account.showdownWins = (account.showdownWins || 0) + 1;
     account.charStats[char].wins += 1;
     ss.wins += 1;
@@ -8417,6 +8438,18 @@ function setupInput() {
           } else {
             const r = Math.round((s.wins / s.games) * 100);
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("charWinrate", r, s.wins, s.games)}</div>`;
+          }
+        }
+        html += `<div class="stats-divider"></div>`;
+        html += `<div class="stats-row" style="font-weight:700">🪓 ${t("statsChopWood")}</div>`;
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+          const s = account.chopWoodCharStats?.[char];
+          const name = char.charAt(0).toUpperCase() + char.slice(1);
+          if (!s || s.games === 0) {
+            html += `<div class="stats-char">${name}: ${t("statsNoRecord")}</div>`;
+          } else {
+            const rate = Math.round((s.wins / s.games) * 100);
+            html += `<div class="stats-char">${name}: ${t("charWinrate", rate, s.wins, s.games)}</div>`;
           }
         }
         html += `<div class="stats-divider"></div>`;
