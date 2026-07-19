@@ -683,6 +683,28 @@ function loadAccount() {
       if (!s.purple) s.purple = { wins: 0, games: 0 };
       if (!s.pink) s.pink = { wins: 0, games: 0 };
     }
+    if (!account.seasonChopWoodStats) {
+      account.seasonChopWoodStats = {};
+      migrated = true;
+    }
+    if (!account.seasonChopWoodStats[CURRENT_SEASON]) {
+      account.seasonChopWoodStats[CURRENT_SEASON] = { wins: 0, losses: 0 };
+      migrated = true;
+    }
+    if (!account.seasonChopWoodCharStats) {
+      account.seasonChopWoodCharStats = {};
+      migrated = true;
+    }
+    if (!account.seasonChopWoodCharStats[CURRENT_SEASON]) {
+      account.seasonChopWoodCharStats[CURRENT_SEASON] = {};
+      migrated = true;
+    }
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+      if (!account.seasonChopWoodCharStats[CURRENT_SEASON][char]) {
+        account.seasonChopWoodCharStats[CURRENT_SEASON][char] = { wins: 0, games: 0 };
+        migrated = true;
+      }
+    }
     if (account.coins === undefined) { account.coins = 0; migrated = true; }
     if (!account.charLevels) {
       account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1 };
@@ -799,6 +821,15 @@ function createAccount(id, nickname) {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
         yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
+      },
+    },
+    seasonChopWoodStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
+    seasonChopWoodCharStats: {
+      [CURRENT_SEASON]: {
+        red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
+        blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
+        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+        purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
       },
     },
   };
@@ -1160,12 +1191,17 @@ function recordGameResult(rank, mode = "showdown") {
   if (chopWoodCharStat) chopWoodCharStat.games += 1;
   const ss = account.seasonStats[CURRENT_SEASON];
   const scs = account.seasonCharStats[CURRENT_SEASON][char];
+  const seasonChopWood = mode === "chopwood" ? account.seasonChopWoodStats[CURRENT_SEASON] : null;
+  const seasonChopWoodChar = mode === "chopwood" ? account.seasonChopWoodCharStats[CURRENT_SEASON][char] : null;
   scs.games += 1;
+  if (seasonChopWoodChar) seasonChopWoodChar.games += 1;
   if (rank <= 4) {
     account.wins += 1;
     if (mode === "chopwood") {
       account.chopWoodWins = (account.chopWoodWins || 0) + 1;
       chopWoodCharStat.wins += 1;
+      seasonChopWood.wins += 1;
+      seasonChopWoodChar.wins += 1;
     }
     else account.showdownWins = (account.showdownWins || 0) + 1;
     account.charStats[char].wins += 1;
@@ -1186,6 +1222,7 @@ function recordGameResult(rank, mode = "showdown") {
   } else {
     account.losses += 1;
     ss.losses += 1;
+    if (seasonChopWood) seasonChopWood.losses += 1;
     account.winStreak = 0;
     coinsEarned += COIN_REWARDS.lose;
   }
@@ -8474,6 +8511,28 @@ function setupInput() {
               } else {
                 const cr = Math.round((cs.wins / cs.games) * 100);
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: ${cr}% (${cs.wins}W/${cs.games}G)</div>`;
+              }
+            }
+          }
+          const cwSeason = account.seasonChopWoodStats?.[key];
+          const cwSeasonChars = account.seasonChopWoodCharStats?.[key];
+          const cwGames = cwSeason ? cwSeason.wins + cwSeason.losses : 0;
+          html += `<div class="stats-char" style="padding-left:12px;font-weight:700">🪓 ${t("statsChopWood")}</div>`;
+          if (cwGames === 0) {
+            html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">${t("statsNoRecord")}</div>`;
+          } else {
+            const cwRate = Math.round((cwSeason.wins / cwGames) * 100);
+            html += `<div class="stats-char" style="padding-left:12px;font-size:11px">${t("charWinrate", cwRate, cwSeason.wins, cwGames)}</div>`;
+          }
+          if (cwSeasonChars) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+              const cs = cwSeasonChars[c];
+              const name = c.charAt(0).toUpperCase() + c.slice(1);
+              if (!cs || cs.games === 0) {
+                html += `<div class="stats-char" style="padding-left:24px;font-size:11px;color:var(--muted)">${name}: ${t("statsNoRecord")}</div>`;
+              } else {
+                const rate = Math.round((cs.wins / cs.games) * 100);
+                html += `<div class="stats-char" style="padding-left:24px;font-size:11px;color:var(--muted)">${name}: ${t("charWinrate", rate, cs.wins, cs.games)}</div>`;
               }
             }
           }
