@@ -8457,6 +8457,11 @@ function setupInput() {
     const btn = e.target.closest("button");
     if (btn && !btn.disabled) {
       audio.play("click");
+      if (messageOverlay.contains(btn)) {
+        btn.classList.remove("lobby-button-click");
+        void btn.offsetWidth;
+        btn.classList.add("lobby-button-click");
+      }
       syncLobbyStartButton();
     }
   });
