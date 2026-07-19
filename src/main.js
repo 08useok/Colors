@@ -7807,7 +7807,7 @@ function updateCamera(dt) {
     return;
   }
 
-  const spectatorTarget = player.dead && !mpConfig
+  const spectatorTarget = player.dead
     ? state.players.find((fighter) => !fighter.dead) || player
     : player;
   const target = spectatorTarget.mesh.position.clone();
@@ -8315,8 +8315,13 @@ function checkEndState() {
   spectatorExitButton.classList.toggle("hidden", !soloPlayerWatchingAi);
   if (soloPlayerWatchingAi && !state.forceSpectatorExit) return;
   if (alive.length <= 1 || playerDead) {
-    const playerWon = alive.length === 1 && alive[0]?.isPlayer && !playerDead;
-    if (playerWon && !state.victoryCelebrating) {
+    const winner = alive[0];
+    const playerRank = (!player || !player.dead)
+      ? 1
+      : state.players.length - state.deathOrder.indexOf(player.id);
+    const playerWon = alive.length === 1 && winner?.isPlayer && !playerDead;
+    const aiWonAgainstRunnerUp = alive.length === 1 && !winner?.isPlayer && !winner?.networkId && playerDead && playerRank === 2;
+    if ((playerWon || aiWonAgainstRunnerUp) && !state.victoryCelebrating) {
       state.victoryCelebrating = true;
       state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 2);
       state.mouseHeld = false;
@@ -8334,10 +8339,6 @@ function checkEndState() {
     showdownBgm.pause();
     showdownMusic.pause();
     try {
-      const winner = alive[0];
-      const playerRank = (!player || !player.dead)
-        ? 1
-        : state.players.length - state.deathOrder.indexOf(player.id);
       const { streakBefore, streakAfter, bonus, milestone, coinsEarned } = recordGameResult(playerRank);
       const account = loadAccount();
       const delta = calcTrophyChange(playerRank);
