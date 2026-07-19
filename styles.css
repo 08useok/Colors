@@ -1015,6 +1015,32 @@ body {
   transform: scale(0.97);
 }
 
+.char-skin-toggle {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 9px;
+  padding: 6px 5px;
+  border: 1px solid rgba(255, 210, 158, 0.35);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.char-skin-toggle.equipped {
+  border-color: var(--accent);
+  background: rgba(255, 204, 102, 0.2);
+  color: var(--accent);
+}
+
+.char-skin-toggle.disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
 .char-icon {
   width: 52px;
   height: 52px;

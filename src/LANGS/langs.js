@@ -216,7 +216,8 @@ export const LANGS = {
     pv137c: "로비 왼쪽 캐릭터 컬러 버튼 추가",
     // Shop
     shopCardEffect: "체력·공격력 +2%", shopCoinShort: "(부족)", shopSeasonEnded: "시즌 종료 — 획득 불가",
-    skinEquip: "장착", skinUnequip: "장착 해제", skinAlphaRedDesc: "Alpha Season 한정 왕관 스킨",
+    skinEquip: "스킨 착용", skinUnequip: "착용 해제", skinNone: "스킨 없음", skinAlphaRedDesc: "Alpha Season 한정 왕관 스킨",
+    skinChampionCyanDesc: "알파 시즌 참가자 한정 Cyan 우승 기념 스킨",
     // Rotation screen
     rotationEnd: "종료", rotationDays: "일", rotationToday: "오늘",
     rotationRecord: "{0}승 / {1}판 ({2}%)", rotationWinMsg: "  |  🏆 Rotation 우승: {0}",
@@ -452,7 +453,8 @@ export const LANGS = {
     pv137c: "Character color buttons added to lobby left side",
     // Shop
     shopCardEffect: "HP & ATK +2%", shopCoinShort: "(Short)", shopSeasonEnded: "Season ended",
-    skinEquip: "Equip", skinUnequip: "Unequip", skinAlphaRedDesc: "Alpha Season exclusive crown skin",
+    skinEquip: "Equip Skin", skinUnequip: "Unequip", skinNone: "No Skin", skinAlphaRedDesc: "Alpha Season exclusive crown skin",
+    skinChampionCyanDesc: "Cyan champion skin for Alpha Season participants",
     // Rotation screen
     rotationEnd: "Ended", rotationDays: "d", rotationToday: "Today",
     rotationRecord: "{0}W / {1}G ({2}%)", rotationWinMsg: "  |  🏆 Rotation Champion: {0}",

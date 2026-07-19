@@ -217,6 +217,9 @@ const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
 const CURRENT_SEASON = "alpha4";
+const ALPHA_SEASONS = ["alpha1", "alpha2", "alpha3", "alpha4"];
+const ALPHA_REWARD_DATE = "2026-07-26";
+const ALPHA_PARTICIPATION_REWARD_SKIN = "alpha_champion_cyan";
 const SEASONS = {
   alpha1: "알파 시즌 1",
   alpha2: "알파 시즌 2",
@@ -261,6 +264,13 @@ const SKINS = {
     cost: 1000,
     desc: "skinAlphaRedDesc",
   },
+  alpha_champion_cyan: {
+    name: "Champion Cyan",
+    character: "cyan",
+    season: "alpha4",
+    cost: 0,
+    desc: "skinChampionCyanDesc",
+  },
 };
 
 function createCrown() {
@@ -288,7 +298,7 @@ function createCrown() {
 
 function applySkin(group, skinId) {
   if (!skinId || !SKINS[skinId]) return;
-  if (skinId === "alpha_red") {
+  if (skinId === "alpha_red" || skinId === "alpha_champion_cyan") {
     const crown = createCrown();
     crown.position.set(0, 2.7, 0);
     group.add(crown);
@@ -379,6 +389,24 @@ async function syncGlobalRotation(account) {
   } catch {
     return false;
   }
+}
+
+function hasAlphaParticipation(account) {
+  if (account.alphaSeasonParticipated) return true;
+  return ALPHA_SEASONS.some((season) => {
+    const stats = account.seasonStats?.[season];
+    return (Number(stats?.wins) || 0) + (Number(stats?.losses) || 0) > 0;
+  });
+}
+
+function grantAlphaParticipationReward(account) {
+  const rewardStartsAt = new Date(`${ALPHA_REWARD_DATE}T00:00:00+09:00`).getTime();
+  if (Date.now() < rewardStartsAt || !hasAlphaParticipation(account)) return false;
+  account.ownedSkins ??= [];
+  if (account.ownedSkins.includes(ALPHA_PARTICIPATION_REWARD_SKIN)) return false;
+  account.ownedSkins.push(ALPHA_PARTICIPATION_REWARD_SKIN);
+  account.alphaParticipationRewardClaimed = true;
+  return true;
 }
 
 function getRotationImportId(account) {
@@ -642,6 +670,7 @@ function loadAccount() {
       delete account.cosmetics.equippedEmote;
       migrated = true;
     }
+    if (grantAlphaParticipationReward(account)) migrated = true;
     if (initRotationState(account)) migrated = true;
     if (account.rotation) {
       const beforeRound = account.rotation.lastRoundProcessedAt;
@@ -798,6 +827,7 @@ function updateLobbyUI(account) {
   document.querySelectorAll(".color-dot").forEach((dot) => {
     dot.classList.toggle("selected", dot.dataset.char === account.selectedCharacter);
   });
+  renderCharacterSkinButtons(account);
   updateColorInfo(account.selectedCharacter, account);
   state.selectedCharacter = account.selectedCharacter;
   setPreviewCharacter(account.selectedCharacter);
@@ -926,6 +956,45 @@ function showDailyLogin(account) {
   setTimeout(() => { if (!locked) dailyIdInput.focus(); }, 50);
 }
 
+function renderCharacterSkinButtons(account) {
+  document.querySelectorAll(".char-btn").forEach((charButton) => {
+    const charKey = charButton.dataset.char;
+    const ownedSkins = Object.entries(SKINS)
+      .filter(([skinId, skin]) => skin.character === charKey && account?.ownedSkins?.includes(skinId));
+    const equippedSkinId = account?.selectedSkins?.[charKey];
+    const equippedSkin = ownedSkins.find(([skinId]) => skinId === equippedSkinId);
+    let toggle = charButton.querySelector(".char-skin-toggle");
+    if (!toggle) {
+      toggle = document.createElement("span");
+      toggle.className = "char-skin-toggle";
+      charButton.appendChild(toggle);
+    }
+    toggle.dataset.char = charKey;
+    toggle.classList.toggle("disabled", ownedSkins.length === 0);
+    toggle.classList.toggle("equipped", Boolean(equippedSkin));
+    toggle.textContent = ownedSkins.length === 0
+      ? t("skinNone")
+      : equippedSkin ? t("skinUnequip") : t("skinEquip");
+  });
+}
+
+function toggleCharacterSkin(charKey) {
+  const account = loadAccount();
+  if (!account) return;
+  const ownedSkins = Object.entries(SKINS)
+    .filter(([skinId, skin]) => skin.character === charKey && account.ownedSkins.includes(skinId));
+  if (ownedSkins.length === 0) return;
+
+  const currentIndex = ownedSkins.findIndex(([skinId]) => account.selectedSkins[charKey] === skinId);
+  if (currentIndex === ownedSkins.length - 1) delete account.selectedSkins[charKey];
+  else account.selectedSkins[charKey] = ownedSkins[currentIndex + 1][0];
+  saveAccount(account);
+  renderCharacterSkinButtons(account);
+  updateColorInfo(charKey, account);
+  previewChar = null;
+  setPreviewCharacter(charKey);
+}
+
 const EVENT_END_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
 
 function updateEventCountdown() {
@@ -1026,6 +1095,8 @@ function streakBonus(streak) {
 function recordGameResult(rank) {
   const account = loadAccount();
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
+
+  if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
 
   const char = account.selectedCharacter;
   const prevStreak = account.winStreak;
@@ -3665,6 +3736,7 @@ function checkTakeDownEnd() {
     const account = loadAccount();
     let rotationMsg = "";
     if (account) {
+      if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
       account.coins = (account.coins || 0) + coinsEarned;
 
       if (account.rotation) {
@@ -7906,6 +7978,11 @@ function checkEndState() {
     if (winningTeam) {
       state.gameOver = true;
       state.running = false;
+      const account = loadAccount();
+      if (account && CURRENT_SEASON.startsWith("alpha")) {
+        account.alphaSeasonParticipated = true;
+        saveAccount(account);
+      }
       if (winningTeam === allyTeam) {
         audio.play("win");
         resultTitle.textContent = t("cwWin");
@@ -8546,7 +8623,8 @@ function setupInput() {
   });
 
   // 캐릭터 선택 (선택만, 게임 시작은 전투 시작 버튼)
-  document.querySelectorAll(".char-btn").forEach((btn) => btn.addEventListener("click", () => {
+  document.querySelectorAll(".char-btn").forEach((btn) => btn.addEventListener("click", (event) => {
+    if (event.target.closest(".char-skin-toggle")) return;
     const account = loadAccount();
     pendingCharacter = btn.dataset.char;
     document.querySelectorAll(".char-btn").forEach((item) => {
@@ -8556,6 +8634,15 @@ function setupInput() {
     setPreviewCharacter(pendingCharacter);
     characterActions.classList.remove("hidden");
   }));
+
+  document.querySelectorAll(".char-btn").forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      if (!event.target.closest(".char-skin-toggle")) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toggleCharacterSkin(btn.dataset.char);
+    });
+  });
 
   tryCharacterBtn.addEventListener("click", async () => {
     if (!pendingCharacter) return;
