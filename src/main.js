@@ -5320,12 +5320,25 @@ function isPathBlocked(ax, az, bx, bz, radius) {
 }
 
 function findNavTarget(fighter, targetX, targetZ) {
-  if (fighter._navUntil && state.gameTime < fighter._navUntil &&
-      fighter._navGoalX === targetX && fighter._navGoalZ === targetZ) {
+  const fx = fighter.mesh.position.x;
+  const fz = fighter.mesh.position.z;
+  const navRadius = fighter.radius * 0.85;
+  const goalShift = Math.hypot(
+    targetX - (fighter._navGoalX ?? targetX),
+    targetZ - (fighter._navGoalZ ?? targetZ),
+  );
+  const waypointDistance = fighter._navResult
+    ? Math.hypot(fighter._navResult.x - fx, fighter._navResult.z - fz)
+    : 0;
+  const canKeepWaypoint = fighter._navResult?.isWaypoint
+    && waypointDistance > 1
+    && goalShift < 4
+    && !isPathBlocked(fx, fz, fighter._navResult.x, fighter._navResult.z, navRadius);
+  if (canKeepWaypoint || (fighter._navUntil && state.gameTime < fighter._navUntil && goalShift < 1)) {
     return fighter._navResult;
   }
   const result = _computeNavTarget(fighter, targetX, targetZ);
-  fighter._navUntil = state.gameTime + 0.4;
+  fighter._navUntil = state.gameTime + 0.6;
   fighter._navGoalX = targetX;
   fighter._navGoalZ = targetZ;
   fighter._navResult = result;
@@ -5337,7 +5350,7 @@ function _computeNavTarget(fighter, targetX, targetZ) {
   const fz = fighter.mesh.position.z;
   const navRadius = fighter.radius * 0.85;
   if (!isPathBlocked(fx, fz, targetX, targetZ, navRadius)) {
-    return { x: targetX, z: targetZ };
+    return { x: targetX, z: targetZ, isWaypoint: false };
   }
   const pad = fighter.radius + 0.6;
   const searchRange = 25;
@@ -5361,10 +5374,10 @@ function _computeNavTarget(fighter, targetX, targetZ) {
       if (score >= bestScore) continue;
       if (isPathBlocked(fx, fz, c.x, c.z, navRadius)) continue;
       bestScore = score;
-      bestCorner = c;
+      bestCorner = { ...c, isWaypoint: true };
     }
   }
-  return bestCorner || { x: targetX, z: targetZ };
+  return bestCorner || { x: targetX, z: targetZ, isWaypoint: false };
 }
 
 function findWallEscapeDir(fighter, dirX, dirZ, lookahead) {
