@@ -310,8 +310,8 @@ function equipSkin(characterId, skinId) {
 function updateCrimsonControls() {
   crimsonControls.classList.remove("hidden");
   const labels = {
-    red: "2연속 펀치", green: "4연속 부메랑", blue: "고속 탄환", orange: "분열 폭탄",
-    yellow: "전기 충격", cyan: "6갈래 일제 사격", purple: "독침 · 약병 교대", pink: "회복 원형 공격",
+    red: "크림슨 슬래시", green: "부메랑 투척", blue: "정밀 사격", orange: "폭발탄",
+    yellow: "전격탄", cyan: "래피드 버스트", purple: "맹독침", pink: "리듬 스트라이크",
     crimson: "3연속 부채꼴 타격",
   };
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
