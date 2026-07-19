@@ -4963,7 +4963,7 @@ function createNeedleHitEffect(x, z) {
   state.effects.push({ mesh: puff, life: 0.3, maxLife: 0.3, type: "needleHit" });
 }
 
-function createDamagePopup(position, amount, color = "#ffd27a") {
+function createDamagePopup(position, amount, color = "#ffd27a", prefixOverride = null) {
   const canvas = document.createElement("canvas");
   canvas.width = 128;
   canvas.height = 64;
@@ -4974,7 +4974,7 @@ function createDamagePopup(position, amount, color = "#ffd27a") {
   ctx.lineWidth = 6;
   ctx.strokeStyle = "rgba(0, 0, 0, 0.7)";
   ctx.fillStyle = color;
-  const prefix = color === "#ff5c5c" ? "-" : "";
+  const prefix = prefixOverride ?? (color === "#ff5c5c" ? "-" : "");
   const text = `${prefix}${Math.round(amount)}`;
   ctx.strokeText(text, 64, 32);
   ctx.fillText(text, 64, 32);
@@ -6071,7 +6071,13 @@ function beginHealCircleAttack(fighter) {
     if (isAlly) {
       const healDebuff = (target.poisonUntil && target.poisonUntil > state.gameTime) ? 0.5 : 1;
       const healAmount = charDef.healCircleHeal * (1 + charDef.chopWoodHealBonus) * healDebuff;
+      const healthBeforeHeal = target.health;
       target.health = Math.min(target.maxHealth, target.health + healAmount);
+      const healed = target.health - healthBeforeHeal;
+      if (healed > 0) {
+        tempVec3.copy(target.mesh.position);
+        createDamagePopup(tempVec3, healed, "#55e676", "+");
+      }
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
       if (fighter.isPlayer || target.isPlayer) audio.play("heal");
     } else if (!state.chopWoodMode || target.team !== fighter.team) {
