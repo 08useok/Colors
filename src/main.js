@@ -468,7 +468,7 @@ const ROTATION_NEW_ABILITIES = {
 
 const ROTATION_PARTICIPATION_REWARD = { coins: 100, trophies: 20 };
 const ROTATION_CHAMPION_REWARD = { coins: 1000, trophies: 200 };
-const PINK_AREA_HEAL_ABILITY_MULTIPLIER = 1.35;
+const PINK_AREA_HEAL_ABILITY_MULTIPLIER = 1.2;
 const ORANGE_BLAST_ABILITY_MULTIPLIER = 1.25;
 
 function initRotationState(account) {
@@ -6407,7 +6407,7 @@ function updateProjectiles(dt) {
                 x: proj.x, z: proj.z,
                 vx: (bx / bLen) * charDef.boomerangSpeed,
                 vz: (bz / bLen) * charDef.boomerangSpeed,
-                damage: proj.damage,
+                damage: dmg,
                 range: charDef.boomerangRange * ATTACK_RANGE_MULTIPLIER,
                 farThreshold: Infinity,
                 farMultiplier: 1,
@@ -9351,7 +9351,10 @@ function setupInput() {
     yellow: "🟡", cyan: "🩵", purple: "🟣", pink: "🩷",
   };
 
-  function openTdCharSelect(onSelect) {
+  let tdCharSelectCancelAction = null;
+
+  function openTdCharSelect(onSelect, onCancel = null) {
+    tdCharSelectCancelAction = onCancel;
     const account = loadAccount();
     const eliminated = account?.rotation?.eliminated ?? [];
     const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
@@ -9376,6 +9379,7 @@ function setupInput() {
         if (acc) { acc.selectedCharacter = btn.dataset.char; saveAccount(acc); }
         audio.play("close");
         tdCharSelectOverlay.classList.add("hidden");
+        tdCharSelectCancelAction = null;
         onSelect();
       });
     });
@@ -9385,7 +9389,11 @@ function setupInput() {
   }
 
   tdCharSelectCloseBtn.addEventListener("click", () => {
+    audio.play("close");
     tdCharSelectOverlay.classList.add("hidden");
+    const cancelAction = tdCharSelectCancelAction;
+    tdCharSelectCancelAction = null;
+    cancelAction?.();
   });
 
   document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
@@ -9616,9 +9624,9 @@ function setupInput() {
     } else if (state.takedownMode) {
       resultOverlay.style.display = "none";
       if (state.tdSolo) {
-        openTdCharSelect(() => startTakeDown());
+        openTdCharSelect(() => startTakeDown(), () => { resultOverlay.style.display = "flex"; });
       } else {
-        openTdCharSelect(() => enterMatchmaking());
+        openTdCharSelect(() => enterMatchmaking(), () => { resultOverlay.style.display = "flex"; });
       }
     } else if (state.chopWoodMode) {
       startChopWood();
