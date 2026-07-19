@@ -119,6 +119,7 @@ const zoneTimer = document.getElementById("zone-timer");
 const warning = document.getElementById("warning");
 const ammoPips = document.getElementById("ammo-fan");
 const killFeed = document.getElementById("kill-feed");
+const spectatorExitButton = document.getElementById("spectator-exit-button");
 const hitMarker = document.getElementById("hit-marker");
 const damageTakenIndicator = document.getElementById("damage-taken-indicator");
 const crosshairEl = document.getElementById("crosshair");
@@ -1289,6 +1290,7 @@ const state = {
   projectiles: [],
   deathOrder: [],
   resultRevealAt: 0,
+  forceSpectatorExit: false,
   victoryCelebrating: false,
   outcomeSfxPlayed: false,
   solids: [],
@@ -5216,6 +5218,8 @@ function resetGame() {
   state.projectiles = [];
   state.deathOrder = [];
   state.resultRevealAt = 0;
+  state.forceSpectatorExit = false;
+  spectatorExitButton.classList.add("hidden");
   state.victoryCelebrating = false;
   state.outcomeSfxPlayed = false;
   state.showdownAnnounced = false;
@@ -8284,7 +8288,8 @@ function checkEndState() {
   const player = getPlayer();
   const playerDead = !!player?.dead;
   const soloPlayerWatchingAi = !mpConfig && playerDead && alive.length > 1;
-  if (soloPlayerWatchingAi) return;
+  spectatorExitButton.classList.toggle("hidden", !soloPlayerWatchingAi);
+  if (soloPlayerWatchingAi && !state.forceSpectatorExit) return;
   if (alive.length <= 1 || playerDead) {
     const playerWon = alive.length === 1 && alive[0]?.isPlayer && !playerDead;
     if (playerWon && !state.victoryCelebrating) {
@@ -8301,6 +8306,7 @@ function checkEndState() {
     state.victoryCelebrating = false;
     state.gameOver = true;
     state.running = false;
+    spectatorExitButton.classList.add("hidden");
     showdownBgm.pause();
     showdownMusic.pause();
     try {
@@ -9541,6 +9547,15 @@ function setupInput() {
   }
 
   // 다시 시작
+  spectatorExitButton.addEventListener("click", () => {
+    const player = getPlayer();
+    if (!state.running || !player?.dead || mpConfig) return;
+    state.forceSpectatorExit = true;
+    state.resultRevealAt = state.gameTime;
+    spectatorExitButton.classList.add("hidden");
+    checkEndState();
+  });
+
   playAgainButton.addEventListener("click", () => {
     if (mpConfig?.mode === "showdown") {
       mp.disconnect();
