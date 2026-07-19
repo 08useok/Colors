@@ -1226,6 +1226,7 @@ const state = {
   deathOrder: [],
   resultRevealAt: 0,
   victoryCelebrating: false,
+  outcomeSfxPlayed: false,
   solids: [],
   bushes: [],
   lakeRects: [],
@@ -1395,17 +1396,21 @@ const audio = {
       pulse({ wave: "sine", from: 500, to: 900, duration: 0.2, peak: 0.18 });
       pulse({ wave: "sine", from: 700, to: 1100, duration: 0.18, peak: 0.15, delay: 0.06 });
     } else if (type === "showdownStart") {
-      pulse({ wave: "sawtooth", from: 150, to: 300, duration: 0.3, peak: 0.28 });
-      pulse({ wave: "square", from: 300, to: 450, duration: 0.2, peak: 0.22, delay: 0.1 });
+      pulse({ wave: "sawtooth", from: 118, to: 72, duration: 0.55, peak: 0.2 });
+      pulse({ wave: "square", from: 240, to: 380, duration: 0.18, peak: 0.14, delay: 0.08 });
+      pulse({ wave: "triangle", from: 430, to: 760, duration: 0.28, peak: 0.16, delay: 0.24 });
+      pulse({ wave: "sine", from: 820, to: 1240, duration: 0.2, peak: 0.12, delay: 0.48 });
     } else if (type === "zoneShrink") {
       pulse({ wave: "triangle", from: 400, to: 150, duration: 0.4, peak: 0.2 });
     } else if (type === "win") {
-      pulse({ wave: "triangle", from: 440, to: 660, duration: 0.12, peak: 0.22 });
-      pulse({ wave: "triangle", from: 660, to: 880, duration: 0.15, peak: 0.22, delay: 0.1 });
-      pulse({ wave: "triangle", from: 880, to: 1100, duration: 0.18, peak: 0.2, delay: 0.25 });
+      pulse({ wave: "triangle", from: 392, to: 523, duration: 0.16, peak: 0.16 });
+      pulse({ wave: "triangle", from: 523, to: 659, duration: 0.18, peak: 0.17, delay: 0.13 });
+      pulse({ wave: "triangle", from: 659, to: 1047, duration: 0.36, peak: 0.18, delay: 0.29 });
+      pulse({ wave: "sine", from: 784, to: 1175, duration: 0.42, peak: 0.1, delay: 0.36 });
     } else if (type === "lose") {
-      pulse({ wave: "triangle", from: 440, to: 220, duration: 0.3, peak: 0.2 });
-      pulse({ wave: "triangle", from: 220, to: 110, duration: 0.35, peak: 0.18, delay: 0.2 });
+      pulse({ wave: "sawtooth", from: 330, to: 155, duration: 0.34, peak: 0.16 });
+      pulse({ wave: "triangle", from: 247, to: 92, duration: 0.48, peak: 0.14, delay: 0.2 });
+      pulse({ wave: "square", from: 82, to: 52, duration: 0.24, peak: 0.08, delay: 0.48 });
     } else if (type === "chopWood") {
       pulse({ wave: "square", from: 220, to: 110, duration: 0.06, peak: 0.25 });
     } else if (type === "bushEnter") {
@@ -4061,6 +4066,10 @@ function setupMpHandlers() {
           addKillFeed(fighter.isPlayer ? "처치되었습니다" : `${fighter.name} 처치`, null, null, tone);
           state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 3);
           audio.play("kill");
+          if (fighter.isPlayer && !state.outcomeSfxPlayed) {
+            state.outcomeSfxPlayed = true;
+            audio.play("lose");
+          }
         }
       }
       if (Array.isArray(msg.deathOrder)) {
@@ -5148,6 +5157,7 @@ function resetGame() {
   state.deathOrder = [];
   state.resultRevealAt = 0;
   state.victoryCelebrating = false;
+  state.outcomeSfxPlayed = false;
   state.showdownAnnounced = false;
   showdownAnnounceEl.classList.add("hidden");
   showdownAnnounceEl.classList.remove("showdown-pop");
@@ -6616,6 +6626,10 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       } else {
         addKillFeed(`${target.name} 사망`, null, null, target.isPlayer ? "defeat" : "");
         if (target.isPlayer) state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 3);
+      }
+      if (target.isPlayer && !state.outcomeSfxPlayed) {
+        state.outcomeSfxPlayed = true;
+        audio.play("lose");
       }
     }
   }
@@ -8210,6 +8224,10 @@ function checkEndState() {
       state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 2);
       state.mouseHeld = false;
       state.scheduledHits = [];
+      if (!state.outcomeSfxPlayed) {
+        state.outcomeSfxPlayed = true;
+        audio.play("win");
+      }
     }
     if (state.gameTime < state.resultRevealAt) return;
     state.victoryCelebrating = false;
@@ -8229,7 +8247,10 @@ function checkEndState() {
       const totalText = account ? t("totalTrophy", account.trophies) : "";
       const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
 
-      audio.play(playerRank <= 4 ? "win" : "lose");
+      if (!state.outcomeSfxPlayed) {
+        state.outcomeSfxPlayed = true;
+        audio.play(playerRank === 1 ? "win" : "lose");
+      }
       if (playerDead && alive.length > 1) {
         resultTitle.textContent = t("rankN", playerRank);
         resultBody.textContent = t("resultDead", deltaText, totalText);
