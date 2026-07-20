@@ -8403,6 +8403,7 @@ function checkEndState() {
       resultBody.textContent = "";
       resultStats.textContent = "";
     }
+    clearBattleMap();
     resultOverlay.style.display = "flex";
     document.exitPointerLock?.();
   }
