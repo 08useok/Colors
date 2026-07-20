@@ -61,6 +61,7 @@ const startBattleBtn = document.getElementById("start-battle-btn");
 const lobbyEventMap = document.getElementById("lobby-event-map");
 const eventCountdown = document.getElementById("event-countdown");
 const modeSelector = document.getElementById("mode-selector");
+const showdownCurrentMap = document.getElementById("showdown-current-map");
 const characterPanel = document.getElementById("character-panel");
 const characterToggle = document.getElementById("character-toggle");
 const characterActions = document.getElementById("character-actions");
@@ -2958,6 +2959,15 @@ const MAP_POOL = [
     ],
   },
 ];
+
+function getCurrentShowdownMapId() {
+  return Math.floor(Date.now() / 86400000) % MAP_POOL.length;
+}
+
+function updateShowdownCurrentMap() {
+  state.currentMapId = getCurrentShowdownMapId();
+  showdownCurrentMap.textContent = `현재 맵: ${MAP_POOL[state.currentMapId].name}`;
+}
 
 // ── Take Down 전용 8방향 대칭 맵 ──────────────────────────────────────
 function rotateXZ(x, z, angleDeg) {
@@ -9094,6 +9104,7 @@ function setupInput() {
 
   startBattleBtn.addEventListener("click", () => {
     characterPanel.classList.add("hidden");
+    updateShowdownCurrentMap();
     modeSelector.classList.remove("hidden");
     characterToggle.classList.remove("active");
     startBattleBtn.classList.add("active");
@@ -9695,7 +9706,8 @@ function setupInput() {
 }
 
 createLights();
-createMap(MAP_POOL[0]);
+updateShowdownCurrentMap();
+createMap(MAP_POOL[state.currentMapId]);
 createTrainingMap();
 setupInput();
 animate();

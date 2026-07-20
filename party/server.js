@@ -195,7 +195,8 @@ export class ColorsServer extends Server {
 
     let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.playerIds.length < ROOM_MAX);
     if (!match) {
-      match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: Math.floor(Math.random() * 3), playerIds: [], started: false, countdownTimer: null };
+      const currentMapId = Math.floor(Date.now() / 86400000) % 3;
+      match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: currentMapId, playerIds: [], started: false, countdownTimer: null };
       this.matches.set(match.id, match);
     }
     match.playerIds.push(player.id);
