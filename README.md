@@ -98,6 +98,79 @@ README는 게임 화면에 표시되는 페이지가 아닙니다. 게임 코드
 
 모드가 종료될 때는 장면에서 객체를 제거하고 관련 배열도 비워야 이전 전투의 투사체나 효과가 남지 않습니다.
 
+### 맵의 벽 생성
+
+일반 전투 맵의 배치는 `src/main.js`의 `MAP_POOL`에 저장됩니다. 각 맵의 `wallSpecs`는 벽 하나를 다음 순서로 정의합니다.
+
+```js
+wallSpecs: [
+  [x, z, width, depth],
+]
+```
+
+예를 들어 `[-18, 40, 8, 2]`는 월드 좌표 `(-18, 40)`에 가로 8타일, 세로 2타일인 벽을 만듭니다. 높이를 생략하면 기본값 2.8을 사용합니다.
+
+`createMap(mapData)`가 `wallSpecs`를 순회하며 `createWall()`을 호출합니다. `createWall()`은 두 가지 일을 합니다.
+
+1. `THREE.BoxGeometry`로 화면에 보이는 직육면체 벽을 생성합니다.
+2. 벽의 좌표와 크기를 `state.battleSolids`에 등록해 플레이어와 투사체의 충돌 판정에 사용합니다.
+
+회전 벽은 `angle` 값을 받을 수 있습니다. 충돌 영역은 회전된 벽을 감싸는 AABB의 `minX`, `maxX`, `minZ`, `maxZ`로 계산됩니다.
+
+```js
+createWall(x, z, width, depth, height, group, solids, color, angle);
+```
+
+- `x`, `z`: 벽 중심 위치
+- `width`, `depth`, `height`: 벽 크기
+- `group`: 벽을 추가할 Three.js 그룹
+- `solids`: 충돌 정보를 저장할 배열
+- `color`: 벽 색상
+- `angle`: Y축 회전 각도(라디안)
+
+맵을 바꿀 때 `clearBattleMap()`이 기존 벽의 3D 객체와 충돌 배열을 정리한 뒤 새 맵을 생성합니다.
+
+### 수풀 생성과 은신
+
+수풀 위치도 `MAP_POOL`의 `bushSpecs`에 저장됩니다.
+
+```js
+bushSpecs: [
+  [x, z],
+]
+```
+
+`createMap()`은 각 좌표에 `createBush()`를 호출합니다. 수풀 하나는 4~5개의 저해상도 정이십면체 덩어리를 원형으로 배치해 만듭니다. 덩어리마다 크기, 회전, 위치와 녹색 계열 재질이 조금씩 달라 자연스럽게 보입니다.
+
+```js
+createBush(x, z, radius, group, bushArray);
+```
+
+생성된 수풀은 화면의 `group`에 추가되고, `{ x, z, radius, mesh }` 형태로 `state.battleBushes`에 저장됩니다. 수풀은 벽처럼 이동을 막는 고체가 아니라 은신 영역입니다.
+
+`isInBush(fighter)`는 캐릭터와 수풀 중심 사이의 거리 제곱이 수풀 반지름 제곱보다 작은지 검사합니다. 수풀 안에 있는 캐릭터는 3타일보다 먼 상대에게 숨겨지며, 공격하거나 피해를 받으면 `revealedUntil`이 설정되어 잠시 드러납니다. `isVisibleThroughBush()`는 관찰자와 대상 사이에 수풀이 있는지도 검사합니다.
+
+### 재화 저장 방식
+
+일반 재화는 계정 객체의 `coins` 숫자로 저장됩니다.
+
+```js
+account.coins = (account.coins || 0) + coinsEarned;
+saveAccount(account);
+```
+
+계정 데이터는 브라우저 저장소를 사용합니다.
+
+- `skullCreekAccounts`: 모든 계정을 ID별로 저장하는 `localStorage` 레지스트리
+- `skullCreekAccount`: 현재 계정의 호환용 복사본
+- `skullCreekActiveAccountId`: 현재 탭에서 사용하는 계정 ID를 저장하는 `sessionStorage`
+
+`saveAccount(account)`은 현재 계정을 `skullCreekAccounts`에 넣고, 활성 계정 ID와 호환용 복사본도 함께 갱신합니다. `loadAccount()`은 활성 ID로 계정을 찾고, 없으면 호환용 복사본을 읽어 레지스트리로 이전합니다.
+
+전투 보상, 이벤트 보상이나 상점 구매로 `account.coins`가 바뀌면 반드시 `saveAccount(account)`을 호출해야 새로고침 후에도 유지됩니다. 로비의 재화 표시는 저장된 `account.coins`를 읽어 갱신합니다.
+
+이 방식은 브라우저 로컬 저장이므로 다른 기기나 다른 브라우저로 자동 동기화되지 않습니다. 사이트 데이터나 `localStorage`를 삭제하면 저장된 계정과 재화도 사라질 수 있습니다.
+
 ### 변경 후 확인 순서
 
 1. 수정한 파일을 저장합니다.
