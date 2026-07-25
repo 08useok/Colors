@@ -7,6 +7,12 @@
       "runtimeArgs": ["serve", "."],
       "port": 3456,
       "autoPort": true
+    },
+    {
+      "name": "multiplayer",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "dev", "--port", "8787"],
+      "port": 8787
     }
   ]
 }

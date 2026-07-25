@@ -3,6 +3,9 @@ import { DurableObject } from "cloudflare:workers";
 
 const ROOM_MAX = 8;
 const COUNTDOWN_SEC = 5;
+// 매칭에서 허용하는 캐릭터 — 베타 시즌 1에서 크림슨 추가
+const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]);
+// 로테이션 통계는 8종 기준으로 저장돼 있어 크림슨을 넣으면 기존 state.stats와 어긋난다
 const CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]);
 const CHARACTER_ORDER = [...CHARACTERS];
 const ROTATION_START_DATE = "2026-07-12";
@@ -186,7 +189,7 @@ export class ColorsServer extends Server {
     const player = this.players.get(connection.id);
     if (!player) return;
     player.nickname = this.cleanNickname(data.nickname);
-    player.charType = CHARACTERS.has(data.charType) ? data.charType : "red";
+    player.charType = PLAYABLE_CHARACTERS.has(data.charType) ? data.charType : "red";
     player.newAbilityChars = cleanAbilityChars(data.newAbilityChars);
     player.mode = data.mode === "showdown" ? "showdown" : "takedown";
 
