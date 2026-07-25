@@ -1,7 +1,7 @@
 # Implementation Plan — Skull Creek (해골천)
 
-> Last updated: 2026-07-06
-> Status: In Development — Beta Season 1 transition
+> Last updated: 2026-07-25
+> Status: Beta Season 1 (v1.5.0) 구현 완료 — 2026-07-27 00:00 KST 푸시 배포 예약
 > Source of truth: `specs/*` vs `src/main.js` (monolithic, ~7538 lines)
 > Entry point: `index.html` → `src/main.js?v=1.4.9`
 
@@ -42,9 +42,22 @@ The following specs are fully implemented in `src/main.js` and `index.html`:
 
 ---
 
-## Priority 1 — Beta Season 1 Transition (베타 시즌 1)
+## Priority 1 — Beta Season 1 Transition (베타 시즌 1) — ✅ 구현 완료 (2026-07-25)
 
-Umbrella spec: `specs/beta-season-transition.md` — 2026-07-06 target date.
+Umbrella spec: `specs/beta-season-transition.md` — 배포 시점 2026-07-27 00:00 KST.
+
+구현 결과 요약 (아래 세부 항목은 2026-07-06 계획 시점 기준이라 일부 값이 최종 구현과 다름):
+- 1.1 시즌 상수 → `main.js`의 `CURRENT_SEASON = "beta1"`, `SEASONS.beta1` 추가 ✅
+- 1.2 Orange 버프 → `config/characters.js` 직격 900 / 속도 26 / 판정 0.75 ✅
+      (`bombSplashDamage`는 700 유지 — 스펙의 380은 현재값을 300으로 오기한 값이라 적용 시 너프가 됨)
+- 1.3 등급/크레딧 → `ownedCharacters` + `credits`, 잠금 UI, 상점 캐릭터 구매 탭 ✅
+- 1.4 일일 보상 → 스펙 개정판대로 "승리 1회 = 100 β 크레딧 자동 지급"으로 구현 (6회 가샤는 폐기) ✅
+- 1.5 크림슨 → 부채꼴 3연타(타당 900) + KO 스트레이트(5×5·2500·벽 파괴·게이지 9) ✅
+      단 `ROTATION_CHAR_ORDER`에는 미추가 — 로테이션 캠페인 데이터가 8종 기준이라 깨짐
+- 1.6 레드 테마 스킨 → `config/skins.js` 6종 + 상점 등급 배지 + 장식 비주얼 ✅
+- 1.7 패치노트 → `index.html` v1.5.0 항목, 캐시버스터 갱신 ✅
+
+남은 검증: 크림슨 실전 전투(3연타 판정·궁극기 벽 파괴)는 브라우저에서 육안 확인 필요.
 
 **Dependency chain** (implement in this order):
 ```
