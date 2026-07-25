@@ -1698,9 +1698,11 @@ function createGround(group = scene) {
   group.add(grid);
 }
 
-// GLB 캐릭터 전투 모델의 목표 높이. 원본 GLB는 전부 높이 1로 정규화돼 있어서
-// 이 값 하나로 Blue/Cyan/Pink의 키가 서로 맞는다. 발은 항상 group local y=-1.85.
+// GLB 캐릭터 전투 모델의 목표 높이. 원본 GLB는 전부 높이 1로 정규화돼 있다.
+// 발은 항상 group local y=-1.85에 오도록 맞춘다.
 const GLB_BATTLE_HEIGHT = 3.67;
+// 시안은 모델 비례상 같은 높이에서 더 크게 보여서 따로 낮춰 쓴다.
+const CYAN_BATTLE_HEIGHT = 2.7;
 const GLB_FEET_Y = -1.85;
 
 function createStickman(color, skinId) {
@@ -1776,7 +1778,7 @@ function createStickman(color, skinId) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const scale = GLB_BATTLE_HEIGHT / Math.max(size.y, 0.001);
+    const scale = CYAN_BATTLE_HEIGHT / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
     model.rotation.y = 0;
