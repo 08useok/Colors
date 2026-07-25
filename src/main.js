@@ -4486,7 +4486,8 @@ function playNetworkAttack(fighter, msg) {
   }
   fighter.ammo = ammo;
   fighter.nextAttackAt = nextAttackAt;
-  audio.play(fighter.characterType === "red" ? "attack" : "projectileFire");
+  const isMelee = fighter.characterType === "red" || fighter.characterType === "crimson";
+  audio.play(isMelee ? "attack" : "projectileFire");
 }
 
 function updateMatchmakingUI() {
@@ -5839,6 +5840,8 @@ function beginCrimsonPunchCombo(fighter) {
   for (let i = 0; i < charDef.attackCount; i += 1) {
     queueAttackHit(fighter, i, charDef.attackDamage, state.gameTime + interval * i);
   }
+  // 원격 플레이어는 예약된 타격이 취소되고 이 이펙트만 남으므로 여기서 한 번 띄운다
+  createCrimsonPunchEffect(fighter, fighter.yaw, charDef.attackRange * ATTACK_RANGE_MULTIPLIER);
   if (fighter.isPlayer) audio.play("attack");
   return true;
 }
