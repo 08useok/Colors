@@ -42,13 +42,30 @@ Worker 개발 서버 주소는 `http://localhost:8787`입니다.
 ## 프로젝트 구조
 
 - `index.html`: 게임 화면, 메뉴와 HUD 마크업
+- `beta-season.html`: 베타 시즌 전용 로컬 테스트 화면
 - `styles.css`: 전체 화면 스타일
 - `src/main.js`: 게임 상태, 전투, 맵, 캐릭터와 렌더링 로직
 - `src/config/characters.js`: 캐릭터 스펙 설정
+- `src/config/beta-characters.js`: 기본 게임과 분리된 베타 시즌 스펙 설정
 - `src/multiplayer.js`: 멀티플레이 연결 코드
 - `assets/`: 모델, 이미지, 사운드와 시각 효과 리소스
 - `specs/`: 캐릭터와 시스템 상세 문서
 - `server/`, `party/`: 멀티플레이 서버 코드
+
+## 베타 시즌 테스트
+
+기본 게임은 알파 시즌 4(`v1.4.14`)를 유지합니다. 베타 시즌은 다음 주소에서 별도로 테스트합니다.
+
+```text
+http://localhost:4173/beta-season.html
+```
+
+- Blue, Cyan, Pink는 GLB 캐릭터 모델을 사용합니다.
+- 모델별 `walk-m1s`, `walk-m2l`, `walk-m3e`는 걷기 시작, 반복, 정지 모션입니다.
+- 맵 클릭은 수동 조준, 공격 버튼은 자동 조준입니다.
+- 일반 공격에는 기본 넉백이 없으며, 명시된 궁극기만 넉백을 적용합니다.
+- 기본 게임에서 승리할 때마다 100 β 크레딧이 자동 지급됩니다.
+- 베타 시즌은 사용자의 배포 지시 전까지 GitHub에 올리지 않습니다.
 
 ## 코드 설명서
 

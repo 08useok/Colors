@@ -12,11 +12,11 @@ Red의 내구력, Green의 폭딜, Blue의 장거리, Orange의 폭발과 차별
 |------|-----|------|
 | 체력 | 5,800 | Blue(4400) < **Yellow** < Orange(6500) |
 | 이동속도 | 1.0 (Normal) | Blue, Orange와 동일 |
-| 사거리 | 8 | Orange와 동일 |
+| 사거리 | 12 | |
 | 탄약 | 3 | |
-| 재장전 | 1.0초 | Orange와 동일 |
-| 공격 쿨다운 | 0.35초 | Orange와 동일 |
-| 데미지 | 3,400 | |
+| 재장전 | 0.5초 | |
+| 공격 쿨다운 | 0.35초 | |
+| 데미지 | 2,400 | |
 | 투사체 속도 | 16 | Orange와 동일 |
 
 ---
@@ -79,7 +79,7 @@ yellow: {
   attackType: "electric",
   reloadDuration: 1.0,
   attackCooldown: 0.35,
-  electricDamage: 3400,
+  electricDamage: 2400,
   electricRange: 8,
   electricSpeed: 16,
   shockSlowPercent: 0.4,

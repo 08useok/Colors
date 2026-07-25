@@ -8,7 +8,7 @@
 orange: {
   maxHealth: 5800,
   bombDamage: 750,
-  bombSplashDamage: 300,
+  bombSplashDamage: 700,
   bombRange: 9,
   bombSpeed: 22,
   bombSplashCount: 5,

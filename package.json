@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "check": "node --check src/main.js && node --check src/multiplayer.js && node --check src/config/characters.js"
+    "check": "node --check src/main.js && node --check src/beta-season.js && node --check src/multiplayer.js && node --check src/config/characters.js && node --check src/config/beta-characters.js && node --check src/config/skins.js && node --check src/visuals/crown.js"
   },
   "devDependencies": {
     "wrangler": "^4.100.0",

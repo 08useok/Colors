@@ -29,6 +29,9 @@
       orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 },
       cyan:   { wins: 0, games: 0 },
+      purple: { wins: 0, games: 0 },
+      pink:   { wins: 0, games: 0 },
+      crimson:{ wins: 0, games: 0 },
     },
     chopWood: {
       red:    { wins: 0, games: 0 },
@@ -37,6 +40,9 @@
       orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 },
       cyan:   { wins: 0, games: 0 },
+      purple: { wins: 0, games: 0 },
+      pink:   { wins: 0, games: 0 },
+      crimson:{ wins: 0, games: 0 },
     },
   },
   winStreak: 0,       // 현재 연승 횟수
@@ -148,6 +154,9 @@ HP 10,000
 <div class="char-winrate" id="winrate-orange"></div>
 <div class="char-winrate" id="winrate-yellow"></div>
 <div class="char-winrate" id="winrate-cyan"></div>
+<div class="char-winrate" id="winrate-purple"></div>
+<div class="char-winrate" id="winrate-pink"></div>
+<div class="char-winrate" id="winrate-crimson"></div>
 
 <!-- 로비 우측 상단 계정 영역 내 -->
 <div id="streak-display" class="hidden"></div>
@@ -165,6 +174,8 @@ function loadAccount() {
       red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
       blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
+      purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
+      crimson: { wins: 0, games: 0 },
     });
     account.charStats = { showdown: defaultStats(), chopWood: defaultStats() };
   }

@@ -1,3 +1,5 @@
 node_modules/
 .partykit/
 .wrangler/
+__pycache__/
+*.py[cod]
