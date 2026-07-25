@@ -344,6 +344,34 @@ body {
   transform: scale(0.96);
 }
 
+.ultimate-button {
+  --charge: 0deg;
+  --ult-color: #0ff0fe;
+  position: absolute;
+  right: 42px;
+  bottom: 258px;
+  width: 76px;
+  height: 76px;
+  border: 3px solid rgba(255, 255, 255, 0.65);
+  border-radius: 50%;
+  color: #fff;
+  background: conic-gradient(var(--ult-color) var(--charge), #59636d var(--charge));
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  z-index: 25;
+  cursor: pointer;
+}
+
+.ultimate-button.hidden { display: none; }
+.ultimate-button span { font-size: 11px; font-weight: 800; }
+.ultimate-button strong { font-size: 13px; }
+.ultimate-button.ready { box-shadow: 0 0 22px var(--ult-color), 0 8px 20px rgba(0, 0, 0, 0.3); }
+.ultimate-button.crimson { --ult-color: #ff2b2b; }
+
 .crosshair-line {
   position: absolute;
   background: rgba(255, 248, 230, 0.9);
@@ -566,6 +594,13 @@ body {
 
 .lobby-button-click {
   animation: lobbyButtonClick 300ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.side-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 @keyframes lobbyButtonClick {
@@ -1155,6 +1190,30 @@ body {
 .char-icon-pink {
   background: radial-gradient(circle at 35% 35%, #ffaacc, #cc4488 70%);
   box-shadow: 0 6px 18px rgba(255, 105, 180, 0.45);
+}
+
+.char-icon-crimson {
+  background: radial-gradient(circle at 35% 35%, #d43b3b, #a00000 70%);
+  box-shadow: 0 6px 18px rgba(160, 0, 0, 0.5);
+}
+
+/* ── 베타 시즌 1: 미보유 캐릭터 잠금 ── */
+.char-btn.locked {
+  opacity: 0.5;
+  filter: grayscale(0.65);
+}
+
+.char-btn.locked .char-skin-toggle {
+  visibility: hidden;
+}
+
+.char-lock {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffd166;
+  white-space: nowrap;
 }
 
 .char-name {
@@ -2254,6 +2313,14 @@ body {
   text-shadow: 0 0 10px rgba(255, 209, 102, 0.4);
 }
 
+/* ── β 크레딧 표시 ── */
+.lobby-credits {
+  font-size: 16px;
+  font-weight: 800;
+  color: #79d5ff;
+  text-shadow: 0 0 10px rgba(121, 213, 255, 0.4);
+}
+
 /* ── 캐릭터 정보 레벨·마스터리 ── */
 .ci-level-mastery {
   display: flex;
@@ -2325,6 +2392,25 @@ body {
   font-weight: 800;
   color: #ffd166;
 }
+.shop-credits {
+  font-size: 18px;
+  font-weight: 800;
+  color: #79d5ff;
+}
+.shop-card-rarity {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+.rarity-common { background: rgba(200, 200, 200, 0.18); color: #d8d8d8; }
+.rarity-rare { background: rgba(90, 170, 255, 0.18); color: #7ab8ff; }
+.rarity-epic { background: rgba(190, 120, 255, 0.18); color: #c78bff; }
+.rarity-hero,
+.rarity-legendary { background: rgba(255, 170, 60, 0.2); color: #ffc16b; }
 .shop-close-btn {
   width: 36px;
   height: 36px;

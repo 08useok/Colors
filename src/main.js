@@ -1,9 +1,11 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.135";
+import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js";
+import { CHARACTERS } from "./config/characters.js?v=1.5.141";
+import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
+import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 // ── i18n ────────────────────────────────────────────────────────────────
 // LANGS는 ./LANGS/langs.js에서 import
@@ -61,7 +63,6 @@ const startBattleBtn = document.getElementById("start-battle-btn");
 const lobbyEventMap = document.getElementById("lobby-event-map");
 const eventCountdown = document.getElementById("event-countdown");
 const modeSelector = document.getElementById("mode-selector");
-const showdownCurrentMap = document.getElementById("showdown-current-map");
 const characterPanel = document.getElementById("character-panel");
 const characterToggle = document.getElementById("character-toggle");
 const characterActions = document.getElementById("character-actions");
@@ -127,6 +128,8 @@ const crosshairEl = document.getElementById("crosshair");
 const mobileJoystick = document.getElementById("mobile-joystick");
 const mobileJoystickThumb = document.getElementById("mobile-joystick-thumb");
 const mobileAttackButton = document.getElementById("mobile-attack-button");
+const ultimateButton = document.getElementById("ultimate-button");
+const ultimateStateEl = document.getElementById("ultimate-state");
 const mapNameEl = document.getElementById("map-name");
 const cwHud = document.getElementById("chop-wood-hud");
 const cwTreeAFill = document.getElementById("cw-tree-a-fill");
@@ -142,10 +145,13 @@ const cwChopLabel = document.getElementById("cw-chop-label");
 const cwChopFill = document.getElementById("cw-chop-progress-fill");
 const cwRespawnEl = document.getElementById("cw-respawn");
 const lobbyCoins = document.getElementById("lobby-coins");
+const lobbyCredits = document.getElementById("lobby-credits");
 const shopOverlay = document.getElementById("shop-overlay");
 const shopCoins = document.getElementById("shop-coins");
+const shopCredits = document.getElementById("shop-credits");
 const shopCloseBtn = document.getElementById("shop-close-btn");
 const shopContent = document.getElementById("shop-levelup");
+const shopCharsContent = document.getElementById("shop-chars");
 const shopSkinsContent = document.getElementById("shop-skins");
 const openShopBtn = document.getElementById("open-shop-btn");
 const rotationOverlay = document.getElementById("rotation-overlay");
@@ -193,6 +199,8 @@ renderer.shadowMap.type = LOW_END_DEVICE ? THREE.BasicShadowMap : THREE.PCFShado
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
+const galeStrikeTexture = new THREE.TextureLoader().load("./assets/vfx/gale-strike.png");
+galeStrikeTexture.colorSpace = THREE.SRGBColorSpace;
 scene.background = new THREE.Color(0xc98353);
 scene.fog = new THREE.Fog(0xc98353, 55, 120);
 
@@ -222,7 +230,7 @@ const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
-const CURRENT_SEASON = "alpha4";
+const CURRENT_SEASON = "beta1";
 const ALPHA_SEASONS = ["alpha1", "alpha2", "alpha3", "alpha4"];
 const ALPHA_REWARD_DATE = "2026-07-26";
 const ALPHA_PARTICIPATION_REWARD_SKIN = "alpha_champion_cyan";
@@ -231,7 +239,38 @@ const SEASONS = {
   alpha2: "알파 시즌 2",
   alpha3: "알파 시즌 3",
   alpha4: "알파 시즌 4",
+  beta1: "베타 시즌 1",
 };
+
+// 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
+const CHARACTER_RARITY = {
+  red: "common", green: "common", blue: "common",
+  orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
+  crimson: "hero",
+};
+const RARITY_PRICE = { common: 0, rare: 200, hero: 900 };
+const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
+// 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
+const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+const WIN_REWARD_CREDITS = 100;
+
+function getCharacterPrice(charKey) {
+  return RARITY_PRICE[CHARACTER_RARITY[charKey]] ?? 0;
+}
+
+function ownsCharacter(account, charKey) {
+  if (!account) return true;
+  if (getCharacterPrice(charKey) === 0) return true;
+  return (account.ownedCharacters ?? PRE_BETA_CHARACTERS).includes(charKey);
+}
+
+function showToast(msg) {
+  const el = document.createElement("div");
+  el.textContent = msg;
+  el.style.cssText = "position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 18px;border-radius:8px;font-size:13px;z-index:9999;pointer-events:none";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
 
 const LEVEL_UP_COST = [0, 200, 500, 1000, 2000, 4000];
 const MAX_CHAR_LEVEL = 6;
@@ -262,54 +301,71 @@ function getLevelMultiplier(level) {
   return 1 + (level - 1) * LEVEL_BONUS_PER_LEVEL;
 }
 
-const SKINS = {
-  alpha_red: {
-    name: "Alpha Red",
-    character: "red",
-    season: "alpha3",
-    cost: 1000,
-    desc: "skinAlphaRedDesc",
-  },
-  alpha_champion_cyan: {
-    name: "Champion Cyan",
-    character: "cyan",
-    season: "alpha4",
-    cost: 0,
-    desc: "skinChampionCyanDesc",
-  },
-};
-
-function createCrown() {
-  const crownMat = new THREE.MeshStandardMaterial({
-    color: 0xffd700,
-    roughness: 0.3,
-    metalness: 0.6,
-  });
-  const crown = new THREE.Group();
-  const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.62, 0.68, 0.25, 8),
-    crownMat,
-  );
-  crown.add(base);
-  const pointGeo = new THREE.ConeGeometry(0.14, 0.32, 4);
-  const pointCount = 5;
-  for (let i = 0; i < pointCount; i++) {
-    const angle = (i / pointCount) * Math.PI * 2;
-    const point = new THREE.Mesh(pointGeo, crownMat);
-    point.position.set(Math.cos(angle) * 0.54, 0.25, Math.sin(angle) * 0.54);
-    crown.add(point);
-  }
-  return crown;
-}
-
 function applySkin(group, skinId) {
   if (!skinId || !SKINS[skinId]) return;
-  if (skinId === "alpha_red" || skinId === "alpha_champion_cyan") {
-    const crown = createCrown();
-    crown.position.set(0, 2.7, 0);
+  if (skinId === "alpha_red" || skinId === "alpha_champion_cyan" || skinId.startsWith("crown_")) {
+    const crown = createHighPolyCrown(getCrownVariant(skinId));
+    const usesGlbModel = ["blue", "cyan", "pink"].includes(SKINS[skinId].character);
+    fitCrownToHead(crown, usesGlbModel ? 2.7 : 2.38);
     group.add(crown);
     group.userData.crown = crown;
   }
+  if (skinId.startsWith("beta_red_")) {
+    const accessory = createRedThemeAccessory(skinId);
+    if (accessory) {
+      group.add(accessory);
+      group.userData.skinAccessory = accessory;
+    }
+  }
+}
+
+// 베타 시즌 1 레드 테마 스킨 장식 — 등급이 높을수록 화려해진다
+function createRedThemeAccessory(skinId) {
+  const accessory = new THREE.Group();
+  const redMetal = new THREE.MeshStandardMaterial({
+    color: skinId === "beta_red_crimson" ? 0x5a0010 : 0xd51f32,
+    emissive: skinId === "beta_red_red" ? 0x5c0008 : 0x240002,
+    emissiveIntensity: skinId === "beta_red_red" ? 0.8 : 0.35,
+    metalness: 0.72,
+    roughness: 0.24,
+  });
+  const gold = new THREE.MeshStandardMaterial({ color: 0xffc83d, metalness: 0.82, roughness: 0.2 });
+
+  if (skinId === "beta_red_orange") {
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
+    brim.position.y = 2.25;
+    const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.52, 0.48, 16), redMetal);
+    crownTop.position.y = 2.48;
+    const badge = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), gold);
+    badge.position.set(0, 2.48, -0.48);
+    accessory.add(brim, crownTop, badge);
+  } else if (skinId === "beta_red_crimson") {
+    for (const side of [-1, 1]) {
+      const shoulder = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.72, 8), redMetal);
+      shoulder.position.set(side * 0.86, 1.68, 0);
+      shoulder.rotation.z = side * -0.72;
+      accessory.add(shoulder);
+    }
+    const chestGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.22), gold);
+    chestGem.position.set(0, 1.5, -0.67);
+    accessory.add(chestGem);
+  } else if (skinId === "beta_red_red") {
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.08, 10, 32), gold);
+    halo.rotation.x = Math.PI / 2;
+    halo.position.y = 2.6;
+    const crest = new THREE.Mesh(new THREE.OctahedronGeometry(0.25), redMetal);
+    crest.position.set(0, 2.25, -0.55);
+    accessory.add(halo, crest);
+  } else {
+    return null;
+  }
+
+  accessory.traverse((part) => {
+    if (!part.isMesh) return;
+    part.castShadow = true;
+    part.renderOrder = 5;
+  });
+  return accessory;
 }
 
 const EMOTES = {
@@ -648,6 +704,7 @@ function loadAccount() {
     if (!account.charStats.cyan) account.charStats.cyan = { wins: 0, games: 0 };
     if (!account.charStats.purple) account.charStats.purple = { wins: 0, games: 0 };
     if (!account.charStats.pink) account.charStats.pink = { wins: 0, games: 0 };
+    if (!account.charStats.crimson) account.charStats.crimson = { wins: 0, games: 0 };
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -656,7 +713,7 @@ function loadAccount() {
       account.chopWoodCharStats = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
       if (!account.chopWoodCharStats[char]) {
         account.chopWoodCharStats[char] = { wins: 0, games: 0 };
         migrated = true;
@@ -688,6 +745,7 @@ function loadAccount() {
       if (!s.cyan) s.cyan = { wins: 0, games: 0 };
       if (!s.purple) s.purple = { wins: 0, games: 0 };
       if (!s.pink) s.pink = { wins: 0, games: 0 };
+      if (!s.crimson) s.crimson = { wins: 0, games: 0 };
     }
     if (!account.seasonChopWoodStats) {
       account.seasonChopWoodStats = {};
@@ -705,7 +763,7 @@ function loadAccount() {
       account.seasonChopWoodCharStats[CURRENT_SEASON] = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
       if (!account.seasonChopWoodCharStats[CURRENT_SEASON][char]) {
         account.seasonChopWoodCharStats[CURRENT_SEASON][char] = { wins: 0, games: 0 };
         migrated = true;
@@ -720,8 +778,49 @@ function loadAccount() {
     if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
     if (!account.charLevels.purple) { account.charLevels.purple = 1; migrated = true; }
     if (!account.charLevels.pink) { account.charLevels.pink = 1; migrated = true; }
+    if (!account.charLevels.crimson) { account.charLevels.crimson = 1; migrated = true; }
+    // 베타 시즌 1 등급 시스템 — 기존 계정은 쓰던 8종을 그대로 보유, 크림슨만 신규 구매 대상
+    if (!Array.isArray(account.ownedCharacters)) {
+      account.ownedCharacters = [...PRE_BETA_CHARACTERS];
+      migrated = true;
+    }
+    if (typeof account.credits !== "number") { account.credits = 0; migrated = true; }
     if (!account.ownedSkins) { account.ownedSkins = []; migrated = true; }
     if (!account.selectedSkins) { account.selectedSkins = {}; migrated = true; }
+    const migratedOwnedSkins = [...new Set(account.ownedSkins.map(migrateSkinId))]
+      .filter((skinId) => Boolean(SKINS[skinId]));
+    if (JSON.stringify(migratedOwnedSkins) !== JSON.stringify(account.ownedSkins)) {
+      account.ownedSkins = migratedOwnedSkins;
+      migrated = true;
+    }
+    for (const [characterId, skinId] of Object.entries(account.selectedSkins)) {
+      const migratedId = migrateSkinId(skinId);
+      if (SKINS[migratedId]?.character === characterId && account.ownedSkins.includes(migratedId)) {
+        if (migratedId !== skinId) {
+          account.selectedSkins[characterId] = migratedId;
+          migrated = true;
+        }
+      } else {
+        delete account.selectedSkins[characterId];
+        migrated = true;
+      }
+    }
+    if (CURRENT_SEASON === "beta1" && !account.beta1SkinMigrationDone) {
+      let betaState = {};
+      try { betaState = JSON.parse(localStorage.getItem("colorsBetaSeasonTest") || "{}"); } catch { betaState = {}; }
+      const betaOwnedSkins = (betaState.ownedSkins || [])
+        .map(migrateSkinId)
+        .filter((skinId) => SKINS[skinId]?.season === "beta1");
+      account.ownedSkins = [...new Set([...account.ownedSkins, ...betaOwnedSkins])];
+      for (const [characterId, skinId] of Object.entries(betaState.selectedSkins || {})) {
+        const migratedId = migrateSkinId(skinId);
+        if (SKINS[migratedId]?.character === characterId && account.ownedSkins.includes(migratedId)) {
+          account.selectedSkins[characterId] = migratedId;
+        }
+      }
+      account.beta1SkinMigrationDone = true;
+      migrated = true;
+    }
     if (!account.cosmetics) {
       account.cosmetics = {
         ownedEmotes: [], equippedEmotes: [null, null, null],
@@ -799,10 +898,13 @@ function createAccount(id, nickname) {
       cyan:   { wins: 0, games: 0 },
       purple: { wins: 0, games: 0 },
       pink:   { wins: 0, games: 0 },
+      crimson: { wins: 0, games: 0 },
     },
     charLevels: {
-      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1,
+      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1,
     },
+    ownedCharacters: [...DEFAULT_OWNED_CHARACTERS],
+    credits: 0,
     ownedSkins: [],
     selectedSkins: {},
     cosmetics: {
@@ -819,6 +921,7 @@ function createAccount(id, nickname) {
       blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
       yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
       purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
+      crimson: { wins: 0, games: 0 },
     },
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -827,6 +930,7 @@ function createAccount(id, nickname) {
         red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
         yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
+        crimson: { wins: 0, games: 0 },
       },
     },
     seasonChopWoodStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -836,6 +940,7 @@ function createAccount(id, nickname) {
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
         yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
         purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
+        crimson: { wins: 0, games: 0 },
       },
     },
   };
@@ -871,6 +976,7 @@ function updateLobbyUI(account) {
   sidebarProfileLevel.textContent = `Lv.${calcLevel(account.trophies)}`;
   lobbyTrophies.textContent = account.trophies;
   if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
+  if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
   lobbyRecord.textContent = t("record", account.wins, account.losses);
   if (lobbyWinrate) {
     const totalGames = account.wins + account.losses;
@@ -885,7 +991,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
@@ -915,6 +1021,7 @@ function updateLobbyUI(account) {
   document.querySelectorAll(".color-dot").forEach((dot) => {
     dot.classList.toggle("selected", dot.dataset.char === account.selectedCharacter);
   });
+  renderCharacterLocks(account);
   renderCharacterSkinButtons(account);
   updateColorInfo(account.selectedCharacter, account);
   state.selectedCharacter = account.selectedCharacter;
@@ -923,6 +1030,26 @@ function updateLobbyUI(account) {
     setupFrontModel(account.selectedCharacter);
   }
   applyProfileCosmetics(account);
+}
+
+// 미보유 캐릭터 버튼에 자물쇠와 크레딧 가격을 붙인다
+function renderCharacterLocks(account) {
+  document.querySelectorAll(".char-btn").forEach((btn) => {
+    const charKey = btn.dataset.char;
+    const locked = !ownsCharacter(account, charKey);
+    btn.classList.toggle("locked", locked);
+    let lockEl = btn.querySelector(".char-lock");
+    if (!locked) {
+      lockEl?.remove();
+      return;
+    }
+    if (!lockEl) {
+      lockEl = document.createElement("span");
+      lockEl.className = "char-lock";
+      btn.appendChild(lockEl);
+    }
+    lockEl.textContent = `🔒 ${getCharacterPrice(charKey).toLocaleString()} ${t("creditUnit")}`;
+  });
 }
 
 const CHAR_STAT_BARS = {
@@ -934,6 +1061,7 @@ const CHAR_STAT_BARS = {
   cyan:   { hp: 6,  atk: 6, range: 5, speed: 6 },
   purple: { hp: 6,  atk: 8, range: 5, speed: 6 },
   pink:   { hp: 10, atk: 7, range: 3, speed: 10 },
+  crimson: { hp: 10, atk: 8, range: 2, speed: 10 },
 };
 
 function statBar(label, value) {
@@ -975,7 +1103,7 @@ function updateColorInfo(charKey, account) {
       if (!account.ownedSkins.includes(skinId)) continue;
       const equipped = account.selectedSkins[charKey] === skinId;
       skinHtml += `<div class="ci-skin-row">`
-        + `<span class="ci-skin-name">${skin.name}</span>`
+        + `<span class="ci-skin-name">${t(skin.nameKey)}</span>`
         + `<button class="ci-skin-btn${equipped ? " ci-skin-active" : ""}" data-skin="${skinId}" data-char="${charKey}" type="button">`
         + (equipped ? "장착 중" : "장착")
         + `</button></div>`;
@@ -1180,6 +1308,26 @@ function streakBonus(streak) {
   return Math.min(streak - 1, 4);
 }
 
+// 승리 1회당 β 크레딧 지급 — 계정 잔액이 본체이고, 베타 테스트 페이지 저장소도 함께 갱신한다
+function grantBetaDailyWinReward(account) {
+  const storageKey = "colorsBetaSeasonTest";
+  const today = getTodayString();
+  let beta = {};
+  try { beta = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch { beta = {}; }
+  beta.credits = (Number.isFinite(beta.credits) ? beta.credits : 1500) + WIN_REWARD_CREDITS;
+  beta.daily = beta.daily?.date === today
+    ? { ...beta.daily, winRewards: (beta.daily.winRewards || 0) + 1 }
+    : { date: today, winRewards: 1 };
+  localStorage.setItem(storageKey, JSON.stringify(beta));
+
+  const acc = account ?? loadAccount();
+  if (acc) {
+    acc.credits = (acc.credits ?? 0) + WIN_REWARD_CREDITS;
+    if (!account) saveAccount(acc);
+  }
+  return WIN_REWARD_CREDITS;
+}
+
 function recordGameResult(rank, mode = "showdown") {
   const account = loadAccount();
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
@@ -1191,6 +1339,7 @@ function recordGameResult(rank, mode = "showdown") {
   let bonus = 0;
   let milestone = false;
   let coinsEarned = 0;
+  let betaCreditsEarned = 0;
 
   account.charStats[char].games += 1;
   const chopWoodCharStat = mode === "chopwood" ? account.chopWoodCharStats[char] : null;
@@ -1221,6 +1370,7 @@ function recordGameResult(rank, mode = "showdown") {
       milestone = true;
     }
     coinsEarned += COIN_REWARDS.win;
+    betaCreditsEarned = grantBetaDailyWinReward(account);
     if (rank === 1) coinsEarned += COIN_REWARDS.first;
     if (account.winStreak >= 10) coinsEarned += COIN_REWARDS.streak10;
     else if (account.winStreak >= 5) coinsEarned += COIN_REWARDS.streak5;
@@ -1245,7 +1395,7 @@ function recordGameResult(rank, mode = "showdown") {
   }
   localStorage.setItem("skullCreekLeaderboardBots", JSON.stringify(leaderboardBots));
 
-  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone, coinsEarned };
+  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone, coinsEarned, betaCreditsEarned };
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -1564,14 +1714,6 @@ function createStickman(color, skinId) {
     model.scale.setScalar(scale);
     model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
     model.rotation.y = Math.PI;
-    model.traverse(c => {
-      if (!c.isMesh) return;
-      const mats = Array.isArray(c.material) ? c.material : [c.material];
-      for (const material of mats) {
-        material.map = null;
-        material.color?.set(0x165dff);
-      }
-    });
     _applyPinkToon(model);
     model.traverse(c => {
       if (!c.isMesh) return;
@@ -1623,6 +1765,48 @@ function createStickman(color, skinId) {
   }
 
   // Pink: start/loop/end 3개 GLB 상태머신
+  if (color === 0x0ff0fe && _cyanWalkGlb) {
+    const group = new THREE.Group();
+    const model = skeletonClone(_cyanWalkGlb.scene);
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const scale = 2.7 / Math.max(size.y, 0.001);
+    model.scale.setScalar(scale);
+    model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
+    model.rotation.y = 0;
+    model.traverse(c => {
+      if (!c.isMesh) return;
+      c.frustumCulled = false;
+      c.castShadow = true;
+      c.receiveShadow = true;
+    });
+    group.add(model);
+
+    const cyanMixer = new THREE.AnimationMixer(model);
+    const cyanWalkAction = _cyanWalkGlb.animations?.length
+      ? cyanMixer.clipAction(_cyanWalkGlb.animations[0])
+      : null;
+    if (cyanWalkAction) {
+      cyanWalkAction.setLoop(THREE.LoopRepeat, Infinity);
+      cyanWalkAction.play();
+      cyanWalkAction.paused = true;
+    }
+    const bodyMaterials = [];
+    model.traverse(c => {
+      if (!c.isMesh) return;
+      const mats = Array.isArray(c.material) ? c.material : [c.material];
+      for (const material of mats) {
+        if (!bodyMaterials.includes(material)) bodyMaterials.push(material);
+      }
+    });
+    group.userData = {
+      isGlbModel: true, isCyanGlb: true, cyanModel: model,
+      cyanMixer, cyanWalkAction, bodyMaterials, guitar: null,
+    };
+    return group;
+  }
+
   if (color === 0xF4CDD3 && _pinkGlb.loop) {
     const group = new THREE.Group();
 
@@ -2371,6 +2555,7 @@ function _applyPinkToon(scene) {
 
 let _bluePreviewGlb = null;
 let _blueWalkGlb = null;
+let _cyanWalkGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
@@ -2380,6 +2565,14 @@ _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
     setPreviewCharacter('blue');
   }
   if (frontModelCharType === 'blue') setupFrontModel('blue');
+});
+_glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
+  _cyanWalkGlb = _stripRootMotion(g);
+  if (previewCharType === 'cyan') {
+    previewChar = null;
+    setPreviewCharacter('cyan');
+  }
+  if (frontModelCharType === 'cyan') setupFrontModel('cyan');
 });
 _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
@@ -2447,10 +2640,10 @@ function setupFrontModel(charType) {
       const s = skeletonClone(gltf.scene);
       const box = new THREE.Box3().setFromObject(s);
       const sz = box.getSize(new THREE.Vector3());
-      const sc = 2.2 / sz.y;
+      const sc = 1.8 / sz.y;
       const ctr = box.getCenter(new THREE.Vector3());
       s.scale.setScalar(sc);
-      s.position.set(-ctr.x * sc, -ctr.y * sc - 2.2, -ctr.z * sc);
+      s.position.set(-ctr.x * sc, -ctr.y * sc - 1.8, -ctr.z * sc);
       _applyPinkToon(s);
       s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       let sm = null;
@@ -2515,9 +2708,9 @@ function setPreviewCharacter(charType) {
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
-      const scale = 2.2 / size.y;
+      const scale = 1.8 / size.y;
       m.scale.setScalar(scale);
-      m.position.set(-center.x * scale, -center.y * scale - 2.2, -center.z * scale);
+      m.position.set(-center.x * scale, -center.y * scale - 1.8, -center.z * scale);
       _applyPinkToon(m);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
@@ -2551,6 +2744,11 @@ function renderPreview(dt) {
 
   // GLB 모델 (Pink)은 뼈대가 없으므로 회전만 하고 종료
   if (previewIsGlb) {
+    if (previewModel.userData.isCyanGlb && previewModel.userData.cyanWalkAction) {
+      previewModel.userData.cyanWalkAction.paused = false;
+      previewModel.userData.cyanWalkAction.timeScale = 0.8;
+      previewModel.userData.cyanMixer.update(dt);
+    }
     previewRenderer.render(previewScene, previewCamera);
     return;
   }
@@ -2721,6 +2919,12 @@ function makeFighter(options) {
     poisonUntil: 0,
     poisonSourceId: -1,
     poisonNextTick: 0,
+    cyanUltimateCharge: 0,
+    crimsonUltimateCharge: 0,
+    galeKnockbackRemaining: 0,
+    galeKnockbackX: 0,
+    galeKnockbackZ: 0,
+    galeKnockbackSpeed: 0,
   };
 
   fighter.mesh = createStickman(charDef.color, skinId);
@@ -2785,6 +2989,7 @@ function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr =
   const aabbHalfZ = Math.abs(sin) * width * 0.5 + Math.abs(cos) * depth * 0.5;
   solidsArr.push({
     type: "wall",
+    mesh,
     x,
     z,
     width,
@@ -2869,14 +3074,24 @@ const MAP_POOL = [
   {
     id: 0,
     name: "해골 협곡",
+    // 벽 형식: [중심 X, 중심 Z, 가로 길이(width), 세로 길이(depth)]
+    // width > depth: 가로벽 ─ / depth > width: 세로벽 │ / 같으면 정사각 블록 ■
     wallSpecs: [
+      // 북쪽 외곽 벽
       [-33, 34, 2, 6], [-18, 40, 8, 2], [-7, 35, 2, 8], [9, 36, 2, 10], [24, 38, 2, 8],
+      // 북동쪽에서 중앙 북부로 이어지는 벽
       [41, 23, 2, 8], [36, 12, 6, 2], [22, 20, 2, 8], [14, 9, 8, 2], [0, 17, 10, 2],
+      // 북서쪽과 서쪽 벽
       [-13, 18, 2, 8], [-24, 15, 6, 2], [-36, 20, 2, 10], [-42, 8, 6, 2], [-28, 4, 2, 8], [-15, -2, 10, 2],
+      // 중앙과 동쪽 벽
       [-2, 4, 2, 10], [16, -2, 6, 2], [28, 4, 2, 8], [40, -2, 6, 2], [35, -18, 2, 12], [25, -24, 10, 2],
+      // 남동쪽에서 남서쪽으로 이어지는 벽
       [15, -30, 2, 8], [0, -26, 8, 2], [-12, -30, 2, 8], [-28, -24, 10, 2], [-38, -16, 2, 8],
+      // 남쪽 외곽 벽
       [-14, -40, 8, 2], [2, -40, 12, 2], [18, -38, 2, 10],
+      // 중앙 남부의 미로 벽
       [-6, -14, 6, 2], [8, -14, 2, 8], [12, -12, 8, 2], [-20, -14, 2, 8], [-24, -8, 8, 2], [24, -10, 8, 2],
+      // 중앙 북부의 보조 벽
       [31, -8, 2, 8], [5, 28, 8, 2], [15, 28, 2, 8], [-26, 28, 10, 2], [-18, 25, 2, 8], [32, 26, 8, 2],
     ],
     bushSpecs: [
@@ -2899,14 +3114,24 @@ const MAP_POOL = [
   {
     id: 1,
     name: "마른 호수",
+    // 벽 형식: [중심 X, 중심 Z, 가로 길이(width), 세로 길이(depth)]
+    // width > depth: 가로벽 ─ / depth > width: 세로벽 │ / 같으면 정사각 블록 ■
     wallSpecs: [
+      // 북쪽 외곽 벽
       [-20, 38, 2, 8], [0, 42, 10, 2], [18, 38, 2, 8],
+      // 북쪽 중단 벽
       [-28, 22, 8, 2], [-10, 28, 2, 8], [10, 22, 8, 2], [28, 28, 2, 10], [42, 20, 6, 2],
+      // 중앙 북부 벽
       [-36, 10, 6, 2], [-22, 6, 2, 8], [-8, 10, 8, 2], [8, 6, 2, 8], [22, 10, 6, 2], [38, 8, 2, 8],
+      // 중앙 남부 벽
       [-40, -6, 8, 2], [-24, -10, 2, 8], [-6, -6, 6, 2], [10, -10, 2, 8], [26, -6, 8, 2], [42, -10, 2, 8],
+      // 남쪽 중단 벽
       [-36, -22, 2, 10], [-18, -24, 8, 2], [0, -20, 2, 8], [18, -24, 8, 2], [36, -22, 2, 10],
+      // 남쪽 외곽 벽
       [-26, -38, 2, 8], [-8, -40, 10, 2], [12, -38, 2, 8],
+      // 중앙 사각 구역과 중앙 블록
       [-14, 14, 2, 6], [14, 14, 2, 6], [-14, -14, 2, 6], [14, -14, 2, 6], [0, 0, 4, 4],
+      // 네 모서리의 가로 벽
       [-34, 34, 8, 2], [34, 34, 8, 2], [-34, -34, 8, 2], [34, -34, 8, 2],
     ],
     bushSpecs: [
@@ -2931,13 +3156,22 @@ const MAP_POOL = [
   {
     id: 2,
     name: "뼈의 미로",
+    // 벽 형식: [중심 X, 중심 Z, 가로 길이(width), 세로 길이(depth)]
+    // width > depth: 가로벽 ─ / depth > width: 세로벽 │ / 같으면 정사각 블록 ■
     wallSpecs: [
+      // 북쪽 외곽 벽
       [-24, 36, 2, 10], [0, 40, 12, 2], [24, 36, 2, 10],
+      // 북쪽 미로 첫 번째 줄
       [-30, 18, 8, 2], [-14, 24, 2, 10], [0, 18, 10, 2], [14, 24, 2, 10], [30, 18, 8, 2],
+      // 중앙 북부 미로
       [-38, 6, 6, 2], [-20, 2, 2, 10], [-6, 6, 6, 2], [6, 2, 2, 10], [20, 6, 6, 2], [38, 2, 2, 10],
+      // 중앙 남부 미로
       [-42, -10, 8, 2], [-28, -14, 2, 8], [-10, -10, 10, 2], [10, -14, 2, 8], [28, -10, 8, 2], [42, -14, 2, 8],
+      // 남쪽 미로 첫 번째 줄
       [-36, -26, 2, 10], [-18, -28, 8, 2], [0, -26, 2, 10], [18, -28, 8, 2], [36, -26, 2, 10],
+      // 남쪽 외곽 벽
       [-22, -42, 2, 8], [0, -40, 12, 2], [22, -42, 2, 8],
+      // 네 모서리의 가로 벽
       [-34, 34, 8, 2], [34, 34, 8, 2], [-34, -34, 8, 2], [34, -34, 8, 2],
     ],
     bushSpecs: [
@@ -2959,15 +3193,6 @@ const MAP_POOL = [
     ],
   },
 ];
-
-function getCurrentShowdownMapId() {
-  return Math.floor(Date.now() / 86400000) % MAP_POOL.length;
-}
-
-function updateShowdownCurrentMap() {
-  state.currentMapId = getCurrentShowdownMapId();
-  showdownCurrentMap.textContent = `현재 맵: ${MAP_POOL[state.currentMapId].name}`;
-}
 
 // ── Take Down 전용 8방향 대칭 맵 ──────────────────────────────────────
 function rotateXZ(x, z, angleDeg) {
@@ -3289,7 +3514,7 @@ function initChopWoodPlayers() {
   });
   state.players = [];
 
-  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
 
@@ -3389,7 +3614,7 @@ function initTakeDownPlayers() {
   // 탈락 캐릭터 제외
   const _tdAccount = loadAccount();
   const _tdEliminated = new Set(_tdAccount?.rotation?.eliminated ?? []);
-  const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]
+  const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]
     .filter((c) => !_tdEliminated.has(c));
 
   // 멀티 기준: 원격 플레이어 목록
@@ -3897,6 +4122,7 @@ function checkTakeDownEnd() {
       state.rotationResultId = null;
     }
 
+    const betaCreditsEarned = playerRank <= 4 ? grantBetaDailyWinReward() : 0;
     const resultTag = playerRank <= 4 ? t("tdWin") : t("tdLose");
     audio.play(playerRank <= 4 ? "win" : "lose");
     resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : t("tdTimeUp");
@@ -3906,6 +4132,7 @@ function checkTakeDownEnd() {
       statsLines.push(t("tdBossDmg", player.tdBossDmg));
       statsLines.push(t("tdKills", player.tdKills));
     }
+    if (betaCreditsEarned) statsLines.push(t("winRewardCredits", betaCreditsEarned));
     resultStats.textContent = statsLines.join("  |  ");
     resultStreak.style.display = "none";
     resultOverlay.style.display = "flex";
@@ -4416,7 +4643,7 @@ const attackAimIndicator = createAttackAimIndicator();
 function createGreenAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.green.boomerangRange * ATTACK_RANGE_MULTIPLIER;
-  const halfAngle = 25 * (Math.PI / 180); // 25° = half of 50°
+  const halfAngle = 15 * (Math.PI / 180); // 15° = half of 30°
 
   // Fan fill (ShapeGeometry in XZ plane via rotation)
   const shape = new THREE.Shape();
@@ -5059,7 +5286,7 @@ function initPlayers() {
       if (!isLocal) mpNetFighters[participant.id] = fighter;
       state.players.push(fighter);
     });
-    const baseBotTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+    const baseBotTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
     const botCount = spawns.length - mpConfig.players.length;
     const botTypes = shuffle(Array.from({ length: botCount }, (_, index) => baseBotTypes[index % baseBotTypes.length]));
     for (let index = mpConfig.players.length; index < spawns.length; index += 1) {
@@ -5082,7 +5309,7 @@ function initPlayers() {
   }
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
@@ -5592,6 +5819,103 @@ function queueAttackHit(attacker, hitIndex, damage, executeAt) {
   });
 }
 
+// 크림슨 3연속 펀치 — 부채꼴 범위에 -25°, 0°, +25° 순서로 세 번 때린다
+function beginCrimsonPunchCombo(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
+    return false;
+  }
+  const charDef = CHARACTERS.crimson;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.spread = Math.min(1, fighter.spread + 0.12);
+  fighter.recoilKick = Math.min(1.5, fighter.recoilKick + 0.4);
+  fighter.lastCombatTime = state.gameTime;
+  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+
+  const interval = charDef.attackIntervalMs / 1000;
+  for (let i = 0; i < charDef.attackCount; i += 1) {
+    queueAttackHit(fighter, i, charDef.attackDamage, state.gameTime + interval * i);
+  }
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
+// 부채꼴 판정 — 범위 안 적을 전부 때리고, 명중하면 궁극기 게이지가 찬다
+function resolveCrimsonPunch(attacker, hitIndex, damage) {
+  const charDef = CHARACTERS.crimson;
+  const centerYaw = attacker.yaw + (charDef.attackAngles[hitIndex] ?? 0);
+  const range = charDef.attackRange * ATTACK_RANGE_MULTIPLIER;
+  let hitCount = 0;
+
+  for (const target of state.players) {
+    if (target.id === attacker.id || target.dead) continue;
+    if (state.chopWoodMode && target.team === attacker.team) continue;
+
+    const deltaX = target.mesh.position.x - attacker.mesh.position.x;
+    const deltaZ = target.mesh.position.z - attacker.mesh.position.z;
+    const dist = Math.hypot(deltaX, deltaZ);
+    if (dist > range + target.radius) continue;
+    if (!isFighterVisible(attacker, target)) continue;
+
+    const targetYaw = Math.atan2(deltaX, deltaZ);
+    let diff = targetYaw - centerYaw;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    if (Math.abs(diff) > charDef.attackHalfAngle) continue;
+
+    applyDamage(target, damage, attacker);
+    tempVec3.copy(target.mesh.position);
+    tempVec3.y = 1.6;
+    createHitSpark(tempVec3);
+    hitCount += 1;
+  }
+
+  createCrimsonPunchEffect(attacker, centerYaw, range);
+
+  if (hitCount > 0) {
+    attacker.crimsonUltimateCharge = Math.min(
+      charDef.ultimate.chargeRequired,
+      (attacker.crimsonUltimateCharge ?? 0) + 1,
+    );
+    if (attacker.isPlayer) {
+      flashHitMarker();
+      audio.play("hit");
+    }
+  }
+}
+
+function createCrimsonPunchEffect(attacker, yaw, range) {
+  const cx = attacker.mesh.position.x + Math.sin(yaw) * range * 0.6;
+  const cz = attacker.mesh.position.z + Math.cos(yaw) * range * 0.6;
+
+  const fist = new THREE.Mesh(
+    new THREE.SphereGeometry(0.38, 8, 6),
+    new THREE.MeshBasicMaterial({ color: 0xa00000, transparent: true, opacity: 0.9 }),
+  );
+  fist.position.set(cx, 1.2, cz);
+  scene.add(fist);
+  state.effects.push({ mesh: fist, life: 0.14, maxLife: 0.14, type: "fist" });
+
+  const impact = new THREE.Mesh(
+    new THREE.RingGeometry(0.25, 0.55, 12),
+    new THREE.MeshBasicMaterial({
+      color: 0xff5a4a,
+      transparent: true,
+      opacity: 0.85,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  impact.rotation.y = yaw;
+  impact.rotation.x = Math.PI / 2;
+  impact.position.set(cx, 1.2, cz);
+  scene.add(impact);
+  state.effects.push({ mesh: impact, life: 0.2, maxLife: 0.2, type: "punchImpact" });
+}
+
 function beginAttackCore(fighter) {
   if (state.gameTime < state.freezeUntil) return false;
   if (fighter.characterType === "green") {
@@ -5614,6 +5938,9 @@ function beginAttackCore(fighter) {
   }
   if (fighter.characterType === "pink") {
     return beginHealCircleAttack(fighter);
+  }
+  if (fighter.characterType === "crimson") {
+    return beginCrimsonPunchCombo(fighter);
   }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
@@ -5677,6 +6004,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "cyan") baseRange = CHARACTERS.cyan.spreadLineRange;
   else if (fighter.characterType === "purple") baseRange = CHARACTERS.purple.needleRange;
   else if (fighter.characterType === "pink") baseRange = CHARACTERS.pink.healCircleRange;
+  else if (fighter.characterType === "crimson") baseRange = CHARACTERS.crimson.attackRange;
   return baseRange * ATTACK_RANGE_MULTIPLIER;
 }
 
@@ -6021,6 +6349,182 @@ function beginSpreadLineAttack(fighter) {
   return true;
 }
 
+function autoAimCyanUltimate(fighter, range) {
+  let nearest = null;
+  let nearestDistance = range;
+  for (const target of state.players) {
+    if (target.id === fighter.id || target.dead) continue;
+    if (state.chopWoodMode && target.team === fighter.team) continue;
+    const dx = target.mesh.position.x - fighter.mesh.position.x;
+    const dz = target.mesh.position.z - fighter.mesh.position.z;
+    const distance = Math.hypot(dx, dz);
+    if (distance < nearestDistance) {
+      nearest = target;
+      nearestDistance = distance;
+    }
+  }
+  if (nearest) {
+    fighter.yaw = Math.atan2(
+      nearest.mesh.position.x - fighter.mesh.position.x,
+      nearest.mesh.position.z - fighter.mesh.position.z,
+    );
+    fighter.mesh.rotation.y = fighter.yaw;
+  }
+}
+
+function tryUseCyanUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "cyan" || !state.running) return false;
+  const ultimate = CHARACTERS.cyan.ultimate;
+  if (fighter.cyanUltimateCharge < ultimate.chargeRequired) return false;
+
+  autoAimCyanUltimate(fighter, ultimate.range);
+  fighter.cyanUltimateCharge = 0;
+  const yaw = fighter.yaw;
+  const speed = CHARACTERS.cyan.spreadLineSpeed * ultimate.speedMultiplier;
+  const forward = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
+  const sideways = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(ultimate.width, 2.8),
+    new THREE.MeshBasicMaterial({
+      map: galeStrikeTexture,
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.92,
+      depthWrite: false,
+      depthTest: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    }),
+  );
+  mesh.quaternion.setFromRotationMatrix(
+    new THREE.Matrix4().makeBasis(sideways, forward, new THREE.Vector3(0, -1, 0)),
+  );
+  mesh.position.set(
+    fighter.mesh.position.x + forward.x,
+    1.05,
+    fighter.mesh.position.z + forward.z,
+  );
+  mesh.renderOrder = 30;
+  scene.add(mesh);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: mesh.position.x,
+    z: mesh.position.z,
+    vx: forward.x * speed,
+    vz: forward.z * speed,
+    speed,
+    damage: ultimate.damage,
+    range: ultimate.range,
+    knockback: ultimate.knockback,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    mesh,
+    isGaleStrike: true,
+    hitTargetIds: new Set(),
+  });
+  audio.play("projectileFire");
+  return true;
+}
+
+// 궁극기 범위 안의 벽을 영구 제거한다. 맵 경계벽(20타일 이상)은 남긴다.
+function destroyWallsInArea(centerX, centerZ, half) {
+  const minX = centerX - half;
+  const maxX = centerX + half;
+  const minZ = centerZ - half;
+  const maxZ = centerZ + half;
+  let destroyed = 0;
+  for (let i = state.solids.length - 1; i >= 0; i -= 1) {
+    const solid = state.solids[i];
+    if (solid.type !== "wall") continue;
+    if (solid.width >= 20 || solid.depth >= 20) continue;
+    if (solid.maxX < minX || solid.minX > maxX) continue;
+    if (solid.maxZ < minZ || solid.minZ > maxZ) continue;
+    if (solid.mesh) {
+      solid.mesh.parent?.remove(solid.mesh);
+      solid.mesh.geometry?.dispose();
+      solid.mesh.material?.dispose();
+    }
+    state.solids.splice(i, 1);
+    destroyed += 1;
+  }
+  return destroyed;
+}
+
+function createCrimsonUltimateEffect(centerX, centerZ, yaw, size) {
+  const shock = new THREE.Mesh(
+    new THREE.PlaneGeometry(size, size),
+    new THREE.MeshBasicMaterial({
+      color: 0xff2b2b,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    }),
+  );
+  shock.rotation.x = -Math.PI / 2;
+  shock.rotation.z = -yaw;
+  shock.position.set(centerX, 0.12, centerZ);
+  scene.add(shock);
+  state.effects.push({ mesh: shock, life: 0.5, maxLife: 0.5, type: "punchImpact" });
+
+  const burst = new THREE.Mesh(
+    new THREE.SphereGeometry(size * 0.42, 12, 10),
+    new THREE.MeshBasicMaterial({ color: 0xff6a4a, transparent: true, opacity: 0.5, depthWrite: false }),
+  );
+  burst.position.set(centerX, 1.4, centerZ);
+  scene.add(burst);
+  state.effects.push({ mesh: burst, life: 0.35, maxLife: 0.35, type: "punchBurst" });
+}
+
+// KO 스트레이트 — 정면 5×5에 피해·넉백, 범위 안 벽은 부순다
+function tryUseCrimsonUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "crimson" || !state.running) return false;
+  const ultimate = CHARACTERS.crimson.ultimate;
+  if ((fighter.crimsonUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+
+  fighter.crimsonUltimateCharge = 0;
+  const yaw = fighter.yaw;
+  const forwardX = Math.sin(yaw);
+  const forwardZ = Math.cos(yaw);
+  const half = ultimate.size * 0.5;
+  const centerX = fighter.mesh.position.x + forwardX * half;
+  const centerZ = fighter.mesh.position.z + forwardZ * half;
+
+  for (const target of state.players) {
+    if (target.id === fighter.id || target.dead) continue;
+    if (state.chopWoodMode && target.team === fighter.team) continue;
+    const dx = target.mesh.position.x - centerX;
+    const dz = target.mesh.position.z - centerZ;
+    const forwardDistance = Math.abs(dx * forwardX + dz * forwardZ);
+    const sideDistance = Math.abs(dx * forwardZ - dz * forwardX);
+    if (forwardDistance > half + target.radius || sideDistance > half + target.radius) continue;
+
+    applyDamage(target, ultimate.damage, fighter);
+    target.galeKnockbackX = forwardX;
+    target.galeKnockbackZ = forwardZ;
+    target.galeKnockbackRemaining = ultimate.knockback;
+    target.galeKnockbackSpeed = 12;
+    tempVec3.copy(target.mesh.position);
+    tempVec3.y = 1.6;
+    createHitSpark(tempVec3);
+    if (fighter.isPlayer) {
+      flashHitMarker();
+      audio.play("hit");
+    }
+  }
+
+  destroyWallsInArea(centerX, centerZ, half);
+  createCrimsonUltimateEffect(centerX, centerZ, yaw, ultimate.size);
+  audio.play("attack");
+  return true;
+}
+
+function tryUseUltimate(fighter = getPlayer()) {
+  if (!fighter) return false;
+  if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
+  return tryUseCyanUltimate(fighter);
+}
+
 function createNeedleMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.ConeGeometry(0.08, 0.5, 6),
@@ -6068,7 +6572,6 @@ function beginHealCircleAttack(fighter) {
   let effectiveRange = (fighter.hasPinkAreaHealAbility
     ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
     : charDef.healCircleRange) * ATTACK_RANGE_MULTIPLIER;
-  if (state.chopWoodMode) effectiveRange *= (1 + charDef.chopWoodRangeBonus);
   const r2 = effectiveRange * effectiveRange;
 
   for (const target of state.players) {
@@ -6080,7 +6583,7 @@ function beginHealCircleAttack(fighter) {
     const isAlly = state.chopWoodMode && target.team === fighter.team;
     if (isAlly) {
       const healDebuff = (target.poisonUntil && target.poisonUntil > state.gameTime) ? 0.5 : 1;
-      const healAmount = charDef.healCircleHeal * (1 + charDef.chopWoodHealBonus) * healDebuff;
+      const healAmount = charDef.healCircleHeal * healDebuff;
       const healthBeforeHeal = target.health;
       target.health = Math.min(target.maxHealth, target.health + healAmount);
       const healed = target.health - healthBeforeHeal;
@@ -6295,6 +6798,26 @@ function updateProjectiles(dt) {
     }
     proj.mesh.visible = true;
 
+    if (proj.isBoomerang && proj.isReturning) {
+      const owner = state.players.find((fighter) => fighter.id === proj.ownerId && !fighter.dead);
+      if (!owner) {
+        scene.remove(proj.mesh);
+        state.projectiles.splice(i, 1);
+        continue;
+      }
+      const returnX = owner.mesh.position.x - proj.x;
+      const returnZ = owner.mesh.position.z - proj.z;
+      const returnDistance = Math.hypot(returnX, returnZ);
+      if (returnDistance < owner.radius + 0.35) {
+        scene.remove(proj.mesh);
+        state.projectiles.splice(i, 1);
+        continue;
+      }
+      const returnSpeed = CHARACTERS.green.boomerangSpeed * CHARACTERS.green.boomerangReturnSpeedMultiplier;
+      proj.vx = (returnX / returnDistance) * returnSpeed;
+      proj.vz = (returnZ / returnDistance) * returnSpeed;
+    }
+
     const step = Math.hypot(proj.vx, proj.vz) * dt;
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
@@ -6314,9 +6837,9 @@ function updateProjectiles(dt) {
         continue;
       }
     } else {
-      const projectileY = proj.isBossWave ? 2 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2;
+      const projectileY = proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2;
       proj.mesh.position.set(proj.x, projectileY, proj.z);
-      if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle) {
+      if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle && !proj.isGaleStrike) {
         proj.mesh.rotation.z += dt * 10;
       }
     }
@@ -6347,12 +6870,45 @@ function updateProjectiles(dt) {
       continue;
     }
 
+    if (proj.isGaleStrike) {
+      const attacker = state.players.find((fighter) => fighter.id === proj.ownerId);
+      const directionLength = Math.hypot(proj.vx, proj.vz) || 1;
+      const forwardX = proj.vx / directionLength;
+      const forwardZ = proj.vz / directionLength;
+      for (const target of state.players) {
+        if (target.id === proj.ownerId || target.dead || proj.hitTargetIds.has(target.id)) continue;
+        if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
+        const dx = target.mesh.position.x - proj.x;
+        const dz = target.mesh.position.z - proj.z;
+        const forwardDistance = Math.abs(dx * forwardX + dz * forwardZ);
+        const sideDistance = Math.abs(dx * forwardZ - dz * forwardX);
+        if (forwardDistance > 1 || sideDistance > CHARACTERS.cyan.ultimate.width * 0.5 + target.radius) continue;
+        proj.hitTargetIds.add(target.id);
+        applyDamage(target, proj.damage, attacker ?? null);
+        target.galeKnockbackX = forwardX;
+        target.galeKnockbackZ = forwardZ;
+        target.galeKnockbackRemaining = proj.knockback;
+        target.galeKnockbackSpeed = proj.speed;
+        if (attacker?.isPlayer) {
+          flashHitMarker();
+          audio.play("hit");
+        }
+      }
+      proj.mesh.material.opacity = 0.82 + Math.sin(proj.distTraveled * 3) * 0.1;
+      if (proj.distTraveled >= proj.range) {
+        scene.remove(proj.mesh);
+        state.projectiles.splice(i, 1);
+      }
+      continue;
+    }
+
     let hit = false;
     const attacker = state.players.find((p) => p.id === proj.ownerId);
     for (const target of state.players) {
       if (target.id === proj.ownerId || target.dead) {
         continue;
       }
+      if (proj.hitTargetIds?.has(target.id)) continue;
       if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
       const dx = target.mesh.position.x - proj.x;
       const dz = target.mesh.position.z - proj.z;
@@ -6368,6 +6924,13 @@ function updateProjectiles(dt) {
         const isFar = proj.distTraveled > proj.farThreshold;
         const dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
+        proj.hitTargetIds?.add(target.id);
+        if (proj.isSpreadLine && attacker?.characterType === "cyan" && dealt > 0) {
+          attacker.cyanUltimateCharge = Math.min(
+            CHARACTERS.cyan.ultimate.chargeRequired,
+            attacker.cyanUltimateCharge + 1,
+          );
+        }
         if (attacker && attacker.isPlayer) {
           flashHitMarker();
           audio.play("hit");
@@ -6458,7 +7021,18 @@ function updateProjectiles(dt) {
       }
     }
 
-    if (hit || proj.distTraveled >= proj.range) {
+    if (proj.isBoomerang && !proj.isReturning && (hit || proj.distTraveled >= proj.range)) {
+      proj.isReturning = true;
+      proj.distTraveled = 0;
+      proj.hitTargetIds ??= new Set();
+      continue;
+    }
+
+    if (proj.isBoomerang && proj.isReturning && hit) {
+      continue;
+    }
+
+    if (hit || (!proj.isBoomerang && proj.distTraveled >= proj.range)) {
       if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); audio.play("explosion"); }
       if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
@@ -6570,6 +7144,11 @@ function findNearestBush(pos) {
 
 function resolveAttack(attacker, hitIndex, damage) {
   if (!attacker || attacker.dead) {
+    return;
+  }
+
+  if (attacker.characterType === "crimson") {
+    resolveCrimsonPunch(attacker, hitIndex, damage);
     return;
   }
 
@@ -7180,6 +7759,7 @@ function updateBot(bot, dt, zone) {
     else if (ct === "cyan") idealDist = 6;
     else if (ct === "purple") idealDist = 11;
     else if (ct === "pink") idealDist = 3;
+    else if (ct === "crimson") idealDist = 2; // 근접 브루저 — 최대한 붙는다
     else idealDist = atkRange * 0.6;
 
     let purpleIsVialTurn = false;
@@ -7275,6 +7855,10 @@ function updateBot(bot, dt, zone) {
       if (ct === "yellow") bot.yellowKiteUntil = state.gameTime + 1.5;
       if (ct === "purple" && target.health < target.maxHealth * 0.3) {
         if ((bot.attackIndex || 0) % 2 === 0) bot.attackIndex = (bot.attackIndex || 0) + 1;
+      }
+      // 크림슨 봇: 근접 교전 중 게이지가 차면 바로 궁극기
+      if (ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
+        tryUseCrimsonUltimate(bot);
       }
       beginAttack(bot);
     }
@@ -7434,6 +8018,16 @@ function updateBossAnimation(boss, dt) {
   }
 }
 
+function updateGaleKnockback(dt) {
+  for (const fighter of state.players) {
+    if (fighter.dead || fighter.galeKnockbackRemaining <= 0) continue;
+    const step = Math.min(fighter.galeKnockbackRemaining, fighter.galeKnockbackSpeed * dt);
+    fighter.mesh.position.x += fighter.galeKnockbackX * step;
+    fighter.mesh.position.z += fighter.galeKnockbackZ * step;
+    fighter.galeKnockbackRemaining -= step;
+  }
+}
+
 function updateFighterAnimation(fighter, dt) {
   if (fighter.isBoss) {
     updateBossAnimation(fighter, dt);
@@ -7589,6 +8183,24 @@ function updateFighterAnimation(fighter, dt) {
       bodyZ += punchOne * 0.08 - punchTwo * 0.07;
       headY += -punchOne * 0.18 + punchTwo * 0.18;
       headX += punchOne * 0.06 + punchTwo * 0.04;
+    } else if (charType === "crimson") {
+      // 크림슨 3연속 펀치 — 0.12초 간격으로 좌·우·좌 난타
+      const punchOne = pulse(t, 0.00, 0.06, 0.12);
+      const punchTwo = pulse(t, 0.12, 0.18, 0.24);
+      const punchThree = pulse(t, 0.24, 0.31, 0.40);
+      const recover = pulse(t, 0.40, 0.50, 0.62);
+      rightArmX += -fighter.attackSwing * 0.45 - (punchOne + punchThree) * 1.7 + recover * 0.3;
+      leftArmX += -fighter.attackSwing * 0.35 - punchTwo * 1.7 + recover * 0.25;
+      rightArmZ += -(punchOne + punchThree) * 0.22;
+      leftArmZ += punchTwo * 0.22;
+      rightElbowX += (punchOne + punchThree) * 0.45 - recover * 0.25;
+      leftElbowX += punchTwo * 0.45 - recover * 0.25;
+      leftLeg += -punchOne * 0.12 + punchTwo * 0.2 - punchThree * 0.12;
+      rightLeg += punchOne * 0.2 - punchTwo * 0.12 + punchThree * 0.2;
+      bodyY += -(punchOne + punchThree) * 0.22 + punchTwo * 0.24;
+      bodyZ += (punchOne + punchThree) * 0.07 - punchTwo * 0.06;
+      headY += -(punchOne + punchThree) * 0.14 + punchTwo * 0.14;
+      headX += (punchOne + punchTwo + punchThree) * 0.04;
     } else {
       // 기본 더블 펀치 콤보
       const punchOne = pulse(t, 0.02, 0.11, 0.2);
@@ -7641,6 +8253,13 @@ function updateFighterAnimation(fighter, dt) {
       poseBone('CC_Base_L_Forearm', 0, -0.25);
       poseBone('CC_Base_R_Forearm', 0, 0.25);
       poseBone('CC_Base_Spine01', 0, moving ? phase * 0.025 : 0);
+      }
+    } else if (body.isCyanGlb) {
+      if (body.cyanWalkAction) {
+        const moving = speed > 0.5;
+        body.cyanWalkAction.paused = !moving;
+        body.cyanWalkAction.timeScale = THREE.MathUtils.clamp(speed / 5, 0.65, 1.5);
+        body.cyanMixer.update(dt);
       }
     } else {
     const moving = speed > 0.5;
@@ -8048,6 +8667,23 @@ function updateHud() {
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
 
+  const hasUltimate = (player.characterType === "cyan" || player.characterType === "crimson")
+    && !player.dead && state.running;
+  ultimateButton.classList.toggle("hidden", !hasUltimate);
+  ultimateButton.classList.toggle("crimson", player.characterType === "crimson");
+  if (hasUltimate) {
+    const isCrimson = player.characterType === "crimson";
+    const ultimate = CHARACTERS[player.characterType].ultimate;
+    const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0) : player.cyanUltimateCharge;
+    const ratio = Math.min(1, charge / ultimate.chargeRequired);
+    ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
+    ultimateButton.classList.toggle("ready", ratio >= 1);
+    ultimateStateEl.textContent = ratio >= 1 ? "READY" : `${Math.round(ratio * 100)}%`;
+    ultimateButton.title = ratio >= 1
+      ? `Space 또는 Q · ${ultimate.name}`
+      : `궁극기 ${charge}/${ultimate.chargeRequired}`;
+  }
+
   emoteBtns.forEach((btn, i) => {
     if (!btn || btn.classList.contains("hidden")) return;
     const cdLeft = Math.ceil(emoteCooldownUntil[i] - state.gameTime);
@@ -8296,7 +8932,7 @@ function checkEndState() {
       state.running = false;
       const playerWon = winningTeam === allyTeam;
       const resultRank = playerWon ? 1 : 10;
-      const { bonus, coinsEarned } = recordGameResult(resultRank, "chopwood");
+      const { bonus, coinsEarned, betaCreditsEarned } = recordGameResult(resultRank, "chopwood");
       const account = loadAccount();
       const trophyDelta = calcTrophyChange(resultRank) + bonus;
       if (playerWon) {
@@ -8316,6 +8952,7 @@ function checkEndState() {
         statsLines.push(t("cwChopDmg", player.chopDamageDealt));
         statsLines.push(t("cwBestAxe", t(AXE_GRADES[player.bestAxeLevel].key)));
       }
+      if (betaCreditsEarned) statsLines.push(t("winRewardCredits", betaCreditsEarned));
       resultStats.textContent = statsLines.join("  |  ");
       resultStreak.style.display = "none";
       resultOverlay.style.display = "flex";
@@ -8371,7 +9008,7 @@ function checkEndState() {
     showdownBgm.pause();
     showdownMusic.pause();
     try {
-      const { streakBefore, streakAfter, bonus, milestone, coinsEarned } = recordGameResult(playerRank);
+      const { streakBefore, streakAfter, bonus, milestone, coinsEarned, betaCreditsEarned } = recordGameResult(playerRank);
       const account = loadAccount();
       const delta = calcTrophyChange(playerRank);
       const deltaText = delta > 0 ? `+${delta}` : `${delta}`;
@@ -8395,7 +9032,8 @@ function checkEndState() {
         resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
         resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
       }
-      resultStats.textContent = (player ? t("dmgDealt", Math.round(player.damageDealt)) : "") + coinText;
+      const betaRewardText = betaCreditsEarned ? `  ${t("winRewardCredits", betaCreditsEarned)}` : "";
+      resultStats.textContent = (player ? t("dmgDealt", Math.round(player.damageDealt)) : "") + coinText + betaRewardText;
 
       let streakMsg = "";
       if (milestone) streakMsg += t("milestone100");
@@ -8447,6 +9085,7 @@ function animate() {
     const frozen = countdownFrozen || victoryFrozen;
 
     if (!frozen) {
+      updateGaleKnockback(dt);
       updatePlayerControls(dt);
       for (const fighter of state.players) {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
@@ -8541,7 +9180,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("showdownWins", account.showdownWins || 0)}</div>`;
         html += `<div class="stats-row">${t("chopWoodWins", account.chopWoodWins || 0)}</div>`;
         html += `<div class="stats-divider"></div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -8552,7 +9191,7 @@ function setupInput() {
         }
         html += `<div class="stats-divider"></div>`;
         html += `<div class="stats-row" style="font-weight:700">🪓 ${t("statsChopWood")}</div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
           const s = account.chopWoodCharStats?.[char];
           const name = char.charAt(0).toUpperCase() + char.slice(1);
           if (!s || s.games === 0) {
@@ -8577,7 +9216,7 @@ function setupInput() {
           html += `<div class="season-detail${expanded ? "" : " hidden"}" data-season-detail="${key}">`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -8598,7 +9237,7 @@ function setupInput() {
             html += `<div class="stats-char" style="padding-left:12px;font-size:11px">${t("charWinrate", cwRate, cwSeason.wins, cwGames)}</div>`;
           }
           if (cwSeasonChars) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
               const cs = cwSeasonChars[c];
               const name = c.charAt(0).toUpperCase() + c.slice(1);
               if (!cs || cs.games === 0) {
@@ -8714,6 +9353,7 @@ function setupInput() {
     if (event.code === "Digit1" || event.code === "Numpad1") triggerEmote(0);
     if (event.code === "Digit2" || event.code === "Numpad2") triggerEmote(1);
     if (event.code === "Digit3" || event.code === "Numpad3") triggerEmote(2);
+    if (!event.repeat && (event.code === "Space" || event.code === "KeyQ")) tryUseUltimate();
     state.keyState[event.code] = true;
   });
 
@@ -9032,6 +9672,11 @@ function setupInput() {
   document.querySelectorAll(".char-btn").forEach((btn) => btn.addEventListener("click", (event) => {
     if (event.target.closest(".char-skin-toggle")) return;
     const account = loadAccount();
+    if (!ownsCharacter(account, btn.dataset.char)) {
+      showToast(t("charLockedHint"));
+      openShopCharactersTab();
+      return;
+    }
     pendingCharacter = btn.dataset.char;
     document.querySelectorAll(".char-btn").forEach((item) => {
       item.classList.toggle("selected", item.dataset.char === pendingCharacter);
@@ -9104,7 +9749,6 @@ function setupInput() {
 
   startBattleBtn.addEventListener("click", () => {
     characterPanel.classList.add("hidden");
-    updateShowdownCurrentMap();
     modeSelector.classList.remove("hidden");
     characterToggle.classList.remove("active");
     startBattleBtn.classList.add("active");
@@ -9141,8 +9785,8 @@ function setupInput() {
   function renderShopLevelUp() {
     const account = loadAccount();
     if (!account) return;
-    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3" };
+    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
@@ -9212,10 +9856,74 @@ function setupInput() {
     });
   }
 
+  // 크레딧으로 구매하는 희귀·영웅 캐릭터 목록
+  function renderShopCharacters() {
+    const account = loadAccount();
+    if (!account || !shopCharsContent) return;
+    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000" };
+    const buyable = Object.keys(CHARACTER_RARITY).filter((c) => getCharacterPrice(c) > 0);
+    let html = '<div class="shop-grid">';
+    for (const charKey of buyable) {
+      const owned = ownsCharacter(account, charKey);
+      const price = getCharacterPrice(charKey);
+      const canBuy = !owned && (account.credits ?? 0) >= price;
+      const borderColor = colorMap[charKey] || "#fff";
+      const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
+      html += `<div class="shop-card" style="border-color:${borderColor}">`;
+      html += `<div class="shop-card-name" style="color:${borderColor}">${name}</div>`;
+      html += `<div class="shop-card-rarity rarity-${CHARACTER_RARITY[charKey]}">${t("rarity_" + CHARACTER_RARITY[charKey])}</div>`;
+      html += `<div class="shop-card-effect">${t(charKey + "Desc")}</div>`;
+      if (owned) {
+        html += `<button class="shop-buy-btn disabled" type="button" disabled>${t("charOwned")}</button>`;
+      } else {
+        html += `<button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-buychar="${charKey}" data-price="${price}" type="button"${canBuy ? "" : " disabled"}>β ${price.toLocaleString()}</button>`;
+      }
+      html += `</div>`;
+    }
+    html += "</div>";
+    shopCharsContent.innerHTML = html;
+    if (shopCredits) shopCredits.textContent = account.credits ?? 0;
+
+    shopCharsContent.querySelectorAll(".shop-buy-btn[data-buychar]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const acc = loadAccount();
+        if (!acc) return;
+        const charKey = btn.dataset.buychar;
+        const price = parseInt(btn.dataset.price, 10);
+        if (ownsCharacter(acc, charKey)) return;
+        if ((acc.credits ?? 0) < price) {
+          audio.play("purchaseFail");
+          showToast(t("creditShort"));
+          return;
+        }
+        audio.play("purchase");
+        acc.credits -= price;
+        acc.ownedCharacters = [...new Set([...(acc.ownedCharacters ?? []), charKey])];
+        saveAccount(acc);
+        renderShopCharacters();
+        renderCharacterLocks(acc);
+        if (lobbyCredits) lobbyCredits.textContent = acc.credits;
+        showToast(t("charUnlocked", charKey.charAt(0).toUpperCase() + charKey.slice(1)));
+      });
+    });
+  }
+
+  function openShopCharactersTab() {
+    shopOverlay.classList.remove("hidden");
+    document.querySelectorAll(".shop-tab").forEach((tab) => {
+      tab.classList.toggle("active", tab.dataset.tab === "chars");
+    });
+    document.getElementById("shop-levelup").classList.add("hidden");
+    document.getElementById("shop-skins").classList.add("hidden");
+    document.getElementById("shop-cosmetics").classList.add("hidden");
+    shopCharsContent?.classList.remove("hidden");
+    renderShopCharacters();
+  }
+
   function renderShopSkins() {
     const account = loadAccount();
     if (!account) return;
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", pink: "#f4cdd3", crimson: "#a00000" };
     let html = '<div class="shop-grid">';
     for (const [skinId, skin] of Object.entries(SKINS)) {
       const owned = account.ownedSkins.includes(skinId);
@@ -9224,7 +9932,8 @@ function setupInput() {
       const seasonOk = skin.season === CURRENT_SEASON;
       const borderColor = colorMap[skin.character] || "#fff";
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
-      html += `<div class="shop-card-name" style="color:${borderColor}">${skin.name}</div>`;
+      html += `<div class="shop-card-name" style="color:${borderColor}">${t(skin.nameKey)}</div>`;
+      html += `<div class="shop-card-rarity rarity-${skin.rarity}">${t("rarity_" + skin.rarity)}</div>`;
       html += `<div class="shop-card-effect">${t(skin.desc)}</div>`;
       if (!seasonOk && !owned) {
         html += `<div class="shop-card-mastery">${t("shopSeasonEnded")}</div>`;
@@ -9233,7 +9942,8 @@ function setupInput() {
       } else if (owned) {
         html += `<button class="shop-buy-btn shop-skin-equip" data-skin="${skinId}" type="button">${t("skinEquip")}</button>`;
       } else {
-        html += `<button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-skin="${skinId}" data-cost="${skin.cost}" type="button"${canBuy ? "" : " disabled"}>🪙 ${skin.cost}</button>`;
+        const priceLabel = skin.cost === 0 ? t("shopFree") : `🪙 ${skin.cost}`;
+        html += `<button class="shop-buy-btn${canBuy ? "" : " disabled"}" data-skin="${skinId}" data-cost="${skin.cost}" type="button"${canBuy ? "" : " disabled"}>${priceLabel}</button>`;
       }
       html += `</div>`;
     }
@@ -9282,6 +9992,7 @@ function setupInput() {
     audio.play("open");
     shopOverlay.classList.remove("hidden");
     renderShopLevelUp();
+    renderShopCharacters();
     renderShopSkins();
   });
 
@@ -9369,7 +10080,7 @@ function setupInput() {
     tdCharSelectCancelAction = onCancel;
     const account = loadAccount();
     const eliminated = account?.rotation?.eliminated ?? [];
-    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
 
     tdCharSelectGrid.innerHTML = chars.map((c) => {
       const isElim = eliminated.includes(c);
@@ -9463,9 +10174,11 @@ function setupInput() {
       tab.classList.add("active");
       const target = tab.dataset.tab;
       document.getElementById("shop-levelup").classList.toggle("hidden", target !== "levelup");
+      document.getElementById("shop-chars").classList.toggle("hidden", target !== "chars");
       document.getElementById("shop-skins").classList.toggle("hidden", target !== "skins");
       document.getElementById("shop-cosmetics").classList.toggle("hidden", target !== "cosmetics");
       if (target === "cosmetics") renderCosmeticsShop();
+      if (target === "chars") renderShopCharacters();
     });
   });
 
@@ -9703,11 +10416,14 @@ function setupInput() {
     }
   });
   mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
+  ultimateButton.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    tryUseUltimate();
+  });
 }
 
 createLights();
-updateShowdownCurrentMap();
-createMap(MAP_POOL[state.currentMapId]);
+createMap(MAP_POOL[0]);
 createTrainingMap();
 setupInput();
 animate();
