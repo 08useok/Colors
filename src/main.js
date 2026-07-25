@@ -1714,6 +1714,9 @@ function createStickman(color, skinId) {
       if (c.isMesh && !c.isSkinnedMesh) rigHelpers.push(c);
     });
     for (const helper of rigHelpers) helper.removeFromParent();
+    // skeletonClone 직후에는 월드 행렬이 낡아 있어 Box3가 Armature 스케일을
+    // 반영하지 못한다. 갱신하지 않으면 배율 계산이 100배까지 어긋난다.
+    model.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -1775,6 +1778,7 @@ function createStickman(color, skinId) {
   if (color === 0x0ff0fe && _cyanWalkGlb) {
     const group = new THREE.Group();
     const model = skeletonClone(_cyanWalkGlb.scene);
+    model.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -1820,6 +1824,7 @@ function createStickman(color, skinId) {
     // GLB 씬을 스케일/센터 맞춰서 추가하는 헬퍼
     function addPinkScene(gltf, visible) {
       const s = skeletonClone(gltf.scene);
+      s.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(s);
       const sz = box.getSize(new THREE.Vector3());
       // 파이터 group은 항상 world y=1.85 → 발이 group local y=-1.85에 와야 지면에 닿는다
@@ -2589,6 +2594,7 @@ _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripR
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
   const model = _bluePreviewGlb.scene.clone(true);
+  model.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -2644,6 +2650,7 @@ function setupFrontModel(charType) {
     const setup = (gltf) => {
       if (frontModelCharType !== 'pink') return;
       const s = skeletonClone(gltf.scene);
+      s.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(s);
       const sz = box.getSize(new THREE.Vector3());
       const sc = 1.8 / sz.y;
@@ -2711,6 +2718,7 @@ function setPreviewCharacter(charType) {
       if (previewCharType !== "pink") return;
       if (previewModel) previewScene.remove(previewModel);
       const m = skeletonClone(gltf.scene);
+      m.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(m);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
