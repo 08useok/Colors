@@ -1698,6 +1698,11 @@ function createGround(group = scene) {
   group.add(grid);
 }
 
+// GLB 캐릭터 전투 모델의 목표 높이. 원본 GLB는 전부 높이 1로 정규화돼 있어서
+// 이 값 하나로 Blue/Cyan/Pink의 키가 서로 맞는다. 발은 항상 group local y=-1.85.
+const GLB_BATTLE_HEIGHT = 3.67;
+const GLB_FEET_Y = -1.85;
+
 function createStickman(color, skinId) {
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
@@ -1708,11 +1713,11 @@ function createStickman(color, skinId) {
     });
     for (const helper of rigHelpers) helper.removeFromParent();
     const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    // 정규화된 Blue 스킨의 실제 렌더 크기에 맞춘 전투 배율이다.
-    const scale = 3.67;
+    const scale = GLB_BATTLE_HEIGHT / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
-    model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
+    model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
     model.rotation.y = Math.PI;
     _applyPinkToon(model);
     model.traverse(c => {
@@ -1771,9 +1776,9 @@ function createStickman(color, skinId) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const scale = 2.7 / Math.max(size.y, 0.001);
+    const scale = GLB_BATTLE_HEIGHT / Math.max(size.y, 0.001);
     model.scale.setScalar(scale);
-    model.position.set(-center.x * scale, -box.min.y * scale - 1.85, -center.z * scale);
+    model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
     model.rotation.y = 0;
     model.traverse(c => {
       if (!c.isMesh) return;
@@ -1815,11 +1820,10 @@ function createStickman(color, skinId) {
       const s = skeletonClone(gltf.scene);
       const box = new THREE.Box3().setFromObject(s);
       const sz = box.getSize(new THREE.Vector3());
-      // 스틱맨과 동일 비율: 발=ground(world y≈0), 머리=world y≈4.2
-      // 파이터 group은 항상 world y=1.85 → 발은 group local y=-1.85
-      const sc = 1.5 / sz.y;
+      // 파이터 group은 항상 world y=1.85 → 발이 group local y=-1.85에 와야 지면에 닿는다
+      const sc = GLB_BATTLE_HEIGHT / Math.max(sz.y, 0.001);
       s.scale.setScalar(sc);
-      s.position.set(0, -1.85, 0);
+      s.position.set(0, -box.min.y * sc + GLB_FEET_Y, 0);
       _applyPinkToon(s);
       s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
       s.visible = visible;
