@@ -123,4 +123,27 @@ export const CHARACTERS = {
     moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
+  crimson: {
+    color: 0xa00000,
+    maxHealth: 9800,
+    attackType: "punchCombo",
+    reloadDuration: 0.5,
+    attackCooldown: 0.74,
+    // 게임 내 최고 이동속도 — Pink/Red(1.4)보다 빠르다
+    moveSpeedMultiplier: 1.5,
+    attackRange: 2.5,
+    attackDamage: 900,
+    attackCount: 3,
+    attackIntervalMs: 120,
+    attackHalfAngle: deg(42),
+    attackAngles: [-25, 0, 25].map(deg),
+    ultimate: {
+      name: "KO 스트레이트",
+      damage: 2500,
+      size: 5,
+      knockback: 1,
+      chargeRequired: 9,
+    },
+    walk: { cycleSpeed: 9, armAmp: 0.36, legAmp: 0.42, armRestZ: Math.PI * 0.1 },
+  },
 };
