@@ -2717,14 +2717,14 @@ function setupFrontModel(charType) {
         a.play(); a.paused = true;
         mx.update(0.3);
       }
-      pinkFrontModel = s;
+      pinkFrontModel = fitModelForPreview(s);
       _applyCamera();
       pinkFrontScene.add(pinkFrontModel);
     };
     if (_pinkGlb.loop) setup(_pinkGlb.loop);
     else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
   } else if (charType === 'blue' && _bluePreviewGlb) {
-    pinkFrontModel = createBluePreviewModel();
+    pinkFrontModel = fitModelForPreview(createBluePreviewModel());
     pinkFrontSk = null;
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
@@ -2735,6 +2735,7 @@ function setupFrontModel(charType) {
     const skinId = acc?.selectedSkins?.[charType] || null;
     const m = createStickman(charDef.color, skinId);
     m.position.y = 0;
+    fitModelForPreview(m);
     pinkFrontModel = m;
     pinkFrontSk = null;
     _applyCamera();
@@ -2748,6 +2749,26 @@ function renderPinkFront(dt) {
   const t = pinkFrontTime;
   pinkFrontModel.rotation.y = t * 0.6;
   pinkFrontRenderer.render(pinkFrontScene, pinkFrontCamera);
+}
+
+// 로비 프리뷰는 전투 배율과 무관하게 전부 같은 키로 맞춘다.
+// 스틱맨(절차생성) 크기가 기준이다.
+const PREVIEW_HEIGHT = 4.23;
+const PREVIEW_FEET_Y = -1.85;
+
+function fitModelForPreview(model) {
+  if (!model) return model;
+  model.updateMatrixWorld(true);
+  const size = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
+  if (size.y < 0.001) return model;
+  model.scale.multiplyScalar(PREVIEW_HEIGHT / size.y);
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.x -= center.x;
+  model.position.z -= center.z;
+  model.position.y -= box.min.y - PREVIEW_FEET_Y;
+  return model;
 }
 
 function setPreviewCharacter(charType) {
@@ -2777,7 +2798,7 @@ function setPreviewCharacter(charType) {
       _applyPinkToon(m);
       m.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
       m.userData = {};
-      previewModel = m;
+      previewModel = fitModelForPreview(m);
       previewScene.add(previewModel);
     };
     if (_pinkGlb.loop) {
@@ -2787,12 +2808,13 @@ function setPreviewCharacter(charType) {
     }
   } else if (charType === "blue" && _bluePreviewGlb) {
     previewIsGlb = true;
-    previewModel = createBluePreviewModel();
+    previewModel = fitModelForPreview(createBluePreviewModel());
     previewScene.add(previewModel);
   } else {
     previewModel = createStickman(charDef.color, skinId);
     previewIsGlb = Boolean(previewModel.userData.isGlbModel);
     previewModel.position.y = 0;
+    fitModelForPreview(previewModel);
     previewScene.add(previewModel);
   }
 }
