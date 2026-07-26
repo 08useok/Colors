@@ -1246,6 +1246,13 @@ function updateEventCountdown() {
   const remaining = Math.max(0, EVENT_END_AT - Date.now());
   eventCountdown.textContent = remaining <= 0 ? "이벤트 종료" : formatCountdown(remaining);
   updateBetaCountdown();
+  updateBetaPatchVisibility();
+}
+
+// v1.5.0 패치노트는 베타 시즌이 실제로 시작된 뒤에만 공개한다.
+function updateBetaPatchVisibility() {
+  const patch = document.getElementById("beta-season-patch");
+  patch?.classList.toggle("hidden", Date.now() < BETA_SEASON_START_AT);
 }
 
 // 베타 시즌 전용 UI(크레딧 잔액, 캐릭터 구매 탭)는 시즌이 열릴 때까지 숨긴다
