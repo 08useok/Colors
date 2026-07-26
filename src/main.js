@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.142";
+import { LANGS } from "./LANGS/langs.js?v=1.5.143";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.141";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
@@ -9309,9 +9309,9 @@ function setupInput() {
       if (account) {
         const totalGames = account.wins + account.losses;
         const winRate = totalGames === 0 ? 0 : Math.round((account.wins / totalGames) * 100);
-        let html = `<div class="stats-header">${t("accountTitle")} · ${account.nickname}</div>`;
+        let html = `<div class="stats-header">👤 ${t("accountTitle")} · ${account.nickname}</div>`;
         html += `<div class="stats-row">Lv.${calcLevel(account.trophies)}</div>`;
-        html += `<div class="stats-row">${t("trophyLabel")}: ${account.trophies}</div>`;
+        html += `<div class="stats-row">🏆 ${t("trophyLabel")}: ${account.trophies}</div>`;
         html += `<div class="stats-row">${t("record", account.wins, account.losses)}</div>`;
         html += `<div class="stats-row">${t("winrate", winRate, account.wins, totalGames)}</div>`;
         html += `<div class="stats-row">${t("bestStreakLabel", account.bestStreak)}</div>`;
@@ -9328,7 +9328,7 @@ function setupInput() {
           }
         }
         html += `<div class="stats-divider"></div>`;
-        html += `<div class="stats-row" style="font-weight:700">${t("statsChopWood")}</div>`;
+        html += `<div class="stats-row" style="font-weight:700">🪓 ${t("statsChopWood")}</div>`;
         for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
           const s = account.chopWoodCharStats?.[char];
           const name = char.charAt(0).toUpperCase() + char.slice(1);
@@ -9367,7 +9367,7 @@ function setupInput() {
           const cwSeason = account.seasonChopWoodStats?.[key];
           const cwSeasonChars = account.seasonChopWoodCharStats?.[key];
           const cwGames = cwSeason ? cwSeason.wins + cwSeason.losses : 0;
-          html += `<div class="stats-char" style="padding-left:12px;font-weight:700">${t("statsChopWood")}</div>`;
+          html += `<div class="stats-char" style="padding-left:12px;font-weight:700">🪓 ${t("statsChopWood")}</div>`;
           if (cwGames === 0) {
             html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">${t("statsNoRecord")}</div>`;
           } else {
@@ -9419,7 +9419,7 @@ function setupInput() {
           entries = [{ playerId: getRotationImportId(account), nickname: account.nickname, trophies: account.trophies }];
         }
         const myPlayerId = getRotationImportId(account);
-        let html = `<div class="stats-row" style="font-weight:700;margin-bottom:6px">${t("leaderboardBtn")}</div>`;
+        let html = `<div class="stats-row" style="font-weight:700;margin-bottom:6px">🏆 ${t("leaderboardBtn")}</div>`;
         entries.forEach((e, i) => {
           const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
           const highlight = e.playerId === myPlayerId ? ' style="color:#ffcc66;font-weight:700"' : '';
