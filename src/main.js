@@ -30,11 +30,16 @@ function applyLanguage() {
   applySeasonLabels();
 }
 
-// langs.js는 베타 시즌 문구를 갖고 있다. 시즌이 열리기 전에는 알파 시즌 4로 되돌린다.
+// 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  if (IS_BETA_SEASON) return;
+  const seasonLabel = IS_BETA_SEASON
+    ? (currentLang === "ko" ? "베타 시즌 1" : "Beta Season 1")
+    : (currentLang === "ko" ? "알파 시즌 4" : "Alpha Season 4");
   const tag = document.querySelector(".lobby-season-tag");
-  if (tag) tag.textContent = currentLang === "ko" ? "알파 시즌 4" : "Alpha Season 4";
+  const sidebarSeason = document.getElementById("sidebar-profile-season");
+  if (tag) tag.textContent = seasonLabel;
+  if (sidebarSeason) sidebarSeason.textContent = seasonLabel;
+  if (IS_BETA_SEASON) return;
   document.querySelectorAll('[data-i18n="charCount"]').forEach((el) => {
     el.textContent = currentLang === "ko" ? "캐릭터 8종" : "8 Characters";
   });
@@ -112,9 +117,16 @@ const showdownBgm = new Audio("./assets/showdown-bgm.mp3");
 showdownBgm.loop = true;
 const lobbyBgm = new Audio("./assets/lobby-bgm.mp3");
 lobbyBgm.loop = true;
+const betaLobbyBgm = new Audio("./assets/beta-lobby-bgm.mp3");
+betaLobbyBgm.loop = true;
+
+function pauseLobbyBgm() {
+  lobbyBgm.pause();
+  betaLobbyBgm.pause();
+}
 
 function stopAllBgm() {
-  lobbyBgm.pause();
+  pauseLobbyBgm();
   showdownBgm.pause();
   showdownMusic.pause();
 }
@@ -123,8 +135,11 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  lobbyBgm.volume = 0.3;
-  lobbyBgm.play().catch(() => {});
+  const activeLobbyBgm = IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  const inactiveLobbyBgm = IS_BETA_SEASON ? lobbyBgm : betaLobbyBgm;
+  inactiveLobbyBgm.pause();
+  activeLobbyBgm.volume = 0.3;
+  activeLobbyBgm.play().catch(() => {});
 }
 const zonePanel = document.getElementById("zone-panel");
 const zoneState = document.getElementById("zone-state");
@@ -4633,7 +4648,7 @@ function updateMatchmakingUI() {
 async function enterMatchmaking(mode = "takedown") {
   const account = loadAccount();
   if (!account) return;
-  lobbyBgm.pause();
+  pauseLobbyBgm();
 
   audio.play("open");
   matchmakingOverlay.classList.remove("hidden");
@@ -5523,7 +5538,7 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
-  lobbyBgm.pause();
+  pauseLobbyBgm();
   clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = true;
@@ -5636,7 +5651,7 @@ function resetGame() {
   showdownAnnounceEl.classList.add("hidden");
   showdownAnnounceEl.classList.remove("showdown-pop");
   showdownMusic.pause();
-  lobbyBgm.pause();
+  pauseLobbyBgm();
   if (state.audioEnabled) {
     showdownBgm.currentTime = 0;
     showdownBgm.volume = 0.35;
@@ -8758,7 +8773,7 @@ function triggerShowdownAnnounce() {
   setTimeout(() => showdownAnnounceEl.classList.add("hidden"), 1800);
   if (state.audioEnabled) {
     showdownBgm.pause();
-    lobbyBgm.pause();
+    pauseLobbyBgm();
     showdownMusic.currentTime = 0;
     showdownMusic.volume = 0.6;
     showdownMusic.play().catch(() => {});
