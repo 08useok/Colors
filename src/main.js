@@ -1303,6 +1303,8 @@ function syncLobbyStartButton() {
 
 function showLobby() {
   crosshairEl.classList.add("hidden");
+  // 전투 HUD 잔여물 정리 — updateHud가 로비에서는 안 돌아 궁극기 버튼이 남는다
+  ultimateButton?.classList.add("hidden");
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   showdownBgm.pause();
@@ -3880,6 +3882,7 @@ function startTakeDown() {
   mapNameEl.classList.remove("hidden");
 
   state.gameTime = 0;
+  emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
   state.freezeUntil = 3;
   state.lowHealthAlerted = false;
   state.wasInBush = false;
@@ -4695,6 +4698,7 @@ function startChopWood() {
   mapNameEl.classList.remove("hidden");
 
   state.gameTime = 0;
+  emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
   state.freezeUntil = 5;
   state.lowHealthAlerted = false;
   state.lastZonePhase = null;
@@ -5521,6 +5525,7 @@ function startTraining() {
   state.trainingMode = true;
   mapNameEl.classList.add("hidden");
   state.gameTime = 0;
+  emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
   state.freezeUntil = 0;
   state.running = true;
   state.gameOver = false;
@@ -5600,6 +5605,7 @@ function resetGame() {
   mapNameEl.textContent = t("mapPrefix") + currentMap.name;
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
+  emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
   state.freezeUntil = 5;
   state.lowHealthAlerted = false;
   state.lastZonePhase = null;

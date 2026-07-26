@@ -91,6 +91,12 @@ const characterMeta = {
     tip: ["탄막의 중앙을 적에게 맞추기보다 이동 경로를 덮으세요. 궁극기는 좁은 길에서 효과적입니다.", "Cover escape routes with the spread. Save the ultimate for lanes where knockback matters."],
     range: 8.33, damage: 3600,
   },
+  crimson: {
+    role: ["근접 브루저", "Melee Bruiser"], attack: ["3연속 펀치", "Triple Punch"],
+    desc: ["부채꼴 범위를 세 번 두들기고, 벽까지 부수는 궁극기로 한타를 여는 근접 브루저입니다.", "A melee bruiser who hammers a fan-shaped area three times and opens fights with a wall-breaking ultimate."],
+    tip: ["게임 내 가장 빠른 이동속도로 거리를 좁히세요. 궁극기 게이지는 죽어도 유지되니 아껴뒀다가 벽 뒤 적을 노리세요.", "Use the fastest movement in the game to close the gap. The ultimate gauge survives death, so save it for enemies hiding behind walls."],
+    range: 2.5, damage: 2700,
+  },
   purple: {
     role: ["지속 피해", "Damage over Time"], attack: ["맹독침", "Venom Needle"],
     desc: ["독침과 폭발 약병을 번갈아 사용해 직접 피해와 지속 피해를 함께 가합니다.", "Alternates venom needles and explosive vials for direct and damage-over-time pressure."],
@@ -159,6 +165,15 @@ const characterDetails = {
     matchup: ["한 명에게 모든 탄을 맞히기보다 적의 이동 공간을 줄이는 데 집중하세요. 질풍 강타는 자기장 가장자리에서 밀어내기와 함께 사용하면 강력합니다.", "Focus on reducing movement space rather than landing every shot. Gale Strike is especially strong for knockback near the zone edge."],
     history: [["v1.4.0", "여섯 번째 캐릭터로 추가", "v1.4.0", "Added as the sixth character"], ["v1.4.4", "광역 제압 역할과 효과 개선", "v1.4.4", "Improved area-control role and effects"], ["v1.4.8", "알파 시즌 4 전환과 함께 조정", "v1.4.8", "Adjusted with the Alpha Season 4 transition"], ["현재", "질풍 강타 궁극기와 전용 버튼 지원", "Current", "Supports the Gale Strike ultimate and dedicated control"]],
     other: ["베타 일반 공격 여섯 발의 이론상 최대 피해는 2,700입니다. 궁극기는 12회 충전이 필요하며 피해와 넉백을 함께 적용합니다.", "All six Beta projectiles theoretically deal 2,700. The ultimate requires 12 charges and applies both damage and knockback."],
+  },
+  crimson: {
+    setting: ["진홍색을 대표하는 근접 브루저입니다. 레드를 보고 권투를 시작해 세계적인 선수가 됐지만, 정작 레드는 못 이긴다고 말합니다. 베타 시즌 1에서 영웅 등급으로 합류했습니다.", "The crimson melee bruiser. Crimson took up boxing after watching Red and became world-class, yet still claims he cannot beat Red. Joined in Beta Season 1 as a Hero-tier character."],
+    attack: ["전방 84도 부채꼴에 -25도, 0도, +25도 순서로 0.12초 간격 3연타를 넣습니다. 타당 900 피해로 전부 맞히면 2,700이며, 범위 안 여러 적을 동시에 때립니다.", "Throws three punches at -25, 0 and +25 degrees within an 84-degree fan, 0.12s apart. Each hit deals 900 for 2,700 total and strikes every enemy in the arc."],
+    strong: ["Blue처럼 체력이 낮고 근접전을 피하려는 원거리 딜러", "Squishy ranged fighters who want to avoid melee, such as Blue"],
+    weak: ["Purple의 지속 피해와 거리를 유지하는 견제", "Purple's damage over time and disengage pressure"],
+    matchup: ["사거리가 2.5타일로 가장 짧습니다. 벽과 수풀로 접근 경로를 가린 뒤 한 번에 붙으세요. 궁극기는 벽을 부수며 들어가는 진입기로도 쓸 수 있습니다.", "With the shortest range at 2.5 tiles, approach behind walls and bushes, then commit once. The ultimate doubles as an engage tool since it destroys walls."],
+    history: [["v1.5.0", "베타 시즌 1 신규 영웅 캐릭터로 추가", "v1.5.0", "Added as the Beta Season 1 Hero-tier character"]],
+    other: ["궁극기 KO 스트레이트는 일반 공격 9회 명중으로 충전되며, 정면 5×5 범위에 2,500 피해와 넉백을 주고 범위 안의 벽을 영구히 제거합니다. 게이지는 사망해도 초기화되지 않습니다.", "The KO Straight ultimate charges from nine basic-attack hits, deals 2,500 damage with knockback in a 5x5 area ahead, and permanently removes walls inside it. The gauge is not reset on death."],
   },
   purple: {
     setting: ["보라색을 대표하는 지속 피해 컨트롤러입니다. 독침과 약병을 번갈아 사용해 회복과 위치 선정에 압박을 주는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The purple damage-over-time controller. Purple alternates needles and vials to pressure healing and positioning. No official story background has been published."],
@@ -256,6 +271,8 @@ function characterCard(id) {
   const stats = wikiStats(id);
   const meta = characterMeta[id];
   const attackStats = betaAttackStats(id);
+  // 위키 데이터가 없는 신규 캐릭터 때문에 목록 전체가 죽지 않도록 건너뛴다
+  if (!stats || !meta) return "";
   return `<article class="character-card" data-open="char:${id}" tabindex="0" role="button" aria-label="${id}">
     <div class="portrait" style="--char:#${stats.color.toString(16).padStart(6,"0")}" data-letter="${id[0].toUpperCase()}"></div>
     <div class="char-card-body">
