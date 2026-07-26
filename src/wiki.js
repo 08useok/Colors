@@ -5,6 +5,16 @@ import { SKINS } from "./config/skins.js";
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
+// 사이트가 하위 경로(GitHub Pages의 /Colors/)에 올라갈 수 있어 라우팅도 베이스를 탄다.
+// boot.js가 먼저 계산해두지만, 단독 로드 대비 여기서도 구한다.
+const BASE = window.__WIKI_BASE__ ?? (location.pathname.replace(/\/wiki(\/.*)?$/, "") + "/");
+// 베이스를 뺀 위키 내부 경로 ("/Colors/wiki/shop/" → "/wiki/shop/")
+function wikiPath() {
+  const path = location.pathname.toLowerCase();
+  const base = BASE.toLowerCase().replace(/\/$/, "");
+  return base && path.startsWith(base) ? path.slice(base.length) || "/" : path;
+}
+
 const copy = {
   ko: {
     wiki: "게임 위키", home: "홈", characters: "캐릭터", systems: "게임 가이드", shop: "상점",
@@ -307,11 +317,11 @@ function renderPatches() {
 }
 
 const routePaths = {
-  home: "/wiki/",
-  characters: "/wiki/characters/",
-  systems: "/wiki/guides/",
-  shop: "/wiki/shop/",
-  patches: "/wiki/patches/",
+  home: `${BASE}wiki/`,
+  characters: `${BASE}wiki/characters/`,
+  systems: `${BASE}wiki/guides/`,
+  shop: `${BASE}wiki/shop/`,
+  patches: `${BASE}wiki/patches/`,
 };
 
 function renderRoute(nextRoute, updateUrl = true) {
@@ -391,8 +401,8 @@ function openCharacter(id, updateUrl = true) {
     </div>`;
   document.title = `${id[0].toUpperCase()+id.slice(1)} | COLORS 위키`;
   if (!$("#article-dialog").open) $("#article-dialog").showModal();
-  if (updateUrl && location.pathname !== `/wiki/characters/${id}/`) {
-    history.pushState(null, "", `/wiki/characters/${id}/`);
+  if (updateUrl && location.pathname !== `${BASE}wiki/characters/${id}/`) {
+    history.pushState(null, "", `${BASE}wiki/characters/${id}/`);
   }
 }
 
@@ -410,7 +420,7 @@ function openArticle(value) {
 }
 
 function routeFromPath() {
-  const path = location.pathname.toLowerCase();
+  const path = wikiPath();
   const charMatch = path.match(/^\/wiki\/characters\/([a-z]+)\/?$/);
   if (charMatch && characterMeta[charMatch[1]]) return { route: "characters", character: charMatch[1] };
   if (path.startsWith("/wiki/characters")) return { route: "characters" };
@@ -422,7 +432,7 @@ function routeFromPath() {
 
 function closeArticle() {
   $("#article-dialog").close();
-  if (/^\/wiki\/characters\/[a-z]+\/?$/.test(location.pathname)) {
+  if (/^\/wiki\/characters\/[a-z]+\/?$/.test(wikiPath())) {
     history.pushState(null, "", routePaths.characters);
     renderRoute("characters", false);
   }
