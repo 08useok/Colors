@@ -1312,6 +1312,7 @@ function showLobby() {
   crosshairEl.classList.add("hidden");
   // 전투 HUD 잔여물 정리 — updateHud가 로비에서는 안 돌아 궁극기 버튼이 남는다
   ultimateButton?.classList.add("hidden");
+  document.getElementById("emote-btns")?.classList.add("hidden");
   messageOverlay.style.display = "flex";
   resultOverlay.style.display = "none";
   showdownBgm.pause();
@@ -5536,6 +5537,7 @@ function startTraining() {
   state.freezeUntil = 0;
   state.running = true;
   state.gameOver = false;
+  document.getElementById("emote-btns")?.classList.remove("hidden");
   state.mouseHeld = false;
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
@@ -5618,6 +5620,7 @@ function resetGame() {
   state.lastZonePhase = null;
   state.wasInBush = false;
   state.running = true;
+  document.getElementById("emote-btns")?.classList.remove("hidden");
   state.gameOver = false;
   state.mouseHeld = false;
   state.scheduledHits = [];
@@ -7495,7 +7498,7 @@ function updateEmoteBtns(account) {
 }
 
 function triggerEmote(slot = 0) {
-  if ((!state.gameStarted && !state.trainingMode) || state.gameOver) return;
+  if (!state.running || state.gameOver) return;
   if (state.gameTime < emoteCooldownUntil[slot]) return;
   const player = getPlayer();
   if (!player) return;
