@@ -2616,6 +2616,7 @@ function _applyPinkToon(scene) {
 let _bluePreviewGlb = null;
 let _blueWalkGlb = null;
 let _cyanWalkGlb = null;
+let _cyanPreviewGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
@@ -2628,6 +2629,10 @@ _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
 });
 _glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
   _cyanWalkGlb = _stripRootMotion(g);
+});
+// 로비 프리뷰 전용 시안 모델 (애니메이션 없는 원본 포즈)
+_glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
+  _cyanPreviewGlb = g;
   if (previewCharType === 'cyan') {
     previewChar = null;
     setPreviewCharacter('cyan');
@@ -2658,6 +2663,26 @@ function createBluePreviewModel() {
     c.castShadow = true;
   });
   model.userData.isBluePreview = true;
+  return model;
+}
+
+function createCyanPreviewModel() {
+  if (!_cyanPreviewGlb) return null;
+  const model = _cyanPreviewGlb.scene.clone(true);
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const scale = 4.0 / Math.max(size.y, 0.001);
+  model.scale.setScalar(scale);
+  model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+  _applyPinkToon(model);
+  model.traverse(c => {
+    if (!c.isMesh) return;
+    c.frustumCulled = false;
+    c.castShadow = true;
+  });
+  model.userData.isCyanPreview = true;
   return model;
 }
 
@@ -2725,6 +2750,11 @@ function setupFrontModel(charType) {
     else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
   } else if (charType === 'blue' && _bluePreviewGlb) {
     pinkFrontModel = fitModelForPreview(createBluePreviewModel());
+    pinkFrontSk = null;
+    _applyCamera();
+    pinkFrontScene.add(pinkFrontModel);
+  } else if (charType === 'cyan' && _cyanPreviewGlb) {
+    pinkFrontModel = fitModelForPreview(createCyanPreviewModel());
     pinkFrontSk = null;
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
@@ -2809,6 +2839,10 @@ function setPreviewCharacter(charType) {
   } else if (charType === "blue" && _bluePreviewGlb) {
     previewIsGlb = true;
     previewModel = fitModelForPreview(createBluePreviewModel());
+    previewScene.add(previewModel);
+  } else if (charType === "cyan" && _cyanPreviewGlb) {
+    previewIsGlb = true;
+    previewModel = fitModelForPreview(createCyanPreviewModel());
     previewScene.add(previewModel);
   } else {
     previewModel = createStickman(charDef.color, skinId);
