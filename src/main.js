@@ -27,6 +27,17 @@ function applyLanguage() {
     el.placeholder = t(el.dataset.i18nPlaceholder);
   });
   document.getElementById("lang-toggle").textContent = currentLang === "ko" ? "EN" : "KO";
+  applySeasonLabels();
+}
+
+// langs.js는 베타 시즌 문구를 갖고 있다. 시즌이 열리기 전에는 알파 시즌 4로 되돌린다.
+function applySeasonLabels() {
+  if (IS_BETA_SEASON) return;
+  const tag = document.querySelector(".lobby-season-tag");
+  if (tag) tag.textContent = currentLang === "ko" ? "알파 시즌 4" : "Alpha Season 4";
+  document.querySelectorAll('[data-i18n="charCount"]').forEach((el) => {
+    el.textContent = currentLang === "ko" ? "캐릭터 8종" : "8 Characters";
+  });
 }
 
 function setLanguage(lang) {
@@ -230,7 +241,11 @@ const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
-const CURRENT_SEASON = "beta1";
+// 베타 시즌 1은 이 시각에 자동으로 열린다. 미리 배포해두면 클라이언트가
+// 자정을 넘기는 순간(새로고침 기준) 알아서 전환된다 — 수동 배포가 필요 없다.
+const BETA_SEASON_START_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
+const IS_BETA_SEASON = CURRENT_SEASON === "beta1";
 const ALPHA_SEASONS = ["alpha1", "alpha2", "alpha3", "alpha4"];
 const ALPHA_REWARD_DATE = "2026-07-26";
 const ALPHA_PARTICIPATION_REWARD_SKIN = "alpha_champion_cyan";
@@ -253,12 +268,15 @@ const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 const WIN_REWARD_CREDITS = 100;
+// 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
+const ROSTER = IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function getCharacterPrice(charKey) {
   return RARITY_PRICE[CHARACTER_RARITY[charKey]] ?? 0;
 }
 
 function ownsCharacter(account, charKey) {
+  if (!IS_BETA_SEASON) return true;
   if (!account) return true;
   if (getCharacterPrice(charKey) === 0) return true;
   return (account.ownedCharacters ?? PRE_BETA_CHARACTERS).includes(charKey);
@@ -1036,6 +1054,8 @@ function updateLobbyUI(account) {
 function renderCharacterLocks(account) {
   document.querySelectorAll(".char-btn").forEach((btn) => {
     const charKey = btn.dataset.char;
+    // 시즌 전 캐릭터는 로비에서 아예 숨긴다
+    btn.classList.toggle("hidden", !ROSTER.includes(charKey));
     const locked = !ownsCharacter(account, charKey);
     btn.classList.toggle("locked", locked);
     let lockEl = btn.querySelector(".char-lock");
@@ -1213,18 +1233,47 @@ function toggleCharacterSkin(charKey) {
 
 const EVENT_END_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
 
-function updateEventCountdown() {
-  const remaining = Math.max(0, EVENT_END_AT - Date.now());
-  if (remaining <= 0) {
-    eventCountdown.textContent = "이벤트 종료";
-    return;
-  }
+function formatCountdown(remaining) {
   const totalSeconds = Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  eventCountdown.textContent = `D-${days} (${String(hours).padStart(2, "0")}시 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초)`;
+  return `D-${days} (${String(hours).padStart(2, "0")}시 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초)`;
+}
+
+function updateEventCountdown() {
+  const remaining = Math.max(0, EVENT_END_AT - Date.now());
+  eventCountdown.textContent = remaining <= 0 ? "이벤트 종료" : formatCountdown(remaining);
+  updateBetaCountdown();
+}
+
+// 베타 시즌 전용 UI(크레딧 잔액, 캐릭터 구매 탭)는 시즌이 열릴 때까지 숨긴다
+function applySeasonVisibility() {
+  const betaOnly = [
+    document.querySelector(".lobby-credits"),
+    document.querySelector(".shop-credits"),
+    document.querySelector('.shop-tab[data-tab="chars"]'),
+    document.getElementById("shop-chars"),
+  ];
+  for (const el of betaOnly) el?.classList.toggle("hidden", !IS_BETA_SEASON);
+  // 계정이 없어 updateLobbyUI가 아직 안 돈 상태에서도 시즌 전 캐릭터는 숨겨야 한다
+  document.querySelectorAll(".char-btn").forEach((btn) => {
+    btn.classList.toggle("hidden", !ROSTER.includes(btn.dataset.char));
+  });
+}
+
+// 베타 시즌 시작까지 남은 시간. 시즌이 열리면 사라진다.
+function updateBetaCountdown() {
+  const el = document.getElementById("beta-countdown");
+  if (!el) return;
+  const remaining = BETA_SEASON_START_AT - Date.now();
+  if (IS_BETA_SEASON || remaining <= 0) {
+    el.classList.add("hidden");
+    return;
+  }
+  el.classList.remove("hidden");
+  el.textContent = `베타 시즌 1까지 ${formatCountdown(remaining)}`;
 }
 
 function syncLobbyStartButton() {
@@ -3528,7 +3577,7 @@ function initChopWoodPlayers() {
   });
   state.players = [];
 
-  const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
+  const botTypes = [...ROSTER];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
 
@@ -3628,7 +3677,7 @@ function initTakeDownPlayers() {
   // 탈락 캐릭터 제외
   const _tdAccount = loadAccount();
   const _tdEliminated = new Set(_tdAccount?.rotation?.eliminated ?? []);
-  const allTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]
+  const allTypes = [...ROSTER]
     .filter((c) => !_tdEliminated.has(c));
 
   // 멀티 기준: 원격 플레이어 목록
@@ -5301,7 +5350,7 @@ function initPlayers() {
       if (!isLocal) mpNetFighters[participant.id] = fighter;
       state.players.push(fighter);
     });
-    const baseBotTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
+    const baseBotTypes = [...ROSTER];
     const botCount = spawns.length - mpConfig.players.length;
     const botTypes = shuffle(Array.from({ length: botCount }, (_, index) => baseBotTypes[index % baseBotTypes.length]));
     for (let index = mpConfig.players.length; index < spawns.length; index += 1) {
@@ -5324,7 +5373,7 @@ function initPlayers() {
   }
 
   spawns.forEach((spawn, index) => {
-    const botTypes = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
+    const botTypes = [...ROSTER];
     const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
@@ -9802,7 +9851,7 @@ function setupInput() {
   function renderShopLevelUp() {
     const account = loadAccount();
     if (!account) return;
-    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
+    const chars = [...ROSTER];
     const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
@@ -9943,6 +9992,8 @@ function setupInput() {
     const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", pink: "#f4cdd3", crimson: "#a00000" };
     let html = '<div class="shop-grid">';
     for (const [skinId, skin] of Object.entries(SKINS)) {
+      // 아직 안 열린 시즌의 스킨은 "시즌 종료"로 오해되지 않게 아예 숨긴다
+      if (skin.season === "beta1" && !IS_BETA_SEASON) continue;
       const owned = account.ownedSkins.includes(skinId);
       const equipped = account.selectedSkins[skin.character] === skinId;
       const canBuy = !owned && account.coins >= skin.cost;
@@ -10097,7 +10148,7 @@ function setupInput() {
     tdCharSelectCancelAction = onCancel;
     const account = loadAccount();
     const eliminated = account?.rotation?.eliminated ?? [];
-    const chars = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"];
+    const chars = [...ROSTER];
 
     tdCharSelectGrid.innerHTML = chars.map((c) => {
       const isElim = eliminated.includes(c);
@@ -10448,5 +10499,6 @@ rebuildAmmoPips();
 updateHud();
 applyLanguage();
 showLobby();
+applySeasonVisibility();
 updateEventCountdown();
 setInterval(updateEventCountdown, 1000);
