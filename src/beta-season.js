@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS } from "./config/beta-characters.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.136";
+import { LANGS } from "./LANGS/langs.js?v=1.5.137";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");

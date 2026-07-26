@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.127">
+  <link rel="stylesheet" href="./styles.css?v=1.5.128">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -148,13 +148,13 @@
           </div>
           <button id="lang-toggle" class="side-toggle-btn" type="button">EN</button>
           <div class="side-nav-divider"></div>
-          <button id="character-toggle" class="side-nav-btn" type="button">🎨 캐릭터</button>
-          <button id="mobile-event-toggle" class="side-nav-btn mobile-event-toggle" type="button">🎯 이벤트</button>
-          <button id="open-shop-btn" class="side-nav-btn" type="button">🪙 상점</button>
-          <a id="open-wiki-btn" class="side-nav-btn side-nav-link" href="./wiki/">📖 위키</a>
-          <button id="open-account-switch-btn" class="side-nav-btn" type="button">👤 계정 전환</button>
+          <button id="character-toggle" class="side-nav-btn" type="button">캐릭터</button>
+          <button id="mobile-event-toggle" class="side-nav-btn mobile-event-toggle" type="button">이벤트</button>
+          <button id="open-shop-btn" class="side-nav-btn" type="button">상점</button>
+          <a id="open-wiki-btn" class="side-nav-btn side-nav-link" href="./wiki/">위키</a>
+          <button id="open-account-switch-btn" class="side-nav-btn" type="button">계정 전환</button>
           <div class="side-nav-divider"></div>
-          <button id="stats-toggle" class="side-nav-btn" type="button" data-i18n="statsBtn">👤 계정</button>
+          <button id="stats-toggle" class="side-nav-btn" type="button" data-i18n="statsBtn">계정</button>
           <div id="stats-panel" class="stats-panel hidden"></div>
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
           <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
@@ -162,7 +162,7 @@
             <p class="matchup-desc" data-i18n="matchupDesc">가위바위보 상성 — 유리한 상대를 노려 승률을 높이세요!</p>
             <table>
               <thead>
-                <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muAdv">✅ 유리</th><th data-i18n="muEven">⚔ 경합</th><th data-i18n="muDis">❌ 불리</th></tr>
+                <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muAdv">유리</th><th data-i18n="muEven">경합</th><th data-i18n="muDis">불리</th></tr>
               </thead>
               <tbody>
                 <tr><td class="mu-red">🔴 Red</td><td>🟢 🟣</td><td>🔵 🩷</td><td>🟠 🟡 🩵</td></tr>
@@ -561,7 +561,7 @@
 
         <aside id="leaderboard-panel" class="leaderboard-panel lobby-right-leaderboard hidden" aria-live="polite"></aside>
 
-        <button id="start-battle-btn" class="lobby-start-fab hidden" type="button" data-i18n="startBattle">⚔️ 전투 시작</button>
+        <button id="start-battle-btn" class="lobby-start-fab hidden" type="button" data-i18n="startBattle">전투 시작</button>
 
         <div id="lobby-event-map" class="lobby-event-map hidden">
           <div class="event-map-heading">
@@ -633,7 +633,7 @@
               </div>
             </div>
             <div class="lobby-right">
-              <div class="lobby-coins">🪙 <span id="lobby-coins">0</span></div>
+              <div class="lobby-coins"><span class="currency-label">COIN</span> <span id="lobby-coins">0</span></div>
               <div class="lobby-credits">β <span id="lobby-credits">0</span></div>
               <div class="lobby-trophy"><span data-i18n="trophyLabel">트로피</span> <span id="lobby-trophies">0</span></div>
               <div class="lobby-stats-group">
@@ -724,7 +724,7 @@
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
           <div id="character-actions" class="character-actions hidden">
-            <button id="try-character-btn" type="button">🎯 훈련장 체험</button>
+            <button id="try-character-btn" type="button">훈련장 체험</button>
             <button id="confirm-character-btn" type="button">✓ 선택</button>
           </div>
           </div>
@@ -736,7 +736,7 @@
               <small id="showdown-current-map" class="mode-current-map">현재 맵: 해골 협곡</small>
             </button>
             <button id="mode-chopwood" class="mode-btn mode-chopwood" type="button">
-              <span class="mode-icon-text">🪓</span>
+              <span class="mode-icon-text">CW</span>
               <span data-i18n="modeChopWood">찹 우드</span>
             </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
@@ -791,8 +791,8 @@
   <div id="shop-overlay" class="hidden">
     <div class="shop-screen">
       <div class="shop-header">
-        <h2>🪙 상점</h2>
-        <div class="shop-coins">🪙 <span id="shop-coins">0</span></div>
+        <h2>상점</h2>
+        <div class="shop-coins"><span class="currency-label">COIN</span> <span id="shop-coins">0</span></div>
         <div class="shop-credits">β <span id="shop-credits">0</span></div>
         <button id="shop-close-btn" class="shop-close-btn" type="button">✕</button>
       </div>
@@ -822,7 +822,7 @@
   <div id="rotation-overlay" class="hidden">
     <div class="rotation-screen">
       <div class="rotation-header">
-        <h2>🔄 Rotation Mode</h2>
+        <h2>Rotation Mode</h2>
         <button id="rotation-close-btn" class="shop-close-btn" type="button">✕</button>
       </div>
       <div id="rotation-champion-banner" class="rotation-champion-banner hidden"></div>
@@ -847,6 +847,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.142"></script>
+  <script type="module" src="./src/main.js?v=1.5.144"></script>
 </body>
 </html>
