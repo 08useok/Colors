@@ -89,6 +89,10 @@ const lobbyNickname = document.getElementById("lobby-nickname");
 const lobbyLevel = document.getElementById("lobby-level");
 const sidebarProfileNickname = document.getElementById("sidebar-profile-nickname");
 const sidebarProfileLevel = document.getElementById("sidebar-profile-level");
+const patchnotesDock = document.getElementById("patchnotes-dock");
+const patchnotesToggle = document.getElementById("patchnotes-toggle");
+const patchnotesPanel = document.getElementById("patchnotes");
+patchnotesDock.append(patchnotesToggle, patchnotesPanel);
 const lobbyTrophies = document.getElementById("lobby-trophies");
 const lobbyRecord = document.getElementById("lobby-record");
 const lobbyWinrate = document.getElementById("lobby-winrate");
@@ -9463,11 +9467,9 @@ function setupInput() {
     btn.textContent = table.classList.contains("hidden") ? t("matchupBtn") : t("matchupBtnClose");
   });
 
-  document.getElementById("patchnotes-toggle").addEventListener("click", () => {
-    const panel = document.getElementById("patchnotes");
-    const btn = document.getElementById("patchnotes-toggle");
-    panel.classList.toggle("hidden");
-    btn.textContent = panel.classList.contains("hidden") ? t("patchnotesBtn") : t("patchnotesBtnClose");
+  patchnotesToggle.addEventListener("click", () => {
+    patchnotesPanel.classList.toggle("hidden");
+    patchnotesToggle.textContent = patchnotesPanel.classList.contains("hidden") ? t("patchnotesBtn") : t("patchnotesBtnClose");
   });
 
   document.getElementById("pinkfront-toggle").addEventListener("click", () => {

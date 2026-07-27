@@ -1983,6 +1983,61 @@ body {
   backdrop-filter: blur(4px);
 }
 
+.patchnotes-dock {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 35;
+  display: flex;
+  width: min(460px, calc(100vw - 32px));
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.lobby-side-panel.hidden + .patchnotes-dock {
+  display: none;
+}
+
+.patchnotes-dock > * {
+  pointer-events: auto;
+}
+
+.patchnotes-dock #patchnotes-toggle {
+  min-width: 108px;
+  padding: 9px 16px;
+  color: #ffe2bd;
+  background: linear-gradient(135deg, rgba(62, 34, 17, 0.96), rgba(31, 20, 10, 0.96));
+  border-color: rgba(255, 190, 120, 0.5);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+}
+
+.patchnotes-dock .patchnotes {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: calc(100vh - 74px);
+  padding: 16px 18px;
+  border-color: rgba(255, 190, 120, 0.36);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(42, 25, 14, 0.98), rgba(18, 11, 7, 0.98));
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.48);
+}
+
+@media (max-width: 900px) {
+  .patchnotes-dock {
+    top: 70px;
+    right: 10px;
+    width: min(460px, calc(100vw - 20px));
+  }
+
+  .patchnotes-dock .patchnotes {
+    display: block;
+    max-height: calc(100vh - 124px);
+  }
+}
+
 .patch-entry {
   margin-bottom: 10px;
 }
