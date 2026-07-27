@@ -912,6 +912,21 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
 }
 
+function createGoldIngotGeometry() {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+    -0.28, -0.11, -0.18,  0.28, -0.11, -0.18,  0.28, -0.11,  0.18, -0.28, -0.11,  0.18,
+    -0.19,  0.11, -0.11,  0.19,  0.11, -0.11,  0.19,  0.11,  0.11, -0.19,  0.11,  0.11,
+  ]), 3));
+  geometry.setIndex([
+    0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7,
+    0, 1, 5, 0, 5, 4, 1, 2, 6, 1, 6, 5,
+    2, 3, 7, 2, 7, 6, 3, 0, 4, 3, 4, 7,
+  ]);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 function spawnGoldProjectile(position, yaw, stage, attackId) {
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
   canvas.dataset.lastGoldStage = String(stage);
@@ -921,12 +936,17 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
   const damage = def[`stage${stage}Damage`];
   const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
   const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
+  const geometry = stage === 1
+    ? new THREE.CylinderGeometry(def.stage1Size / 2, def.stage1Size / 2, 0.55, 12)
+    : stage === 3
+      ? createGoldIngotGeometry()
+      : new THREE.SphereGeometry(radii[stage], 8, 6);
   const mesh = new THREE.Mesh(
-    stage === 1
-      ? new THREE.BoxGeometry(def.stage1Size, def.stage1Size, def.stage1Size)
-      : new THREE.SphereGeometry(radii[stage], 8, 6),
+    geometry,
     new THREE.MeshStandardMaterial({ color: colors[stage], emissive: colors[stage], emissiveIntensity: 0.8, metalness: 0.55, roughness: 0.25 }),
   );
+  if (stage === 1) mesh.rotation.x = Math.PI / 2;
+  if (stage === 3) mesh.rotation.y = yaw;
   mesh.position.copy(position);
   mesh.position.y = player.position.y + 1.25;
   scene.add(mesh);
