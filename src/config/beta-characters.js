@@ -35,7 +35,8 @@ export const BETA_CHARACTERS = {
   },
   orange: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 0.5, maxAmmo: 3,
-    bombDamage: 750, bombRange: 9, bombSpeed: 22, betaSplashRadius: 2.2,
+    bombDamage: 750, bombRange: 9, bombSpeed: 22,
+    bombSplashDamage: 700, bombSplashCount: 5, bombSplashSpeed: 10, bombSplashRange: 4.4, bombSplashHitRadius: 0.75,
     description: "오렌지는 평범한 오렌지 농부입니다. 하지만 컬러스의 첫 번째 우승자가 되려고 합니다. 오직 오렌지 하나만으로요...",
     basicAttack: {
       name: "오렌지 슛",

@@ -1015,6 +1015,31 @@ function createGoldIngotGeometry() {
   return geometry;
 }
 
+function spawnOrangeJuice(position) {
+  const def = BETA_CHARACTERS.orange;
+  const range = def.bombSplashRange * def.blastRadiusMultiplier;
+  createGroundPulse(range, 0xffb12b, position);
+  for (let i = 0; i < def.bombSplashCount; i += 1) {
+    const angle = (i / def.bombSplashCount) * Math.PI * 2;
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.14, 6, 6),
+      new THREE.MeshBasicMaterial({ color: 0xffcc44, transparent: true, opacity: 0.92 }),
+    );
+    mesh.position.copy(position);
+    scene.add(mesh);
+    betaProjectiles.push({
+      mesh, characterId: "orange",
+      vx: Math.sin(angle) * def.bombSplashSpeed,
+      vz: Math.cos(angle) * def.bombSplashSpeed,
+      speed: def.bombSplashSpeed, traveled: 0, returnTraveled: 0,
+      range, damage: def.bombSplashDamage, splash: 0,
+      type: "orangeJuice", hitRadius: def.bombSplashHitRadius,
+      hit: new Set(), causesKnockback: false,
+    });
+    canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
+  }
+}
+
 function spawnGoldProjectile(position, yaw, stage, attackId) {
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
   canvas.dataset.lastGoldStage = String(stage);
@@ -1180,7 +1205,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
     startModelAttackMotion();
     fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14 });
   } else if (id === "orange") {
-    fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, splash: def.betaSplashRadius * def.blastRadiusMultiplier, type: "bomb" });
+    fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "bomb" });
   } else if (id === "yellow") {
     fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
   } else if (id === "cyan") {
@@ -1761,6 +1786,7 @@ function animate() {
     const projectile = betaProjectiles[i];
     let remove = false;
     let shouldSplitGold = false;
+    let shouldSplitOrange = false;
     if (projectile.type === "boomerang" && projectile.returned) {
       const returnX = player.position.x - projectile.mesh.position.x;
       const returnZ = player.position.z - projectile.mesh.position.z;
@@ -1786,6 +1812,13 @@ function animate() {
       && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
       remove = true;
       shouldSplitGold = projectile.goldStage < 3;
+    }
+    if ((projectile.type === "bomb" || projectile.type === "orangeJuice") && solids.some((solid) =>
+      solid.top >= projectile.mesh.position.y - projectile.hitRadius
+      && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
+      && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
+      remove = true;
+      shouldSplitOrange = projectile.type === "bomb";
     }
     if (projectile.type !== "cyanUltimate") projectile.mesh.rotation.y += dt * 9;
     if (projectile.type === "cyanUltimate") {
@@ -1833,6 +1866,7 @@ function animate() {
         } else {
           damageTarget(target, projectile.damage, projectile.causesKnockback);
         }
+        if (projectile.type === "bomb") shouldSplitOrange = true;
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
@@ -1855,9 +1889,11 @@ function animate() {
     } else if (projectile.traveled >= projectile.range) {
       remove = true;
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
+      if (projectile.type === "bomb") shouldSplitOrange = true;
     }
     if (remove) {
       if (shouldSplitGold) splitGoldProjectile(projectile);
+      if (shouldSplitOrange) spawnOrangeJuice(projectile.mesh.position.clone());
       scene.remove(projectile.mesh);
       projectile.mesh.geometry.dispose();
       projectile.mesh.material.dispose();
