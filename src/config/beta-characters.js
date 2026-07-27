@@ -157,10 +157,10 @@ export const BETA_CHARACTERS = {
     projectileRadius: 0.2, ultimateChargeRequired: 12, maxChargePerAttack: 6,
     ultimate: {
       id: "malfunctionZone", name: "고장 지대",
-      description: "최대 8타일 거리에 반경 3타일 장판을 설치합니다. 적은 공격할 수 없고 이동속도가 50% 감소합니다.",
+      description: "자신의 위치에 반경 3타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다.",
       nameEn: "Malfunction Zone",
-      descriptionEn: "Places a 3-tile radius field up to 8 tiles away. Enemies inside cannot attack and move 50% slower.",
-      castRange: 8, radius: 3, duration: 4, delay: 0.35,
+      descriptionEn: "Summons a 3-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower.",
+      castRange: 0, radius: 3, duration: 4, delay: 0.35, followsCaster: true,
     },
   },
 };

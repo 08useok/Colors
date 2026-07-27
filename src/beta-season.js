@@ -1412,12 +1412,11 @@ function performPinkEncore() {
 
 function performGoldUltimate() {
   const def = BETA_CHARACTERS.gold.ultimate;
-  autoAimAtNearestTarget(def.castRange);
-  const centerX = player.position.x + Math.sin(player.rotation.y) * def.castRange;
-  const centerZ = player.position.z + Math.cos(player.rotation.y) * def.castRange;
-  const centerGround = groundHeightAt(centerX, centerZ);
-  const center = new THREE.Vector3(centerX, centerGround > -5 ? centerGround + 0.08 : 0.08, centerZ);
   setTimeout(() => {
+    const centerX = player.position.x;
+    const centerZ = player.position.z;
+    const centerGround = groundHeightAt(centerX, centerZ);
+    const center = new THREE.Vector3(centerX, centerGround > -5 ? centerGround + 0.08 : 0.08, centerZ);
     const mesh = new THREE.Mesh(
       new THREE.CircleGeometry(def.radius, 48),
       new THREE.MeshBasicMaterial({ color: 0xd9a51f, transparent: true, opacity: 0.34, side: THREE.DoubleSide, depthWrite: false }),
@@ -1425,7 +1424,11 @@ function performGoldUltimate() {
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.copy(center);
     scene.add(mesh);
-    malfunctionZones.push({ mesh, x: center.x, z: center.z, radius: def.radius, expiresAt: clock.elapsedTime + def.duration });
+    malfunctionZones.push({
+      mesh, x: center.x, z: center.z, radius: def.radius,
+      expiresAt: clock.elapsedTime + def.duration,
+      followsPlayer: def.followsCaster,
+    });
     canvas.dataset.lastMalfunctionZone = `${center.x.toFixed(2)},${center.y.toFixed(2)},${center.z.toFixed(2)}`;
     attackComboState.textContent = "고장 지대 설치";
   }, def.delay * 1000);
@@ -1956,6 +1959,12 @@ function animate() {
       for (const target of testTargets) target.userData.inMalfunctionZone = false;
     }
     const zone = malfunctionZones[i];
+    if (zone.followsPlayer) {
+      zone.x = player.position.x;
+      zone.z = player.position.z;
+      const zoneGround = groundHeightAt(zone.x, zone.z);
+      zone.mesh.position.set(zone.x, zoneGround > -5 ? zoneGround + 0.08 : 0.08, zone.z);
+    }
     zone.mesh.material.opacity = 0.26 + Math.sin(clock.elapsedTime * 8) * 0.08;
     if (clock.elapsedTime >= zone.expiresAt) {
       scene.remove(zone.mesh);
