@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.143";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.141";
+import { CHARACTERS } from "./config/characters.js?v=1.5.142";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -253,8 +253,7 @@ tdMapCamera.position.set(0, 100, 0);
 tdMapCamera.lookAt(0, 0, 0);
 let tdMapOpen = false;
 
-const attackDepth = 5;
-const ATTACK_RANGE_MULTIPLIER = 1.5;
+const attackDepth = 6;
 const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
 const baseMoveSpeed = 10.4;
@@ -1607,7 +1606,7 @@ function createAttackAimIndicator() {
 
   const subA = new THREE.Group();
   subA.rotation.y = -20 * (Math.PI / 180);
-  const meleeRange = attackDepth * ATTACK_RANGE_MULTIPLIER;
+  const meleeRange = attackDepth;
   const rectA = new THREE.Mesh(new THREE.PlaneGeometry(attackWidth, meleeRange), makeMat());
   rectA.rotation.x = -Math.PI / 2;
   rectA.position.set(0.5, 0.08, meleeRange * 0.5);
@@ -4613,7 +4612,7 @@ function playNetworkAttack(fighter, msg) {
     const charDef = CHARACTERS.pink;
     const range = (fighter.hasPinkAreaHealAbility
       ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
-      : charDef.healCircleRange) * ATTACK_RANGE_MULTIPLIER;
+      : charDef.healCircleRange);
     createHealCircleEffect(fighter.mesh.position.x, fighter.mesh.position.z, range);
     audio.play("attack");
     return;
@@ -4793,7 +4792,7 @@ const attackAimIndicator = createAttackAimIndicator();
 
 function createGreenAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.green.boomerangRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.green.boomerangRange;
   const halfAngle = 15 * (Math.PI / 180); // 15° = half of 30°
 
   // Fan fill (ShapeGeometry in XZ plane via rotation)
@@ -4854,7 +4853,7 @@ const greenAimIndicator = createGreenAimIndicator();
 
 function createBlueAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.blue.bulletRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.blue.bulletRange;
 
   const beam = new THREE.Mesh(
     new THREE.PlaneGeometry(1, range),
@@ -4893,7 +4892,7 @@ function createBlueAimIndicator() {
 
 function createOrangeAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.orange.bombRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.orange.bombRange;
 
   const beam = new THREE.Mesh(
     new THREE.PlaneGeometry(1, range),
@@ -4934,7 +4933,7 @@ const orangeAimIndicator = createOrangeAimIndicator();
 
 function createYellowAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.yellow.electricRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.yellow.electricRange;
 
   const beam = new THREE.Mesh(
     new THREE.PlaneGeometry(1, range),
@@ -4974,7 +4973,7 @@ const yellowAimIndicator = createYellowAimIndicator();
 
 function createCyanAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.cyan.spreadLineRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.cyan.spreadLineRange;
   const totalWidth = (CHARACTERS.cyan.spreadLineCount - 1) * CHARACTERS.cyan.spreadLineSpacing;
 
   const beam = new THREE.Mesh(
@@ -5015,7 +5014,7 @@ const cyanAimIndicator = createCyanAimIndicator();
 
 function createPurpleAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.purple.needleRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.purple.needleRange;
   const splashR = CHARACTERS.purple.vialSplashRadius;
 
   const beam = new THREE.Mesh(
@@ -5085,7 +5084,7 @@ const purpleAimIndicator = createPurpleAimIndicator();
 
 function createPinkAimIndicator() {
   const group = new THREE.Group();
-  const range = CHARACTERS.pink.healCircleRange * ATTACK_RANGE_MULTIPLIER;
+  const range = CHARACTERS.pink.healCircleRange;
 
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(range - 0.12, range, 32),
@@ -5177,7 +5176,7 @@ function createAttackEffect(attacker, hitIndex) {
   const tilt = (hitIndex === 0 ? -20 : 20) * (Math.PI / 180);
   const effectYaw = attacker.yaw + tilt;
 
-  const fwdDist = attackDepth * ATTACK_RANGE_MULTIPLIER * 0.55;
+  const fwdDist = attackDepth * 0.55;
   const cx = attacker.mesh.position.x + Math.sin(attacker.yaw) * fwdDist;
   const cz = attacker.mesh.position.z + Math.cos(attacker.yaw) * fwdDist;
 
@@ -5995,7 +5994,7 @@ function beginCrimsonPunchCombo(fighter) {
     queueAttackHit(fighter, i, charDef.attackDamage, state.gameTime + interval * i);
   }
   // 원격 플레이어는 예약된 타격이 취소되고 이 이펙트만 남으므로 여기서 한 번 띄운다
-  createCrimsonPunchEffect(fighter, fighter.yaw, charDef.attackRange * ATTACK_RANGE_MULTIPLIER);
+  createCrimsonPunchEffect(fighter, fighter.yaw, charDef.attackRange);
   if (fighter.isPlayer) audio.play("attack");
   return true;
 }
@@ -6004,7 +6003,7 @@ function beginCrimsonPunchCombo(fighter) {
 function resolveCrimsonPunch(attacker, hitIndex, damage) {
   const charDef = CHARACTERS.crimson;
   const centerYaw = attacker.yaw + (charDef.attackAngles[hitIndex] ?? 0);
-  const range = charDef.attackRange * ATTACK_RANGE_MULTIPLIER;
+  const range = charDef.attackRange;
   let hitCount = 0;
 
   for (const target of state.players) {
@@ -6162,7 +6161,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "purple") baseRange = CHARACTERS.purple.needleRange;
   else if (fighter.characterType === "pink") baseRange = CHARACTERS.pink.healCircleRange;
   else if (fighter.characterType === "crimson") baseRange = CHARACTERS.crimson.attackRange;
-  return baseRange * ATTACK_RANGE_MULTIPLIER;
+  return baseRange;
 }
 
 function getMoveSpeed(fighter) {
@@ -6215,7 +6214,7 @@ function beginBulletAttack(fighter) {
     vx: Math.sin(yaw) * charDef.bulletSpeed,
     vz: Math.cos(yaw) * charDef.bulletSpeed,
     damage: charDef.bulletDamage,
-    range: charDef.bulletRange * ATTACK_RANGE_MULTIPLIER,
+    range: charDef.bulletRange,
     farThreshold: Infinity,
     farMultiplier: 1,
     distTraveled: 0,
@@ -6270,7 +6269,7 @@ function beginBoomerangAttack(fighter) {
       vx: Math.sin(yaw) * charDef.boomerangSpeed,
       vz: Math.cos(yaw) * charDef.boomerangSpeed,
       damage: charDef.boomerangDamage,
-      range: charDef.boomerangRange * ATTACK_RANGE_MULTIPLIER,
+      range: charDef.boomerangRange,
       farThreshold: charDef.boomerangFarThreshold,
       farMultiplier: charDef.boomerangFarMultiplier,
       distTraveled: 0,
@@ -6320,7 +6319,7 @@ function beginBombAttack(fighter) {
     vx: Math.sin(yaw) * charDef.bombSpeed,
     vz: Math.cos(yaw) * charDef.bombSpeed,
     damage: charDef.bombDamage,
-    range: charDef.bombRange * ATTACK_RANGE_MULTIPLIER,
+    range: charDef.bombRange,
     farThreshold: Infinity,
     farMultiplier: 1,
     distTraveled: 0,
@@ -6416,7 +6415,7 @@ function beginElectricAttack(fighter) {
     vx: Math.sin(yaw) * charDef.electricSpeed,
     vz: Math.cos(yaw) * charDef.electricSpeed,
     damage: charDef.electricDamage,
-    range: charDef.electricRange * ATTACK_RANGE_MULTIPLIER,
+    range: charDef.electricRange,
     farThreshold: Infinity,
     farMultiplier: 1,
     distTraveled: 0,
@@ -6493,7 +6492,7 @@ function beginSpreadLineAttack(fighter) {
       vx: Math.sin(yaw) * charDef.spreadLineSpeed,
       vz: Math.cos(yaw) * charDef.spreadLineSpeed,
       damage: charDef.spreadLineDamage,
-      range: charDef.spreadLineRange * ATTACK_RANGE_MULTIPLIER,
+      range: charDef.spreadLineRange,
       farThreshold: Infinity,
       farMultiplier: 1,
       distTraveled: 0,
@@ -6728,7 +6727,7 @@ function beginHealCircleAttack(fighter) {
   const fz = fighter.mesh.position.z;
   let effectiveRange = (fighter.hasPinkAreaHealAbility
     ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
-    : charDef.healCircleRange) * ATTACK_RANGE_MULTIPLIER;
+    : charDef.healCircleRange);
   const r2 = effectiveRange * effectiveRange;
 
   for (const target of state.players) {
@@ -6856,7 +6855,7 @@ function beginPoisonAttack(fighter) {
         vx: Math.sin(angle) * charDef.needleSpeed,
         vz: Math.cos(angle) * charDef.needleSpeed,
         damage: charDef.needleDamage,
-        range: charDef.needleRange * ATTACK_RANGE_MULTIPLIER,
+        range: charDef.needleRange,
         farThreshold: Infinity,
         farMultiplier: 1,
         distTraveled: 0,
@@ -6867,7 +6866,7 @@ function beginPoisonAttack(fighter) {
     }
   } else {
     const mesh = createVialMesh(fighter.mesh.position, yaw);
-    const vialRange = charDef.vialRange * ATTACK_RANGE_MULTIPLIER;
+    const vialRange = charDef.vialRange;
     const flightTime = vialRange / charDef.vialSpeed;
     const gravity = 20;
     const vy0 = gravity * flightTime * 0.5;
@@ -7138,7 +7137,7 @@ function updateProjectiles(dt) {
                 vx: (bx / bLen) * charDef.boomerangSpeed,
                 vz: (bz / bLen) * charDef.boomerangSpeed,
                 damage: dmg,
-                range: charDef.boomerangRange * ATTACK_RANGE_MULTIPLIER,
+                range: charDef.boomerangRange,
                 farThreshold: Infinity,
                 farMultiplier: 1,
                 distTraveled: 0,
@@ -7331,7 +7330,7 @@ function resolveAttack(attacker, hitIndex, damage) {
     const deltaZ = target.mesh.position.z - attacker.mesh.position.z;
     const localX = deltaX * cosYaw - deltaZ * sinYaw - spreadOffset;
     const localZ = deltaX * sinYaw + deltaZ * cosYaw;
-    if (localZ < 0 || localZ > attackDepth * ATTACK_RANGE_MULTIPLIER) {
+    if (localZ < 0 || localZ > attackDepth) {
       continue;
     }
     if (Math.abs(localX - punchSide) > attackHalfWidth) {
@@ -7941,7 +7940,7 @@ function updateBot(bot, dt, zone) {
       }
       if (lowestAlly) {
         const allyDist = Math.hypot(lowestAlly.mesh.position.x - botPos.x, lowestAlly.mesh.position.z - botPos.z);
-        if (allyDist > CHARACTERS.pink.healCircleRange * ATTACK_RANGE_MULTIPLIER + 1) {
+        if (allyDist > CHARACTERS.pink.healCircleRange + 1) {
           const allyNav = findNavTarget(bot, lowestAlly.mesh.position.x, lowestAlly.mesh.position.z);
           bot.yaw = Math.atan2(allyNav.x - botPos.x, allyNav.z - botPos.z);
           tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed);
