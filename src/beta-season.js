@@ -24,8 +24,17 @@ const crimsonAttackButton = document.getElementById("crimson-attack-btn");
 const attackComboState = document.getElementById("attack-combo-state");
 const attackTitle = crimsonAttackButton.querySelector("strong");
 const attackHint = crimsonAttackButton.querySelector("small");
+const ultimateButton = document.getElementById("ultimate-btn");
+const ultimateState = document.getElementById("ultimate-state");
+const goldRushToggle = document.getElementById("gold-rush-toggle");
+const goldRushHud = document.getElementById("gold-rush-hud");
+const goldCountEl = document.getElementById("gold-count");
+const goldRushTimerEl = document.getElementById("gold-rush-timer");
+const goldRushStatusEl = document.getElementById("gold-rush-status");
+const respawnOverlay = document.getElementById("respawn-overlay");
+const respawnCountdownEl = document.getElementById("respawn-countdown");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "60";
+const CHARACTER_MODEL_VERSION = "61";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -36,8 +45,9 @@ const CHARACTERS = [
   { id: "purple", name: "Purple", rarity: "rare", price: 200, color: 0x9252d7 },
   { id: "pink", name: "Pink", rarity: "rare", price: 200, color: 0xf28cba },
   { id: "crimson", name: "Crimson", rarity: "legendary", price: 900, color: 0xa00000 },
+  { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xd4a928 },
 ];
-const BETA_SEASON_ID = "beta1";
+const BETA_SEASON_ID = "beta2";
 const BETA_SKINS = getSkinsForSeason(BETA_SEASON_ID);
 
 function loadBetaState() {
@@ -150,11 +160,11 @@ box(-1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
 box(1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
 
 const testTargets = [];
-function createTestTarget(x, z) {
+function createTestTarget(x, z, { ally = false } = {}) {
   const target = new THREE.Group();
   const mesh = new THREE.Mesh(
     new THREE.CapsuleGeometry(0.38, 0.75, 4, 8),
-    new THREE.MeshStandardMaterial({ color: 0xf4d36a, roughness: 0.65 }),
+    new THREE.MeshStandardMaterial({ color: ally ? 0x64b5ff : 0xf4d36a, roughness: 0.65 }),
   );
   mesh.position.y = 0.78;
   mesh.castShadow = true;
@@ -163,6 +173,9 @@ function createTestTarget(x, z) {
   target.userData.health = 6000;
   target.userData.mesh = mesh;
   target.userData.kind = "jjajjal";
+  target.userData.isAlly = ally;
+  target.userData.maxHealth = 6000;
+  target.userData.deadPosition = target.position.clone();
   target.userData.baseScale = 1;
   scene.add(target);
   testTargets.push(target);
@@ -170,6 +183,8 @@ function createTestTarget(x, z) {
 createTestTarget(-1.4, -2.4);
 createTestTarget(0, -3.2);
 createTestTarget(1.4, -2.4);
+createTestTarget(-2.2, 1.5, { ally: true });
+createTestTarget(2.2, 1.5, { ally: true });
 
 // 베타 시즌 포털
 const portal = new THREE.Group();
@@ -594,10 +609,17 @@ function selectCharacter(id) {
 function applySelectedSkinVisual() {
   const character = CHARACTERS.find((item) => item.id === betaState.selectedCharacter);
   const skinId = betaState.selectedSkins[betaState.selectedCharacter] || "";
-  const skinColors = { beta_red_orange: 0xb3261e, beta_red_crimson: 0x62000d, beta_red_red: 0xff2135 };
+  const skinColors = {
+    beta_red_orange: 0xb3261e,
+    beta_red_crimson: 0x62000d,
+    beta_red_red: 0xff2135,
+    beta2_gold_yellow: 0xffdb3d,
+    beta2_gold_orange: 0xf28b21,
+    beta2_gold_gold: 0xffc928,
+  };
   bodyMat.color.setHex(skinColors[skinId] ?? character?.color ?? 0xef3c58);
-  bodyMat.metalness = skinId === "beta_red_red" ? 0.45 : skinId.startsWith("beta_red_") ? 0.2 : 0;
-  bodyMat.roughness = skinId.startsWith("beta_red_") ? 0.32 : 0.55;
+  bodyMat.metalness = skinId.startsWith("beta2_gold_") ? 0.7 : skinId === "beta_red_red" ? 0.45 : skinId.startsWith("beta_red_") ? 0.2 : 0;
+  bodyMat.roughness = skinId.startsWith("beta2_gold_") ? 0.22 : skinId.startsWith("beta_red_") ? 0.32 : 0.55;
   const crownVisible = skinId.startsWith("crown_");
   if (crownVisible) {
     const variant = getCrownVariant(skinId);
@@ -700,9 +722,11 @@ function updateCrimsonControls() {
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
-  const hideUltimate = !["crimson", "cyan"].includes(betaState.selectedCharacter);
-  document.getElementById("ultimate-btn").classList.toggle("hidden", hideUltimate);
+  const hideUltimate = !["crimson", "cyan", "pink", "gold"].includes(betaState.selectedCharacter);
+  ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
+  ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
+  ultimateButton.classList.toggle("pink-ultimate", betaState.selectedCharacter === "pink");
   updateCrimsonUltimateGauge();
 }
 
@@ -740,7 +764,7 @@ function renderCharacters() {
       ${basicAttack ? `<p><strong>일반 공격 · ${basicAttack.name}</strong><br>${basicAttack.description}</p>` : ""}
       ${officialAbility ? `<p><strong>공식 능력 · ${officialAbility.name}</strong><br>${officialAbility.description}</p>` : ""}
       ${ultimate ? `<p><strong>궁극기 · ${ultimate.name}</strong><br>${ultimate.description}</p>` : ""}
-      <p>${character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : "베타 시즌 캐릭터 등급 테스트"}</p>
+      <p>${character.id === "gold" ? "베타 시즌 2 신규 · 설치형 컨트롤러" : character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : "베타 시즌 캐릭터 등급 테스트"}</p>
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
       ${skinList}
     </article>`;
@@ -753,7 +777,7 @@ function renderShop() {
     const owned = betaState.ownedSkins.includes(skin.id);
     return `<article class="beta-card">
       <span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span>
-      <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 베타 시즌 1</p>
+      <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 베타 시즌 2</p>
       <button data-skin="${skin.id}" ${owned ? "disabled" : ""}>${owned ? "보유 중" : skin.cost === 0 ? getBetaText("shopFree") : `${skin.cost.toLocaleString("ko-KR")} 코인`}</button>
     </article>`;
   }).join("")}</div>`;
@@ -808,6 +832,12 @@ let crimsonAttackReady = true;
 const betaProjectiles = [];
 let generalAttackReady = true;
 let purpleAttackIndex = 0;
+let goldUltimateCharge = 0;
+let pinkUltimateCharge = 0;
+let goldAttackSequence = 0;
+const goldAttackCharge = new Map();
+const goldStageHits = new Map();
+const malfunctionZones = [];
 
 function damageTarget(target, damage, causesKnockback = false) {
   if (!target.visible) return;
@@ -882,6 +912,86 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
 }
 
+function spawnGoldProjectile(position, yaw, stage, attackId) {
+  canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
+  canvas.dataset.lastGoldStage = String(stage);
+  const def = BETA_CHARACTERS.gold;
+  const speed = def[`stage${stage}Speed`];
+  const range = def[`stage${stage}Range`];
+  const damage = def[`stage${stage}Damage`];
+  const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
+  const radii = [0, 0.38, 0.26, def.projectileRadius];
+  const mesh = new THREE.Mesh(
+    stage === 1 ? new THREE.DodecahedronGeometry(radii[stage], 0) : new THREE.SphereGeometry(radii[stage], 8, 6),
+    new THREE.MeshStandardMaterial({ color: colors[stage], emissive: colors[stage], emissiveIntensity: 0.8, metalness: 0.55, roughness: 0.25 }),
+  );
+  mesh.position.copy(position);
+  mesh.position.y = player.position.y + 1.25;
+  scene.add(mesh);
+  betaProjectiles.push({
+    mesh, characterId: "gold", vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed,
+    speed, traveled: 0, returnTraveled: 0, range, damage, splash: 0,
+    type: `goldStage${stage}`, hitRadius: radii[stage], hit: new Set(),
+    causesKnockback: false, goldStage: stage, goldAttackId: attackId, goldYaw: yaw,
+  });
+}
+
+function splitGoldProjectile(projectile) {
+  canvas.dataset.lastGoldSplit = String(projectile.goldStage);
+  const origin = projectile.mesh.position.clone();
+  if (projectile.goldStage === 1) {
+    spawnGoldProjectile(origin, projectile.goldYaw - Math.PI / 2, 2, projectile.goldAttackId);
+    spawnGoldProjectile(origin, projectile.goldYaw + Math.PI / 2, 2, projectile.goldAttackId);
+    createGroundPulse(BETA_CHARACTERS.gold.stage1SplashRadius, 0xffd347, origin);
+  } else if (projectile.goldStage === 2) {
+    for (let i = 0; i < 6; i += 1) {
+      spawnGoldProjectile(origin, projectile.goldYaw + (i / 6) * Math.PI * 2, 3, projectile.goldAttackId);
+    }
+  }
+}
+
+function applyGoldProjectileHit(projectile, target) {
+  const attackId = projectile.goldAttackId;
+  const stage = projectile.goldStage;
+  let targetStages = goldStageHits.get(attackId);
+  if (!targetStages) {
+    targetStages = new Map();
+    goldStageHits.set(attackId, targetStages);
+  }
+  let stages = targetStages.get(target);
+  if (!stages) {
+    stages = new Set();
+    targetStages.set(target, stages);
+  }
+  const hitOne = (hitTarget) => {
+    let hitTargetStages = targetStages.get(hitTarget);
+    if (!hitTargetStages) {
+      hitTargetStages = new Set();
+      targetStages.set(hitTarget, hitTargetStages);
+    }
+    if (hitTargetStages.has(stage)) return;
+    hitTargetStages.add(stage);
+    damageTarget(hitTarget, projectile.damage);
+    const chargeValue = [0, 3, 2, 1][stage];
+    const gained = goldAttackCharge.get(attackId) || 0;
+    const awarded = Math.min(chargeValue, BETA_CHARACTERS.gold.maxChargePerAttack - gained);
+    if (awarded > 0) {
+      goldAttackCharge.set(attackId, gained + awarded);
+      goldUltimateCharge = Math.min(BETA_CHARACTERS.gold.ultimateChargeRequired, goldUltimateCharge + awarded);
+      updateCrimsonUltimateGauge();
+    }
+  };
+  hitOne(target);
+  if (stage === 1) {
+    for (const other of testTargets) {
+      if (!other.visible || other.userData.isAlly || other === target) continue;
+      if (Math.hypot(other.position.x - target.position.x, other.position.z - target.position.z) <= BETA_CHARACTERS.gold.stage1SplashRadius) {
+        hitOne(other);
+      }
+    }
+  }
+}
+
 function hitFan(range, halfAngle, damage) {
   const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
   for (const target of testTargets) {
@@ -916,6 +1026,7 @@ function getBetaAttackRange(id, def) {
   if (id === "cyan") return def.spreadLineRange;
   if (id === "purple") return Math.max(def.needleRange, def.vialRange);
   if (id === "pink") return def.healCircleRange;
+  if (id === "gold") return def.stage1Range;
   return 0;
 }
 
@@ -932,6 +1043,7 @@ function createGroundPulse(radius, color, position = player.position) {
 }
 
 function performCharacterAttack({ manualAim = false } = {}) {
+  if (goldRushState.dead) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
   if (id === "crimson") return performCrimsonAttack();
@@ -976,11 +1088,25 @@ function performCharacterAttack({ manualAim = false } = {}) {
     attackComboState.textContent = vial ? "독 약병" : "독침";
   } else if (id === "pink") {
     startModelAttackMotion();
+    pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
+    updateCrimsonUltimateGauge();
     createGroundPulse(def.healCircleRange, 0xff9fcf);
     for (const target of testTargets) {
       const distance = Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z);
-      if (target.visible && distance <= def.healCircleRange) damageTarget(target, def.healCircleDamage);
+      if (target.visible && distance <= def.healCircleRange) {
+        if (target.userData.isAlly) {
+          target.userData.health = Math.min(target.userData.maxHealth, target.userData.health + def.healCircleHeal);
+        } else {
+          damageTarget(target, def.healCircleDamage);
+        }
+      }
     }
+  } else if (id === "gold") {
+    const attackId = ++goldAttackSequence;
+    goldAttackCharge.set(attackId, 0);
+    goldStageHits.set(attackId, new Map());
+    spawnGoldProjectile(player.position, player.rotation.y, 1, attackId);
+    attackComboState.textContent = "금광석 1단계";
   }
   setTimeout(() => {
     generalAttackReady = true;
@@ -1068,23 +1194,62 @@ let crimsonUltimateCharge = 0;
 let cyanUltimateCharge = 0;
 
 function updateCrimsonUltimateGauge() {
-  const ultimateButton = document.getElementById("ultimate-btn");
-  const ultimateState = document.getElementById("ultimate-state");
-  const isCyan = betaState.selectedCharacter === "cyan";
-  const charge = isCyan ? cyanUltimateCharge : crimsonUltimateCharge;
-  const required = isCyan ? BETA_CHARACTERS.cyan.ultimate.chargeRequired : CRIMSON.ultimateChargeRequired;
-  const ultimateName = isCyan ? BETA_CHARACTERS.cyan.ultimate.name : BETA_CHARACTERS.crimson.ultimate.name;
-  const ultimateColor = isCyan ? "#0ff0fe" : "#a00000";
+  const id = betaState.selectedCharacter;
+  const configs = {
+    cyan: { charge: cyanUltimateCharge, required: BETA_CHARACTERS.cyan.ultimate.chargeRequired, name: BETA_CHARACTERS.cyan.ultimate.name, color: "#0ff0fe" },
+    crimson: { charge: crimsonUltimateCharge, required: CRIMSON.ultimateChargeRequired, name: BETA_CHARACTERS.crimson.ultimate.name, color: "#a00000" },
+    pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
+    gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#e2ad20" },
+  };
+  const config = configs[id] || configs.crimson;
+  const { charge, required } = config;
   const ready = charge >= required;
   const chargeRatio = Math.min(1, charge / required);
-  ultimateButton.style.setProperty("--ultimate-color", ultimateColor);
+  ultimateButton.style.setProperty("--ultimate-color", config.color);
   ultimateButton.style.setProperty("--charge-angle", `${chargeRatio * 360}deg`);
   ultimateButton.classList.toggle("ready", ready);
   ultimateButton.setAttribute("aria-valuenow", String(charge));
   ultimateButton.setAttribute("aria-valuemax", String(required));
-  ultimateButton.setAttribute("aria-label", `${isCyan ? "시안" : "크림슨"} 궁극기 ${ultimateName}`);
-  ultimateButton.title = ready ? `Space 또는 Q · ${ultimateName} 사용 가능` : `궁극기 ${charge}/${required}`;
+  ultimateButton.setAttribute("aria-label", `${id} 궁극기 ${config.name}`);
+  ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `궁극기 ${charge}/${required}`;
   ultimateState.textContent = ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
+}
+
+function performPinkEncore() {
+  const def = BETA_CHARACTERS.pink.ultimate;
+  let revived = 0;
+  createGroundPulse(def.radius, 0xff79b8);
+  for (const target of testTargets) {
+    if (!target.userData.isAlly || target.visible) continue;
+    if (Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z) > def.radius) continue;
+    target.visible = true;
+    target.userData.health = target.userData.maxHealth * def.reviveHealthRatio;
+    target.userData.invulnerableUntil = clock.elapsedTime + def.invulnerabilityDuration;
+    createGroundPulse(1.1, 0xffb3d7, target.position);
+    revived += 1;
+  }
+  attackComboState.textContent = revived ? `앙코르! · ${revived}명 부활` : "부활 대상 없음";
+}
+
+function performGoldUltimate() {
+  const def = BETA_CHARACTERS.gold.ultimate;
+  autoAimAtNearestTarget(def.castRange);
+  const center = new THREE.Vector3(
+    player.position.x + Math.sin(player.rotation.y) * def.castRange,
+    0.18,
+    player.position.z + Math.cos(player.rotation.y) * def.castRange,
+  );
+  setTimeout(() => {
+    const mesh = new THREE.Mesh(
+      new THREE.CircleGeometry(def.radius, 48),
+      new THREE.MeshBasicMaterial({ color: 0xd9a51f, transparent: true, opacity: 0.34, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.copy(center);
+    scene.add(mesh);
+    malfunctionZones.push({ mesh, x: center.x, z: center.z, radius: def.radius, expiresAt: clock.elapsedTime + def.duration });
+    attackComboState.textContent = "고장 지대 설치";
+  }, def.delay * 1000);
 }
 
 function performCyanUltimate() {
@@ -1115,7 +1280,22 @@ function performCyanUltimate() {
   });
 }
 
-document.getElementById("ultimate-btn").addEventListener("click", () => {
+ultimateButton.addEventListener("click", () => {
+  if (goldRushState.dead) return;
+  if (betaState.selectedCharacter === "gold") {
+    if (goldUltimateCharge < BETA_CHARACTERS.gold.ultimateChargeRequired) return;
+    goldUltimateCharge = 0;
+    updateCrimsonUltimateGauge();
+    performGoldUltimate();
+    return;
+  }
+  if (betaState.selectedCharacter === "pink") {
+    if (pinkUltimateCharge < BETA_CHARACTERS.pink.ultimate.chargeRequired) return;
+    pinkUltimateCharge = 0;
+    updateCrimsonUltimateGauge();
+    performPinkEncore();
+    return;
+  }
   if (betaState.selectedCharacter === "cyan") {
     const required = BETA_CHARACTERS.cyan.ultimate.chargeRequired;
     if (cyanUltimateCharge < required) return;
@@ -1198,6 +1378,142 @@ const manualAimRaycaster = new THREE.Raycaster();
 const manualAimPointer = new THREE.Vector2();
 const manualAimPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const manualAimPoint = new THREE.Vector3();
+const initialSpawnPoint = new THREE.Vector3(0, 1.7, 0);
+const goldPickups = [];
+const goldRushState = {
+  active: false, ended: false, gold: 0, startedAt: 0, nextSpawnAt: 0,
+  winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
+};
+
+const goldMine = new THREE.Group();
+const goldMineBase = new THREE.Mesh(
+  new THREE.CylinderGeometry(2.2, 2.7, 0.5, 12),
+  new THREE.MeshStandardMaterial({ color: 0x735617, metalness: 0.45, roughness: 0.5 }),
+);
+goldMineBase.position.y = 0.25;
+goldMine.add(goldMineBase);
+const goldMineCrystal = new THREE.Mesh(
+  new THREE.OctahedronGeometry(1.05, 0),
+  new THREE.MeshStandardMaterial({ color: 0xffd33d, emissive: 0x7b4c00, emissiveIntensity: 1.2, metalness: 0.7, roughness: 0.18 }),
+);
+goldMineCrystal.position.y = 1.3;
+goldMine.add(goldMineCrystal);
+goldMine.visible = false;
+scene.add(goldMine);
+
+function spawnGoldPickup(position = null, dropped = false) {
+  const naturalCount = goldPickups.filter((pickup) => !pickup.dropped).length;
+  if (!dropped && naturalCount >= 20) return;
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 2.8 + Math.random() * 2.4;
+  const mesh = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.34, 0),
+    new THREE.MeshStandardMaterial({ color: 0xffd33d, emissive: 0x8b5900, emissiveIntensity: 1.3, metalness: 0.65, roughness: 0.2 }),
+  );
+  mesh.position.copy(position || new THREE.Vector3(Math.sin(angle) * radius, 0.65, Math.cos(angle) * radius));
+  mesh.position.y = 0.65;
+  scene.add(mesh);
+  goldPickups.push({ mesh, dropped });
+}
+
+function updateGoldRushHud() {
+  goldCountEl.textContent = String(goldRushState.gold);
+  const elapsed = Math.max(0, clock.elapsedTime - goldRushState.startedAt);
+  const remaining = Math.max(0, 180 - elapsed);
+  const remainingSeconds = Math.ceil(remaining);
+  goldRushTimerEl.textContent = `${String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:${String(remainingSeconds % 60).padStart(2, "0")}`;
+  if (goldRushState.winCountdownStartedAt !== null) {
+    const winRemaining = Math.max(0, 10 - (clock.elapsedTime - goldRushState.winCountdownStartedAt));
+    goldRushStatusEl.textContent = `금 10개 방어 ${winRemaining.toFixed(1)}초`;
+  } else if (!goldRushState.ended) {
+    goldRushStatusEl.textContent = "중앙 금광에서 금을 모으세요";
+  }
+}
+
+function endGoldRush(message) {
+  goldRushState.ended = true;
+  goldRushState.winCountdownStartedAt = null;
+  goldRushStatusEl.textContent = message;
+  showToast(message);
+}
+
+function startGoldRush() {
+  goldRushState.active = true;
+  goldRushState.ended = false;
+  goldRushState.gold = 0;
+  goldRushState.startedAt = clock.elapsedTime;
+  goldRushState.nextSpawnAt = clock.elapsedTime + 5;
+  goldRushState.winCountdownStartedAt = null;
+  goldRushState.dead = false;
+  goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+  initialSpawnPoint.set(0, 1.7, 15);
+  resetPlayer();
+  player.visible = true;
+  goldMine.visible = true;
+  goldRushHud.classList.remove("hidden");
+  respawnOverlay.classList.add("hidden");
+  goldRushToggle.textContent = "골드 러쉬 재시작";
+  for (const pickup of goldPickups) scene.remove(pickup.mesh);
+  goldPickups.length = 0;
+  updateGoldRushHud();
+}
+
+function killGoldRushPlayer() {
+  if (!goldRushState.active || goldRushState.dead || goldRushState.ended) return;
+  for (let i = 0; i < goldRushState.gold; i += 1) {
+    const offset = new THREE.Vector3((Math.random() - 0.5) * 2.5, 0.65, (Math.random() - 0.5) * 2.5);
+    spawnGoldPickup(player.position.clone().add(offset), true);
+  }
+  goldRushState.gold = 0;
+  goldRushState.winCountdownStartedAt = null;
+  goldRushState.dead = true;
+  goldRushState.respawnAt = clock.elapsedTime + 5;
+  player.visible = false;
+  respawnOverlay.classList.remove("hidden");
+  updateGoldRushHud();
+}
+
+function updateGoldRush() {
+  if (!goldRushState.active || goldRushState.ended) return;
+  if (goldRushState.dead) {
+    const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
+    respawnCountdownEl.textContent = String(Math.ceil(remaining));
+    if (remaining <= 0) {
+      goldRushState.dead = false;
+      goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+      resetPlayer();
+      player.visible = true;
+      respawnOverlay.classList.add("hidden");
+    }
+    return;
+  }
+  if (clock.elapsedTime >= goldRushState.nextSpawnAt) {
+    spawnGoldPickup();
+    goldRushState.nextSpawnAt += 3;
+  }
+  for (let i = goldPickups.length - 1; i >= 0; i -= 1) {
+    const pickup = goldPickups[i];
+    pickup.mesh.rotation.y += 0.05;
+    const dx = pickup.mesh.position.x - player.position.x;
+    const dz = pickup.mesh.position.z - player.position.z;
+    if (Math.hypot(dx, dz) > 1.25) continue;
+    scene.remove(pickup.mesh);
+    pickup.mesh.geometry.dispose();
+    pickup.mesh.material.dispose();
+    goldPickups.splice(i, 1);
+    goldRushState.gold += 1;
+  }
+  if (goldRushState.gold >= 10) {
+    goldRushState.winCountdownStartedAt ??= clock.elapsedTime;
+    if (clock.elapsedTime - goldRushState.winCountdownStartedAt >= 10) endGoldRush("골드 러쉬 승리!");
+  } else {
+    goldRushState.winCountdownStartedAt = null;
+  }
+  if (clock.elapsedTime - goldRushState.startedAt >= 180) {
+    endGoldRush(`시간 종료 · 금 ${goldRushState.gold}개`);
+  }
+  updateGoldRushHud();
+}
 
 function aimPlayerAtPointer(event) {
   const rect = canvas.getBoundingClientRect();
@@ -1254,9 +1570,25 @@ canvas.addEventListener("wheel", (event) => {
   distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 3.5, 24);
 }, { passive: true });
 
-function resetPlayer() { player.position.set(0, 1.7, 0); player.rotation.y = Math.PI; }
+function resetPlayer() { player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
+goldRushToggle.addEventListener("click", startGoldRush);
+document.getElementById("test-death-btn").addEventListener("click", () => {
+  if (betaState.selectedCharacter === "pink") {
+    let marked = 0;
+    for (const target of testTargets) {
+      if (!target.userData.isAlly) continue;
+      target.userData.deadPosition = target.position.clone();
+      target.userData.health = 0;
+      target.visible = false;
+      marked += 1;
+    }
+    showToast(`앙코르 테스트 · 아군 ${marked}명 쓰러짐`);
+    return;
+  }
+  killGoldRushPlayer();
+});
 document.getElementById("overview-btn").addEventListener("click", (event) => {
   overview = !overview;
   event.currentTarget.textContent = overview ? "플레이 시점" : "전체 보기";
@@ -1285,9 +1617,11 @@ const cameraTarget = new THREE.Vector3();
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04);
+  updateGoldRush();
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
     let remove = false;
+    let shouldSplitGold = false;
     if (projectile.type === "boomerang" && projectile.returned) {
       const returnX = player.position.x - projectile.mesh.position.x;
       const returnZ = player.position.z - projectile.mesh.position.z;
@@ -1307,16 +1641,27 @@ function animate() {
       if (projectile.returned) projectile.returnTraveled += step;
       else projectile.traveled += step;
     }
+    if (projectile.goldStage && solids.some((solid) =>
+      solid.top >= projectile.mesh.position.y - projectile.hitRadius
+      && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
+      && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
+      remove = true;
+      shouldSplitGold = projectile.goldStage < 3;
+    }
     if (projectile.type !== "cyanUltimate") projectile.mesh.rotation.y += dt * 9;
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
     }
     if (!remove) {
       for (const target of testTargets) {
-        if (!target.visible || projectile.hit.has(target)) continue;
+        if (!target.visible || target.userData.isAlly || projectile.hit.has(target)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
         const targetDz = target.position.z - projectile.mesh.position.z;
-        if (projectile.type === "cyanUltimate") {
+        if (projectile.goldStage) {
+          applyGoldProjectileHit(projectile, target);
+          remove = true;
+          shouldSplitGold = projectile.goldStage < 3;
+        } else if (projectile.type === "cyanUltimate") {
           const directionLength = Math.hypot(projectile.vx, projectile.vz) || 1;
           const forwardX = projectile.vx / directionLength;
           const forwardZ = projectile.vz / directionLength;
@@ -1349,7 +1694,7 @@ function animate() {
             if (other !== target && other.visible && Math.hypot(other.position.x - target.position.x, other.position.z - target.position.z) <= projectile.splash) damageTarget(other, projectile.damage);
           }
         }
-        if (projectile.type !== "boomerang" && projectile.type !== "cyanUltimate") remove = true;
+        if (!projectile.goldStage && projectile.type !== "boomerang" && projectile.type !== "cyanUltimate") remove = true;
         if (remove) break;
       }
     }
@@ -1360,8 +1705,10 @@ function animate() {
       if (projectile.returnTraveled >= projectile.range * 2) remove = true;
     } else if (projectile.traveled >= projectile.range) {
       remove = true;
+      if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
     }
     if (remove) {
+      if (shouldSplitGold) splitGoldProjectile(projectile);
       scene.remove(projectile.mesh);
       projectile.mesh.geometry.dispose();
       projectile.mesh.material.dispose();
@@ -1381,10 +1728,28 @@ function animate() {
       crimsonSlashes.splice(i, 1);
     }
   }
+  for (let i = malfunctionZones.length - 1; i >= 0; i -= 1) {
+    const zone = malfunctionZones[i];
+    zone.mesh.material.opacity = 0.26 + Math.sin(clock.elapsedTime * 8) * 0.08;
+    if (clock.elapsedTime >= zone.expiresAt) {
+      scene.remove(zone.mesh);
+      zone.mesh.geometry.dispose();
+      zone.mesh.material.dispose();
+      malfunctionZones.splice(i, 1);
+      continue;
+    }
+    for (const target of testTargets) {
+      if (!target.visible || target.userData.isAlly) continue;
+      if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) {
+        target.userData.malfunctionUntil = zone.expiresAt;
+        target.userData.moveSpeedMultiplier = target.userData.kind === "alphaBoss" ? 0.75 : 0.5;
+      }
+    }
+  }
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
-  const isMoving = input.lengthSq() > 0;
+  const isMoving = !goldRushState.dead && input.lengthSq() > 0;
   if (isMoving) {
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);
@@ -1418,9 +1783,13 @@ function animate() {
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
 
   portal.rotation.y += dt * 0.65;
+  goldMineCrystal.rotation.y += dt * 1.4;
   alphaBoss.rotation.y = Math.sin(clock.elapsedTime * 0.45) * 0.16;
   alphaBoss.position.y = 4.8 + Math.sin(clock.elapsedTime * 1.15) * 0.08;
   for (const target of testTargets) {
+    if ((target.userData.malfunctionUntil || 0) <= clock.elapsedTime) {
+      target.userData.moveSpeedMultiplier = 1;
+    }
     const galeKnockbackRemaining = target.userData.galeKnockbackRemaining || 0;
     if (galeKnockbackRemaining > 0) {
       const knockbackStep = Math.min(galeKnockbackRemaining, target.userData.galeKnockbackSpeed * dt);

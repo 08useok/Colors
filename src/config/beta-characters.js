@@ -87,6 +87,10 @@ export const BETA_CHARACTERS = {
       name: "퍼지는 음표",
       description: "원형으로 퍼지는 음표를 발사합니다. 음표는 적에게 피해를 주고, 아군에게는 체력을 회복시킵니다.",
     },
+    ultimate: {
+      id: "encore", name: "앙코르!", description: "반경 8타일 안에서 쓰러진 아군을 체력 40%와 2초 무적으로 부활시킵니다.",
+      chargeRequired: 15, radius: 8, reviveHealthRatio: 0.4, invulnerabilityDuration: 2,
+    },
   },
   crimson: {
     maxHealth: 9800, moveSpeedMultiplier: 1.5, attackCooldown: 0.74, reloadDuration: 0.5, maxAmmo: 3,
@@ -102,5 +106,22 @@ export const BETA_CHARACTERS = {
       description: "엄청난 펀치를 날립니다. 너무 강한 펀치를 날린 나머지 벽도 부서지고 적도 밀려납니다.",
     },
     ultimateDamage: 2500, ultimateLength: 5, ultimateWidth: 5, ultimateKnockback: 1, ultimateChargeRequired: 9,
+  },
+  gold: {
+    maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.8, reloadDuration: 0.7, maxAmmo: 3,
+    description: "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+    basicAttack: {
+      name: "연쇄 금광석",
+      description: "금광석을 던져 폭발시키고 좌우 90도로 분열합니다. 분열탄은 다시 각각 6방향으로 갈라집니다.",
+    },
+    stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1SplashRadius: 1.5,
+    stage2Damage: 2000, stage2Range: 4, stage2Speed: 18,
+    stage3Damage: 1000, stage3Range: 3, stage3Speed: 20,
+    projectileRadius: 0.2, ultimateChargeRequired: 12, maxChargePerAttack: 6,
+    ultimate: {
+      id: "malfunctionZone", name: "고장 지대",
+      description: "최대 8타일 거리에 반경 3타일 장판을 설치합니다. 적은 공격할 수 없고 이동속도가 50% 감소합니다.",
+      castRange: 8, radius: 3, duration: 4, delay: 0.35,
+    },
   },
 };

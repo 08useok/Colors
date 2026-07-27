@@ -79,6 +79,33 @@ export const SKINS = {
     cost: 0,
     desc: "skinCrownCyanDesc",
   },
+  beta2_gold_yellow: {
+    id: "beta2_gold_yellow",
+    name: "황금 광산 기술자 옐로우",
+    character: "yellow",
+    season: "beta2",
+    rarity: "rare",
+    cost: 1000,
+    desc: "골드 러쉬 시즌 한정 옐로우 스킨",
+  },
+  beta2_gold_orange: {
+    id: "beta2_gold_orange",
+    name: "골드 사냥꾼 오렌지",
+    character: "orange",
+    season: "beta2",
+    rarity: "legendary",
+    cost: 5000,
+    desc: "골드 러쉬 시즌 한정 오렌지 스킨",
+  },
+  beta2_gold_gold: {
+    id: "beta2_gold_gold",
+    name: "황금 대농장주 골드",
+    character: "gold",
+    season: "beta2",
+    rarity: "epic",
+    cost: 2500,
+    desc: "골드 러쉬 시즌 한정 골드 스킨",
+  },
 };
 
 export const SKIN_ID_MIGRATION = {

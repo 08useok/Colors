@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.1.5">
+  <link rel="stylesheet" href="./beta-season.css?v=0.2.0">
   <script type="importmap">
   {
     "imports": {
@@ -21,13 +21,14 @@
   <header class="beta-header">
     <div>
       <span class="test-chip">TEST ONLY</span>
-      <h1>베타 시즌 1</h1>
-      <p>부유 유적 섬 · 맵 동선 테스트</p>
+      <h1>베타 시즌 2 · 골드 러쉬</h1>
+      <p>Gold · 앙코르! · 골드 러쉬 규칙 테스트</p>
     </div>
     <nav class="beta-nav">
       <button type="button" data-panel="characters">캐릭터</button>
       <button type="button" data-panel="shop">시즌 상점</button>
       <button type="button" data-panel="daily">일일 보상</button>
+      <button id="gold-rush-toggle" type="button">골드 러쉬 시작</button>
       <a href="./index.html">현재 게임</a>
     </nav>
   </header>
@@ -35,7 +36,7 @@
   <div class="beta-wallet">
     <span>β 크레딧</span>
     <strong id="credit-value">1,500</strong>
-    <span class="rank-chip">베타 시즌 테스트</span>
+    <span class="rank-chip">베타 시즌 2 테스트</span>
   </div>
 
   <aside class="test-panel">
@@ -44,6 +45,7 @@
     <div class="test-actions">
       <button id="overview-btn" type="button">전체 보기</button>
       <button id="reset-btn" type="button">시작점 복귀</button>
+      <button id="test-death-btn" type="button">테스트 사망</button>
     </div>
     <small>이 페이지의 플레이는 계정, 전적, 이벤트에 저장되지 않습니다.</small>
   </aside>
@@ -54,6 +56,18 @@
   </div>
 
   <div class="beta-watermark">BETA MAP 0.1</div>
+
+  <div id="gold-rush-hud" class="gold-rush-hud hidden">
+    <strong>GOLD RUSH</strong>
+    <span>보유 금 <b id="gold-count">0</b> / 10</span>
+    <span id="gold-rush-timer">03:00</span>
+    <span id="gold-rush-status">중앙 금광에서 금을 모으세요</span>
+  </div>
+
+  <div id="respawn-overlay" class="respawn-overlay hidden">
+    <strong id="respawn-countdown">5</strong>
+    <span>최초 스폰 지점에서 부활합니다</span>
+  </div>
 
   <div id="crimson-controls" class="crimson-controls hidden">
     <button id="crimson-attack-btn" class="attack-btn" type="button">
@@ -83,6 +97,6 @@
   </div>
 
   <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
-  <script type="module" src="./src/beta-season.js?v=0.1.18"></script>
+  <script type="module" src="./src/beta-season.js?v=0.2.0"></script>
 </body>
 </html>
