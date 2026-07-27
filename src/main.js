@@ -4,7 +4,7 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.144";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.142";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.145";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.146";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -278,6 +278,10 @@ const SEASONS = {
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
+// 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
+// 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
+const ULTIMATE_CHARACTERS = new Set(["cyan", "crimson"]);
+
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
@@ -1127,7 +1131,7 @@ function characterLoreHtml(charKey) {
   const html = block(t("loreIntro"), pick(beta, "description"))
     + skill("loreBasicAttack", beta.basicAttack)
     + skill("loreAbility", beta.officialAbility)
-    + skill("loreUltimate", beta.ultimate);
+    + skill("loreUltimate", ULTIMATE_CHARACTERS.has(charKey) ? beta.ultimate : null);
   return html ? `<div class="ci-lore">${html}</div>` : "";
 }
 
@@ -6714,6 +6718,7 @@ function tryUseCrimsonUltimate(fighter = getPlayer()) {
 
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
+  if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   return tryUseCyanUltimate(fighter);
 }
@@ -8860,7 +8865,7 @@ function updateHud() {
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   updateAmmoPips(player.ammo);
 
-  const hasUltimate = (player.characterType === "cyan" || player.characterType === "crimson")
+  const hasUltimate = ULTIMATE_CHARACTERS.has(player.characterType)
     && !player.dead && state.running;
   ultimateButton.classList.toggle("hidden", !hasUltimate);
   ultimateButton.classList.toggle("crimson", player.characterType === "crimson");
