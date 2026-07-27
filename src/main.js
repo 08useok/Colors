@@ -4,7 +4,7 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.144";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.142";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.144";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.145";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -1116,13 +1116,18 @@ function statBar(label, value) {
 function characterLoreHtml(charKey) {
   const beta = BETA_CHARACTERS[charKey];
   if (!beta) return "";
+  // 영어일 때는 ~En 필드를 쓰고, 번역이 없으면 한국어 원문으로 되돌아간다
+  const pick = (source, field) => (currentLang === "en" ? source?.[`${field}En`] : null) ?? source?.[field];
   const block = (label, body) => body
     ? `<div class="ci-lore-block"><strong>${label}</strong><p>${body}</p></div>`
     : "";
-  const html = block(t("loreIntro"), beta.description)
-    + block(beta.basicAttack ? `${t("loreBasicAttack")} · ${beta.basicAttack.name}` : "", beta.basicAttack?.description)
-    + block(beta.officialAbility ? `${t("loreAbility")} · ${beta.officialAbility.name}` : "", beta.officialAbility?.description)
-    + block(beta.ultimate ? `${t("loreUltimate")} · ${beta.ultimate.name}` : "", beta.ultimate?.description);
+  const skill = (labelKey, source) => source
+    ? block(`${t(labelKey)} · ${pick(source, "name")}`, pick(source, "description"))
+    : "";
+  const html = block(t("loreIntro"), pick(beta, "description"))
+    + skill("loreBasicAttack", beta.basicAttack)
+    + skill("loreAbility", beta.officialAbility)
+    + skill("loreUltimate", beta.ultimate);
   return html ? `<div class="ci-lore">${html}</div>` : "";
 }
 
