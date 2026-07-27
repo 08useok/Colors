@@ -144,7 +144,7 @@ function playLobbyBgm() {
   const activeLobbyBgm = IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
   const inactiveLobbyBgm = IS_BETA_SEASON ? lobbyBgm : betaLobbyBgm;
   inactiveLobbyBgm.pause();
-  activeLobbyBgm.volume = 0.3;
+  activeLobbyBgm.volume = 0.45;
   activeLobbyBgm.play().catch(() => {});
 }
 const zonePanel = document.getElementById("zone-panel");
@@ -5726,7 +5726,7 @@ function resetGame() {
   pauseLobbyBgm();
   if (state.audioEnabled) {
     showdownBgm.currentTime = 0;
-    showdownBgm.volume = 0.35;
+    showdownBgm.volume = 0.5;
     showdownBgm.play().catch(() => {});
   }
   state.effects.forEach((effect) => scene.remove(effect.mesh));
@@ -8848,7 +8848,7 @@ function triggerShowdownAnnounce() {
     showdownBgm.pause();
     pauseLobbyBgm();
     showdownMusic.currentTime = 0;
-    showdownMusic.volume = 0.6;
+    showdownMusic.volume = 0.9;
     showdownMusic.play().catch(() => {});
   }
 }
