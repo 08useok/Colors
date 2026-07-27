@@ -20,6 +20,30 @@ py -m http.server 4173
 http://localhost:4173/
 ```
 
+### CMD에서 실행하기
+
+1. `Win + R`을 누르고 `cmd`를 입력한 뒤 Enter를 누릅니다.
+2. 아래 명령으로 프로젝트 폴더에 들어갑니다. 경로에 공백이 있으므로 큰따옴표를 빼면 안 됩니다.
+
+```cmd
+cd /d "C:\Users\useok\OneDrive\문서\New project"
+```
+
+3. 로컬 서버를 실행합니다.
+
+```cmd
+py -m http.server 4173
+```
+
+4. CMD 창을 닫지 않은 상태에서 브라우저 주소창에 원하는 주소를 입력합니다.
+
+```text
+기본 게임: http://localhost:4173/
+베타 시즌 2: http://localhost:4173/beta-season.html
+```
+
+서버를 종료하려면 CMD 창에서 `Ctrl + C`를 누릅니다.
+
 ## 조작법
 
 - `WASD`: 이동
