@@ -244,6 +244,8 @@ export const LANGS = {
     skinCrownPinkDesc: "베타 시즌 1 준우승 기념 왕관 스킨",
     skinCrownGreenDesc: "베타 시즌 1 3위 기념 왕관 스킨",
     skinCrownCyanDesc: "베타 시즌 1 우승 기념 왕관 스킨",
+    skinBeta2GoldYellowName: "골드 러시 옐로우", skinBeta2GoldOrangeName: "골드 러시 오렌지", skinBeta2GoldGoldName: "골드 러시 골드",
+    skinBeta2GoldYellowDesc: "골드 러시 시즌 한정 옐로우 스킨", skinBeta2GoldOrangeDesc: "골드 러시 시즌 한정 오렌지 스킨", skinBeta2GoldGoldDesc: "골드 러시 시즌 한정 골드 스킨",
     // Rotation screen
     rotationEnd: "종료", rotationDays: "일", rotationToday: "오늘",
     rotationRecord: "{0}승 / {1}판 ({2}%)", rotationWinMsg: "  |  🏆 Rotation 우승: {0}",
@@ -507,6 +509,8 @@ export const LANGS = {
     skinCrownPinkDesc: "Beta Season 1 runner-up crown skin",
     skinCrownGreenDesc: "Beta Season 1 third-place crown skin",
     skinCrownCyanDesc: "Beta Season 1 champion crown skin",
+    skinBeta2GoldYellowName: "Gold Rush Yellow", skinBeta2GoldOrangeName: "Gold Rush Orange", skinBeta2GoldGoldName: "Gold Rush Gold",
+    skinBeta2GoldYellowDesc: "Gold Rush Season limited Yellow skin", skinBeta2GoldOrangeDesc: "Gold Rush Season limited Orange skin", skinBeta2GoldGoldDesc: "Gold Rush Season limited Gold skin",
     // Rotation screen
     rotationEnd: "Ended", rotationDays: "d", rotationToday: "Today",
     rotationRecord: "{0}W / {1}G ({2}%)", rotationWinMsg: "  |  🏆 Rotation Champion: {0}",

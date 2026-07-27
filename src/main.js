@@ -10152,7 +10152,7 @@ function setupInput() {
     let html = '<div class="shop-grid">';
     for (const [skinId, skin] of Object.entries(SKINS)) {
       // 아직 안 열린 시즌의 스킨은 "시즌 종료"로 오해되지 않게 아예 숨긴다
-      if (skin.season === "beta1" && !IS_BETA_SEASON) continue;
+      if (skin.season !== CURRENT_SEASON) continue;
       const owned = account.ownedSkins.includes(skinId);
       const equipped = account.selectedSkins[skin.character] === skinId;
       const canBuy = !owned && account.coins >= skin.cost;
