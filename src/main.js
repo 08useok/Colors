@@ -4,7 +4,7 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.144";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.142";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.146";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.147";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -1823,6 +1823,57 @@ const GLB_BATTLE_HEIGHT = 3.67;
 const CYAN_BATTLE_HEIGHT = 2.7;
 const GLB_FEET_Y = -1.85;
 
+// 시안 리그를 쓰는 캐릭터의 색 → 로드된 GLB. 리컬러본은 리그와 애니메이션이
+// 시안과 같아서 모델 생성 코드를 그대로 공유한다.
+function getCyanRigGltf(color) {
+  if (color === CHARACTERS.cyan.color) return _cyanWalkGlb;
+  const charKey = CYAN_RIG_COLOR_TO_CHAR.get(color);
+  return charKey ? _cyanRigGlb[charKey] : null;
+}
+
+function buildCyanRigModel(gltf) {
+  const group = new THREE.Group();
+  const model = skeletonClone(gltf.scene);
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const scale = CYAN_BATTLE_HEIGHT / Math.max(size.y, 0.001);
+  model.scale.setScalar(scale);
+  model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
+  model.rotation.y = 0;
+  model.traverse(c => {
+    if (!c.isMesh) return;
+    c.frustumCulled = false;
+    c.castShadow = true;
+    c.receiveShadow = true;
+  });
+  group.add(model);
+
+  const cyanMixer = new THREE.AnimationMixer(model);
+  const cyanWalkAction = gltf.animations?.length
+    ? cyanMixer.clipAction(gltf.animations[0])
+    : null;
+  if (cyanWalkAction) {
+    cyanWalkAction.setLoop(THREE.LoopRepeat, Infinity);
+    cyanWalkAction.play();
+    cyanWalkAction.paused = true;
+  }
+  const bodyMaterials = [];
+  model.traverse(c => {
+    if (!c.isMesh) return;
+    const mats = Array.isArray(c.material) ? c.material : [c.material];
+    for (const material of mats) {
+      if (!bodyMaterials.includes(material)) bodyMaterials.push(material);
+    }
+  });
+  group.userData = {
+    isGlbModel: true, isCyanGlb: true, cyanModel: model,
+    cyanMixer, cyanWalkAction, bodyMaterials, guitar: null,
+  };
+  return group;
+}
+
 function createStickman(color, skinId) {
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
@@ -1892,49 +1943,9 @@ function createStickman(color, skinId) {
     return group;
   }
 
-  // Pink: start/loop/end 3개 GLB 상태머신
-  if (color === 0x0ff0fe && _cyanWalkGlb) {
-    const group = new THREE.Group();
-    const model = skeletonClone(_cyanWalkGlb.scene);
-    model.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(model);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    const scale = CYAN_BATTLE_HEIGHT / Math.max(size.y, 0.001);
-    model.scale.setScalar(scale);
-    model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
-    model.rotation.y = 0;
-    model.traverse(c => {
-      if (!c.isMesh) return;
-      c.frustumCulled = false;
-      c.castShadow = true;
-      c.receiveShadow = true;
-    });
-    group.add(model);
-
-    const cyanMixer = new THREE.AnimationMixer(model);
-    const cyanWalkAction = _cyanWalkGlb.animations?.length
-      ? cyanMixer.clipAction(_cyanWalkGlb.animations[0])
-      : null;
-    if (cyanWalkAction) {
-      cyanWalkAction.setLoop(THREE.LoopRepeat, Infinity);
-      cyanWalkAction.play();
-      cyanWalkAction.paused = true;
-    }
-    const bodyMaterials = [];
-    model.traverse(c => {
-      if (!c.isMesh) return;
-      const mats = Array.isArray(c.material) ? c.material : [c.material];
-      for (const material of mats) {
-        if (!bodyMaterials.includes(material)) bodyMaterials.push(material);
-      }
-    });
-    group.userData = {
-      isGlbModel: true, isCyanGlb: true, cyanModel: model,
-      cyanMixer, cyanWalkAction, bodyMaterials, guitar: null,
-    };
-    return group;
-  }
+  // 시안 리그를 공유하는 캐릭터들(시안 + 시안에서 리컬러한 green/orange/red/yellow)
+  const rigGltf = getCyanRigGltf(color);
+  if (rigGltf) return buildCyanRigModel(rigGltf);
 
   if (color === 0xF4CDD3 && _pinkGlb.loop) {
     const group = new THREE.Group();
@@ -2708,6 +2719,23 @@ _glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
   }
   if (frontModelCharType === 'cyan') setupFrontModel('cyan');
 });
+// 시안 리그를 리컬러해서 만든 캐릭터들 — 리그와 걷기 클립이 시안과 동일하다
+const CYAN_RIG_CHARACTERS = ["green", "orange", "red", "yellow"];
+const _cyanRigGlb = {};
+const CYAN_RIG_COLOR_TO_CHAR = new Map(
+  CYAN_RIG_CHARACTERS.map((charKey) => [CHARACTERS[charKey].color, charKey]),
+);
+for (const charKey of CYAN_RIG_CHARACTERS) {
+  _glbLoader.load(`./assets/3d/${charKey}/walk-m2l.glb`, g => {
+    _cyanRigGlb[charKey] = _stripRootMotion(g);
+    if (previewCharType === charKey) {
+      previewChar = null;
+      setPreviewCharacter(charKey);
+    }
+    if (frontModelCharType === charKey) setupFrontModel(charKey);
+  });
+}
+
 _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
   _pinkGlb.loop = _stripRootMotion(g);
