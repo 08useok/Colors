@@ -937,15 +937,22 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
   const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
   const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
   const geometry = stage === 1
-    ? new THREE.CylinderGeometry(def.stage1Size / 2, def.stage1Size / 2, 0.55, 12)
+    ? new THREE.CircleGeometry(def.stage1Size / 2, 12)
     : stage === 3
       ? createGoldIngotGeometry()
       : new THREE.SphereGeometry(radii[stage], 8, 6);
   const mesh = new THREE.Mesh(
     geometry,
-    new THREE.MeshStandardMaterial({ color: colors[stage], emissive: colors[stage], emissiveIntensity: 0.8, metalness: 0.55, roughness: 0.25 }),
+    new THREE.MeshStandardMaterial({
+      color: colors[stage],
+      emissive: colors[stage],
+      emissiveIntensity: 0.8,
+      metalness: 0.55,
+      roughness: 0.25,
+      side: stage === 1 ? THREE.DoubleSide : THREE.FrontSide,
+    }),
   );
-  if (stage === 1) mesh.rotation.x = Math.PI / 2;
+  if (stage === 1) mesh.rotation.x = -Math.PI / 2;
   if (stage === 3) mesh.rotation.y = yaw;
   mesh.position.copy(position);
   mesh.position.y = player.position.y + 1.25;
