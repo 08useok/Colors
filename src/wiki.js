@@ -24,9 +24,9 @@ const copy = {
     searchPlaceholder: "캐릭터, 스킬, 맵을 검색하세요", battleRules: "전투 규칙", categories: "카테고리",
     liveData: "베타 데이터 연동", liveDataDesc: "능력치와 일반 공격은 베타 설정 기준입니다.",
     footer: "이 위키의 수치 정보는 게임 설정을 기준으로 자동 표시됩니다.", backGame: "게임으로 돌아가기 →",
-    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 8명의 파이터를 만나보세요.",
+    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 9명의 파이터를 만나보세요.",
     viewAll: "모두 보기", beginnerGuides: "초보자 가이드", guideDesc: "처음 전장에 들어가기 전에 알아둘 핵심 정보",
-    latestPatch: "최근 업데이트", seasonDesc: "알파 시즌 4의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
+    latestPatch: "최근 업데이트", seasonDesc: "베타 시즌 1의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
     speed: "이동 속도", cooldown: "공격 간격", reload: "장전", role: "역할", basicAttack: "일반 공격",
     strategy: "초보자 운영 팁", related: "관련 문서", open: "문서 보기", allGuides: "게임 가이드",
     guidePageDesc: "전투 규칙부터 계정 성장까지, 플레이에 필요한 시스템을 익혀보세요.",
@@ -42,9 +42,9 @@ const copy = {
     searchPlaceholder: "Search characters, skills, and maps", battleRules: "Combat Rules", categories: "Categories",
     liveData: "Beta game data", liveDataDesc: "Stats and basic attacks use the Beta config.",
     footer: "Numerical information is loaded from the current game configuration.", backGame: "Back to game →",
-    allCharacters: "All Characters", charDesc: "Meet eight fighters with distinct colors and combat styles.",
+    allCharacters: "All Characters", charDesc: "Meet nine fighters with distinct colors and combat styles.",
     viewAll: "View all", beginnerGuides: "Beginner Guides", guideDesc: "Essentials to know before your first battle",
-    latestPatch: "Latest Updates", seasonDesc: "Recent changes in Alpha Season 4", hp: "HP", damage: "Damage", range: "Range",
+    latestPatch: "Latest Updates", seasonDesc: "Recent changes in Beta Season 1", hp: "HP", damage: "Damage", range: "Range",
     speed: "Move Speed", cooldown: "Cooldown", reload: "Reload", role: "Role", basicAttack: "Basic Attack",
     strategy: "Beginner Strategy", related: "Related articles", open: "Open article", allGuides: "Game Guide",
     guidePageDesc: "Learn the systems you need, from combat rules to account progression.",
@@ -196,6 +196,13 @@ const characterDetails = {
 };
 
 const guides = [
+  { id:"beta1", icon:"β", title:["베타 시즌 1", "Beta Season 1"], desc:["v1.5.0에서 시작된 COLORS의 첫 베타 시즌과 핵심 변화를 소개합니다.", "Meet the first Beta season of COLORS and its major v1.5.0 changes."], body:["2026년 7월 27일 시작된 베타 시즌 1은 신규 영웅 캐릭터 Crimson, 캐릭터 등급과 구매, β 크레딧, 시즌 한정 스킨을 도입했습니다. 알파 시즌 1~4의 전적은 그대로 보존되며 새로운 경기는 beta1 전적으로 따로 누적됩니다.", "Beta Season 1 launched on July 27, 2026 with the new Hero fighter Crimson, character rarities and purchases, Beta Credits, and seasonal skins. Alpha Season 1–4 records remain intact while new matches are tracked separately under beta1."], sections:[
+    [["시즌 핵심", "Season highlights"], ["신규 영웅 Crimson과 KO 스트레이트 궁극기, 캐릭터 등급 시스템, β 크레딧 및 캐릭터 구매 상점이 시즌의 핵심입니다.", "The season centers on the new Hero Crimson and KO Straight ultimate, character rarities, Beta Credits, and the character shop."]],
+    [["등급과 구매", "Rarities & unlocks"], ["일반 등급은 Red·Green·Blue, 희귀 등급은 Orange·Yellow·Cyan·Purple·Pink, 영웅 등급은 Crimson입니다. 기존 계정은 기존 8종을 유지하며 Crimson만 신규 구매 대상입니다.", "Common includes Red, Green, and Blue; Rare includes Orange, Yellow, Cyan, Purple, and Pink; Hero includes Crimson. Existing accounts keep the original eight fighters and only Crimson requires a new unlock."]],
+    [["β 크레딧", "Beta Credits"], ["쇼다운·Chop Wood·Take Down 승리 시 100 β 크레딧을 받습니다. 희귀 캐릭터는 200, 영웅 Crimson은 900 크레딧이 필요합니다.", "Wins in Showdown, Chop Wood, and Take Down award 100 Beta Credits. Rare fighters cost 200 and Hero Crimson costs 900 credits."]],
+    [["시즌 스킨", "Season skins"], ["Crimson Orange, Blood Crimson, Scarlet Red와 순위 보상 왕관 3종이 베타 시즌 1 수집품으로 추가되었습니다.", "Crimson Orange, Blood Crimson, Scarlet Red, and three placement crown skins join the Beta Season 1 collection."]],
+    [["전적 보존", "Record preservation"], ["알파 시즌 전적과 전체 계정 기록은 초기화되지 않습니다. 베타 시즌 1 전적만 새로운 시즌 항목으로 분리 기록됩니다.", "Alpha season and lifetime account records are not reset. Beta Season 1 results are stored in a new, separate season entry."]],
+  ]},
   { id:"combat", icon:"⚔", title:["전투 기본", "Combat Basics"], desc:["WASD 이동, 마우스 조준, 클릭 공격과 자동 장전의 기본 흐름을 설명합니다.", "Movement, aiming, attacks, ammo, and automatic reload."], body:["모든 캐릭터는 기본적으로 3발의 탄약을 사용합니다. 공격 후 탄약은 캐릭터별 장전 시간에 따라 한 발씩 자동 회복됩니다. 피해를 받지 않고 일정 시간이 지나면 체력이 자연 회복됩니다.", "Every character uses three ammo charges. Ammo automatically returns one at a time based on reload speed. Health regenerates after avoiding damage for a short period."] },
   { id:"showdown", icon:"♛", title:["쇼다운", "Showdown"], desc:["10명이 겨루고 마지막 생존자를 결정하는 배틀로얄 모드입니다.", "A ten-player battle royale where the last fighter standing wins."], body:["자기장은 다섯 단계에 걸쳐 줄어듭니다. 수풀에서는 모습을 숨길 수 있지만 공격하거나 피해를 받으면 잠시 발각됩니다. 마지막 생존자는 1위를 기록합니다.", "The zone shrinks through five phases. Bushes hide fighters, but attacking or taking damage reveals them temporarily. The last survivor takes first place."] },
   { id:"maps", icon:"⌖", title:["맵과 지형", "Maps & Terrain"], desc:["벽, 호수, 수풀과 맵 로테이션이 전투에 미치는 영향입니다.", "How walls, lakes, bushes, and map rotation shape combat."], body:["쇼다운은 세 개의 전장을 순환합니다. 벽은 투사체와 이동을 막고, 호수는 진입할 수 없습니다. 수풀 안의 플레이어는 같은 수풀에 들어오거나 발각되기 전까지 보이지 않습니다.", "Showdown rotates through three arenas. Walls block movement and projectiles, lakes are impassable, and bushes conceal fighters until revealed or approached."] },
@@ -205,6 +212,12 @@ const guides = [
 ];
 
 const patches = [
+  { version:"v1.5.0", date:"2026.07.27", title:["베타 시즌 1 시작", "Beta Season 1 Launch"], items:[
+    ["신규 영웅 캐릭터 Crimson과 KO 스트레이트 궁극기 추가", "Added the new Hero fighter Crimson and KO Straight ultimate"],
+    ["캐릭터 등급, 구매 상점과 β 크레딧 도입", "Introduced character rarities, character shop, and Beta Credits"],
+    ["기존 계정의 알파 시즌 전적과 보유 캐릭터 보존", "Preserved Alpha season records and existing character ownership"],
+    ["베타 시즌 1 한정 스킨과 왕관 보상 추가", "Added Beta Season 1 limited skins and crown rewards"],
+  ], summary:["COLORS의 첫 베타 시즌입니다. 신규 캐릭터와 성장 경제를 도입하면서 기존 계정의 기록과 보유 자산은 그대로 이어집니다.", "The first Beta season of COLORS introduces a new fighter and progression economy while preserving existing account records and ownership."], impact:["Crimson을 해제하고 캐릭터별 수집·성장을 이어가는 장기 목표가 추가됩니다. 경기 승리는 β 크레딧 획득과 직접 연결됩니다.", "Players gain a new long-term goal through unlocking Crimson and expanding their roster. Match wins now directly award Beta Credits."] },
   { version:"v1.4.14", date:"2026.07.19", title:["알파 시즌 라스트 패치", "Alpha Season Final Patch"], items:[
     ["쇼다운 멀티플레이와 계정 기반 글로벌 트로피 리더보드 추가", "Added Showdown multiplayer and account-based global trophy leaderboard"],
     ["스폰과 AI 배치를 경기마다 무작위화", "Randomized spawns and AI placement each match"],
@@ -233,7 +246,8 @@ const loc = (pair) => pair[lang === "ko" ? 0 : 1];
 const fmt = (value) => new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 2 }).format(value);
 
 function wikiStats(id) {
-  return { ...CHARACTERS[id], ...(BETA_CHARACTERS[id] || {}) };
+  const fallbackColors = { crimson: 0x8b0000 };
+  return { color: fallbackColors[id], ...CHARACTERS[id], ...(BETA_CHARACTERS[id] || {}) };
 }
 
 function moveSpeedLabel(multiplier) {
@@ -250,6 +264,7 @@ function betaAttackStats(id) {
   if (id === "orange") return { damage: stats.bombDamage, range: stats.bombRange };
   if (id === "yellow") return { damage: stats.electricDamage, range: stats.electricRange };
   if (id === "cyan") return { damage: stats.spreadLineDamage * stats.spreadLineCount, range: stats.spreadLineRange };
+  if (id === "crimson") return { damage: stats.attackDamage * stats.attackCount, range: stats.attackRange };
   if (id === "purple") return { damage: stats.vialDamage, range: stats.vialRange };
   return { damage: stats.healCircleDamage, range: stats.healCircleRange };
 }
@@ -265,6 +280,7 @@ function applyLanguage() {
   const target = routeFromPath();
   renderRoute(target.route, false);
   if (target.character && $("#article-dialog").open) openCharacter(target.character, false);
+  if (target.guide && $("#article-dialog").open) openGuide(target.guide, false);
 }
 
 function characterCard(id) {
@@ -288,7 +304,7 @@ function sectionHead(title, desc, action = "") {
 }
 
 function renderHome() {
-  const cards = Object.keys(CHARACTERS).map(characterCard).join("");
+  const cards = Object.keys(characterMeta).map(characterCard).join("");
   return `${sectionHead(tr("allCharacters"), tr("charDesc"), `<button data-route="characters">${tr("viewAll")} →</button>`)}
     <div class="character-grid">${cards}</div>
     <div class="home-panels">
@@ -304,7 +320,7 @@ function renderHome() {
 }
 
 function renderCharacters() {
-  return `${sectionHead(tr("allCharacters"), tr("charDesc"))}<div class="character-grid">${Object.keys(CHARACTERS).map(characterCard).join("")}</div>`;
+  return `${sectionHead(tr("allCharacters"), tr("charDesc"))}<div class="character-grid">${Object.keys(characterMeta).map(characterCard).join("")}</div>`;
 }
 
 function renderSystems() {
@@ -423,11 +439,16 @@ function openCharacter(id, updateUrl = true) {
   }
 }
 
-function openGuide(id) {
+function openGuide(id, updateUrl = true) {
   const guide = guides.find(g => g.id === id);
   if (!guide) return;
-  $("#dialog-content").innerHTML = `<div class="article-hero" style="--char:#e63232"><div><p>${tr("allGuides")}</p><h2>${loc(guide.title)}</h2><p>${loc(guide.desc)}</p></div></div><div class="article-body"><h3>${lang==="ko"?"핵심 내용":"Essentials"}</h3><p>${loc(guide.body)}</p><div class="tip-box">${tr("dataNote")} · ${tr("liveDataDesc")}</div></div>`;
+  const extraSections = guide.sections?.map(([title, body], index) => `<section class="character-section"><h3><span>${index + 1}</span>${loc(title)}</h3><p>${loc(body)}</p></section>`).join("") || "";
+  $("#dialog-content").innerHTML = `<div class="article-hero" style="--char:#e63232"><div><p>${tr("allGuides")}</p><h2>${loc(guide.title)}</h2><p>${loc(guide.desc)}</p></div></div><div class="article-body"><h3>${lang==="ko"?"핵심 내용":"Essentials"}</h3><p>${loc(guide.body)}</p>${extraSections}<div class="tip-box">${tr("dataNote")} · ${tr("liveDataDesc")}</div></div>`;
+  document.title = `${loc(guide.title)} | COLORS 위키`;
   if (!$("#article-dialog").open) $("#article-dialog").showModal();
+  if (id === "beta1" && updateUrl && wikiPath() !== "/wiki/seasons/beta-1/") {
+    history.pushState(null, "", `${BASE}wiki/seasons/beta-1/`);
+  }
 }
 
 function openArticle(value) {
@@ -441,6 +462,7 @@ function routeFromPath() {
   const charMatch = path.match(/^\/wiki\/characters\/([a-z]+)\/?$/);
   if (charMatch && characterMeta[charMatch[1]]) return { route: "characters", character: charMatch[1] };
   if (path.startsWith("/wiki/characters")) return { route: "characters" };
+  if (path.startsWith("/wiki/seasons/beta-1")) return { route: "systems", guide: "beta1" };
   if (path.startsWith("/wiki/guides")) return { route: "systems" };
   if (path.startsWith("/wiki/shop")) return { route: "shop" };
   if (path.startsWith("/wiki/patches")) return { route: "patches" };
@@ -500,9 +522,11 @@ window.addEventListener("popstate", () => {
   if ($("#article-dialog").open) $("#article-dialog").close();
   renderRoute(target.route, false);
   if (target.character) openCharacter(target.character, false);
+  if (target.guide) openGuide(target.guide, false);
 });
 
 const initialTarget = routeFromPath();
 route = initialTarget.route;
 applyLanguage();
 if (initialTarget.character) openCharacter(initialTarget.character, false);
+if (initialTarget.guide) openGuide(initialTarget.guide, false);
