@@ -156,7 +156,7 @@ for (let i = 0; i < 8; i += 1) {
   const angle = (i / 8) * Math.PI * 2;
   box(Math.sin(angle) * 7, 3.6, Math.cos(angle) * 7, 1.2, 4.2, 1.2, stoneMaterial);
 }
-for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[38,-7,4,2],[43,5,2,5],[-6,38,5,2],[7,42,3,4]]) {
+for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[-6,38,5,2],[7,42,3,4]]) {
   box(x, 5.5, z, w, 3, d, stoneMaterial);
 }
 
@@ -190,8 +190,7 @@ createTestTarget(-1.4, -2.4);
 createTestTarget(0, -3.2);
 createTestTarget(1.4, -2.4);
 for (const x of [35, 38, 41, 44, 47]) {
-  createTestTarget(x, -3);
-  createTestTarget(x, 3);
+  for (const z of [-7, -3, 3, 7]) createTestTarget(x, z);
 }
 createTestTarget(-2.2, 1.5, { ally: true });
 createTestTarget(2.2, 1.5, { ally: true });
