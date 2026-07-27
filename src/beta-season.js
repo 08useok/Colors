@@ -809,18 +809,18 @@ function renderDaily(result = "") {
   modalContent.innerHTML = `<div class="drop-box">
     <span class="rarity legendary">경기 종료 후 별 보상</span>
     <h3>${claimed ? "오늘의 보상 획득 완료" : "별을 돌려 등급을 올려보세요"}</h3>
-    <div class="drop-result">${result || (claimed ? `${betaState.daily.rewardGrade} · ${betaState.daily.rewardAmount} β 크레딧` : `오늘 ${rewardCount}회 지급 · 총 ${rewardCount * 100} β 크레딧`)}</div>
+    <div class="drop-result">${result || (claimed ? `${betaState.daily.rewardGrade} · ${betaState.daily.rewardAmount} ${betaState.daily.rewardCurrency || "β 크레딧"}` : `오늘 ${rewardCount}회 획득`)}</div>
     <p>경기가 끝나면 모든 게임 UI가 사라지고 일일 보상 별이 나타납니다.</p>
     ${claimed ? "" : '<button type="button" data-daily-reveal>보상 연출 테스트</button>'}
   </div>`;
 }
 
 const DAILY_REWARD_TIERS = [
-  { id: "common", name: "일반", credits: 100 },
-  { id: "rare", name: "희귀", credits: 150 },
-  { id: "epic", name: "초희귀", credits: 250 },
-  { id: "legendary", name: "영웅", credits: 400 },
-  { id: "mythic", name: "전설", credits: 600 },
+  { id: "common", name: "일반", credits: 100, coins: 250 },
+  { id: "rare", name: "희귀", credits: 150, coins: 400 },
+  { id: "epic", name: "초희귀", credits: 250, coins: 700 },
+  { id: "legendary", name: "영웅", credits: 400, coins: 1200 },
+  { id: "mythic", name: "전설", credits: 600, coins: 2000 },
 ];
 let dailyRewardTierIndex = 0;
 let dailyRewardSpinning = false;
@@ -849,15 +849,20 @@ function showDailyRewardReveal() {
 
 function finishDailyReward() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
+  const rewardType = Math.random() < 0.5 ? "coins" : "credits";
+  const rewardAmount = tier[rewardType];
+  const rewardCurrency = rewardType === "coins" ? "코인" : "β 크레딧";
   dailyRewardComplete = true;
-  betaState.credits += tier.credits;
+  betaState[rewardType] += rewardAmount;
   betaState.daily.claimed = true;
   betaState.daily.winRewards = (betaState.daily.winRewards || 0) + 1;
   betaState.daily.rewardGrade = tier.name;
-  betaState.daily.rewardAmount = tier.credits;
+  betaState.daily.rewardType = rewardType;
+  betaState.daily.rewardAmount = rewardAmount;
+  betaState.daily.rewardCurrency = rewardCurrency;
   saveBetaState();
   dailyRewardStar.disabled = true;
-  dailyRewardMessage.textContent = `${tier.name} 보상 · ${tier.credits} β 크레딧 획득!`;
+  dailyRewardMessage.textContent = `${tier.name} 보상 · ${rewardAmount} ${rewardCurrency} 획득!`;
   dailyRewardReturn.classList.remove("hidden");
 }
 
