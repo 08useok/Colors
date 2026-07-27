@@ -188,8 +188,13 @@ function createTestTarget(x, z, { ally = false } = {}) {
 createTestTarget(-1.4, -2.4);
 createTestTarget(0, -3.2);
 createTestTarget(1.4, -2.4);
+for (const x of [3.5, 5, 6.5, 8, 9.5]) {
+  createTestTarget(x, -2);
+  createTestTarget(x, 0);
+}
 createTestTarget(-2.2, 1.5, { ally: true });
 createTestTarget(2.2, 1.5, { ally: true });
+canvas.dataset.testTargetCount = String(testTargets.length);
 
 // 베타 시즌 포털
 const portal = new THREE.Group();
