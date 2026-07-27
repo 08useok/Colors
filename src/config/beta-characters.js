@@ -112,9 +112,9 @@ export const BETA_CHARACTERS = {
     description: "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
     basicAttack: {
       name: "연쇄 금광석",
-      description: "금광석을 던져 폭발시키고 좌우 90도로 분열합니다. 분열탄은 다시 각각 6방향으로 갈라집니다.",
+      description: "2×2타일 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 다시 각각 6방향으로 갈라집니다.",
     },
-    stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1SplashRadius: 1.5,
+    stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1Size: 2, stage1SplashRadius: 1.5,
     stage2Damage: 2000, stage2Range: 4, stage2Speed: 18,
     stage3Damage: 1000, stage3Range: 3, stage3Speed: 20,
     projectileRadius: 0.2, ultimateChargeRequired: 12, maxChargePerAttack: 6,

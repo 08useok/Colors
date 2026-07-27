@@ -920,9 +920,11 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
   const range = def[`stage${stage}Range`];
   const damage = def[`stage${stage}Damage`];
   const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
-  const radii = [0, 0.38, 0.26, def.projectileRadius];
+  const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
   const mesh = new THREE.Mesh(
-    stage === 1 ? new THREE.DodecahedronGeometry(radii[stage], 0) : new THREE.SphereGeometry(radii[stage], 8, 6),
+    stage === 1
+      ? new THREE.BoxGeometry(def.stage1Size, def.stage1Size, def.stage1Size)
+      : new THREE.SphereGeometry(radii[stage], 8, 6),
     new THREE.MeshStandardMaterial({ color: colors[stage], emissive: colors[stage], emissiveIntensity: 0.8, metalness: 0.55, roughness: 0.25 }),
   );
   mesh.position.copy(position);
@@ -1658,6 +1660,16 @@ function animate() {
         const targetDx = target.position.x - projectile.mesh.position.x;
         const targetDz = target.position.z - projectile.mesh.position.z;
         if (projectile.goldStage) {
+          if (projectile.goldStage === 1) {
+            const forwardX = Math.sin(projectile.goldYaw);
+            const forwardZ = Math.cos(projectile.goldYaw);
+            const forwardDistance = Math.abs(targetDx * forwardX + targetDz * forwardZ);
+            const sideDistance = Math.abs(targetDx * forwardZ - targetDz * forwardX);
+            const collisionHalfSize = BETA_CHARACTERS.gold.stage1Size / 2 + 0.85;
+            if (forwardDistance > collisionHalfSize || sideDistance > collisionHalfSize) continue;
+          } else if (Math.hypot(targetDx, targetDz) > 0.85 + projectile.hitRadius) {
+            continue;
+          }
           applyGoldProjectileHit(projectile, target);
           remove = true;
           shouldSplitGold = projectile.goldStage < 3;
