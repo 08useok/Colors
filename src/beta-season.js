@@ -927,6 +927,38 @@ const goldAttackCharge = new Map();
 const goldStageHits = new Map();
 const malfunctionZones = [];
 
+function ensureMalfunctionIndicator(target) {
+  if (target.userData.malfunctionIndicator) return target.userData.malfunctionIndicator;
+  const group = new THREE.Group();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffc928,
+    emissive: 0xff7a00,
+    emissiveIntensity: 1.4,
+    metalness: 0.45,
+    roughness: 0.25,
+  });
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.07, 6, 24), material);
+  ring.rotation.x = Math.PI / 2;
+  group.add(ring);
+  for (const angle of [-Math.PI / 4, Math.PI / 4]) {
+    const slash = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.05, 0.12), material);
+    slash.rotation.z = angle;
+    group.add(slash);
+  }
+  for (let i = 0; i < 3; i += 1) {
+    const spark = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), material);
+    const angle = (i / 3) * Math.PI * 2;
+    spark.position.set(Math.sin(angle) * 0.95, 0.15 + (i % 2) * 0.22, Math.cos(angle) * 0.95);
+    group.add(spark);
+  }
+  group.position.y = target.userData.kind === "alphaBoss" ? 9.2 : 2.35;
+  group.visible = false;
+  group.userData.material = material;
+  target.add(group);
+  target.userData.malfunctionIndicator = group;
+  return group;
+}
+
 function damageTarget(target, damage, causesKnockback = false) {
   if (!target.visible) return;
   target.userData.health -= damage;
@@ -1375,11 +1407,10 @@ function performPinkEncore() {
 function performGoldUltimate() {
   const def = BETA_CHARACTERS.gold.ultimate;
   autoAimAtNearestTarget(def.castRange);
-  const center = new THREE.Vector3(
-    player.position.x + Math.sin(player.rotation.y) * def.castRange,
-    0.18,
-    player.position.z + Math.cos(player.rotation.y) * def.castRange,
-  );
+  const centerX = player.position.x + Math.sin(player.rotation.y) * def.castRange;
+  const centerZ = player.position.z + Math.cos(player.rotation.y) * def.castRange;
+  const centerGround = groundHeightAt(centerX, centerZ);
+  const center = new THREE.Vector3(centerX, centerGround > -5 ? centerGround + 0.08 : 0.08, centerZ);
   setTimeout(() => {
     const mesh = new THREE.Mesh(
       new THREE.CircleGeometry(def.radius, 48),
@@ -1389,6 +1420,7 @@ function performGoldUltimate() {
     mesh.position.copy(center);
     scene.add(mesh);
     malfunctionZones.push({ mesh, x: center.x, z: center.z, radius: def.radius, expiresAt: clock.elapsedTime + def.duration });
+    canvas.dataset.lastMalfunctionZone = `${center.x.toFixed(2)},${center.y.toFixed(2)},${center.z.toFixed(2)}`;
     attackComboState.textContent = "고장 지대 설치";
   }, def.delay * 1000);
 }
@@ -1914,6 +1946,9 @@ function animate() {
     }
   }
   for (let i = malfunctionZones.length - 1; i >= 0; i -= 1) {
+    if (i === malfunctionZones.length - 1) {
+      for (const target of testTargets) target.userData.inMalfunctionZone = false;
+    }
     const zone = malfunctionZones[i];
     zone.mesh.material.opacity = 0.26 + Math.sin(clock.elapsedTime * 8) * 0.08;
     if (clock.elapsedTime >= zone.expiresAt) {
@@ -1926,11 +1961,36 @@ function animate() {
     for (const target of testTargets) {
       if (!target.visible || target.userData.isAlly) continue;
       if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) {
-        target.userData.malfunctionUntil = zone.expiresAt;
-        target.userData.moveSpeedMultiplier = target.userData.kind === "alphaBoss" ? 0.75 : 0.5;
+        target.userData.inMalfunctionZone = true;
+        target.userData.malfunctionUntil = clock.elapsedTime + 0.1;
+        const isBoss = target.userData.kind === "alphaBoss";
+        target.userData.moveSpeedMultiplier = isBoss ? 0.75 : 0.5;
+        target.userData.attackDisabled = !isBoss;
+        target.userData.specialDisabled = !isBoss;
       }
     }
   }
+  if (malfunctionZones.length === 0) {
+    for (const target of testTargets) target.userData.inMalfunctionZone = false;
+  }
+  for (const target of testTargets) {
+    const indicator = target.userData.malfunctionIndicator;
+    if (target.userData.inMalfunctionZone) {
+      const activeIndicator = indicator || ensureMalfunctionIndicator(target);
+      activeIndicator.visible = true;
+      activeIndicator.rotation.y += dt * 4.5;
+      const pulse = 1 + Math.sin(clock.elapsedTime * 10) * 0.12;
+      activeIndicator.scale.setScalar(pulse);
+      activeIndicator.userData.material.emissiveIntensity = 1.2 + Math.sin(clock.elapsedTime * 12) * 0.5;
+    } else {
+      target.userData.moveSpeedMultiplier = 1;
+      target.userData.attackDisabled = false;
+      target.userData.specialDisabled = false;
+      target.userData.malfunctionUntil = 0;
+      if (indicator) indicator.visible = false;
+    }
+  }
+  canvas.dataset.malfunctionTargets = String(testTargets.filter((target) => target.userData.inMalfunctionZone).length);
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
@@ -1973,7 +2033,7 @@ function animate() {
   alphaBoss.rotation.y = Math.sin(clock.elapsedTime * 0.45) * 0.16;
   alphaBoss.position.y = 4.8 + Math.sin(clock.elapsedTime * 1.15) * 0.08;
   for (const target of testTargets) {
-    if ((target.userData.malfunctionUntil || 0) <= clock.elapsedTime) {
+    if (!target.userData.inMalfunctionZone) {
       target.userData.moveSpeedMultiplier = 1;
     }
     const galeKnockbackRemaining = target.userData.galeKnockbackRemaining || 0;
