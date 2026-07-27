@@ -77,6 +77,7 @@ const switchNicknameInput = document.getElementById("switch-nickname-input");
 const accountSwitchError = document.getElementById("account-switch-error");
 const startBattleBtn = document.getElementById("start-battle-btn");
 const lobbyEventMap = document.getElementById("lobby-event-map");
+const mobileEventToggle = document.getElementById("mobile-event-toggle");
 const eventCountdown = document.getElementById("event-countdown");
 const modeSelector = document.getElementById("mode-selector");
 const characterPanel = document.getElementById("character-panel");
@@ -1251,6 +1252,20 @@ function toggleCharacterSkin(charKey) {
 
 const EVENT_END_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
 
+function isEventActive() {
+  return Date.now() < EVENT_END_AT;
+}
+
+function showLobbyEventMapIfActive() {
+  const active = isEventActive();
+  lobbyEventMap.classList.toggle("hidden", !active);
+  mobileEventToggle.classList.toggle("hidden", !active);
+  if (!active) {
+    lobbyEventMap.classList.remove("mobile-open");
+    mobileEventToggle.classList.remove("active");
+  }
+}
+
 function formatCountdown(remaining) {
   const totalSeconds = Math.floor(remaining / 1000);
   const days = Math.floor(totalSeconds / 86400);
@@ -1263,6 +1278,7 @@ function formatCountdown(remaining) {
 function updateEventCountdown() {
   const remaining = Math.max(0, EVENT_END_AT - Date.now());
   eventCountdown.textContent = remaining <= 0 ? "이벤트 종료" : formatCountdown(remaining);
+  if (remaining <= 0) showLobbyEventMapIfActive();
   updateBetaCountdown();
   updateBetaPatchVisibility();
 }
@@ -1355,7 +1371,7 @@ function showLobby() {
     setTimeout(() => idInput.focus(), 50);
   } else if (isLoginDoneToday(account)) {
     startBattleBtn.classList.remove("hidden");
-    lobbyEventMap.classList.remove("hidden");
+    showLobbyEventMapIfActive();
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     dailyLogin.classList.add("hidden");
@@ -9685,7 +9701,7 @@ function setupInput() {
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     startBattleBtn.classList.remove("hidden");
-    lobbyEventMap.classList.remove("hidden");
+    showLobbyEventMapIfActive();
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     updateLobbyUI(account);
   });
@@ -9700,7 +9716,7 @@ function setupInput() {
     lobbyMain.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     startBattleBtn.classList.remove("hidden");
-    lobbyEventMap.classList.remove("hidden");
+    showLobbyEventMapIfActive();
     accountSwitchError.classList.add("hidden");
     accountSwitchError.textContent = "";
   }
@@ -9786,7 +9802,7 @@ function setupInput() {
       dailyLogin.classList.add("hidden");
       lobbyMain.classList.remove("hidden");
       startBattleBtn.classList.remove("hidden");
-      lobbyEventMap.classList.remove("hidden");
+      showLobbyEventMapIfActive();
       document.getElementById("lobby-side-panel").classList.remove("hidden");
       if (account.lang && account.lang !== currentLang) setLanguage(account.lang);
       updateLobbyUI(account);
@@ -9894,7 +9910,8 @@ function setupInput() {
     startBattleBtn.classList.remove("active");
   });
 
-  document.getElementById("mobile-event-toggle").addEventListener("click", (event) => {
+  mobileEventToggle.addEventListener("click", (event) => {
+    if (!isEventActive()) return;
     const button = event.currentTarget;
     const willOpen = !lobbyEventMap.classList.contains("mobile-open");
     lobbyEventMap.classList.toggle("mobile-open", willOpen);
