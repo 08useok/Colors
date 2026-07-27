@@ -48,6 +48,7 @@
 20. Blue·Cyan·Pink GLB 모델 및 시작/반복/정지 이동 모션
 21. 계획: 베타 시즌 2 골드 러쉬 스킨 3종 — Yellow·Orange·Gold (`specs/skin-gold-rush.md`)
 22. 계획: 베타 시즌 캐릭터별 승리·패배 애니메이션과 클릭형 결과 화면 (`specs/beta-result-poses.md`)
+23. 계획: 베타 시즌 2 골드 러쉬 — Gold, Pink 광역 부활, 골드 러쉬 모드 (`specs/beta-season-2.md`)
 
 ## Non-goals
 - 대규모 상용 멀티플레이 인프라

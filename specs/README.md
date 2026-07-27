@@ -11,6 +11,11 @@
 | 5 | 재화 | [`05-currency.md`](05-currency.md) |
 | 6 | 시스템 | [`06-systems.md`](06-systems.md) |
 
+## 시즌 기획
+
+- [`beta-season-transition.md`](beta-season-transition.md) — 베타 시즌 1 전환
+- [`beta-season-2.md`](beta-season-2.md) — 베타 시즌 2 골드 러쉬
+
 ## 작성 규칙
 
 - 대표 파일에는 기능 범위, 기준 코드와 관련 상세 문서를 기록한다.
@@ -18,4 +23,3 @@
 - 알파 기본 게임과 베타 테스트 수치는 반드시 구분한다.
 - 실제 수치의 최종 기준은 설정 파일과 실행 코드다.
 - 아직 구현되지 않은 내용은 `계획`으로 명시한다.
-
