@@ -1494,6 +1494,7 @@ const goldPickups = [];
 const goldRushState = {
   active: false, ended: false, gold: 0, startedAt: 0, nextSpawnAt: 0,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
+  mineGoldAvailable: true, mineGoldRespawnAt: 0,
 };
 
 const goldMine = new THREE.Group();
@@ -1562,10 +1563,13 @@ function startGoldRush() {
   goldRushState.winCountdownStartedAt = null;
   goldRushState.dead = false;
   goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+  goldRushState.mineGoldAvailable = true;
+  goldRushState.mineGoldRespawnAt = 0;
   initialSpawnPoint.set(0, 1.7, 15);
   resetPlayer();
   player.visible = true;
   goldMine.visible = true;
+  goldMineCrystal.visible = true;
   goldRushHud.classList.remove("hidden");
   respawnOverlay.classList.add("hidden");
   goldRushToggle.textContent = "골드 러쉬 재시작";
@@ -1602,6 +1606,18 @@ function updateGoldRush() {
       respawnOverlay.classList.add("hidden");
     }
     return;
+  }
+  if (!goldRushState.mineGoldAvailable && clock.elapsedTime >= goldRushState.mineGoldRespawnAt) {
+    goldRushState.mineGoldAvailable = true;
+    goldMineCrystal.visible = true;
+  }
+  if (goldRushState.mineGoldAvailable && Math.hypot(player.position.x - goldMine.position.x, player.position.z - goldMine.position.z) <= 2.4) {
+    goldRushState.mineGoldAvailable = false;
+    goldRushState.mineGoldRespawnAt = clock.elapsedTime + 3;
+    goldMineCrystal.visible = false;
+    goldRushState.gold += 1;
+    canvas.dataset.lastGoldPickup = "central-mine";
+    updateGoldRushHud();
   }
   if (clock.elapsedTime >= goldRushState.nextSpawnAt) {
     spawnGoldPickup();
