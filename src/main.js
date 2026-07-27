@@ -1,9 +1,10 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.143";
+import { LANGS } from "./LANGS/langs.js?v=1.5.144";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.142";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.144";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -1111,6 +1112,20 @@ function statBar(label, value) {
     + `</div>`;
 }
 
+// 베타 전용 페이지에 있던 캐릭터 소개·기술 설명을 본 게임 캐릭터 정보에 그대로 보여준다
+function characterLoreHtml(charKey) {
+  const beta = BETA_CHARACTERS[charKey];
+  if (!beta) return "";
+  const block = (label, body) => body
+    ? `<div class="ci-lore-block"><strong>${label}</strong><p>${body}</p></div>`
+    : "";
+  const html = block(t("loreIntro"), beta.description)
+    + block(beta.basicAttack ? `${t("loreBasicAttack")} · ${beta.basicAttack.name}` : "", beta.basicAttack?.description)
+    + block(beta.officialAbility ? `${t("loreAbility")} · ${beta.officialAbility.name}` : "", beta.officialAbility?.description)
+    + block(beta.ultimate ? `${t("loreUltimate")} · ${beta.ultimate.name}` : "", beta.ultimate?.description);
+  return html ? `<div class="ci-lore">${html}</div>` : "";
+}
+
 function updateColorInfo(charKey, account) {
   const el = document.getElementById("color-info");
   if (!el) return;
@@ -1152,6 +1167,7 @@ function updateColorInfo(charKey, account) {
   el.innerHTML = `<div class="ci-name">${name}</div>`
     + `<div class="ci-hp">HP ${effectiveHp}</div>`
     + `<div class="ci-desc">${desc}</div>`
+    + characterLoreHtml(charKey)
     + `<div class="ci-stats">`
     + statBar(t("statHp"), bars.hp)
     + statBar(t("statAtk"), bars.atk)
