@@ -33,6 +33,11 @@ const goldRushTimerEl = document.getElementById("gold-rush-timer");
 const goldRushStatusEl = document.getElementById("gold-rush-status");
 const respawnOverlay = document.getElementById("respawn-overlay");
 const respawnCountdownEl = document.getElementById("respawn-countdown");
+const dailyRewardReveal = document.getElementById("daily-reward-reveal");
+const dailyRewardGrade = document.getElementById("daily-reward-grade");
+const dailyRewardStar = document.getElementById("daily-reward-star");
+const dailyRewardMessage = document.getElementById("daily-reward-message");
+const dailyRewardReturn = document.getElementById("daily-reward-return");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
 const CHARACTER_MODEL_VERSION = "62";
 const CHARACTERS = [
@@ -799,14 +804,86 @@ function buySkin(id) {
 
 function renderDaily(result = "") {
   const rewardCount = betaState.daily.winRewards || 0;
+  const claimed = Boolean(betaState.daily.claimed);
   modalTitle.textContent = "일일 승리 보상";
   modalContent.innerHTML = `<div class="drop-box">
-    <span class="rarity legendary">승리할 때마다 자동 지급</span>
-    <h3>승리 1회 · 100 β 크레딧</h3>
-    <div class="drop-result">${result || `오늘 ${rewardCount}회 지급 · 총 ${rewardCount * 100} β 크레딧`}</div>
-    <p>기본 게임에서 승리 결과가 기록될 때 자동으로 들어옵니다.</p>
+    <span class="rarity legendary">경기 종료 후 별 보상</span>
+    <h3>${claimed ? "오늘의 보상 획득 완료" : "별을 돌려 등급을 올려보세요"}</h3>
+    <div class="drop-result">${result || (claimed ? `${betaState.daily.rewardGrade} · ${betaState.daily.rewardAmount} β 크레딧` : `오늘 ${rewardCount}회 지급 · 총 ${rewardCount * 100} β 크레딧`)}</div>
+    <p>경기가 끝나면 모든 게임 UI가 사라지고 일일 보상 별이 나타납니다.</p>
+    ${claimed ? "" : '<button type="button" data-daily-reveal>보상 연출 테스트</button>'}
   </div>`;
 }
+
+const DAILY_REWARD_TIERS = [
+  { id: "common", name: "일반", credits: 100 },
+  { id: "rare", name: "희귀", credits: 150 },
+  { id: "epic", name: "초희귀", credits: 250 },
+  { id: "legendary", name: "영웅", credits: 400 },
+  { id: "mythic", name: "전설", credits: 600 },
+];
+let dailyRewardTierIndex = 0;
+let dailyRewardSpinning = false;
+let dailyRewardComplete = false;
+
+function updateDailyRewardReveal() {
+  const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
+  dailyRewardReveal.dataset.tier = tier.id;
+  dailyRewardGrade.textContent = tier.name;
+}
+
+function showDailyRewardReveal() {
+  if (betaState.daily.claimed) return;
+  dailyRewardTierIndex = 0;
+  dailyRewardSpinning = false;
+  dailyRewardComplete = false;
+  dailyRewardStar.disabled = false;
+  dailyRewardStar.classList.remove("spinning");
+  dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
+  dailyRewardReturn.classList.add("hidden");
+  updateDailyRewardReveal();
+  modal.classList.add("hidden");
+  document.body.classList.add("daily-reveal-active");
+  dailyRewardReveal.classList.remove("hidden");
+}
+
+function finishDailyReward() {
+  const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
+  dailyRewardComplete = true;
+  betaState.credits += tier.credits;
+  betaState.daily.claimed = true;
+  betaState.daily.winRewards = (betaState.daily.winRewards || 0) + 1;
+  betaState.daily.rewardGrade = tier.name;
+  betaState.daily.rewardAmount = tier.credits;
+  saveBetaState();
+  dailyRewardStar.disabled = true;
+  dailyRewardMessage.textContent = `${tier.name} 보상 · ${tier.credits} β 크레딧 획득!`;
+  dailyRewardReturn.classList.remove("hidden");
+}
+
+dailyRewardStar.addEventListener("click", () => {
+  if (dailyRewardSpinning || dailyRewardComplete) return;
+  dailyRewardSpinning = true;
+  dailyRewardStar.classList.add("spinning");
+  dailyRewardMessage.textContent = "별이 회전하고 있습니다…";
+  setTimeout(() => {
+    dailyRewardStar.classList.remove("spinning");
+    dailyRewardSpinning = false;
+    const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
+    if (canUpgrade && Math.random() < 0.45) {
+      dailyRewardTierIndex += 1;
+      updateDailyRewardReveal();
+      dailyRewardMessage.textContent = `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 다시 클릭하세요`;
+      return;
+    }
+    finishDailyReward();
+  }, 900);
+});
+
+dailyRewardReturn.addEventListener("click", () => {
+  dailyRewardReveal.classList.add("hidden");
+  document.body.classList.remove("daily-reveal-active");
+});
 
 function openPanel(panel) {
   modal.classList.remove("hidden");
@@ -826,6 +903,10 @@ modalContent.addEventListener("click", (event) => {
   if (equipSkinButton) equipSkin(equipSkinButton.dataset.skinCharacter, equipSkinButton.dataset.equipSkin);
   const unequipSkinButton = event.target.closest("[data-unequip-skin]");
   if (unequipSkinButton) unequipSkin(unequipSkinButton.dataset.unequipSkin);
+  if (event.target.closest("[data-daily-reveal]")) {
+    modal.classList.add("hidden");
+    showDailyRewardReveal();
+  }
 });
 
 const CRIMSON = BETA_CHARACTERS.crimson;
@@ -1465,6 +1546,7 @@ function endGoldRush(message) {
   goldRushState.winCountdownStartedAt = null;
   goldRushStatusEl.textContent = message;
   showToast(message);
+  showDailyRewardReveal();
 }
 
 function startGoldRush() {
@@ -1526,7 +1608,7 @@ function updateGoldRush() {
     pickup.mesh.rotation.y += 0.05;
     const dx = pickup.mesh.position.x - player.position.x;
     const dz = pickup.mesh.position.z - player.position.z;
-    if (Math.hypot(dx, dz) > 1.25) continue;
+    if (Math.hypot(dx, dz) > 1.5) continue;
     scene.remove(pickup.mesh);
     pickup.mesh.geometry.dispose();
     pickup.mesh.material.dispose();

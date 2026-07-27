@@ -159,6 +159,68 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .ultimate-btn.gold-ultimate { --ultimate-color: #e2ad20; }
 .ultimate-btn.pink-ultimate { --ultimate-color: #ff79b8; }
 
+.daily-reveal-active #beta-canvas { opacity: .16; filter: blur(4px); }
+.daily-reveal-active .beta-header,
+.daily-reveal-active .beta-wallet,
+.daily-reveal-active .test-panel,
+.daily-reveal-active .location-card,
+.daily-reveal-active .beta-watermark,
+.daily-reveal-active .gold-rush-hud,
+.daily-reveal-active .respawn-overlay,
+.daily-reveal-active .crimson-controls,
+.daily-reveal-active .beta-modal,
+.daily-reveal-active .beta-toast { display: none !important; }
+.daily-reward-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  background: radial-gradient(circle at center, rgba(59, 85, 117, .58), rgba(3, 7, 14, .96) 68%);
+  text-align: center;
+}
+.reward-kicker { color: #a9bdd2; font-size: 11px; font-weight: 900; letter-spacing: .22em; }
+#daily-reward-grade { color: #e9f2f7; font-size: 24px; text-shadow: 0 0 20px currentColor; }
+.daily-reward-star {
+  width: 170px;
+  height: 170px;
+  border: 0;
+  background: transparent;
+  color: #dfe8ed;
+  font-size: 150px;
+  line-height: 1;
+  cursor: pointer;
+  filter: drop-shadow(0 0 18px currentColor);
+  transition: color .25s, filter .25s, transform .2s;
+}
+.daily-reward-star:hover { transform: scale(1.06); }
+.daily-reward-star.spinning { animation: daily-star-spin .9s cubic-bezier(.32,.02,.27,1); pointer-events: none; }
+.daily-reward-reveal[data-tier="rare"] .daily-reward-star,
+.daily-reward-reveal[data-tier="rare"] #daily-reward-grade { color: #62c7ff; }
+.daily-reward-reveal[data-tier="epic"] .daily-reward-star,
+.daily-reward-reveal[data-tier="epic"] #daily-reward-grade { color: #d779ff; }
+.daily-reward-reveal[data-tier="legendary"] .daily-reward-star,
+.daily-reward-reveal[data-tier="legendary"] #daily-reward-grade { color: #ffd84d; }
+.daily-reward-reveal[data-tier="mythic"] .daily-reward-star,
+.daily-reward-reveal[data-tier="mythic"] #daily-reward-grade { color: #ff657a; }
+#daily-reward-message { min-height: 24px; margin: 0; color: #f5f7f9; font-weight: 800; }
+.daily-reward-return {
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 12px;
+  padding: 10px 18px;
+  color: #17202a;
+  background: #f5df77;
+  font-weight: 900;
+  cursor: pointer;
+}
+@keyframes daily-star-spin {
+  0% { transform: rotate(0) scale(1); }
+  55% { transform: rotate(540deg) scale(1.24); filter: drop-shadow(0 0 42px currentColor) brightness(1.8); }
+  100% { transform: rotate(1080deg) scale(1); }
+}
+
 @media (max-width: 640px) {
   .beta-header { align-items: flex-start; gap: 8px; }
   .beta-header p { display: none; }
@@ -172,4 +234,5 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
   .beta-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .crimson-controls { bottom: 168px; width: 180px; }
   .gold-rush-hud { top: 154px; min-width: 0; width: calc(100% - 36px); flex-wrap: wrap; }
+  .daily-reward-star { width: 130px; height: 130px; font-size: 112px; }
 }
