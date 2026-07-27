@@ -1609,11 +1609,13 @@ function updateGoldRush() {
     const dx = pickup.mesh.position.x - player.position.x;
     const dz = pickup.mesh.position.z - player.position.z;
     if (Math.hypot(dx, dz) > 1.5) continue;
+    pickup.mesh.visible = false;
+    goldPickups.splice(i, 1);
     scene.remove(pickup.mesh);
     pickup.mesh.geometry.dispose();
     pickup.mesh.material.dispose();
-    goldPickups.splice(i, 1);
     goldRushState.gold += 1;
+    updateGoldRushHud();
   }
   if (goldRushState.gold >= 10) {
     goldRushState.winCountdownStartedAt ??= clock.elapsedTime;
@@ -1729,7 +1731,6 @@ const cameraTarget = new THREE.Vector3();
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04);
-  updateGoldRush();
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
     let remove = false;
@@ -1903,6 +1904,7 @@ function animate() {
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
+  updateGoldRush();
 
   portal.rotation.y += dt * 0.65;
   goldMineCrystal.rotation.y += dt * 1.4;
