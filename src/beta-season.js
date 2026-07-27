@@ -34,7 +34,7 @@ const goldRushStatusEl = document.getElementById("gold-rush-status");
 const respawnOverlay = document.getElementById("respawn-overlay");
 const respawnCountdownEl = document.getElementById("respawn-countdown");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "61";
+const CHARACTER_MODEL_VERSION = "62";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -405,7 +405,9 @@ function clearCharacterModel() {
 
 function prepareCharacterScene(model, characterId) {
   if (characterId === "blue") addBlueScarf(model);
-  if (["blue", "green", "cyan", "pink"].includes(characterId)) applyBetaToonRendering(model, characterId);
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink"].includes(characterId)) {
+    applyBetaToonRendering(model, characterId);
+  }
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -558,7 +560,7 @@ function updateModelAttackMotion(dt) {
 function setPlayerModel(characterId) {
   const token = ++characterLoadToken;
   clearCharacterModel();
-  if (characterId === "blue" || characterId === "green" || characterId === "cyan" || characterId === "pink") {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -937,7 +939,7 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
   const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
   const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
   const geometry = stage === 1
-    ? new THREE.CircleGeometry(def.stage1Size / 2, 12)
+    ? new THREE.DodecahedronGeometry(def.stage1Size / 2, 0)
     : stage === 3
       ? createGoldIngotGeometry()
       : new THREE.SphereGeometry(radii[stage], 8, 6);
@@ -949,10 +951,9 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
       emissiveIntensity: 0.8,
       metalness: 0.55,
       roughness: 0.25,
-      side: stage === 1 ? THREE.DoubleSide : THREE.FrontSide,
+      side: THREE.FrontSide,
     }),
   );
-  if (stage === 1) mesh.rotation.x = -Math.PI / 2;
   if (stage === 3) mesh.rotation.y = yaw;
   mesh.position.copy(position);
   mesh.position.y = player.position.y + 1.25;
