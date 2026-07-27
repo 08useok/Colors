@@ -174,7 +174,8 @@ function createTestTarget(x, z, { ally = false } = {}) {
   mesh.position.y = 0.78;
   mesh.castShadow = true;
   target.add(mesh);
-  target.position.set(x, 1.55, z);
+  const targetGround = groundHeightAt(x, z);
+  target.position.set(x, targetGround > -5 ? targetGround + 0.05 : 1.55, z);
   target.userData.health = 6000;
   target.userData.mesh = mesh;
   target.userData.kind = "jjajjal";
@@ -188,9 +189,9 @@ function createTestTarget(x, z, { ally = false } = {}) {
 createTestTarget(-1.4, -2.4);
 createTestTarget(0, -3.2);
 createTestTarget(1.4, -2.4);
-for (const x of [3.5, 5, 6.5, 8, 9.5]) {
-  createTestTarget(x, -2);
-  createTestTarget(x, 0);
+for (const x of [35, 38, 41, 44, 47]) {
+  createTestTarget(x, -3);
+  createTestTarget(x, 3);
 }
 createTestTarget(-2.2, 1.5, { ally: true });
 createTestTarget(2.2, 1.5, { ally: true });
