@@ -1509,6 +1509,7 @@ const goldMineCrystal = new THREE.Mesh(
 );
 goldMineCrystal.position.y = 1.3;
 goldMine.add(goldMineCrystal);
+goldMine.position.y = 1.5;
 goldMine.visible = false;
 scene.add(goldMine);
 
@@ -1521,10 +1522,13 @@ function spawnGoldPickup(position = null, dropped = false) {
     new THREE.OctahedronGeometry(0.34, 0),
     new THREE.MeshStandardMaterial({ color: 0xffd33d, emissive: 0x8b5900, emissiveIntensity: 1.3, metalness: 0.65, roughness: 0.2 }),
   );
-  mesh.position.copy(position || new THREE.Vector3(Math.sin(angle) * radius, 0.65, Math.cos(angle) * radius));
-  mesh.position.y = 0.65;
+  mesh.position.copy(position || new THREE.Vector3(Math.sin(angle) * radius, 0, Math.cos(angle) * radius));
+  const pickupGround = groundHeightAt(mesh.position.x, mesh.position.z);
+  mesh.position.y = pickupGround > -5 ? pickupGround + 0.45 : 0.65;
   scene.add(mesh);
   goldPickups.push({ mesh, dropped });
+  canvas.dataset.goldPickupCount = String(goldPickups.length);
+  canvas.dataset.lastGoldPickup = `${mesh.position.x.toFixed(2)},${mesh.position.y.toFixed(2)},${mesh.position.z.toFixed(2)}`;
 }
 
 function updateGoldRushHud() {
@@ -1611,6 +1615,7 @@ function updateGoldRush() {
     if (Math.hypot(dx, dz) > 1.5) continue;
     pickup.mesh.visible = false;
     goldPickups.splice(i, 1);
+    canvas.dataset.goldPickupCount = String(goldPickups.length);
     scene.remove(pickup.mesh);
     pickup.mesh.geometry.dispose();
     pickup.mesh.material.dispose();
