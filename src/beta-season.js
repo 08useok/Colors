@@ -1172,11 +1172,20 @@ function applyGoldProjectileHit(projectile, target) {
   }
 }
 
-function hitFan(range, halfAngle, damage) {
+// 레드 일자 공격의 폭. 판정과 이펙트가 같은 값을 쓴다.
+const RED_ATTACK_WIDTH = 1.7;
+
+// 본 게임 레드와 같은 정면 직사각형 판정. 이펙트(createGroundSlash)와 같은 폭을 쓴다.
+function hitBox(range, halfWidth, damage) {
   const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
+  const lateral = new THREE.Vector2(Math.cos(player.rotation.y), -Math.sin(player.rotation.y));
   for (const target of testTargets) {
+    if (!target.visible) continue;
     const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
-    if (target.visible && delta.length() <= range && forward.dot(delta.normalize()) >= Math.cos(halfAngle)) damageTarget(target, damage);
+    const depth = delta.dot(forward);
+    if (depth < 0 || depth > range) continue;
+    if (Math.abs(delta.dot(lateral)) > halfWidth) continue;
+    damageTarget(target, damage);
   }
 }
 
@@ -1257,9 +1266,9 @@ function performCharacterAttack({ manualAim = false } = {}) {
   crimsonAttackButton.classList.add("cooldown");
   attackComboState.textContent = "공격 중";
   if (id === "red") {
-    hitFan(def.attackRange, def.attackHalfAngle, def.attackDamage);
-    setTimeout(() => hitFan(def.attackRange, def.attackHalfAngle, def.attackDamage), def.attackIntervalMs);
-    createGroundSlash(def.attackRange, 1.7, 0xff554b);
+    hitBox(def.attackRange, RED_ATTACK_WIDTH / 2, def.attackDamage);
+    setTimeout(() => hitBox(def.attackRange, RED_ATTACK_WIDTH / 2, def.attackDamage), def.attackIntervalMs);
+    createGroundSlash(def.attackRange, RED_ATTACK_WIDTH, 0xff554b);
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier }));
   } else if (id === "blue") {
