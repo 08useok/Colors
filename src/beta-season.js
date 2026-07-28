@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.1";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.1";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -245,6 +245,30 @@ const alphaBoss = createAlphaBoss();
 canvas.dataset.alphaEnemies = "jjajjal:3,bossHp:120000";
 
 const player = new THREE.Group();
+const attackAimIndicator = new THREE.Group();
+const attackAimBeam = new THREE.Mesh(
+  new THREE.PlaneGeometry(1, 1),
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.52,
+    side: THREE.DoubleSide, depthWrite: false, depthTest: false,
+  }),
+);
+attackAimBeam.rotation.x = -Math.PI / 2;
+attackAimBeam.renderOrder = 25;
+attackAimIndicator.add(attackAimBeam);
+const attackAimEnd = new THREE.Mesh(
+  new THREE.RingGeometry(0.28, 0.4, 24),
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.78,
+    side: THREE.DoubleSide, depthWrite: false, depthTest: false,
+  }),
+);
+attackAimEnd.rotation.x = -Math.PI / 2;
+attackAimEnd.position.y = 0.015;
+attackAimEnd.renderOrder = 26;
+attackAimIndicator.add(attackAimEnd);
+attackAimIndicator.position.y = 0.12;
+player.add(attackAimIndicator);
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef3c58, roughness: 0.55 });
 const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 1.2, 5, 10), bodyMat);
 body.position.y = 1.2;
@@ -616,6 +640,7 @@ function selectCharacter(id) {
   setPlayerModel(id);
   applySelectedSkinVisual();
   updateCrimsonControls();
+  updateAttackAimIndicator();
   saveBetaState();
   renderCharacters();
   showToast(`${character.name} 선택 완료`);
@@ -798,6 +823,24 @@ function renderShop() {
   }).join("")}</div>`;
 }
 
+function renderAssetShowroom() {
+  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink"]);
+  const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
+  modalTitle.textContent = "에셋 쇼룸";
+  modalContent.innerHTML = `<div class="beta-grid">${CHARACTERS.map((character) => {
+    const usesGlb = glbCharacters.has(character.id);
+    const modelPath = usesGlb ? `assets/3d/${character.id}/walk-m1s.glb` : "Three.js 절차형 모델";
+    const skinCount = seasonAssets.filter((skin) => skin.character === character.id).length;
+    return `<article class="beta-card">
+      <span class="rarity ${character.rarity}">${usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
+      <h3>${character.name}</h3>
+      <p>${usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
+      <p>베타 시즌 2 스킨 에셋 ${skinCount}개</p>
+      <code>${modelPath}</code>
+    </article>`;
+  }).join("")}</div>`;
+}
+
 function buySkin(id) {
   const skin = SKINS[id];
   if (!skin || betaState.ownedSkins.includes(id)) return;
@@ -902,6 +945,7 @@ function openPanel(panel) {
   modal.classList.remove("hidden");
   if (panel === "characters") renderCharacters();
   if (panel === "shop") renderShop();
+  if (panel === "assets") renderAssetShowroom();
   if (panel === "daily") renderDaily();
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
@@ -1232,6 +1276,19 @@ function getBetaAttackRange(id, def) {
   if (id === "pink") return def.healCircleRange;
   if (id === "gold") return def.stage1Range;
   return 0;
+}
+
+function updateAttackAimIndicator() {
+  const character = CHARACTERS.find((item) => item.id === betaState.selectedCharacter);
+  const definition = BETA_CHARACTERS[betaState.selectedCharacter];
+  const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
+  attackAimBeam.scale.set(betaState.selectedCharacter === "gold" ? 0.24 : 0.14, range, 1);
+  attackAimBeam.position.z = range / 2;
+  attackAimEnd.position.z = range;
+  attackAimBeam.material.color.setHex(character?.color ?? 0xffffff);
+  attackAimEnd.material.color.setHex(character?.color ?? 0xffffff);
+  attackAimIndicator.visible = true;
+  canvas.dataset.aimRange = String(range);
 }
 
 function createGroundPulse(radius, color, position = player.position) {
@@ -1602,6 +1659,7 @@ bodyMat.color.setHex(CHARACTERS.find((item) => item.id === betaState.selectedCha
 setPlayerModel(betaState.selectedCharacter);
 applySelectedSkinVisual();
 updateCrimsonControls();
+updateAttackAimIndicator();
 updateWallet();
 
 const keys = new Set();
