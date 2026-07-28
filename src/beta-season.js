@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.1";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.1";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.2";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.2";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -249,24 +249,13 @@ const attackAimIndicator = new THREE.Group();
 const attackAimBeam = new THREE.Mesh(
   new THREE.PlaneGeometry(1, 1),
   new THREE.MeshBasicMaterial({
-    color: 0xffffff, transparent: true, opacity: 0.52,
+    color: 0xffffff,
     side: THREE.DoubleSide, depthWrite: false, depthTest: false,
   }),
 );
 attackAimBeam.rotation.x = -Math.PI / 2;
 attackAimBeam.renderOrder = 25;
 attackAimIndicator.add(attackAimBeam);
-const attackAimEnd = new THREE.Mesh(
-  new THREE.RingGeometry(0.28, 0.4, 24),
-  new THREE.MeshBasicMaterial({
-    color: 0xffffff, transparent: true, opacity: 0.78,
-    side: THREE.DoubleSide, depthWrite: false, depthTest: false,
-  }),
-);
-attackAimEnd.rotation.x = -Math.PI / 2;
-attackAimEnd.position.y = 0.015;
-attackAimEnd.renderOrder = 26;
-attackAimIndicator.add(attackAimEnd);
 attackAimIndicator.position.y = 0.12;
 player.add(attackAimIndicator);
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef3c58, roughness: 0.55 });
@@ -290,8 +279,9 @@ let activeCharacterMixer = null;
 let activeCharacterAction = null;
 let activeCharacterWasMoving = false;
 let activeCharacterMotion = null;
-let cyanAttackMotionTime = -1;
-let cyanAttackPoseRestore = [];
+let modelAttackMotionTime = -1;
+let modelAttackCharacter = null;
+let modelAttackPoseRestore = [];
 let characterLoadToken = 0;
 let betaToonGradient = null;
 
@@ -435,8 +425,9 @@ function clearCharacterModel() {
   activeCharacterAction = null;
   activeCharacterWasMoving = false;
   activeCharacterMotion = null;
-  cyanAttackMotionTime = -1;
-  cyanAttackPoseRestore = [];
+  modelAttackMotionTime = -1;
+  modelAttackCharacter = null;
+  modelAttackPoseRestore = [];
   canvas.dataset.characterModel = "primitive";
 }
 
@@ -476,7 +467,7 @@ function loadCharacterMotionSet(characterId, token) {
       const actions = {};
       for (const [key, gltf] of entries) {
         const sceneModel = prepareCharacterScene(gltf.scene, characterId);
-        sceneModel.visible = key === "start";
+        sceneModel.visible = key === "stop";
         scenes[key] = sceneModel;
         group.add(sceneModel);
         const clip = gltf.animations[0];
@@ -492,15 +483,15 @@ function loadCharacterMotionSet(characterId, token) {
       const show = (key) => {
         for (const [sceneKey, sceneModel] of Object.entries(scenes)) sceneModel.visible = sceneKey === key;
       };
-      if (actions.start) {
-        actions.start.play();
-        actions.start.paused = true;
-        actions.start.time = 0;
-        mixers.start.update(0);
+      if (actions.stop) {
+        actions.stop.play();
+        actions.stop.time = Math.max(0, actions.stop.getClip().duration - 0.001);
+        mixers.stop.update(0);
+        actions.stop.paused = true;
       }
       player.add(group);
       activeCharacterModel = group;
-      activeCharacterMotion = { characterId, scenes, mixers, actions, show, state: "idle", current: "start" };
+      activeCharacterMotion = { characterId, scenes, mixers, actions, show, state: "idle", current: "stop" };
       canvas.dataset.characterModel = characterId;
     })
     .catch(() => {
@@ -553,43 +544,79 @@ function updateCharacterMotion(isMoving, dt) {
   canvas.dataset.motionState = motion.state;
 }
 
-function startModelAttackMotion() {
-  cyanAttackMotionTime = 0;
+const MODEL_ATTACK_POSES = {
+  red: { duration: 0.44, peak: 0.22, bones: [
+    ["CC_Base_R_Upperarm", 1.22, 0, 0.34], ["CC_Base_R_Forearm", 0.52, 0, 0.08],
+    ["CC_Base_L_Upperarm", 0.88, 0, -0.32], ["CC_Base_L_Forearm", 0.38, 0, -0.06],
+    ["CC_Base_Spine02", 0.18, -0.12, 0],
+  ] },
+  green: { duration: 0.5, peak: 0.34, bones: [
+    ["CC_Base_R_Upperarm", 1.08, -0.28, 0.48], ["CC_Base_R_Forearm", 0.7, 0, 0.12],
+    ["CC_Base_L_Upperarm", 0.72, 0.2, -0.32], ["CC_Base_Spine02", 0.12, -0.22, 0],
+  ] },
+  blue: { duration: 0.34, peak: 0.2, bones: [
+    ["CC_Base_R_Upperarm", 1.35, 0, 0.12], ["CC_Base_R_Forearm", 0.22, 0, 0],
+    ["CC_Base_L_Upperarm", 0.35, 0, -0.18], ["CC_Base_Spine02", 0.14, -0.08, 0],
+  ] },
+  orange: { duration: 0.56, peak: 0.42, bones: [
+    ["CC_Base_R_Upperarm", 1.5, -0.18, 0.42], ["CC_Base_R_Forearm", 0.88, 0, 0.08],
+    ["CC_Base_L_Upperarm", 0.58, 0.14, -0.26], ["CC_Base_Spine02", -0.1, -0.28, 0],
+  ] },
+  yellow: { duration: 0.42, peak: 0.28, bones: [
+    ["CC_Base_R_Upperarm", 1.12, 0, 0.18], ["CC_Base_R_Forearm", 0.3, 0, 0],
+    ["CC_Base_L_Upperarm", 1.12, 0, -0.18], ["CC_Base_L_Forearm", 0.3, 0, 0],
+    ["CC_Base_Spine02", 0.16, 0, 0],
+  ] },
+  cyan: { duration: 0.4, peak: 0.24, bones: [
+    ["CC_Base_R_Upperarm", 1.1, 0, 0.24], ["CC_Base_R_Forearm", 0.4, 0, 0],
+    ["CC_Base_L_Upperarm", 0.82, 0, -0.2], ["CC_Base_L_Forearm", 0.28, 0, 0],
+    ["CC_Base_Spine02", 0.12, 0, 0],
+  ] },
+  pink: { duration: 0.58, peak: 0.38, bones: [
+    ["CC_Base_R_Upperarm", 0.56, 0, 0.78], ["CC_Base_R_Forearm", 0.18, 0, 0.22],
+    ["CC_Base_L_Upperarm", 0.56, 0, -0.78], ["CC_Base_L_Forearm", 0.18, 0, -0.22],
+    ["CC_Base_Spine02", -0.08, 0, 0],
+  ] },
+};
+
+function startModelAttackMotion(characterId = betaState.selectedCharacter) {
+  if (!MODEL_ATTACK_POSES[characterId]) return;
+  modelAttackMotionTime = 0;
+  modelAttackCharacter = characterId;
   canvas.dataset.attackMotion = "firing";
+  canvas.dataset.attackMotionProfile = characterId;
 }
 
 function restoreModelAttackPose() {
-  for (const { bone, quaternion } of cyanAttackPoseRestore) bone.quaternion.copy(quaternion);
-  cyanAttackPoseRestore = [];
+  for (const { bone, quaternion } of modelAttackPoseRestore) bone.quaternion.copy(quaternion);
+  modelAttackPoseRestore = [];
 }
 
 function updateModelAttackMotion(dt) {
-  if ((!activeCharacterMotion && !activeCharacterModel) || cyanAttackMotionTime < 0) return;
-  cyanAttackMotionTime += dt;
-  const duration = 0.38;
-  const progress = Math.min(1, cyanAttackMotionTime / duration);
-  const strength = progress < 0.28
-    ? THREE.MathUtils.smoothstep(progress / 0.28, 0, 1)
-    : 1 - THREE.MathUtils.smoothstep((progress - 0.28) / 0.72, 0, 1);
+  const profile = MODEL_ATTACK_POSES[modelAttackCharacter];
+  if ((!activeCharacterMotion && !activeCharacterModel) || modelAttackMotionTime < 0 || !profile) return;
+  modelAttackMotionTime += dt;
+  const progress = Math.min(1, modelAttackMotionTime / profile.duration);
+  const strength = progress < profile.peak
+    ? THREE.MathUtils.smoothstep(progress / profile.peak, 0, 1)
+    : 1 - THREE.MathUtils.smoothstep((progress - profile.peak) / (1 - profile.peak), 0, 1);
   const sceneModel = activeCharacterMotion
     ? activeCharacterMotion.scenes[activeCharacterMotion.current]
     : activeCharacterModel;
   if (sceneModel) {
-    const pose = (name, rotateX = 0, rotateZ = 0) => {
+    const pose = (name, rotateX = 0, rotateY = 0, rotateZ = 0) => {
       const bone = sceneModel.getObjectByName(name);
       if (!bone) return;
-      cyanAttackPoseRestore.push({ bone, quaternion: bone.quaternion.clone() });
+      modelAttackPoseRestore.push({ bone, quaternion: bone.quaternion.clone() });
       if (rotateX) bone.rotateX(rotateX * strength);
+      if (rotateY) bone.rotateY(rotateY * strength);
       if (rotateZ) bone.rotateZ(rotateZ * strength);
     };
-    pose("CC_Base_R_Upperarm", 1.05, 0.2);
-    pose("CC_Base_R_Forearm", 0.38, 0);
-    pose("CC_Base_L_Upperarm", 0.72, -0.16);
-    pose("CC_Base_L_Forearm", 0.24, 0);
-    pose("CC_Base_Spine02", 0.1, 0);
+    for (const bonePose of profile.bones) pose(...bonePose);
   }
   if (progress >= 1) {
-    cyanAttackMotionTime = -1;
+    modelAttackMotionTime = -1;
+    modelAttackCharacter = null;
     canvas.dataset.attackMotion = "idle";
   }
 }
@@ -1279,16 +1306,14 @@ function getBetaAttackRange(id, def) {
 }
 
 function updateAttackAimIndicator() {
-  const character = CHARACTERS.find((item) => item.id === betaState.selectedCharacter);
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
   const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
-  attackAimBeam.scale.set(betaState.selectedCharacter === "gold" ? 0.24 : 0.14, range, 1);
+  attackAimBeam.scale.set(0.18, range, 1);
   attackAimBeam.position.z = range / 2;
-  attackAimEnd.position.z = range;
-  attackAimBeam.material.color.setHex(character?.color ?? 0xffffff);
-  attackAimEnd.material.color.setHex(character?.color ?? 0xffffff);
+  attackAimBeam.material.color.setHex(0xffffff);
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
+  canvas.dataset.aimStyle = "white-opaque-rectangle";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
@@ -1337,6 +1362,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
   if (!manualAim) autoAimAtNearestTarget(getBetaAttackRange(id, def));
   generalAttackReady = false;
   crimsonAttackButton.classList.add("cooldown");
+  startModelAttackMotion(id);
   attackComboState.textContent = "공격 중";
   if (id === "red") {
     // 타격마다 기울어진 획(X자)과 가운데 일자를 함께 낸다. 획은 중앙에서
@@ -1354,14 +1380,12 @@ function performCharacterAttack({ manualAim = false } = {}) {
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier }));
   } else if (id === "blue") {
-    startModelAttackMotion();
     fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14 });
   } else if (id === "orange") {
     fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "bomb" });
   } else if (id === "yellow") {
     fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
   } else if (id === "cyan") {
-    startModelAttackMotion();
     const burstYaw = player.rotation.y;
     for (let i = 0; i < def.spreadLineCount; i += 1) {
       const lateralOffset = (i - (def.spreadLineCount - 1) / 2) * 0.45;
@@ -1380,7 +1404,6 @@ function performCharacterAttack({ manualAim = false } = {}) {
     }
     attackComboState.textContent = vial ? "독 약병" : "독침";
   } else if (id === "pink") {
-    startModelAttackMotion();
     pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
     updateCrimsonUltimateGauge();
     createGroundPulse(def.healCircleRange, 0xff9fcf);
