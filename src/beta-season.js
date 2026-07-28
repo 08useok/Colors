@@ -1175,18 +1175,32 @@ function applyGoldProjectileHit(projectile, target) {
 // 레드 일자 공격의 폭. 판정과 이펙트가 같은 값을 쓴다.
 const RED_ATTACK_WIDTH = 1.7;
 
-// 본 게임 레드와 같은 정면 직사각형 판정. 이펙트(createGroundSlash)와 같은 폭을 쓴다.
-function hitBox(range, halfWidth, damage) {
-  const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
-  const lateral = new THREE.Vector2(Math.cos(player.rotation.y), -Math.sin(player.rotation.y));
+// X자를 이루는 두 타격의 기울기. 본 게임 레드의 이펙트 각도와 같다.
+const RED_SLASH_ANGLES = [-20, 20].map((deg) => deg * (Math.PI / 180));
+
+// 정면 length/2 지점을 중심으로 angle만큼 기울어진 직사각형 판정.
+// angle이 0이면 일자, ±20도면 X자의 한 획이 된다. 이펙트와 같은 형상을 쓴다.
+function collectSlashTargets(length, halfWidth, angle, found) {
+  const yaw = player.rotation.y + angle;
+  const forward = new THREE.Vector2(Math.sin(yaw), Math.cos(yaw));
+  const lateral = new THREE.Vector2(Math.cos(yaw), -Math.sin(yaw));
+  const centerX = player.position.x + Math.sin(player.rotation.y) * length * 0.5;
+  const centerZ = player.position.z + Math.cos(player.rotation.y) * length * 0.5;
   for (const target of testTargets) {
-    if (!target.visible) continue;
-    const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
-    const depth = delta.dot(forward);
-    if (depth < 0 || depth > range) continue;
+    if (!target.visible || found.has(target)) continue;
+    const delta = new THREE.Vector2(target.position.x - centerX, target.position.z - centerZ);
+    if (Math.abs(delta.dot(forward)) > length * 0.5) continue;
     if (Math.abs(delta.dot(lateral)) > halfWidth) continue;
-    damageTarget(target, damage);
+    found.add(target);
   }
+  return found;
+}
+
+// 여러 획이 겹쳐도 한 타에 한 번만 피해를 준다
+function hitSlashes(length, halfWidth, angles, damage) {
+  const found = new Set();
+  for (const angle of angles) collectSlashTargets(length, halfWidth, angle, found);
+  for (const target of found) damageTarget(target, damage);
 }
 
 function autoAimAtNearestTarget(maxRange) {
@@ -1233,14 +1247,15 @@ function createGroundPulse(radius, color, position = player.position) {
 
 // 레드처럼 정면으로 뻗는 공격용 이펙트. 원형 펄스와 달리 바라보는 방향으로
 // 길게 깔린다.
-function createGroundSlash(length, width, color) {
+function createGroundSlash(length, width, color, angle = 0) {
   const mesh = new THREE.Mesh(
     new THREE.PlaneGeometry(width, length),
     new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
   );
-  // 오일러 순서를 YXZ로 두면 눕힌 뒤 바라보는 방향으로 그대로 돌아간다
+  // 오일러 순서를 YXZ로 두면 눕힌 뒤 바라보는 방향으로 그대로 돌아간다.
+  // 회전 중심이 막대 한가운데라 angle을 주면 중앙에서 교차하는 X자가 된다.
   mesh.rotation.order = "YXZ";
-  mesh.rotation.y = player.rotation.y;
+  mesh.rotation.y = player.rotation.y + angle;
   mesh.rotation.x = Math.PI / 2;
   const forwardX = Math.sin(player.rotation.y);
   const forwardZ = Math.cos(player.rotation.y);
@@ -1266,14 +1281,17 @@ function performCharacterAttack({ manualAim = false } = {}) {
   crimsonAttackButton.classList.add("cooldown");
   attackComboState.textContent = "공격 중";
   if (id === "red") {
-    // 타격마다 판정과 이펙트를 함께 낸다 (잽 잽 = attackCount 2회)
-    const strike = () => {
-      hitBox(def.attackRange, RED_ATTACK_WIDTH / 2, def.attackDamage);
-      createGroundSlash(def.attackRange, RED_ATTACK_WIDTH, 0xff554b);
+    // 타격마다 기울어진 획(X자)과 가운데 일자를 함께 낸다. 획은 중앙에서
+    // 교차했다가 양 끝으로 퍼진다.
+    const strike = (index) => {
+      const angle = RED_SLASH_ANGLES[index % RED_SLASH_ANGLES.length];
+      hitSlashes(def.attackRange, RED_ATTACK_WIDTH / 2, [angle, 0], def.attackDamage);
+      createGroundSlash(def.attackRange, RED_ATTACK_WIDTH, 0xff554b, angle);
+      createGroundSlash(def.attackRange, RED_ATTACK_WIDTH * 0.8, 0xffa08a, 0);
     };
-    strike();
+    strike(0);
     for (let i = 1; i < def.attackCount; i += 1) {
-      setTimeout(strike, def.attackIntervalMs * i);
+      setTimeout(() => strike(i), def.attackIntervalMs * i);
     }
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier }));
