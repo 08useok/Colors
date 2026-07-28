@@ -1222,6 +1222,28 @@ function createGroundPulse(radius, color, position = player.position) {
   crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.38, maxLife: 0.38 });
 }
 
+// 레드처럼 정면으로 뻗는 공격용 이펙트. 원형 펄스와 달리 바라보는 방향으로
+// 길게 깔린다.
+function createGroundSlash(length, width, color) {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, length),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  // 오일러 순서를 YXZ로 두면 눕힌 뒤 바라보는 방향으로 그대로 돌아간다
+  mesh.rotation.order = "YXZ";
+  mesh.rotation.y = player.rotation.y;
+  mesh.rotation.x = Math.PI / 2;
+  const forwardX = Math.sin(player.rotation.y);
+  const forwardZ = Math.cos(player.rotation.y);
+  mesh.position.set(
+    player.position.x + forwardX * length * 0.5,
+    player.position.y + 0.12,
+    player.position.z + forwardZ * length * 0.5,
+  );
+  scene.add(mesh);
+  crimsonSlashes.push({ group: mesh, mesh, life: 0.38, maxLife: 0.38 });
+}
+
 function performCharacterAttack({ manualAim = false } = {}) {
   if (goldRushState.dead) return;
   const id = betaState.selectedCharacter;
@@ -1237,7 +1259,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
   if (id === "red") {
     hitFan(def.attackRange, def.attackHalfAngle, def.attackDamage);
     setTimeout(() => hitFan(def.attackRange, def.attackHalfAngle, def.attackDamage), def.attackIntervalMs);
-    createGroundPulse(2.2, 0xff554b);
+    createGroundSlash(def.attackRange, 1.7, 0xff554b);
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier }));
   } else if (id === "blue") {
