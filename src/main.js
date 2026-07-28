@@ -8507,20 +8507,32 @@ function updateFighterAnimation(fighter, dt) {
       const armBones = body.cyanArmBones;
       if (armBones && fighter.attackAnimTime >= 0) {
         const at = fighter.attackAnimTime;
-        const first = pulse(at, 0.02, 0.11, 0.22);
-        const second = pulse(at, 0.22, 0.32, 0.45);
-        const punch = (name, amount) => {
+        const pose = (name, amount) => {
           const bone = armBones[name];
           const bind = body.cyanArmBind?.[name];
           if (!bone || !bind) return;
           bone.quaternion.copy(bind);
           if (amount) bone.rotateX(amount);
         };
-        punch("CC_Base_R_Upperarm", first * 1.3);
-        punch("CC_Base_R_Forearm", first * 0.45);
-        punch("CC_Base_L_Upperarm", second * 1.3);
-        punch("CC_Base_L_Forearm", second * 0.45);
-        punch("CC_Base_Spine02", (first + second) * 0.12);
+        if (fighter.characterType === "red") {
+          // 더블 펀치 — 양팔을 번갈아 정면으로 뻗는다
+          const first = pulse(at, 0.02, 0.11, 0.22);
+          const second = pulse(at, 0.22, 0.32, 0.45);
+          pose("CC_Base_R_Upperarm", first * 1.3);
+          pose("CC_Base_R_Forearm", first * 0.45);
+          pose("CC_Base_L_Upperarm", second * 1.3);
+          pose("CC_Base_L_Forearm", second * 0.45);
+          pose("CC_Base_Spine02", (first + second) * 0.12);
+        } else {
+          // 던지기 — 오른팔을 뒤로 당겼다가(음수) 앞으로 내던진다(양수)
+          const windup = pulse(at, 0.00, 0.10, 0.18);
+          const release = pulse(at, 0.18, 0.24, 0.34);
+          const recover = pulse(at, 0.34, 0.48, 0.60);
+          pose("CC_Base_R_Upperarm", -windup * 0.95 + release * 1.35 - recover * 0.25);
+          pose("CC_Base_R_Forearm", -windup * 0.55 + release * 0.5);
+          pose("CC_Base_L_Upperarm", windup * 0.25 - release * 0.2);
+          pose("CC_Base_Spine02", -windup * 0.1 + release * 0.14);
+        }
       }
     } else {
     const moving = speed > 0.5;
