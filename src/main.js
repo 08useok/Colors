@@ -1823,6 +1823,12 @@ const GLB_BATTLE_HEIGHT = 3.67;
 const CYAN_BATTLE_HEIGHT = 2.7;
 const GLB_FEET_Y = -1.85;
 
+const CYAN_RIG_ARM_BONES = [
+  "CC_Base_L_Upperarm", "CC_Base_R_Upperarm",
+  "CC_Base_L_Forearm", "CC_Base_R_Forearm",
+  "CC_Base_Spine02",
+];
+
 // 시안 리그를 쓰는 캐릭터의 색 → 로드된 GLB. 리컬러본은 리그와 애니메이션이
 // 시안과 같아서 모델 생성 코드를 그대로 공유한다.
 function getCyanRigGltf(color) {
@@ -1867,9 +1873,18 @@ function buildCyanRigModel(gltf) {
       if (!bodyMaterials.includes(material)) bodyMaterials.push(material);
     }
   });
+  // 공격 모션용 팔 본과 바인드 자세. 걷기 포즈 위에 각도를 더하면 팔 위상에 따라
+  // 결과가 달라지므로, 공격할 때는 바인드로 되돌린 뒤 다시 잡는다.
+  const cyanArmBones = {};
+  const cyanArmBind = {};
+  model.traverse(o => {
+    if (!o.isBone || !CYAN_RIG_ARM_BONES.includes(o.name)) return;
+    cyanArmBones[o.name] = o;
+    cyanArmBind[o.name] = o.quaternion.clone();
+  });
   group.userData = {
     isGlbModel: true, isCyanGlb: true, cyanModel: model,
-    cyanMixer, cyanWalkAction, bodyMaterials, guitar: null,
+    cyanMixer, cyanWalkAction, cyanArmBones, cyanArmBind, bodyMaterials, guitar: null,
   };
   return group;
 }
@@ -8486,6 +8501,26 @@ function updateFighterAnimation(fighter, dt) {
         body.cyanWalkAction.paused = !moving;
         body.cyanWalkAction.timeScale = THREE.MathUtils.clamp(speed / 5, 0.65, 1.5);
         body.cyanMixer.update(dt);
+      }
+      // 믹서가 매 프레임 본을 덮어쓰므로 공격 포즈는 갱신 뒤에 덧씌운다.
+      // 바인드 기준으로 rotateX 양수가 양팔 모두 정면으로 뻗는 방향이다.
+      const armBones = body.cyanArmBones;
+      if (armBones && fighter.attackAnimTime >= 0) {
+        const at = fighter.attackAnimTime;
+        const first = pulse(at, 0.02, 0.11, 0.22);
+        const second = pulse(at, 0.22, 0.32, 0.45);
+        const punch = (name, amount) => {
+          const bone = armBones[name];
+          const bind = body.cyanArmBind?.[name];
+          if (!bone || !bind) return;
+          bone.quaternion.copy(bind);
+          if (amount) bone.rotateX(amount);
+        };
+        punch("CC_Base_R_Upperarm", first * 1.3);
+        punch("CC_Base_R_Forearm", first * 0.45);
+        punch("CC_Base_L_Upperarm", second * 1.3);
+        punch("CC_Base_L_Forearm", second * 0.45);
+        punch("CC_Base_Spine02", (first + second) * 0.12);
       }
     } else {
     const moving = speed > 0.5;
