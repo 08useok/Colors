@@ -144,6 +144,7 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .gold-rush-hud strong, .gold-rush-hud b { color: #ffd85b; }
 .gold-rush-hud span { color: #f4e5af; font-size: 12px; }
 #gold-rush-status { max-width: 190px; color: #fff4c9; }
+#gold-rush-rivals { color: #ffc864; font-weight: 800; }
 .respawn-overlay {
   position: fixed;
   inset: 0;

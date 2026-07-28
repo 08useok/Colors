@@ -31,6 +31,7 @@ const goldRushHud = document.getElementById("gold-rush-hud");
 const goldCountEl = document.getElementById("gold-count");
 const goldRushTimerEl = document.getElementById("gold-rush-timer");
 const goldRushStatusEl = document.getElementById("gold-rush-status");
+const goldRushRivalsEl = document.getElementById("gold-rush-rivals");
 const respawnOverlay = document.getElementById("respawn-overlay");
 const respawnCountdownEl = document.getElementById("respawn-countdown");
 const dailyRewardReveal = document.getElementById("daily-reward-reveal");
@@ -1618,6 +1619,8 @@ const manualAimPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const manualAimPoint = new THREE.Vector3();
 const initialSpawnPoint = new THREE.Vector3(0, 1.7, 0);
 const goldPickups = [];
+const goldRushBots = [];
+const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
 const goldRushState = {
   active: false, ended: false, gold: 0, startedAt: 0, nextSpawnAt: 0,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
@@ -1641,6 +1644,53 @@ goldMine.position.y = 1.5;
 goldMine.visible = false;
 scene.add(goldMine);
 
+function clearGoldRushBots() {
+  for (const bot of goldRushBots) {
+    scene.remove(bot.mesh);
+    bot.mesh.traverse((part) => {
+      if (!part.isMesh) return;
+      part.geometry.dispose();
+      part.material.dispose();
+    });
+  }
+  goldRushBots.length = 0;
+}
+
+function createGoldRushBots() {
+  clearGoldRushBots();
+  for (let i = 0; i < 9; i += 1) {
+    const mesh = new THREE.Group();
+    const material = new THREE.MeshStandardMaterial({ color: GOLD_RUSH_BOT_COLORS[i], roughness: 0.58 });
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.8, 4, 8), material);
+    body.position.y = 0.86;
+    body.castShadow = true;
+    mesh.add(body);
+    const marker = new THREE.Mesh(
+      new THREE.TorusGeometry(0.54, 0.055, 5, 18),
+      new THREE.MeshBasicMaterial({ color: 0xffd84e, transparent: true, opacity: 0.9 }),
+    );
+    marker.rotation.x = Math.PI / 2;
+    marker.position.y = 1.8;
+    mesh.add(marker);
+    const angle = (i / 9) * Math.PI * 2;
+    const spawn = new THREE.Vector3(Math.sin(angle) * 9, 0, Math.cos(angle) * 9);
+    const ground = groundHeightAt(spawn.x, spawn.z);
+    spawn.y = ground > -5 ? ground + 0.05 : 1.55;
+    mesh.position.copy(spawn);
+    scene.add(mesh);
+    goldRushBots.push({
+      id: i + 1,
+      name: `AI ${i + 1}`,
+      mesh,
+      spawn,
+      gold: 0,
+      speed: 3.8 + (i % 4) * 0.3,
+      winCountdownStartedAt: null,
+    });
+  }
+  canvas.dataset.goldRushBotCount = String(goldRushBots.length);
+}
+
 function spawnGoldPickup(position = null, dropped = false) {
   const naturalCount = goldPickups.filter((pickup) => !pickup.dropped).length;
   if (!dropped && naturalCount >= 20) return;
@@ -1659,15 +1709,58 @@ function spawnGoldPickup(position = null, dropped = false) {
   canvas.dataset.lastGoldPickup = `${mesh.position.x.toFixed(2)},${mesh.position.y.toFixed(2)},${mesh.position.z.toFixed(2)}`;
 }
 
+function removeGoldPickup(index) {
+  const [pickup] = goldPickups.splice(index, 1);
+  if (!pickup) return;
+  pickup.mesh.visible = false;
+  scene.remove(pickup.mesh);
+  pickup.mesh.geometry.dispose();
+  pickup.mesh.material.dispose();
+  canvas.dataset.goldPickupCount = String(goldPickups.length);
+}
+
+function updateGoldRushBots(dt) {
+  for (const bot of goldRushBots) {
+    let targetX = goldMine.position.x;
+    let targetZ = goldMine.position.z;
+    let nearestDistance = Infinity;
+    for (const pickup of goldPickups) {
+      const distance = Math.hypot(pickup.mesh.position.x - bot.mesh.position.x, pickup.mesh.position.z - bot.mesh.position.z);
+      if (distance >= nearestDistance) continue;
+      nearestDistance = distance;
+      targetX = pickup.mesh.position.x;
+      targetZ = pickup.mesh.position.z;
+    }
+    const dx = targetX - bot.mesh.position.x;
+    const dz = targetZ - bot.mesh.position.z;
+    const distance = Math.hypot(dx, dz);
+    if (distance > 0.05) {
+      const step = Math.min(distance, bot.speed * dt);
+      bot.mesh.position.x += (dx / distance) * step;
+      bot.mesh.position.z += (dz / distance) * step;
+      bot.mesh.rotation.y = Math.atan2(dx, dz);
+      const ground = groundHeightAt(bot.mesh.position.x, bot.mesh.position.z);
+      if (ground > -5) bot.mesh.position.y = THREE.MathUtils.damp(bot.mesh.position.y, ground + 0.05, 12, dt);
+    }
+    bot.mesh.children[1].rotation.z += dt * 2.4;
+  }
+}
+
 function updateGoldRushHud() {
   goldCountEl.textContent = String(goldRushState.gold);
   const elapsed = Math.max(0, clock.elapsedTime - goldRushState.startedAt);
   const remaining = Math.max(0, 180 - elapsed);
   const remainingSeconds = Math.ceil(remaining);
   goldRushTimerEl.textContent = `${String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:${String(remainingSeconds % 60).padStart(2, "0")}`;
+  const leader = goldRushBots.reduce((best, bot) => (!best || bot.gold > best.gold ? bot : best), null);
+  goldRushRivalsEl.textContent = leader ? `선두 AI ${leader.id} · 금 ${leader.gold}` : "AI 준비 중";
+  const threateningBot = goldRushBots.find((bot) => bot.winCountdownStartedAt !== null);
   if (goldRushState.winCountdownStartedAt !== null) {
     const winRemaining = Math.max(0, 10 - (clock.elapsedTime - goldRushState.winCountdownStartedAt));
     goldRushStatusEl.textContent = `금 10개 방어 ${winRemaining.toFixed(1)}초`;
+  } else if (threateningBot) {
+    const winRemaining = Math.max(0, 10 - (clock.elapsedTime - threateningBot.winCountdownStartedAt));
+    goldRushStatusEl.textContent = `${threateningBot.name} 방어 중 · ${winRemaining.toFixed(1)}초`;
   } else if (!goldRushState.ended) {
     goldRushStatusEl.textContent = "중앙 금광에서 금을 모으세요";
   }
@@ -1700,8 +1793,8 @@ function startGoldRush() {
   goldRushHud.classList.remove("hidden");
   respawnOverlay.classList.add("hidden");
   goldRushToggle.textContent = "골드 러쉬 재시작";
-  for (const pickup of goldPickups) scene.remove(pickup.mesh);
-  goldPickups.length = 0;
+  for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
+  createGoldRushBots();
   updateGoldRushHud();
 }
 
@@ -1720,7 +1813,7 @@ function killGoldRushPlayer() {
   updateGoldRushHud();
 }
 
-function updateGoldRush() {
+function updateGoldRush(dt) {
   if (!goldRushState.active || goldRushState.ended) return;
   if (goldRushState.dead) {
     const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
@@ -1732,18 +1825,26 @@ function updateGoldRush() {
       player.visible = true;
       respawnOverlay.classList.add("hidden");
     }
-    return;
   }
+  updateGoldRushBots(dt);
   if (!goldRushState.mineGoldAvailable && clock.elapsedTime >= goldRushState.mineGoldRespawnAt) {
     goldRushState.mineGoldAvailable = true;
     goldMineCrystal.visible = true;
   }
-  if (goldRushState.mineGoldAvailable && Math.hypot(player.position.x - goldMine.position.x, player.position.z - goldMine.position.z) <= 2.4) {
+  let centralCollector = null;
+  if (!goldRushState.dead && Math.hypot(player.position.x - goldMine.position.x, player.position.z - goldMine.position.z) <= 2.4) {
+    centralCollector = goldRushState;
+  } else {
+    centralCollector = goldRushBots.find((bot) =>
+      Math.hypot(bot.mesh.position.x - goldMine.position.x, bot.mesh.position.z - goldMine.position.z) <= 2.4,
+    ) || null;
+  }
+  if (goldRushState.mineGoldAvailable && centralCollector) {
     goldRushState.mineGoldAvailable = false;
     goldRushState.mineGoldRespawnAt = clock.elapsedTime + 3;
     goldMineCrystal.visible = false;
-    goldRushState.gold += 1;
-    canvas.dataset.lastGoldPickup = "central-mine";
+    centralCollector.gold += 1;
+    canvas.dataset.lastGoldPickup = centralCollector === goldRushState ? "central-mine:player" : `central-mine:ai-${centralCollector.id}`;
     updateGoldRushHud();
   }
   if (clock.elapsedTime >= goldRushState.nextSpawnAt) {
@@ -1752,17 +1853,19 @@ function updateGoldRush() {
   }
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) {
     const pickup = goldPickups[i];
-    pickup.mesh.rotation.y += 0.05;
+    pickup.mesh.rotation.y += dt * 3;
     const dx = pickup.mesh.position.x - player.position.x;
     const dz = pickup.mesh.position.z - player.position.z;
-    if (Math.hypot(dx, dz) > 1.5) continue;
-    pickup.mesh.visible = false;
-    goldPickups.splice(i, 1);
-    canvas.dataset.goldPickupCount = String(goldPickups.length);
-    scene.remove(pickup.mesh);
-    pickup.mesh.geometry.dispose();
-    pickup.mesh.material.dispose();
-    goldRushState.gold += 1;
+    let collector = !goldRushState.dead && Math.hypot(dx, dz) <= 1.5 ? goldRushState : null;
+    if (!collector) {
+      collector = goldRushBots.find((bot) =>
+        Math.hypot(pickup.mesh.position.x - bot.mesh.position.x, pickup.mesh.position.z - bot.mesh.position.z) <= 1.2,
+      ) || null;
+    }
+    if (!collector) continue;
+    removeGoldPickup(i);
+    collector.gold += 1;
+    canvas.dataset.lastGoldCollector = collector === goldRushState ? "player" : `ai-${collector.id}`;
     updateGoldRushHud();
   }
   if (goldRushState.gold >= 10) {
@@ -1771,8 +1874,22 @@ function updateGoldRush() {
   } else {
     goldRushState.winCountdownStartedAt = null;
   }
+  for (const bot of goldRushBots) {
+    if (bot.gold >= 10) {
+      bot.winCountdownStartedAt ??= clock.elapsedTime;
+      if (clock.elapsedTime - bot.winCountdownStartedAt >= 10) {
+        endGoldRush(`${bot.name} 골드 러쉬 승리!`);
+        return;
+      }
+    } else {
+      bot.winCountdownStartedAt = null;
+    }
+  }
   if (clock.elapsedTime - goldRushState.startedAt >= 180) {
-    endGoldRush(`시간 종료 · 금 ${goldRushState.gold}개`);
+    const standings = [{ name: "플레이어", gold: goldRushState.gold }, ...goldRushBots.map((bot) => ({ name: bot.name, gold: bot.gold }))];
+    standings.sort((a, b) => b.gold - a.gold);
+    endGoldRush(`시간 종료 · ${standings[0].name} 승리 (${standings[0].gold}금)`);
+    return;
   }
   updateGoldRushHud();
 }
@@ -2097,7 +2214,7 @@ function animate() {
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
-  updateGoldRush();
+  updateGoldRush(dt);
 
   portal.rotation.y += dt * 0.65;
   goldMineCrystal.rotation.y += dt * 1.4;
