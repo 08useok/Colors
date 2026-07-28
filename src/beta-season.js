@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.4";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.4";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.5";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.5";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -25,6 +25,7 @@ const attackComboState = document.getElementById("attack-combo-state");
 const attackTitle = crimsonAttackButton.querySelector("strong");
 const attackHint = crimsonAttackButton.querySelector("small");
 const ultimateButton = document.getElementById("ultimate-btn");
+const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
 const goldRushHud = document.getElementById("gold-rush-hud");
@@ -1695,6 +1696,8 @@ let dragging = false;
 let lastPointerX = 0;
 let lastPointerY = 0;
 let pointerTravel = 0;
+let manualAimActive = false;
+let clickMoveTarget = null;
 const manualAimRaycaster = new THREE.Raycaster();
 const manualAimPointer = new THREE.Vector2();
 const manualAimPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -1976,7 +1979,7 @@ function updateGoldRush(dt) {
   updateGoldRushHud();
 }
 
-function aimPlayerAtPointer(event) {
+function groundPointAtPointer(event) {
   const rect = canvas.getBoundingClientRect();
   manualAimPointer.set(
     ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -1984,7 +1987,11 @@ function aimPlayerAtPointer(event) {
   );
   manualAimRaycaster.setFromCamera(manualAimPointer, camera);
   manualAimPlane.constant = -player.position.y;
-  if (!manualAimRaycaster.ray.intersectPlane(manualAimPlane, manualAimPoint)) return false;
+  return manualAimRaycaster.ray.intersectPlane(manualAimPlane, manualAimPoint);
+}
+
+function aimPlayerAtPointer(event) {
+  if (!groundPointAtPointer(event)) return false;
   const aimX = manualAimPoint.x - player.position.x;
   const aimZ = manualAimPoint.z - player.position.z;
   if (Math.hypot(aimX, aimZ) < 0.25) return false;
@@ -1993,6 +2000,23 @@ function aimPlayerAtPointer(event) {
   canvas.dataset.aimPoint = `${manualAimPoint.x.toFixed(2)},${manualAimPoint.z.toFixed(2)}`;
   return true;
 }
+
+function setClickMoveTarget(event) {
+  if (!groundPointAtPointer(event)) return false;
+  clickMoveTarget = new THREE.Vector3(manualAimPoint.x, player.position.y, manualAimPoint.z);
+  canvas.dataset.moveMode = "click";
+  canvas.dataset.moveTarget = `${clickMoveTarget.x.toFixed(2)},${clickMoveTarget.z.toFixed(2)}`;
+  return true;
+}
+
+aimModeButton.addEventListener("click", () => {
+  manualAimActive = !manualAimActive;
+  clickMoveTarget = null;
+  aimModeButton.classList.toggle("active", manualAimActive);
+  aimModeButton.setAttribute("aria-pressed", String(manualAimActive));
+  aimModeButton.textContent = manualAimActive ? "수동 에임 · 마우스 추적" : "이동 모드 · 클릭 이동";
+  canvas.dataset.aimMode = manualAimActive ? "manual" : "auto";
+});
 
 addEventListener("keydown", (event) => {
   keys.add(event.code);
@@ -2013,11 +2037,16 @@ canvas.addEventListener("pointerdown", (event) => {
 canvas.addEventListener("pointerup", (event) => {
   dragging = false;
   if (event.button === 0 && pointerTravel < 6 && modal.classList.contains("hidden")) {
-    canvas.dataset.lastAttackInput = "mouse";
-    performCharacterAttack({ manualAim: aimPlayerAtPointer(event) });
+    if (manualAimActive) {
+      canvas.dataset.lastAttackInput = "mouse";
+      performCharacterAttack({ manualAim: aimPlayerAtPointer(event) });
+    } else {
+      setClickMoveTarget(event);
+    }
   }
 });
 canvas.addEventListener("pointermove", (event) => {
+  if (manualAimActive && modal.classList.contains("hidden")) aimPlayerAtPointer(event);
   if (!dragging || overview) return;
   const dx = event.clientX - lastPointerX;
   const dy = event.clientY - lastPointerY;
@@ -2264,8 +2293,10 @@ function animate() {
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
-  const isMoving = !goldRushState.dead && input.lengthSq() > 0;
-  if (isMoving) {
+  let isMoving = false;
+  if (!goldRushState.dead && input.lengthSq() > 0) {
+    clickMoveTarget = null;
+    isMoving = true;
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);
     const cos = Math.cos(yaw);
@@ -2273,7 +2304,21 @@ function animate() {
     const moveZ = input.y * cos + input.x * sin;
     player.position.x += moveX;
     player.position.z += moveZ;
-    player.rotation.y = Math.atan2(moveX, moveZ);
+    if (!manualAimActive) player.rotation.y = Math.atan2(moveX, moveZ);
+  } else if (!goldRushState.dead && clickMoveTarget) {
+    const moveX = clickMoveTarget.x - player.position.x;
+    const moveZ = clickMoveTarget.z - player.position.z;
+    const remaining = Math.hypot(moveX, moveZ);
+    if (remaining <= 0.2) {
+      clickMoveTarget = null;
+      canvas.dataset.moveMode = "idle";
+    } else {
+      const step = Math.min(8 * dt, remaining);
+      player.position.x += moveX / remaining * step;
+      player.position.z += moveZ / remaining * step;
+      player.rotation.y = Math.atan2(moveX, moveZ);
+      isMoving = true;
+    }
   }
   restoreModelAttackPose();
   if (activeCharacterMotion) {

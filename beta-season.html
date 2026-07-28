@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.4.4">
+  <link rel="stylesheet" href="./beta-season.css?v=0.4.5">
   <script type="importmap">
   {
     "imports": {
@@ -80,6 +80,9 @@
   </div>
 
   <div id="crimson-controls" class="crimson-controls hidden">
+    <button id="aim-mode-btn" class="aim-mode-btn" type="button" aria-pressed="false">
+      이동 모드 · 클릭 이동
+    </button>
     <button id="crimson-attack-btn" class="attack-btn" type="button">
       <small>마우스 좌클릭 · 일반 공격</small>
       <strong>3연속 펀치</strong>
@@ -107,6 +110,6 @@
   </div>
 
   <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
-  <script type="module" src="./src/beta-season.js?v=0.4.4"></script>
+  <script type="module" src="./src/beta-season.js?v=0.4.5"></script>
 </body>
 </html>
