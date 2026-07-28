@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.2";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.2";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.3";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -249,7 +249,8 @@ const attackAimIndicator = new THREE.Group();
 const attackAimBeam = new THREE.Mesh(
   new THREE.PlaneGeometry(1, 1),
   new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    color: 0xffffff, transparent: false, opacity: 1,
+    blending: THREE.NoBlending, toneMapped: false,
     side: THREE.DoubleSide, depthWrite: false, depthTest: false,
   }),
 );
@@ -1308,7 +1309,7 @@ function getBetaAttackRange(id, def) {
 function updateAttackAimIndicator() {
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
   const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
-  attackAimBeam.scale.set(0.18, range, 1);
+  attackAimBeam.scale.set(0.42, range, 1);
   attackAimBeam.position.z = range / 2;
   attackAimBeam.material.color.setHex(0xffffff);
   attackAimIndicator.visible = true;
