@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.3";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.3";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.4";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -249,13 +249,13 @@ const attackAimIndicator = new THREE.Group();
 const attackAimBeam = new THREE.Mesh(
   new THREE.PlaneGeometry(1, 1),
   new THREE.MeshBasicMaterial({
-    color: 0xffffff, transparent: false, opacity: 1,
-    blending: THREE.NoBlending, toneMapped: false,
-    side: THREE.DoubleSide, depthWrite: false, depthTest: false,
+    color: 0xffffff, transparent: true, opacity: 0.5,
+    toneMapped: false,
+    side: THREE.DoubleSide, depthWrite: false, depthTest: true,
   }),
 );
 attackAimBeam.rotation.x = -Math.PI / 2;
-attackAimBeam.renderOrder = 25;
+attackAimBeam.renderOrder = 0;
 attackAimIndicator.add(attackAimBeam);
 attackAimIndicator.position.y = 0.12;
 player.add(attackAimIndicator);
@@ -1314,7 +1314,7 @@ function updateAttackAimIndicator() {
   attackAimBeam.material.color.setHex(0xffffff);
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = "white-opaque-rectangle";
+  canvas.dataset.aimStyle = "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
