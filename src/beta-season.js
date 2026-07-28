@@ -1266,9 +1266,15 @@ function performCharacterAttack({ manualAim = false } = {}) {
   crimsonAttackButton.classList.add("cooldown");
   attackComboState.textContent = "공격 중";
   if (id === "red") {
-    hitBox(def.attackRange, RED_ATTACK_WIDTH / 2, def.attackDamage);
-    setTimeout(() => hitBox(def.attackRange, RED_ATTACK_WIDTH / 2, def.attackDamage), def.attackIntervalMs);
-    createGroundSlash(def.attackRange, RED_ATTACK_WIDTH, 0xff554b);
+    // 타격마다 판정과 이펙트를 함께 낸다 (잽 잽 = attackCount 2회)
+    const strike = () => {
+      hitBox(def.attackRange, RED_ATTACK_WIDTH / 2, def.attackDamage);
+      createGroundSlash(def.attackRange, RED_ATTACK_WIDTH, 0xff554b);
+    };
+    strike();
+    for (let i = 1; i < def.attackCount; i += 1) {
+      setTimeout(strike, def.attackIntervalMs * i);
+    }
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier }));
   } else if (id === "blue") {
