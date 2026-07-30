@@ -1233,9 +1233,12 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
   const redThemeColor = redThemeSkin === "beta_red_crimson" ? 0x8f0019 : redThemeSkin === "beta_red_red" ? 0xff2842 : 0xd72834;
+  const isOrangeFruit = type === "orangeFruit";
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(radius, 10, 8),
-    redThemeSkin
+    isOrangeFruit
+      ? new THREE.MeshStandardMaterial({ color: 0xf28b21, roughness: 0.78, metalness: 0 })
+      : redThemeSkin
       ? new THREE.MeshStandardMaterial({
         color: redThemeColor,
         emissive: redThemeColor,
@@ -1247,6 +1250,21 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
       })
       : new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.92 }),
   );
+  if (isOrangeFruit) {
+    const stem = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.045, 0.16, 8),
+      new THREE.MeshStandardMaterial({ color: 0x5d3b16, roughness: 0.9 }),
+    );
+    stem.position.y = radius * 0.92;
+    const leaf = new THREE.Mesh(
+      new THREE.SphereGeometry(0.11, 8, 5),
+      new THREE.MeshStandardMaterial({ color: 0x3f8b35, roughness: 0.86 }),
+    );
+    leaf.scale.set(1.35, 0.24, 0.58);
+    leaf.position.set(0.09, radius * 1.08, 0);
+    leaf.rotation.z = -0.35;
+    mesh.add(stem, leaf);
+  }
   if (redThemeSkin) mesh.scale.setScalar(redThemeSkin === "beta_red_red" ? 1.25 : 1.12);
   mesh.position.set(
     player.position.x + Math.cos(yaw) * lateralOffset,
@@ -1256,6 +1274,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   scene.add(mesh);
   betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, launchY: mesh.position.y });
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
+  canvas.dataset.lastProjectileType = type;
 }
 
 function createGoldIngotGeometry() {
@@ -1552,7 +1571,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
   } else if (id === "blue") {
     fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14 });
   } else if (id === "orange") {
-    fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "bomb" });
+    fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "orangeFruit" });
   } else if (id === "yellow") {
     fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
   } else if (id === "cyan") {
@@ -2609,6 +2628,12 @@ function animate() {
           + Math.sin(progress * Math.PI) * VIAL_ARC_HEIGHT
           - progress * (projectile.launchY - 0.35);
         projectile.mesh.rotation.x += dt * 6;
+      } else if (projectile.type === "orangeFruit") {
+        const progress = Math.min(1, projectile.traveled / projectile.range);
+        projectile.mesh.position.y = projectile.launchY
+          + Math.sin(progress * Math.PI) * 1.65
+          - progress * (projectile.launchY - 0.38);
+        projectile.mesh.rotation.x += dt * 7;
       }
     }
     if (projectile.goldStage && solids.some((solid) =>
@@ -2618,12 +2643,12 @@ function animate() {
       remove = true;
       shouldSplitGold = projectile.goldStage < 3;
     }
-    if ((projectile.type === "bomb" || projectile.type === "orangeJuice") && solids.some((solid) =>
+    if ((projectile.type === "orangeFruit" || projectile.type === "orangeJuice") && solids.some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
       && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
       && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
       remove = true;
-      shouldSplitOrange = projectile.type === "bomb";
+      shouldSplitOrange = projectile.type === "orangeFruit";
     }
     if (projectile.type !== "cyanUltimate") projectile.mesh.rotation.y += dt * 9;
     if (projectile.type === "cyanUltimate") {
@@ -2671,13 +2696,13 @@ function animate() {
         } else {
           damageTarget(target, projectile.damage, projectile.causesKnockback);
         }
-        if (projectile.type === "bomb") shouldSplitOrange = true;
+        if (projectile.type === "orangeFruit") shouldSplitOrange = true;
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
         }
         if (projectile.splash > 0) {
-          createGroundPulse(projectile.splash, projectile.type === "bomb" ? 0xff9b32 : 0xb13cff, target.position);
+          createGroundPulse(projectile.splash, projectile.type === "orangeFruit" ? 0xff9b32 : 0xb13cff, target.position);
           for (const other of testTargets) {
             if (other !== target && other.visible && Math.hypot(other.position.x - target.position.x, other.position.z - target.position.z) <= projectile.splash) damageTarget(other, projectile.damage);
           }
@@ -2694,7 +2719,7 @@ function animate() {
     } else if (projectile.traveled >= projectile.range) {
       remove = true;
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
-      if (projectile.type === "bomb") shouldSplitOrange = true;
+      if (projectile.type === "orangeFruit") shouldSplitOrange = true;
       // 독병은 착지 지점에서 깨지며 주변에 광역 피해를 준다
       if (projectile.type === "vial" && projectile.splash > 0) shouldBreakVial = true;
     }
