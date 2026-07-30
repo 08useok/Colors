@@ -770,7 +770,7 @@ const skinHeadPosition = new THREE.Vector3();
 const skinHeadWorldQuaternion = new THREE.Quaternion();
 const skinPlayerWorldQuaternion = new THREE.Quaternion();
 function updateHeadAttachedSkinAccessory() {
-  const hat = skinAccessory.getObjectByName("GoldRushOrangeHat");
+  const hat = skinAccessory.getObjectByName("OrangeSkinHat");
   if (!hat) return;
   const model = activeCharacterMotion
     ? activeCharacterMotion.scenes[activeCharacterMotion.current]
@@ -808,15 +808,15 @@ function rebuildRedThemeAccessory(skinId) {
       roughness: 0.72,
     });
     const hat = new THREE.Group();
-    hat.name = "GoldRushOrangeHat";
+    hat.name = "OrangeSkinHat";
     hat.visible = false;
     const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.1, 24), leather);
-    hatBrim.position.y = 0.18;
+    hatBrim.position.y = 0.34;
     const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.54, 0.52, 20), leather);
-    hatTop.position.y = 0.44;
+    hatTop.position.y = 0.6;
     const hatBand = new THREE.Mesh(new THREE.TorusGeometry(0.49, 0.055, 8, 28), gold);
     hatBand.rotation.x = Math.PI / 2;
-    hatBand.position.y = 0.29;
+    hatBand.position.y = 0.45;
     hat.add(hatBrim, hatTop, hatBand);
     const belt = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.08, 10, 32), leather);
     belt.rotation.x = Math.PI / 2;
@@ -853,13 +853,17 @@ function rebuildRedThemeAccessory(skinId) {
   if (skinId === "beta2_gold_orange") {
     // 골드 러쉬 장비는 위에서 구성한다.
   } else if (skinId === "beta_red_orange") {
+    const hat = new THREE.Group();
+    hat.name = "OrangeSkinHat";
+    hat.visible = false;
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
-    brim.position.y = 2.35;
+    brim.position.y = 0.34;
     const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.52, 0.48, 16), redMetal);
-    crownTop.position.y = 2.58;
+    crownTop.position.y = 0.58;
     const badge = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), gold);
-    badge.position.set(0, 2.58, -0.48);
-    skinAccessory.add(brim, crownTop, badge);
+    badge.position.set(0, 0.58, -0.48);
+    hat.add(brim, crownTop, badge);
+    skinAccessory.add(hat);
   } else if (skinId === "beta_red_crimson") {
     for (const side of [-1, 1]) {
       const shoulder = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.72, 8), redMetal);
