@@ -1114,7 +1114,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     player.position.z - Math.sin(yaw) * lateralOffset,
   );
   scene.add(mesh);
-  betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback });
+  betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, launchY: mesh.position.y });
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
 }
 
@@ -1356,6 +1356,21 @@ function createGroundSlash(length, width, color, angle = 0) {
   );
   scene.add(mesh);
   crimsonSlashes.push({ group: mesh, mesh, life: 0.38, maxLife: 0.38 });
+}
+
+// 독병 포물선의 최고 높이. 벽을 넘길 수 있을 만큼 띄운다.
+const VIAL_ARC_HEIGHT = 3.4;
+
+// 독병이 착지해 깨질 때 — 주변 적에게 광역 피해
+function breakVial(projectile) {
+  const landing = projectile.mesh.position.clone();
+  landing.y = 0;
+  createGroundPulse(projectile.splash, 0xb13cff, landing);
+  for (const target of testTargets) {
+    if (!target.visible || target.userData.isAlly) continue;
+    const distance = Math.hypot(target.position.x - landing.x, target.position.z - landing.z);
+    if (distance <= projectile.splash) damageTarget(target, projectile.damage);
+  }
 }
 
 function performCharacterAttack({ manualAim = false } = {}) {
@@ -2142,6 +2157,7 @@ function animate() {
     let remove = false;
     let shouldSplitGold = false;
     let shouldSplitOrange = false;
+    let shouldBreakVial = false;
     if (projectile.type === "boomerang" && projectile.returned) {
       const returnX = player.position.x - projectile.mesh.position.x;
       const returnZ = player.position.z - projectile.mesh.position.z;
@@ -2160,6 +2176,14 @@ function animate() {
       projectile.mesh.position.z += projectile.vz * dt;
       if (projectile.returned) projectile.returnTraveled += step;
       else projectile.traveled += step;
+      // 독병은 던지는 무기 — 사거리 중간이 가장 높은 포물선을 그린다
+      if (projectile.type === "vial") {
+        const progress = Math.min(1, projectile.traveled / projectile.range);
+        projectile.mesh.position.y = projectile.launchY
+          + Math.sin(progress * Math.PI) * VIAL_ARC_HEIGHT
+          - progress * (projectile.launchY - 0.35);
+        projectile.mesh.rotation.x += dt * 6;
+      }
     }
     if (projectile.goldStage && solids.some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
@@ -2245,10 +2269,13 @@ function animate() {
       remove = true;
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
       if (projectile.type === "bomb") shouldSplitOrange = true;
+      // 독병은 착지 지점에서 깨지며 주변에 광역 피해를 준다
+      if (projectile.type === "vial" && projectile.splash > 0) shouldBreakVial = true;
     }
     if (remove) {
       if (shouldSplitGold) splitGoldProjectile(projectile);
       if (shouldSplitOrange) spawnOrangeJuice(projectile.mesh.position.clone());
+      if (shouldBreakVial) breakVial(projectile);
       scene.remove(projectile.mesh);
       projectile.mesh.geometry.dispose();
       projectile.mesh.material.dispose();
