@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.144";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.142";
+import { CHARACTERS } from "./config/characters.js?v=1.5.173";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -5338,6 +5338,60 @@ function createPinkAimIndicator() {
 
 const pinkAimIndicator = createPinkAimIndicator();
 
+function createCrimsonAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.crimson.attackRange;
+  const attackOffsets = CHARACTERS.crimson.attackAngles;
+  const halfAngle = CHARACTERS.crimson.attackHalfAngle + Math.max(...attackOffsets.map(Math.abs));
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  for (let i = 0; i <= 36; i += 1) {
+    const angle = -halfAngle + (i / 36) * halfAngle * 2;
+    shape.lineTo(Math.sin(angle) * range, Math.cos(angle) * range);
+  }
+  shape.lineTo(0, 0);
+
+  const fanMesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(shape),
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.2,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      depthTest: false,
+    }),
+  );
+  fanMesh.rotation.x = Math.PI / 2;
+  fanMesh.position.y = 0.1;
+  fanMesh.renderOrder = 20;
+  group.add(fanMesh);
+
+  for (const angle of [-halfAngle, ...attackOffsets, halfAngle]) {
+    const line = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0.11, 0),
+        new THREE.Vector3(Math.sin(angle) * range, 0.11, Math.cos(angle) * range),
+      ]),
+      new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.5,
+        depthTest: false,
+      }),
+    );
+    line.renderOrder = 21;
+    group.add(line);
+  }
+
+  group.visible = false;
+  group.userData = { fanMesh };
+  scene.add(group);
+  return group;
+}
+
+const crimsonAimIndicator = createCrimsonAimIndicator();
+
 function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
@@ -8904,6 +8958,7 @@ function updateAttackAimIndicator() {
     cyanAimIndicator.visible = false;
     purpleAimIndicator.visible = false;
     pinkAimIndicator.visible = false;
+    crimsonAimIndicator.visible = false;
     return;
   }
 
@@ -8919,6 +8974,7 @@ function updateAttackAimIndicator() {
   cyanAimIndicator.visible = false;
   purpleAimIndicator.visible = false;
   pinkAimIndicator.visible = false;
+  crimsonAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -8982,6 +9038,11 @@ function updateAttackAimIndicator() {
     pinkAimIndicator.scale.setScalar(player.hasPinkAreaHealAbility ? PINK_AREA_HEAL_ABILITY_MULTIPLIER : 1);
     pinkAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.35;
     pinkAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.06;
+  } else if (charType === "crimson") {
+    crimsonAimIndicator.visible = true;
+    crimsonAimIndicator.position.set(pos.x, 0, pos.z);
+    crimsonAimIndicator.rotation.y = yaw;
+    crimsonAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.06 : 0.2;
   }
 }
 

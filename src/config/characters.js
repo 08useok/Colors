@@ -131,7 +131,7 @@ export const CHARACTERS = {
     attackCooldown: 0.74,
     // 게임 내 최고 이동속도 — Pink/Red(1.4)보다 빠르다
     moveSpeedMultiplier: 1.5,
-    attackRange: 3.5,
+    attackRange: 7,
     attackDamage: 900,
     attackCount: 3,
     attackIntervalMs: 120,
