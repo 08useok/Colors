@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.5";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.5";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.8";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.8";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -1755,31 +1755,64 @@ scene.add(goldMine);
 function clearGoldRushBots() {
   for (const bot of goldRushBots) {
     scene.remove(bot.mesh);
-    bot.mesh.traverse((part) => {
-      if (!part.isMesh) return;
-      part.geometry.dispose();
-      part.material.dispose();
-    });
+    bot.mixer?.stopAllAction();
+    for (const disposable of bot.disposableMeshes || []) {
+      disposable.geometry.dispose();
+      disposable.material.dispose();
+    }
   }
   goldRushBots.length = 0;
 }
 
+function createGoldRushBotAvatar(index) {
+  const group = new THREE.Group();
+  const disposableMeshes = [];
+  let mixer = null;
+  let usesPlayerModel = false;
+  const playerLoopScene = activeCharacterMotion?.scenes.loop;
+  const playerLoopClip = activeCharacterMotion?.actions.loop?.getClip();
+
+  if (playerLoopScene && playerLoopClip) {
+    const avatar = skeletonClone(playerLoopScene);
+    avatar.visible = true;
+    avatar.traverse((part) => {
+      if (!part.isMesh) return;
+      part.castShadow = true;
+      part.receiveShadow = true;
+    });
+    group.add(avatar);
+    mixer = new THREE.AnimationMixer(avatar);
+    const action = mixer.clipAction(playerLoopClip);
+    action.setLoop(THREE.LoopRepeat, Infinity);
+    action.play();
+    usesPlayerModel = true;
+  } else {
+    const material = new THREE.MeshStandardMaterial({ color: GOLD_RUSH_BOT_COLORS[index], roughness: 0.58 });
+    const fallbackBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.8, 4, 8), material);
+    fallbackBody.position.y = 0.86;
+    fallbackBody.castShadow = true;
+    group.add(fallbackBody);
+    disposableMeshes.push(fallbackBody);
+  }
+
+  const marker = new THREE.Mesh(
+    new THREE.TorusGeometry(0.58, 0.06, 5, 20),
+    new THREE.MeshBasicMaterial({ color: GOLD_RUSH_BOT_COLORS[index], transparent: true, opacity: 0.9 }),
+  );
+  marker.rotation.x = Math.PI / 2;
+  marker.position.y = usesPlayerModel ? 3.05 : 1.8;
+  group.add(marker);
+  disposableMeshes.push(marker);
+  return { group, marker, mixer, disposableMeshes, usesPlayerModel };
+}
+
 function createGoldRushBots() {
   clearGoldRushBots();
+  let playerModelCount = 0;
   for (let i = 0; i < 9; i += 1) {
-    const mesh = new THREE.Group();
-    const material = new THREE.MeshStandardMaterial({ color: GOLD_RUSH_BOT_COLORS[i], roughness: 0.58 });
-    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.8, 4, 8), material);
-    body.position.y = 0.86;
-    body.castShadow = true;
-    mesh.add(body);
-    const marker = new THREE.Mesh(
-      new THREE.TorusGeometry(0.54, 0.055, 5, 18),
-      new THREE.MeshBasicMaterial({ color: 0xffd84e, transparent: true, opacity: 0.9 }),
-    );
-    marker.rotation.x = Math.PI / 2;
-    marker.position.y = 1.8;
-    mesh.add(marker);
+    const avatar = createGoldRushBotAvatar(i);
+    const mesh = avatar.group;
+    if (avatar.usesPlayerModel) playerModelCount += 1;
     const angle = (i / 9) * Math.PI * 2;
     const spawn = new THREE.Vector3(Math.sin(angle) * 9, 0, Math.cos(angle) * 9);
     const ground = groundHeightAt(spawn.x, spawn.z);
@@ -1790,6 +1823,10 @@ function createGoldRushBots() {
       id: i + 1,
       name: `AI ${i + 1}`,
       mesh,
+      marker: avatar.marker,
+      mixer: avatar.mixer,
+      disposableMeshes: avatar.disposableMeshes,
+      usesPlayerModel: avatar.usesPlayerModel,
       spawn,
       gold: 0,
       speed: 3.8 + (i % 4) * 0.3,
@@ -1797,6 +1834,7 @@ function createGoldRushBots() {
     });
   }
   canvas.dataset.goldRushBotCount = String(goldRushBots.length);
+  canvas.dataset.goldRushPlayerModelBots = String(playerModelCount);
 }
 
 function spawnGoldPickup(position = null, dropped = false) {
@@ -1850,7 +1888,8 @@ function updateGoldRushBots(dt) {
       const ground = groundHeightAt(bot.mesh.position.x, bot.mesh.position.z);
       if (ground > -5) bot.mesh.position.y = THREE.MathUtils.damp(bot.mesh.position.y, ground + 0.05, 12, dt);
     }
-    bot.mesh.children[1].rotation.z += dt * 2.4;
+    bot.mixer?.update(dt);
+    bot.marker.rotation.z += dt * 2.4;
   }
 }
 
