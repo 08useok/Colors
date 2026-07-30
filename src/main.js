@@ -2060,6 +2060,7 @@ function createStickman(color, skinId) {
   if (rigGltf) {
     const group = buildCyanRigModel(rigGltf);
     if (skinId) applySkin(group, skinId);
+    _applyPinkToon(group);
     return group;
   }
   if (CYAN_RIG_COLOR_TO_CHAR.has(color)) {
@@ -2705,6 +2706,7 @@ function createStickman(color, skinId) {
   }
 
   if (skinId) applySkin(group, skinId);
+  _applyPinkToon(group);
 
   return group;
 }
@@ -2790,17 +2792,35 @@ function _getPinkToonGrad() {
 
 function _applyPinkToon(scene) {
   const grad = _getPinkToonGrad();
-  scene.traverse(c => {
-    if (!c.isMesh) return;
+  const materialMap = new Map();
+  const meshes = [];
+  scene.traverse(c => { if (c.isMesh && !c.userData.characterToonOutline) meshes.push(c); });
+  for (const c of meshes) {
+    if (c.userData.characterToonRendered) continue;
     const mats = Array.isArray(c.material) ? c.material : [c.material];
-    const toonMats = mats.map(m => new THREE.MeshToonMaterial({
-      map: m.map ?? null,
-      color: m.color?.clone() ?? new THREE.Color(1, 1, 1),
-      gradientMap: grad,
-      transparent: m.transparent ?? false,
-      alphaTest: m.alphaTest ?? 0,
-    }));
+    const toonMats = mats.map((m) => {
+      if (m.isMeshBasicMaterial || m.isMeshToonMaterial) return m;
+      if (materialMap.has(m)) return materialMap.get(m);
+      const toon = new THREE.MeshToonMaterial({
+        map: m.map ?? null,
+        color: m.color?.clone() ?? new THREE.Color(1, 1, 1),
+        gradientMap: grad,
+        transparent: m.transparent ?? false,
+        opacity: m.opacity ?? 1,
+        alphaTest: m.alphaTest ?? 0,
+        side: m.side,
+        depthWrite: m.depthWrite,
+        depthTest: m.depthTest,
+      });
+      if (m.emissive && toon.emissive) {
+        toon.emissive.copy(m.emissive);
+        toon.emissiveIntensity = m.emissiveIntensity ?? 1;
+      }
+      materialMap.set(m, toon);
+      return toon;
+    });
     c.material = toonMats.length === 1 ? toonMats[0] : toonMats;
+    c.userData.characterToonRendered = true;
     if (c.isSkinnedMesh) {
       const ol = new THREE.SkinnedMesh(
         c.geometry,
@@ -2809,9 +2829,15 @@ function _applyPinkToon(scene) {
       ol.bind(c.skeleton, c.bindMatrix);
       ol.scale.setScalar(1.07);
       ol.frustumCulled = false;
+      ol.userData.characterToonOutline = true;
       c.parent.add(ol);
     }
-  });
+  }
+  if (scene.userData.bodyMaterials) {
+    scene.userData.bodyMaterials = [...new Set(
+      scene.userData.bodyMaterials.map((material) => materialMap.get(material) ?? material),
+    )];
+  }
 }
 
 let _bluePreviewGlb = null;
