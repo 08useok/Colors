@@ -4,7 +4,7 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.144";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.142";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.147";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 

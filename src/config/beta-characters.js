@@ -123,7 +123,7 @@ export const BETA_CHARACTERS = {
   },
   crimson: {
     maxHealth: 9800, moveSpeedMultiplier: 1.5, attackCooldown: 0.74, reloadDuration: 0.5, maxAmmo: 3,
-    attackRange: 2.5, attackDamage: 900, attackCount: 3, attackIntervalMs: 120,
+    attackRange: 6, attackDamage: 900, attackCount: 3, attackIntervalMs: 120,
     attackHalfAngle: degrees(42), attackAngles: [-25, 0, 25].map(degrees),
     description: "크림슨은 레드를 보고 권투를 시작해서 세계적인 권투 선수가 되었습니다. 근데 정작 자기는 레드를 못 이긴다고 하네요.",
     descriptionEn: "Crimson took up boxing after watching Red and became world class, yet he still says he cannot beat Red.",
