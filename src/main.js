@@ -1819,8 +1819,8 @@ function createGround(group = scene) {
 // GLB 캐릭터 전투 모델의 목표 높이. 원본 GLB는 전부 높이 1로 정규화돼 있다.
 // 발은 항상 group local y=-1.85에 오도록 맞춘다.
 const GLB_BATTLE_HEIGHT = 3.67;
-// 시안은 모델 비례상 같은 높이에서 더 크게 보여서 따로 낮춰 쓴다.
-const CYAN_BATTLE_HEIGHT = 2.7;
+// 시안 리그를 공유하는 다섯 캐릭터도 다른 GLB 파이터와 같은 전투 높이를 사용한다.
+const CYAN_BATTLE_HEIGHT = GLB_BATTLE_HEIGHT;
 const GLB_FEET_Y = -1.85;
 
 const CYAN_RIG_ARM_BONES = [
