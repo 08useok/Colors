@@ -1964,7 +1964,11 @@ function createStickman(color, skinId) {
 
   // 시안 리그를 공유하는 캐릭터들(시안 + 시안에서 리컬러한 green/orange/red/yellow)
   const rigGltf = getCyanRigGltf(color);
-  if (rigGltf) return buildCyanRigModel(rigGltf);
+  if (rigGltf) {
+    const group = buildCyanRigModel(rigGltf);
+    if (skinId) applySkin(group, skinId);
+    return group;
+  }
 
   if (color === 0xF4CDD3 && _pinkGlb.loop) {
     const group = new THREE.Group();
