@@ -766,6 +766,32 @@ function disposeSkinAccessory() {
   }
 }
 
+const skinHeadPosition = new THREE.Vector3();
+const skinHeadWorldQuaternion = new THREE.Quaternion();
+const skinPlayerWorldQuaternion = new THREE.Quaternion();
+function updateHeadAttachedSkinAccessory() {
+  const hat = skinAccessory.getObjectByName("GoldRushOrangeHat");
+  if (!hat) return;
+  const model = activeCharacterMotion
+    ? activeCharacterMotion.scenes[activeCharacterMotion.current]
+    : activeCharacterModel;
+  const headBone = model?.getObjectByName("CC_Base_Head");
+  if (!headBone) {
+    hat.visible = false;
+    return;
+  }
+  player.updateWorldMatrix(true, true);
+  headBone.updateWorldMatrix(true, false);
+  headBone.getWorldPosition(skinHeadPosition);
+  headBone.getWorldQuaternion(skinHeadWorldQuaternion);
+  player.worldToLocal(skinHeadPosition);
+  player.getWorldQuaternion(skinPlayerWorldQuaternion);
+  skinPlayerWorldQuaternion.invert();
+  hat.position.copy(skinHeadPosition);
+  hat.quaternion.copy(skinPlayerWorldQuaternion.multiply(skinHeadWorldQuaternion));
+  hat.visible = true;
+}
+
 function rebuildRedThemeAccessory(skinId) {
   disposeSkinAccessory();
   if (skinId === "beta2_gold_orange") {
@@ -781,19 +807,23 @@ function rebuildRedThemeAccessory(skinId) {
       metalness: 0.08,
       roughness: 0.72,
     });
+    const hat = new THREE.Group();
+    hat.name = "GoldRushOrangeHat";
+    hat.visible = false;
     const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.1, 24), leather);
-    hatBrim.position.y = 2.42;
+    hatBrim.position.y = 0.18;
     const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.54, 0.52, 20), leather);
-    hatTop.position.y = 2.68;
+    hatTop.position.y = 0.44;
     const hatBand = new THREE.Mesh(new THREE.TorusGeometry(0.49, 0.055, 8, 28), gold);
     hatBand.rotation.x = Math.PI / 2;
-    hatBand.position.y = 2.53;
+    hatBand.position.y = 0.29;
+    hat.add(hatBrim, hatTop, hatBand);
     const belt = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.08, 10, 32), leather);
     belt.rotation.x = Math.PI / 2;
     belt.position.y = 1.05;
     const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.24, 0.1), gold);
     buckle.position.set(0, 1.05, -0.52);
-    skinAccessory.add(hatBrim, hatTop, hatBand, belt, buckle);
+    skinAccessory.add(hat, belt, buckle);
     for (const side of [-1, 1]) {
       const pouch = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.38, 0.24), leather);
       pouch.position.set(side * 0.5, 0.88, 0);
@@ -2773,6 +2803,7 @@ function animate() {
     activeCharacterWasMoving = isMoving;
     updateModelAttackMotion(dt);
   }
+  updateHeadAttachedSkinAccessory();
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
