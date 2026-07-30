@@ -2628,12 +2628,6 @@ function animate() {
           + Math.sin(progress * Math.PI) * VIAL_ARC_HEIGHT
           - progress * (projectile.launchY - 0.35);
         projectile.mesh.rotation.x += dt * 6;
-      } else if (projectile.type === "orangeFruit") {
-        const progress = Math.min(1, projectile.traveled / projectile.range);
-        projectile.mesh.position.y = projectile.launchY
-          + Math.sin(progress * Math.PI) * 1.65
-          - progress * (projectile.launchY - 0.38);
-        projectile.mesh.rotation.x += dt * 7;
       }
     }
     if (projectile.goldStage && solids.some((solid) =>
