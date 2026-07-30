@@ -64,7 +64,7 @@ const CHARACTERS = [
 ];
 const BETA_SEASON_ID = "beta2";
 // 베타 시즌 2가 실제로 열리기 전에는 시즌 2 보상 스킨을 공개하지 않는다.
-const BETA_SEASON_ACTIVE = false;
+const BETA_SEASON_ACTIVE = true;
 const BETA_SKINS = BETA_SEASON_ACTIVE ? getSkinsForSeason(BETA_SEASON_ID) : [];
 
 function loadBetaState() {
