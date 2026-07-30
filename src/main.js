@@ -378,7 +378,7 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.name = "OrangeSkinHat";
       accessory.visible = false;
       accessory.scale.set(1.74, 1.62, 1.74);
-      accessory.userData.headSeatOffset = -0.632;
+      accessory.userData.headSeatOffset = -0.7;
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
     brim.position.y = headAttached ? 1.17 : 2.25;
