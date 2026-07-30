@@ -1722,6 +1722,9 @@ const tempVec32 = new THREE.Vector3();
 const tempVec2 = new THREE.Vector2();
 const cameraTarget = new THREE.Vector3();
 const cameraDesired = new THREE.Vector3();
+const CAMERA_TILT_DEGREES = 2.5;
+const CAMERA_HEIGHT = 18.5;
+const CAMERA_DEPTH_OFFSET = Math.tan(THREE.MathUtils.degToRad(CAMERA_TILT_DEGREES)) * CAMERA_HEIGHT;
 const FLASH_EMISSIVE = new THREE.Color(0x7f0f0f);
 const SHOCK_EMISSIVE = new THREE.Color(0x2299cc);
 const POISON_EMISSIVE = new THREE.Color(0x44aa22);
@@ -8880,8 +8883,8 @@ function updateCamera(dt) {
     cameraDesired.y += 7.5;
     cameraDesired.z += 1.3;
   } else {
-    cameraDesired.y += 18.5;
-    cameraDesired.z += 3.12;
+    cameraDesired.y += CAMERA_HEIGHT;
+    cameraDesired.z += CAMERA_DEPTH_OFFSET;
   }
   camera.up.set(0, 0, -1);
   camera.position.lerp(cameraDesired, 1 - Math.exp(-dt * 10));
