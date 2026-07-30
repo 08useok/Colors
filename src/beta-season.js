@@ -351,6 +351,35 @@ function applyBetaToonRendering(model, characterId) {
   model.userData.cartoonRendered = true;
 }
 
+function applySkinPaletteToModel(model, characterId) {
+  const skinId = betaState.selectedSkins[characterId] || "";
+  const tintHex = {
+    beta_red_orange: 0xb3261e,
+    beta2_gold_orange: 0xf6a51c,
+  }[skinId];
+  const tint = tintHex ? new THREE.Color(tintHex) : null;
+  model.traverse((child) => {
+    if (!child.isMesh) return;
+    const materials = Array.isArray(child.material) ? child.material : [child.material];
+    for (const material of materials) {
+      if (!material?.color || material.isMeshBasicMaterial) continue;
+      material.userData.baseSkinColor ??= material.color.clone();
+      material.color.copy(material.userData.baseSkinColor);
+      if (tint) material.color.lerp(tint, skinId === "beta2_gold_orange" ? 0.68 : 0.5);
+    }
+  });
+}
+
+function refreshActiveCharacterSkinPalette() {
+  if (activeCharacterMotion) {
+    for (const model of Object.values(activeCharacterMotion.scenes)) {
+      applySkinPaletteToModel(model, activeCharacterMotion.characterId);
+    }
+    return;
+  }
+  if (activeCharacterModel) applySkinPaletteToModel(activeCharacterModel, betaState.selectedCharacter);
+}
+
 function addBlueScarf(model) {
   const material = new THREE.MeshStandardMaterial({
     color: 0x55cfff,
@@ -446,6 +475,7 @@ function prepareCharacterScene(model, characterId) {
   if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple"].includes(characterId)) {
     applyBetaToonRendering(model, characterId);
   }
+  applySkinPaletteToModel(model, characterId);
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
@@ -710,6 +740,7 @@ function applySelectedSkinVisual() {
     const usesGlbModel = ["blue", "cyan", "pink", "purple"].includes(betaState.selectedCharacter);
     fitCrownToHead(crown, usesGlbModel ? 2.7 : 2.5);
   } else crown.visible = false;
+  refreshActiveCharacterSkinPalette();
   rebuildRedThemeAccessory(skinId);
 }
 
@@ -737,7 +768,50 @@ function disposeSkinAccessory() {
 
 function rebuildRedThemeAccessory(skinId) {
   disposeSkinAccessory();
-  if (!skinId.startsWith("beta_red_")) return;
+  if (skinId === "beta2_gold_orange") {
+    const gold = new THREE.MeshStandardMaterial({
+      color: 0xffc928,
+      emissive: 0x5a3000,
+      emissiveIntensity: 0.28,
+      metalness: 0.82,
+      roughness: 0.2,
+    });
+    const leather = new THREE.MeshStandardMaterial({
+      color: 0x5a2d12,
+      metalness: 0.08,
+      roughness: 0.72,
+    });
+    const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.1, 24), leather);
+    hatBrim.position.y = 2.42;
+    const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.54, 0.52, 20), leather);
+    hatTop.position.y = 2.68;
+    const hatBand = new THREE.Mesh(new THREE.TorusGeometry(0.49, 0.055, 8, 28), gold);
+    hatBand.rotation.x = Math.PI / 2;
+    hatBand.position.y = 2.53;
+    const belt = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.08, 10, 32), leather);
+    belt.rotation.x = Math.PI / 2;
+    belt.position.y = 1.05;
+    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.24, 0.1), gold);
+    buckle.position.set(0, 1.05, -0.52);
+    skinAccessory.add(hatBrim, hatTop, hatBand, belt, buckle);
+    for (const side of [-1, 1]) {
+      const pouch = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.38, 0.24), leather);
+      pouch.position.set(side * 0.5, 0.88, 0);
+      pouch.rotation.z = side * 0.12;
+      skinAccessory.add(pouch);
+    }
+    const tool = new THREE.Group();
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.92, 10), leather);
+    const pick = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.6, 8), gold);
+    pick.rotation.z = Math.PI / 2;
+    pick.position.y = 0.43;
+    tool.add(handle, pick);
+    tool.position.set(0.72, 1.1, 0.12);
+    tool.rotation.z = -0.38;
+    skinAccessory.add(tool);
+  } else if (!skinId.startsWith("beta_red_")) {
+    return;
+  }
   const redMetal = new THREE.MeshStandardMaterial({
     color: skinId === "beta_red_crimson" ? 0x5a0010 : 0xd51f32,
     emissive: skinId === "beta_red_red" ? 0x5c0008 : 0x240002,
@@ -746,7 +820,9 @@ function rebuildRedThemeAccessory(skinId) {
     roughness: 0.24,
   });
   const gold = new THREE.MeshStandardMaterial({ color: 0xffc83d, metalness: 0.82, roughness: 0.2 });
-  if (skinId === "beta_red_orange") {
+  if (skinId === "beta2_gold_orange") {
+    // 골드 러쉬 장비는 위에서 구성한다.
+  } else if (skinId === "beta_red_orange") {
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
     brim.position.y = 2.35;
     const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.52, 0.48, 16), redMetal);
