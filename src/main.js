@@ -377,7 +377,8 @@ function createRedThemeAccessory(skinId, headAttached = false) {
     if (headAttached) {
       accessory.name = "OrangeSkinHat";
       accessory.visible = false;
-      accessory.scale.set(1.16, 1.08, 1.16);
+      accessory.scale.set(1.74, 1.62, 1.74);
+      accessory.userData.headSeatOffset = -0.632;
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
     brim.position.y = headAttached ? 1.17 : 2.25;
@@ -435,6 +436,7 @@ function updateHeadAttachedSkin(group) {
   skinGroupWorldQuaternion.invert();
   hat.position.copy(skinHeadPosition);
   hat.quaternion.copy(skinGroupWorldQuaternion.multiply(skinHeadWorldQuaternion));
+  hat.translateY(hat.userData.headSeatOffset ?? 0);
   hat.visible = true;
 }
 
