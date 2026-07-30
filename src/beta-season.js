@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.8";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.8";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.9";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.9";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -30,6 +30,7 @@ const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
 const goldRushHud = document.getElementById("gold-rush-hud");
 const goldCountEl = document.getElementById("gold-count");
+const goldRushHealthEl = document.getElementById("gold-rush-health");
 const goldRushTimerEl = document.getElementById("gold-rush-timer");
 const goldRushStatusEl = document.getElementById("gold-rush-status");
 const goldRushRivalsEl = document.getElementById("gold-rush-rivals");
@@ -1047,6 +1048,10 @@ function ensureMalfunctionIndicator(target) {
 
 function damageTarget(target, damage, causesKnockback = false) {
   if (!target.visible) return;
+  if (target.userData.goldRushBot) {
+    damageGoldRushBot(target.userData.goldRushBot, damage);
+    return;
+  }
   target.userData.health -= damage;
   if (causesKnockback) {
     const pushX = target.position.x - player.position.x;
@@ -1728,12 +1733,41 @@ const manualAimPoint = new THREE.Vector3();
 const initialSpawnPoint = new THREE.Vector3(0, 1.7, 0);
 const goldPickups = [];
 const goldRushBots = [];
+const goldRushAttackEffects = [];
 const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
 const goldRushState = {
   active: false, ended: false, gold: 0, startedAt: 0, nextSpawnAt: 0,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
-  mineGoldAvailable: true, mineGoldRespawnAt: 0,
+  mineGoldAvailable: true, mineGoldRespawnAt: 0, health: 1, maxHealth: 1,
 };
+
+function createGoldRushHealthBar(height = 3.15) {
+  const group = new THREE.Group();
+  group.position.y = height;
+  const backgroundMaterial = new THREE.SpriteMaterial({ color: 0x16191d, depthTest: false, depthWrite: false });
+  const fillMaterial = new THREE.SpriteMaterial({ color: 0x48e568, depthTest: false, depthWrite: false });
+  const background = new THREE.Sprite(backgroundMaterial);
+  background.scale.set(1.55, 0.2, 1);
+  background.renderOrder = 30;
+  const fill = new THREE.Sprite(fillMaterial);
+  fill.renderOrder = 31;
+  group.add(background, fill);
+  group.userData.fill = fill;
+  group.userData.materials = [backgroundMaterial, fillMaterial];
+  return group;
+}
+
+function updateGoldRushHealthBar(bar, health, maxHealth) {
+  const ratio = THREE.MathUtils.clamp(health / Math.max(1, maxHealth), 0, 1);
+  const fill = bar.userData.fill;
+  fill.scale.set(1.4 * ratio, 0.12, 1);
+  fill.position.x = -0.7 + 0.7 * ratio;
+  fill.material.color.setHex(ratio > 0.5 ? 0x48e568 : ratio > 0.25 ? 0xffc642 : 0xff4f55);
+}
+
+const playerGoldRushHealthBar = createGoldRushHealthBar(3.2);
+playerGoldRushHealthBar.visible = false;
+player.add(playerGoldRushHealthBar);
 
 const goldMine = new THREE.Group();
 const goldMineBase = new THREE.Mesh(
@@ -1755,13 +1789,21 @@ scene.add(goldMine);
 function clearGoldRushBots() {
   for (const bot of goldRushBots) {
     scene.remove(bot.mesh);
+    const targetIndex = testTargets.indexOf(bot.mesh);
+    if (targetIndex >= 0) testTargets.splice(targetIndex, 1);
     bot.mixer?.stopAllAction();
+    for (const material of bot.healthBar?.userData.materials || []) material.dispose();
     for (const disposable of bot.disposableMeshes || []) {
       disposable.geometry.dispose();
       disposable.material.dispose();
     }
   }
   goldRushBots.length = 0;
+  for (const effect of goldRushAttackEffects.splice(0)) {
+    scene.remove(effect.line);
+    effect.line.geometry.dispose();
+    effect.line.material.dispose();
+  }
 }
 
 function createGoldRushBotAvatar(index) {
@@ -1803,7 +1845,9 @@ function createGoldRushBotAvatar(index) {
   marker.position.y = usesPlayerModel ? 3.05 : 1.8;
   group.add(marker);
   disposableMeshes.push(marker);
-  return { group, marker, mixer, disposableMeshes, usesPlayerModel };
+  const healthBar = createGoldRushHealthBar(usesPlayerModel ? 3.25 : 2.05);
+  group.add(healthBar);
+  return { group, marker, healthBar, mixer, disposableMeshes, usesPlayerModel };
 }
 
 function createGoldRushBots() {
@@ -1819,22 +1863,100 @@ function createGoldRushBots() {
     spawn.y = ground > -5 ? ground + 0.05 : 1.55;
     mesh.position.copy(spawn);
     scene.add(mesh);
-    goldRushBots.push({
+    const maxHealth = BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000;
+    const bot = {
       id: i + 1,
       name: `AI ${i + 1}`,
       mesh,
       marker: avatar.marker,
+      healthBar: avatar.healthBar,
       mixer: avatar.mixer,
       disposableMeshes: avatar.disposableMeshes,
       usesPlayerModel: avatar.usesPlayerModel,
       spawn,
       gold: 0,
+      health: maxHealth,
+      maxHealth,
+      dead: false,
+      respawnAt: 0,
+      invulnerableUntil: clock.elapsedTime + 2,
+      nextAttackAt: clock.elapsedTime + 0.7 + Math.random() * 0.8,
+      attackDamage: 750 + (i % 3) * 125,
       speed: 3.8 + (i % 4) * 0.3,
       winCountdownStartedAt: null,
-    });
+    };
+    mesh.userData.goldRushBot = bot;
+    mesh.userData.health = bot.health;
+    mesh.userData.maxHealth = bot.maxHealth;
+    testTargets.push(mesh);
+    updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+    goldRushBots.push(bot);
   }
   canvas.dataset.goldRushBotCount = String(goldRushBots.length);
   canvas.dataset.goldRushPlayerModelBots = String(playerModelCount);
+}
+
+function dropGoldRushGold(owner, position) {
+  const droppedCount = owner.gold;
+  for (let i = 0; i < owner.gold; i += 1) {
+    const offset = new THREE.Vector3((Math.random() - 0.5) * 2.5, 0.65, (Math.random() - 0.5) * 2.5);
+    spawnGoldPickup(position.clone().add(offset), true);
+  }
+  owner.gold = 0;
+  owner.winCountdownStartedAt = null;
+  canvas.dataset.lastGoldRushDroppedGold = String(droppedCount);
+  canvas.dataset.goldRushDroppedGoldTotal = String(
+    Number(canvas.dataset.goldRushDroppedGoldTotal || 0) + droppedCount,
+  );
+}
+
+function damageGoldRushBot(bot, damage) {
+  if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
+  bot.health = Math.max(0, bot.health - damage);
+  bot.mesh.userData.health = bot.health;
+  updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+  bot.marker.material.color.setHex(0xffffff);
+  setTimeout(() => {
+    if (!bot.dead) bot.marker.material.color.setHex(GOLD_RUSH_BOT_COLORS[bot.id - 1]);
+  }, 90);
+  if (bot.health > 0) return;
+  dropGoldRushGold(bot, bot.mesh.position);
+  bot.dead = true;
+  bot.respawnAt = clock.elapsedTime + 5;
+  bot.mesh.visible = false;
+  canvas.dataset.lastGoldRushDeath = `ai-${bot.id}`;
+}
+
+function damageGoldRushPlayer(damage) {
+  if (goldRushState.dead || clock.elapsedTime < goldRushState.invulnerableUntil) return;
+  goldRushState.health = Math.max(0, goldRushState.health - damage);
+  updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  canvas.dataset.playerGoldRushHealth = String(Math.ceil(goldRushState.health));
+  if (goldRushState.health <= 0) killGoldRushPlayer();
+}
+
+function createGoldRushAttackEffect(from, to, color) {
+  const geometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(from.x, from.y + 1.35, from.z),
+    new THREE.Vector3(to.x, to.y + 1.35, to.z),
+  ]);
+  const material = new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.95 });
+  const line = new THREE.Line(geometry, material);
+  scene.add(line);
+  goldRushAttackEffects.push({ line, life: 0.18, maxLife: 0.18 });
+}
+
+function updateGoldRushAttackEffects(dt) {
+  for (let i = goldRushAttackEffects.length - 1; i >= 0; i -= 1) {
+    const effect = goldRushAttackEffects[i];
+    effect.life -= dt;
+    effect.line.material.opacity = Math.max(0, effect.life / effect.maxLife);
+    if (effect.life > 0) continue;
+    scene.remove(effect.line);
+    effect.line.geometry.dispose();
+    effect.line.material.dispose();
+    goldRushAttackEffects.splice(i, 1);
+  }
 }
 
 function spawnGoldPickup(position = null, dropped = false) {
@@ -1866,7 +1988,20 @@ function removeGoldPickup(index) {
 }
 
 function updateGoldRushBots(dt) {
+  updateGoldRushAttackEffects(dt);
   for (const bot of goldRushBots) {
+    if (bot.dead) {
+      if (clock.elapsedTime < bot.respawnAt) continue;
+      bot.dead = false;
+      bot.health = bot.maxHealth;
+      bot.mesh.userData.health = bot.health;
+      bot.mesh.userData.maxHealth = bot.maxHealth;
+      bot.mesh.position.copy(bot.spawn);
+      bot.mesh.visible = true;
+      bot.invulnerableUntil = clock.elapsedTime + 2;
+      bot.nextAttackAt = clock.elapsedTime + 0.8;
+      updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+    }
     let targetX = goldMine.position.x;
     let targetZ = goldMine.position.z;
     let nearestDistance = Infinity;
@@ -1890,11 +2025,36 @@ function updateGoldRushBots(dt) {
     }
     bot.mixer?.update(dt);
     bot.marker.rotation.z += dt * 2.4;
+
+    const combatCandidates = [];
+    if (!goldRushState.dead) {
+      const playerDistance = Math.hypot(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
+      if (playerDistance < 18) combatCandidates.push(goldRushState);
+    }
+    for (const other of goldRushBots) {
+      if (other === bot || other.dead) continue;
+      const otherDistance = Math.hypot(other.mesh.position.x - bot.mesh.position.x, other.mesh.position.z - bot.mesh.position.z);
+      if (otherDistance < 18) combatCandidates.push(other);
+    }
+    const combatTarget = combatCandidates.length
+      ? combatCandidates[(bot.id + Math.floor(clock.elapsedTime * 1.7)) % combatCandidates.length]
+      : null;
+    if (combatTarget && clock.elapsedTime >= bot.nextAttackAt) {
+      const targetPosition = combatTarget === goldRushState ? player.position : combatTarget.mesh.position;
+      bot.mesh.rotation.y = Math.atan2(targetPosition.x - bot.mesh.position.x, targetPosition.z - bot.mesh.position.z);
+      createGoldRushAttackEffect(bot.mesh.position, targetPosition, GOLD_RUSH_BOT_COLORS[bot.id - 1]);
+      if (combatTarget === goldRushState) damageGoldRushPlayer(bot.attackDamage);
+      else damageGoldRushBot(combatTarget, bot.attackDamage);
+      bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
+    }
   }
+  canvas.dataset.goldRushDamagedBots = String(goldRushBots.filter((bot) => !bot.dead && bot.health < bot.maxHealth).length);
+  canvas.dataset.goldRushDeadBots = String(goldRushBots.filter((bot) => bot.dead).length);
 }
 
 function updateGoldRushHud() {
   goldCountEl.textContent = String(goldRushState.gold);
+  goldRushHealthEl.textContent = `${Math.ceil(goldRushState.health)} / ${goldRushState.maxHealth}`;
   const elapsed = Math.max(0, clock.elapsedTime - goldRushState.startedAt);
   const remaining = Math.max(0, 180 - elapsed);
   const remainingSeconds = Math.ceil(remaining);
@@ -1916,6 +2076,7 @@ function updateGoldRushHud() {
 function endGoldRush(message) {
   goldRushState.ended = true;
   goldRushState.winCountdownStartedAt = null;
+  playerGoldRushHealthBar.visible = false;
   goldRushStatusEl.textContent = message;
   showToast(message);
   showDailyRewardReveal();
@@ -1926,15 +2087,21 @@ function startGoldRush() {
   goldRushState.ended = false;
   goldRushState.gold = 0;
   goldRushState.startedAt = clock.elapsedTime;
-  goldRushState.nextSpawnAt = clock.elapsedTime + 5;
+  goldRushState.nextSpawnAt = clock.elapsedTime + 2.5;
   goldRushState.winCountdownStartedAt = null;
   goldRushState.dead = false;
   goldRushState.invulnerableUntil = clock.elapsedTime + 2;
   goldRushState.mineGoldAvailable = true;
   goldRushState.mineGoldRespawnAt = 0;
+  goldRushState.maxHealth = BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000;
+  goldRushState.health = goldRushState.maxHealth;
+  canvas.dataset.goldRushDroppedGoldTotal = "0";
   initialSpawnPoint.set(0, 1.7, 15);
   resetPlayer();
   player.visible = true;
+  playerGoldRushHealthBar.visible = true;
+  updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
   goldMine.visible = true;
   goldMineCrystal.visible = true;
   goldRushHud.classList.remove("hidden");
@@ -1947,15 +2114,12 @@ function startGoldRush() {
 
 function killGoldRushPlayer() {
   if (!goldRushState.active || goldRushState.dead || goldRushState.ended) return;
-  for (let i = 0; i < goldRushState.gold; i += 1) {
-    const offset = new THREE.Vector3((Math.random() - 0.5) * 2.5, 0.65, (Math.random() - 0.5) * 2.5);
-    spawnGoldPickup(player.position.clone().add(offset), true);
-  }
-  goldRushState.gold = 0;
-  goldRushState.winCountdownStartedAt = null;
+  dropGoldRushGold(goldRushState, player.position);
+  goldRushState.health = 0;
   goldRushState.dead = true;
   goldRushState.respawnAt = clock.elapsedTime + 5;
   player.visible = false;
+  playerGoldRushHealthBar.visible = false;
   respawnOverlay.classList.remove("hidden");
   updateGoldRushHud();
 }
@@ -1968,8 +2132,12 @@ function updateGoldRush(dt) {
     if (remaining <= 0) {
       goldRushState.dead = false;
       goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+      goldRushState.health = goldRushState.maxHealth;
       resetPlayer();
       player.visible = true;
+      playerGoldRushHealthBar.visible = true;
+      updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+      canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
       respawnOverlay.classList.add("hidden");
     }
   }
@@ -1982,13 +2150,13 @@ function updateGoldRush(dt) {
   if (!goldRushState.dead && Math.hypot(player.position.x - goldMine.position.x, player.position.z - goldMine.position.z) <= 2.4) {
     centralCollector = goldRushState;
   } else {
-    centralCollector = goldRushBots.find((bot) =>
+    centralCollector = goldRushBots.find((bot) => !bot.dead &&
       Math.hypot(bot.mesh.position.x - goldMine.position.x, bot.mesh.position.z - goldMine.position.z) <= 2.4,
     ) || null;
   }
   if (goldRushState.mineGoldAvailable && centralCollector) {
     goldRushState.mineGoldAvailable = false;
-    goldRushState.mineGoldRespawnAt = clock.elapsedTime + 3;
+    goldRushState.mineGoldRespawnAt = clock.elapsedTime + 1.5;
     goldMineCrystal.visible = false;
     centralCollector.gold += 1;
     canvas.dataset.lastGoldPickup = centralCollector === goldRushState ? "central-mine:player" : `central-mine:ai-${centralCollector.id}`;
@@ -1996,7 +2164,7 @@ function updateGoldRush(dt) {
   }
   if (clock.elapsedTime >= goldRushState.nextSpawnAt) {
     spawnGoldPickup();
-    goldRushState.nextSpawnAt += 3;
+    goldRushState.nextSpawnAt += 1.5;
   }
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) {
     const pickup = goldPickups[i];
@@ -2005,7 +2173,7 @@ function updateGoldRush(dt) {
     const dz = pickup.mesh.position.z - player.position.z;
     let collector = !goldRushState.dead && Math.hypot(dx, dz) <= 1.5 ? goldRushState : null;
     if (!collector) {
-      collector = goldRushBots.find((bot) =>
+      collector = goldRushBots.find((bot) => !bot.dead &&
         Math.hypot(pickup.mesh.position.x - bot.mesh.position.x, pickup.mesh.position.z - bot.mesh.position.z) <= 1.2,
       ) || null;
     }
