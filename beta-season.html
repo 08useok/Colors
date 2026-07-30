@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.4.9">
+  <link rel="stylesheet" href="./beta-season.css?v=0.5.0">
   <script type="importmap">
   {
     "imports": {
@@ -61,10 +61,25 @@
   <div id="gold-rush-hud" class="gold-rush-hud hidden">
     <strong>GOLD RUSH</strong>
     <span>보유 금 <b id="gold-count">0</b> / 10</span>
-    <span>체력 <b id="gold-rush-health">0 / 0</b></span>
     <span id="gold-rush-timer">03:00</span>
     <span id="gold-rush-rivals">AI 9명 참가</span>
     <span id="gold-rush-status">중앙 금광에서 금을 모으세요</span>
+  </div>
+
+  <div id="gold-rush-player-panel" class="gold-rush-player-panel hidden">
+    <div class="gold-rush-stat-label">체력</div>
+    <div class="gold-rush-health-bar">
+      <div id="gold-rush-health-fill" class="gold-rush-health-fill"></div>
+      <div class="gold-rush-health-segments"><span></span><span></span><span></span><span></span></div>
+      <div id="gold-rush-health-value" class="gold-rush-health-value">0</div>
+    </div>
+    <div class="gold-rush-stat-row">
+      <span id="gold-rush-health">0 / 0</span>
+      <span id="gold-rush-reload-state">탄약 가득</span>
+    </div>
+    <div class="gold-rush-reload-outer"><div id="gold-rush-reload-bar" class="gold-rush-reload-inner"></div></div>
+    <div class="gold-rush-stat-label gold-rush-ammo-label">탄약</div>
+    <div id="gold-rush-ammo-fan" class="gold-rush-ammo-fan"></div>
   </div>
 
   <div id="respawn-overlay" class="respawn-overlay hidden">
@@ -111,6 +126,6 @@
   </div>
 
   <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
-  <script type="module" src="./src/beta-season.js?v=0.4.9"></script>
+  <script type="module" src="./src/beta-season.js?v=0.5.0"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.4.9";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.4.9";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.0";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.0";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -30,7 +30,13 @@ const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
 const goldRushHud = document.getElementById("gold-rush-hud");
 const goldCountEl = document.getElementById("gold-count");
+const goldRushPlayerPanel = document.getElementById("gold-rush-player-panel");
 const goldRushHealthEl = document.getElementById("gold-rush-health");
+const goldRushHealthFill = document.getElementById("gold-rush-health-fill");
+const goldRushHealthValue = document.getElementById("gold-rush-health-value");
+const goldRushReloadState = document.getElementById("gold-rush-reload-state");
+const goldRushReloadBar = document.getElementById("gold-rush-reload-bar");
+const goldRushAmmoFan = document.getElementById("gold-rush-ammo-fan");
 const goldRushTimerEl = document.getElementById("gold-rush-timer");
 const goldRushStatusEl = document.getElementById("gold-rush-status");
 const goldRushRivalsEl = document.getElementById("gold-rush-rivals");
@@ -1386,8 +1392,16 @@ function performCharacterAttack({ manualAim = false } = {}) {
   if (!generalAttackReady) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
+  if (goldRushState.active && !goldRushState.ended && goldRushState.ammo <= 0) {
+    attackComboState.textContent = "탄약 없음";
+    return;
+  }
   if (!manualAim) autoAimAtNearestTarget(getBetaAttackRange(id, def));
   generalAttackReady = false;
+  if (goldRushState.active && !goldRushState.ended) {
+    goldRushState.ammo -= 1;
+    updateGoldRushCombatHud();
+  }
   crimsonAttackButton.classList.add("cooldown");
   startModelAttackMotion(id);
   attackComboState.textContent = "공격 중";
@@ -1739,35 +1753,42 @@ const goldRushState = {
   active: false, ended: false, gold: 0, startedAt: 0, nextSpawnAt: 0,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
   mineGoldAvailable: true, mineGoldRespawnAt: 0, health: 1, maxHealth: 1,
+  ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5,
 };
 
 function createGoldRushHealthBar(height = 3.15) {
   const group = new THREE.Group();
   group.position.y = height;
-  const backgroundMaterial = new THREE.SpriteMaterial({ color: 0x16191d, depthTest: false, depthWrite: false });
-  const fillMaterial = new THREE.SpriteMaterial({ color: 0x48e568, depthTest: false, depthWrite: false });
-  const background = new THREE.Sprite(backgroundMaterial);
-  background.scale.set(1.55, 0.2, 1);
+  const backgroundMaterial = new THREE.MeshBasicMaterial({ color: 0x2d1a11, transparent: true, opacity: 0.88 });
+  const fillMaterial = new THREE.MeshBasicMaterial({ color: 0xff8455 });
+  const background = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 0.16), backgroundMaterial);
+  const fill = new THREE.Mesh(new THREE.PlaneGeometry(1.31, 0.1), fillMaterial);
   background.renderOrder = 30;
-  const fill = new THREE.Sprite(fillMaterial);
+  fill.position.z = 0.001;
   fill.renderOrder = 31;
   group.add(background, fill);
   group.userData.fill = fill;
   group.userData.materials = [backgroundMaterial, fillMaterial];
+  group.userData.geometries = [background.geometry, fill.geometry];
   return group;
 }
 
 function updateGoldRushHealthBar(bar, health, maxHealth) {
   const ratio = THREE.MathUtils.clamp(health / Math.max(1, maxHealth), 0, 1);
   const fill = bar.userData.fill;
-  fill.scale.set(1.4 * ratio, 0.12, 1);
-  fill.position.x = -0.7 + 0.7 * ratio;
-  fill.material.color.setHex(ratio > 0.5 ? 0x48e568 : ratio > 0.25 ? 0xffc642 : 0xff4f55);
+  fill.scale.x = ratio;
+  fill.position.x = (-1.31 * (1 - ratio)) * 0.5;
 }
 
 const playerGoldRushHealthBar = createGoldRushHealthBar(3.2);
 playerGoldRushHealthBar.visible = false;
 player.add(playerGoldRushHealthBar);
+const healthBarParentQuaternion = new THREE.Quaternion();
+
+function faceGoldRushHealthBarToCamera(bar) {
+  bar.parent.getWorldQuaternion(healthBarParentQuaternion);
+  bar.quaternion.copy(healthBarParentQuaternion.invert().multiply(camera.quaternion));
+}
 
 const goldMine = new THREE.Group();
 const goldMineBase = new THREE.Mesh(
@@ -1793,6 +1814,7 @@ function clearGoldRushBots() {
     if (targetIndex >= 0) testTargets.splice(targetIndex, 1);
     bot.mixer?.stopAllAction();
     for (const material of bot.healthBar?.userData.materials || []) material.dispose();
+    for (const geometry of bot.healthBar?.userData.geometries || []) geometry.dispose();
     for (const disposable of bot.disposableMeshes || []) {
       disposable.geometry.dispose();
       disposable.material.dispose();
@@ -1864,6 +1886,7 @@ function createGoldRushBots() {
     mesh.position.copy(spawn);
     scene.add(mesh);
     const maxHealth = BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000;
+    const maxAmmo = BETA_CHARACTERS[betaState.selectedCharacter]?.maxAmmo || 3;
     const bot = {
       id: i + 1,
       name: `AI ${i + 1}`,
@@ -1882,6 +1905,10 @@ function createGoldRushBots() {
       invulnerableUntil: clock.elapsedTime + 2,
       nextAttackAt: clock.elapsedTime + 0.7 + Math.random() * 0.8,
       attackDamage: 750 + (i % 3) * 125,
+      ammo: maxAmmo,
+      maxAmmo,
+      reloadTimer: 0,
+      reloadDuration: BETA_CHARACTERS[betaState.selectedCharacter]?.reloadDuration || 0.5,
       speed: 3.8 + (i % 4) * 0.3,
       winCountdownStartedAt: null,
     };
@@ -2000,8 +2027,20 @@ function updateGoldRushBots(dt) {
       bot.mesh.visible = true;
       bot.invulnerableUntil = clock.elapsedTime + 2;
       bot.nextAttackAt = clock.elapsedTime + 0.8;
+      bot.ammo = bot.maxAmmo;
+      bot.reloadTimer = 0;
       updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
     }
+    if (bot.ammo >= bot.maxAmmo) {
+      bot.reloadTimer = 0;
+    } else if (clock.elapsedTime >= bot.nextAttackAt) {
+      bot.reloadTimer += dt;
+      while (bot.reloadTimer >= bot.reloadDuration && bot.ammo < bot.maxAmmo) {
+        bot.reloadTimer -= bot.reloadDuration;
+        bot.ammo += 1;
+      }
+    }
+    faceGoldRushHealthBarToCamera(bot.healthBar);
     let targetX = goldMine.position.x;
     let targetZ = goldMine.position.z;
     let nearestDistance = Infinity;
@@ -2039,12 +2078,13 @@ function updateGoldRushBots(dt) {
     const combatTarget = combatCandidates.length
       ? combatCandidates[(bot.id + Math.floor(clock.elapsedTime * 1.7)) % combatCandidates.length]
       : null;
-    if (combatTarget && clock.elapsedTime >= bot.nextAttackAt) {
+    if (combatTarget && bot.ammo > 0 && clock.elapsedTime >= bot.nextAttackAt) {
       const targetPosition = combatTarget === goldRushState ? player.position : combatTarget.mesh.position;
       bot.mesh.rotation.y = Math.atan2(targetPosition.x - bot.mesh.position.x, targetPosition.z - bot.mesh.position.z);
       createGoldRushAttackEffect(bot.mesh.position, targetPosition, GOLD_RUSH_BOT_COLORS[bot.id - 1]);
       if (combatTarget === goldRushState) damageGoldRushPlayer(bot.attackDamage);
       else damageGoldRushBot(combatTarget, bot.attackDamage);
+      bot.ammo -= 1;
       bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
     }
   }
@@ -2052,9 +2092,40 @@ function updateGoldRushBots(dt) {
   canvas.dataset.goldRushDeadBots = String(goldRushBots.filter((bot) => bot.dead).length);
 }
 
+function renderGoldRushAmmoFan(count) {
+  goldRushAmmoFan.replaceChildren();
+  const spread = 50;
+  const step = count > 1 ? spread / (count - 1) : 0;
+  for (let i = 0; i < count; i += 1) {
+    const segment = document.createElement("div");
+    segment.className = "gold-rush-ammo-segment filled";
+    segment.style.transform = `rotate(${count > 1 ? -spread / 2 + i * step : 0}deg)`;
+    goldRushAmmoFan.appendChild(segment);
+  }
+}
+
+function updateGoldRushCombatHud() {
+  const healthRatio = THREE.MathUtils.clamp(goldRushState.health / Math.max(1, goldRushState.maxHealth), 0, 1);
+  goldRushHealthFill.style.width = `${healthRatio * 100}%`;
+  goldRushHealthValue.textContent = String(Math.ceil(goldRushState.health));
+  goldRushHealthEl.textContent = `${Math.ceil(goldRushState.health)} / ${goldRushState.maxHealth}`;
+  const reloadProgress = goldRushState.ammo >= goldRushState.maxAmmo
+    ? 1
+    : THREE.MathUtils.clamp(goldRushState.reloadTimer / goldRushState.reloadDuration, 0, 1);
+  goldRushReloadBar.style.width = `${reloadProgress * 100}%`;
+  goldRushReloadBar.dataset.state = goldRushState.ammo >= goldRushState.maxAmmo ? "full" : "reloading";
+  goldRushReloadState.textContent = goldRushState.ammo >= goldRushState.maxAmmo
+    ? "탄약 가득"
+    : `다음 탄약 ${(goldRushState.reloadDuration - goldRushState.reloadTimer).toFixed(1)}초`;
+  [...goldRushAmmoFan.children].forEach((segment, index) => {
+    segment.classList.toggle("filled", index < goldRushState.ammo);
+  });
+  canvas.dataset.goldRushAmmo = `${goldRushState.ammo}/${goldRushState.maxAmmo}`;
+}
+
 function updateGoldRushHud() {
   goldCountEl.textContent = String(goldRushState.gold);
-  goldRushHealthEl.textContent = `${Math.ceil(goldRushState.health)} / ${goldRushState.maxHealth}`;
+  updateGoldRushCombatHud();
   const elapsed = Math.max(0, clock.elapsedTime - goldRushState.startedAt);
   const remaining = Math.max(0, 180 - elapsed);
   const remainingSeconds = Math.ceil(remaining);
@@ -2077,6 +2148,7 @@ function endGoldRush(message) {
   goldRushState.ended = true;
   goldRushState.winCountdownStartedAt = null;
   playerGoldRushHealthBar.visible = false;
+  goldRushPlayerPanel.classList.add("hidden");
   goldRushStatusEl.textContent = message;
   showToast(message);
   showDailyRewardReveal();
@@ -2095,6 +2167,10 @@ function startGoldRush() {
   goldRushState.mineGoldRespawnAt = 0;
   goldRushState.maxHealth = BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000;
   goldRushState.health = goldRushState.maxHealth;
+  goldRushState.maxAmmo = BETA_CHARACTERS[betaState.selectedCharacter]?.maxAmmo || 3;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  goldRushState.reloadDuration = BETA_CHARACTERS[betaState.selectedCharacter]?.reloadDuration || 0.5;
   canvas.dataset.goldRushDroppedGoldTotal = "0";
   initialSpawnPoint.set(0, 1.7, 15);
   resetPlayer();
@@ -2105,6 +2181,8 @@ function startGoldRush() {
   goldMine.visible = true;
   goldMineCrystal.visible = true;
   goldRushHud.classList.remove("hidden");
+  goldRushPlayerPanel.classList.remove("hidden");
+  renderGoldRushAmmoFan(goldRushState.maxAmmo);
   respawnOverlay.classList.add("hidden");
   goldRushToggle.textContent = "골드 러쉬 재시작";
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
@@ -2126,6 +2204,7 @@ function killGoldRushPlayer() {
 
 function updateGoldRush(dt) {
   if (!goldRushState.active || goldRushState.ended) return;
+  faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
   if (goldRushState.dead) {
     const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
     respawnCountdownEl.textContent = String(Math.ceil(remaining));
@@ -2133,6 +2212,8 @@ function updateGoldRush(dt) {
       goldRushState.dead = false;
       goldRushState.invulnerableUntil = clock.elapsedTime + 2;
       goldRushState.health = goldRushState.maxHealth;
+      goldRushState.ammo = goldRushState.maxAmmo;
+      goldRushState.reloadTimer = 0;
       resetPlayer();
       player.visible = true;
       playerGoldRushHealthBar.visible = true;
@@ -2140,6 +2221,15 @@ function updateGoldRush(dt) {
       canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
       respawnOverlay.classList.add("hidden");
     }
+  }
+  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && generalAttackReady) {
+    goldRushState.reloadTimer += dt;
+    while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
+      goldRushState.reloadTimer -= goldRushState.reloadDuration;
+      goldRushState.ammo += 1;
+    }
+  } else if (goldRushState.ammo >= goldRushState.maxAmmo) {
+    goldRushState.reloadTimer = 0;
   }
   updateGoldRushBots(dt);
   if (!goldRushState.mineGoldAvailable && clock.elapsedTime >= goldRushState.mineGoldRespawnAt) {
