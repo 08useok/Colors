@@ -379,11 +379,11 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.visible = false;
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
-    brim.position.y = headAttached ? 0.89 : 2.25;
+    brim.position.y = headAttached ? 1.17 : 2.25;
     const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.52, 0.48, 16), redMetal);
-    crownTop.position.y = headAttached ? 1.13 : 2.48;
+    crownTop.position.y = headAttached ? 1.41 : 2.48;
     const badge = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), gold);
-    badge.position.set(0, headAttached ? 1.13 : 2.48, -0.48);
+    badge.position.set(0, headAttached ? 1.41 : 2.48, -0.48);
     accessory.add(brim, crownTop, badge);
   } else if (skinId === "beta_red_crimson") {
     for (const side of [-1, 1]) {
