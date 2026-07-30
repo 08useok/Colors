@@ -377,6 +377,7 @@ function createRedThemeAccessory(skinId, headAttached = false) {
     if (headAttached) {
       accessory.name = "OrangeSkinHat";
       accessory.visible = false;
+      accessory.scale.set(1.16, 1.08, 1.16);
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
     brim.position.y = headAttached ? 1.17 : 2.25;
@@ -1994,6 +1995,11 @@ function createStickman(color, skinId) {
   if (rigGltf) {
     const group = buildCyanRigModel(rigGltf);
     if (skinId) applySkin(group, skinId);
+    return group;
+  }
+  if (CYAN_RIG_COLOR_TO_CHAR.has(color)) {
+    const group = new THREE.Group();
+    group.userData = { isGlbModel: true, awaitingRigModel: true };
     return group;
   }
 
