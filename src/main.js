@@ -507,7 +507,7 @@ async function syncGlobalRotation(account) {
     account.rotation.stats = global.stats;
     account.rotation.remaining = global.remaining;
     account.rotation.eliminated = global.eliminated ?? [];
-    account.rotation.newAbilityChars = [...new Set(global.eliminated ?? [])];
+    account.rotation.newAbilityChars = isEventActive() ? [...new Set(global.eliminated ?? [])] : [];
     account.rotation.champion = global.champion ?? null;
     account.rotation.startDate = global.startDate ?? ROTATION_CAMPAIGN_START_DATE;
     account.rotation.lastRoundProcessedAt = global.lastRoundProcessedAt ?? 5;
@@ -883,6 +883,10 @@ function loadAccount() {
       const beforeRound = account.rotation.lastRoundProcessedAt;
       processRotationRounds(account);
       if (account.rotation.lastRoundProcessedAt !== beforeRound) migrated = true;
+      if (!isEventActive() && (account.rotation.newAbilityChars?.length ?? 0) > 0) {
+        account.rotation.newAbilityChars = [];
+        migrated = true;
+      }
     }
     if (migrated) saveAccount(account);
     return account;
@@ -3082,7 +3086,9 @@ function makeFighter(options) {
   let levelMult = 1;
   let skinId = null;
   const acc = loadAccount();
-  const newAbilityChars = new Set(options.newAbilityChars ?? acc?.rotation?.newAbilityChars ?? []);
+  const newAbilityChars = new Set(
+    isEventActive() ? (options.newAbilityChars ?? acc?.rotation?.newAbilityChars ?? []) : [],
+  );
   const hasOrangeBlastAbility = options.characterType === "orange" && newAbilityChars.has("orange");
   const hasPurpleFanAbility = options.characterType === "purple" && newAbilityChars.has("purple");
   const hasYellowOverloadAbility = options.characterType === "yellow" && newAbilityChars.has("yellow");
@@ -4746,7 +4752,12 @@ async function enterMatchmaking(mode = "takedown") {
   matchmakingPlayersList.innerHTML = "";
 
   try {
-    await mp.connect(account.nickname, state.selectedCharacter, account.rotation?.newAbilityChars ?? [], mode);
+    await mp.connect(
+      account.nickname,
+      state.selectedCharacter,
+      isEventActive() ? (account.rotation?.newAbilityChars ?? []) : [],
+      mode,
+    );
   } catch (e) {
     matchmakingStatus.textContent = t("mmConnFail", e.message);
     return;
@@ -10305,7 +10316,7 @@ function setupInput() {
       const s = rot.stats[charKey];
       const isEliminated = rot.eliminated.includes(charKey);
       const isChampion = rot.champion === charKey;
-      const hasNewAbility = rot.newAbilityChars.includes(charKey);
+      const hasNewAbility = isEventActive() && rot.newAbilityChars.includes(charKey);
       const winRate = s.games > 0 ? Math.round((s.wins / s.games) * 100) : 0;
 
       let rowClass = "rotation-row";
