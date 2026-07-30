@@ -435,7 +435,7 @@ function clearCharacterModel() {
 
 function prepareCharacterScene(model, characterId) {
   if (characterId === "blue") addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple"].includes(characterId)) {
     applyBetaToonRendering(model, characterId);
   }
   const box = new THREE.Box3().setFromObject(model);
@@ -579,6 +579,11 @@ const MODEL_ATTACK_POSES = {
     ["CC_Base_L_Upperarm", 0.56, 0, -0.78], ["CC_Base_L_Forearm", 0.18, 0, -0.22],
     ["CC_Base_Spine02", -0.08, 0, 0],
   ] },
+  purple: { duration: 0.46, peak: 0.24, bones: [
+    ["CC_Base_R_Upperarm", 1.05, 0, 0.3], ["CC_Base_R_Forearm", 0.42, 0, 0.1],
+    ["CC_Base_L_Upperarm", 0.3, 0, -0.12],
+    ["CC_Base_Spine02", 0.1, -0.1, 0],
+  ] },
 };
 
 function startModelAttackMotion(characterId = betaState.selectedCharacter) {
@@ -626,7 +631,7 @@ function updateModelAttackMotion(dt) {
 function setPlayerModel(characterId) {
   const token = ++characterLoadToken;
   clearCharacterModel();
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -694,7 +699,7 @@ function applySelectedSkinVisual() {
     const variant = getCrownVariant(skinId);
     if (crown.userData.variant !== variant) replaceCrown(variant);
     crown.visible = true;
-    const usesGlbModel = ["blue", "cyan", "pink"].includes(betaState.selectedCharacter);
+    const usesGlbModel = ["blue", "cyan", "pink", "purple"].includes(betaState.selectedCharacter);
     fitCrownToHead(crown, usesGlbModel ? 2.7 : 2.5);
   } else crown.visible = false;
   rebuildRedThemeAccessory(skinId);
@@ -853,7 +858,7 @@ function renderShop() {
 }
 
 function renderAssetShowroom() {
-  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink"]);
+  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple"]);
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
   modalContent.innerHTML = `<div class="beta-grid">${CHARACTERS.map((character) => {
@@ -1697,7 +1702,10 @@ let lastPointerX = 0;
 let lastPointerY = 0;
 let pointerTravel = 0;
 let manualAimActive = false;
-let clickMoveTarget = null;
+// 좌클릭은 공격, 누른 채 0.5초를 넘기면 수동 에임으로 넘어간다
+const AIM_HOLD_SECONDS = 0.5;
+let pointerHoldTimer = null;
+let holdAiming = false;
 const manualAimRaycaster = new THREE.Raycaster();
 const manualAimPointer = new THREE.Vector2();
 const manualAimPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -2001,22 +2009,16 @@ function aimPlayerAtPointer(event) {
   return true;
 }
 
-function setClickMoveTarget(event) {
-  if (!groundPointAtPointer(event)) return false;
-  clickMoveTarget = new THREE.Vector3(manualAimPoint.x, player.position.y, manualAimPoint.z);
-  canvas.dataset.moveMode = "click";
-  canvas.dataset.moveTarget = `${clickMoveTarget.x.toFixed(2)},${clickMoveTarget.z.toFixed(2)}`;
-  return true;
-}
-
+// 수동 에임 고정 토글. 꺼두면 좌클릭은 자동 조준 공격이고, 0.5초 이상
+// 누르고 있는 동안만 수동 에임이 된다.
 aimModeButton.addEventListener("click", () => {
   manualAimActive = !manualAimActive;
-  clickMoveTarget = null;
   aimModeButton.classList.toggle("active", manualAimActive);
   aimModeButton.setAttribute("aria-pressed", String(manualAimActive));
-  aimModeButton.textContent = manualAimActive ? "수동 에임 · 마우스 추적" : "이동 모드 · 클릭 이동";
+  aimModeButton.textContent = manualAimActive ? "수동 에임 고정" : "좌클릭 공격 · 길게 눌러 조준";
   canvas.dataset.aimMode = manualAimActive ? "manual" : "auto";
 });
+aimModeButton.textContent = "좌클릭 공격 · 길게 눌러 조준";
 
 addEventListener("keydown", (event) => {
   keys.add(event.code);
@@ -2027,30 +2029,58 @@ addEventListener("keydown", (event) => {
   }
 });
 addEventListener("keyup", (event) => keys.delete(event.code));
+function stopHoldAim() {
+  if (pointerHoldTimer !== null) {
+    clearTimeout(pointerHoldTimer);
+    pointerHoldTimer = null;
+  }
+  holdAiming = false;
+  canvas.dataset.aimMode = manualAimActive ? "manual" : "auto";
+}
+
 canvas.addEventListener("pointerdown", (event) => {
   dragging = true;
   pointerTravel = 0;
   lastPointerX = event.clientX;
   lastPointerY = event.clientY;
   canvas.setPointerCapture(event.pointerId);
+  if (event.button !== 0 || !modal.classList.contains("hidden")) return;
+  pointerHoldTimer = setTimeout(() => {
+    pointerHoldTimer = null;
+    holdAiming = true;
+    canvas.dataset.aimMode = "hold";
+    aimPlayerAtPointer(event);
+  }, AIM_HOLD_SECONDS * 1000);
 });
 canvas.addEventListener("pointerup", (event) => {
   dragging = false;
-  if (event.button === 0 && pointerTravel < 6 && modal.classList.contains("hidden")) {
-    if (manualAimActive) {
-      canvas.dataset.lastAttackInput = "mouse";
-      performCharacterAttack({ manualAim: aimPlayerAtPointer(event) });
-    } else {
-      setClickMoveTarget(event);
-    }
+  const wasAiming = holdAiming;
+  const held = pointerHoldTimer !== null || wasAiming;
+  stopHoldAim();
+  if (event.button !== 0 || !modal.classList.contains("hidden")) return;
+  if (wasAiming) {
+    // 수동 에임 유지 후 놓으면 조준한 방향으로 공격
+    canvas.dataset.lastAttackInput = "hold-aim";
+    performCharacterAttack({ manualAim: aimPlayerAtPointer(event) });
+    return;
   }
+  if (!held || pointerTravel >= 6) return;
+  canvas.dataset.lastAttackInput = "mouse";
+  performCharacterAttack({ manualAim: manualAimActive && aimPlayerAtPointer(event) });
 });
+canvas.addEventListener("pointercancel", stopHoldAim);
 canvas.addEventListener("pointermove", (event) => {
-  if (manualAimActive && modal.classList.contains("hidden")) aimPlayerAtPointer(event);
+  if ((manualAimActive || holdAiming) && modal.classList.contains("hidden")) aimPlayerAtPointer(event);
   if (!dragging || overview) return;
   const dx = event.clientX - lastPointerX;
   const dy = event.clientY - lastPointerY;
   pointerTravel += Math.hypot(dx, dy);
+  // 수동 에임 중에는 드래그가 시점을 돌리지 않는다 — 카메라는 조준 방향을 따라간다
+  if (holdAiming) {
+    lastPointerX = event.clientX;
+    lastPointerY = event.clientY;
+    return;
+  }
   yaw -= dx * 0.006;
   pitch = THREE.MathUtils.clamp(pitch + dy * 0.004, 0.25, 1.15);
   lastPointerX = event.clientX;
@@ -2295,7 +2325,6 @@ function animate() {
   const input = new THREE.Vector2(strafe, forward);
   let isMoving = false;
   if (!goldRushState.dead && input.lengthSq() > 0) {
-    clickMoveTarget = null;
     isMoving = true;
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);
@@ -2304,21 +2333,8 @@ function animate() {
     const moveZ = input.y * cos + input.x * sin;
     player.position.x += moveX;
     player.position.z += moveZ;
-    if (!manualAimActive) player.rotation.y = Math.atan2(moveX, moveZ);
-  } else if (!goldRushState.dead && clickMoveTarget) {
-    const moveX = clickMoveTarget.x - player.position.x;
-    const moveZ = clickMoveTarget.z - player.position.z;
-    const remaining = Math.hypot(moveX, moveZ);
-    if (remaining <= 0.2) {
-      clickMoveTarget = null;
-      canvas.dataset.moveMode = "idle";
-    } else {
-      const step = Math.min(8 * dt, remaining);
-      player.position.x += moveX / remaining * step;
-      player.position.z += moveZ / remaining * step;
-      player.rotation.y = Math.atan2(moveX, moveZ);
-      isMoving = true;
-    }
+    // 수동 에임 중에는 진행 방향으로 몸을 돌리지 않는다 — 조준 방향을 유지
+    if (!manualAimActive && !holdAiming) player.rotation.y = Math.atan2(moveX, moveZ);
   }
   restoreModelAttackPose();
   if (activeCharacterMotion) {
@@ -2386,6 +2402,13 @@ function animate() {
     camera.position.lerp(new THREE.Vector3(0, 82, 0.01), 1 - Math.exp(-4 * dt));
     camera.lookAt(0, 0, 0);
   } else {
+    // 수동 에임 중이면 카메라가 조준 방향 뒤로 부드럽게 돌아간다
+    if (holdAiming || manualAimActive) {
+      let diff = player.rotation.y - yaw;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      yaw += diff * (1 - Math.exp(-6 * dt));
+    }
     cameraTarget.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
     const horizontal = Math.cos(pitch) * distance;
     const desired = new THREE.Vector3(
