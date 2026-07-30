@@ -413,6 +413,7 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.scale.set(1.74, 1.62, 1.74);
       accessory.userData.autoFitHeadwear = true;
       accessory.userData.seatBottomY = -0.045;
+      accessory.userData.seatInset = 0.2;
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
     brim.position.y = headAttached ? 0 : 2.25;
