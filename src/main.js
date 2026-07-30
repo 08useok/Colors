@@ -347,34 +347,45 @@ function applySkin(group, skinId) {
   if (!skinId || !SKINS[skinId]) return;
   if (skinId === "alpha_red" || skinId === "alpha_champion_cyan" || skinId.startsWith("crown_")) {
     const crown = createHighPolyCrown(getCrownVariant(skinId));
-    const usesGlbModel = ["blue", "cyan", "pink"].includes(SKINS[skinId].character);
-    fitCrownToHead(crown, usesGlbModel ? 2.7 : 2.38);
+    if (getHeadwearModel(group)) {
+      crown.visible = false;
+      crown.userData.autoFitHeadwear = true;
+      crown.userData.seatBottomY = crown.userData.bottomY;
+      group.userData.headwear = crown;
+    } else {
+      fitCrownToHead(crown, 2.38);
+    }
     group.add(crown);
     group.userData.crown = crown;
   }
   if (skinId.startsWith("beta_red_")) {
-    if (skinId === "beta_red_orange") applyCrimsonOrangePalette(group);
-    const accessory = createRedThemeAccessory(skinId, Boolean(group.userData.cyanModel));
+    applyRedThemePalette(group, skinId);
+    const accessory = createRedThemeAccessory(skinId, Boolean(getHeadwearModel(group)));
     if (accessory) {
       group.add(accessory);
       group.userData.skinAccessory = accessory;
+      if (accessory.userData.autoFitHeadwear) group.userData.headwear = accessory;
     }
   }
 }
 
-function applyCrimsonOrangePalette(group) {
-  const model = group.userData.cyanModel;
-  if (!model) return;
-  const crimson = new THREE.Color(0xb3261e);
+function applyRedThemePalette(group, skinId) {
+  const model = group.userData.cyanModel ?? group;
+  const tint = new THREE.Color({
+    beta_red_orange: 0xb3261e,
+    beta_red_crimson: 0x62000d,
+    beta_red_red: 0xff2135,
+  }[skinId] ?? 0xb3261e);
+  const tintStrength = skinId === "beta_red_red" ? 0.72 : skinId === "beta_red_crimson" ? 0.68 : 0.58;
   const bodyMaterials = [];
   model.traverse((part) => {
     if (!part.isMesh || part.material?.isMeshBasicMaterial) return;
     const originals = Array.isArray(part.material) ? part.material : [part.material];
     const materials = originals.map((original) => {
       const material = original.clone();
-      if (material.color) material.color.lerp(crimson, 0.58);
-      if ("roughness" in material) material.roughness = 0.42;
-      if ("metalness" in material) material.metalness = 0.12;
+      if (material.color) material.color.lerp(tint, tintStrength);
+      if ("roughness" in material) material.roughness = skinId === "beta_red_red" ? 0.24 : 0.42;
+      if ("metalness" in material) material.metalness = skinId === "beta_red_red" ? 0.38 : 0.12;
       bodyMaterials.push(material);
       return material;
     });
@@ -400,6 +411,8 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.name = "OrangeSkinHat";
       accessory.visible = false;
       accessory.scale.set(1.74, 1.62, 1.74);
+      accessory.userData.autoFitHeadwear = true;
+      accessory.userData.seatBottomY = -0.045;
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
     brim.position.y = headAttached ? 0 : 2.25;
@@ -427,10 +440,15 @@ function createRedThemeAccessory(skinId, headAttached = false) {
   } else if (skinId === "beta_red_red") {
     const halo = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.08, 10, 32), gold);
     halo.rotation.x = Math.PI / 2;
-    halo.position.y = 2.6;
+    halo.position.y = headAttached ? 0.34 : 2.6;
     const crest = new THREE.Mesh(new THREE.OctahedronGeometry(0.25), redMetal);
-    crest.position.set(0, 2.25, -0.55);
+    crest.position.set(0, headAttached ? 0.08 : 2.25, -0.55);
     accessory.add(halo, crest);
+    if (headAttached) {
+      accessory.visible = false;
+      accessory.userData.autoFitHeadwear = true;
+      accessory.userData.seatInset = 0.02;
+    }
   } else {
     return null;
   }
@@ -448,10 +466,18 @@ const skinHatTopPosition = new THREE.Vector3();
 const skinHeadWorldQuaternion = new THREE.Quaternion();
 const skinGroupWorldQuaternion = new THREE.Quaternion();
 const skinModelBounds = new THREE.Box3();
+function getHeadwearModel(group) {
+  if (group.userData.cyanModel) return group.userData.cyanModel;
+  if (group.userData.blueModel) return group.userData.blueModel;
+  const scenes = Object.values(group.userData.pinkScenes ?? {});
+  return scenes.find((sceneModel) => sceneModel?.visible) ?? scenes[0] ?? null;
+}
+
 function updateHeadAttachedSkin(group) {
-  const hat = group.userData.skinAccessory;
-  if (hat?.name !== "OrangeSkinHat") return;
-  const headBone = group.userData.cyanModel?.getObjectByName("CC_Base_Head");
+  const hat = group.userData.headwear;
+  if (!hat?.userData.autoFitHeadwear) return;
+  const model = getHeadwearModel(group);
+  const headBone = model?.getObjectByName("CC_Base_Head");
   if (!headBone) {
     hat.visible = false;
     return;
@@ -461,10 +487,11 @@ function updateHeadAttachedSkin(group) {
   headBone.getWorldPosition(skinHeadPosition);
   headBone.getWorldQuaternion(skinHeadWorldQuaternion);
   if (!Number.isFinite(hat.userData.seatY)) {
-    skinModelBounds.setFromObject(group.userData.cyanModel);
+    skinModelBounds.setFromObject(model);
     skinHatTopPosition.set(skinHeadPosition.x, skinModelBounds.max.y, skinHeadPosition.z);
     group.worldToLocal(skinHatTopPosition);
-    hat.userData.seatY = skinHatTopPosition.y - 0.035;
+    const bottomY = (hat.userData.seatBottomY ?? 0) * hat.scale.y;
+    hat.userData.seatY = skinHatTopPosition.y - bottomY - (hat.userData.seatInset ?? 0.035);
   }
   group.worldToLocal(skinHeadPosition);
   group.getWorldQuaternion(skinGroupWorldQuaternion);
