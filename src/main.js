@@ -353,12 +353,34 @@ function applySkin(group, skinId) {
     group.userData.crown = crown;
   }
   if (skinId.startsWith("beta_red_")) {
+    if (skinId === "beta_red_orange") applyCrimsonOrangePalette(group);
     const accessory = createRedThemeAccessory(skinId, Boolean(group.userData.cyanModel));
     if (accessory) {
       group.add(accessory);
       group.userData.skinAccessory = accessory;
     }
   }
+}
+
+function applyCrimsonOrangePalette(group) {
+  const model = group.userData.cyanModel;
+  if (!model) return;
+  const crimson = new THREE.Color(0xb3261e);
+  const bodyMaterials = [];
+  model.traverse((part) => {
+    if (!part.isMesh || part.material?.isMeshBasicMaterial) return;
+    const originals = Array.isArray(part.material) ? part.material : [part.material];
+    const materials = originals.map((original) => {
+      const material = original.clone();
+      if (material.color) material.color.lerp(crimson, 0.58);
+      if ("roughness" in material) material.roughness = 0.42;
+      if ("metalness" in material) material.metalness = 0.12;
+      bodyMaterials.push(material);
+      return material;
+    });
+    part.material = Array.isArray(part.material) ? materials : materials[0];
+  });
+  group.userData.bodyMaterials = bodyMaterials;
 }
 
 // 베타 시즌 1 레드 테마 스킨 장식 — 등급이 높을수록 화려해진다
@@ -378,15 +400,20 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.name = "OrangeSkinHat";
       accessory.visible = false;
       accessory.scale.set(1.74, 1.62, 1.74);
-      accessory.userData.headSeatOffset = -0.78;
     }
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
-    brim.position.y = headAttached ? 1.17 : 2.25;
+    brim.position.y = headAttached ? 0 : 2.25;
     const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.52, 0.48, 16), redMetal);
-    crownTop.position.y = headAttached ? 1.41 : 2.48;
+    crownTop.position.y = headAttached ? 0.24 : 2.48;
     const badge = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), gold);
-    badge.position.set(0, headAttached ? 1.41 : 2.48, -0.48);
+    badge.position.set(0, headAttached ? 0.24 : 2.48, -0.48);
     accessory.add(brim, crownTop, badge);
+    if (headAttached) {
+      const band = new THREE.Mesh(new THREE.TorusGeometry(0.49, 0.045, 8, 28), gold);
+      band.rotation.x = Math.PI / 2;
+      band.position.y = 0.1;
+      accessory.add(band);
+    }
   } else if (skinId === "beta_red_crimson") {
     for (const side of [-1, 1]) {
       const shoulder = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.72, 8), redMetal);
@@ -417,8 +444,10 @@ function createRedThemeAccessory(skinId, headAttached = false) {
 }
 
 const skinHeadPosition = new THREE.Vector3();
+const skinHatTopPosition = new THREE.Vector3();
 const skinHeadWorldQuaternion = new THREE.Quaternion();
 const skinGroupWorldQuaternion = new THREE.Quaternion();
+const skinModelBounds = new THREE.Box3();
 function updateHeadAttachedSkin(group) {
   const hat = group.userData.skinAccessory;
   if (hat?.name !== "OrangeSkinHat") return;
@@ -431,12 +460,18 @@ function updateHeadAttachedSkin(group) {
   headBone.updateWorldMatrix(true, false);
   headBone.getWorldPosition(skinHeadPosition);
   headBone.getWorldQuaternion(skinHeadWorldQuaternion);
+  if (!Number.isFinite(hat.userData.seatY)) {
+    skinModelBounds.setFromObject(group.userData.cyanModel);
+    skinHatTopPosition.set(skinHeadPosition.x, skinModelBounds.max.y, skinHeadPosition.z);
+    group.worldToLocal(skinHatTopPosition);
+    hat.userData.seatY = skinHatTopPosition.y - 0.035;
+  }
   group.worldToLocal(skinHeadPosition);
   group.getWorldQuaternion(skinGroupWorldQuaternion);
   skinGroupWorldQuaternion.invert();
   hat.position.copy(skinHeadPosition);
+  hat.position.y = hat.userData.seatY;
   hat.quaternion.copy(skinGroupWorldQuaternion.multiply(skinHeadWorldQuaternion));
-  hat.translateY(hat.userData.headSeatOffset ?? 0);
   hat.visible = true;
 }
 
