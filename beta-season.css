@@ -218,6 +218,7 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 }
 .daily-reward-star:hover { transform: scale(1.06); }
 .daily-reward-star.spinning { animation: daily-star-spin .9s cubic-bezier(.32,.02,.27,1); pointer-events: none; }
+.daily-reward-attempts { display: block; margin-top: 10px; color: #ffe4a1; font-size: 13px; font-weight: 900; letter-spacing: .04em; }
 .daily-reward-reveal[data-tier="rare"] .daily-reward-star,
 .daily-reward-reveal[data-tier="rare"] #daily-reward-grade { color: #62c7ff; }
 .daily-reward-reveal[data-tier="epic"] .daily-reward-star,

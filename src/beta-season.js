@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.0";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.0";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.1";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.1";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -45,6 +45,7 @@ const respawnCountdownEl = document.getElementById("respawn-countdown");
 const dailyRewardReveal = document.getElementById("daily-reward-reveal");
 const dailyRewardGrade = document.getElementById("daily-reward-grade");
 const dailyRewardStar = document.getElementById("daily-reward-star");
+const dailyRewardAttempts = document.getElementById("daily-reward-attempts");
 const dailyRewardMessage = document.getElementById("daily-reward-message");
 const dailyRewardReturn = document.getElementById("daily-reward-return");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
@@ -917,11 +918,19 @@ const DAILY_REWARD_TIERS = [
 let dailyRewardTierIndex = 0;
 let dailyRewardSpinning = false;
 let dailyRewardComplete = false;
+const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
+let dailyRewardAttemptsUsed = 0;
 
 function updateDailyRewardReveal() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
+  const remaining = Math.max(0, DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed);
   dailyRewardReveal.dataset.tier = tier.id;
+  dailyRewardReveal.dataset.upgradeAttemptsUsed = String(dailyRewardAttemptsUsed);
+  dailyRewardReveal.dataset.upgradeAttemptsRemaining = String(remaining);
   dailyRewardGrade.textContent = tier.name;
+  dailyRewardAttempts.textContent = dailyRewardComplete
+    ? `업그레이드 ${dailyRewardAttemptsUsed}회 완료`
+    : `업그레이드 기회 ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}`;
 }
 
 function showDailyRewardReveal() {
@@ -929,6 +938,7 @@ function showDailyRewardReveal() {
   dailyRewardTierIndex = 0;
   dailyRewardSpinning = false;
   dailyRewardComplete = false;
+  dailyRewardAttemptsUsed = 0;
   dailyRewardStar.disabled = false;
   dailyRewardStar.classList.remove("spinning");
   dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
@@ -945,6 +955,7 @@ function finishDailyReward() {
   const rewardAmount = tier[rewardType];
   const rewardCurrency = rewardType === "coins" ? "코인" : "β 크레딧";
   dailyRewardComplete = true;
+  updateDailyRewardReveal();
   betaState[rewardType] += rewardAmount;
   betaState.daily.claimed = true;
   betaState.daily.winRewards = (betaState.daily.winRewards || 0) + 1;
@@ -966,14 +977,22 @@ dailyRewardStar.addEventListener("click", () => {
   setTimeout(() => {
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
+    dailyRewardAttemptsUsed += 1;
     const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
-    if (canUpgrade && Math.random() < 0.45) {
+    const upgraded = canUpgrade && Math.random() < 0.45;
+    if (upgraded) {
       dailyRewardTierIndex += 1;
-      updateDailyRewardReveal();
-      dailyRewardMessage.textContent = `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 다시 클릭하세요`;
+    }
+    updateDailyRewardReveal();
+    const attemptsRemaining = DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed;
+    const reachedTopTier = dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
+    if (attemptsRemaining <= 0 || reachedTopTier) {
+      finishDailyReward();
       return;
     }
-    finishDailyReward();
+    dailyRewardMessage.textContent = upgraded
+      ? `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 남은 기회 ${attemptsRemaining}회`
+      : `등급 유지 · 남은 업그레이드 기회 ${attemptsRemaining}회`;
   }, 900);
 });
 
