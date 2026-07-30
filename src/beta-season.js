@@ -811,12 +811,12 @@ function rebuildRedThemeAccessory(skinId) {
     hat.name = "OrangeSkinHat";
     hat.visible = false;
     const hatBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.1, 24), leather);
-    hatBrim.position.y = 0.34;
+    hatBrim.position.y = 0.89;
     const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.54, 0.52, 20), leather);
-    hatTop.position.y = 0.6;
+    hatTop.position.y = 1.15;
     const hatBand = new THREE.Mesh(new THREE.TorusGeometry(0.49, 0.055, 8, 28), gold);
     hatBand.rotation.x = Math.PI / 2;
-    hatBand.position.y = 0.45;
+    hatBand.position.y = 1;
     hat.add(hatBrim, hatTop, hatBand);
     const belt = new THREE.Mesh(new THREE.TorusGeometry(0.53, 0.08, 10, 32), leather);
     belt.rotation.x = Math.PI / 2;
@@ -857,11 +857,11 @@ function rebuildRedThemeAccessory(skinId) {
     hat.name = "OrangeSkinHat";
     hat.visible = false;
     const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.76, 0.76, 0.09, 20), redMetal);
-    brim.position.y = 0.34;
+    brim.position.y = 0.89;
     const crownTop = new THREE.Mesh(new THREE.CylinderGeometry(0.43, 0.52, 0.48, 16), redMetal);
-    crownTop.position.y = 0.58;
+    crownTop.position.y = 1.13;
     const badge = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), gold);
-    badge.position.set(0, 0.58, -0.48);
+    badge.position.set(0, 1.13, -0.48);
     hat.add(brim, crownTop, badge);
     skinAccessory.add(hat);
   } else if (skinId === "beta_red_crimson") {
