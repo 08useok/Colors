@@ -266,6 +266,19 @@ const attackAimBeam = new THREE.Mesh(
 attackAimBeam.rotation.x = -Math.PI / 2;
 attackAimBeam.renderOrder = 0;
 attackAimIndicator.add(attackAimBeam);
+// 근접(펀치) 캐릭터는 직선 대신 사정거리 원형 가이드를 쓴다
+const attackAimRing = new THREE.Mesh(
+  new THREE.RingGeometry(0.92, 1, 48),
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.42,
+    toneMapped: false,
+    side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+  }),
+);
+attackAimRing.rotation.x = -Math.PI / 2;
+attackAimRing.renderOrder = 0;
+attackAimRing.visible = false;
+attackAimIndicator.add(attackAimRing);
 attackAimIndicator.position.y = 0.12;
 player.add(attackAimIndicator);
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef3c58, roughness: 0.55 });
@@ -1208,12 +1221,6 @@ function getActiveRedThemeSkin() {
   return skinId.startsWith("beta_red_") ? skinId : "";
 }
 
-// 타격 시 화면 흔들림. 값이 쌓이고 매 프레임 감쇠한다.
-let cameraShake = 0;
-function addCameraShake(amount) {
-  cameraShake = Math.min(0.5, cameraShake + amount);
-}
-
 // 부드럽게 퍼지는 원형 그라디언트. 단색 평면보다 이펙트가 덜 밋밋해진다.
 let _sparkTexture = null;
 function getSparkTexture() {
@@ -1257,7 +1264,6 @@ function createHitImpact(position, color = 0xffd9a0) {
   scene.add(glow);
   crimsonSlashes.push({ group: glow, mesh: glow, life: 0.28, maxLife: 0.28, grow: 2.1 });
 
-  addCameraShake(0.16);
 }
 
 function createRedThemeHitEffect(position) {
@@ -1514,6 +1520,9 @@ function autoAimAtNearestTarget(maxRange) {
   return true;
 }
 
+// 사정거리를 원형으로 보여줄 근접 캐릭터
+const MELEE_AIM_CHARACTERS = new Set(["red", "crimson"]);
+
 function getBetaAttackRange(id, def) {
   if (id === "red") return def.attackRange;
   if (id === "green") return def.boomerangRange;
@@ -1530,12 +1539,20 @@ function getBetaAttackRange(id, def) {
 function updateAttackAimIndicator() {
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
   const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
-  attackAimBeam.scale.set(0.42, range, 1);
-  attackAimBeam.position.z = range / 2;
-  attackAimBeam.material.color.setHex(0xffffff);
+  // 펀치 캐릭터는 방향 대신 닿는 범위를 보여주는 게 맞다
+  const melee = MELEE_AIM_CHARACTERS.has(betaState.selectedCharacter);
+  attackAimBeam.visible = !melee;
+  attackAimRing.visible = melee;
+  if (melee) {
+    attackAimRing.scale.setScalar(range);
+  } else {
+    attackAimBeam.scale.set(0.42, range, 1);
+    attackAimBeam.position.z = range / 2;
+    attackAimBeam.material.color.setHex(0xffffff);
+  }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = melee ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
@@ -2957,14 +2974,6 @@ function animate() {
   } else {
     // 수동 에임 중이면 카메라가 조준 방향 뒤로 부드럽게 돌아간다
     cameraTarget.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
-    if (cameraShake > 0.001) {
-      cameraTarget.x += (Math.random() - 0.5) * cameraShake;
-      cameraTarget.y += (Math.random() - 0.5) * cameraShake * 0.6;
-      cameraTarget.z += (Math.random() - 0.5) * cameraShake;
-      cameraShake *= Math.exp(-9 * dt);
-    } else {
-      cameraShake = 0;
-    }
     const horizontal = Math.cos(pitch) * distance;
     const desired = new THREE.Vector3(
       cameraTarget.x - Math.sin(yaw) * horizontal,
