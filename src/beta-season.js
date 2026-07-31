@@ -1151,7 +1151,6 @@ modalContent.addEventListener("click", (event) => {
 
 const CRIMSON = BETA_CHARACTERS.crimson;
 const crimsonSlashes = [];
-let crimsonAttackReady = true;
 const betaProjectiles = [];
 let generalAttackReady = true;
 let purpleAttackIndex = 0;
@@ -1533,6 +1532,7 @@ function getBetaAttackRange(id, def) {
   if (id === "purple") return Math.max(def.needleRange, def.vialRange);
   if (id === "pink") return def.healCircleRange;
   if (id === "gold") return def.stage1Range;
+  if (id === "crimson") return def.attackRange;
   return 0;
 }
 
@@ -1609,7 +1609,6 @@ function performCharacterAttack({ manualAim = false } = {}) {
   if (goldRushState.dead) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
-  if (id === "crimson") return performCrimsonAttack();
   if (!generalAttackReady) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
@@ -1689,6 +1688,8 @@ function performCharacterAttack({ manualAim = false } = {}) {
     goldStageHits.set(attackId, new Map());
     spawnGoldProjectile(player.position, player.rotation.y, 1, attackId);
     attackComboState.textContent = "금광석 1단계";
+  } else if (id === "crimson") {
+    CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
   }
   setTimeout(() => {
     generalAttackReady = true;
@@ -1763,21 +1764,6 @@ function createCrimsonSlash(hitIndex) {
   attackComboState.textContent = `${hitIndex + 1}/${CRIMSON.attackCount} · ${hitDamage} 피해`;
 }
 
-function performCrimsonAttack() {
-  if (betaState.selectedCharacter !== "crimson" || !crimsonAttackReady) return;
-  autoAimAtNearestTarget(CRIMSON.attackRange);
-  crimsonAttackReady = false;
-  crimsonAttackButton.classList.add("cooldown");
-  CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
-  setTimeout(() => {
-    attackComboState.textContent = "재장전 중 · 0.5초";
-  }, CRIMSON.attackIntervalMs * (CRIMSON.attackCount - 1) + 40);
-  setTimeout(() => {
-    crimsonAttackReady = true;
-    crimsonAttackButton.classList.remove("cooldown");
-    attackComboState.textContent = "준비";
-  }, CRIMSON.attackIntervalMs * (CRIMSON.attackCount - 1) + CRIMSON.reloadDuration * 1000);
-}
 crimsonAttackButton.addEventListener("click", performCharacterAttack);
 
 let crimsonUltimateCharge = 0;
