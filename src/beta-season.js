@@ -732,7 +732,7 @@ function applySelectedSkinVisual() {
   bodyMat.color.setHex(skinColors[skinId] ?? character?.color ?? 0xef3c58);
   bodyMat.metalness = skinId.startsWith("beta2_gold_") ? 0.7 : skinId === "beta_red_red" ? 0.45 : skinId.startsWith("beta_red_") ? 0.2 : 0;
   bodyMat.roughness = skinId.startsWith("beta2_gold_") ? 0.22 : skinId.startsWith("beta_red_") ? 0.32 : 0.55;
-  const crownVisible = skinId.startsWith("crown_");
+  const crownVisible = skinId === "alpha_champion_cyan" || skinId.startsWith("crown_");
   if (crownVisible) {
     const variant = getCrownVariant(skinId);
     if (crown.userData.variant !== variant) replaceCrown(variant);
@@ -1197,6 +1197,7 @@ function damageTarget(target, damage, causesKnockback = false) {
     target.userData.knockbackZ = (pushZ / pushLength) * pushStrength;
     target.userData.hitRecoil = 1;
   }
+  createHitImpact(target.position);
   createRedThemeHitEffect(target.position);
   flashTarget(target);
   if (target.userData.health <= 0) target.visible = false;
@@ -1205,6 +1206,58 @@ function damageTarget(target, damage, causesKnockback = false) {
 function getActiveRedThemeSkin() {
   const skinId = betaState.selectedSkins[betaState.selectedCharacter] || "";
   return skinId.startsWith("beta_red_") ? skinId : "";
+}
+
+// 타격 시 화면 흔들림. 값이 쌓이고 매 프레임 감쇠한다.
+let cameraShake = 0;
+function addCameraShake(amount) {
+  cameraShake = Math.min(0.5, cameraShake + amount);
+}
+
+// 부드럽게 퍼지는 원형 그라디언트. 단색 평면보다 이펙트가 덜 밋밋해진다.
+let _sparkTexture = null;
+function getSparkTexture() {
+  if (_sparkTexture) return _sparkTexture;
+  const size = 64;
+  const canvasEl = document.createElement("canvas");
+  canvasEl.width = size;
+  canvasEl.height = size;
+  const ctx = canvasEl.getContext("2d");
+  const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  gradient.addColorStop(0, "rgba(255,255,255,1)");
+  gradient.addColorStop(0.35, "rgba(255,255,255,0.55)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+  _sparkTexture = new THREE.CanvasTexture(canvasEl);
+  return _sparkTexture;
+}
+
+// 피격 임팩트 — 스킨과 무관하게 모든 타격에서 터진다.
+// 밝은 코어와 퍼지는 잔광을 겹쳐 타격감을 준다.
+function createHitImpact(position, color = 0xffd9a0) {
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(0.22, 10, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  core.position.copy(position);
+  core.position.y += 0.9;
+  scene.add(core);
+  crimsonSlashes.push({ group: core, mesh: core, life: 0.16, maxLife: 0.16, grow: 2.4 });
+
+  const glow = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.5, 1.5),
+    new THREE.MeshBasicMaterial({
+      map: getSparkTexture(), color, transparent: true, opacity: 0.85,
+      depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    }),
+  );
+  glow.position.copy(core.position);
+  glow.lookAt(camera.position);
+  scene.add(glow);
+  crimsonSlashes.push({ group: glow, mesh: glow, life: 0.28, maxLife: 0.28, grow: 2.1 });
+
+  addCameraShake(0.16);
 }
 
 function createRedThemeHitEffect(position) {
@@ -1229,7 +1282,7 @@ function createRedThemeHitEffect(position) {
   crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.3, maxLife: 0.3 });
 }
 
-function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, causesKnockback = false }) {
+function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false }) {
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
   const redThemeColor = redThemeSkin === "beta_red_crimson" ? 0x8f0019 : redThemeSkin === "beta_red_red" ? 0xff2842 : 0xd72834;
@@ -1272,7 +1325,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     player.position.z - Math.sin(yaw) * lateralOffset,
   );
   scene.add(mesh);
-  betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, launchY: mesh.position.y });
+  betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, returnDamageMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, launchY: mesh.position.y });
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
   canvas.dataset.lastProjectileType = type;
 }
@@ -1292,9 +1345,12 @@ function createGoldIngotGeometry() {
   return geometry;
 }
 
-function spawnOrangeJuice(position) {
+function spawnOrangeJuice(position, directHitTarget = null) {
   const def = BETA_CHARACTERS.orange;
   const range = def.bombSplashRange * def.blastRadiusMultiplier;
+  const blockedDirectHits = directHitTarget
+    ? Math.max(0, def.bombSplashCount - def.bombDirectHitJuiceCount)
+    : 0;
   createGroundPulse(range, 0xffb12b, position);
   for (let i = 0; i < def.bombSplashCount; i += 1) {
     const angle = (i / def.bombSplashCount) * Math.PI * 2;
@@ -1311,7 +1367,7 @@ function spawnOrangeJuice(position) {
       speed: def.bombSplashSpeed, traveled: 0, returnTraveled: 0,
       range, damage: def.bombSplashDamage, splash: 0,
       type: "orangeJuice", hitRadius: def.bombSplashHitRadius,
-      hit: new Set(), causesKnockback: false,
+      hit: new Set(i < blockedDirectHits ? [directHitTarget] : []), causesKnockback: false,
     });
     canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
   }
@@ -1411,7 +1467,7 @@ function applyGoldProjectileHit(projectile, target) {
 }
 
 // 레드 일자 공격의 폭. 판정과 이펙트가 같은 값을 쓴다.
-const RED_ATTACK_WIDTH = 1.7;
+const RED_BASE_ATTACK_WIDTH = 1.7;
 
 // X자를 이루는 두 타격의 기울기. 본 게임 레드의 이펙트 각도와 같다.
 const RED_SLASH_ANGLES = [-20, 20].map((deg) => deg * (Math.PI / 180));
@@ -1554,20 +1610,21 @@ function performCharacterAttack({ manualAim = false } = {}) {
   startModelAttackMotion(id);
   attackComboState.textContent = "공격 중";
   if (id === "red") {
+    const attackWidth = RED_BASE_ATTACK_WIDTH * def.attackWidthMultiplier;
     // 타격마다 기울어진 획(X자)과 가운데 일자를 함께 낸다. 획은 중앙에서
     // 교차했다가 양 끝으로 퍼진다.
     const strike = (index) => {
       const angle = RED_SLASH_ANGLES[index % RED_SLASH_ANGLES.length];
-      hitSlashes(def.attackRange, RED_ATTACK_WIDTH / 2, [angle, 0], def.attackDamage);
-      createGroundSlash(def.attackRange, RED_ATTACK_WIDTH, 0xff554b, angle);
-      createGroundSlash(def.attackRange, RED_ATTACK_WIDTH * 0.8, 0xffa08a, 0);
+      hitSlashes(def.attackRange, attackWidth / 2, [angle, 0], def.attackDamage);
+      createGroundSlash(def.attackRange, attackWidth, 0xff554b, angle);
+      createGroundSlash(def.attackRange, attackWidth * 0.8, 0xffa08a, 0);
     };
     strike(0);
     for (let i = 1; i < def.attackCount; i += 1) {
       setTimeout(() => strike(i), def.attackIntervalMs * i);
     }
   } else if (id === "green") {
-    def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier }));
+    def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier, returnDamageMultiplier: def.boomerangReturnDamageMultiplier }));
   } else if (id === "blue") {
     fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14 });
   } else if (id === "orange") {
@@ -1585,9 +1642,12 @@ function performCharacterAttack({ manualAim = false } = {}) {
     if (vial) {
       fireBetaProjectile({ speed: def.vialSpeed, range: def.vialRange, damage: def.vialDamage, color: 0xc04cff, radius: 0.3, splash: def.vialSplashRadius, type: "vial" });
     } else {
-      const angleStep = def.needleCount > 1 ? def.needleSpreadAngle / (def.needleCount - 1) : 0;
       for (let i = 0; i < def.needleCount; i += 1) {
-        const angle = def.needleCount > 1 ? -def.needleSpreadAngle / 2 + i * angleStep : 0;
+        const angle = def.needleRadial
+          ? (i / def.needleCount) * Math.PI * 2
+          : def.needleCount > 1
+            ? -def.needleSpreadAngle / 2 + i * (def.needleSpreadAngle / (def.needleCount - 1))
+            : 0;
         fireBetaProjectile({ angle, speed: def.needleSpeed, range: def.needleRange, damage: def.needleDamage, color: 0x8a25c7, radius: 0.11, type: "needle" });
       }
     }
@@ -1621,10 +1681,16 @@ function performCharacterAttack({ manualAim = false } = {}) {
 }
 
 function flashTarget(target) {
-  const material = target.userData.mesh.material;
-  const previous = material.emissive.getHex();
-  material.emissive.setHex(0xff4030);
-  setTimeout(() => material.emissive.setHex(previous), 110);
+  const material = target.userData.mesh?.material;
+  if (material?.emissive) {
+    const previous = material.emissive.getHex();
+    material.emissive.setHex(0xff4030);
+    setTimeout(() => material.emissive.setHex(previous), 110);
+  }
+  // 맞는 순간 살짝 움츠렸다 돌아오게 해서 반응을 눈에 띄게 한다
+  const baseScale = target.userData.baseScale ?? 1;
+  target.scale.setScalar(baseScale * 1.16);
+  setTimeout(() => target.scale.setScalar(baseScale), 90);
 }
 
 function hitTargetsInFan(angleOffset, damage) {
@@ -1639,6 +1705,7 @@ function hitTargetsInFan(angleOffset, damage) {
     target.userData.health -= damage;
     crimsonUltimateCharge = Math.min(CRIMSON.ultimateChargeRequired, crimsonUltimateCharge + 1);
     updateCrimsonUltimateGauge();
+    createHitImpact(target.position);
     createRedThemeHitEffect(target.position);
     flashTarget(target);
     if (target.userData.health <= 0) target.visible = false;
@@ -1646,6 +1713,7 @@ function hitTargetsInFan(angleOffset, damage) {
 }
 
 function createCrimsonSlash(hitIndex) {
+  const hitDamage = CRIMSON.attackDamages?.[hitIndex] ?? CRIMSON.attackDamage;
   const halfAngle = CRIMSON.attackHalfAngle;
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
@@ -1674,8 +1742,8 @@ function createCrimsonSlash(hitIndex) {
   scene.add(group);
   mesh.renderOrder = 20;
   crimsonSlashes.push({ group, mesh, life: 0.65, maxLife: 0.65 });
-  hitTargetsInFan(CRIMSON.attackAngles[hitIndex], CRIMSON.attackDamage);
-  attackComboState.textContent = `${hitIndex + 1}/${CRIMSON.attackCount} · ${CRIMSON.attackDamage} 피해`;
+  hitTargetsInFan(CRIMSON.attackAngles[hitIndex], hitDamage);
+  attackComboState.textContent = `${hitIndex + 1}/${CRIMSON.attackCount} · ${hitDamage} 피해`;
 }
 
 function performCrimsonAttack() {
@@ -2089,6 +2157,7 @@ function damageGoldRushBot(bot, damage) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
   bot.health = Math.max(0, bot.health - damage);
   bot.mesh.userData.health = bot.health;
+  createHitImpact(bot.mesh.position);
   updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
   bot.marker.material.color.setHex(0xffffff);
   setTimeout(() => {
@@ -2602,6 +2671,7 @@ function animate() {
     let remove = false;
     let shouldSplitGold = false;
     let shouldSplitOrange = false;
+    let orangeDirectHitTarget = null;
     let shouldBreakVial = false;
     if (projectile.type === "boomerang" && projectile.returned) {
       const returnX = player.position.x - projectile.mesh.position.x;
@@ -2688,9 +2758,15 @@ function animate() {
           flashTarget(target);
           if (target.userData.health <= 0) target.visible = false;
         } else {
-          damageTarget(target, projectile.damage, projectile.causesKnockback);
+          const damage = projectile.type === "boomerang" && projectile.returned
+            ? projectile.damage * projectile.returnDamageMultiplier
+            : projectile.damage;
+          damageTarget(target, damage, projectile.causesKnockback);
         }
-        if (projectile.type === "orangeFruit") shouldSplitOrange = true;
+        if (projectile.type === "orangeFruit") {
+          shouldSplitOrange = true;
+          orangeDirectHitTarget = target;
+        }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
@@ -2707,6 +2783,7 @@ function animate() {
     }
     if (projectile.type === "boomerang" && !projectile.returned && projectile.traveled >= projectile.range) {
       projectile.returned = true;
+      projectile.hit.clear();
     }
     if (projectile.type === "boomerang") {
       if (projectile.returnTraveled >= projectile.range * 2) remove = true;
@@ -2719,7 +2796,7 @@ function animate() {
     }
     if (remove) {
       if (shouldSplitGold) splitGoldProjectile(projectile);
-      if (shouldSplitOrange) spawnOrangeJuice(projectile.mesh.position.clone());
+      if (shouldSplitOrange) spawnOrangeJuice(projectile.mesh.position.clone(), orangeDirectHitTarget);
       if (shouldBreakVial) breakVial(projectile);
       scene.remove(projectile.mesh);
       projectile.mesh.geometry.dispose();
@@ -2731,8 +2808,11 @@ function animate() {
     const slash = crimsonSlashes[i];
     slash.life -= dt;
     const progress = 1 - slash.life / slash.maxLife;
-    slash.mesh.material.opacity = Math.max(0, 0.72 * (1 - progress));
-    slash.mesh.scale.setScalar(0.86 + progress * 0.2);
+    // 처음엔 빠르게 밝고 뒤로 갈수록 천천히 사라지도록 감쇠 곡선을 준다
+    const fade = (1 - progress) * (1 - progress);
+    slash.mesh.material.opacity = Math.max(0, (slash.peakOpacity ?? 0.72) * fade);
+    const grow = slash.grow ?? 1.2;
+    slash.mesh.scale.setScalar(0.86 + progress * (grow - 0.86));
     if (slash.life <= 0) {
       scene.remove(slash.group);
       slash.mesh.geometry.dispose();
@@ -2876,13 +2956,15 @@ function animate() {
     camera.lookAt(0, 0, 0);
   } else {
     // 수동 에임 중이면 카메라가 조준 방향 뒤로 부드럽게 돌아간다
-    if (holdAiming || manualAimActive) {
-      let diff = player.rotation.y - yaw;
-      while (diff > Math.PI) diff -= Math.PI * 2;
-      while (diff < -Math.PI) diff += Math.PI * 2;
-      yaw += diff * (1 - Math.exp(-6 * dt));
-    }
     cameraTarget.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
+    if (cameraShake > 0.001) {
+      cameraTarget.x += (Math.random() - 0.5) * cameraShake;
+      cameraTarget.y += (Math.random() - 0.5) * cameraShake * 0.6;
+      cameraTarget.z += (Math.random() - 0.5) * cameraShake;
+      cameraShake *= Math.exp(-9 * dt);
+    } else {
+      cameraShake = 0;
+    }
     const horizontal = Math.cos(pitch) * distance;
     const desired = new THREE.Vector3(
       cameraTarget.x - Math.sin(yaw) * horizontal,
