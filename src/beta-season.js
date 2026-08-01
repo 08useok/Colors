@@ -2508,12 +2508,16 @@ function updateGoldRush(dt) {
       respawnOverlay.classList.add("hidden");
     }
   }
-  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && generalAttackReady) {
+  // 한 발만 써도 곧바로 채워진다. 공격 쿨다운과 무관하게 진행한다.
+  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo) {
     goldRushState.reloadTimer += dt;
+    let reloaded = false;
     while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
       goldRushState.reloadTimer -= goldRushState.reloadDuration;
       goldRushState.ammo += 1;
+      reloaded = true;
     }
+    if (reloaded) updateGoldRushCombatHud();
   } else if (goldRushState.ammo >= goldRushState.maxAmmo) {
     goldRushState.reloadTimer = 0;
   }
