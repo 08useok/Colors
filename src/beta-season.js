@@ -1061,6 +1061,8 @@ const DAILY_REWARD_TIERS = [
 let dailyRewardTierIndex = 0;
 let dailyRewardSpinning = false;
 let dailyRewardComplete = false;
+// 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
+// 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
 const DAILY_REWARD_UPGRADE_CHANCE = 0.45;
 let dailyRewardAttemptsUsed = 0;
@@ -1076,8 +1078,7 @@ function updateDailyRewardReveal() {
     ? `업그레이드 ${dailyRewardAttemptsUsed}회 완료`
     : `업그레이드 기회 ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}`;
   // 남은 기회가 있고 아직 최고 등급이 아닐 때만 일괄 사용 버튼을 보여준다
-  const topTier = dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
-  const showUpgradeAll = !dailyRewardComplete && remaining > 0 && !topTier;
+  const showUpgradeAll = !dailyRewardComplete && remaining > 0 && !dailyRewardAtTopTier();
   dailyRewardUpgradeAll.classList.toggle("hidden", !showUpgradeAll);
   dailyRewardUpgradeAll.textContent = `남은 ${remaining}회 한 번에 사용`;
 }
@@ -1120,27 +1121,36 @@ function finishDailyReward() {
 }
 
 // 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
+// 굴림 1회. 성공하면 기회를 1회 돌려주므로 실패했을 때만 기회가 준다.
 function rollDailyRewardUpgrade() {
   const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
   const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
   if (upgraded) dailyRewardTierIndex += 1;
+  else dailyRewardAttemptsUsed += 1;
   return upgraded;
 }
 
+function dailyRewardAttemptsLeft() {
+  return Math.max(0, DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed);
+}
+
+function dailyRewardAtTopTier() {
+  return dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
+}
+
 // 남은 기회를 한 번에 소모한다. 판정 확률은 한 번씩 누르는 것과 같다.
+// 성공해도 기회가 줄지 않으므로, 끝날 때까지(실패 소진 또는 최고 등급) 자동으로 굴린다
 dailyRewardUpgradeAll.addEventListener("click", () => {
   if (dailyRewardSpinning || dailyRewardComplete) return;
-  const remaining = DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed;
-  if (remaining <= 0) return;
+  if (dailyRewardAttemptsLeft() <= 0 || dailyRewardAtTopTier()) return;
   dailyRewardSpinning = true;
   dailyRewardStar.classList.add("spinning");
   dailyRewardUpgradeAll.disabled = true;
-  dailyRewardMessage.textContent = `남은 ${remaining}회를 한 번에 사용합니다…`;
+  dailyRewardMessage.textContent = "남은 기회를 한 번에 사용합니다…";
   const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
   setTimeout(() => {
     let gained = 0;
-    for (let i = 0; i < remaining; i += 1) {
-      dailyRewardAttemptsUsed += 1;
+    while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
       if (rollDailyRewardUpgrade()) gained += 1;
     }
     dailyRewardStar.classList.remove("spinning");
@@ -1162,18 +1172,16 @@ dailyRewardStar.addEventListener("click", () => {
   setTimeout(() => {
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
-    dailyRewardAttemptsUsed += 1;
     const upgraded = rollDailyRewardUpgrade();
     updateDailyRewardReveal();
-    const attemptsRemaining = DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed;
-    const reachedTopTier = dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
-    if (attemptsRemaining <= 0 || reachedTopTier) {
+    const attemptsRemaining = dailyRewardAttemptsLeft();
+    if (attemptsRemaining <= 0 || dailyRewardAtTopTier()) {
       finishDailyReward();
       return;
     }
     dailyRewardMessage.textContent = upgraded
-      ? `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 남은 기회 ${attemptsRemaining}회`
-      : `등급 유지 · 남은 업그레이드 기회 ${attemptsRemaining}회`;
+      ? `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 기회는 그대로 ${attemptsRemaining}회`
+      : `등급 유지 · 남은 기회 ${attemptsRemaining}회`;
   }, 900);
 });
 
