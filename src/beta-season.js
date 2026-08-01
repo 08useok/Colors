@@ -1045,7 +1045,7 @@ function renderDaily(result = "") {
   </div>`;
 }
 
-// 9·10단계 이름은 아직 미정이라 자리표시자를 둔다
+// 9단계 이름은 말 그대로 "???"다. 자리표시자가 아니라 확정된 이름.
 const DAILY_REWARD_TIERS = [
   { id: "common", name: "일반", credits: 100, coins: 250 },
   { id: "rare", name: "희귀", credits: 150, coins: 400 },
@@ -1055,8 +1055,8 @@ const DAILY_REWARD_TIERS = [
   { id: "unique", name: "유니크", credits: 900, coins: 3200 },
   { id: "ultra", name: "울트라 전설", credits: 1400, coins: 5000 },
   { id: "transcend", name: "초월", credits: 2100, coins: 8000 },
-  { id: "unknown9", name: "???", credits: 3200, coins: 12000 },
-  { id: "unknown10", name: "????", credits: 5000, coins: 20000 },
+  { id: "unknown", name: "???", credits: 3200, coins: 12000 },
+  { id: "absolute", name: "절대", credits: 5000, coins: 20000 },
 ];
 let dailyRewardTierIndex = 0;
 let dailyRewardSpinning = false;
