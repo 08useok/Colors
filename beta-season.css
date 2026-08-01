@@ -237,6 +237,22 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
   font-weight: 900;
   cursor: pointer;
 }
+.daily-reward-upgrade-all {
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 12px;
+  padding: 8px 16px;
+  color: #f4f7ff;
+  background: rgba(255, 255, 255, .1);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.daily-reward-upgrade-all:disabled {
+  opacity: .45;
+  cursor: default;
+}
+
 @keyframes daily-star-spin {
   0% { transform: rotate(0) scale(1); }
   55% { transform: rotate(540deg) scale(1.24); filter: drop-shadow(0 0 42px currentColor) brightness(1.8); }

@@ -48,6 +48,7 @@ const dailyRewardStar = document.getElementById("daily-reward-star");
 const dailyRewardAttempts = document.getElementById("daily-reward-attempts");
 const dailyRewardMessage = document.getElementById("daily-reward-message");
 const dailyRewardReturn = document.getElementById("daily-reward-return");
+const dailyRewardUpgradeAll = document.getElementById("daily-reward-upgrade-all");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
 const CHARACTER_MODEL_VERSION = "62";
 const CHARACTERS = [
@@ -366,11 +367,15 @@ function applyBetaToonRendering(model, characterId) {
 
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
+  // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
+  // 구별이 안 됐다 — 뚜렷한 골드 톤 + emissive 글로우로 대체.
   const tintHex = {
     beta_red_orange: 0xb3261e,
-    beta2_gold_orange: 0xf6a51c,
+    beta2_gold_orange: 0xb8720a,
+    beta2_gold_yellow: 0xd9a520,
   }[skinId];
   const tint = tintHex ? new THREE.Color(tintHex) : null;
+  const emissiveHex = skinId === "beta2_gold_orange" ? 0x4a2a00 : skinId === "beta2_gold_yellow" ? 0x3d2600 : null;
   model.traverse((child) => {
     if (!child.isMesh) return;
     const materials = Array.isArray(child.material) ? child.material : [child.material];
@@ -378,7 +383,16 @@ function applySkinPaletteToModel(model, characterId) {
       if (!material?.color || material.isMeshBasicMaterial) continue;
       material.userData.baseSkinColor ??= material.color.clone();
       material.color.copy(material.userData.baseSkinColor);
-      if (tint) material.color.lerp(tint, skinId === "beta2_gold_orange" ? 0.68 : 0.5);
+      if (tint) material.color.lerp(tint, skinId === "beta2_gold_orange" ? 0.8 : 0.75);
+      if ("emissive" in material) {
+        material.userData.baseSkinEmissive ??= material.emissive.clone();
+        if (emissiveHex) {
+          material.emissive.set(emissiveHex);
+          material.emissiveIntensity = skinId === "beta2_gold_orange" ? 0.65 : 0.5;
+        } else {
+          material.emissive.copy(material.userData.baseSkinEmissive);
+        }
+      }
     }
   });
 }
@@ -1031,17 +1045,24 @@ function renderDaily(result = "") {
   </div>`;
 }
 
+// 9·10단계 이름은 아직 미정이라 자리표시자를 둔다
 const DAILY_REWARD_TIERS = [
   { id: "common", name: "일반", credits: 100, coins: 250 },
   { id: "rare", name: "희귀", credits: 150, coins: 400 },
   { id: "epic", name: "초희귀", credits: 250, coins: 700 },
-  { id: "legendary", name: "영웅", credits: 400, coins: 1200 },
-  { id: "mythic", name: "전설", credits: 600, coins: 2000 },
+  { id: "mythic", name: "신화", credits: 400, coins: 1200 },
+  { id: "legendary", name: "전설", credits: 600, coins: 2000 },
+  { id: "unique", name: "유니크", credits: 900, coins: 3200 },
+  { id: "ultra", name: "울트라 전설", credits: 1400, coins: 5000 },
+  { id: "transcend", name: "초월", credits: 2100, coins: 8000 },
+  { id: "unknown9", name: "???", credits: 3200, coins: 12000 },
+  { id: "unknown10", name: "????", credits: 5000, coins: 20000 },
 ];
 let dailyRewardTierIndex = 0;
 let dailyRewardSpinning = false;
 let dailyRewardComplete = false;
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
+const DAILY_REWARD_UPGRADE_CHANCE = 0.45;
 let dailyRewardAttemptsUsed = 0;
 
 function updateDailyRewardReveal() {
@@ -1054,6 +1075,11 @@ function updateDailyRewardReveal() {
   dailyRewardAttempts.textContent = dailyRewardComplete
     ? `업그레이드 ${dailyRewardAttemptsUsed}회 완료`
     : `업그레이드 기회 ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}`;
+  // 남은 기회가 있고 아직 최고 등급이 아닐 때만 일괄 사용 버튼을 보여준다
+  const topTier = dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
+  const showUpgradeAll = !dailyRewardComplete && remaining > 0 && !topTier;
+  dailyRewardUpgradeAll.classList.toggle("hidden", !showUpgradeAll);
+  dailyRewardUpgradeAll.textContent = `남은 ${remaining}회 한 번에 사용`;
 }
 
 function showDailyRewardReveal() {
@@ -1064,6 +1090,7 @@ function showDailyRewardReveal() {
   dailyRewardAttemptsUsed = 0;
   dailyRewardStar.disabled = false;
   dailyRewardStar.classList.remove("spinning");
+  dailyRewardUpgradeAll.disabled = false;
   dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
   dailyRewardReturn.classList.add("hidden");
   updateDailyRewardReveal();
@@ -1092,6 +1119,41 @@ function finishDailyReward() {
   dailyRewardReturn.classList.remove("hidden");
 }
 
+// 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
+function rollDailyRewardUpgrade() {
+  const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
+  const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
+  if (upgraded) dailyRewardTierIndex += 1;
+  return upgraded;
+}
+
+// 남은 기회를 한 번에 소모한다. 판정 확률은 한 번씩 누르는 것과 같다.
+dailyRewardUpgradeAll.addEventListener("click", () => {
+  if (dailyRewardSpinning || dailyRewardComplete) return;
+  const remaining = DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed;
+  if (remaining <= 0) return;
+  dailyRewardSpinning = true;
+  dailyRewardStar.classList.add("spinning");
+  dailyRewardUpgradeAll.disabled = true;
+  dailyRewardMessage.textContent = `남은 ${remaining}회를 한 번에 사용합니다…`;
+  const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  setTimeout(() => {
+    let gained = 0;
+    for (let i = 0; i < remaining; i += 1) {
+      dailyRewardAttemptsUsed += 1;
+      if (rollDailyRewardUpgrade()) gained += 1;
+    }
+    dailyRewardStar.classList.remove("spinning");
+    dailyRewardSpinning = false;
+    const endTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+    updateDailyRewardReveal();
+    finishDailyReward();
+    dailyRewardMessage.textContent = gained > 0
+      ? `${startTier} → ${endTier} · ${gained}단계 상승! ${dailyRewardMessage.textContent}`
+      : `${startTier} 등급 유지 · ${dailyRewardMessage.textContent}`;
+  }, 1100);
+});
+
 dailyRewardStar.addEventListener("click", () => {
   if (dailyRewardSpinning || dailyRewardComplete) return;
   dailyRewardSpinning = true;
@@ -1101,11 +1163,7 @@ dailyRewardStar.addEventListener("click", () => {
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
     dailyRewardAttemptsUsed += 1;
-    const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
-    const upgraded = canUpgrade && Math.random() < 0.45;
-    if (upgraded) {
-      dailyRewardTierIndex += 1;
-    }
+    const upgraded = rollDailyRewardUpgrade();
     updateDailyRewardReveal();
     const attemptsRemaining = DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed;
     const reachedTopTier = dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
