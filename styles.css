@@ -2071,6 +2071,23 @@ body {
   margin-bottom: 10px;
 }
 
+.patch-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 210, 158, 0.55);
+  margin: 4px 0 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 210, 158, 0.15);
+}
+
+.patch-section-label:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
 .patch-version {
   font-size: 13px;
   font-weight: 800;
