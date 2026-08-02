@@ -1190,7 +1190,7 @@ dailyRewardUpgradeAll.addEventListener("click", () => {
     dailyRewardMessage.textContent = gained > 0
       ? `${startTier} → ${endTier} · ${gained}단계 상승! ${dailyRewardMessage.textContent}`
       : `${startTier} 등급 유지 · ${dailyRewardMessage.textContent}`;
-  }, 1100);
+  }, 900);
 });
 
 dailyRewardStar.addEventListener("click", () => {
