@@ -1064,7 +1064,10 @@ let dailyRewardComplete = false;
 // 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
 // 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
-const DAILY_REWARD_UPGRADE_CHANCE = 0.55;
+// 현재 등급(dailyRewardTierIndex)에서 다음 단계로 성공할 확률. 등급이
+// 높아질수록 오르기 어려워진다. 마지막 값(절대)은 이미 최고 등급이라
+// canUpgrade 체크에 걸려 사용되지 않는다.
+const DAILY_REWARD_UPGRADE_CHANCE_BY_TIER = [0.60, 0.40, 0.30, 0.25, 0.21, 0.10, 0.05, 0.03, 0.02, 0.01];
 let dailyRewardAttemptsUsed = 0;
 
 function updateDailyRewardReveal() {
@@ -1142,7 +1145,8 @@ function rollUpgradeJumpSteps() {
 // 굴림 1회. 성공하면 기회를 1회 돌려주므로 실패했을 때만 기회가 준다.
 function rollDailyRewardUpgrade() {
   const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
-  const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
+  const chance = DAILY_REWARD_UPGRADE_CHANCE_BY_TIER[dailyRewardTierIndex] ?? 0;
+  const upgraded = canUpgrade && Math.random() < chance;
   if (upgraded) {
     const steps = rollUpgradeJumpSteps();
     dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
