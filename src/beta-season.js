@@ -1084,7 +1084,7 @@ function updateDailyRewardReveal() {
 }
 
 function showDailyRewardReveal() {
-  if (betaState.daily.claimed) return;
+  // 베타 테스트 페이지는 반복 테스트용이라 하루 1회 제한을 두지 않는다
   dailyRewardTierIndex = 0;
   dailyRewardSpinning = false;
   dailyRewardComplete = false;
