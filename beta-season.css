@@ -222,7 +222,7 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .daily-reward-reveal[data-tier="rare"] .daily-reward-star,
 .daily-reward-reveal[data-tier="rare"] #daily-reward-grade { color: #62c7ff; }
 .daily-reward-reveal[data-tier="epic"] .daily-reward-star,
-.daily-reward-reveal[data-tier="epic"] #daily-reward-grade { color: #d779ff; }
+.daily-reward-reveal[data-tier="epic"] #daily-reward-grade { color: #39ffb0; }
 .daily-reward-reveal[data-tier="legendary"] .daily-reward-star,
 .daily-reward-reveal[data-tier="legendary"] #daily-reward-grade { color: #ffd84d; }
 .daily-reward-reveal[data-tier="mythic"] .daily-reward-star,
