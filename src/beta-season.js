@@ -1218,7 +1218,37 @@ modalContent.addEventListener("click", (event) => {
 const CRIMSON = BETA_CHARACTERS.crimson;
 const crimsonSlashes = [];
 const betaProjectiles = [];
+const damagePopups = [];
 let generalAttackReady = true;
+
+// 본 게임(main.js)의 createDamagePopup을 그대로 이식한 데미지 숫자 표시
+function createDamagePopup(position, amount, color = "#ffd27a", prefixOverride = null) {
+  const popupCanvas = document.createElement("canvas");
+  popupCanvas.width = 128;
+  popupCanvas.height = 64;
+  const ctx = popupCanvas.getContext("2d");
+  ctx.font = "bold 40px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.7)";
+  ctx.fillStyle = color;
+  const prefix = prefixOverride ?? (color === "#ff5c5c" ? "-" : "");
+  const text = `${prefix}${Math.round(amount)}`;
+  ctx.strokeText(text, 64, 32);
+  ctx.fillText(text, 64, 32);
+
+  const texture = new THREE.CanvasTexture(popupCanvas);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }),
+  );
+  sprite.scale.set(1.4, 0.7, 1);
+  sprite.position.copy(position);
+  sprite.position.y += 3.6;
+  sprite.position.x += (Math.random() - 0.5) * 0.6;
+  scene.add(sprite);
+  damagePopups.push({ mesh: sprite, life: 0.7, maxLife: 0.7 });
+}
 let purpleAttackIndex = 0;
 let goldUltimateCharge = 0;
 let pinkUltimateCharge = 0;
@@ -1265,6 +1295,7 @@ function damageTarget(target, damage, causesKnockback = false) {
     damageGoldRushBot(target.userData.goldRushBot, damage);
     return;
   }
+  createDamagePopup(target.position, damage);
   target.userData.health -= damage;
   if (causesKnockback) {
     const pushX = target.position.x - player.position.x;
@@ -2226,6 +2257,7 @@ function damageGoldRushBot(bot, damage) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
   bot.health = Math.max(0, bot.health - damage);
   bot.mesh.userData.health = bot.health;
+  createDamagePopup(bot.mesh.position, damage);
   createHitImpact(bot.mesh.position);
   updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
   bot.marker.material.color.setHex(0xffffff);
@@ -2891,6 +2923,18 @@ function animate() {
       slash.mesh.geometry.dispose();
       slash.mesh.material.dispose();
       crimsonSlashes.splice(i, 1);
+    }
+  }
+  for (let i = damagePopups.length - 1; i >= 0; i -= 1) {
+    const popup = damagePopups[i];
+    popup.life -= dt;
+    popup.mesh.position.y += dt * 1.4;
+    popup.mesh.material.opacity = Math.max(0, popup.life / popup.maxLife);
+    if (popup.life <= 0) {
+      scene.remove(popup.mesh);
+      popup.mesh.material.map.dispose();
+      popup.mesh.material.dispose();
+      damagePopups.splice(i, 1);
     }
   }
   for (let i = malfunctionZones.length - 1; i >= 0; i -= 1) {
