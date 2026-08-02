@@ -1120,13 +1120,35 @@ function finishDailyReward() {
   dailyRewardReturn.classList.remove("hidden");
 }
 
+// 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다. 대부분 +1이지만
+// 가끔 +2~+4로 크게 뛰어 한 번의 탭으로 여러 단계가 오르는 손맛을 준다.
+const DAILY_REWARD_JUMP_WEIGHTS = [
+  { steps: 1, weight: 60 },
+  { steps: 2, weight: 25 },
+  { steps: 3, weight: 10 },
+  { steps: 4, weight: 5 },
+];
+function rollUpgradeJumpSteps() {
+  const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (const { steps, weight } of DAILY_REWARD_JUMP_WEIGHTS) {
+    if (roll < weight) return steps;
+    roll -= weight;
+  }
+  return DAILY_REWARD_JUMP_WEIGHTS[0].steps;
+}
+
 // 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
 // 굴림 1회. 성공하면 기회를 1회 돌려주므로 실패했을 때만 기회가 준다.
 function rollDailyRewardUpgrade() {
   const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
   const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
-  if (upgraded) dailyRewardTierIndex += 1;
-  else dailyRewardAttemptsUsed += 1;
+  if (upgraded) {
+    const steps = rollUpgradeJumpSteps();
+    dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
+  } else {
+    dailyRewardAttemptsUsed += 1;
+  }
   return upgraded;
 }
 
