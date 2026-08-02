@@ -2469,6 +2469,9 @@ function endGoldRush(message) {
   goldRushPlayerPanel.classList.add("hidden");
   goldRushStatusEl.textContent = message;
   showToast(message);
+  clearGoldRushBots();
+  goldMine.visible = false;
+  goldRushHud.classList.add("hidden");
   showDailyRewardReveal();
 }
 
