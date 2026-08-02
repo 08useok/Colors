@@ -1064,7 +1064,7 @@ let dailyRewardComplete = false;
 // 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
 // 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
-const DAILY_REWARD_UPGRADE_CHANCE = 0.7;
+const DAILY_REWARD_UPGRADE_CHANCE = 0.55;
 let dailyRewardAttemptsUsed = 0;
 
 function updateDailyRewardReveal() {
