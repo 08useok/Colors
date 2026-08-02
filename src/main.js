@@ -92,9 +92,13 @@ const lobbyLevel = document.getElementById("lobby-level");
 const sidebarProfileNickname = document.getElementById("sidebar-profile-nickname");
 const sidebarProfileLevel = document.getElementById("sidebar-profile-level");
 const patchnotesDock = document.getElementById("patchnotes-dock");
+const lobbyDockActions = document.getElementById("lobby-dock-actions");
+const noticeToggle = document.getElementById("notice-toggle");
+const noticePanel = document.getElementById("notice-panel");
 const patchnotesToggle = document.getElementById("patchnotes-toggle");
 const patchnotesPanel = document.getElementById("patchnotes");
-patchnotesDock.append(patchnotesToggle, patchnotesPanel);
+lobbyDockActions.append(patchnotesToggle);
+patchnotesDock.append(patchnotesPanel);
 const lobbyTrophies = document.getElementById("lobby-trophies");
 const lobbyRecord = document.getElementById("lobby-record");
 const lobbyWinrate = document.getElementById("lobby-winrate");
@@ -1449,6 +1453,7 @@ function syncLobbyStartButton() {
     document.getElementById("stats-panel"),
     document.getElementById("leaderboard-panel"),
     document.getElementById("matchup-table"),
+    document.getElementById("notice-panel"),
     document.getElementById("patchnotes"),
     document.getElementById("pink-front-canvas"),
   ];
@@ -9789,8 +9794,17 @@ function setupInput() {
   });
 
   patchnotesToggle.addEventListener("click", () => {
+    noticePanel.classList.add("hidden");
+    noticeToggle.textContent = "📢 공지";
     patchnotesPanel.classList.toggle("hidden");
     patchnotesToggle.textContent = patchnotesPanel.classList.contains("hidden") ? t("patchnotesBtn") : t("patchnotesBtnClose");
+  });
+
+  noticeToggle.addEventListener("click", () => {
+    patchnotesPanel.classList.add("hidden");
+    patchnotesToggle.textContent = t("patchnotesBtn");
+    noticePanel.classList.toggle("hidden");
+    noticeToggle.textContent = noticePanel.classList.contains("hidden") ? "📢 공지" : "닫기";
   });
 
   document.getElementById("pinkfront-toggle").addEventListener("click", () => {

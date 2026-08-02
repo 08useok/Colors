@@ -2025,6 +2025,12 @@ body {
   pointer-events: none;
 }
 
+.lobby-dock-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .lobby-side-panel.hidden + .patchnotes-dock {
   display: none;
 }
@@ -2033,13 +2039,80 @@ body {
   pointer-events: auto;
 }
 
-.patchnotes-dock #patchnotes-toggle {
+.patchnotes-dock #patchnotes-toggle,
+.patchnotes-dock .notice-toggle {
   min-width: 108px;
   padding: 9px 16px;
   color: #ffe2bd;
   background: linear-gradient(135deg, rgba(62, 34, 17, 0.96), rgba(31, 20, 10, 0.96));
   border-color: rgba(255, 190, 120, 0.5);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+}
+
+.patchnotes-dock .notice-toggle {
+  color: #fff1ad;
+  border-color: rgba(255, 221, 91, 0.62);
+  background: linear-gradient(135deg, rgba(91, 57, 12, 0.97), rgba(43, 26, 8, 0.97));
+}
+
+.lobby-notice {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 20px;
+  color: #fff4df;
+  text-align: left;
+  border: 1px solid rgba(255, 215, 112, 0.42);
+  border-radius: 14px;
+  background: linear-gradient(155deg, rgba(63, 39, 14, 0.98), rgba(21, 13, 8, 0.98));
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.48);
+}
+
+.notice-kicker {
+  margin-bottom: 5px;
+  color: #ffd66e;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.lobby-notice h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+}
+
+.notice-summary,
+.notice-timezone {
+  margin: 0;
+  color: #d9c8ae;
+  font-size: 12px;
+}
+
+.notice-schedule {
+  display: grid;
+  gap: 7px;
+  margin: 16px 0 10px;
+}
+
+.notice-schedule > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: rgba(255, 218, 128, 0.08);
+}
+
+.notice-schedule dt {
+  color: #cbb99f;
+  font-size: 11px;
+}
+
+.notice-schedule dd {
+  margin: 0;
+  color: #ffe29a;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .patchnotes-dock .patchnotes {
