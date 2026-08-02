@@ -727,7 +727,7 @@ const ROTATION_NEW_ABILITIES = {
   red: { name: "분노의 질주", desc: "체력 30% 이하 시 이동속도 증가" },
   green: { name: "더블 바운스", desc: "부메랑 추가 튕김" },
   blue: { name: "관통탄", desc: "탄환이 적을 관통" },
-  orange: { name: "광역 폭발", desc: "폭발 범위 25% 증가 — 베타 시즌 2부터 기본 스킬로 통합" },
+  orange: { name: "광역 폭발", desc: "폭발 범위 25% 증가" },
   yellow: { name: "과부하 감전", desc: "감전 지속 2배 + 이동 감속 65%" },
   cyan: { name: "정밀 사격", desc: "집탄률 증가" },
   purple: { name: "삼중 독침", desc: "독침 3발 부채꼴(90도) 발사 — 베타 시즌 2부터 기본 스킬로 통합" },
@@ -6713,10 +6713,11 @@ function beginBombAttack(fighter) {
 function spawnBombSplash(x, z, ownerId, directHitTargetId = null) {
   const charDef = CHARACTERS.orange;
   const owner = state.players.find((p) => p.id === ownerId);
+  const blastMult = owner?.hasOrangeBlastAbility ? ORANGE_BLAST_ABILITY_MULTIPLIER : 1;
   const directHitTracker = directHitTargetId != null
     ? { targetId: directHitTargetId, count: 0, max: charDef.bombSplashMaxHitsOnDirectTarget ?? Infinity }
     : null;
-  const blastR = 3.75;
+  const blastR = 3 * blastMult;
   const blastR2 = blastR * blastR;
   for (const target of state.players) {
     if (target.dead || target.id === ownerId) continue;
@@ -6751,14 +6752,14 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId = null) {
       vx: Math.sin(angle) * charDef.bombSplashSpeed,
       vz: Math.cos(angle) * charDef.bombSplashSpeed,
       damage: charDef.bombSplashDamage,
-      range: charDef.bombSplashRange,
+      range: charDef.bombSplashRange * blastMult,
       farThreshold: Infinity,
       farMultiplier: 1,
       distTraveled: 0,
       launchAt: state.gameTime,
       mesh: splashMesh,
       isSplash: true,
-      projRadius: charDef.bombSplashHitRadius,
+      projRadius: charDef.bombSplashHitRadius * blastMult,
       directHitTracker,
     });
   }
