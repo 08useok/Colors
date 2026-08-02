@@ -727,10 +727,10 @@ const ROTATION_NEW_ABILITIES = {
   red: { name: "분노의 질주", desc: "체력 30% 이하 시 이동속도 증가" },
   green: { name: "더블 바운스", desc: "부메랑 추가 튕김" },
   blue: { name: "관통탄", desc: "탄환이 적을 관통" },
-  orange: { name: "광역 폭발", desc: "폭발 범위 증가" },
+  orange: { name: "광역 폭발", desc: "폭발 범위 25% 증가" },
   yellow: { name: "과부하 감전", desc: "감전 지속 2배 + 이동 감속 65%" },
   cyan: { name: "정밀 사격", desc: "집탄률 증가" },
-  purple: { name: "쌍독침", desc: "독침 2발 부채꼴(11도) 발사" },
+  purple: { name: "삼중 독침", desc: "독침 3발 부채꼴(90도) 발사 — 베타 시즌 2부터 기본 스킬로 통합" },
   pink: { name: "광역 치유", desc: "회복 범위 증가" },
 };
 
