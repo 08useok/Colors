@@ -28,6 +28,7 @@ const ultimateButton = document.getElementById("ultimate-btn");
 const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
+const showdownToggle = document.getElementById("showdown-toggle");
 const goldRushHud = document.getElementById("gold-rush-hud");
 const goldCountEl = document.getElementById("gold-count");
 const goldRushPlayerPanel = document.getElementById("gold-rush-player-panel");
@@ -134,6 +135,8 @@ scene.add(sun);
 const map = new THREE.Group();
 scene.add(map);
 const solids = [];
+const showdownSolids = [];
+let currentArenaMode = "lobby";
 const platformMaterial = new THREE.MeshStandardMaterial({ color: 0x6a7773, roughness: 0.88 });
 const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x79d5d2, roughness: 0.42, metalness: 0.25 });
 const stoneMaterial = new THREE.MeshStandardMaterial({ color: 0x40545a, roughness: 0.92 });
@@ -180,6 +183,36 @@ for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[-
 // 크림슨 궁극기의 벽 파괴를 확인하는 중앙 시험 벽
 box(-1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
 box(1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
+
+const iceCreamShowdownMap = new THREE.Group();
+iceCreamShowdownMap.visible = false;
+scene.add(iceCreamShowdownMap);
+const ivoryTileMaterial = new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.9 });
+const skyTileMaterial = new THREE.MeshStandardMaterial({ color: 0x93def1, roughness: 0.84 });
+const iceWallMaterial = new THREE.MeshStandardMaterial({ color: 0xfff2c9, emissive: 0x92d9e7, emissiveIntensity: 0.08, roughness: 0.72 });
+function showdownBox(x, y, z, width, height, depth, material = iceWallMaterial, solid = true) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  iceCreamShowdownMap.add(mesh);
+  if (solid) showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: y + height / 2, mesh });
+  return mesh;
+}
+for (let x = -4; x < 4; x += 1) {
+  for (let z = -4; z < 4; z += 1) {
+    showdownBox(x * 5 + 2.5, 1.5, z * 5 + 2.5, 5, 0.12, 5, (x + z) % 2 ? skyTileMaterial : ivoryTileMaterial, false);
+  }
+}
+showdownSolids.push({ x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: iceCreamShowdownMap });
+for (const [x, z, w, d] of [[0,-20,40,1], [0,20,40,1], [-20,0,1,40], [20,0,1,40], [-8,-7,7,2], [8,7,7,2], [-8,8,2,7], [8,-8,2,7], [0,0,5,2]]) {
+  showdownBox(x, 2.55, z, w, 2, d);
+}
+for (const [x, z, color] of [[-14,-14,0xff9fcf], [14,-14,0xb8edff], [-14,14,0xc7f29b], [14,14,0xffd38e]]) {
+  const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
+  scoop.position.set(x, 3.25, z);
+  iceCreamShowdownMap.add(scoop);
+}
 
 const testTargets = [];
 function createTestTarget(x, z, { ally = false } = {}) {
@@ -2282,7 +2315,7 @@ const goldRushBots = [];
 const goldRushAttackEffects = [];
 const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
 const goldRushState = {
-  active: false, ended: false, gold: 0, startedAt: 0, nextSpawnAt: 0,
+  active: false, ended: false, mode: "goldRush", gold: 0, startedAt: 0, nextSpawnAt: 0,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
   mineGoldAvailable: true, mineGoldRespawnAt: 0, health: 1, maxHealth: 1,
   ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5,
@@ -2481,7 +2514,7 @@ function damageGoldRushBot(bot, damage) {
     if (!bot.dead) bot.marker.material.color.setHex(GOLD_RUSH_BOT_COLORS[bot.id - 1]);
   }, 90);
   if (bot.health > 0) return;
-  dropGoldRushGold(bot, bot.mesh.position);
+  if (goldRushState.mode === "goldRush") dropGoldRushGold(bot, bot.mesh.position);
   bot.dead = true;
   bot.respawnAt = clock.elapsedTime + 5;
   bot.mesh.visible = false;
@@ -2552,6 +2585,7 @@ function updateGoldRushBots(dt) {
   updateGoldRushAttackEffects(dt);
   for (const bot of goldRushBots) {
     if (bot.dead) {
+      if (goldRushState.mode === "showdown") continue;
       if (clock.elapsedTime < bot.respawnAt) continue;
       bot.dead = false;
       bot.health = bot.maxHealth;
@@ -2708,6 +2742,7 @@ function updateGoldRushHud() {
 }
 
 function endGoldRush(message) {
+  const finishedMode = goldRushState.mode;
   goldRushState.ended = true;
   goldRushState.winCountdownStartedAt = null;
   playerGoldRushHealthBar.visible = false;
@@ -2717,10 +2752,24 @@ function endGoldRush(message) {
   clearGoldRushBots();
   goldMine.visible = false;
   goldRushHud.classList.add("hidden");
-  showDailyRewardReveal();
+  currentArenaMode = "lobby";
+  iceCreamShowdownMap.visible = false;
+  map.visible = true;
+  alphaBoss.visible = true;
+  for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = true;
+  player.visible = true;
+  initialSpawnPoint.set(0, 1.7, 0);
+  resetPlayer();
+  if (finishedMode === "goldRush") showDailyRewardReveal();
 }
 
-function startGoldRush() {
+function startGoldRush(mode = "goldRush") {
+  goldRushState.mode = mode;
+  currentArenaMode = mode === "showdown" ? "showdown" : "lobby";
+  iceCreamShowdownMap.visible = mode === "showdown";
+  map.visible = mode !== "showdown";
+  alphaBoss.visible = mode !== "showdown";
+  for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = mode !== "showdown";
   goldRushState.active = true;
   goldRushState.ended = false;
   goldRushState.gold = 0;
@@ -2744,8 +2793,8 @@ function startGoldRush() {
   playerGoldRushHealthBar.visible = true;
   updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
   canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
-  goldMine.visible = true;
-  goldMineCrystal.visible = true;
+  goldMine.visible = mode === "goldRush";
+  goldMineCrystal.visible = mode === "goldRush";
   goldRushHud.classList.remove("hidden");
   goldRushPlayerPanel.classList.remove("hidden");
   renderGoldRushAmmoFan(goldRushState.maxAmmo);
@@ -2753,11 +2802,29 @@ function startGoldRush() {
   goldRushToggle.textContent = "골드 러쉬 재시작";
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
   createGoldRushBots();
-  updateGoldRushHud();
+  if (mode === "showdown") {
+    goldRushHud.querySelector("strong").textContent = "ICE CREAM SHOWDOWN";
+    goldCountEl.parentElement.style.display = "none";
+    goldRushTimerEl.textContent = "생존";
+    goldRushRivalsEl.textContent = "10명 생존";
+    goldRushStatusEl.textContent = "마지막 1명까지 살아남으세요";
+    showdownToggle.textContent = "쇼다운 재시작";
+    canvas.dataset.betaMode = "ice-cream-showdown";
+  } else {
+    goldRushHud.querySelector("strong").textContent = "GOLD RUSH";
+    goldCountEl.parentElement.style.display = "";
+    updateGoldRushHud();
+  }
 }
 
 function killGoldRushPlayer() {
   if (!goldRushState.active || goldRushState.dead || goldRushState.ended) return;
+  if (goldRushState.mode === "showdown") {
+    goldRushState.health = 0;
+    goldRushState.dead = true;
+    endGoldRush("쇼다운 패배");
+    return;
+  }
   dropGoldRushGold(goldRushState, player.position);
   goldRushState.health = 0;
   goldRushState.dead = true;
@@ -2802,6 +2869,17 @@ function updateGoldRush(dt) {
     goldRushState.reloadTimer = 0;
   }
   updateGoldRushBots(dt);
+  if (goldRushState.mode === "showdown") {
+    const survivors = goldRushBots.filter((bot) => !bot.dead).length + (goldRushState.dead ? 0 : 1);
+    goldRushRivalsEl.textContent = `${survivors}명 생존`;
+    goldRushStatusEl.textContent = "마지막 1명까지 살아남으세요";
+    if (!goldRushState.dead && survivors === 1) {
+      betaState.orderEvent.progress = Math.min(100, betaState.orderEvent.progress + 1);
+      saveBetaState();
+      endGoldRush("쇼다운 승리! · 주문 이벤트 +1승");
+    }
+    return;
+  }
   if (!goldRushState.mineGoldAvailable && clock.elapsedTime >= goldRushState.mineGoldRespawnAt) {
     goldRushState.mineGoldAvailable = true;
     goldMineCrystal.visible = true;
@@ -3000,7 +3078,8 @@ canvas.addEventListener("wheel", (event) => {
 function resetPlayer() { player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
-goldRushToggle.addEventListener("click", startGoldRush);
+goldRushToggle.addEventListener("click", () => startGoldRush("goldRush"));
+showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
 document.getElementById("test-death-btn").addEventListener("click", () => {
   if (betaState.selectedCharacter === "pink") {
     let marked = 0;
@@ -3023,13 +3102,18 @@ document.getElementById("overview-btn").addEventListener("click", (event) => {
 
 function groundHeightAt(x, z) {
   let best = -20;
-  for (const solid of solids) {
+  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  for (const solid of arenaSolids) {
     if (Math.abs(x - solid.x) <= solid.halfW && Math.abs(z - solid.z) <= solid.halfD) best = Math.max(best, solid.top);
   }
   return best;
 }
 
 function updateLocation() {
+  if (currentArenaMode === "showdown") {
+    locationName.textContent = "아이스크림 쇼다운";
+    return;
+  }
   const { x, z } = player.position;
   if (z < -28) locationName.textContent = "포털 관문";
   else if (z > 28) locationName.textContent = "상층 정원";
