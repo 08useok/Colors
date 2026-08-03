@@ -3304,9 +3304,20 @@ function updateLocation() {
 const clock = new THREE.Clock();
 const cameraTarget = new THREE.Vector3();
 
+// 블루처럼 빠른 투사체를 천천히 관찰할 수 있도록 전체 시뮬레이션 속도를 늦춘다
+const SLOW_MOTION_SCALE = 0.3;
+let slowMotionActive = false;
+const slowmoButton = document.getElementById("slowmo-btn");
+slowmoButton.addEventListener("click", () => {
+  slowMotionActive = !slowMotionActive;
+  slowmoButton.classList.toggle("active", slowMotionActive);
+  slowmoButton.setAttribute("aria-pressed", String(slowMotionActive));
+  slowmoButton.textContent = slowMotionActive ? "슬로우 모드 (켜짐)" : "슬로우 모드";
+});
+
 function animate() {
   requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.04);
+  const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
     let remove = false;
