@@ -1511,7 +1511,12 @@ function createIvoryIceCreamZone(x, z, fromUltimate = false) {
   const overturnedScoop = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfffff2, roughness: 0.7 }));
   overturnedScoop.scale.y = 0.45;
   overturnedScoop.position.y = 0.12;
-  group.add(puddle, overturnedScoop);
+  const uprightCone = new THREE.Mesh(
+    new THREE.ConeGeometry(0.34, 0.9, 12),
+    new THREE.MeshStandardMaterial({ color: 0xd7a45b, roughness: 0.88 }),
+  );
+  uprightCone.position.y = 0.55;
+  group.add(puddle, overturnedScoop, uprightCone);
   group.position.set(x, Math.max(0.09, groundHeightAt(x, z) + 0.09), z);
   scene.add(group);
   const now = clock.elapsedTime;
