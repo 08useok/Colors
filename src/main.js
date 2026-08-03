@@ -1965,12 +1965,69 @@ const CYAN_RIG_ARM_BONES = [
 function getCyanRigGltf(color) {
   if (color === CHARACTERS.cyan.color) return _cyanWalkGlb;
   const charKey = CYAN_RIG_COLOR_TO_CHAR.get(color);
-  return charKey ? _cyanRigGlb[charKey] : null;
+  if (!charKey) return null;
+  return CYAN_RIG_TEMPLATE_CHARACTERS.includes(charKey) ? _cyanWalkGlb : _cyanRigGlb[charKey];
 }
 
-function buildCyanRigModel(gltf) {
+const cyanTemplateTextureCache = new Map();
+
+function recolorCyanTemplateTexture(texture, targetHex) {
+  if (!texture?.image) return texture;
+  const cacheKey = `${texture.uuid}:${targetHex}`;
+  if (cyanTemplateTextureCache.has(cacheKey)) return cyanTemplateTextureCache.get(cacheKey);
+  const source = texture.image;
+  const canvas = document.createElement("canvas");
+  canvas.width = source.width;
+  canvas.height = source.height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  context.drawImage(source, 0, 0);
+  const image = context.getImageData(0, 0, canvas.width, canvas.height);
+  const target = new THREE.Color(targetHex).convertLinearToSRGB();
+  const tr = target.r * 255;
+  const tg = target.g * 255;
+  const tb = target.b * 255;
+  for (let i = 0; i < image.data.length; i += 4) {
+    const r = image.data[i];
+    const g = image.data[i + 1];
+    const b = image.data[i + 2];
+    // 시안 피부만 교체하고 흰자·눈동자·입처럼 채도가 낮은 얼굴 요소는 보존한다.
+    if (g < r * 1.45 || b < r * 1.55 || b < 105) continue;
+    const shade = THREE.MathUtils.clamp(Math.max(r, g, b) / 200, 0.28, 1.25);
+    image.data[i] = Math.min(255, tr * shade);
+    image.data[i + 1] = Math.min(255, tg * shade);
+    image.data[i + 2] = Math.min(255, tb * shade);
+  }
+  context.putImageData(image, 0, 0);
+  const recolored = texture.clone();
+  // Texture.clone()은 Source를 공유하므로 image만 바꾸면 마지막 캐릭터의 색이
+  // 앞서 만든 캐릭터까지 덮어쓴다. 캐릭터별 Source를 따로 만든다.
+  recolored.source = new THREE.Source(canvas);
+  recolored.needsUpdate = true;
+  cyanTemplateTextureCache.set(cacheKey, recolored);
+  return recolored;
+}
+
+function applyCyanTemplateLook(model, charKey) {
+  if (!CYAN_RIG_TEMPLATE_CHARACTERS.includes(charKey)) return;
+  const targetHex = CHARACTERS[charKey].color;
+  model.traverse((part) => {
+    if (!part.isMesh) return;
+    const originals = Array.isArray(part.material) ? part.material : [part.material];
+    const materials = originals.map((original) => {
+      const material = original.clone();
+      material.map = recolorCyanTemplateTexture(original.map, targetHex);
+      material.roughness = charKey === "gold" ? 0.42 : 0.72;
+      material.metalness = charKey === "gold" ? 0.28 : 0.02;
+      return material;
+    });
+    part.material = materials.length === 1 ? materials[0] : materials;
+  });
+}
+
+function buildCyanRigModel(gltf, charKey = "cyan") {
   const group = new THREE.Group();
   const model = skeletonClone(gltf.scene);
+  applyCyanTemplateLook(model, charKey);
   model.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
@@ -2015,6 +2072,7 @@ function buildCyanRigModel(gltf) {
   });
   group.userData = {
     isGlbModel: true, isCyanGlb: true, cyanModel: model,
+    cyanTemplateCharacter: charKey,
     cyanMixer, cyanWalkAction, cyanArmBones, cyanArmBind, bodyMaterials, guitar: null,
   };
   return group;
@@ -2092,7 +2150,8 @@ function createStickman(color, skinId) {
   // 시안 리그를 공유하는 캐릭터들(시안 + 시안에서 리컬러한 green/orange/red/yellow)
   const rigGltf = getCyanRigGltf(color);
   if (rigGltf) {
-    const group = buildCyanRigModel(rigGltf);
+    const rigCharKey = color === CHARACTERS.cyan.color ? "cyan" : CYAN_RIG_COLOR_TO_CHAR.get(color);
+    const group = buildCyanRigModel(rigGltf, rigCharKey);
     if (skinId) applySkin(group, skinId);
     _applyPinkToon(group);
     return group;
@@ -2912,6 +2971,13 @@ _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
 });
 _glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
   _cyanWalkGlb = _stripRootMotion(g);
+  for (const charKey of CYAN_RIG_TEMPLATE_CHARACTERS) {
+    if (previewCharType === charKey) {
+      previewChar = null;
+      setPreviewCharacter(charKey);
+    }
+    if (frontModelCharType === charKey) setupFrontModel(charKey);
+  }
 });
 // 로비 프리뷰 전용 시안 모델 (애니메이션 없는 원본 포즈)
 _glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
@@ -2924,9 +2990,11 @@ _glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
 });
 // 시안 리그를 리컬러해서 만든 캐릭터들 — 리그와 걷기 클립이 시안과 동일하다
 const CYAN_RIG_CHARACTERS = ["green", "orange", "red", "yellow"];
+const CYAN_RIG_TEMPLATE_CHARACTERS = ["crimson", "gold"];
 const _cyanRigGlb = {};
 const CYAN_RIG_COLOR_TO_CHAR = new Map(
-  CYAN_RIG_CHARACTERS.map((charKey) => [CHARACTERS[charKey].color, charKey]),
+  [...CYAN_RIG_CHARACTERS, ...CYAN_RIG_TEMPLATE_CHARACTERS]
+    .map((charKey) => [CHARACTERS[charKey].color, charKey]),
 );
 for (const charKey of CYAN_RIG_CHARACTERS) {
   _glbLoader.load(`./assets/3d/${charKey}/walk-m2l.glb`, g => {
@@ -9030,7 +9098,16 @@ function updateFighterAnimation(fighter, dt) {
           bone.quaternion.copy(bind);
           if (amount) bone.rotateX(amount);
         };
-        if (fighter.characterType === "red") {
+        if (fighter.characterType === "crimson") {
+          const first = pulse(at, 0.00, 0.06, 0.12);
+          const second = pulse(at, 0.12, 0.18, 0.24);
+          const third = pulse(at, 0.24, 0.31, 0.40);
+          pose("CC_Base_R_Upperarm", (first + third) * 1.42);
+          pose("CC_Base_R_Forearm", (first + third) * 0.52);
+          pose("CC_Base_L_Upperarm", second * 1.42);
+          pose("CC_Base_L_Forearm", second * 0.52);
+          pose("CC_Base_Spine02", (first - second + third) * 0.14);
+        } else if (fighter.characterType === "red") {
           // 더블 펀치 — 양팔을 번갈아 정면으로 뻗는다
           const first = pulse(at, 0.02, 0.11, 0.22);
           const second = pulse(at, 0.22, 0.32, 0.45);
