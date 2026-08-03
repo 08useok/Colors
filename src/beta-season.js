@@ -1842,7 +1842,8 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
     ? new THREE.DodecahedronGeometry(def.stage1Size / 2, 0)
     : stage === 3
       ? createGoldIngotGeometry()
-      : new THREE.SphereGeometry(radii[stage], 8, 6);
+      // 2단계 분열탄 — 각진 파편 실루엣(팔면체)으로 둥근 구체와 구분
+      : new THREE.OctahedronGeometry(radii[stage], 0);
   const mesh = new THREE.Mesh(
     geometry,
     new THREE.MeshStandardMaterial({
@@ -2019,6 +2020,48 @@ function createGroundPulse(radius, color, position = player.position) {
   crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.38, maxLife: 0.38 });
 }
 
+// 핑크 전용 — 8자 모양 동그란 음표 실루엣 하나
+function createPinkNoteMesh() {
+  const shape = new THREE.Shape();
+  shape.absarc(0, -0.16, 0.16, 0, Math.PI * 2, false);
+  const hole = new THREE.Path();
+  hole.absarc(0, -0.16, 0.07, 0, Math.PI * 2, true);
+  shape.holes.push(hole);
+  const noteHead = new THREE.Mesh(
+    new THREE.ShapeGeometry(shape),
+    new THREE.MeshBasicMaterial({ color: 0xff8fd6, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  const stem = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.05, 0.42),
+    new THREE.MeshBasicMaterial({ color: 0xff8fd6, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  stem.position.set(0.15, 0.12, 0);
+  const flag = new THREE.Mesh(
+    new THREE.CircleGeometry(0.1, 12, 0, Math.PI * 0.6),
+    new THREE.MeshBasicMaterial({ color: 0xff8fd6, transparent: true, opacity: 0.95, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  flag.position.set(0.15, 0.33, 0);
+  const group = new THREE.Group();
+  group.add(noteHead, stem, flag);
+  return group;
+}
+
+// 핑크 일반 공격 — 음표가 원형으로 퍼져 나가는 연출
+function createPinkNoteBurst(radius, position = player.position) {
+  const noteCount = 8;
+  for (let i = 0; i < noteCount; i += 1) {
+    const angle = (i / noteCount) * Math.PI * 2;
+    const note = createPinkNoteMesh();
+    note.position.set(position.x, position.y + 1.1, position.z);
+    note.rotation.y = -angle;
+    scene.add(note);
+    crimsonSlashes.push({
+      group: note, mesh: note.children[0], life: 0.5, maxLife: 0.5,
+      noteAngle: angle, noteRadius: radius, noteOrigin: position.clone(),
+    });
+  }
+}
+
 // 레드처럼 정면으로 뻗는 공격용 이펙트. 원형 펄스와 달리 바라보는 방향으로
 // 길게 깔린다.
 function createGroundSlash(length, width, color, angle = 0) {
@@ -2146,6 +2189,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
     pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
     updateCrimsonUltimateGauge();
     createGroundPulse(def.healCircleRange, 0xff9fcf);
+    createPinkNoteBurst(def.healCircleRange);
     for (const target of testTargets) {
       const distance = Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z);
       if (target.visible && distance <= def.healCircleRange) {
@@ -2391,8 +2435,18 @@ ultimateButton.addEventListener("click", () => {
   updateCrimsonUltimateGauge();
   const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
   const right = new THREE.Vector2(forward.y, -forward.x);
+  // 밋밋한 사각 평면 대신 정면으로 벌어지는 충격파 쐐기 모양
+  const ultimateHalfWidth0 = CRIMSON.ultimateWidth * 0.5;
+  const ultimateHalfLength0 = CRIMSON.ultimateLength * 0.5;
+  const waveShape = new THREE.Shape();
+  waveShape.moveTo(-ultimateHalfWidth0 * 0.18, -ultimateHalfLength0);
+  waveShape.lineTo(ultimateHalfWidth0 * 0.18, -ultimateHalfLength0);
+  waveShape.lineTo(ultimateHalfWidth0, ultimateHalfLength0 * 0.7);
+  waveShape.lineTo(0, ultimateHalfLength0 * 1.2);
+  waveShape.lineTo(-ultimateHalfWidth0, ultimateHalfLength0 * 0.7);
+  waveShape.closePath();
   const wave = new THREE.Mesh(
-    new THREE.PlaneGeometry(CRIMSON.ultimateWidth, CRIMSON.ultimateLength),
+    new THREE.ShapeGeometry(waveShape),
     new THREE.MeshBasicMaterial({ color: 0xff5a45, side: THREE.DoubleSide, transparent: true, opacity: .72, depthWrite: false }),
   );
   wave.rotation.x = -Math.PI / 2;
@@ -3493,12 +3547,23 @@ function animate() {
     } else {
       slash.mesh.material.opacity = Math.max(0, (slash.peakOpacity ?? 0.72) * fade);
     }
+    if (slash.noteAngle !== undefined) {
+      const travel = progress * slash.noteRadius;
+      slash.group.position.set(
+        slash.noteOrigin.x + Math.sin(slash.noteAngle) * travel,
+        slash.noteOrigin.y + 1.1,
+        slash.noteOrigin.z + Math.cos(slash.noteAngle) * travel,
+      );
+    }
     const grow = slash.grow ?? 1.2;
     slash.mesh.scale.setScalar(0.86 + progress * (grow - 0.86));
     if (slash.life <= 0) {
       scene.remove(slash.group);
-      slash.mesh.geometry.dispose();
-      slash.mesh.material.dispose();
+      slash.group.traverse((part) => {
+        part.geometry?.dispose();
+        if (Array.isArray(part.material)) part.material.forEach((material) => material.dispose());
+        else part.material?.dispose();
+      });
       crimsonSlashes.splice(i, 1);
     }
   }
