@@ -71,7 +71,6 @@ const BETA_SEASON_ACTIVE = true;
 const BETA_SKINS = BETA_SEASON_ACTIVE ? getSkinsForSeason(BETA_SEASON_ID) : [];
 
 function loadBetaState() {
-  const today = new Date().toISOString().slice(0, 10);
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(BETA_STORAGE_KEY) || "{}"); } catch { saved = {}; }
   const selectedSkins = {};
@@ -89,7 +88,14 @@ function loadBetaState() {
     ownedSkins,
     selectedSkins,
     orderEvent: { progress: Math.max(0, Number(saved.orderEvent?.progress) || 0), claimed: saved.orderEvent?.claimed || [] },
-    daily: saved.daily?.date === today ? { winRewards: 0, ...saved.daily } : { date: today, winRewards: 0 },
+    daily: {
+      winRewards: Math.max(0, Number(saved.daily?.winRewards) || 0),
+      pendingRewards: Math.max(0, Number(saved.daily?.pendingRewards) || 0),
+      rewardGrade: saved.daily?.rewardGrade,
+      rewardType: saved.daily?.rewardType,
+      rewardAmount: saved.daily?.rewardAmount,
+      rewardCurrency: saved.daily?.rewardCurrency,
+    },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
   if (!state.ownedCharacters.includes("ivory")) state.ownedCharacters.push("ivory");
@@ -1106,13 +1112,14 @@ function buySkin(id) {
 
 function renderDaily(result = "") {
   const rewardCount = betaState.daily.winRewards || 0;
-  const claimed = Boolean(betaState.daily.claimed);
-  modalTitle.textContent = "일일 승리 보상";
+  const pending = betaState.daily.pendingRewards || 0;
+  const claimed = pending <= 0;
+  modalTitle.textContent = "승리 별 보상";
   modalContent.innerHTML = `<div class="drop-box">
-    <span class="rarity legendary">경기 종료 후 별 보상</span>
-    <h3>${claimed ? "오늘의 보상 획득 완료" : "별을 돌려 등급을 올려보세요"}</h3>
-    <div class="drop-result">${result || (claimed ? `${betaState.daily.rewardGrade} · ${betaState.daily.rewardAmount} ${betaState.daily.rewardCurrency || "β 크레딧"}` : `오늘 ${rewardCount}회 획득`)}</div>
-    <p>경기가 끝나면 모든 게임 UI가 사라지고 일일 보상 별이 나타납니다.</p>
+    <span class="rarity legendary">1승당 별 보상 1회</span>
+    <h3>${claimed ? "승리해서 별을 획득하세요" : "별을 돌려 등급을 올려보세요"}</h3>
+    <div class="drop-result">${result || `대기 ${pending}회 · 지금까지 ${rewardCount}회 수령`}</div>
+    <p>승리할 때마다 별 보상 1회가 적립됩니다.</p>
     ${claimed ? "" : '<button type="button" data-daily-reveal>보상 연출 테스트</button>'}
   </div>`;
 }
@@ -1186,7 +1193,10 @@ function updateDailyRewardReveal() {
 }
 
 function showDailyRewardReveal() {
-  // 베타 테스트 페이지는 반복 테스트용이라 하루 1회 제한을 두지 않는다
+  if ((betaState.daily.pendingRewards || 0) <= 0) {
+    showToast("승리해서 별 보상을 획득하세요");
+    return false;
+  }
   dailyRewardTierIndex = 0;
   dailyRewardSpinning = false;
   dailyRewardComplete = false;
@@ -1200,6 +1210,7 @@ function showDailyRewardReveal() {
   modal.classList.add("hidden");
   document.body.classList.add("daily-reveal-active");
   dailyRewardReveal.classList.remove("hidden");
+  return true;
 }
 
 function finishDailyReward() {
@@ -1210,7 +1221,7 @@ function finishDailyReward() {
   dailyRewardComplete = true;
   updateDailyRewardReveal();
   betaState[rewardType] += rewardAmount;
-  betaState.daily.claimed = true;
+  betaState.daily.pendingRewards = Math.max(0, (betaState.daily.pendingRewards || 0) - 1);
   betaState.daily.winRewards = (betaState.daily.winRewards || 0) + 1;
   betaState.daily.rewardGrade = tier.name;
   betaState.daily.rewardType = rewardType;
@@ -2741,8 +2752,11 @@ function updateGoldRushHud() {
   }
 }
 
-function endGoldRush(message) {
-  const finishedMode = goldRushState.mode;
+function endGoldRush(message, playerWon = false) {
+  if (playerWon) {
+    betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
+    saveBetaState();
+  }
   goldRushState.ended = true;
   goldRushState.winCountdownStartedAt = null;
   playerGoldRushHealthBar.visible = false;
@@ -2760,7 +2774,7 @@ function endGoldRush(message) {
   player.visible = true;
   initialSpawnPoint.set(0, 1.7, 0);
   resetPlayer();
-  if (finishedMode === "goldRush") showDailyRewardReveal();
+  if (playerWon) showDailyRewardReveal();
 }
 
 function startGoldRush(mode = "goldRush") {
@@ -2876,7 +2890,7 @@ function updateGoldRush(dt) {
     if (!goldRushState.dead && survivors === 1) {
       betaState.orderEvent.progress = Math.min(100, betaState.orderEvent.progress + 1);
       saveBetaState();
-      endGoldRush("쇼다운 승리! · 주문 이벤트 +1승");
+      endGoldRush("쇼다운 승리! · 주문 이벤트 +1승", true);
     }
     return;
   }
@@ -2923,7 +2937,7 @@ function updateGoldRush(dt) {
   }
   if (goldRushState.gold >= 10) {
     goldRushState.winCountdownStartedAt ??= clock.elapsedTime;
-    if (clock.elapsedTime - goldRushState.winCountdownStartedAt >= 10) endGoldRush("골드 러쉬 승리!");
+    if (clock.elapsedTime - goldRushState.winCountdownStartedAt >= 10) endGoldRush("골드 러쉬 승리!", true);
   } else {
     goldRushState.winCountdownStartedAt = null;
   }
@@ -2941,7 +2955,7 @@ function updateGoldRush(dt) {
   if (clock.elapsedTime - goldRushState.startedAt >= 180) {
     const standings = [{ name: "플레이어", gold: goldRushState.gold }, ...goldRushBots.map((bot) => ({ name: bot.name, gold: bot.gold }))];
     standings.sort((a, b) => b.gold - a.gold);
-    endGoldRush(`시간 종료 · ${standings[0].name} 승리 (${standings[0].gold}금)`);
+    endGoldRush(`시간 종료 · ${standings[0].name} 승리 (${standings[0].gold}금)`, standings[0].name === "플레이어");
     return;
   }
   updateGoldRushHud();
