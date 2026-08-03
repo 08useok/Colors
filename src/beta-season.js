@@ -1051,10 +1051,24 @@ function renderDaily(result = "") {
 }
 
 const ORDER_EVENT_REWARDS = [[1,"코인 100개"],[3,"크레딧 50개"],[5,"아이스크림 핀"],[10,"코인 200개"],[25,"크레딧 150개"],[40,"아이스크림 가게 프로필 배경"],[50,"코인 500개"],[75,"점원 아이보리 스킨"],[90,"아이스크림 가게 프로필 배지"],[100,"완벽한 점장 칭호 + 특별 승리 연출"]];
+function getOrderTrackPercent(progress) {
+  if (progress <= 0) return 0;
+  const milestones = ORDER_EVENT_REWARDS.map(([wins]) => wins);
+  const reachedIndex = milestones.findIndex((wins) => progress < wins);
+  if (reachedIndex < 0) return 100;
+  const previousIndex = Math.max(0, reachedIndex - 1);
+  const previousWins = reachedIndex === 0 ? 0 : milestones[previousIndex];
+  const nextWins = milestones[reachedIndex];
+  const segmentProgress = (progress - previousWins) / Math.max(1, nextWins - previousWins);
+  const previousPercent = reachedIndex === 0 ? 0 : (previousIndex / (milestones.length - 1)) * 100;
+  const nextPercent = (reachedIndex / (milestones.length - 1)) * 100;
+  return previousPercent + (nextPercent - previousPercent) * segmentProgress;
+}
 function renderOrderEvent() {
   const progress = Math.min(100, betaState.orderEvent.progress);
+  const trackPercent = getOrderTrackPercent(progress);
   modalTitle.textContent = "이벤트: 주문 왔어요~!";
-  modalContent.innerHTML = `<section class="order-event"><div class="order-event-summary"><strong>${progress} / 100</strong><span>AI전 +1 · 플레이어전 +2</span></div><div class="order-track-scroll"><div class="order-track"><div class="order-track-rail"><i style="width:${progress}%"></i></div>${ORDER_EVENT_REWARDS.map(([wins,label])=>{const claimed=betaState.orderEvent.claimed.includes(wins);const unlocked=progress>=wins;return `<article class="order-stop ${claimed?"claimed":unlocked?"available":"locked"}" style="left:${wins}%"><strong>${wins}승</strong><button data-order-claim="${wins}" ${!unlocked||claimed?"disabled":""} aria-label="${wins}승 보상 ${label}"><span>${claimed?"✓":unlocked?"!":"🔒"}</span></button><p>${label}</p></article>`;}).join("")}</div></div></section>`;
+  modalContent.innerHTML = `<section class="order-event"><div class="order-event-summary"><strong>${progress} / 100</strong><span>AI전 +1 · 플레이어전 +2</span></div><div class="order-track-scroll"><div class="order-track"><div class="order-track-rail"><i style="width:${trackPercent}%"></i></div>${ORDER_EVENT_REWARDS.map(([wins,label],index)=>{const claimed=betaState.orderEvent.claimed.includes(wins);const unlocked=progress>=wins;const position=(index/(ORDER_EVENT_REWARDS.length-1))*100;return `<article class="order-stop ${claimed?"claimed":unlocked?"available":"locked"}" style="left:${position}%"><strong>${wins}승</strong><button data-order-claim="${wins}" ${!unlocked||claimed?"disabled":""} aria-label="${wins}승 보상 ${label}"><span>${claimed?"✓":unlocked?"!":"🔒"}</span></button><p>${label}</p></article>`;}).join("")}</div></div></section>`;
 }
 function claimOrderReward(wins) {
   if (betaState.orderEvent.progress < wins || betaState.orderEvent.claimed.includes(wins)) return;
