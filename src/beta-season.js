@@ -87,6 +87,7 @@ function loadBetaState() {
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
     ownedSkins,
     selectedSkins,
+    orderEvent: { progress: Math.max(0, Number(saved.orderEvent?.progress) || 0), claimed: saved.orderEvent?.claimed || [] },
     daily: saved.daily?.date === today ? { winRewards: 0, ...saved.daily } : { date: today, winRewards: 0 },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
@@ -1049,6 +1050,22 @@ function renderDaily(result = "") {
   </div>`;
 }
 
+const ORDER_EVENT_REWARDS = [[1,"코인 100개"],[3,"크레딧 50개"],[5,"아이스크림 핀"],[10,"코인 200개"],[25,"크레딧 150개"],[40,"아이스크림 가게 프로필 배경"],[50,"코인 500개"],[75,"점원 아이보리 스킨"],[90,"아이스크림 가게 프로필 배지"],[100,"완벽한 점장 칭호 + 특별 승리 연출"]];
+function renderOrderEvent() {
+  const progress = Math.min(100, betaState.orderEvent.progress);
+  modalTitle.textContent = "이벤트: 주문 왔어요~!";
+  modalContent.innerHTML = `<section class="order-event"><div class="order-event-summary"><strong>${progress} / 100</strong><span>AI전 +1 · 플레이어전 +2</span></div><div class="order-progress"><i style="width:${progress}%"></i></div><div class="order-list">${ORDER_EVENT_REWARDS.map(([wins,label])=>{const claimed=betaState.orderEvent.claimed.includes(wins);const unlocked=progress>=wins;return `<article class="order-card ${unlocked?"unlocked":"locked"}"><span class="order-status">${claimed?"✓":unlocked?"!":"🔒"}</span><strong>${wins}승 주문서</strong><p>${label}</p><button data-order-claim="${wins}" ${!unlocked||claimed?"disabled":""}>${claimed?"수령 완료":unlocked?"수령":"잠김"}</button></article>`;}).join("")}</div></section>`;
+}
+function claimOrderReward(wins) {
+  if (betaState.orderEvent.progress < wins || betaState.orderEvent.claimed.includes(wins)) return;
+  if (wins === 1) betaState.coins += 100;
+  if (wins === 3) betaState.credits += 50;
+  if (wins === 10) betaState.coins += 200;
+  if (wins === 25) betaState.credits += 150;
+  if (wins === 50) betaState.coins += 500;
+  betaState.orderEvent.claimed.push(wins); saveBetaState(); renderOrderEvent(); showToast("이벤트 보상 수령 완료");
+}
+
 // 9단계 이름은 말 그대로 "???"다. 자리표시자가 아니라 확정된 이름.
 const DAILY_REWARD_TIERS = [
   { id: "common", name: "일반", credits: 100, coins: 250 },
@@ -1229,6 +1246,7 @@ function openPanel(panel) {
   if (panel === "shop") renderShop();
   if (panel === "assets") renderAssetShowroom();
   if (panel === "daily") renderDaily();
+  if (panel === "orders") renderOrderEvent();
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
 document.getElementById("modal-close").addEventListener("click", () => modal.classList.add("hidden"));
@@ -1246,6 +1264,8 @@ modalContent.addEventListener("click", (event) => {
     modal.classList.add("hidden");
     showDailyRewardReveal();
   }
+  const orderClaim = event.target.closest("[data-order-claim]");
+  if (orderClaim) claimOrderReward(Number(orderClaim.dataset.orderClaim));
 });
 
 const CRIMSON = BETA_CHARACTERS.crimson;

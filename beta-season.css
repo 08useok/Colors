@@ -269,6 +269,19 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
   100% { transform: rotate(1080deg) scale(1); }
 }
 
+.order-event { padding:18px; border-radius:22px; color:#153747; background:linear-gradient(145deg,#9fe7ff,#72cdea); }
+.order-event-summary { display:flex; justify-content:space-between; gap:16px; align-items:end; }
+.order-event-summary strong { font-size:28px; }
+.order-progress { height:16px; margin:14px 0 18px; overflow:hidden; border-radius:999px; background:#efffff; }
+.order-progress i { display:block; height:100%; background:linear-gradient(90deg,#75dd63,#27a947); }
+.order-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+.order-card { position:relative; padding:14px; border-radius:16px; background:#fffced; }
+.order-card.locked { color:#71828a; background:#dce9ec; }
+.order-card p { min-height:34px; font-size:12px; }
+.order-card button { width:100%; padding:8px; border:0; border-radius:10px; color:#fff; background:#37b956; font-weight:900; }
+.order-card button:disabled { background:#9aa9ae; }
+.order-status { position:absolute; top:10px; right:12px; color:#25a949; font-size:22px; font-weight:900; }
+
 @media (max-width: 640px) {
   .beta-header { align-items: flex-start; gap: 8px; }
   .beta-header p { display: none; }
