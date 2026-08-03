@@ -286,6 +286,24 @@ attackAimRing.visible = false;
 attackAimIndicator.add(attackAimRing);
 attackAimIndicator.position.y = 0.12;
 player.add(attackAimIndicator);
+const ivoryUltimateAimIndicator = new THREE.Group();
+const ivoryUltimateAimBeam = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.34, BETA_CHARACTERS.ivory.ultimate.castRange),
+  new THREE.MeshBasicMaterial({ color: 0xdff8ff, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }),
+);
+ivoryUltimateAimBeam.rotation.x = -Math.PI / 2;
+ivoryUltimateAimBeam.position.z = BETA_CHARACTERS.ivory.ultimate.castRange / 2;
+ivoryUltimateAimIndicator.add(ivoryUltimateAimBeam);
+for (const angle of [Math.PI / 4, -Math.PI / 4]) {
+  const arm = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 3.8), ivoryUltimateAimBeam.material);
+  arm.rotation.x = -Math.PI / 2;
+  arm.rotation.z = angle;
+  arm.position.z = BETA_CHARACTERS.ivory.ultimate.castRange;
+  ivoryUltimateAimIndicator.add(arm);
+}
+ivoryUltimateAimIndicator.position.y = 0.14;
+ivoryUltimateAimIndicator.visible = false;
+player.add(ivoryUltimateAimIndicator);
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef3c58, roughness: 0.55 });
 const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 1.2, 5, 10), bodyMat);
 body.position.y = 1.2;
@@ -2197,6 +2215,24 @@ ultimateButton.addEventListener("click", () => {
     else { scene.remove(wave); wave.geometry.dispose(); wave.material.dispose(); }
   }
   expandWave();
+});
+
+let ivoryUltimateAiming = false;
+ultimateButton.addEventListener("pointerdown", (event) => {
+  if (betaState.selectedCharacter !== "ivory") return;
+  ivoryUltimateAiming = true;
+  ivoryUltimateAimIndicator.visible = true;
+  ultimateButton.setPointerCapture(event.pointerId);
+  canvas.dataset.ultimateAim = "manual";
+});
+addEventListener("pointermove", (event) => {
+  if (ivoryUltimateAiming) aimPlayerAtPointer(event);
+});
+addEventListener("pointerup", () => {
+  if (!ivoryUltimateAiming) return;
+  ivoryUltimateAiming = false;
+  ivoryUltimateAimIndicator.visible = false;
+  canvas.dataset.ultimateAim = "released";
 });
 bodyMat.color.setHex(CHARACTERS.find((item) => item.id === betaState.selectedCharacter)?.color ?? 0xef3c58);
 setPlayerModel(betaState.selectedCharacter);
