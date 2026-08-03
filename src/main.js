@@ -451,7 +451,7 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       hornGroup.visible = false;
       hornGroup.userData.autoFitHeadwear = true;
       hornGroup.userData.seatBottomY = -0.08;
-      hornGroup.userData.seatInset = 0.08;
+      hornGroup.userData.seatInset = 0.2;
       accessory.userData.headwearPart = hornGroup;
     } else {
       hornGroup.position.y = 2.38;
@@ -468,12 +468,6 @@ function createRedThemeAccessory(skinId, headAttached = false) {
     }
     accessory.add(hornGroup);
 
-    for (const side of [-1, 1]) {
-      const shoulder = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.72, 8), redMetal);
-      shoulder.position.set(side * 0.68, 0.14, 0);
-      shoulder.rotation.z = side * -0.72;
-      accessory.add(shoulder);
-    }
     const cubeCore = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.3), redMetal);
     cubeCore.name = "BloodCrimsonCube";
     cubeCore.position.set(0, 0.1, 0.56);
