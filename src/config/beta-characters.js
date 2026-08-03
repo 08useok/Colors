@@ -163,4 +163,23 @@ export const BETA_CHARACTERS = {
       castRange: 0, radius: 3, duration: 4, delay: 0.35, followsCaster: true,
     },
   },
+  ivory: {
+    maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.7, reloadDuration: 0.8, maxAmmo: 3,
+    iceCreamDamage: 1100, iceCreamRange: 9, iceCreamSpeed: 14, iceCreamZoneRadius: 2.5,
+    iceCreamZoneDuration: 4, iceCreamZoneTickInterval: 1,
+    description: "발랄한 아이스크림 가게 직원입니다. 잘 녹지 않는 아이스크림으로 전장을 장악합니다.",
+    descriptionEn: "A cheerful ice cream shop employee who controls the battlefield with ice cream that refuses to melt.",
+    basicAttack: {
+      name: "안 녹는 아이스크림",
+      description: "최대 사거리 9타일에 아이스크림을 던집니다. 착탄 시 1100 피해를 주고, 4초 동안 매초 1100 피해를 주는 장판을 만듭니다. 장판 피해는 중첩되지 않습니다.",
+      nameEn: "Unmelting Ice Cream",
+      descriptionEn: "Throws ice cream exactly 9 tiles. It deals 1,100 impact damage and leaves a four-second zone that deals 1,100 damage each second. Zone damage does not stack.",
+    },
+    ultimate: {
+      id: "groupOrder", name: "단체 주문",
+      description: "최대 20타일 거리의 중앙과 네 방향에 아이스크림 5개를 던집니다.",
+      nameEn: "Group Order", descriptionEn: "Throws five ice creams at a target area up to 20 tiles away: one in the center and one in each cardinal direction.",
+      castRange: 20, patternRadius: 3.5, chargeRequired: 12,
+    },
+  },
 };

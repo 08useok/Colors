@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.2";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.3";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.1";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -62,6 +62,7 @@ const CHARACTERS = [
   { id: "pink", name: "Pink", rarity: "rare", price: 200, color: 0xf28cba },
   { id: "crimson", name: "Crimson", rarity: "legendary", price: 900, color: 0xa00000 },
   { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xd4a928 },
+  { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
 ];
 const BETA_SEASON_ID = "beta2";
 // 베타 시즌 2가 실제로 열리기 전에는 시즌 2 보상 스킨을 공개하지 않는다.
@@ -88,6 +89,8 @@ function loadBetaState() {
     selectedSkins,
     daily: saved.daily?.date === today ? { winRewards: 0, ...saved.daily } : { date: today, winRewards: 0 },
   };
+  // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
+  if (!state.ownedCharacters.includes("ivory")) state.ownedCharacters.push("ivory");
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
   return state;
 }
@@ -941,7 +944,7 @@ function updateCrimsonControls() {
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
-  const hideUltimate = !["crimson", "cyan", "pink", "gold"].includes(betaState.selectedCharacter);
+  const hideUltimate = !["crimson", "cyan", "pink", "gold", "ivory"].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
   ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
@@ -1285,6 +1288,7 @@ let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
 const goldStageHits = new Map();
 const malfunctionZones = [];
+const ivoryIceCreamZones = [];
 
 function ensureMalfunctionIndicator(target) {
   if (target.userData.malfunctionIndicator) return target.userData.malfunctionIndicator;
@@ -1459,6 +1463,68 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, returnDamageMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, launchY: mesh.position.y });
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
   canvas.dataset.lastProjectileType = type;
+}
+
+function createIvoryScoopMesh() {
+  const scoop = new THREE.Group();
+  const cream = new THREE.MeshStandardMaterial({ color: 0xffffe8, roughness: 0.72 });
+  const cone = new THREE.MeshStandardMaterial({ color: 0xd7a45b, roughness: 0.88 });
+  const ball = new THREE.Mesh(new THREE.SphereGeometry(0.34, 14, 10), cream);
+  const wafer = new THREE.Mesh(new THREE.ConeGeometry(0.25, 0.55, 10), cone);
+  wafer.position.y = -0.34;
+  wafer.rotation.z = Math.PI;
+  scoop.add(ball, wafer);
+  return scoop;
+}
+
+function fireIvoryIceCream(targetX, targetZ, fromUltimate = false) {
+  const def = BETA_CHARACTERS.ivory;
+  const dx = targetX - player.position.x;
+  const dz = targetZ - player.position.z;
+  const range = Math.max(0.01, Math.hypot(dx, dz));
+  const mesh = createIvoryScoopMesh();
+  mesh.position.set(player.position.x, player.position.y + 1.35, player.position.z);
+  scene.add(mesh);
+  betaProjectiles.push({
+    mesh, characterId: "ivory", vx: (dx / range) * def.iceCreamSpeed, vz: (dz / range) * def.iceCreamSpeed,
+    speed: def.iceCreamSpeed, traveled: 0, returnTraveled: 0, range, damage: def.iceCreamDamage,
+    splash: 0, type: "ivoryIceCream", hitRadius: 0.34, hit: new Set(), causesKnockback: false,
+    launchY: mesh.position.y, landingX: targetX, landingZ: targetZ, fromUltimate,
+  });
+  canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
+  canvas.dataset.lastProjectileType = "ivoryIceCream";
+}
+
+function chargeIvoryUltimate(amount = 1) {
+  ivoryUltimateCharge = Math.min(BETA_CHARACTERS.ivory.ultimate.chargeRequired, ivoryUltimateCharge + amount);
+  if (betaState.selectedCharacter === "ivory") updateCrimsonUltimateGauge();
+}
+
+function createIvoryIceCreamZone(x, z, fromUltimate = false) {
+  const def = BETA_CHARACTERS.ivory;
+  const group = new THREE.Group();
+  const puddle = new THREE.Mesh(
+    new THREE.CircleGeometry(def.iceCreamZoneRadius, 36),
+    new THREE.MeshStandardMaterial({ color: 0xffffe8, emissive: 0x91dff2, emissiveIntensity: 0.16, transparent: true, opacity: 0.82, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  puddle.rotation.x = -Math.PI / 2;
+  const overturnedScoop = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfffff2, roughness: 0.7 }));
+  overturnedScoop.scale.y = 0.45;
+  overturnedScoop.position.y = 0.12;
+  group.add(puddle, overturnedScoop);
+  group.position.set(x, Math.max(0.09, groundHeightAt(x, z) + 0.09), z);
+  scene.add(group);
+  const now = clock.elapsedTime;
+  ivoryIceCreamZones.push({ group, puddle, x, z, radius: def.iceCreamZoneRadius, expiresAt: now + def.iceCreamZoneDuration, nextTickAt: now + def.iceCreamZoneTickInterval, fromUltimate });
+
+  for (const target of testTargets) {
+    if (!target.visible || target.userData.isAlly) continue;
+    if (Math.hypot(target.position.x - x, target.position.z - z) <= def.iceCreamZoneRadius) {
+      damageTarget(target, def.iceCreamDamage);
+      chargeIvoryUltimate(1);
+    }
+  }
+  canvas.dataset.lastIvoryLanding = `${x.toFixed(2)},${z.toFixed(2)}`;
 }
 
 function createGoldIngotGeometry() {
@@ -1658,6 +1724,7 @@ function getBetaAttackRange(id, def) {
   if (id === "purple") return Math.max(def.needleRange, def.vialRange);
   if (id === "pink") return def.healCircleRange;
   if (id === "gold") return def.stage1Range;
+  if (id === "ivory") return def.iceCreamRange;
   if (id === "crimson") return def.attackRange;
   return 0;
 }
@@ -1814,6 +1881,11 @@ function performCharacterAttack({ manualAim = false } = {}) {
     goldStageHits.set(attackId, new Map());
     spawnGoldProjectile(player.position, player.rotation.y, 1, attackId);
     attackComboState.textContent = "금광석 1단계";
+  } else if (id === "ivory") {
+    const targetX = player.position.x + Math.sin(player.rotation.y) * def.iceCreamRange;
+    const targetZ = player.position.z + Math.cos(player.rotation.y) * def.iceCreamRange;
+    fireIvoryIceCream(targetX, targetZ);
+    attackComboState.textContent = "아이스크림 배달 중";
   } else if (id === "crimson") {
     CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
   }
@@ -1894,10 +1966,12 @@ crimsonAttackButton.addEventListener("click", performCharacterAttack);
 
 let crimsonUltimateCharge = 0;
 let cyanUltimateCharge = 0;
+let ivoryUltimateCharge = 0;
 
 function updateCrimsonUltimateGauge() {
   const id = betaState.selectedCharacter;
   const configs = {
+    ivory: { charge: ivoryUltimateCharge, required: BETA_CHARACTERS.ivory.ultimate.chargeRequired, name: "단체 주문", color: "#dff8ff" },
     cyan: { charge: cyanUltimateCharge, required: BETA_CHARACTERS.cyan.ultimate.chargeRequired, name: BETA_CHARACTERS.cyan.ultimate.name, color: "#0ff0fe" },
     crimson: { charge: crimsonUltimateCharge, required: CRIMSON.ultimateChargeRequired, name: BETA_CHARACTERS.crimson.ultimate.name, color: "#a00000" },
     pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
@@ -1957,6 +2031,19 @@ function performGoldUltimate() {
   }, def.delay * 1000);
 }
 
+function performIvoryUltimate() {
+  const def = BETA_CHARACTERS.ivory;
+  const yaw = player.rotation.y;
+  const centerX = player.position.x + Math.sin(yaw) * def.ultimate.castRange;
+  const centerZ = player.position.z + Math.cos(yaw) * def.ultimate.castRange;
+  const r = def.ultimate.patternRadius;
+  for (const [offsetX, offsetZ] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
+    fireIvoryIceCream(centerX + offsetX, centerZ + offsetZ, true);
+  }
+  attackComboState.textContent = "단체 주문 5개 배달 중";
+  canvas.dataset.lastUltimate = "ivory-group-order:5";
+}
+
 function performCyanUltimate() {
   const def = BETA_CHARACTERS.cyan.ultimate;
   autoAimAtNearestTarget(def.range);
@@ -1987,6 +2074,13 @@ function performCyanUltimate() {
 
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
+  if (betaState.selectedCharacter === "ivory") {
+    if (ivoryUltimateCharge < BETA_CHARACTERS.ivory.ultimate.chargeRequired) return;
+    ivoryUltimateCharge = 0;
+    updateCrimsonUltimateGauge();
+    performIvoryUltimate();
+    return;
+  }
   if (betaState.selectedCharacter === "gold") {
     if (goldUltimateCharge < BETA_CHARACTERS.gold.ultimateChargeRequired) return;
     goldUltimateCharge = 0;
@@ -2829,10 +2923,11 @@ function animate() {
       if (projectile.returned) projectile.returnTraveled += step;
       else projectile.traveled += step;
       // 독병은 던지는 무기 — 사거리 중간이 가장 높은 포물선을 그린다
-      if (projectile.type === "vial") {
+      if (projectile.type === "vial" || projectile.type === "ivoryIceCream") {
         const progress = Math.min(1, projectile.traveled / projectile.range);
+        const arcHeight = projectile.type === "ivoryIceCream" ? 4.2 : VIAL_ARC_HEIGHT;
         projectile.mesh.position.y = projectile.launchY
-          + Math.sin(progress * Math.PI) * VIAL_ARC_HEIGHT
+          + Math.sin(progress * Math.PI) * arcHeight
           - progress * (projectile.launchY - 0.35);
         projectile.mesh.rotation.x += dt * 6;
       }
@@ -2855,7 +2950,7 @@ function animate() {
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
     }
-    if (!remove) {
+    if (!remove && projectile.type !== "ivoryIceCream") {
       for (const target of testTargets) {
         if (!target.visible || target.userData.isAlly || projectile.hit.has(target)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
@@ -2928,6 +3023,9 @@ function animate() {
       remove = true;
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
       if (projectile.type === "orangeFruit") shouldSplitOrange = true;
+      if (projectile.type === "ivoryIceCream") {
+        createIvoryIceCreamZone(projectile.landingX, projectile.landingZ, projectile.fromUltimate);
+      }
       // 독병은 착지 지점에서 깨지며 주변에 광역 피해를 준다
       if (projectile.type === "vial" && projectile.splash > 0) shouldBreakVial = true;
     }
@@ -2936,8 +3034,11 @@ function animate() {
       if (shouldSplitOrange) spawnOrangeJuice(projectile.mesh.position.clone(), orangeDirectHitTarget);
       if (shouldBreakVial) breakVial(projectile);
       scene.remove(projectile.mesh);
-      projectile.mesh.geometry.dispose();
-      projectile.mesh.material.dispose();
+      projectile.mesh.traverse((part) => {
+        part.geometry?.dispose();
+        if (Array.isArray(part.material)) part.material.forEach((material) => material.dispose());
+        else part.material?.dispose();
+      });
       betaProjectiles.splice(i, 1);
     }
   }
@@ -2969,6 +3070,31 @@ function animate() {
       damagePopups.splice(i, 1);
     }
   }
+  const dueIvoryZoneTargets = new Set();
+  for (let i = ivoryIceCreamZones.length - 1; i >= 0; i -= 1) {
+    const zone = ivoryIceCreamZones[i];
+    const remaining = Math.max(0, zone.expiresAt - clock.elapsedTime);
+    zone.puddle.material.opacity = 0.5 + Math.min(0.32, remaining * 0.08);
+    zone.puddle.scale.setScalar(1 + Math.sin(clock.elapsedTime * 4 + i) * 0.025);
+    if (clock.elapsedTime >= zone.nextTickAt && zone.nextTickAt <= zone.expiresAt) {
+      zone.nextTickAt += BETA_CHARACTERS.ivory.iceCreamZoneTickInterval;
+      for (const target of testTargets) {
+        if (!target.visible || target.userData.isAlly) continue;
+        if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) dueIvoryZoneTargets.add(target);
+      }
+    }
+    if (clock.elapsedTime >= zone.expiresAt) {
+      scene.remove(zone.group);
+      zone.group.traverse((part) => { part.geometry?.dispose(); part.material?.dispose(); });
+      ivoryIceCreamZones.splice(i, 1);
+    }
+  }
+  for (const target of dueIvoryZoneTargets) {
+    damageTarget(target, BETA_CHARACTERS.ivory.iceCreamDamage);
+    chargeIvoryUltimate(1);
+  }
+  canvas.dataset.ivoryZones = String(ivoryIceCreamZones.length);
+
   for (let i = malfunctionZones.length - 1; i >= 0; i -= 1) {
     if (i === malfunctionZones.length - 1) {
       for (const target of testTargets) target.userData.inMalfunctionZone = false;
