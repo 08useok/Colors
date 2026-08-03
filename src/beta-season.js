@@ -2076,7 +2076,8 @@ function performIvoryUltimate() {
   const centerX = player.position.x + Math.sin(yaw) * def.ultimate.castRange;
   const centerZ = player.position.z + Math.cos(yaw) * def.ultimate.castRange;
   const r = def.ultimate.patternRadius;
-  for (const [offsetX, offsetZ] of [[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]]) {
+  const diagonal = r / Math.sqrt(2);
+  for (const [offsetX, offsetZ] of [[0, 0], [diagonal, diagonal], [-diagonal, diagonal], [diagonal, -diagonal], [-diagonal, -diagonal]]) {
     fireIvoryIceCream(centerX + offsetX, centerZ + offsetZ, true);
   }
   attackComboState.textContent = "단체 주문 5개 배달 중";
