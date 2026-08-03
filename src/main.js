@@ -379,7 +379,8 @@ function applySkin(group, skinId) {
     if (accessory) {
       group.add(accessory);
       group.userData.skinAccessory = accessory;
-      if (accessory.userData.autoFitHeadwear) group.userData.headwear = accessory;
+      const headwear = accessory.userData.headwearPart ?? accessory;
+      if (headwear.userData.autoFitHeadwear) group.userData.headwear = headwear;
     }
   }
 }
@@ -444,15 +445,43 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.add(band);
     }
   } else if (skinId === "beta_red_crimson") {
+    const hornGroup = new THREE.Group();
+    hornGroup.name = "BloodCrimsonHorns";
+    if (headAttached) {
+      hornGroup.visible = false;
+      hornGroup.userData.autoFitHeadwear = true;
+      hornGroup.userData.seatBottomY = -0.08;
+      hornGroup.userData.seatInset = 0.08;
+      accessory.userData.headwearPart = hornGroup;
+    } else {
+      hornGroup.position.y = 2.38;
+    }
+    for (const side of [-1, 1]) {
+      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.72, 10), redMetal);
+      horn.position.set(side * 0.34, 0.28, 0);
+      horn.rotation.z = side * -0.34;
+      hornGroup.add(horn);
+      const hornBase = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.035, 7, 18), gold);
+      hornBase.position.set(side * 0.34, -0.05, 0);
+      hornBase.rotation.x = Math.PI / 2;
+      hornGroup.add(hornBase);
+    }
+    accessory.add(hornGroup);
+
     for (const side of [-1, 1]) {
       const shoulder = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.72, 8), redMetal);
-      shoulder.position.set(side * 0.86, 1.68, 0);
+      shoulder.position.set(side * 0.68, 0.14, 0);
       shoulder.rotation.z = side * -0.72;
       accessory.add(shoulder);
     }
-    const chestGem = new THREE.Mesh(new THREE.OctahedronGeometry(0.22), gold);
-    chestGem.position.set(0, 1.5, -0.67);
-    accessory.add(chestGem);
+    const cubeCore = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.3), redMetal);
+    cubeCore.name = "BloodCrimsonCube";
+    cubeCore.position.set(0, 0.1, 0.56);
+    cubeCore.rotation.z = Math.PI / 4;
+    const cubeGem = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.34), gold);
+    cubeGem.rotation.z = Math.PI / 4;
+    cubeCore.add(cubeGem);
+    accessory.add(cubeCore);
   } else if (skinId === "beta_red_red") {
     const halo = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.08, 10, 32), gold);
     halo.rotation.x = Math.PI / 2;
