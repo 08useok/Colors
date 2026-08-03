@@ -2951,7 +2951,7 @@ function animate() {
       }
     }
     const step = Math.hypot(projectile.vx, projectile.vz) * dt;
-    if (!remove) {
+    if (!remove && !projectile.ivoryLandedAt) {
       projectile.mesh.position.x += projectile.vx * dt;
       projectile.mesh.position.z += projectile.vz * dt;
       if (projectile.returned) projectile.returnTraveled += step;
@@ -3054,10 +3054,16 @@ function animate() {
     if (projectile.type === "boomerang") {
       if (projectile.returnTraveled >= projectile.range * 2) remove = true;
     } else if (projectile.traveled >= projectile.range) {
-      remove = true;
+      if (projectile.type === "ivoryIceCream" && !projectile.ivoryLandedAt) {
+        projectile.mesh.position.set(projectile.landingX, 0.35, projectile.landingZ);
+        projectile.traveled = projectile.range;
+        projectile.ivoryLandedAt = clock.elapsedTime;
+      } else if (projectile.type !== "ivoryIceCream" || clock.elapsedTime - projectile.ivoryLandedAt >= 0.08) {
+        remove = true;
+      }
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
       if (projectile.type === "orangeFruit") shouldSplitOrange = true;
-      if (projectile.type === "ivoryIceCream") {
+      if (remove && projectile.type === "ivoryIceCream") {
         createIvoryIceCreamZone(projectile.landingX, projectile.landingZ, projectile.fromUltimate);
       }
       // 독병은 착지 지점에서 깨지며 주변에 광역 피해를 준다
