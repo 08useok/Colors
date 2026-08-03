@@ -459,7 +459,7 @@ function createRedThemeAccessory(skinId, headAttached = false) {
     for (const side of [-1, 1]) {
       const horn = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.72, 10), redMetal);
       horn.position.set(side * 0.34, 0.28, 0);
-      horn.rotation.z = side * -0.34;
+      horn.rotation.z = side * THREE.MathUtils.degToRad(-15);
       hornGroup.add(horn);
       const hornBase = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.035, 7, 18), gold);
       hornBase.position.set(side * 0.34, -0.05, 0);
@@ -468,14 +468,6 @@ function createRedThemeAccessory(skinId, headAttached = false) {
     }
     accessory.add(hornGroup);
 
-    const cubeCore = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.3), redMetal);
-    cubeCore.name = "BloodCrimsonCube";
-    cubeCore.position.set(0, 0.1, 0.56);
-    cubeCore.rotation.z = Math.PI / 4;
-    const cubeGem = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.34), gold);
-    cubeGem.rotation.z = Math.PI / 4;
-    cubeCore.add(cubeGem);
-    accessory.add(cubeCore);
   } else if (skinId === "beta_red_red") {
     const halo = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.08, 10, 32), gold);
     halo.rotation.x = Math.PI / 2;
