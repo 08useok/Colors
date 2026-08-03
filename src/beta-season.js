@@ -2880,12 +2880,21 @@ function groundPointAtPointer(event) {
   return manualAimRaycaster.ray.intersectPlane(manualAimPlane, manualAimPoint);
 }
 
-function aimPlayerAtPointer(event) {
+function aimPlayerAtPointer(event, aimKind = "attack") {
   if (!groundPointAtPointer(event)) return false;
   const aimX = manualAimPoint.x - player.position.x;
   const aimZ = manualAimPoint.z - player.position.z;
-  if (Math.hypot(aimX, aimZ) < 0.25) return false;
+  const pointerRange = Math.hypot(aimX, aimZ);
+  if (pointerRange < 0.25) return false;
   player.rotation.y = Math.atan2(aimX, aimZ);
+  if (betaState.selectedCharacter === "ivory") {
+    if (aimKind === "ultimate") {
+      ivoryUltimateAimRange = THREE.MathUtils.clamp(pointerRange, THROW_AIM_MIN_RANGE, BETA_CHARACTERS.ivory.ultimate.castRange);
+    } else {
+      ivoryAttackAimRange = THREE.MathUtils.clamp(pointerRange, THROW_AIM_MIN_RANGE, BETA_CHARACTERS.ivory.iceCreamRange);
+    }
+    updateIvoryThrowAimVisuals();
+  }
   canvas.dataset.aimMode = "manual";
   canvas.dataset.aimPoint = `${manualAimPoint.x.toFixed(2)},${manualAimPoint.z.toFixed(2)}`;
   return true;
@@ -2902,15 +2911,31 @@ aimModeButton.addEventListener("click", () => {
 });
 aimModeButton.textContent = "좌클릭 공격 · 길게 눌러 조준";
 
+let ivoryUltimateKeyboardAiming = false;
 addEventListener("keydown", (event) => {
   keys.add(event.code);
   if (event.repeat || modal.classList.contains("hidden") === false) return;
-  if (event.code === "Space" || event.code === "KeyQ") {
+  if (event.code === "KeyQ" && betaState.selectedCharacter === "ivory") {
+    event.preventDefault();
+    ivoryUltimateKeyboardAiming = true;
+    ivoryUltimateAiming = true;
+    ivoryUltimateAimIndicator.visible = true;
+    canvas.dataset.ultimateAim = "keyboard-manual";
+  } else if (event.code === "Space" || event.code === "KeyQ") {
     event.preventDefault();
     document.getElementById("ultimate-btn").click();
   }
 });
-addEventListener("keyup", (event) => keys.delete(event.code));
+addEventListener("keyup", (event) => {
+  keys.delete(event.code);
+  if (event.code !== "KeyQ" || !ivoryUltimateKeyboardAiming) return;
+  event.preventDefault();
+  ivoryUltimateKeyboardAiming = false;
+  ivoryUltimateAiming = false;
+  ivoryUltimateAimIndicator.visible = false;
+  canvas.dataset.ultimateAim = "keyboard-released";
+  document.getElementById("ultimate-btn").click();
+});
 function stopHoldAim() {
   if (pointerHoldTimer !== null) {
     clearTimeout(pointerHoldTimer);
