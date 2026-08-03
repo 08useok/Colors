@@ -146,4 +146,18 @@ export const CHARACTERS = {
     },
     walk: { cycleSpeed: 9, armAmp: 0.36, legAmp: 0.42, armRestZ: Math.PI * 0.1 },
   },
+  gold: {
+    color: 0xd4a928,
+    maxHealth: 6200,
+    attackType: "goldOre",
+    reloadDuration: 0.7,
+    attackCooldown: 0.8,
+    moveSpeedMultiplier: 1.0,
+    stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1Size: 2, stage1SplashRadius: 1.5,
+    stage2Damage: 2000, stage2Range: 4, stage2Speed: 18,
+    stage3Damage: 1000, stage3Range: 3, stage3Speed: 20,
+    projectileRadius: 0.2, maxChargePerAttack: 6,
+    ultimate: { name: "Malfunction Zone", damage: 0, radius: 3, duration: 4, delay: 0.35, chargeRequired: 12 },
+    walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
+  },
 };

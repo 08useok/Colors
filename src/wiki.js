@@ -109,6 +109,12 @@ const characterMeta = {
     tip: ["혼자 추격하기보다 아군과 함께 움직이세요. 공격과 회복이 동시에 적용되는 위치가 가장 좋습니다.", "Stay with allies. Position the circle to hit enemies and heal teammates at the same time."],
     range: 4.5, damage: 2400,
   },
+  gold: {
+    role: ["고장 지대 컨트롤러", "Malfunction Controller"], attack: ["연쇄 금광석", "Chain Gold Ore"],
+    desc: ["2x2 금광석이 적중하면 좌우 분열 후 금괴 여섯 발로 한 번 더 갈라집니다. 단계별 적중으로 고장 지대를 충전합니다.", "A 2x2 gold ore splits left and right on impact, then each fragment bursts into six gold bars. Stage hits charge Malfunction Zone."],
+    tip: ["첫 광석은 벽이나 적에게 맞혀야 분열합니다. 궁극기는 근접 전투에서 상대의 공격과 이동을 동시에 끊는 데 사용하세요.", "Land the first ore on a wall or enemy to trigger the split. Use the ultimate in close fights to deny attacks and movement together."],
+    range: 8, damage: 4000,
+  },
 };
 
 const characterDetails = {
@@ -195,7 +201,19 @@ const characterDetails = {
   },
 };
 
+characterDetails.gold = {
+  setting: ["금을 사랑하는 전설 등급 컨트롤러입니다. 광석을 단계적으로 분열시켜 전장을 넓게 압박합니다.", "A Legendary controller who loves gold and pressures wide areas through staged ore splits."],
+  attack: ["첫 광석은 4,000 피해와 1.5타일 범위 피해를 주고 좌우로 분열합니다. 2단계는 각 2,000 피해, 마지막 금괴는 여섯 방향으로 각 1,000 피해를 줍니다.", "The first ore deals 4,000 damage with a 1.5-tile splash then splits sideways. Stage two deals 2,000 each; the final six gold bars deal 1,000 each."],
+  strong: ["Crimson, Purple, Pink처럼 접근하거나 좁은 범위에 머무는 상대", "Close or confined fighters such as Crimson, Purple, and Pink"],
+  weak: ["Blue, Yellow, Cyan의 장거리 견제", "Long-range pressure from Blue, Yellow, and Cyan"],
+  matchup: ["분열 경로를 벽과 통로에 맞춰 예측하기 어렵게 만드세요. 고장 지대 안의 적은 공격할 수 없고 이동 속도가 50% 감소합니다.", "Use walls and lanes to make split paths unpredictable. Enemies in Malfunction Zone cannot attack and move 50% slower."],
+  history: [["v1.5.2", "베타 시즌 2 신규 전설 캐릭터", "v1.5.2", "Added as the Beta Season 2 Legendary fighter"]],
+  other: ["궁극기는 일반 공격 단계별 적중으로 최대 12 충전됩니다. 한 번의 일반 공격에서 얻는 충전량은 최대 6입니다.", "The ultimate needs 12 charge from stage hits. A single basic attack can contribute at most 6 charge."]
+};
+
 const guides = [
+  { id:"beta2", icon:"β2", title:["베타 시즌 2", "Beta Season 2"], desc:["v1.5.2 정식 시즌 업데이트", "The v1.5.2 live season update"], body:["베타 시즌 2는 2026년 8월 3일 00:00 KST에 시작해 8월 10일 00:00 KST에 종료됩니다. Gold와 Gold Rush, 시즌 한정 스킨을 포함합니다.", "Beta Season 2 runs from August 3, 2026 00:00 KST to August 10, 2026 00:00 KST. It includes Gold, Gold Rush, and seasonal skins."], sections:[[["핵심 콘텐츠", "Highlights"], ["신규 전설 캐릭터 Gold, 연쇄 금광석과 고장 지대 궁극기, Gold Rush 경쟁 모드를 추가했습니다.", "Added Gold, the Chain Gold Ore and Malfunction Zone kit, and the Gold Rush competitive mode."]], [["기간", "Schedule"], ["시작 2026.08.03 00:00 KST · 종료 2026.08.10 00:00 KST", "Starts 2026.08.03 00:00 KST · Ends 2026.08.10 00:00 KST"]]] },
+  { id:"goldrush", icon:"🪙", title:["골드 러쉬", "Gold Rush"], desc:["금 10개를 지켜 승리하는 10인 모드", "A 10-player mode won by holding 10 gold"], body:["중앙 금광과 맵에 생성되는 금을 자동으로 획득합니다. 금 10개를 모은 뒤 10초간 보유하면 즉시 승리합니다. AI 9명이 함께 경쟁합니다.", "Gold spawning at the center and around the map is collected automatically. Hold 10 gold for 10 seconds to win instantly against nine AI rivals."], sections:[[["승리 조건", "Win condition"], ["금 10개 보유 후 10초 유지. 3분이 끝나면 가장 많은 금을 보유한 플레이어가 승리합니다.", "Hold 10 gold for 10 seconds. At three minutes, the fighter holding the most gold wins."]]] },
   { id:"beta1", icon:"β", title:["베타 시즌 1", "Beta Season 1"], desc:["v1.5.0에서 시작된 COLORS의 첫 베타 시즌과 핵심 변화를 소개합니다.", "Meet the first Beta season of COLORS and its major v1.5.0 changes."], body:["2026년 7월 27일 시작된 베타 시즌 1은 신규 영웅 캐릭터 Crimson, 캐릭터 등급과 구매, β 크레딧, 시즌 한정 스킨을 도입했습니다. 알파 시즌 1~4의 전적은 그대로 보존되며 새로운 경기는 beta1 전적으로 따로 누적됩니다.", "Beta Season 1 launched on July 27, 2026 with the new Hero fighter Crimson, character rarities and purchases, Beta Credits, and seasonal skins. Alpha Season 1–4 records remain intact while new matches are tracked separately under beta1."], sections:[
     [["시즌 핵심", "Season highlights"], ["신규 영웅 Crimson과 KO 스트레이트 궁극기, 캐릭터 등급 시스템, β 크레딧 및 캐릭터 구매 상점이 시즌의 핵심입니다.", "The season centers on the new Hero Crimson and KO Straight ultimate, character rarities, Beta Credits, and the character shop."]],
     [["등급과 구매", "Rarities & unlocks"], ["일반 등급은 Red·Green·Blue, 희귀 등급은 Orange·Yellow·Cyan·Purple·Pink, 영웅 등급은 Crimson입니다. 기존 계정은 기존 8종을 유지하며 Crimson만 신규 구매 대상입니다.", "Common includes Red, Green, and Blue; Rare includes Orange, Yellow, Cyan, Purple, and Pink; Hero includes Crimson. Existing accounts keep the original eight fighters and only Crimson requires a new unlock."]],
@@ -212,6 +230,12 @@ const guides = [
 ];
 
 const patches = [
+  { version:"v1.5.2", date:"2026.08.03", title:["베타 시즌 2 업데이트", "Beta Season 2 Update"], items:[
+    ["베타 시즌 2 정식 시작 및 Gold 추가", "Launched Beta Season 2 and added Gold"],
+    ["연쇄 금광석 3단 분열과 고장 지대 궁극기 추가", "Added three-stage Chain Gold Ore and Malfunction Zone"],
+    ["AI 9명과 경쟁하는 Gold Rush 모드 추가", "Added Gold Rush with nine AI rivals"],
+    ["전체 상성표와 시즌 위키 갱신", "Updated the full matchup table and season wiki"],
+  ], summary:["베타 시즌 2는 Gold와 Gold Rush를 중심으로 한 일주일 정식 시즌입니다.", "Beta Season 2 is a one-week live season centered on Gold and Gold Rush."], impact:["Gold의 분열 경로와 고장 지대가 좁은 길 교전에 새로운 제어 선택지를 만듭니다.", "Gold's split paths and Malfunction Zone add new control decisions in chokepoint fights."] },
   { version:"v1.5.0", date:"2026.07.27", title:["베타 시즌 1 시작", "Beta Season 1 Launch"], items:[
     ["신규 영웅 캐릭터 Crimson과 KO 스트레이트 궁극기 추가", "Added the new Hero fighter Crimson and KO Straight ultimate"],
     ["캐릭터 등급, 구매 상점과 β 크레딧 도입", "Introduced character rarities, character shop, and Beta Credits"],
@@ -246,7 +270,7 @@ const loc = (pair) => pair[lang === "ko" ? 0 : 1];
 const fmt = (value) => new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 2 }).format(value);
 
 function wikiStats(id) {
-  const fallbackColors = { crimson: 0x8b0000 };
+  const fallbackColors = { crimson: 0x8b0000, gold: 0xd4a928 };
   return { color: fallbackColors[id], ...CHARACTERS[id], ...(BETA_CHARACTERS[id] || {}) };
 }
 
@@ -265,6 +289,7 @@ function betaAttackStats(id) {
   if (id === "yellow") return { damage: stats.electricDamage, range: stats.electricRange };
   if (id === "cyan") return { damage: stats.spreadLineDamage * stats.spreadLineCount, range: stats.spreadLineRange };
   if (id === "crimson") return { damage: stats.attackDamage * stats.attackCount, range: stats.attackRange };
+  if (id === "gold") return { damage: stats.stage1Damage, range: stats.stage1Range };
   if (id === "purple") return { damage: stats.vialDamage, range: stats.vialRange };
   return { damage: stats.healCircleDamage, range: stats.healCircleRange };
 }
@@ -449,6 +474,9 @@ function openGuide(id, updateUrl = true) {
   if (id === "beta1" && updateUrl && wikiPath() !== "/wiki/seasons/beta-1/") {
     history.pushState(null, "", `${BASE}wiki/seasons/beta-1/`);
   }
+  if (id === "beta2" && updateUrl && wikiPath() !== "/wiki/seasons/beta-2/") {
+    history.pushState(null, "", `${BASE}wiki/seasons/beta-2/`);
+  }
 }
 
 function openArticle(value) {
@@ -463,6 +491,7 @@ function routeFromPath() {
   if (charMatch && characterMeta[charMatch[1]]) return { route: "characters", character: charMatch[1] };
   if (path.startsWith("/wiki/characters")) return { route: "characters" };
   if (path.startsWith("/wiki/seasons/beta-1")) return { route: "systems", guide: "beta1" };
+  if (path.startsWith("/wiki/seasons/beta-2")) return { route: "systems", guide: "beta2" };
   if (path.startsWith("/wiki/guides")) return { route: "systems" };
   if (path.startsWith("/wiki/shop")) return { route: "shop" };
   if (path.startsWith("/wiki/patches")) return { route: "patches" };

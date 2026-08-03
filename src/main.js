@@ -33,7 +33,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = IS_BETA_SEASON
+  const seasonLabel = CURRENT_SEASON === "beta2"
+    ? (currentLang === "ko" ? "베타 시즌 2" : "Beta Season 2")
+    : IS_BETA_SEASON
     ? (currentLang === "ko" ? "베타 시즌 1" : "Beta Season 1")
     : (currentLang === "ko" ? "알파 시즌 4" : "Alpha Season 4");
   const tag = document.querySelector(".lobby-season-tag");
@@ -129,10 +131,13 @@ const lobbyBgm = new Audio("./assets/lobby-bgm.mp3");
 lobbyBgm.loop = true;
 const betaLobbyBgm = new Audio("./assets/beta-lobby-bgm.mp3");
 betaLobbyBgm.loop = true;
+const beta2LobbyBgm = new Audio("./assets/beta2-lobby-bgm.mp3?v=1.5.2");
+beta2LobbyBgm.loop = true;
 
 function pauseLobbyBgm() {
   lobbyBgm.pause();
   betaLobbyBgm.pause();
+  beta2LobbyBgm.pause();
 }
 
 function stopAllBgm() {
@@ -145,9 +150,8 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  const activeLobbyBgm = IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
-  const inactiveLobbyBgm = IS_BETA_SEASON ? lobbyBgm : betaLobbyBgm;
-  inactiveLobbyBgm.pause();
+  const activeLobbyBgm = CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
   activeLobbyBgm.volume = 0.45;
   activeLobbyBgm.play().catch(() => {});
 }
@@ -268,8 +272,12 @@ const turnSpeed = 4.4;
 // 베타 시즌 1은 이 시각에 자동으로 열린다. 미리 배포해두면 클라이언트가
 // 자정을 넘기는 순간(새로고침 기준) 알아서 전환된다 — 수동 배포가 필요 없다.
 const BETA_SEASON_START_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
-const IS_BETA_SEASON = CURRENT_SEASON === "beta1";
+const BETA_SEASON_2_START_AT = new Date("2026-08-03T00:00:00+09:00").getTime();
+const BETA_SEASON_2_END_AT = new Date("2026-08-10T00:00:00+09:00").getTime();
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_2_START_AT && Date.now() < BETA_SEASON_2_END_AT
+  ? "beta2"
+  : Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
+const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
 const ALPHA_SEASONS = ["alpha1", "alpha2", "alpha3", "alpha4"];
 const ALPHA_REWARD_DATE = "2026-07-26";
 const ALPHA_PARTICIPATION_REWARD_SKIN = "alpha_champion_cyan";
@@ -279,25 +287,28 @@ const SEASONS = {
   alpha3: "알파 시즌 3",
   alpha4: "알파 시즌 4",
   beta1: "베타 시즌 1",
+  beta2: "베타 시즌 2",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
-const ULTIMATE_CHARACTERS = new Set(["cyan", "crimson"]);
+const ULTIMATE_CHARACTERS = new Set(["cyan", "crimson", "gold"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero",
+  crimson: "hero", gold: "legendary",
 };
-const RARITY_PRICE = { common: 0, rare: 200, hero: 900 };
+const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
+const ROSTER = CURRENT_SEASON === "beta2"
+  ? [...PRE_BETA_CHARACTERS, "crimson", "gold"]
+  : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function getCharacterPrice(charKey) {
   return RARITY_PRICE[CHARACTER_RARITY[charKey]] ?? 0;
@@ -844,6 +855,7 @@ function loadAccount() {
     if (!account.charStats.purple) account.charStats.purple = { wins: 0, games: 0 };
     if (!account.charStats.pink) account.charStats.pink = { wins: 0, games: 0 };
     if (!account.charStats.crimson) account.charStats.crimson = { wins: 0, games: 0 };
+    if (!account.charStats.gold) { account.charStats.gold = { wins: 0, games: 0 }; migrated = true; }
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -852,7 +864,7 @@ function loadAccount() {
       account.chopWoodCharStats = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
       if (!account.chopWoodCharStats[char]) {
         account.chopWoodCharStats[char] = { wins: 0, games: 0 };
         migrated = true;
@@ -885,6 +897,7 @@ function loadAccount() {
       if (!s.purple) s.purple = { wins: 0, games: 0 };
       if (!s.pink) s.pink = { wins: 0, games: 0 };
       if (!s.crimson) s.crimson = { wins: 0, games: 0 };
+      if (!s.gold) s.gold = { wins: 0, games: 0 };
     }
     if (!account.seasonChopWoodStats) {
       account.seasonChopWoodStats = {};
@@ -902,7 +915,7 @@ function loadAccount() {
       account.seasonChopWoodCharStats[CURRENT_SEASON] = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
       if (!account.seasonChopWoodCharStats[CURRENT_SEASON][char]) {
         account.seasonChopWoodCharStats[CURRENT_SEASON][char] = { wins: 0, games: 0 };
         migrated = true;
@@ -918,6 +931,7 @@ function loadAccount() {
     if (!account.charLevels.purple) { account.charLevels.purple = 1; migrated = true; }
     if (!account.charLevels.pink) { account.charLevels.pink = 1; migrated = true; }
     if (!account.charLevels.crimson) { account.charLevels.crimson = 1; migrated = true; }
+    if (!account.charLevels.gold) { account.charLevels.gold = 1; migrated = true; }
     // 베타 시즌 1 등급 시스템 — 기존 계정은 쓰던 8종을 그대로 보유, 크림슨만 신규 구매 대상
     if (!Array.isArray(account.ownedCharacters)) {
       account.ownedCharacters = [...PRE_BETA_CHARACTERS];
@@ -1042,9 +1056,10 @@ function createAccount(id, nickname) {
       purple: { wins: 0, games: 0 },
       pink:   { wins: 0, games: 0 },
       crimson: { wins: 0, games: 0 },
+      gold: { wins: 0, games: 0 },
     },
     charLevels: {
-      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1,
+      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
     },
     ownedCharacters: [...DEFAULT_OWNED_CHARACTERS],
     credits: 0,
@@ -1065,6 +1080,7 @@ function createAccount(id, nickname) {
       yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
       purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
       crimson: { wins: 0, games: 0 },
+      gold: { wins: 0, games: 0 },
     },
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -1207,6 +1223,7 @@ const CHAR_STAT_BARS = {
   purple: { hp: 6,  atk: 8, range: 5, speed: 6 },
   pink:   { hp: 10, atk: 7, range: 3, speed: 10 },
   crimson: { hp: 10, atk: 8, range: 2, speed: 10 },
+  gold: { hp: 6, atk: 10, range: 6, speed: 6 },
 };
 
 function statBar(label, value) {
@@ -1413,6 +1430,7 @@ function updateEventCountdown() {
 function updateBetaPatchVisibility() {
   const patch = document.getElementById("beta-season-patch");
   patch?.classList.toggle("hidden", Date.now() < BETA_SEASON_START_AT);
+  document.getElementById("beta-season-2-patch")?.classList.toggle("hidden", CURRENT_SEASON !== "beta2");
 }
 
 // 베타 시즌 전용 UI(크레딧 잔액, 캐릭터 구매 탭)는 시즌이 열릴 때까지 숨긴다
@@ -1424,6 +1442,9 @@ function applySeasonVisibility() {
     document.getElementById("shop-chars"),
   ];
   for (const el of betaOnly) el?.classList.toggle("hidden", !IS_BETA_SEASON);
+  document.querySelectorAll("[data-beta2-only]").forEach((el) => {
+    el.classList.toggle("hidden", CURRENT_SEASON !== "beta2");
+  });
   // 계정이 없어 updateLobbyUI가 아직 안 돈 상태에서도 시즌 전 캐릭터는 숨겨야 한다
   document.querySelectorAll(".char-btn").forEach((btn) => {
     btn.classList.toggle("hidden", !ROSTER.includes(btn.dataset.char));
@@ -1709,6 +1730,11 @@ const state = {
   lowHealthAlerted: false,
   wasInBush: false,
   chopWoodMode: false,
+  goldRushMode: false,
+  goldRushItems: [],
+  goldRushNextSpawnAt: 0,
+  goldRushHoldStartedAt: 0,
+  malfunctionZones: [],
   teams: null,
   playerTeam: null,
   showdownAnnounced: false,
@@ -2193,6 +2219,28 @@ function createStickman(color, skinId) {
     fctx.fillStyle = '#ffffff';
     fctx.beginPath(); fctx.arc(cx - r * 0.28, cy - r * 0.28, r * 0.22, 0, Math.PI * 2); fctx.fill();
   };
+
+  if (color === 0xd4a928) {
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xffd34f, emissive: 0x744400, emissiveIntensity: 0.3, metalness: 0.78, roughness: 0.2 });
+    const darkMat = new THREE.MeshStandardMaterial({ color: 0x3b2a12, roughness: 0.7, metalness: 0.15 });
+    const hardHat = new THREE.Mesh(new THREE.SphereGeometry(0.73, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), goldMat);
+    hardHat.position.set(0, 2.12, 0);
+    group.add(hardHat);
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffffc8 }));
+    lamp.position.set(0, 2.2, 0.65);
+    group.add(lamp);
+    const pick = new THREE.Group();
+    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.9, 8), darkMat);
+    handle.rotation.z = -0.55;
+    pick.add(handle);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.10, 0.10), goldMat);
+    head.rotation.z = 0.25;
+    head.position.set(-0.22, 0.36, 0);
+    pick.add(head);
+    pick.position.set(0.02, -0.42, 0.1);
+    rightForeArm.add(pick);
+    group.userData.prop = pick;
+  }
 
   if (color === 0xF4CDD3) {
     // Pink — 귀여운 큰 눈 + 볼터치 + 미소
@@ -3295,6 +3343,8 @@ function makeFighter(options) {
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
     crimsonUltimateCharge: 0,
+    goldUltimateCharge: 0,
+    goldAttackCharges: new Map(),
     galeKnockbackRemaining: 0,
     galeKnockbackX: 0,
     galeKnockbackZ: 0,
@@ -4121,6 +4171,11 @@ function startTakeDown() {
   trainingMapGroup.visible = false;
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
+  state.goldRushMode = false;
+  state.goldRushItems.forEach((item) => scene.remove(item.mesh));
+  state.goldRushItems = [];
+  state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
+  state.malfunctionZones = [];
   state.teams = null;
   state.playerTeam = null;
   state.trainingMode = false;
@@ -5905,6 +5960,11 @@ function resetGame() {
   trainingMapGroup.visible = false;
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
+  state.goldRushMode = false;
+  state.goldRushItems.forEach((item) => scene.remove(item.mesh));
+  state.goldRushItems = [];
+  state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
+  state.malfunctionZones = [];
   state.takedownMode = false;
   state.tdBoss = null;
   tdHud.classList.add("hidden");
@@ -5962,6 +6022,73 @@ function resetGame() {
   updateHud();
   resultOverlay.style.display = "none";
   messageOverlay.style.display = "none";
+}
+
+function spawnGoldRushPickup(x, z) {
+  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.34, 0), new THREE.MeshStandardMaterial({ color: 0xffd34f, emissive: 0xaa6400, emissiveIntensity: 0.8, metalness: 0.7, roughness: 0.2 }));
+  mesh.position.set(x, 0.6, z);
+  scene.add(mesh);
+  state.goldRushItems.push({ mesh, x, z, spawnedAt: state.gameTime });
+}
+
+function startGoldRush() {
+  resetGame();
+  state.goldRushMode = true;
+  state.freezeUntil = 3;
+  state.goldRushEndsAt = 180;
+  state.goldRushNextSpawnAt = 0;
+  state.goldRushHoldStartedAt = 0;
+  for (const fighter of state.players) fighter.goldCount = 0;
+  mapNameEl.textContent = "GOLD RUSH · 금 10개를 10초간 지키세요";
+}
+
+function finishGoldRush(winner) {
+  if (state.gameOver) return;
+  state.gameOver = true;
+  state.running = false;
+  const player = getPlayer();
+  const rank = winner?.isPlayer ? 1 : Math.max(2, state.players.filter((fighter) => (fighter.goldCount ?? 0) > (player?.goldCount ?? 0)).length + 2);
+  const { coinsEarned, betaCreditsEarned } = recordGameResult(rank);
+  resultTitle.textContent = winner?.isPlayer ? "GOLD RUSH 승리!" : "GOLD RUSH 종료";
+  resultBody.textContent = winner?.isPlayer ? "금 10개를 10초간 지켰습니다." : `${winner?.name ?? "AI"}가 금을 지켰습니다.`;
+  resultStats.textContent = `보유 금 ${player?.goldCount ?? 0}/10 · 코인 +${coinsEarned}${betaCreditsEarned ? ` · β 크레딧 +${betaCreditsEarned}` : ""}`;
+  resultStreak.style.display = "none";
+  resultOverlay.style.display = "flex";
+  document.exitPointerLock?.();
+}
+
+function updateGoldRush(dt) {
+  if (!state.goldRushMode || state.gameOver) return;
+  if (state.gameTime >= state.goldRushEndsAt) {
+    const winner = [...state.players].filter((fighter) => !fighter.dead).sort((a, b) => (b.goldCount ?? 0) - (a.goldCount ?? 0))[0];
+    finishGoldRush(winner);
+    return;
+  }
+  if (state.gameTime >= state.goldRushNextSpawnAt && state.goldRushItems.length < 20) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = state.goldRushItems.length < 4 ? 2 + Math.random() * 4 : 6 + Math.random() * 18;
+    spawnGoldRushPickup(Math.cos(angle) * radius, Math.sin(angle) * radius);
+    state.goldRushNextSpawnAt = state.gameTime + (state.goldRushItems.length < 4 ? 3 : 5);
+  }
+  for (let i = state.goldRushItems.length - 1; i >= 0; i -= 1) {
+    const item = state.goldRushItems[i];
+    item.mesh.rotation.y += dt * 3;
+    item.mesh.position.y = 0.62 + Math.sin((state.gameTime - item.spawnedAt) * 4) * 0.09;
+    const collector = state.players.find((fighter) => !fighter.dead && Math.hypot(fighter.mesh.position.x - item.x, fighter.mesh.position.z - item.z) < fighter.radius + 0.45);
+    if (!collector) continue;
+    collector.goldCount = (collector.goldCount ?? 0) + 1;
+    scene.remove(item.mesh);
+    item.mesh.geometry.dispose();
+    item.mesh.material.dispose();
+    state.goldRushItems.splice(i, 1);
+  }
+  const leader = state.players.find((fighter) => !fighter.dead && (fighter.goldCount ?? 0) >= 10);
+  if (leader) {
+    if (state.goldRushHoldOwner !== leader.id) { state.goldRushHoldOwner = leader.id; state.goldRushHoldStartedAt = state.gameTime; }
+    if (state.gameTime - state.goldRushHoldStartedAt >= 10) finishGoldRush(leader);
+  } else {
+    state.goldRushHoldOwner = null;
+  }
 }
 
 function getPlayer() {
@@ -6358,8 +6485,99 @@ function createCrimsonPunchEffect(attacker, yaw, range) {
   state.effects.push({ mesh: impact, life: 0.2, maxLife: 0.2, type: "punchImpact" });
 }
 
+function createGoldIngotGeometry() {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([
+    -0.28, -0.11, -0.18, 0.28, -0.11, -0.18, 0.28, -0.11, 0.18, -0.28, -0.11, 0.18,
+    -0.19, 0.11, -0.11, 0.19, 0.11, -0.11, 0.19, 0.11, 0.11, -0.19, 0.11, 0.11,
+  ]), 3));
+  geometry.setIndex([0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7, 0, 1, 5, 0, 5, 4, 1, 2, 6, 1, 6, 5, 2, 3, 7, 2, 7, 6, 3, 0, 4, 3, 4, 7]);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function spawnGoldProjectile(fighter, position, yaw, stage, attackId) {
+  const def = CHARACTERS.gold;
+  const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
+  const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
+  const geometry = stage === 1 ? new THREE.DodecahedronGeometry(def.stage1Size / 2, 0)
+    : stage === 3 ? createGoldIngotGeometry() : new THREE.SphereGeometry(radii[stage], 8, 6);
+  const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: colors[stage], emissive: colors[stage], emissiveIntensity: 0.8, metalness: 0.55, roughness: 0.25 }));
+  mesh.position.set(position.x, 1.3, position.z);
+  mesh.rotation.y = yaw;
+  scene.add(mesh);
+  state.projectiles.push({
+    ownerId: fighter.id, x: position.x, z: position.z,
+    vx: Math.sin(yaw) * def[`stage${stage}Speed`], vz: Math.cos(yaw) * def[`stage${stage}Speed`],
+    damage: def[`stage${stage}Damage`], range: def[`stage${stage}Range`], distTraveled: 0,
+    launchAt: state.gameTime, mesh, projRadius: radii[stage], hitTargetIds: new Set(),
+    goldStage: stage, goldAttackId: attackId, goldYaw: yaw,
+  });
+}
+
+function splitGoldProjectile(proj, fighter) {
+  const origin = new THREE.Vector3(proj.x, 0, proj.z);
+  if (proj.goldStage === 1) {
+    spawnGoldProjectile(fighter, origin, proj.goldYaw - Math.PI / 2, 2, proj.goldAttackId);
+    spawnGoldProjectile(fighter, origin, proj.goldYaw + Math.PI / 2, 2, proj.goldAttackId);
+    createGoldImpactEffect(origin, CHARACTERS.gold.stage1SplashRadius);
+  } else if (proj.goldStage === 2) {
+    for (let i = 0; i < 6; i += 1) spawnGoldProjectile(fighter, origin, proj.goldYaw + i * Math.PI / 3, 3, proj.goldAttackId);
+  }
+}
+
+function createGoldImpactEffect(position, radius = 1) {
+  const ring = new THREE.Mesh(new THREE.RingGeometry(Math.max(0.16, radius - 0.18), radius, 24), new THREE.MeshBasicMaterial({ color: 0xffd347, transparent: true, opacity: 0.78, side: THREE.DoubleSide, depthWrite: false }));
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(position.x, 0.14, position.z);
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.35, maxLife: 0.35, type: "goldImpact" });
+}
+
+function applyGoldProjectileHit(proj, target, fighter) {
+  const hitStages = fighter.goldAttackCharges.get(proj.goldAttackId) ?? { charge: 0, targets: new Map() };
+  fighter.goldAttackCharges.set(proj.goldAttackId, hitStages);
+  const dealStage = (hitTarget) => {
+    const stages = hitStages.targets.get(hitTarget.id) ?? new Set();
+    if (stages.has(proj.goldStage)) return;
+    stages.add(proj.goldStage);
+    hitStages.targets.set(hitTarget.id, stages);
+    const dealt = applyDamage(hitTarget, proj.damage, fighter);
+    if (dealt <= 0) return;
+    const value = [0, 3, 2, 1][proj.goldStage];
+    const award = Math.max(0, Math.min(value, CHARACTERS.gold.maxChargePerAttack - hitStages.charge));
+    hitStages.charge += award;
+    fighter.goldUltimateCharge = Math.min(CHARACTERS.gold.ultimate.chargeRequired, fighter.goldUltimateCharge + award);
+  };
+  dealStage(target);
+  if (proj.goldStage === 1) {
+    for (const other of state.players) {
+      if (other.dead || other.id === fighter.id) continue;
+      if (state.chopWoodMode && other.team === fighter.team) continue;
+      if (Math.hypot(other.mesh.position.x - target.mesh.position.x, other.mesh.position.z - target.mesh.position.z) <= CHARACTERS.gold.stage1SplashRadius) dealStage(other);
+    }
+  }
+  createGoldImpactEffect(target.mesh.position, proj.goldStage === 1 ? CHARACTERS.gold.stage1SplashRadius : 0.65);
+}
+
+function beginGoldAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + CHARACTERS.gold.attackCooldown;
+  fighter.attackSequenceEndsAt = fighter.nextAttackAt;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.lastCombatTime = state.gameTime;
+  const attackId = `${fighter.id}:${state.gameTime.toFixed(3)}`;
+  fighter.goldAttackCharges.set(attackId, { charge: 0, targets: new Map() });
+  spawnGoldProjectile(fighter, fighter.mesh.position, fighter.yaw, 1, attackId);
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
 function beginAttackCore(fighter) {
   if (state.gameTime < state.freezeUntil) return false;
+  if (fighter.malfunctionUntil > state.gameTime) return false;
   if (fighter.characterType === "green") {
     return beginBoomerangAttack(fighter);
   }
@@ -6383,6 +6601,9 @@ function beginAttackCore(fighter) {
   }
   if (fighter.characterType === "crimson") {
     return beginCrimsonPunchCombo(fighter);
+  }
+  if (fighter.characterType === "gold") {
+    return beginGoldAttack(fighter);
   }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
@@ -6447,6 +6668,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "purple") baseRange = CHARACTERS.purple.needleRange;
   else if (fighter.characterType === "pink") baseRange = CHARACTERS.pink.healCircleRange;
   else if (fighter.characterType === "crimson") baseRange = CHARACTERS.crimson.attackRange;
+  else if (fighter.characterType === "gold") baseRange = CHARACTERS.gold.stage1Range;
   return baseRange;
 }
 
@@ -6460,6 +6682,7 @@ function getMoveSpeed(fighter) {
     const slowPercent = fighter.shockSlowOverride ?? CHARACTERS.yellow.shockSlowPercent;
     speed *= (1 - slowPercent);
   }
+  if (fighter.malfunctionUntil > state.gameTime) speed *= 0.5;
   return speed;
 }
 
@@ -6961,10 +7184,31 @@ function tryUseCrimsonUltimate(fighter = getPlayer()) {
   return true;
 }
 
+function tryUseGoldUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "gold" || !state.running) return false;
+  const ultimate = CHARACTERS.gold.ultimate;
+  if ((fighter.goldUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.goldUltimateCharge = 0;
+  window.setTimeout(() => {
+    if (!state.running || fighter.dead) return;
+    const mesh = new THREE.Mesh(
+      new THREE.CircleGeometry(ultimate.radius, 40),
+      new THREE.MeshBasicMaterial({ color: 0xd9a51f, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }),
+    );
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(fighter.mesh.position.x, 0.1, fighter.mesh.position.z);
+    scene.add(mesh);
+    state.malfunctionZones.push({ mesh, ownerId: fighter.id, radius: ultimate.radius, expiresAt: state.gameTime + ultimate.duration });
+    createGoldImpactEffect(fighter.mesh.position, ultimate.radius);
+  }, ultimate.delay * 1000);
+  return true;
+}
+
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
+  if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
   return tryUseCyanUltimate(fighter);
 }
 
@@ -7345,6 +7589,31 @@ function updateProjectiles(dt) {
       continue;
     }
 
+    if (proj.goldStage) {
+      const attacker = state.players.find((fighter) => fighter.id === proj.ownerId);
+      let resolved = false;
+      for (const target of state.players) {
+        if (!attacker || target.id === proj.ownerId || target.dead) continue;
+        if (state.chopWoodMode && target.team === attacker.team) continue;
+        const dx = target.mesh.position.x - proj.x;
+        const dz = target.mesh.position.z - proj.z;
+        const hitRadius = target.radius + proj.projRadius;
+        if (dx * dx + dz * dz > hitRadius * hitRadius) continue;
+        applyGoldProjectileHit(proj, target, attacker);
+        resolved = true;
+        break;
+      }
+      if (!resolved) resolved = state.solids.some((solid) => intersectsRect(proj.x, proj.z, proj.projRadius, solid));
+      if (resolved || proj.distTraveled >= proj.range) {
+        if (attacker && proj.goldStage < 3) splitGoldProjectile(proj, attacker);
+        scene.remove(proj.mesh);
+        proj.mesh.geometry?.dispose();
+        proj.mesh.material?.dispose();
+        state.projectiles.splice(i, 1);
+      }
+      continue;
+    }
+
     let hit = false;
     const attacker = state.players.find((p) => p.id === proj.ownerId);
     for (const target of state.players) {
@@ -7518,6 +7787,43 @@ function updatePoisonTicks() {
         });
       }
     }
+  }
+}
+
+function updateMalfunctionZones() {
+  for (const fighter of state.players) fighter.malfunctionUntil = 0;
+  for (let i = state.malfunctionZones.length - 1; i >= 0; i -= 1) {
+    const zone = state.malfunctionZones[i];
+    const owner = state.players.find((fighter) => fighter.id === zone.ownerId && !fighter.dead);
+    if (!owner || state.gameTime >= zone.expiresAt) {
+      scene.remove(zone.mesh);
+      zone.mesh.geometry?.dispose();
+      zone.mesh.material?.dispose();
+      state.malfunctionZones.splice(i, 1);
+      continue;
+    }
+    zone.mesh.position.set(owner.mesh.position.x, 0.1, owner.mesh.position.z);
+    zone.mesh.material.opacity = 0.24 + Math.sin(state.gameTime * 9) * 0.08;
+    for (const target of state.players) {
+      if (target.dead || target.id === owner.id) continue;
+      if (state.chopWoodMode && target.team === owner.team) continue;
+      const dx = target.mesh.position.x - owner.mesh.position.x;
+      const dz = target.mesh.position.z - owner.mesh.position.z;
+      if (dx * dx + dz * dz > zone.radius * zone.radius) continue;
+      target.malfunctionUntil = state.gameTime + 0.15;
+      if (!target.malfunctionIndicator) {
+        const indicator = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.06, 6, 20), new THREE.MeshBasicMaterial({ color: 0xffc928, transparent: true, opacity: 0.9 }));
+        indicator.rotation.x = Math.PI / 2;
+        indicator.position.y = 2.45;
+        target.mesh.add(indicator);
+        target.malfunctionIndicator = indicator;
+      }
+      target.malfunctionIndicator.visible = true;
+      target.malfunctionIndicator.rotation.z += 0.18;
+    }
+  }
+  for (const fighter of state.players) {
+    if (fighter.malfunctionIndicator) fighter.malfunctionIndicator.visible = fighter.malfunctionUntil > state.gameTime;
   }
 }
 
@@ -7753,6 +8059,10 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
         addKillFeed(`<span style="color:${ac}">${attacker.name}</span> 처치 → <span style="color:${tc}">${target.name}</span>`, ac, tc, getPersonalKillTone(attacker, target));
         if (attacker.isPlayer || target.isPlayer) audio.play("kill");
       }
+    } else if (state.goldRushMode) {
+      target.respawnAt = state.gameTime + 3;
+      target.goldCount = Math.max(0, (target.goldCount ?? 0) - 1);
+      if (attacker) addKillFeed(t("killFeed", attacker.name, target.name), null, null, getPersonalKillTone(attacker, target));
     } else {
       state.deathOrder.push(target.id);
       const personalTone = getPersonalKillTone(attacker, target);
@@ -8191,7 +8501,7 @@ function updateBot(bot, dt, zone) {
     const distance = Math.hypot(target.mesh.position.x - botPos.x, target.mesh.position.z - botPos.z);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
-    const isRanged = ["green", "blue", "orange", "yellow", "cyan", "purple"].includes(bot.characterType);
+    const isRanged = ["green", "blue", "orange", "yellow", "cyan", "purple", "gold"].includes(bot.characterType);
     const ct = bot.characterType;
     let idealDist;
     if (ct === "green") idealDist = 1.5;
@@ -8203,6 +8513,7 @@ function updateBot(bot, dt, zone) {
     else if (ct === "purple") idealDist = 11;
     else if (ct === "pink") idealDist = 3;
     else if (ct === "crimson") idealDist = 2; // 근접 브루저 — 최대한 붙는다
+    else if (ct === "gold") idealDist = 7;
     else idealDist = atkRange * 0.6;
 
     let purpleIsVialTurn = false;
@@ -8302,6 +8613,9 @@ function updateBot(bot, dt, zone) {
       // 크림슨 봇: 근접 교전 중 게이지가 차면 바로 궁극기
       if (ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
         tryUseCrimsonUltimate(bot);
+      }
+      if (ct === "gold" && (bot.goldUltimateCharge ?? 0) >= CHARACTERS.gold.ultimate.chargeRequired && distance < 5) {
+        tryUseGoldUltimate(bot);
       }
       beginAttack(bot);
     }
@@ -9148,6 +9462,9 @@ function updateHud() {
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
+  if (state.goldRushMode) {
+    survivorsLabel.textContent = `GOLD RUSH · 금 ${player.goldCount ?? 0}/10 · ${formatTime(Math.max(0, state.goldRushEndsAt - state.gameTime))}`;
+  }
   updateAmmoPips(player.ammo);
 
   const hasUltimate = ULTIMATE_CHARACTERS.has(player.characterType)
@@ -9157,7 +9474,9 @@ function updateHud() {
   if (hasUltimate) {
     const isCrimson = player.characterType === "crimson";
     const ultimate = CHARACTERS[player.characterType].ultimate;
-    const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0) : player.cyanUltimateCharge;
+    const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0)
+      : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
+      : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
     ultimateButton.classList.toggle("ready", ratio >= 1);
@@ -9358,7 +9677,7 @@ function onChopWoodKill(attacker, target) {
 }
 
 function updateChopWoodRespawn() {
-  if (!state.chopWoodMode) return;
+  if (!state.chopWoodMode && !state.goldRushMode) return;
   for (const fighter of state.players) {
     if (!fighter.dead || !fighter.respawnAt) continue;
     if (state.gameTime >= fighter.respawnAt) {
@@ -9375,7 +9694,7 @@ function updateChopWoodRespawn() {
       if (fighter.axeIndicator) {
         fighter.axeIndicator.material.color.setHex(AXE_GRADES[0].color);
       }
-      const spawns = fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B;
+      const spawns = state.goldRushMode ? MAP_POOL[state.currentMapId].spawns : (fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B);
       const spawn = spawns[Math.floor(Math.random() * spawns.length)];
       fighter.mesh.position.set(spawn.x, 1.85, spawn.z);
       fighter.shadow.position.set(spawn.x, 0.04, spawn.z);
@@ -9402,6 +9721,7 @@ function checkEndState() {
   }
 
   if (state.takedownMode) return;
+  if (state.goldRushMode) return;
 
   if (state.chopWoodMode && state.teams) {
     const player = getPlayer();
@@ -9561,7 +9881,7 @@ function animate() {
 
   if (state.running) {
     state.gameTime += dt;
-    const usesZone = !state.trainingMode && !state.chopWoodMode && !state.takedownMode;
+    const usesZone = !state.trainingMode && !state.chopWoodMode && !state.takedownMode && !state.goldRushMode;
     const zone = usesZone ? getCurrentZone() : null;
     const countdownFrozen = state.gameTime < state.freezeUntil;
     const victoryFrozen = state.victoryCelebrating && state.gameTime < state.resultRevealAt;
@@ -9588,6 +9908,8 @@ function animate() {
       updateScheduledHits();
       updateProjectiles(dt);
       updatePoisonTicks();
+      updateMalfunctionZones();
+      updateGoldRush(dt);
       if (usesZone) {
         if (!mpConfig || mpConfig.isHost) updateZoneDamage(dt, zone);
       }
@@ -9663,7 +9985,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("showdownWins", account.showdownWins || 0)}</div>`;
         html += `<div class="stats-row">${t("chopWoodWins", account.chopWoodWins || 0)}</div>`;
         html += `<div class="stats-divider"></div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -10264,6 +10586,13 @@ function setupInput() {
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("active");
     startChopWood();
+  });
+
+  document.getElementById("mode-goldrush")?.addEventListener("click", async () => {
+    await initAudio();
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("active");
+    startGoldRush();
   });
 
   // 훈련장 시작

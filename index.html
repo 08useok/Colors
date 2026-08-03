@@ -174,12 +174,22 @@
                 <tr><td class="mu-purple">🟣 Purple</td><td>🟠 🔵</td><td>🟡 🩵</td><td>🔴 🟢 🩷 🟥</td></tr>
                 <tr><td class="mu-pink">🩷 Pink</td><td>🟣</td><td>🔴 🟢 🔵</td><td>🟠 🟡 🩵 🟥</td></tr>
                 <tr><td class="mu-crimson">🟥 Crimson</td><td>🟢 🟣 🩷</td><td>🔵 🟠</td><td>🔴 🟡 🩵</td></tr>
+                <tr class="beta2-matchup" data-beta2-only><td class="mu-gold">🟨 Gold</td><td>🟥 🟣 🩷</td><td>🔴 🟢 🟠</td><td>🔵 🟡 🩵</td></tr>
               </tbody>
             </table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
             <div class="patch-section-label">베타 시즌 1 패치노트</div>
+            <div id="beta-season-2-patch" class="patch-entry hidden">
+              <div class="patch-version">v1.5.2 — 2026.08.03 · 베타 시즌 2 업데이트</div>
+              <ul>
+                <li>베타 시즌 2를 2026.08.03 00:00~2026.08.10 00:00 KST로 정식 개시</li>
+                <li>신규 전설 캐릭터 Gold 추가: 3단 분열 광석 공격과 고장 지대 궁극기</li>
+                <li>Gold Rush 모드 추가: AI 9명과 금 10개를 10초간 지키는 경쟁</li>
+                <li>전체 캐릭터 상성표와 공식 위키를 최신 밸런스로 갱신</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.5.1 — 2026.08.01 · 베타 시즌 1 업데이트</div>
               <ul>
@@ -661,7 +671,7 @@
               <div class="lobby-level-row">
                 <span id="lobby-level">Lv.1</span>
                 <span class="lobby-season-tag" data-i18n="season">알파 시즌 3</span>
-                <span class="lobby-version">v1.5.0</span>
+                <span class="lobby-version">v1.5.2</span>
                 <span id="beta-countdown" class="beta-countdown hidden"></span>
               </div>
             </div>
@@ -753,6 +763,13 @@
               <span class="char-winrate" id="winrate-crimson"></span>
               <span class="char-skin-toggle disabled" data-char="crimson">스킨 없음</span>
             </button>
+            <button id="select-gold" class="char-btn" type="button" data-char="gold" data-beta2-only>
+              <span class="selected-badge">선택됨</span>
+              <span class="char-icon char-icon-gold">G</span>
+              <span class="char-name">Gold</span>
+              <span class="char-winrate" id="winrate-gold"></span>
+              <span class="char-skin-toggle disabled" data-char="gold">스킨 없음</span>
+            </button>
           </div>
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
@@ -771,6 +788,11 @@
             <button id="mode-chopwood" class="mode-btn mode-chopwood" type="button">
               <span class="mode-icon-text">🪓</span>
               <span data-i18n="modeChopWood">찹 우드</span>
+            </button>
+            <button id="mode-goldrush" class="mode-btn mode-goldrush" type="button" data-beta2-only>
+              <span class="mode-icon-text">🪙</span>
+              <span>Gold Rush</span>
+              <small class="mode-current-map">금 10개를 10초간 지키세요 · AI 9명</small>
             </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>
@@ -880,6 +902,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.174"></script>
+  <script type="module" src="./src/main.js?v=1.5.2"></script>
 </body>
 </html>

@@ -982,6 +982,8 @@ body {
   box-shadow: 0 8px 20px rgba(26, 143, 143, 0.35);
 }
 
+.mode-goldrush { background: linear-gradient(135deg, #b78820, #5b3d07); border-color: rgba(255,211,76,.55); box-shadow: 0 8px 20px rgba(186,133,20,.35); }
+
 .mode-icon {
   width: 48px;
   height: 48px;
@@ -3185,6 +3187,8 @@ body {
   border: 1px solid rgba(255, 210, 158, 0.2);
   background: #1c1208;
 }
+.char-icon-gold { background: radial-gradient(circle at 35% 35%, #fff2a2, #bb8210 70%); box-shadow: 0 6px 18px rgba(255,201,38,.5); color: #4a3000; }
+
 .td-map-desc {
   margin: 12px 0 0;
   color: var(--muted);
