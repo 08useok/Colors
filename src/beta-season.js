@@ -304,6 +304,22 @@ for (const angle of [Math.PI / 4, -Math.PI / 4]) {
 ivoryUltimateAimIndicator.position.y = 0.14;
 ivoryUltimateAimIndicator.visible = false;
 player.add(ivoryUltimateAimIndicator);
+const THROW_AIM_MIN_RANGE = 1.5;
+let ivoryAttackAimRange = BETA_CHARACTERS.ivory.iceCreamRange;
+let ivoryUltimateAimRange = BETA_CHARACTERS.ivory.ultimate.castRange;
+
+function updateIvoryThrowAimVisuals() {
+  if (betaState.selectedCharacter !== "ivory") return;
+  attackAimBeam.scale.set(0.42, ivoryAttackAimRange, 1);
+  attackAimBeam.position.z = ivoryAttackAimRange / 2;
+  ivoryUltimateAimBeam.scale.y = ivoryUltimateAimRange / BETA_CHARACTERS.ivory.ultimate.castRange;
+  ivoryUltimateAimBeam.position.z = ivoryUltimateAimRange / 2;
+  for (let i = 1; i < ivoryUltimateAimIndicator.children.length; i += 1) {
+    ivoryUltimateAimIndicator.children[i].position.z = ivoryUltimateAimRange;
+  }
+  canvas.dataset.throwAimRange = ivoryAttackAimRange.toFixed(2);
+  canvas.dataset.ultimateThrowAimRange = ivoryUltimateAimRange.toFixed(2);
+}
 const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef3c58, roughness: 0.55 });
 const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, 1.2, 5, 10), bodyMat);
 body.position.y = 1.2;
@@ -1939,8 +1955,9 @@ function performCharacterAttack({ manualAim = false } = {}) {
     spawnGoldProjectile(player.position, player.rotation.y, 1, attackId);
     attackComboState.textContent = "금광석 1단계";
   } else if (id === "ivory") {
-    const targetX = player.position.x + Math.sin(player.rotation.y) * def.iceCreamRange;
-    const targetZ = player.position.z + Math.cos(player.rotation.y) * def.iceCreamRange;
+    const throwRange = manualAim ? ivoryAttackAimRange : def.iceCreamRange;
+    const targetX = player.position.x + Math.sin(player.rotation.y) * throwRange;
+    const targetZ = player.position.z + Math.cos(player.rotation.y) * throwRange;
     fireIvoryIceCream(targetX, targetZ);
     attackComboState.textContent = "아이스크림 배달 중";
   } else if (id === "crimson") {
@@ -2091,8 +2108,8 @@ function performGoldUltimate() {
 function performIvoryUltimate() {
   const def = BETA_CHARACTERS.ivory;
   const yaw = player.rotation.y;
-  const centerX = player.position.x + Math.sin(yaw) * def.ultimate.castRange;
-  const centerZ = player.position.z + Math.cos(yaw) * def.ultimate.castRange;
+  const centerX = player.position.x + Math.sin(yaw) * ivoryUltimateAimRange;
+  const centerZ = player.position.z + Math.cos(yaw) * ivoryUltimateAimRange;
   const r = def.ultimate.patternRadius;
   const diagonal = r / Math.sqrt(2);
   for (const [offsetX, offsetZ] of [[0, 0], [diagonal, diagonal], [-diagonal, diagonal], [diagonal, -diagonal], [-diagonal, -diagonal]]) {
@@ -2226,7 +2243,7 @@ ultimateButton.addEventListener("pointerdown", (event) => {
   canvas.dataset.ultimateAim = "manual";
 });
 addEventListener("pointermove", (event) => {
-  if (ivoryUltimateAiming) aimPlayerAtPointer(event);
+  if (ivoryUltimateAiming) aimPlayerAtPointer(event, "ultimate");
 });
 addEventListener("pointerup", () => {
   if (!ivoryUltimateAiming) return;
