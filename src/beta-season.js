@@ -1554,12 +1554,129 @@ function createRedThemeHitEffect(position) {
   crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.3, maxLife: 0.3 });
 }
 
+function createGreenBoomerangMesh() {
+  const shape = new THREE.Shape();
+  const outerRadius = 0.62;
+  const innerRadius = 0.34;
+  const start = -Math.PI * 0.78;
+  const end = Math.PI * 0.78;
+  for (let i = 0; i <= 18; i += 1) {
+    const angle = start + (end - start) * (i / 18);
+    const x = Math.cos(angle) * outerRadius;
+    const y = Math.sin(angle) * outerRadius;
+    if (i === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+  }
+  for (let i = 18; i >= 0; i -= 1) {
+    const angle = start + (end - start) * (i / 18);
+    shape.lineTo(Math.cos(angle) * innerRadius, Math.sin(angle) * innerRadius);
+  }
+  shape.closePath();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x74ee18,
+    emissive: 0x2a9a08,
+    emissiveIntensity: 1.2,
+    roughness: 0.28,
+    metalness: 0.08,
+  });
+  const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
+  mesh.scale.set(1.05, 1.05, 1.05);
+  return mesh;
+}
+
+// 블루 — 뒤로 갈수록 가늘어지는 유선형 구슬 (스피드 감을 실루엣으로 표현)
+function createBlueMarbleMesh() {
+  const mesh = new THREE.Mesh(
+    new THREE.ConeGeometry(0.15, 0.5, 10),
+    new THREE.MeshStandardMaterial({
+      color: 0x4f83ff, emissive: 0x1c3fbf, emissiveIntensity: 1.4,
+      metalness: 0.5, roughness: 0.15, transparent: true, opacity: 0.94,
+    }),
+  );
+  mesh.rotation.x = Math.PI / 2;
+  return mesh;
+}
+
+// 옐로우 — 지그재그 번개 모양 실루엣
+function createYellowBoltMesh() {
+  const shape = new THREE.Shape();
+  shape.moveTo(-0.1, 0.32);
+  shape.lineTo(0.08, 0.06);
+  shape.lineTo(-0.04, 0.06);
+  shape.lineTo(0.1, -0.32);
+  shape.lineTo(-0.06, -0.02);
+  shape.lineTo(0.06, -0.02);
+  shape.closePath();
+  const mesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(shape),
+    new THREE.MeshBasicMaterial({
+      color: 0xfff45a, transparent: true, opacity: 0.95,
+      side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
+    }),
+  );
+  return mesh;
+}
+
+// 시안 — 압축 알약 캡슐 실루엣
+function createCyanPillMesh() {
+  const mesh = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.09, 0.28, 4, 8),
+    new THREE.MeshStandardMaterial({
+      color: 0x32f4ff, emissive: 0x0aa4b8, emissiveIntensity: 1.1,
+      metalness: 0.3, roughness: 0.2, transparent: true, opacity: 0.95,
+    }),
+  );
+  mesh.rotation.x = Math.PI / 2;
+  return mesh;
+}
+
+// 퍼플 — 얇고 뾰족한 독침 실루엣
+function createPurpleNeedleMesh() {
+  const mesh = new THREE.Mesh(
+    new THREE.ConeGeometry(0.06, 0.55, 8),
+    new THREE.MeshStandardMaterial({
+      color: 0xc04cff, emissive: 0x6a1899, emissiveIntensity: 1.2,
+      metalness: 0.2, roughness: 0.25, transparent: true, opacity: 0.95,
+    }),
+  );
+  mesh.rotation.x = Math.PI / 2;
+  return mesh;
+}
+
+// 퍼플 — 독병(플라스크) 실루엣: 몸통 + 목 + 마개
+function createPurpleVialMesh() {
+  const group = new THREE.Group();
+  const glass = new THREE.MeshStandardMaterial({
+    color: 0x9b3fd6, transparent: true, opacity: 0.75, roughness: 0.15, metalness: 0.1,
+  });
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8), glass);
+  body.scale.set(1, 1.15, 1);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.16, 8), glass);
+  neck.position.y = 0.24;
+  const cork = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.075, 0.075, 0.08, 8),
+    new THREE.MeshStandardMaterial({ color: 0x5d3b16, roughness: 0.9 }),
+  );
+  cork.position.y = 0.34;
+  group.add(body, neck, cork);
+  return group;
+}
+
 function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false }) {
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
   const redThemeColor = redThemeSkin === "beta_red_crimson" ? 0x8f0019 : redThemeSkin === "beta_red_red" ? 0xff2842 : 0xd72834;
   const isOrangeFruit = type === "orangeFruit";
-  const mesh = new THREE.Mesh(
+  const CUSTOM_PROJECTILE_MESHES = {
+    boomerang: createGreenBoomerangMesh,
+    marble: createBlueMarbleMesh,
+    electric: createYellowBoltMesh,
+    cyanShot: createCyanPillMesh,
+    needle: createPurpleNeedleMesh,
+    vial: createPurpleVialMesh,
+  };
+  const mesh = CUSTOM_PROJECTILE_MESHES[type]
+    ? CUSTOM_PROJECTILE_MESHES[type]()
+    : new THREE.Mesh(
     new THREE.SphereGeometry(radius, 10, 8),
     isOrangeFruit
       ? new THREE.MeshStandardMaterial({ color: 0xf28b21, roughness: 0.78, metalness: 0 })
@@ -1925,6 +2042,30 @@ function createGroundSlash(length, width, color, angle = 0) {
   crimsonSlashes.push({ group: mesh, mesh, life: 0.38, maxLife: 0.38 });
 }
 
+function createRedGloveEffect(angle = 0) {
+  const glove = new THREE.Group();
+  const red = new THREE.MeshBasicMaterial({ color: 0xf01824, transparent: true, opacity: 0.96, depthWrite: false });
+  const highlight = new THREE.MeshBasicMaterial({ color: 0xff5b55, transparent: true, opacity: 0.78, depthWrite: false });
+  const cuffMat = new THREE.MeshBasicMaterial({ color: 0xb90818, transparent: true, opacity: 0.96, depthWrite: false });
+  const palm = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 12), red);
+  palm.scale.set(1.05, 1.12, 0.72);
+  const thumb = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 8), highlight);
+  thumb.scale.set(1.15, 0.8, 0.8);
+  thumb.position.set(0.28, -0.12, 0.03);
+  const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.31, 0.42, 12), cuffMat);
+  cuff.rotation.z = -0.32;
+  cuff.position.set(-0.28, -0.42, 0);
+  glove.add(palm, thumb, cuff);
+  glove.position.set(
+    player.position.x + Math.sin(player.rotation.y + angle) * 1.45,
+    player.position.y + 1.18,
+    player.position.z + Math.cos(player.rotation.y + angle) * 1.45,
+  );
+  glove.rotation.y = player.rotation.y + angle;
+  scene.add(glove);
+  crimsonSlashes.push({ group: glove, mesh: palm, materials: [red, highlight, cuffMat], life: 0.22, maxLife: 0.22, grow: 1.5, type: "redGlove" });
+}
+
 // 독병 포물선의 최고 높이. 벽을 넘길 수 있을 만큼 띄운다.
 const VIAL_ARC_HEIGHT = 3.4;
 
@@ -1966,8 +2107,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
     const strike = (index) => {
       const angle = RED_SLASH_ANGLES[index % RED_SLASH_ANGLES.length];
       hitSlashes(def.attackRange, attackWidth / 2, [angle, 0], def.attackDamage);
-      createGroundSlash(def.attackRange, attackWidth, 0xff554b, angle);
-      createGroundSlash(def.attackRange, attackWidth * 0.8, 0xffa08a, 0);
+      createRedGloveEffect(angle);
     };
     strike(0);
     for (let i = 1; i < def.attackCount; i += 1) {
@@ -1976,7 +2116,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier, returnDamageMultiplier: def.boomerangReturnDamageMultiplier }));
   } else if (id === "blue") {
-    fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14 });
+    fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14, type: "marble" });
   } else if (id === "orange") {
     fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "orangeFruit" });
   } else if (id === "yellow") {
@@ -3216,7 +3356,13 @@ function animate() {
       remove = true;
       shouldSplitOrange = projectile.type === "orangeFruit";
     }
-    if (projectile.type !== "cyanUltimate") projectile.mesh.rotation.y += dt * 9;
+    if (projectile.type === "boomerang") {
+      // Rotate in the camera-facing plane, using the viewer's up-axis as the reference.
+      projectile.mesh.quaternion.copy(camera.quaternion);
+      projectile.mesh.rotateZ(dt * 8);
+    } else if (projectile.type !== "cyanUltimate") {
+      projectile.mesh.rotation.y += dt * 9;
+    }
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
     }
@@ -3330,7 +3476,12 @@ function animate() {
     const progress = 1 - slash.life / slash.maxLife;
     // 처음엔 빠르게 밝고 뒤로 갈수록 천천히 사라지도록 감쇠 곡선을 준다
     const fade = (1 - progress) * (1 - progress);
-    slash.mesh.material.opacity = Math.max(0, (slash.peakOpacity ?? 0.72) * fade);
+    if (slash.type === "redGlove") {
+      slash.group.scale.setScalar(0.86 + progress * 0.64);
+      for (const material of slash.materials) material.opacity = Math.max(0, 0.96 * fade);
+    } else {
+      slash.mesh.material.opacity = Math.max(0, (slash.peakOpacity ?? 0.72) * fade);
+    }
     const grow = slash.grow ?? 1.2;
     slash.mesh.scale.setScalar(0.86 + progress * (grow - 0.86));
     if (slash.life <= 0) {
