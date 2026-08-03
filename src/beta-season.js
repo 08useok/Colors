@@ -743,6 +743,7 @@ function selectCharacter(id) {
   applySelectedSkinVisual();
   updateCrimsonControls();
   updateAttackAimIndicator();
+  resetTestCombatHud();
   saveBetaState();
   renderCharacters();
   showToast(`${character.name} 선택 완료`);
@@ -1810,16 +1811,15 @@ function performCharacterAttack({ manualAim = false } = {}) {
   if (!generalAttackReady) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
-  if (goldRushState.active && !goldRushState.ended && goldRushState.ammo <= 0) {
+  if (goldRushState.ammo <= 0) {
     attackComboState.textContent = "탄약 없음";
     return;
   }
   if (!manualAim) autoAimAtNearestTarget(getBetaAttackRange(id, def));
   generalAttackReady = false;
-  if (goldRushState.active && !goldRushState.ended) {
-    goldRushState.ammo -= 1;
-    updateGoldRushCombatHud();
-  }
+  goldRushState.ammo -= 1;
+  goldRushState.reloadTimer = Math.min(goldRushState.reloadTimer, goldRushState.reloadDuration);
+  updateGoldRushCombatHud();
   crimsonAttackButton.classList.add("cooldown");
   startModelAttackMotion(id);
   attackComboState.textContent = "공격 중";
@@ -2567,6 +2567,35 @@ function updateGoldRushCombatHud() {
     segment.classList.toggle("filled", index < goldRushState.ammo);
   });
   canvas.dataset.goldRushAmmo = `${goldRushState.ammo}/${goldRushState.maxAmmo}`;
+  canvas.dataset.playerHealth = `${Math.ceil(goldRushState.health)}/${goldRushState.maxHealth}`;
+}
+
+function resetTestCombatHud() {
+  if (goldRushState.active && !goldRushState.ended) return;
+  const def = BETA_CHARACTERS[betaState.selectedCharacter];
+  goldRushState.maxHealth = def?.maxHealth || 6000;
+  goldRushState.health = goldRushState.maxHealth;
+  goldRushState.maxAmmo = def?.maxAmmo || 3;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  goldRushState.reloadDuration = def?.reloadDuration || 0.5;
+  goldRushPlayerPanel.classList.remove("hidden");
+  renderGoldRushAmmoFan(goldRushState.maxAmmo);
+  updateGoldRushCombatHud();
+}
+
+function updateTestCombatHud(dt) {
+  if (goldRushState.active && !goldRushState.ended) return;
+  if (goldRushState.ammo < goldRushState.maxAmmo) {
+    goldRushState.reloadTimer += dt;
+    while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
+      goldRushState.reloadTimer -= goldRushState.reloadDuration;
+      goldRushState.ammo += 1;
+    }
+  } else {
+    goldRushState.reloadTimer = 0;
+  }
+  updateGoldRushCombatHud();
 }
 
 function updateGoldRushHud() {
@@ -3191,6 +3220,7 @@ function animate() {
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
   updateGoldRush(dt);
+  updateTestCombatHud(dt);
 
   portal.rotation.y += dt * 0.65;
   goldMineCrystal.rotation.y += dt * 1.4;
@@ -3257,4 +3287,5 @@ function resize() {
 }
 addEventListener("resize", resize);
 resize();
+resetTestCombatHud();
 animate();
