@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.4";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.1";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.2";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -87,7 +87,11 @@ function loadBetaState() {
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
     ownedSkins,
     selectedSkins,
-    orderEvent: { progress: Math.max(0, Number(saved.orderEvent?.progress) || 0), claimed: saved.orderEvent?.claimed || [] },
+    orderEvent: {
+      progress: Math.max(0, Number(saved.orderEvent?.progress) || 0),
+      claimed: saved.orderEvent?.claimed || [],
+      cosmetics: { ...(saved.orderEvent?.cosmetics || {}) },
+    },
     daily: {
       winRewards: Math.max(0, Number(saved.daily?.winRewards) || 0),
       pendingRewards: Math.max(0, Number(saved.daily?.pendingRewards) || 0),
@@ -1141,17 +1145,37 @@ function getOrderTrackPercent(progress) {
 function renderOrderEvent() {
   const progress = Math.min(100, betaState.orderEvent.progress);
   const trackPercent = getOrderTrackPercent(progress);
+  const cosmetics = betaState.orderEvent.cosmetics;
+  const ownedRewards = [cosmetics.iceCreamPin && "🍦 아이스크림 핀", cosmetics.shopProfileBackground && "▦ 가게 배경", cosmetics.shopProfileBadge && "🏅 가게 배지", cosmetics.perfectManagerTitle && "완벽한 점장"].filter(Boolean);
   modalTitle.textContent = "이벤트: 주문 왔어요~!";
-  modalContent.innerHTML = `<section class="order-event"><div class="order-event-summary"><strong>${progress} / 100</strong><span>AI전 +1 · 플레이어전 +2</span></div><div class="order-track-scroll"><div class="order-track"><div class="order-track-rail"><i style="width:${trackPercent}%"></i></div>${ORDER_EVENT_REWARDS.map(([wins,label],index)=>{const claimed=betaState.orderEvent.claimed.includes(wins);const unlocked=progress>=wins;const position=(index/(ORDER_EVENT_REWARDS.length-1))*100;return `<article class="order-stop ${claimed?"claimed":unlocked?"available":"locked"}" style="left:${position}%"><strong>${wins}승</strong><button data-order-claim="${wins}" ${!unlocked||claimed?"disabled":""} aria-label="${wins}승 보상 ${label}"><span>${claimed?"✓":unlocked?"!":"🔒"}</span></button><p>${label}</p></article>`;}).join("")}</div></div></section>`;
+  modalContent.innerHTML = `<section class="order-event"><div class="order-event-summary"><strong>${progress} / 100</strong><span>AI전 +1 · 플레이어전 +2</span></div>${ownedRewards.length ? `<div class="order-owned-rewards">${ownedRewards.map((reward) => `<span>${reward}</span>`).join("")}</div>` : ""}<div class="order-track-scroll"><div class="order-track"><div class="order-track-rail"><i style="width:${trackPercent}%"></i></div>${ORDER_EVENT_REWARDS.map(([wins,label],index)=>{const claimed=betaState.orderEvent.claimed.includes(wins);const unlocked=progress>=wins;const position=(index/(ORDER_EVENT_REWARDS.length-1))*100;return `<article class="order-stop ${claimed?"claimed":unlocked?"available":"locked"}" style="left:${position}%"><strong>${wins}승</strong><button data-order-claim="${wins}" ${!unlocked||claimed?"disabled":""} aria-label="${wins}승 보상 ${label}"><span>${claimed?"✓":unlocked?"!":"🔒"}</span></button><p>${label}</p></article>`;}).join("")}</div></div></section>`;
 }
 function claimOrderReward(wins) {
   if (betaState.orderEvent.progress < wins || betaState.orderEvent.claimed.includes(wins)) return;
+  const cosmetics = betaState.orderEvent.cosmetics;
   if (wins === 1) betaState.coins += 100;
   if (wins === 3) betaState.credits += 50;
+  if (wins === 5) cosmetics.iceCreamPin = true;
   if (wins === 10) betaState.coins += 200;
   if (wins === 25) betaState.credits += 150;
+  if (wins === 40) cosmetics.shopProfileBackground = true;
   if (wins === 50) betaState.coins += 500;
+  if (wins === 75 && !betaState.ownedSkins.includes("beta_ivory_clerk")) betaState.ownedSkins.push("beta_ivory_clerk");
+  if (wins === 90) cosmetics.shopProfileBadge = true;
+  if (wins === 100) {
+    cosmetics.perfectManagerTitle = true;
+    cosmetics.specialVictoryEffect = true;
+  }
   betaState.orderEvent.claimed.push(wins); saveBetaState(); renderOrderEvent(); showToast("이벤트 보상 수령 완료");
+}
+
+function playOrderVictoryEffect() {
+  if (!betaState.orderEvent.cosmetics.specialVictoryEffect) return;
+  const effect = document.createElement("div");
+  effect.className = "order-victory-effect";
+  effect.innerHTML = `<strong>완벽한 점장!</strong>${Array.from({ length: 28 }, (_, index) => `<i style="--i:${index}">🍦</i>`).join("")}`;
+  document.body.append(effect);
+  setTimeout(() => effect.remove(), 2600);
 }
 
 // 9단계 이름은 말 그대로 "???"다. 자리표시자가 아니라 확정된 이름.
@@ -2756,6 +2780,7 @@ function endGoldRush(message, playerWon = false) {
   if (playerWon) {
     betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
     saveBetaState();
+    playOrderVictoryEffect();
   }
   goldRushState.ended = true;
   goldRushState.winCountdownStartedAt = null;

@@ -1564,24 +1564,21 @@ function streakBonus(streak) {
   return Math.min(streak - 1, 4);
 }
 
-// 승리 1회당 β 크레딧 지급 — 계정 잔액이 본체이고, 베타 테스트 페이지 저장소도 함께 갱신한다
+// 승리 결과를 베타 시즌 보상과 주문 이벤트에 연결한다.
 function grantBetaDailyWinReward(account) {
   const storageKey = "colorsBetaSeasonTest";
-  const today = getTodayString();
   let beta = {};
   try { beta = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch { beta = {}; }
-  beta.credits = (Number.isFinite(beta.credits) ? beta.credits : 1500) + WIN_REWARD_CREDITS;
-  beta.daily = beta.daily?.date === today
-    ? { ...beta.daily, winRewards: (beta.daily.winRewards || 0) + 1 }
-    : { date: today, winRewards: 1 };
+  beta.daily = { ...(beta.daily || {}), pendingRewards: (beta.daily?.pendingRewards || 0) + 1 };
+  const eventWins = mpConfig ? 2 : 1;
+  beta.orderEvent = {
+    ...(beta.orderEvent || {}),
+    progress: Math.min(100, (Number(beta.orderEvent?.progress) || 0) + eventWins),
+    claimed: beta.orderEvent?.claimed || [],
+    cosmetics: beta.orderEvent?.cosmetics || {},
+  };
   localStorage.setItem(storageKey, JSON.stringify(beta));
-
-  const acc = account ?? loadAccount();
-  if (acc) {
-    acc.credits = (acc.credits ?? 0) + WIN_REWARD_CREDITS;
-    if (!account) saveAccount(acc);
-  }
-  return WIN_REWARD_CREDITS;
+  return 0;
 }
 
 function recordGameResult(rank, mode = "showdown") {
