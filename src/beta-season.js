@@ -3064,7 +3064,13 @@ function animate() {
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
       if (projectile.type === "orangeFruit") shouldSplitOrange = true;
       if (remove && projectile.type === "ivoryIceCream") {
-        createIvoryIceCreamZone(projectile.landingX, projectile.landingZ, projectile.fromUltimate);
+        const directionX = projectile.vx / projectile.speed;
+        const directionZ = projectile.vz / projectile.speed;
+        createIvoryIceCreamZone(
+          projectile.landingX - directionX,
+          projectile.landingZ - directionZ,
+          projectile.fromUltimate,
+        );
       }
       // 독병은 착지 지점에서 깨지며 주변에 광역 피해를 준다
       if (projectile.type === "vial" && projectile.splash > 0) shouldBreakVial = true;
