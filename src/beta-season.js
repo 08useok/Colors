@@ -3431,7 +3431,9 @@ function animate() {
       // Rotate in the camera-facing plane, using the viewer's up-axis as the reference.
       projectile.mesh.quaternion.copy(camera.quaternion);
       projectile.mesh.rotateZ(dt * 8);
-    } else if (projectile.type !== "cyanUltimate") {
+    } else if (projectile.type !== "cyanUltimate" && projectile.type !== "marble" && projectile.type !== "needle") {
+      // marble/needle는 발사 방향에 맞춰 뾰족한 끝을 고정해 두었으므로
+      // 범용 스핀을 적용하면 방향이 계속 흐트러진다.
       projectile.mesh.rotation.y += dt * 9;
     }
     if (projectile.type === "cyanUltimate") {
