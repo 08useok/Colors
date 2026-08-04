@@ -1708,6 +1708,12 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     mesh.add(stem, leaf);
   }
   if (redThemeSkin) mesh.scale.setScalar(redThemeSkin === "beta_red_red" ? 1.25 : 1.12);
+  if (type === "marble" || type === "needle") {
+    // 콘 모양은 로컬 +Z를 향하도록 rotation.x를 먼저 눕혔으므로,
+    // YXZ 순서로 y(yaw)를 더해야 발사 방향을 그대로 따라간다.
+    mesh.rotation.order = "YXZ";
+    mesh.rotation.y = yaw;
+  }
   mesh.position.set(
     player.position.x + Math.cos(yaw) * lateralOffset,
     player.position.y + 1.25,
