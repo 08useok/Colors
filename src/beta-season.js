@@ -1584,16 +1584,32 @@ function createGreenBoomerangMesh() {
 }
 
 // 블루 — 뒤로 갈수록 가늘어지는 유선형 구슬 (스피드 감을 실루엣으로 표현)
+// 블루 — 구슬 머리 + 뒤로 갈수록 가늘어지는 꼬리(혜성 모양)
 function createBlueMarbleMesh() {
-  const mesh = new THREE.Mesh(
-    new THREE.ConeGeometry(0.15, 0.5, 10),
+  const group = new THREE.Group();
+  const headRadius = 0.14;
+  const head = new THREE.Mesh(
+    new THREE.SphereGeometry(headRadius, 12, 10),
     new THREE.MeshStandardMaterial({
       color: 0x4f83ff, emissive: 0x1c3fbf, emissiveIntensity: 1.4,
-      metalness: 0.5, roughness: 0.15, transparent: true, opacity: 0.94,
+      metalness: 0.5, roughness: 0.15, transparent: true, opacity: 0.95,
     }),
   );
-  mesh.rotation.x = Math.PI / 2;
-  return mesh;
+  group.add(head);
+  const tailLength = 0.5;
+  const tail = new THREE.Mesh(
+    // openEnded로 바닥면을 없애 구슬 뒤에 자연스럽게 이어지도록 한다
+    new THREE.ConeGeometry(0.1, tailLength, 10, 1, true),
+    new THREE.MeshBasicMaterial({
+      color: 0x9fc6ff, transparent: true, opacity: 0.45,
+      depthWrite: false, blending: THREE.AdditiveBlending,
+    }),
+  );
+  // 콘의 뾰족한 끝(로컬 +Y)이 진행 방향의 반대(뒤쪽)를 향하도록 -90도 회전
+  tail.rotation.x = -Math.PI / 2;
+  tail.position.z = -(headRadius + tailLength / 2 - 0.05);
+  group.add(tail);
+  return group;
 }
 
 // 옐로우 — 지그재그 번개 모양 실루엣
