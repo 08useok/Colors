@@ -3329,20 +3329,63 @@ function renderPreview(dt) {
   previewRenderer.render(previewScene, previewCamera);
 }
 
+// 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
+function createHealthNumberLabel() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 32;
+  const ctx = canvas.getContext("2d");
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.2, 0.3),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false }),
+  );
+  // 체력바 안쪽 중앙에 겹쳐서 표시한다
+  mesh.position.set(0, 0, 0.003);
+  mesh.renderOrder = 32;
+  mesh.userData.canvas = canvas;
+  mesh.userData.ctx = ctx;
+  mesh.userData.texture = texture;
+  mesh.userData.lastText = "";
+  return mesh;
+}
+
+function updateHealthNumberLabel(label, health, maxHealth) {
+  if (!label) return;
+  const text = `${Math.max(0, Math.ceil(health))}/${Math.round(maxHealth)}`;
+  if (label.userData.lastText === text) return;
+  label.userData.lastText = text;
+  const { ctx, canvas, texture } = label.userData;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "bold 22px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.75)";
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+  texture.needsUpdate = true;
+}
+
 function createHealthBarMesh() {
   const group = new THREE.Group();
   const bg = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.35, 0.16),
+    new THREE.PlaneGeometry(1.35, 0.32),
     new THREE.MeshBasicMaterial({ color: 0x2d1a11, transparent: true, opacity: 0.88 }),
   );
   const fill = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.31, 0.1),
+    new THREE.PlaneGeometry(1.31, 0.26),
     new THREE.MeshBasicMaterial({ color: 0xff8455 }),
   );
   fill.position.z = 0.001;
+  const label = createHealthNumberLabel();
   group.add(bg);
   group.add(fill);
+  group.add(label);
   group.userData.fill = fill;
+  group.userData.label = label;
   return group;
 }
 
@@ -8851,6 +8894,7 @@ function updateBossAnimation(boss, dt) {
     const ratio = THREE.MathUtils.clamp(boss.health / boss.maxHealth, 0, 1);
     fill.scale.x = ratio;
     fill.position.x = (-1.31 * (1 - ratio)) * 0.5;
+    updateHealthNumberLabel(boss.healthBar.userData.label, boss.health, boss.maxHealth);
     boss.healthBar.quaternion.copy(camera.quaternion);
   }
 }
@@ -9275,6 +9319,7 @@ function updateFighterAnimation(fighter, dt) {
   const healthRatio = fighter.health / fighter.maxHealth;
   fill.scale.x = THREE.MathUtils.clamp(healthRatio, 0, 1);
   fill.position.x = (-1.31 * (1 - fill.scale.x)) * 0.5;
+  updateHealthNumberLabel(fighter.healthBar.userData.label, fighter.health, fighter.maxHealth);
   fighter.healthBar.quaternion.copy(camera.quaternion);
 }
 

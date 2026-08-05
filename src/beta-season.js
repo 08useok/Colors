@@ -327,6 +327,30 @@ attackAimRing.rotation.x = -Math.PI / 2;
 attackAimRing.renderOrder = 0;
 attackAimRing.visible = false;
 attackAimIndicator.add(attackAimRing);
+// 부채꼴(각도) 공격은 반경뿐 아니라 실제 사격 각도까지 파이 모양으로 보여준다
+function buildFanShape(halfAngle, range, segments = 24) {
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  for (let i = 0; i <= segments; i += 1) {
+    const angle = -halfAngle + (2 * halfAngle) * (i / segments);
+    // rotation.x = -90°로 눕히면 로컬 +Y가 월드 -Z로 매핑되므로 부호를 뒤집어야 정면을 향한다
+    shape.lineTo(Math.sin(angle) * range, -Math.cos(angle) * range);
+  }
+  shape.lineTo(0, 0);
+  return shape;
+}
+const attackAimFan = new THREE.Mesh(
+  new THREE.ShapeGeometry(buildFanShape(0.01, 1)),
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.32,
+    toneMapped: false,
+    side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+  }),
+);
+attackAimFan.rotation.x = -Math.PI / 2;
+attackAimFan.renderOrder = 0;
+attackAimFan.visible = false;
+attackAimIndicator.add(attackAimFan);
 attackAimIndicator.position.y = 0.12;
 player.add(attackAimIndicator);
 const ivoryUltimateAimIndicator = new THREE.Group();
@@ -1128,7 +1152,7 @@ function renderDaily(result = "") {
   </div>`;
 }
 
-const ORDER_EVENT_REWARDS = [[1,"코인 100개"],[3,"크레딧 50개"],[5,"아이스크림 핀"],[10,"코인 200개"],[25,"크레딧 150개"],[40,"아이스크림 가게 프로필 배경"],[50,"코인 500개"],[75,"점원 아이보리 스킨"],[90,"아이스크림 가게 프로필 배지"],[100,"완벽한 점장 칭호 + 특별 승리 연출"]];
+const ORDER_EVENT_REWARDS = [[1,"코인 100개"],[3,"크레딧 50개"],[5,"아이스크림 핀"],[10,"코인 200개"],[25,"크레딧 150개"],[40,"아이스크림 가게 프로필 배경"],[50,"코인 500개"],[75,"크레딧 300개"],[90,"아이스크림 가게 프로필 배지"],[100,"완벽한 점장 칭호 + 특별 승리 연출"]];
 function getOrderTrackPercent(progress) {
   if (progress <= 0) return 0;
   const milestones = ORDER_EVENT_REWARDS.map(([wins]) => wins);
@@ -1160,7 +1184,7 @@ function claimOrderReward(wins) {
   if (wins === 25) betaState.credits += 150;
   if (wins === 40) cosmetics.shopProfileBackground = true;
   if (wins === 50) betaState.coins += 500;
-  if (wins === 75 && !betaState.ownedSkins.includes("beta_ivory_clerk")) betaState.ownedSkins.push("beta_ivory_clerk");
+  if (wins === 75) betaState.credits += 300;
   if (wins === 90) cosmetics.shopProfileBadge = true;
   if (wins === 100) {
     cosmetics.perfectManagerTitle = true;
@@ -1999,8 +2023,10 @@ function autoAimAtNearestTarget(maxRange) {
   return true;
 }
 
-// 사정거리를 원형으로 보여줄 근접 캐릭터
-const MELEE_AIM_CHARACTERS = new Set(["red", "crimson"]);
+// 부채꼴(각도) 스윙·확산 공격 — 실제 사격 각도를 파이 모양으로 보여준다
+const FAN_AIM_CHARACTERS = new Set(["red", "crimson", "purple", "green"]);
+// 자기 중심 범위(광역) 공격 — 방향과 무관하게 반경만 보여준다
+const AREA_AIM_CHARACTERS = new Set(["pink"]);
 
 function getBetaAttackRange(id, def) {
   if (id === "red") return def.attackRange;
@@ -2009,7 +2035,7 @@ function getBetaAttackRange(id, def) {
   if (id === "orange") return def.bombRange;
   if (id === "yellow") return def.electricRange;
   if (id === "cyan") return def.spreadLineRange;
-  if (id === "purple") return Math.max(def.needleRange, def.vialRange);
+  if (id === "purple") return def.needleRange;
   if (id === "pink") return def.healCircleRange;
   if (id === "gold") return def.stage1Range;
   if (id === "ivory") return def.iceCreamRange;
@@ -2017,14 +2043,27 @@ function getBetaAttackRange(id, def) {
   return 0;
 }
 
+function getBetaAttackHalfAngle(id, def) {
+  if (id === "red") return def.attackHalfAngle;
+  if (id === "crimson") return def.attackHalfAngle;
+  if (id === "purple") return def.needleSpreadAngle / 2;
+  if (id === "green") return Math.max(...def.boomerangAngles.map((angle) => Math.abs(angle)));
+  return 0;
+}
+
 function updateAttackAimIndicator() {
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
   const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
-  // 펀치 캐릭터는 방향 대신 닿는 범위를 보여주는 게 맞다
-  const melee = MELEE_AIM_CHARACTERS.has(betaState.selectedCharacter);
-  attackAimBeam.visible = !melee;
-  attackAimRing.visible = melee;
-  if (melee) {
+  const isFan = FAN_AIM_CHARACTERS.has(betaState.selectedCharacter);
+  const isArea = AREA_AIM_CHARACTERS.has(betaState.selectedCharacter);
+  attackAimBeam.visible = !isFan && !isArea;
+  attackAimRing.visible = isArea;
+  attackAimFan.visible = isFan;
+  if (isFan) {
+    const halfAngle = Math.max(0.01, getBetaAttackHalfAngle(betaState.selectedCharacter, definition));
+    attackAimFan.geometry.dispose();
+    attackAimFan.geometry = new THREE.ShapeGeometry(buildFanShape(halfAngle, range));
+  } else if (isArea) {
     attackAimRing.scale.setScalar(range);
   } else {
     attackAimBeam.scale.set(0.42, range, 1);
@@ -2033,7 +2072,7 @@ function updateAttackAimIndicator() {
   }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = melee ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isFan ? "white-fan-wedge" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
@@ -2674,20 +2713,61 @@ const goldRushState = {
   ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5,
 };
 
+// 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
+function createHealthNumberLabel() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 128;
+  canvas.height = 32;
+  const ctx = canvas.getContext("2d");
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false });
+  const geometry = new THREE.PlaneGeometry(1.2, 0.3);
+  const mesh = new THREE.Mesh(geometry, material);
+  // 체력바 안쪽 중앙에 겹쳐서 표시한다
+  mesh.position.set(0, 0, 0.003);
+  mesh.renderOrder = 32;
+  mesh.userData.canvas = canvas;
+  mesh.userData.ctx = ctx;
+  mesh.userData.texture = texture;
+  mesh.userData.lastText = "";
+  return mesh;
+}
+
+function updateHealthNumberLabel(label, health, maxHealth) {
+  if (!label) return;
+  const text = `${Math.max(0, Math.ceil(health))}/${Math.round(maxHealth)}`;
+  if (label.userData.lastText === text) return;
+  label.userData.lastText = text;
+  const { ctx, canvas, texture } = label.userData;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = "bold 22px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.75)";
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeText(text, canvas.width / 2, canvas.height / 2);
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+  texture.needsUpdate = true;
+}
+
 function createGoldRushHealthBar(height = 3.15) {
   const group = new THREE.Group();
   group.position.y = height;
   const backgroundMaterial = new THREE.MeshBasicMaterial({ color: 0x2d1a11, transparent: true, opacity: 0.88 });
   const fillMaterial = new THREE.MeshBasicMaterial({ color: 0xff8455 });
-  const background = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 0.16), backgroundMaterial);
-  const fill = new THREE.Mesh(new THREE.PlaneGeometry(1.31, 0.1), fillMaterial);
+  const background = new THREE.Mesh(new THREE.PlaneGeometry(1.35, 0.32), backgroundMaterial);
+  const fill = new THREE.Mesh(new THREE.PlaneGeometry(1.31, 0.26), fillMaterial);
   background.renderOrder = 30;
   fill.position.z = 0.001;
   fill.renderOrder = 31;
-  group.add(background, fill);
+  const label = createHealthNumberLabel();
+  group.add(background, fill, label);
   group.userData.fill = fill;
-  group.userData.materials = [backgroundMaterial, fillMaterial];
-  group.userData.geometries = [background.geometry, fill.geometry];
+  group.userData.label = label;
+  group.userData.materials = [backgroundMaterial, fillMaterial, label.material];
+  group.userData.geometries = [background.geometry, fill.geometry, label.geometry];
   return group;
 }
 
@@ -2696,10 +2776,11 @@ function updateGoldRushHealthBar(bar, health, maxHealth) {
   const fill = bar.userData.fill;
   fill.scale.x = ratio;
   fill.position.x = (-1.31 * (1 - ratio)) * 0.5;
+  updateHealthNumberLabel(bar.userData.label, health, maxHealth);
 }
 
 const playerGoldRushHealthBar = createGoldRushHealthBar(3.2);
-playerGoldRushHealthBar.visible = false;
+playerGoldRushHealthBar.visible = true;
 player.add(playerGoldRushHealthBar);
 const healthBarParentQuaternion = new THREE.Quaternion();
 
@@ -3854,6 +3935,12 @@ function animate() {
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
   updateGoldRush(dt);
   updateTestCombatHud(dt);
+  // 골드 러쉬 밖에서도 체력바가 캐릭터 머리 위에 항상 고정되어 보이도록 매 프레임 갱신한다
+  playerGoldRushHealthBar.visible = player.visible;
+  if (player.visible) {
+    faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
+    updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  }
 
   portal.rotation.y += dt * 0.65;
   goldMineCrystal.rotation.y += dt * 1.4;
