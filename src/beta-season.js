@@ -470,6 +470,47 @@ function applyBetaToonRendering(model, characterId) {
   model.userData.cartoonRendered = true;
 }
 
+const skinTintTextureCache = new Map();
+
+// beta2_gold_* 스킨용 텍스처 리컬러. 채도가 낮은(회색조) 픽셀은 그대로 두고
+// 채도가 높은(캐릭터 피부색) 픽셀만 목표 색으로 바꿔서, map을 통째로 떼는 것과
+// 달리 같은 텍스처에 같이 그려진 눈동자·흰자·입 같은 얼굴 디테일을 보존한다.
+function recolorSkinTintTexture(texture, targetHex) {
+  if (!texture?.image) return texture;
+  const cacheKey = `${texture.uuid}:${targetHex}`;
+  if (skinTintTextureCache.has(cacheKey)) return skinTintTextureCache.get(cacheKey);
+  const source = texture.image;
+  const canvas = document.createElement("canvas");
+  canvas.width = source.width;
+  canvas.height = source.height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  context.drawImage(source, 0, 0);
+  const image = context.getImageData(0, 0, canvas.width, canvas.height);
+  const target = new THREE.Color(targetHex).convertLinearToSRGB();
+  const tr = target.r * 255;
+  const tg = target.g * 255;
+  const tb = target.b * 255;
+  for (let i = 0; i < image.data.length; i += 4) {
+    const r = image.data[i];
+    const g = image.data[i + 1];
+    const b = image.data[i + 2];
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const saturation = max === 0 ? 0 : (max - min) / max;
+    if (saturation < 0.18) continue;
+    const shade = THREE.MathUtils.clamp(max / 220, 0.3, 1.3);
+    image.data[i] = Math.min(255, tr * shade);
+    image.data[i + 1] = Math.min(255, tg * shade);
+    image.data[i + 2] = Math.min(255, tb * shade);
+  }
+  context.putImageData(image, 0, 0);
+  const recolored = texture.clone();
+  recolored.source = new THREE.Source(canvas);
+  recolored.needsUpdate = true;
+  skinTintTextureCache.set(cacheKey, recolored);
+  return recolored;
+}
+
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
@@ -490,10 +531,14 @@ function applySkinPaletteToModel(model, characterId) {
       material.userData.baseSkinColor ??= material.color.clone();
       if ("baseSkinMap" in material.userData === false) material.userData.baseSkinMap = material.map;
       // color는 map 위에 곱해지는 값이라, 이미 색이 칠해진 텍스처 위에 lerp만 하면
-      // "살짝 어두운 원래 색"이 될 뿐 골드로 안 바뀐다. 골드 스킨은 map을 떼고
-      // 색을 통째로 교체해 확실히 다른 톤으로 보이게 한다.
-      if (isGoldSkin && tint) {
-        material.map = null;
+      // "살짝 어두운 원래 색"이 될 뿐 골드로 안 바뀐다. map을 통째로 떼면 같은
+      // 텍스처에 같이 그려진 눈동자·흰자·입까지 사라지므로, 채도 높은 픽셀만
+      // 다시 칠한 텍스처로 교체한다.
+      if (isGoldSkin && tint && material.userData.baseSkinMap) {
+        material.map = recolorSkinTintTexture(material.userData.baseSkinMap, tint.getHex());
+        material.color.set(0xffffff);
+      } else if (isGoldSkin && tint) {
+        material.map = material.userData.baseSkinMap;
         material.color.copy(tint);
       } else {
         material.map = material.userData.baseSkinMap;
