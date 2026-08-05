@@ -480,6 +480,7 @@ function applySkinPaletteToModel(model, characterId) {
     beta2_gold_yellow: 0xd9a520,
   }[skinId];
   const tint = tintHex ? new THREE.Color(tintHex) : null;
+  const isGoldSkin = skinId.startsWith("beta2_gold_");
   const emissiveHex = skinId === "beta2_gold_orange" ? 0x4a2a00 : skinId === "beta2_gold_yellow" ? 0x3d2600 : null;
   model.traverse((child) => {
     if (!child.isMesh) return;
@@ -487,8 +488,18 @@ function applySkinPaletteToModel(model, characterId) {
     for (const material of materials) {
       if (!material?.color || material.isMeshBasicMaterial) continue;
       material.userData.baseSkinColor ??= material.color.clone();
-      material.color.copy(material.userData.baseSkinColor);
-      if (tint) material.color.lerp(tint, skinId === "beta2_gold_orange" ? 0.8 : 0.75);
+      if ("baseSkinMap" in material.userData === false) material.userData.baseSkinMap = material.map;
+      // color는 map 위에 곱해지는 값이라, 이미 색이 칠해진 텍스처 위에 lerp만 하면
+      // "살짝 어두운 원래 색"이 될 뿐 골드로 안 바뀐다. 골드 스킨은 map을 떼고
+      // 색을 통째로 교체해 확실히 다른 톤으로 보이게 한다.
+      if (isGoldSkin && tint) {
+        material.map = null;
+        material.color.copy(tint);
+      } else {
+        material.map = material.userData.baseSkinMap;
+        material.color.copy(material.userData.baseSkinColor);
+        if (tint) material.color.lerp(tint, 0.75);
+      }
       if ("emissive" in material) {
         material.userData.baseSkinEmissive ??= material.emissive.clone();
         if (emissiveHex) {

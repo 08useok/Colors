@@ -415,7 +415,18 @@ function applyRedThemePalette(group, skinId) {
     const originals = Array.isArray(part.material) ? part.material : [part.material];
     const materials = originals.map((original) => {
       const material = original.clone();
-      if (material.color) material.color.lerp(tint, tintStrength);
+      if (material.color) {
+        // material.color는 map 텍스처 위에 곱해지는 값이라, 이미 오렌지/노랑으로
+        // 칠해진 텍스처 위에 lerp만 하면 "살짝 어두운 원래 색"이 될 뿐 골드로
+        // 안 바뀐다(곱셈이라 밝아질 수도 없음). 골드 스킨은 map을 떼고 색을 통째로
+        // 교체해 확실히 다른 톤으로 보이게 한다.
+        if (isGoldSkin) {
+          material.map = null;
+          material.color.copy(tint);
+        } else {
+          material.color.lerp(tint, tintStrength);
+        }
+      }
       if ("roughness" in material) material.roughness = isGoldSkin ? 0.22 : skinId === "beta_red_red" ? 0.24 : 0.42;
       if ("metalness" in material) material.metalness = isGoldSkin ? 0.7 : skinId === "beta_red_red" ? 0.38 : 0.12;
       if (emissive && "emissive" in material) {
