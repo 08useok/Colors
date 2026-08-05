@@ -382,17 +382,33 @@ function applySkin(group, skinId) {
       const headwear = accessory.userData.headwearPart ?? accessory;
       if (headwear.userData.autoFitHeadwear) group.userData.headwear = headwear;
     }
+  } else if (skinId.startsWith("beta2_gold_")) {
+    applyRedThemePalette(group, skinId);
   }
 }
 
 function applyRedThemePalette(group, skinId) {
   const model = group.userData.cyanModel ?? group;
+  // GLB 캐릭터는 결국 MeshToonMaterial로 변환되어 metalness/roughness가 사라지므로
+  // (금속 광택으로 스킨을 구별하던 원래 설계가 무의미해짐), 색 자체를 캐릭터 기본색과
+  // 뚜렷이 다른 톤으로 잡고 emissive 글로우 + 반짝이 스프라이트로 구별한다.
   const tint = new THREE.Color({
     beta_red_orange: 0xb3261e,
     beta_red_crimson: 0x62000d,
     beta_red_red: 0xff2135,
+    beta2_gold_yellow: 0xd9a520,
+    beta2_gold_orange: 0xb8720a,
   }[skinId] ?? 0xb3261e);
-  const tintStrength = skinId === "beta_red_red" ? 0.72 : skinId === "beta_red_crimson" ? 0.68 : 0.58;
+  const tintStrength = skinId === "beta_red_red" ? 0.72
+    : skinId === "beta_red_crimson" ? 0.68
+    : skinId === "beta2_gold_orange" ? 0.8
+    : skinId === "beta2_gold_yellow" ? 0.75
+    : 0.58;
+  const isGoldSkin = skinId.startsWith("beta2_gold_");
+  const emissive = isGoldSkin
+    ? new THREE.Color(skinId === "beta2_gold_orange" ? 0x4a2a00 : 0x3d2600)
+    : null;
+  const emissiveIntensity = skinId === "beta2_gold_orange" ? 0.65 : 0.5;
   const bodyMaterials = [];
   model.traverse((part) => {
     if (!part.isMesh || part.material?.isMeshBasicMaterial) return;
@@ -400,14 +416,74 @@ function applyRedThemePalette(group, skinId) {
     const materials = originals.map((original) => {
       const material = original.clone();
       if (material.color) material.color.lerp(tint, tintStrength);
-      if ("roughness" in material) material.roughness = skinId === "beta_red_red" ? 0.24 : 0.42;
-      if ("metalness" in material) material.metalness = skinId === "beta_red_red" ? 0.38 : 0.12;
+      if ("roughness" in material) material.roughness = isGoldSkin ? 0.22 : skinId === "beta_red_red" ? 0.24 : 0.42;
+      if ("metalness" in material) material.metalness = isGoldSkin ? 0.7 : skinId === "beta_red_red" ? 0.38 : 0.12;
+      if (emissive && "emissive" in material) {
+        material.emissive = emissive.clone();
+        material.emissiveIntensity = emissiveIntensity;
+      }
       bodyMaterials.push(material);
       return material;
     });
     part.material = Array.isArray(part.material) ? materials : materials[0];
   });
   group.userData.bodyMaterials = bodyMaterials;
+  if (isGoldSkin) group.userData.goldSparkles = _addGoldSparkles(group, tint);
+}
+
+let _goldSparkleTex = null;
+function _getGoldSparkleTexture() {
+  if (_goldSparkleTex) return _goldSparkleTex;
+  const c = document.createElement('canvas');
+  c.width = 32; c.height = 32;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+  grad.addColorStop(0, 'rgba(255,255,255,1)');
+  grad.addColorStop(0.35, 'rgba(255,244,190,0.9)');
+  grad.addColorStop(1, 'rgba(255,244,190,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 32, 32);
+  const tex = new THREE.CanvasTexture(c);
+  return (_goldSparkleTex = tex);
+}
+
+// 골드 러쉬 스킨용 반짝임 — MeshToonMaterial엔 금속 광택이 없어서 색 변화만으론
+// "고급스러운 느낌"이 안 나기 때문에, 카메라를 향하는 반짝이 스프라이트를 몸 주변에
+// 붙여 시간에 따라 트윙클되게 한다. group(전투 유닛 기준 좌표계)에 직접 매단다.
+function _addGoldSparkles(group, tint) {
+  const tex = _getGoldSparkleTexture();
+  const glintColor = tint.clone().lerp(new THREE.Color(0xffffff), 0.45);
+  // [x, y, z, phase] — y는 GLB_FEET_Y(-1.85) ~ 머리 위(~1.9) 사이 전투 유닛 좌표
+  const offsets = [
+    [0.42, 1.05, 0.18, 0.0],
+    [-0.42, 1.05, -0.18, 0.55],
+    [0, 1.85, 0.1, 1.05],
+    [0, 0.35, 0.4, 1.6],
+    [0.25, -0.4, 0.35, 2.1],
+  ];
+  const sparkles = [];
+  for (const [x, y, z, phase] of offsets) {
+    const mat = new THREE.MeshBasicMaterial({
+      map: tex, color: glintColor,
+      transparent: true, opacity: 0, depthWrite: false,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.24), mat);
+    mesh.position.set(x, y, z);
+    mesh.renderOrder = 15;
+    mesh.frustumCulled = false;
+    mesh.onBeforeRender = (renderer, scene, camera) => {
+      const t = performance.now() * 0.0016 + phase * 2.2;
+      const twinkle = Math.max(0, Math.sin(t)) ** 3;
+      mesh.material.opacity = twinkle;
+      const s = 0.5 + twinkle * 0.65;
+      mesh.scale.set(s, s, s);
+      mesh.lookAt(camera.position);
+    };
+    group.add(mesh);
+    sparkles.push(mesh);
+  }
+  return sparkles;
 }
 
 // 베타 시즌 1 레드 테마 스킨 장식 — 등급이 높을수록 화려해진다
@@ -2090,6 +2166,83 @@ function buildCyanRigModel(gltf, charKey = "cyan") {
   return group;
 }
 
+// 핑크 리그 공유 캐릭터(핑크 본체 + 리컬러본인 퍼플)의 3단계(start/loop/end)
+// 걷기 애니메이션 모델을 만든다. glbSet은 { start, loop, end } 형태의 로드된 GLB.
+function buildPinkRigModel(glbSet, skinId) {
+  const group = new THREE.Group();
+
+  // GLB 씬을 스케일/센터 맞춰서 추가하는 헬퍼
+  function addScene(gltf, visible) {
+    const s = skeletonClone(gltf.scene);
+    s.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(s);
+    const sz = box.getSize(new THREE.Vector3());
+    // 파이터 group은 항상 world y=1.85 → 발이 group local y=-1.85에 와야 지면에 닿는다
+    const sc = GLB_BATTLE_HEIGHT / Math.max(sz.y, 0.001);
+    s.scale.setScalar(sc);
+    s.position.set(0, -box.min.y * sc + GLB_FEET_Y, 0);
+    _applyPinkToon(s);
+    s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
+    s.visible = visible;
+    group.add(s);
+    return s;
+  }
+
+  const scenes = {
+    start: glbSet.start ? addScene(glbSet.start, false) : null,
+    loop:  addScene(glbSet.loop, true),
+    end:   glbSet.end   ? addScene(glbSet.end,   false) : null,
+  };
+
+  // 각 씬에 대한 AnimationMixer
+  const mixers = {};
+  const actions = {};
+  for (const [key, sc] of Object.entries(scenes)) {
+    if (!sc) continue;
+    const gltf = glbSet[key];
+    if (!gltf?.animations?.length) continue;
+    mixers[key] = new THREE.AnimationMixer(sc);
+    const a = mixers[key].clipAction(gltf.animations[0]);
+    a.setLoop(key === 'loop' ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
+    a.clampWhenFinished = true;
+    actions[key] = a;
+  }
+
+  // 첫 번째 스킨드메시에서 재질 추출
+  let skinnedMesh = null;
+  scenes.loop.traverse(c => { if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c; });
+  const bMats = [];
+  if (skinnedMesh) {
+    const ms = Array.isArray(skinnedMesh.material) ? skinnedMesh.material : [skinnedMesh.material];
+    ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m); });
+  }
+
+  // 기본: loop 재생 대기 (이동 시 timeScale 조정)
+  if (actions.loop) { actions.loop.play(); actions.loop.paused = true; }
+
+  function showScene(key) {
+    for (const k of Object.keys(scenes)) { if (scenes[k]) scenes[k].visible = (k === key); }
+  }
+
+  // RootMotion 노드: 게임 자체 이동 시스템 사용하므로 매 프레임 위치 리셋 필요
+  const rootMotionNodes = {};
+  for (const [key, sc] of Object.entries(scenes)) {
+    if (!sc) continue;
+    const rmNode = sc.getObjectByName('RootMotion');
+    if (rmNode) rootMotionNodes[key] = rmNode;
+  }
+
+  group.userData = {
+    isGlbModel: true, skeleton: skinnedMesh?.skeleton ?? null,
+    glbMesh: skinnedMesh, bodyMaterials: bMats, guitar: null,
+    pinkScenes: scenes, pinkMixers: mixers, pinkActions: actions,
+    pinkWalkState: 'idle', pinkShowScene: showScene,
+    pinkRootMotionNodes: rootMotionNodes,
+  };
+  if (skinId) applySkin(group, skinId);
+  return group;
+}
+
 function createStickman(color, skinId) {
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
@@ -2174,79 +2327,8 @@ function createStickman(color, skinId) {
     return group;
   }
 
-  if (color === 0xF4CDD3 && _pinkGlb.loop) {
-    const group = new THREE.Group();
-
-    // GLB 씬을 스케일/센터 맞춰서 추가하는 헬퍼
-    function addPinkScene(gltf, visible) {
-      const s = skeletonClone(gltf.scene);
-      s.updateMatrixWorld(true);
-      const box = new THREE.Box3().setFromObject(s);
-      const sz = box.getSize(new THREE.Vector3());
-      // 파이터 group은 항상 world y=1.85 → 발이 group local y=-1.85에 와야 지면에 닿는다
-      const sc = GLB_BATTLE_HEIGHT / Math.max(sz.y, 0.001);
-      s.scale.setScalar(sc);
-      s.position.set(0, -box.min.y * sc + GLB_FEET_Y, 0);
-      _applyPinkToon(s);
-      s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
-      s.visible = visible;
-      group.add(s);
-      return s;
-    }
-
-    const scenes = {
-      start: _pinkGlb.start ? addPinkScene(_pinkGlb.start, false) : null,
-      loop:  addPinkScene(_pinkGlb.loop, true),
-      end:   _pinkGlb.end   ? addPinkScene(_pinkGlb.end,   false) : null,
-    };
-
-    // 각 씬에 대한 AnimationMixer
-    const mixers = {};
-    const actions = {};
-    for (const [key, sc] of Object.entries(scenes)) {
-      if (!sc) continue;
-      const gltf = _pinkGlb[key];
-      if (!gltf?.animations?.length) continue;
-      mixers[key] = new THREE.AnimationMixer(sc);
-      const a = mixers[key].clipAction(gltf.animations[0]);
-      a.setLoop(key === 'loop' ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
-      a.clampWhenFinished = true;
-      actions[key] = a;
-    }
-
-    // 첫 번째 스킨드메시에서 재질 추출
-    let skinnedMesh = null;
-    scenes.loop.traverse(c => { if (c.isSkinnedMesh && !skinnedMesh) skinnedMesh = c; });
-    const bMats = [];
-    if (skinnedMesh) {
-      const ms = Array.isArray(skinnedMesh.material) ? skinnedMesh.material : [skinnedMesh.material];
-      ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m); });
-    }
-
-    // 기본: loop 재생 대기 (이동 시 timeScale 조정)
-    if (actions.loop) { actions.loop.play(); actions.loop.paused = true; }
-
-    function showScene(key) {
-      for (const k of Object.keys(scenes)) { if (scenes[k]) scenes[k].visible = (k === key); }
-    }
-
-    // RootMotion 노드: 게임 자체 이동 시스템 사용하므로 매 프레임 위치 리셋 필요
-    const rootMotionNodes = {};
-    for (const [key, sc] of Object.entries(scenes)) {
-      if (!sc) continue;
-      const rmNode = sc.getObjectByName('RootMotion');
-      if (rmNode) rootMotionNodes[key] = rmNode;
-    }
-
-    group.userData = {
-      isGlbModel: true, skeleton: skinnedMesh?.skeleton ?? null,
-      glbMesh: skinnedMesh, bodyMaterials: bMats, guitar: null,
-      pinkScenes: scenes, pinkMixers: mixers, pinkActions: actions,
-      pinkWalkState: 'idle', pinkShowScene: showScene,
-      pinkRootMotionNodes: rootMotionNodes,
-    };
-    return group;
-  }
+  if (color === 0xF4CDD3 && _pinkGlb.loop) return buildPinkRigModel(_pinkGlb, skinId);
+  if (color === 0x800080 && _purpleGlb.loop) return buildPinkRigModel(_purpleGlb, skinId);
 
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
@@ -2972,6 +3054,7 @@ let _blueWalkGlb = null;
 let _cyanWalkGlb = null;
 let _cyanPreviewGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
+const _purpleGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
   _bluePreviewGlb = g;
@@ -3024,6 +3107,13 @@ _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
   _pinkGlb.loop = _stripRootMotion(g);
 });
 _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
+
+// 핑크 리그를 리컬러해서 만든 퍼플 (walk-m1s/m2l/m3e 3단계 애니메이션 구조를 그대로 재사용)
+_glbLoader.load('./assets/3d/purple/walk-m1s.glb', g => { _purpleGlb.start = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/purple/walk-m2l.glb', g => {
+  _purpleGlb.loop = _stripRootMotion(g);
+});
+_glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _stripRootMotion(g); });
 
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
@@ -5644,13 +5734,49 @@ function createAttackEffect(attacker, hitIndex) {
   const cx = attacker.mesh.position.x + Math.sin(attacker.yaw) * fwdDist;
   const cz = attacker.mesh.position.z + Math.cos(attacker.yaw) * fwdDist;
 
-  const fist = new THREE.Mesh(
-    new THREE.SphereGeometry(0.4, 8, 6),
-    new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.9 }),
+  // Red's attack is a compact boxing glove: rounded palm, tucked thumb, and cuff.
+  // Keep it as one billboarded group so it reads clearly from the arena camera.
+  const glove = new THREE.Group();
+  const gloveMaterial = new THREE.MeshBasicMaterial({
+    color: 0xf01824,
+    transparent: true,
+    opacity: 0.95,
+    depthWrite: false,
+  });
+  const gloveHighlight = new THREE.MeshBasicMaterial({
+    color: 0xff5b55,
+    transparent: true,
+    opacity: 0.72,
+    depthWrite: false,
+  });
+  const cuffMaterial = new THREE.MeshBasicMaterial({
+    color: 0xb90818,
+    transparent: true,
+    opacity: 0.95,
+    depthWrite: false,
+  });
+  const palm = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 12), gloveMaterial);
+  palm.scale.set(1.05, 1.12, 0.72);
+  palm.position.set(0.02, 0.08, 0);
+  glove.add(palm);
+  const thumb = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 8), gloveHighlight);
+  thumb.scale.set(1.15, 0.8, 0.8);
+  thumb.position.set(0.28, -0.12, 0.03);
+  glove.add(thumb);
+  const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.31, 0.42, 12), cuffMaterial);
+  cuff.rotation.z = -0.32;
+  cuff.position.set(-0.28, -0.42, 0);
+  glove.add(cuff);
+  const cuffPatch = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.22, 0.12),
+    new THREE.MeshBasicMaterial({ color: 0xffd9d9, transparent: true, opacity: 0.9, depthWrite: false }),
   );
-  fist.position.set(cx, 1.2, cz);
-  scene.add(fist);
-  state.effects.push({ mesh: fist, life: 0.18, maxLife: 0.18, type: "fist" });
+  cuffPatch.position.set(-0.23, -0.42, 0.31);
+  cuffPatch.rotation.z = -0.32;
+  glove.add(cuffPatch);
+  glove.position.set(cx, 1.2, cz);
+  scene.add(glove);
+  state.effects.push({ mesh: glove, life: 0.2, maxLife: 0.2, type: "redGlove", materials: [gloveMaterial, gloveHighlight, cuffMaterial, cuffPatch.material] });
 
   const impact = new THREE.Mesh(
     new THREE.RingGeometry(0.3, 0.6, 12),
@@ -8335,7 +8461,12 @@ function updateEffects(dt) {
     if (!GROUND_EFFECT_TYPES.has(effect.type)) {
       effect.mesh.quaternion.copy(camera.quaternion);
     }
-    if (effect.type === "fist") {
+    if (effect.type === "redGlove") {
+      const punch = 1 + (1 - alpha) * 0.7;
+      effect.mesh.scale.set(punch * 1.08, punch * 0.96, punch);
+      effect.mesh.position.x += Math.sin(effect.maxLife - effect.life) * 0.015;
+      for (const material of effect.materials) material.opacity = alpha * 0.95;
+    } else if (effect.type === "fist") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 0.5);
       effect.mesh.material.opacity = alpha * 0.9;
     } else if (effect.type === "punchImpact") {
