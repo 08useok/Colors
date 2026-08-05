@@ -1023,7 +1023,7 @@ function updateCrimsonControls() {
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
-  const hideUltimate = !["crimson", "cyan", "pink", "gold", "ivory"].includes(betaState.selectedCharacter);
+  const hideUltimate = !["crimson", "cyan", "pink", "gold", "ivory", "green"].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
   ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
@@ -1426,6 +1426,12 @@ const goldAttackCharge = new Map();
 const goldStageHits = new Map();
 const malfunctionZones = [];
 const ivoryIceCreamZones = [];
+const greenBushes = [];
+const GREEN_BUSH_REVEAL_RANGE = 3;
+let greenStealthIndicator = null;
+let greenConcealedPrev = false;
+const GREEN_CONCEAL_OPACITY = 0.28;
+const greenConcealMaterialCache = new WeakMap();
 
 function ensureMalfunctionIndicator(target) {
   if (target.userData.malfunctionIndicator) return target.userData.malfunctionIndicator;
@@ -2158,6 +2164,9 @@ function performCharacterAttack({ manualAim = false } = {}) {
     return;
   }
   if (!manualAim) autoAimAtNearestTarget(getBetaAttackRange(id, def));
+  if (greenBushes.length && clock.elapsedTime >= greenRevealedUntil) {
+    greenRevealedUntil = clock.elapsedTime + BETA_CHARACTERS.green.ultimate.revealDuration;
+  }
   generalAttackReady = false;
   goldRushState.ammo -= 1;
   goldRushState.reloadTimer = Math.min(goldRushState.reloadTimer, goldRushState.reloadDuration);
@@ -2315,6 +2324,8 @@ crimsonAttackButton.addEventListener("click", performCharacterAttack);
 let crimsonUltimateCharge = 0;
 let cyanUltimateCharge = 0;
 let ivoryUltimateCharge = 0;
+let greenUltimateCharge = 0;
+let greenRevealedUntil = 0;
 
 function updateCrimsonUltimateGauge() {
   const id = betaState.selectedCharacter;
@@ -2324,6 +2335,7 @@ function updateCrimsonUltimateGauge() {
     crimson: { charge: crimsonUltimateCharge, required: CRIMSON.ultimateChargeRequired, name: BETA_CHARACTERS.crimson.ultimate.name, color: "#a00000" },
     pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
     gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#e2ad20" },
+    green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
   };
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
@@ -2377,6 +2389,89 @@ function performGoldUltimate() {
     canvas.dataset.lastMalfunctionZone = `${center.x.toFixed(2)},${center.y.toFixed(2)},${center.z.toFixed(2)}`;
     attackComboState.textContent = "고장 지대 설치";
   }, def.delay * 1000);
+}
+
+function createGreenBushMesh(radius) {
+  const bush = new THREE.Group();
+  const size = radius * 2;
+  const height = 1.1;
+  const material = new THREE.MeshStandardMaterial({ color: 0x2f9e46, roughness: 0.85 });
+  const box = new THREE.Mesh(new THREE.BoxGeometry(size, height, size), material);
+  box.position.y = height / 2;
+  bush.add(box);
+  return bush;
+}
+
+// 은신 중에는 그린 본체(캡슐 모델 또는 로드된 GLTF 모델)를 반투명하게 렌더링한다.
+// 체력바·인디케이터 링·왕관 등 부가 요소는 대상에서 제외한다.
+function setPlayerConcealedVisual(concealed) {
+  const roots = [body, visor, skinAccessory, activeCharacterModel].filter(Boolean);
+  for (const root of roots) {
+    root.traverse((obj) => {
+      if (!obj.isMesh || !obj.material) return;
+      const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+      for (const mat of materials) {
+        if (!greenConcealMaterialCache.has(mat)) {
+          greenConcealMaterialCache.set(mat, { transparent: mat.transparent, opacity: mat.opacity });
+        }
+        const original = greenConcealMaterialCache.get(mat);
+        mat.transparent = concealed ? true : original.transparent;
+        mat.opacity = concealed ? GREEN_CONCEAL_OPACITY : original.opacity;
+      }
+    });
+  }
+}
+
+function ensureGreenStealthIndicator() {
+  if (greenStealthIndicator) return greenStealthIndicator;
+  const material = new THREE.MeshBasicMaterial({ color: 0x42d66b, transparent: true, opacity: 0.85 });
+  const group = new THREE.Group();
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.05, 6, 20), material);
+  ring.rotation.x = Math.PI / 2;
+  group.add(ring);
+  group.position.y = 2.3;
+  group.visible = false;
+  player.add(group);
+  greenStealthIndicator = group;
+  return group;
+}
+
+// 관찰자(x, z)를 기준으로 그린이 은신 수풀에 가려져 보이지 않는지 판정한다
+function isPlayerHiddenFrom(x, z) {
+  if (clock.elapsedTime < greenRevealedUntil) return false;
+  for (const bush of greenBushes) {
+    const dx = player.position.x - bush.x;
+    const dz = player.position.z - bush.z;
+    if (dx * dx + dz * dz > bush.radius * bush.radius) continue;
+    const ddx = x - bush.x;
+    const ddz = z - bush.z;
+    if (ddx * ddx + ddz * ddz > GREEN_BUSH_REVEAL_RANGE * GREEN_BUSH_REVEAL_RANGE) return true;
+  }
+  return false;
+}
+
+function performGreenUltimate() {
+  const def = BETA_CHARACTERS.green.ultimate;
+  // 새 수풀을 심기 전에 기존 수풀을 정리해 서로 겹치지 않게 한다 — 동시에 하나만 존재
+  for (let i = greenBushes.length - 1; i >= 0; i -= 1) {
+    const old = greenBushes[i];
+    scene.remove(old.mesh);
+    old.mesh.traverse((part) => { part.geometry?.dispose(); part.material?.dispose(); });
+    greenBushes.splice(i, 1);
+  }
+  const centerX = player.position.x;
+  const centerZ = player.position.z;
+  const centerGround = groundHeightAt(centerX, centerZ);
+  const bushMesh = createGreenBushMesh(def.radius);
+  bushMesh.position.set(centerX, centerGround > -5 ? centerGround : 0, centerZ);
+  scene.add(bushMesh);
+  greenBushes.push({
+    mesh: bushMesh, x: centerX, z: centerZ, radius: def.radius,
+    expiresAt: clock.elapsedTime + def.duration,
+  });
+  greenRevealedUntil = 0;
+  attackComboState.textContent = "은신 수풀 소환";
+  canvas.dataset.lastUltimate = `green-hiding-bush:${centerX.toFixed(2)},${centerZ.toFixed(2)}`;
 }
 
 function performIvoryUltimate() {
@@ -2435,6 +2530,13 @@ ultimateButton.addEventListener("click", () => {
     goldUltimateCharge = 0;
     updateCrimsonUltimateGauge();
     performGoldUltimate();
+    return;
+  }
+  if (betaState.selectedCharacter === "green") {
+    if (greenUltimateCharge < BETA_CHARACTERS.green.ultimate.chargeRequired) return;
+    greenUltimateCharge = 0;
+    updateCrimsonUltimateGauge();
+    performGreenUltimate();
     return;
   }
   if (betaState.selectedCharacter === "pink") {
@@ -2887,7 +2989,7 @@ function updateGoldRushBots(dt) {
     const combatCandidates = [];
     if (!goldRushState.dead) {
       const playerDistance = Math.hypot(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
-      if (playerDistance < 18) combatCandidates.push(goldRushState);
+      if (playerDistance < 18 && !isPlayerHiddenFrom(bot.mesh.position.x, bot.mesh.position.z)) combatCandidates.push(goldRushState);
     }
     for (const other of goldRushBots) {
       if (other === bot || other.dead) continue;
@@ -3508,6 +3610,10 @@ function animate() {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
         }
+        if (projectile.characterId === "green" && projectile.type === "boomerang") {
+          greenUltimateCharge = Math.min(BETA_CHARACTERS.green.ultimate.chargeRequired, greenUltimateCharge + 1);
+          if (betaState.selectedCharacter === "green") updateCrimsonUltimateGauge();
+        }
         if (projectile.splash > 0) {
           createGroundPulse(projectile.splash, projectile.type === "orangeFruit" ? 0xff9b32 : 0xb13cff, target.position);
           for (const other of testTargets) {
@@ -3680,6 +3786,34 @@ function animate() {
     }
   }
   canvas.dataset.malfunctionTargets = String(testTargets.filter((target) => target.userData.inMalfunctionZone).length);
+  for (let i = greenBushes.length - 1; i >= 0; i -= 1) {
+    const bush = greenBushes[i];
+    if (clock.elapsedTime >= bush.expiresAt) {
+      scene.remove(bush.mesh);
+      bush.mesh.traverse((part) => { part.geometry?.dispose(); part.material?.dispose(); });
+      greenBushes.splice(i, 1);
+    }
+  }
+  const playerInGreenBush = greenBushes.some((bush) => {
+    const dx = player.position.x - bush.x;
+    const dz = player.position.z - bush.z;
+    return dx * dx + dz * dz <= bush.radius * bush.radius;
+  });
+  const playerConcealed = playerInGreenBush && clock.elapsedTime >= greenRevealedUntil;
+  // 반투명 비주얼은 봇 회피(수풀 반경 제한)와 달리 궁극기 지속시간 내내 위치와 무관하게 유지된다
+  const greenVisualActive = greenBushes.length > 0 && clock.elapsedTime >= greenRevealedUntil;
+  if (playerConcealed) {
+    const indicator = ensureGreenStealthIndicator();
+    indicator.visible = true;
+    indicator.rotation.y += dt * 1.5;
+  } else if (greenStealthIndicator) {
+    greenStealthIndicator.visible = false;
+  }
+  if (greenVisualActive !== greenConcealedPrev) {
+    setPlayerConcealedVisual(greenVisualActive);
+    greenConcealedPrev = greenVisualActive;
+  }
+  canvas.dataset.greenConcealed = String(playerConcealed);
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);

@@ -29,6 +29,11 @@ export const BETA_CHARACTERS = {
       nameEn: "Boomerang",
       descriptionEn: "Throws four boomerangs. The closer the enemy, the more damage each one deals."
     },
+    ultimate: {
+      id: "hidingBush", name: "은신 수풀", description: "자신의 위치에 3타일 크기의 수풀을 소환해 최대 10초 동안 그 안에 숨습니다. 공격하면 3초간 노출됩니다.",
+      nameEn: "Hiding Bush", descriptionEn: "Summons a 3-tile bush at your feet and hides inside it for up to 10 seconds. Attacking exposes you for 3 seconds.",
+      chargeRequired: 7, radius: 1.5, duration: 10, revealDuration: 3,
+    },
   },
   blue: {
     maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.3, reloadDuration: 0.3, maxAmmo: 3,
