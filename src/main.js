@@ -7146,8 +7146,14 @@ function beginBombAttack(fighter) {
   return true;
 }
 
-function spawnBombSplash(x, z, ownerId) {
+function spawnBombSplash(x, z, ownerId, directHitTargetId) {
   const charDef = CHARACTERS.orange;
+  // 직격당한 대상은 폭탄 데미지를 이미 맞았으므로, 과즙 bombSplashCount(5)개 중
+  // (bombSplashCount - bombDirectHitJuiceCount)개는 그 대상을 다시 맞히지 않는다
+  // — 나머지는 그대로 맞을 수 있어 "직격당하면 과즙도 거의 다 맞는다"가 유지된다.
+  const blockedDirectHits = directHitTargetId != null
+    ? Math.max(0, charDef.bombSplashCount - charDef.bombDirectHitJuiceCount)
+    : 0;
   const owner = state.players.find((p) => p.id === ownerId);
   const blastMult = owner?.hasOrangeBlastAbility ? ORANGE_BLAST_ABILITY_MULTIPLIER : 1;
   const blastR = 3 * blastMult;
@@ -7193,6 +7199,7 @@ function spawnBombSplash(x, z, ownerId) {
       mesh: splashMesh,
       isSplash: true,
       projRadius: charDef.bombSplashHitRadius * blastMult,
+      hitTargetIds: i < blockedDirectHits ? new Set([directHitTargetId]) : undefined,
     });
   }
 }
@@ -7961,7 +7968,7 @@ function updateProjectiles(dt) {
         tempVec3.set(proj.x, 1.6, proj.z);
         createHitSpark(tempVec3);
         if (proj.isBomb) {
-          spawnBombSplash(proj.x, proj.z, proj.ownerId);
+          spawnBombSplash(proj.x, proj.z, proj.ownerId, target.id);
           createBombExplosionEffect(proj.x, proj.z);
           audio.play("explosion");
         }
