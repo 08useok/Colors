@@ -1225,6 +1225,11 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* 캐릭터 카드는 밝은 그라디언트 배경이라 상점의 반투명 뱃지가 묻힘 — 불투명 배경으로 대비 확보 */
+.char-btn .char-rarity {
+  background: rgba(20, 12, 6, 0.55);
+}
+
 .selected-badge {
   display: none;
   position: absolute;
