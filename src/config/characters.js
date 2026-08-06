@@ -22,6 +22,7 @@ export const CHARACTERS = {
     boomerangRange: 8,
     boomerangSpeed: 20,
     boomerangReturnSpeedMultiplier: 1.1,
+    boomerangReturnDamageMultiplier: 0.25,
     boomerangFarThreshold: 3.5,
     boomerangFarMultiplier: 0.625,
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
