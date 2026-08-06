@@ -2092,7 +2092,7 @@ function getBetaAttackRange(id, def) {
   if (id === "yellow") return def.electricRange;
   if (id === "cyan") return def.spreadLineRange;
   if (id === "purple") return def.needleRange;
-  if (id === "pink") return def.healCircleRange;
+  if (id === "pink") return def.healCircleRange * def.abilityRangeMultiplier;
   if (id === "gold") return def.stage1Range;
   if (id === "ivory") return def.iceCreamRange;
   if (id === "crimson") return def.attackRange;
@@ -2291,10 +2291,9 @@ function performCharacterAttack({ manualAim = false } = {}) {
   } else if (id === "yellow") {
     fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
   } else if (id === "cyan") {
-    const burstYaw = player.rotation.y;
     for (let i = 0; i < def.spreadLineCount; i += 1) {
-      const lateralOffset = (i - (def.spreadLineCount - 1) / 2) * 0.45;
-      fireBetaProjectile({ yawOverride: burstYaw, lateralOffset, speed: def.spreadLineSpeed, range: def.spreadLineRange, damage: def.spreadLineDamage, color: 0x32f4ff, radius: 0.13, type: "cyanShot", causesKnockback: false });
+      const angle = (i - (def.spreadLineCount - 1) / 2) * def.betaAngleSpacing;
+      fireBetaProjectile({ angle, speed: def.spreadLineSpeed, range: def.spreadLineRange, damage: def.spreadLineDamage, color: 0x32f4ff, radius: 0.13, type: "cyanShot", causesKnockback: false });
     }
   } else if (id === "purple") {
     const vial = purpleAttackIndex++ % 2 === 1;
@@ -2312,13 +2311,16 @@ function performCharacterAttack({ manualAim = false } = {}) {
     }
     attackComboState.textContent = vial ? "독 약병" : "독침";
   } else if (id === "pink") {
+    // 베타 테스트 페이지엔 실제 게임의 로테이션 능력(껐다 켰다) 시스템이 없어서
+    // abilityRangeMultiplier를 조건부로 걸 스위치가 없다 — 테스트 편의상 항상 적용.
+    const healCircleRange = def.healCircleRange * def.abilityRangeMultiplier;
     pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
     updateCrimsonUltimateGauge();
-    createGroundPulse(def.healCircleRange, 0xff9fcf);
-    createPinkNoteBurst(def.healCircleRange);
+    createGroundPulse(healCircleRange, 0xff9fcf);
+    createPinkNoteBurst(healCircleRange);
     for (const target of testTargets) {
       const distance = Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z);
-      if (target.visible && distance <= def.healCircleRange) {
+      if (target.visible && distance <= healCircleRange) {
         if (target.userData.isAlly) {
           target.userData.health = Math.min(target.userData.maxHealth, target.userData.health + def.healCircleHeal);
         } else {
