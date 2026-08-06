@@ -1,6 +1,10 @@
 import * as THREE from "three";
 
 const CROWN_STYLES = {
+  alphaChampion: {
+    metal: 0x24dbe8, emissive: 0x07556b, jewel: 0xffd43b, jewelEmissive: 0x6b3d00,
+    spikeCount: 6, metalness: 0.9, roughness: 0.16, emissiveIntensity: 0.38,
+  },
   champion: {
     metal: 0xffd43b, emissive: 0x5a3500, jewel: 0xe92d4f, jewelEmissive: 0x5d0013,
     spikeCount: 5, metalness: 0.88, roughness: 0.18, emissiveIntensity: 0.28,
@@ -81,6 +85,7 @@ export function fitCrownToHead(crown, headTop) {
 }
 
 export function getCrownVariant(skinId) {
+  if (skinId === "alpha_champion_cyan") return "alphaChampion";
   if (skinId === "crown_pink") return "runnerUp";
   if (skinId === "crown_green") return "third";
   return "champion";
