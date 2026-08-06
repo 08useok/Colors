@@ -5787,8 +5787,8 @@ function createAttackEffect(attacker, hitIndex) {
   const effectYaw = attacker.yaw + tilt;
 
   const fwdDist = attackDepth * 0.55;
-  const cx = attacker.mesh.position.x + Math.sin(attacker.yaw) * fwdDist;
-  const cz = attacker.mesh.position.z + Math.cos(attacker.yaw) * fwdDist;
+  const cx = attacker.mesh.position.x + Math.sin(effectYaw) * fwdDist;
+  const cz = attacker.mesh.position.z + Math.cos(effectYaw) * fwdDist;
 
   // Red's attack is a compact boxing glove: rounded palm, tucked thumb, and cuff.
   // Keep it as one billboarded group so it reads clearly from the arena camera.
