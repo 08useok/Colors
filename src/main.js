@@ -3346,9 +3346,10 @@ _glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
 // 로비 프리뷰 전용 시안 모델 (애니메이션 없는 원본 포즈)
 _glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
   _cyanPreviewGlb = g;
-  if (previewCharType === 'cyan') {
+  if (previewCharType === 'cyan' || CYAN_RIG_TEMPLATE_CHARACTERS.includes(previewCharType)) {
+    const charKey = previewCharType;
     previewChar = null;
-    setPreviewCharacter('cyan');
+    setPreviewCharacter(charKey);
   }
   if (frontModelCharType === 'cyan') setupFrontModel('cyan');
 });
@@ -3408,6 +3409,30 @@ function createBluePreviewModel() {
 function createCyanPreviewModel() {
   if (!_cyanPreviewGlb) return null;
   const model = _cyanPreviewGlb.scene.clone(true);
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const scale = 4.0 / Math.max(size.y, 0.001);
+  model.scale.setScalar(scale);
+  model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+  _applyPinkToon(model);
+  model.traverse(c => {
+    if (!c.isMesh) return;
+    c.frustumCulled = false;
+    c.castShadow = true;
+  });
+  model.userData.isCyanPreview = true;
+  return model;
+}
+
+// 크림슨/골드는 시안 리그를 그대로 쓰지만 걷기 GLB(_cyanWalkGlb)의 기본 포즈가
+// 지저분해서(시안도 같은 이유로 별도 cyan_preview.glb를 씀) 시안 프리뷰 모델을
+// 캐릭터 색으로 리컬러해 재사용한다.
+function createCyanTemplatePreviewModel(charKey) {
+  if (!_cyanPreviewGlb) return null;
+  const model = _cyanPreviewGlb.scene.clone(true);
+  applyCyanTemplateLook(model, charKey);
   model.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
@@ -3583,6 +3608,10 @@ function setPreviewCharacter(charType) {
     previewIsGlb = true;
     previewModel = fitModelForPreview(createCyanPreviewModel());
     previewScene.add(previewModel);
+  } else if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType) && _cyanPreviewGlb) {
+    previewIsGlb = true;
+    previewModel = fitModelForPreview(createCyanTemplatePreviewModel(charType));
+    previewScene.add(previewModel);
   } else {
     previewModel = createStickman(charDef.color, skinId);
     previewIsGlb = Boolean(previewModel.userData.isGlbModel);
@@ -3600,13 +3629,11 @@ function renderPreview(dt) {
 
   previewModel.rotation.y = previewTime * 0.6;
 
-  // GLB 모델 (Pink)은 뼈대가 없으므로 회전만 하고 종료
+  // GLB 모델은 로비 프리뷰에서 회전만 하고 걷기 애니메이션은 재생하지 않는다.
+  // (레드/그린/오렌지/옐로우/크림슨/골드가 쓰는 시안 리그도 블루·시안·핑크처럼
+  // 정지 포즈로 보여야 하는데, 예전에 시안 전용으로만 있던 애니메이션 강제
+  // 재생 코드를 그대로 재사용하면서 걷는 도중 프레임에서 멈춘 것처럼 보였다)
   if (previewIsGlb) {
-    if (previewModel.userData.isCyanGlb && previewModel.userData.cyanWalkAction) {
-      previewModel.userData.cyanWalkAction.paused = false;
-      previewModel.userData.cyanWalkAction.timeScale = 0.8;
-      previewModel.userData.cyanMixer.update(dt);
-    }
     updateHeadAttachedSkin(previewModel);
     previewRenderer.render(previewScene, previewCamera);
     return;
