@@ -5,7 +5,8 @@ const degrees = (value) => value * (Math.PI / 180);
 export const BETA_CHARACTERS = {
   red: {
     maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.55, reloadDuration: 0.5, maxAmmo: 3,
-    attackRange: 5, attackHalfAngle: degrees(45), attackDamage: 2200, attackCount: 2, attackIntervalMs: 240,
+    attackRange: 5, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
+    attackDamage: 2200, attackCount: 2, attackIntervalMs: 240,
     description: "레드는 TV에 나오는 복싱 선수입니다. 하지만 때로는 무식해서 펀치를 잘 못 때리죠.",
     descriptionEn: "Red is a boxer you see on TV. He is not always the sharpest, though, so his punches sometimes miss.",
     basicAttack: {
@@ -19,6 +20,7 @@ export const BETA_CHARACTERS = {
     maxHealth: 8400, moveSpeedMultiplier: 1.2, attackCooldown: 0.45, reloadDuration: 0.5, maxAmmo: 3,
     boomerangDamage: 950, boomerangRange: 6.5, boomerangSpeed: 20,
     boomerangReturnSpeedMultiplier: 1.1,
+    boomerangReturnDamageMultiplier: 0.25,
     boomerangFarThreshold: 3.5, boomerangFarMultiplier: 0.625,
     boomerangAngles: [-25, -25 / 3, 25 / 3, 25].map(degrees),
     description: "그린은 유일하게 항구 출신이 아닌 캐릭터입니다. 그가 살던 곳은 평범한 시골인데, 돈을 벌어서 이사 가려고 이 대회에 참가하게 되었습니다.",
@@ -36,7 +38,7 @@ export const BETA_CHARACTERS = {
     },
   },
   blue: {
-    maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.3, reloadDuration: 0.3, maxAmmo: 3,
+    maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.3, reloadDuration: 0.2, maxAmmo: 3,
     bulletDamage: 1000, bulletRange: 16, bulletSpeed: 35.2,
     description: "블루는 평범한 일반인입니다. 하지만 그의 손만큼 빠른 사람은 없습니다. 아마도요?",
     descriptionEn: "Blue is an ordinary guy. But nobody has hands as fast as his. Probably.",
@@ -50,7 +52,8 @@ export const BETA_CHARACTERS = {
   orange: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 0.5, maxAmmo: 3,
     bombDamage: 750, bombRange: 9, bombSpeed: 22,
-    bombSplashDamage: 700, bombSplashCount: 5, bombSplashSpeed: 10, bombSplashRange: 4.4, bombSplashHitRadius: 0.75,
+    bombSplashDamage: 700, bombSplashCount: 5, bombDirectHitJuiceCount: 4,
+    bombSplashSpeed: 10, bombSplashRange: 4.4, bombSplashHitRadius: 0.75,
     description: "오렌지는 평범한 오렌지 농부입니다. 하지만 컬러스의 첫 번째 우승자가 되려고 합니다. 오직 오렌지 하나만으로요...",
     descriptionEn: "Orange is a plain orange farmer, yet he intends to become the first champion of Colors. Armed with nothing but oranges...",
     basicAttack: {
@@ -77,7 +80,7 @@ export const BETA_CHARACTERS = {
   },
   cyan: {
     maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 0.5, maxAmmo: 3,
-    spreadLineDamage: 450, spreadLineRange: 8.33, spreadLineSpeed: 18, spreadLineCount: 6, betaAngleSpacing: 0.095,
+    spreadLineDamage: 600, spreadLineRange: 8.33, spreadLineSpeed: 18, spreadLineCount: 6, betaAngleSpacing: 0.095,
     description: "시안은 평범하게 사는 컬러이지만, 아무래도 수상합니다. 그가 다녔던 회사의 제품은 다 이상한 걸까요?",
     descriptionEn: "Cyan lives an ordinary life, but something about him is off. Was every product at his old company this strange?",
     basicAttack: {
@@ -89,29 +92,29 @@ export const BETA_CHARACTERS = {
     ultimate: {
       id: "galeStrike", name: "질풍 강타", description: "전방으로 거대한 강풍을 발사해 피해를 주고 강하게 밀쳐냅니다.",
       nameEn: "Gale Strike", descriptionEn: "Unleashes a massive gust forward that damages and strongly knocks back everything it hits.",
-      damage: 800, range: 10, projectileRadius: 4, speedMultiplier: 5 / 3, knockback: 8, chargeRequired: 12,
+      damage: 1200, range: 10, projectileRadius: 4, speedMultiplier: 5 / 3, knockback: 8, chargeRequired: 12,
     },
   },
   purple: {
     maxHealth: 6000, moveSpeedMultiplier: 1, attackCooldown: 0.45, reloadDuration: 0.5, maxAmmo: 3,
     needleDamage: 700, needleRange: 13, needleSpeed: 18,
     poisonDPS: 760, poisonDuration: 4,
-    vialDamage: 3040, vialRange: 13, vialSpeed: 18, vialSplashRadius: 5,
+    vialDamage: 2840, vialRange: 12, vialSpeed: 18, vialSplashRadius: 4,
     description: "퍼플은 향수 가게의 사장님이자 의사 자격증이 있는 컬러입니다. 그녀의 향수 가게가 잘 되는 탓인지는 모르지만 그녀의 독침은 꽤나 아픕니다.",
     descriptionEn: "Purple runs a perfume shop and holds a medical license. Perhaps that is why business is good, but her needles sting badly.",
     basicAttack: {
       name: "독침과 독병",
-      description: "첫 번째 일반 공격은 독침 2발을 발사하여 적에게 피해를 입힙니다. 명중한 적은 일정 시간 동안 독에 걸립니다. 두 번째 일반 공격은 벽을 넘어가는 독병을 던집니다. 독병은 착지 후 깨지며 주변 적에게 광역 피해를 부여합니다.",
+      description: "첫 번째 일반 공격은 독침 3발을 전방 90도 부채꼴로 발사하여 적에게 피해를 입힙니다. 명중한 적은 일정 시간 동안 독에 걸립니다. 두 번째 일반 공격은 벽을 넘어가는 독병을 던집니다. 독병은 착지 후 깨지며 주변 적에게 광역 피해를 부여합니다.",
       nameEn: "Needle & Vial",
-      descriptionEn: "The first attack fires two needles that poison whoever they hit. The second lobs a vial over walls that shatters on landing for area damage."
+      descriptionEn: "The first attack fires three needles in a 90-degree forward fan, poisoning anyone they hit. The second lobs a vial over walls that shatters on landing for area damage."
     },
-    officialAbility: { id: "twinNeedle", name: "쌍독침", description: "독침 2발을 11도 부채꼴로 발사",
-      nameEn: "Twin Needle", descriptionEn: "Fires two needles in an 11-degree fan." },
-    needleCount: 2, needleSpreadAngle: degrees(11),
+    officialAbility: { id: "wideNeedle", name: "광각 독침", description: "독침 3발을 -45도, 0도, +45도로 발사",
+      nameEn: "Wide Needle", descriptionEn: "Fires three needles at -45, 0, and +45 degrees." },
+    needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(90),
   },
   pink: {
     maxHealth: 11500, moveSpeedMultiplier: 1.4, attackCooldown: 0.2, reloadDuration: 0.4, maxAmmo: 3,
-    healCircleDamage: 2400, healCircleHeal: 1600, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
+    healCircleDamage: 2400, healCircleHeal: 1800, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
     description: "핑크는 음악을 좋아하는 스트리머입니다. 그녀는 음악이 너무 좋아서 돈벌이를 까먹는 바람에 돈을 벌려고 대회에 나갔다가 우승해버립니다.",
     descriptionEn: "Pink is a streamer who loves music so much she forgets to earn a living. She entered the tournament for the prize money and ended up winning it.",
     basicAttack: {
@@ -128,7 +131,7 @@ export const BETA_CHARACTERS = {
   },
   crimson: {
     maxHealth: 9800, moveSpeedMultiplier: 1.5, attackCooldown: 0.74, reloadDuration: 0.5, maxAmmo: 3,
-    attackRange: 6, attackDamage: 900, attackCount: 3, attackIntervalMs: 120,
+    attackRange: 6, attackDamage: 4000 / 3, attackDamages: [1333, 1333, 1334], attackCount: 3, attackIntervalMs: 120,
     attackHalfAngle: degrees(42), attackAngles: [-25, 0, 25].map(degrees),
     description: "크림슨은 레드를 보고 권투를 시작해서 세계적인 권투 선수가 되었습니다. 근데 정작 자기는 레드를 못 이긴다고 하네요.",
     descriptionEn: "Crimson took up boxing after watching Red and became world class, yet he still says he cannot beat Red.",
@@ -144,7 +147,7 @@ export const BETA_CHARACTERS = {
       nameEn: "KO Straight",
       descriptionEn: "Throws a monstrous punch. It lands so hard that walls break and enemies are shoved away.",
     },
-    ultimateDamage: 2500, ultimateLength: 5, ultimateWidth: 5, ultimateKnockback: 1, ultimateChargeRequired: 9,
+    ultimateDamage: 3000, ultimateLength: 6, ultimateWidth: 6, ultimateKnockback: 1, ultimateChargeRequired: 9,
   },
   gold: {
     maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.8, reloadDuration: 0.7, maxAmmo: 3,
