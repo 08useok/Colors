@@ -1302,6 +1302,7 @@ function updateLobbyUI(account) {
   document.querySelectorAll(".color-dot").forEach((dot) => {
     dot.classList.toggle("selected", dot.dataset.char === account.selectedCharacter);
   });
+  renderCharacterRarity();
   renderCharacterLocks(account);
   renderCharacterSkinButtons(account);
   updateColorInfo(account.selectedCharacter, account);
@@ -1311,6 +1312,21 @@ function updateLobbyUI(account) {
     setupFrontModel(account.selectedCharacter);
   }
   applyProfileCosmetics(account);
+}
+
+// 상점 캐릭터·스킨 카드와 동일한 등급 배지를 캐릭터 선택 목록에도 붙인다
+function renderCharacterRarity() {
+  document.querySelectorAll(".char-btn").forEach((btn) => {
+    const rarity = CHARACTER_RARITY[btn.dataset.char];
+    if (!rarity) return;
+    let badge = btn.querySelector(".char-rarity");
+    if (!badge) {
+      badge = document.createElement("span");
+      btn.querySelector(".char-name").insertAdjacentElement("beforebegin", badge);
+    }
+    badge.className = `char-rarity shop-card-rarity rarity-${rarity}`;
+    badge.textContent = t("rarity_" + rarity);
+  });
 }
 
 // 미보유 캐릭터 버튼에 자물쇠와 크레딧 가격을 붙인다
