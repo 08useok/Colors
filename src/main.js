@@ -266,6 +266,11 @@ let tdMapOpen = false;
 const attackDepth = 6;
 const attackWidth = 2.3;
 const attackHalfWidth = attackWidth * 0.5;
+// CHARACTERS.red.attackWidthMultiplier(1 + 0.5/1.7)는 베타 테스트 페이지의
+// 기준폭(1.7) 대비 "+0.5타일"이 되도록 설계된 배율이다. 실제 게임의 attackWidth(2.3)는
+// 그 기준과 달라서 배율을 그대로 곱하면 패치노트보다 훨씬 크게 버프된다.
+// 패치노트 문구("0.5타일 증가")를 그대로 따르기 위해 여기선 배율 대신 고정폭을 더한다.
+const redAttackHalfWidth = attackHalfWidth + 0.25;
 const baseMoveSpeed = 10.4;
 const turnSpeed = 4.4;
 
@@ -6709,7 +6714,7 @@ function beginCrimsonPunchCombo(fighter) {
 
   const interval = charDef.attackIntervalMs / 1000;
   for (let i = 0; i < charDef.attackCount; i += 1) {
-    queueAttackHit(fighter, i, charDef.attackDamage, state.gameTime + interval * i);
+    queueAttackHit(fighter, i, charDef.attackDamages?.[i] ?? charDef.attackDamage, state.gameTime + interval * i);
   }
   // 원격 플레이어는 예약된 타격이 취소되고 이 이펙트만 남으므로 여기서 한 번 띄운다
   createCrimsonPunchEffect(fighter, fighter.yaw, charDef.attackRange);
@@ -7686,10 +7691,12 @@ function beginPoisonAttack(fighter) {
   fighter.attackIndex += 1;
 
   if (isNeedle) {
-    const fanAngles = fighter.hasPurpleFanAbility
-      ? [yaw - 0.096, yaw + 0.096]  // 11도 부채꼴 (±5.5도)
-      : [yaw];
-    for (const angle of fanAngles) {
+    for (let i = 0; i < charDef.needleCount; i++) {
+      const angle = charDef.needleRadial
+        ? yaw + (i / charDef.needleCount) * Math.PI * 2
+        : charDef.needleCount > 1
+          ? yaw - charDef.needleSpreadAngle / 2 + i * (charDef.needleSpreadAngle / (charDef.needleCount - 1))
+          : yaw;
       const mesh = createNeedleMesh(fighter.mesh.position, angle);
       state.projectiles.push({
         ownerId: fighter.id,
@@ -7946,7 +7953,8 @@ function updateProjectiles(dt) {
           break;
         }
         const isFar = proj.distTraveled > proj.farThreshold;
-        const dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
+        let dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
+        if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
         proj.hitTargetIds?.add(target.id);
         if (proj.isSpreadLine && attacker?.characterType === "cyan" && dealt > 0) {
@@ -8238,7 +8246,7 @@ function resolveAttack(attacker, hitIndex, damage) {
     if (localZ < 0 || localZ > attackDepth) {
       continue;
     }
-    if (Math.abs(localX - punchSide) > attackHalfWidth) {
+    if (Math.abs(localX - punchSide) > redAttackHalfWidth) {
       continue;
     }
 
