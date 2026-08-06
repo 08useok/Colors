@@ -1422,7 +1422,10 @@ function updateColorInfo(charKey, account) {
       if (!account.ownedSkins.includes(skinId)) continue;
       const equipped = account.selectedSkins[charKey] === skinId;
       skinHtml += `<div class="ci-skin-row">`
+        + `<span class="ci-skin-info">`
         + `<span class="ci-skin-name">${t(skin.nameKey)}</span>`
+        + `<span class="char-rarity shop-card-rarity rarity-${skin.rarity}">${t("rarity_" + skin.rarity)}</span>`
+        + `</span>`
         + `<button class="ci-skin-btn${equipped ? " ci-skin-active" : ""}" data-skin="${skinId}" data-char="${charKey}" type="button">`
         + (equipped ? "장착 중" : "장착")
         + `</button></div>`;

@@ -1453,6 +1453,14 @@ body {
   gap: 8px;
   margin-bottom: 4px;
 }
+.ci-skin-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ci-skin-info .char-rarity {
+  margin-bottom: 0;
+}
 .ci-skin-name {
   font-size: 11px;
   color: var(--muted);
