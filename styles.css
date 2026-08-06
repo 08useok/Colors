@@ -3194,3 +3194,96 @@ body {
   color: var(--muted);
   font-size: 12px;
 }
+
+/* 일일 승리 보상 (별 뽑기) — beta-season.css의 동일 기능에서 포팅 */
+#daily-reward-toggle { position: relative; }
+.daily-reward-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #ff4d4d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 18px;
+  text-align: center;
+}
+.daily-reward-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  background: radial-gradient(circle at center, rgba(59, 85, 117, .58), rgba(3, 7, 14, .96) 68%);
+  text-align: center;
+}
+.daily-reward-reveal .reward-kicker { color: #a9bdd2; font-size: 11px; font-weight: 900; letter-spacing: .22em; }
+#daily-reward-grade { color: #e9f2f7; font-size: 24px; text-shadow: 0 0 20px currentColor; }
+.daily-reward-star {
+  width: 170px;
+  height: 170px;
+  border: 0;
+  background: transparent;
+  color: #dfe8ed;
+  font-size: 150px;
+  line-height: 1;
+  cursor: pointer;
+  filter: drop-shadow(0 0 18px currentColor);
+  transition: color .25s, filter .25s, transform .2s;
+}
+.daily-reward-star:hover { transform: scale(1.06); }
+.daily-reward-star.spinning { animation: daily-star-spin .9s cubic-bezier(.32,.02,.27,1); pointer-events: none; }
+.daily-reward-attempts { display: block; margin-top: 10px; color: #ffe4a1; font-size: 13px; font-weight: 900; letter-spacing: .04em; }
+.daily-reward-reveal[data-tier="rare"] .daily-reward-star,
+.daily-reward-reveal[data-tier="rare"] #daily-reward-grade { color: #62c7ff; }
+.daily-reward-reveal[data-tier="epic"] .daily-reward-star,
+.daily-reward-reveal[data-tier="epic"] #daily-reward-grade { color: #39ffb0; }
+.daily-reward-reveal[data-tier="legendary"] .daily-reward-star,
+.daily-reward-reveal[data-tier="legendary"] #daily-reward-grade { color: #ffd84d; }
+.daily-reward-reveal[data-tier="mythic"] .daily-reward-star,
+.daily-reward-reveal[data-tier="mythic"] #daily-reward-grade { color: #ff657a; }
+.daily-reward-reveal[data-tier="unique"] .daily-reward-star,
+.daily-reward-reveal[data-tier="unique"] #daily-reward-grade { color: #b06bff; }
+.daily-reward-reveal[data-tier="ultra"] .daily-reward-star,
+.daily-reward-reveal[data-tier="ultra"] #daily-reward-grade { color: #ff8a1e; }
+.daily-reward-reveal[data-tier="transcend"] .daily-reward-star,
+.daily-reward-reveal[data-tier="transcend"] #daily-reward-grade { color: #00e5ff; }
+.daily-reward-reveal[data-tier="unknown"] .daily-reward-star,
+.daily-reward-reveal[data-tier="unknown"] #daily-reward-grade { color: #e0aaff; }
+.daily-reward-reveal[data-tier="absolute"] .daily-reward-star,
+.daily-reward-reveal[data-tier="absolute"] #daily-reward-grade { color: #ffffff; }
+#daily-reward-message { min-height: 24px; margin: 0; color: #f5f7f9; font-weight: 800; }
+.daily-reward-return {
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 12px;
+  padding: 10px 18px;
+  color: #17202a;
+  background: #f5df77;
+  font-weight: 900;
+  cursor: pointer;
+}
+.daily-reward-upgrade-all {
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: 12px;
+  padding: 8px 16px;
+  color: #f4f7ff;
+  background: rgba(255, 255, 255, .1);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.daily-reward-upgrade-all:disabled { opacity: .45; cursor: default; }
+@keyframes daily-star-spin {
+  0% { transform: rotate(0) scale(1); }
+  55% { transform: rotate(540deg) scale(1.24); filter: drop-shadow(0 0 42px currentColor) brightness(1.8); }
+  100% { transform: rotate(1080deg) scale(1); }
+}
+@media (max-width: 640px) {
+  .daily-reward-star { width: 130px; height: 130px; font-size: 112px; }
+}

@@ -72,6 +72,15 @@ const dailyLoginLevel = document.getElementById("daily-login-level");
 const dailyIdInput = document.getElementById("daily-id-input");
 const dailyLoginError = document.getElementById("daily-login-error");
 const dailyLoginBtn = document.getElementById("daily-login-btn");
+const dailyRewardToggle = document.getElementById("daily-reward-toggle");
+const dailyRewardBadge = document.getElementById("daily-reward-badge");
+const dailyRewardReveal = document.getElementById("daily-reward-reveal");
+const dailyRewardGrade = document.getElementById("daily-reward-grade");
+const dailyRewardStar = document.getElementById("daily-reward-star");
+const dailyRewardAttempts = document.getElementById("daily-reward-attempts");
+const dailyRewardMessage = document.getElementById("daily-reward-message");
+const dailyRewardReturn = document.getElementById("daily-reward-return");
+const dailyRewardUpgradeAll = document.getElementById("daily-reward-upgrade-all");
 const accountRecoveryBtn = document.getElementById("account-recovery-btn");
 const accountRecoveryInfo = document.getElementById("account-recovery-info");
 const accountSwitch = document.getElementById("account-switch");
@@ -981,6 +990,7 @@ function loadAccount() {
       }
     }
     if (!account.lang) account.lang = "ko";
+    if (!account.daily) { account.daily = { winRewards: 0, pendingRewards: 0 }; migrated = true; }
     if (!account.seasonStats) {
       account.seasonStats = {
         alpha1: { wins: account.wins, losses: account.losses },
@@ -1173,6 +1183,7 @@ function createAccount(id, nickname) {
     },
     ownedCharacters: [...DEFAULT_OWNED_CHARACTERS],
     credits: 0,
+    daily: { winRewards: 0, pendingRewards: 0 },
     ownedSkins: [],
     selectedSkins: {},
     cosmetics: {
@@ -1246,6 +1257,7 @@ function updateLobbyUI(account) {
   lobbyTrophies.textContent = account.trophies;
   if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
   if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
+  updateDailyRewardBadge();
   lobbyRecord.textContent = t("record", account.wins, account.losses);
   if (lobbyWinrate) {
     const totalGames = account.wins + account.losses;
@@ -1659,22 +1671,199 @@ function streakBonus(streak) {
   return Math.min(streak - 1, 4);
 }
 
-// 승리 결과를 베타 시즌 보상과 주문 이벤트에 연결한다.
+// 승리 결과를 계정의 일일 별 보상(대기 카운트)에 연결한다. 호출자가 이후
+// saveAccount(account)를 호출해야 저장된다. 반환값은 이번 판까지 쌓인 대기 개수.
 function grantBetaDailyWinReward(account) {
-  const storageKey = "colorsBetaSeasonTest";
-  let beta = {};
-  try { beta = JSON.parse(localStorage.getItem(storageKey) || "{}"); } catch { beta = {}; }
-  beta.daily = { ...(beta.daily || {}), pendingRewards: (beta.daily?.pendingRewards || 0) + 1 };
-  const eventWins = mpConfig ? 2 : 1;
-  beta.orderEvent = {
-    ...(beta.orderEvent || {}),
-    progress: Math.min(100, (Number(beta.orderEvent?.progress) || 0) + eventWins),
-    claimed: beta.orderEvent?.claimed || [],
-    cosmetics: beta.orderEvent?.cosmetics || {},
-  };
-  localStorage.setItem(storageKey, JSON.stringify(beta));
-  return 0;
+  if (!account) return 0;
+  if (!account.daily) account.daily = { winRewards: 0, pendingRewards: 0 };
+  account.daily.pendingRewards = (account.daily.pendingRewards || 0) + 1;
+  return account.daily.pendingRewards;
 }
+
+function updateDailyRewardBadge() {
+  if (!dailyRewardBadge) return;
+  const account = loadAccount();
+  const pending = account?.daily?.pendingRewards || 0;
+  dailyRewardBadge.textContent = String(pending);
+  dailyRewardBadge.classList.toggle("hidden", pending <= 0);
+}
+
+// 일일 승리 보상(별 뽑기) — beta-season.js의 동일 기능에서 포팅.
+// 9단계 이름은 말 그대로 "???"다. 자리표시자가 아니라 확정된 이름.
+const DAILY_REWARD_TIERS = [
+  { id: "common", name: "일반", credits: 100, coins: 250 },
+  { id: "rare", name: "희귀", credits: 150, coins: 400 },
+  { id: "epic", name: "초희귀", credits: 250, coins: 700 },
+  { id: "mythic", name: "신화", credits: 400, coins: 1200 },
+  { id: "legendary", name: "전설", credits: 600, coins: 2000 },
+  { id: "unique", name: "유니크", credits: 900, coins: 3200 },
+  { id: "ultra", name: "울트라 전설", credits: 1400, coins: 5000 },
+  { id: "transcend", name: "초월", credits: 2100, coins: 8000 },
+  { id: "unknown", name: "???", credits: 3200, coins: 12000 },
+  { id: "absolute", name: "절대", credits: 5000, coins: 20000 },
+];
+let dailyRewardTierIndex = 0;
+let dailyRewardSpinning = false;
+let dailyRewardComplete = false;
+// 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
+// 즉 실패를 이 횟수만큼 쌓으면 종료된다.
+const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
+const DAILY_REWARD_UPGRADE_CHANCE = 0.55;
+let dailyRewardAttemptsUsed = 0;
+
+// 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다.
+const DAILY_REWARD_JUMP_WEIGHTS = [
+  { steps: 1, weight: 60 },
+  { steps: 2, weight: 40 },
+  { steps: 3, weight: 30 },
+  { steps: 4, weight: 25 },
+  { steps: 5, weight: 21 },
+  { steps: 6, weight: 10 },
+  { steps: 7, weight: 5 },
+  { steps: 8, weight: 3 },
+  { steps: 9, weight: 2 },
+  { steps: 10, weight: 1 },
+];
+function rollUpgradeJumpSteps() {
+  const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (const { steps, weight } of DAILY_REWARD_JUMP_WEIGHTS) {
+    if (roll < weight) return steps;
+    roll -= weight;
+  }
+  return DAILY_REWARD_JUMP_WEIGHTS[0].steps;
+}
+
+function dailyRewardAttemptsLeft() {
+  return Math.max(0, DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed);
+}
+
+function dailyRewardAtTopTier() {
+  return dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
+}
+
+// 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
+function rollDailyRewardUpgrade() {
+  const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
+  const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
+  if (upgraded) {
+    const steps = rollUpgradeJumpSteps();
+    dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
+  } else {
+    dailyRewardAttemptsUsed += 1;
+  }
+  return upgraded;
+}
+
+function updateDailyRewardReveal() {
+  const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
+  const remaining = dailyRewardAttemptsLeft();
+  dailyRewardReveal.dataset.tier = tier.id;
+  dailyRewardGrade.textContent = tier.name;
+  dailyRewardAttempts.textContent = dailyRewardComplete
+    ? `업그레이드 ${dailyRewardAttemptsUsed}회 완료`
+    : `업그레이드 기회 ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}`;
+  const showUpgradeAll = !dailyRewardComplete && remaining > 0 && !dailyRewardAtTopTier();
+  dailyRewardUpgradeAll.classList.toggle("hidden", !showUpgradeAll);
+  dailyRewardUpgradeAll.textContent = `남은 ${remaining}회 한 번에 사용`;
+}
+
+function showDailyRewardReveal() {
+  const account = loadAccount();
+  if ((account?.daily?.pendingRewards || 0) <= 0) {
+    showToast("승리해서 별 보상을 획득하세요");
+    return false;
+  }
+  dailyRewardTierIndex = 0;
+  dailyRewardSpinning = false;
+  dailyRewardComplete = false;
+  dailyRewardAttemptsUsed = 0;
+  dailyRewardStar.disabled = false;
+  dailyRewardStar.classList.remove("spinning");
+  dailyRewardUpgradeAll.disabled = false;
+  dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
+  dailyRewardReturn.classList.add("hidden");
+  updateDailyRewardReveal();
+  dailyRewardReveal.classList.remove("hidden");
+  return true;
+}
+
+function finishDailyReward() {
+  const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
+  const rewardType = Math.random() < 0.5 ? "coins" : "credits";
+  const rewardAmount = tier[rewardType];
+  const rewardCurrency = rewardType === "coins" ? "코인" : "β 크레딧";
+  dailyRewardComplete = true;
+  updateDailyRewardReveal();
+  const account = loadAccount();
+  if (account) {
+    account[rewardType] = (account[rewardType] || 0) + rewardAmount;
+    if (!account.daily) account.daily = { winRewards: 0, pendingRewards: 0 };
+    account.daily.pendingRewards = Math.max(0, (account.daily.pendingRewards || 0) - 1);
+    account.daily.winRewards = (account.daily.winRewards || 0) + 1;
+    saveAccount(account);
+    updateDailyRewardBadge();
+    if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
+    if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
+  }
+  dailyRewardStar.disabled = true;
+  dailyRewardMessage.textContent = `${tier.name} 보상 · ${rewardAmount} ${rewardCurrency} 획득!`;
+  dailyRewardReturn.classList.remove("hidden");
+}
+
+dailyRewardUpgradeAll?.addEventListener("click", () => {
+  if (dailyRewardSpinning || dailyRewardComplete) return;
+  if (dailyRewardAttemptsLeft() <= 0 || dailyRewardAtTopTier()) return;
+  dailyRewardSpinning = true;
+  dailyRewardStar.classList.add("spinning");
+  dailyRewardUpgradeAll.disabled = true;
+  dailyRewardMessage.textContent = "남은 기회를 한 번에 사용합니다…";
+  const startTierIndex = dailyRewardTierIndex;
+  const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  setTimeout(() => {
+    while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
+      rollDailyRewardUpgrade();
+    }
+    dailyRewardStar.classList.remove("spinning");
+    dailyRewardSpinning = false;
+    const gained = dailyRewardTierIndex - startTierIndex;
+    const endTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+    updateDailyRewardReveal();
+    finishDailyReward();
+    dailyRewardMessage.textContent = gained > 0
+      ? `${startTier} → ${endTier} · ${gained}단계 상승! ${dailyRewardMessage.textContent}`
+      : `${startTier} 등급 유지 · ${dailyRewardMessage.textContent}`;
+  }, 900);
+});
+
+dailyRewardStar?.addEventListener("click", () => {
+  if (dailyRewardSpinning || dailyRewardComplete) return;
+  dailyRewardSpinning = true;
+  dailyRewardStar.classList.add("spinning");
+  dailyRewardMessage.textContent = "별이 회전하고 있습니다…";
+  setTimeout(() => {
+    dailyRewardStar.classList.remove("spinning");
+    dailyRewardSpinning = false;
+    const upgraded = rollDailyRewardUpgrade();
+    updateDailyRewardReveal();
+    const attemptsRemaining = dailyRewardAttemptsLeft();
+    if (attemptsRemaining <= 0 || dailyRewardAtTopTier()) {
+      finishDailyReward();
+      return;
+    }
+    dailyRewardMessage.textContent = upgraded
+      ? `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 기회는 그대로 ${attemptsRemaining}회`
+      : `등급 유지 · 남은 기회 ${attemptsRemaining}회`;
+  }, 900);
+});
+
+dailyRewardReturn?.addEventListener("click", () => {
+  dailyRewardReveal.classList.add("hidden");
+});
+
+dailyRewardToggle?.addEventListener("click", () => {
+  showDailyRewardReveal();
+});
 
 function recordGameResult(rank, mode = "showdown") {
   const account = loadAccount();
@@ -4826,7 +5015,8 @@ function checkTakeDownEnd() {
       state.rotationResultId = null;
     }
 
-    const betaCreditsEarned = playerRank <= 4 ? grantBetaDailyWinReward() : 0;
+    const betaCreditsEarned = playerRank <= 4 ? grantBetaDailyWinReward(account) : 0;
+    if (account && playerRank <= 4) saveAccount(account);
     const resultTag = playerRank <= 4 ? t("tdWin") : t("tdLose");
     audio.play(playerRank <= 4 ? "win" : "lose");
     resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : t("tdTimeUp");
@@ -4836,7 +5026,7 @@ function checkTakeDownEnd() {
       statsLines.push(t("tdBossDmg", player.tdBossDmg));
       statsLines.push(t("tdKills", player.tdKills));
     }
-    if (betaCreditsEarned) statsLines.push(t("winRewardCredits", betaCreditsEarned));
+    if (betaCreditsEarned) statsLines.push(t("winRewardStar", betaCreditsEarned));
     resultStats.textContent = statsLines.join("  |  ");
     resultStreak.style.display = "none";
     resultOverlay.style.display = "flex";
@@ -6361,7 +6551,7 @@ function finishGoldRush(winner) {
   const { coinsEarned, betaCreditsEarned } = recordGameResult(rank);
   resultTitle.textContent = winner?.isPlayer ? "GOLD RUSH 승리!" : "GOLD RUSH 종료";
   resultBody.textContent = winner?.isPlayer ? "금 10개를 10초간 지켰습니다." : `${winner?.name ?? "AI"}가 금을 지켰습니다.`;
-  resultStats.textContent = `보유 금 ${player?.goldCount ?? 0}/10 · 코인 +${coinsEarned}${betaCreditsEarned ? ` · β 크레딧 +${betaCreditsEarned}` : ""}`;
+  resultStats.textContent = `보유 금 ${player?.goldCount ?? 0}/10 · 코인 +${coinsEarned}${betaCreditsEarned ? ` · ★ 대기 ${betaCreditsEarned}` : ""}`;
   resultStreak.style.display = "none";
   resultOverlay.style.display = "flex";
   document.exitPointerLock?.();
@@ -10091,7 +10281,7 @@ function checkEndState() {
         statsLines.push(t("cwChopDmg", player.chopDamageDealt));
         statsLines.push(t("cwBestAxe", t(AXE_GRADES[player.bestAxeLevel].key)));
       }
-      if (betaCreditsEarned) statsLines.push(t("winRewardCredits", betaCreditsEarned));
+      if (betaCreditsEarned) statsLines.push(t("winRewardStar", betaCreditsEarned));
       resultStats.textContent = statsLines.join("  |  ");
       resultStreak.style.display = "none";
       resultOverlay.style.display = "flex";
@@ -10171,7 +10361,7 @@ function checkEndState() {
         resultTitle.textContent = playerRank === 1 ? t("rank1") : t("rankN", playerRank);
         resultBody.textContent = t("resultLose", winner.name, deltaText, totalText);
       }
-      const betaRewardText = betaCreditsEarned ? `  ${t("winRewardCredits", betaCreditsEarned)}` : "";
+      const betaRewardText = betaCreditsEarned ? `  ${t("winRewardStar", betaCreditsEarned)}` : "";
       resultStats.textContent = (player ? t("dmgDealt", Math.round(player.damageDealt)) : "") + coinText + betaRewardText;
 
       let streakMsg = "";
