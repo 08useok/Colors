@@ -3803,6 +3803,7 @@ function makeFighter(options) {
     name: options.name,
     characterType: options.characterType ?? "red",
     isPlayer: options.isPlayer,
+    skinId,
     levelMult,
     hasOrangeBlastAbility,
     hasPurpleFanAbility,
@@ -6122,10 +6123,10 @@ function createHitSpark(position) {
   });
 }
 
-function createBombExplosionEffect(x, z) {
+function createBombExplosionEffect(x, z, isGold) {
   const ring = new THREE.Mesh(
     new THREE.RingGeometry(0.3, 0.5, 24),
-    new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color: isGold ? 0xffd700 : 0xff6600, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }),
   );
   ring.rotation.x = -Math.PI / 2;
   ring.position.set(x, 0.2, z);
@@ -6134,7 +6135,7 @@ function createBombExplosionEffect(x, z) {
 
   const flash = new THREE.Mesh(
     new THREE.CircleGeometry(1.2, 16),
-    new THREE.MeshBasicMaterial({ color: 0xffaa33, transparent: true, opacity: 0.5, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color: isGold ? 0xfff2b0 : 0xffaa33, transparent: true, opacity: 0.5, depthWrite: false }),
   );
   flash.rotation.x = -Math.PI / 2;
   flash.position.set(x, 0.15, z);
@@ -7342,10 +7343,14 @@ function beginBoomerangAttack(fighter) {
   return true;
 }
 
-function createBombMesh(position, yaw) {
+function createBombMesh(position, yaw, isGold) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.24, 10, 8),
-    new THREE.MeshStandardMaterial({ color: 0xffa500, roughness: 0.4, metalness: 0.2 }),
+    new THREE.MeshStandardMaterial(
+      isGold
+        ? { color: 0xffd700, roughness: 0.2, metalness: 0.75, emissive: 0x8a5a00, emissiveIntensity: 0.5 }
+        : { color: 0xffa500, roughness: 0.4, metalness: 0.2 },
+    ),
   );
   mesh.position.set(position.x + Math.sin(yaw) * 0.9, 1.2, position.z + Math.cos(yaw) * 0.9);
   mesh.castShadow = false;
@@ -7366,7 +7371,8 @@ function beginBombAttack(fighter) {
   if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   const yaw = fighter.yaw;
-  const mesh = createBombMesh(fighter.mesh.position, yaw);
+  const isGold = fighter.skinId === "beta2_gold_orange";
+  const mesh = createBombMesh(fighter.mesh.position, yaw, isGold);
   state.projectiles.push({
     ownerId: fighter.id,
     x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
@@ -7381,6 +7387,7 @@ function beginBombAttack(fighter) {
     launchAt: state.gameTime,
     mesh,
     isBomb: true,
+    isGold,
     projRadius: 0.70,
   });
   if (fighter.isPlayer) audio.play("projectileFire");
@@ -7418,11 +7425,12 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
       }
     }
   }
+  const isGold = owner?.skinId === "beta2_gold_orange";
   for (let i = 0; i < charDef.bombSplashCount; i++) {
     const angle = (i / charDef.bombSplashCount) * Math.PI * 2;
     const splashMesh = new THREE.Mesh(
       new THREE.SphereGeometry(0.14, 6, 6),
-      new THREE.MeshBasicMaterial({ color: 0xffcc44, transparent: true, opacity: 0.9 }),
+      new THREE.MeshBasicMaterial({ color: isGold ? 0xffd700 : 0xffcc44, transparent: true, opacity: 0.9 }),
     );
     splashMesh.position.set(x, 1.0, z);
     scene.add(splashMesh);
@@ -8213,7 +8221,7 @@ function updateProjectiles(dt) {
         createHitSpark(tempVec3);
         if (proj.isBomb) {
           spawnBombSplash(proj.x, proj.z, proj.ownerId, target.id);
-          createBombExplosionEffect(proj.x, proj.z);
+          createBombExplosionEffect(proj.x, proj.z, proj.isGold);
           audio.play("explosion");
         }
         if (proj.isElectric) {
@@ -8281,7 +8289,7 @@ function updateProjectiles(dt) {
     if (!hit && !(proj.isVial && proj.y > 1.5)) {
       for (const solid of state.solids) {
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
-          if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); audio.play("explosion"); }
+          if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
           if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
           hit = true;
           break;
@@ -8301,7 +8309,7 @@ function updateProjectiles(dt) {
     }
 
     if (hit || (!proj.isBoomerang && proj.distTraveled >= proj.range)) {
-      if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z); audio.play("explosion"); }
+      if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
       if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
       state.projectiles.splice(i, 1);
