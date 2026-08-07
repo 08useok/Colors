@@ -7422,12 +7422,6 @@ function beginBombAttack(fighter) {
 
 function spawnBombSplash(x, z, ownerId, directHitTargetId) {
   const charDef = CHARACTERS.orange;
-  // 직격당한 대상은 폭탄 데미지를 이미 맞았으므로, 과즙 bombSplashCount(5)개 중
-  // (bombSplashCount - bombDirectHitJuiceCount)개는 그 대상을 다시 맞히지 않는다
-  // — 나머지는 그대로 맞을 수 있어 "직격당하면 과즙도 거의 다 맞는다"가 유지된다.
-  const blockedDirectHits = directHitTargetId != null
-    ? Math.max(0, charDef.bombSplashCount - charDef.bombDirectHitJuiceCount)
-    : 0;
   const owner = state.players.find((p) => p.id === ownerId);
   const blastMult = owner?.hasOrangeBlastAbility ? ORANGE_BLAST_ABILITY_MULTIPLIER : 1;
   const blastR = 3 * blastMult;
@@ -7445,6 +7439,27 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
         if (dealt > 0) {
           const key = `${ownerId}_${target.id}`;
           if (!state.splashAccum[key]) state.splashAccum[key] = { damage: 0, pos: target.mesh.position.clone(), expireAt: 0 };
+          state.splashAccum[key].damage += dealt;
+          state.splashAccum[key].expireAt = state.gameTime + 0.6;
+        }
+      }
+    }
+  }
+  // 직격당한 대상은 과즙 bombDirectHitJuiceCount(4)개를 그 자리에서 확정 적중시킨다.
+  // 예전엔 5개 중 1개만 재적중 차단하고 나머지는 날아가는 투사체가 실제로 닿아야
+  // 데미지가 들어가서, 명중 개수가 판정 타이밍에 따라 3~4개로 들쭉날쭉했다.
+  const directHitTarget = directHitTargetId != null
+    ? state.players.find((p) => p.id === directHitTargetId && !p.dead)
+    : null;
+  if (directHitTarget) {
+    for (let i = 0; i < charDef.bombDirectHitJuiceCount; i++) {
+      const dealt = applyDamage(directHitTarget, charDef.bombSplashDamage, owner ?? null, true, true);
+      if (owner?.isPlayer) {
+        flashHitMarker();
+        audio.play("hit");
+        if (dealt > 0) {
+          const key = `${ownerId}_${directHitTarget.id}`;
+          if (!state.splashAccum[key]) state.splashAccum[key] = { damage: 0, pos: directHitTarget.mesh.position.clone(), expireAt: 0 };
           state.splashAccum[key].damage += dealt;
           state.splashAccum[key].expireAt = state.gameTime + 0.6;
         }
@@ -7482,7 +7497,9 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
       mesh: splashMesh,
       isSplash: true,
       projRadius: charDef.bombSplashHitRadius * blastMult,
-      hitTargetIds: i < blockedDirectHits ? new Set([directHitTargetId]) : undefined,
+      // 직격 대상은 위에서 이미 확정 적중으로 처리했으니, 날아가는 파편이
+      // 같은 대상을 또 맞혀 중복 데미지를 주지 않도록 전부 차단한다.
+      hitTargetIds: directHitTarget ? new Set([directHitTarget.id]) : undefined,
     });
   }
 }
