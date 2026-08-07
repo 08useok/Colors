@@ -51,6 +51,7 @@ export const CHARACTERS = {
     bombRange: 9,
     bombSpeed: 26,
     bombSplashCount: 5,
+    bombDirectHitJuiceCount: 4,
     bombSplashSpeed: 10,
     bombSplashRange: 4.4,
     bombSplashHitRadius: 0.75,
