@@ -6141,6 +6141,32 @@ function createBombExplosionEffect(x, z, isGold) {
   flash.position.set(x, 0.15, z);
   scene.add(flash);
   state.effects.push({ mesh: flash, life: 0.2, maxLife: 0.2, type: "bombFlash" });
+
+  // 골드 러쉬 오렌지: 색만 바꾼 링/플래시는 눈에 띄게 다르다고 느끼기 어려워서,
+  // 폭발할 때 동전이 사방으로 튀는 버스트를 추가로 얹는다.
+  if (isGold) {
+    const tex = _getGoldSparkleTexture();
+    const coinCount = 8;
+    for (let i = 0; i < coinCount; i++) {
+      const angle = (i / coinCount) * Math.PI * 2 + Math.random() * 0.4;
+      const speed = 2.4 + Math.random() * 1.6;
+      const coin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.1, 0.03, 10),
+        new THREE.MeshBasicMaterial({
+          map: tex, color: 0xffd700, transparent: true, opacity: 1,
+          blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide,
+        }),
+      );
+      coin.position.set(x, 0.3, z);
+      coin.rotation.x = Math.PI / 2;
+      scene.add(coin);
+      state.effects.push({
+        mesh: coin, life: 0.5, maxLife: 0.5, type: "goldCoinBurst",
+        vx: Math.cos(angle) * speed, vy: 2.6 + Math.random() * 1.4, vz: Math.sin(angle) * speed,
+        spin: (Math.random() - 0.5) * 10, baseScale: 1,
+      });
+    }
+  }
 }
 
 function createElectricHitEffect(x, z) {
@@ -7428,10 +7454,18 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
   const isGold = owner?.skinId === "beta2_gold_orange";
   for (let i = 0; i < charDef.bombSplashCount; i++) {
     const angle = (i / charDef.bombSplashCount) * Math.PI * 2;
-    const splashMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.14, 6, 6),
-      new THREE.MeshBasicMaterial({ color: isGold ? 0xffd700 : 0xffcc44, transparent: true, opacity: 0.9 }),
-    );
+    // 골드 러쉬 오렌지는 과즙 대신 동전이 튀는 모양으로 — 색만으론 안 바뀐 것처럼
+    // 보인다는 피드백이 있어서 모양 자체를 과즙(구)에서 동전(원판)으로 바꾼다.
+    const splashMesh = isGold
+      ? new THREE.Mesh(
+          new THREE.CylinderGeometry(0.16, 0.16, 0.04, 10),
+          new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.2, metalness: 0.8, emissive: 0x8a5a00, emissiveIntensity: 0.4 }),
+        )
+      : new THREE.Mesh(
+          new THREE.SphereGeometry(0.14, 6, 6),
+          new THREE.MeshBasicMaterial({ color: 0xffcc44, transparent: true, opacity: 0.9 }),
+        );
+    if (isGold) splashMesh.rotation.x = Math.PI / 2;
     splashMesh.position.set(x, 1.0, z);
     scene.add(splashMesh);
     state.projectiles.push({
@@ -8815,6 +8849,14 @@ function updateEffects(dt) {
       if (effect.vy !== undefined) effect.vy -= 12 * dt;
       effect.mesh.scale.setScalar(alpha);
       effect.mesh.material.opacity = alpha * 0.9;
+    } else if (effect.type === "goldCoinBurst") {
+      effect.mesh.position.x += effect.vx * dt;
+      effect.mesh.position.y += effect.vy * dt;
+      effect.mesh.position.z += effect.vz * dt;
+      effect.vy -= 9 * dt;
+      effect.mesh.rotation.z += dt * effect.spin;
+      effect.mesh.scale.setScalar((0.6 + alpha * 0.6) * effect.baseScale);
+      effect.mesh.material.opacity = alpha;
     } else if (effect.type === "electricHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.5);
       effect.mesh.rotation.z += dt * 15;
