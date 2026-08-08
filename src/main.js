@@ -641,17 +641,20 @@ function createGoldRushAccessory(skinId, headAttached = false) {
     // 뒤에 붙는 구조로 만든다.
     const lampHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.14, 10), darkMetal);
     lampHousing.rotation.x = Math.PI / 2;
-    lampHousing.position.set(0, -0.45, 0.58);
+    lampHousing.position.set(0, -0.45, 0.78);
     helmetGroup.add(lampHousing);
-    const strapMat = new THREE.MeshStandardMaterial({ color: 0x1a120a, roughness: 0.5, metalness: 0.3 });
-    const strap = new THREE.Mesh(new THREE.CylinderGeometry(0.86, 0.86, 0.14, 24), strapMat);
+    // 밴드 높이(-0.45)는 머리가 가장 넓어지는 눈높이 부근이라, 브림(0.82)과
+    // 같은 반경으로는 머리 표면 안쪽으로 파고들어 부분적으로 가려져
+    // 끊긴 것처럼 보였다. 확실히 머리 밖으로 나오도록 반경을 키운다.
+    const strapMat = new THREE.MeshStandardMaterial({ color: 0x1a120a, roughness: 0.5, metalness: 0.3, side: THREE.DoubleSide });
+    const strap = new THREE.Mesh(new THREE.CylinderGeometry(1.05, 1.05, 0.14, 24), strapMat);
     strap.position.y = -0.45;
     helmetGroup.add(strap);
     const lamp = new THREE.Mesh(
       new THREE.SphereGeometry(0.11, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, -0.45, 0.68);
+    lamp.position.set(0, -0.45, 0.88);
     helmetGroup.add(lamp);
     accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
