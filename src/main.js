@@ -629,15 +629,17 @@ function createGoldRushAccessory(skinId, headAttached = false) {
     } else {
       helmetGroup.position.y = 2.25;
     }
-    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.72, 0.08, 20), goldMetal);
-    const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.55, 0.32, 16), goldMetal);
-    dome.position.y = 0.2;
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.09, 20), goldMetal);
+    const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.6, 0.34, 16), goldMetal);
+    dome.position.y = 0.21;
     helmetGroup.add(brim, dome);
+    // 램프는 돔 위가 아니라 브림 앞쪽 가장자리에 낮게 붙여야 "머리에 얹힌 헬멧 램프"로
+    // 읽힌다 — 돔 꼭대기에 두면 크기가 작아서 그냥 얹힌 구슬처럼 보였다.
     const lamp = new THREE.Mesh(
-      new THREE.SphereGeometry(0.09, 10, 8),
+      new THREE.SphereGeometry(0.11, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, 0.22, -0.5);
+    lamp.position.set(0, 0.02, -0.66);
     helmetGroup.add(lamp);
     accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
