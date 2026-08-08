@@ -616,40 +616,39 @@ function createGoldRushAccessory(skinId, headAttached = false) {
   const darkMetal = new THREE.MeshStandardMaterial({ color: 0x3a2c12, metalness: 0.6, roughness: 0.4 });
 
   if (skinId === "beta2_gold_yellow") {
-    // 채굴 램프 헬멧 — 머리띠 + 전방 램프
-    const bandGroup = new THREE.Group();
+    // 채굴 램프 헬멧 — beta_red_orange 모자와 동일하게 회전 없이 Y축으로만
+    // 쌓는다(원판형 브림 + 돔 + 전방 램프). 토러스에 X축 회전을 준 이전
+    // 버전은 헤드본 자세에 따라 밴드가 옆으로 삐뚤어져 보이는 문제가 있었다.
+    const helmetGroup = new THREE.Group();
+    accessory.userData.headwearPart = helmetGroup;
     if (headAttached) {
-      bandGroup.visible = false;
-      bandGroup.userData.autoFitHeadwear = true;
-      bandGroup.userData.seatBottomY = -0.05;
-      bandGroup.userData.seatInset = 0.15;
-      accessory.userData.headwearPart = bandGroup;
+      helmetGroup.visible = false;
+      helmetGroup.userData.autoFitHeadwear = true;
+      helmetGroup.userData.seatBottomY = -0.045;
+      helmetGroup.userData.seatInset = 0.2;
     } else {
-      bandGroup.position.y = 2.3;
+      helmetGroup.position.y = 2.25;
     }
-    const band = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.055, 8, 28), goldMetal);
-    band.rotation.x = Math.PI / 2;
-    bandGroup.add(band);
-    const lampHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.16, 10), darkMetal);
-    lampHousing.rotation.x = Math.PI / 2;
-    lampHousing.position.set(0, 0.02, -0.52);
-    bandGroup.add(lampHousing);
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.72, 0.08, 20), goldMetal);
+    const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.55, 0.32, 16), goldMetal);
+    dome.position.y = 0.2;
+    helmetGroup.add(brim, dome);
     const lamp = new THREE.Mesh(
       new THREE.SphereGeometry(0.09, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, 0.02, -0.62);
-    bandGroup.add(lamp);
-    accessory.add(bandGroup);
+    lamp.position.set(0, 0.22, -0.5);
+    helmetGroup.add(lamp);
+    accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
     // 교차 곡괭이
     const pickGroup = new THREE.Group();
+    accessory.userData.headwearPart = pickGroup;
     if (headAttached) {
       pickGroup.visible = false;
       pickGroup.userData.autoFitHeadwear = true;
       pickGroup.userData.seatBottomY = 0.1;
       pickGroup.userData.seatInset = 0.1;
-      accessory.userData.headwearPart = pickGroup;
     } else {
       pickGroup.position.y = 2.5;
     }
@@ -668,12 +667,12 @@ function createGoldRushAccessory(skinId, headAttached = false) {
   } else if (skinId === "beta2_gold_gold") {
     // 원석 크리스탈 왕관 — 삐죽삐죽한 결정이 머리를 둘러싼다
     const crownGroup = new THREE.Group();
+    accessory.userData.headwearPart = crownGroup;
     if (headAttached) {
       crownGroup.visible = false;
       crownGroup.userData.autoFitHeadwear = true;
       crownGroup.userData.seatBottomY = -0.05;
       crownGroup.userData.seatInset = 0.12;
-      accessory.userData.headwearPart = crownGroup;
     } else {
       crownGroup.position.y = 2.3;
     }
@@ -3555,6 +3554,16 @@ function createCyanTemplatePreviewModel(charKey, skinId) {
   // 보여줘야 하는데, 이 프리뷰 전용 모델은 배틀용 createStickman과 분리돼
   // 있어서 applySkin을 안 태우면 장착한 스킨이 프리뷰에 반영되지 않는다.
   if (skinId) applySkin(model, skinId);
+  // 이 프리뷰 전용 GLB(cyan_preview.glb)엔 배틀용 리그의 헤드본이 없어서
+  // getHeadwearModel이 못 찾고, createGoldRushAccessory는 배틀 스케일
+  // 기준 고정 오프셋(예: y=2.3)으로 떨어지는데 이 프리뷰 모델은 스케일이
+  // 달라 소품이 머리에서 한참 떨어져 붕 뜬다. applySkin 호출 전에 계산해둔
+  // 원본(스케일 적용 전) 바운딩 박스의 머리 꼭대기로 다시 앉혀준다.
+  const accessory = model.userData.skinAccessory;
+  if (accessory && !model.userData.headwear) {
+    const headwear = accessory.userData.headwearPart ?? accessory;
+    headwear.position.set(0, box.max.y - 0.12, 0);
+  }
   return model;
 }
 
