@@ -639,7 +639,7 @@ function createGoldRushAccessory(skinId, headAttached = false) {
       new THREE.SphereGeometry(0.11, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, 0.02, -0.66);
+    lamp.position.set(0, 0.02, 0.66);
     helmetGroup.add(lamp);
     accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
