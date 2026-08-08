@@ -643,7 +643,8 @@ function createGoldRushAccessory(skinId, headAttached = false) {
     lampHousing.rotation.x = Math.PI / 2;
     lampHousing.position.set(0, -0.45, 0.58);
     helmetGroup.add(lampHousing);
-    const strap = new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.78, 0.05, 20), darkMetal);
+    const strapMat = new THREE.MeshStandardMaterial({ color: 0x1a120a, roughness: 0.5, metalness: 0.3 });
+    const strap = new THREE.Mesh(new THREE.CylinderGeometry(0.86, 0.86, 0.14, 24), strapMat);
     strap.position.y = -0.45;
     helmetGroup.add(strap);
     const lamp = new THREE.Mesh(
