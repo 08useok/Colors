@@ -637,11 +637,20 @@ function createGoldRushAccessory(skinId, headAttached = false) {
     // 기준점이라(브림이 그 높이에 있는 이유), 램프를 이마 높이로 내리려면
     // 거기서 한참 아래로 내려야 한다. y=0.02(브림과 거의 같은 높이)로 두면
     // 정수리 쪽에 붙어서 얼굴에서 한참 위로 떠 보였다.
+    // 램프 혼자 이마에 떠 있으면 어색해서, 이마 밴드에 얹힌 검은 하우징
+    // 뒤에 붙는 구조로 만든다.
+    const lampHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.14, 10), darkMetal);
+    lampHousing.rotation.x = Math.PI / 2;
+    lampHousing.position.set(0, -0.45, 0.58);
+    helmetGroup.add(lampHousing);
+    const strap = new THREE.Mesh(new THREE.CylinderGeometry(0.78, 0.78, 0.05, 20), darkMetal);
+    strap.position.y = -0.45;
+    helmetGroup.add(strap);
     const lamp = new THREE.Mesh(
       new THREE.SphereGeometry(0.11, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, -0.45, 0.66);
+    lamp.position.set(0, -0.45, 0.68);
     helmetGroup.add(lamp);
     accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
