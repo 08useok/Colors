@@ -641,7 +641,7 @@ function createGoldRushAccessory(skinId, headAttached = false) {
     // 뒤에 붙는 구조로 만든다.
     const lampHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.14, 10), darkMetal);
     lampHousing.rotation.x = Math.PI / 2;
-    lampHousing.position.set(0, -0.45, 0.78);
+    lampHousing.position.set(0, -0.45, 1.08);
     helmetGroup.add(lampHousing);
     // 밴드 높이(-0.45)는 머리가 가장 넓어지는 눈높이 부근이라, 브림(0.82)과
     // 같은 반경으로는 머리 표면 안쪽으로 파고들어 부분적으로 가려져
@@ -654,7 +654,7 @@ function createGoldRushAccessory(skinId, headAttached = false) {
       new THREE.SphereGeometry(0.11, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, -0.45, 0.88);
+    lamp.position.set(0, -0.45, 1.18);
     helmetGroup.add(lamp);
     accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
