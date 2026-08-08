@@ -398,6 +398,13 @@ function applySkin(group, skinId) {
     }
   } else if (skinId.startsWith("beta2_gold_")) {
     applyRedThemePalette(group, skinId);
+    const accessory = createGoldRushAccessory(skinId, Boolean(getHeadwearModel(group)));
+    if (accessory) {
+      group.add(accessory);
+      group.userData.skinAccessory = accessory;
+      const headwear = accessory.userData.headwearPart ?? accessory;
+      if (headwear.userData.autoFitHeadwear) group.userData.headwear = headwear;
+    }
   }
 }
 
@@ -412,15 +419,17 @@ function applyRedThemePalette(group, skinId) {
     beta_red_red: 0xff2135,
     beta2_gold_yellow: 0xd9a520,
     beta2_gold_orange: 0xb8720a,
+    beta2_gold_gold: 0xffc233,
   }[skinId] ?? 0xb3261e);
   const tintStrength = skinId === "beta_red_red" ? 0.72
     : skinId === "beta_red_crimson" ? 0.68
     : skinId === "beta2_gold_orange" ? 0.8
     : skinId === "beta2_gold_yellow" ? 0.75
+    : skinId === "beta2_gold_gold" ? 0.78
     : 0.58;
   const isGoldSkin = skinId.startsWith("beta2_gold_");
   const emissive = isGoldSkin
-    ? new THREE.Color(skinId === "beta2_gold_orange" ? 0x4a2a00 : 0x3d2600)
+    ? new THREE.Color(skinId === "beta2_gold_orange" ? 0x4a2a00 : skinId === "beta2_gold_gold" ? 0x4a3a00 : 0x3d2600)
     : null;
   const emissiveIntensity = skinId === "beta2_gold_orange" ? 0.65 : 0.5;
   const bodyMaterials = [];
@@ -584,6 +593,101 @@ function createRedThemeAccessory(skinId, headAttached = false) {
       accessory.userData.autoFitHeadwear = true;
       accessory.userData.seatInset = 0.02;
     }
+  } else {
+    return null;
+  }
+
+  accessory.traverse((part) => {
+    if (!part.isMesh) return;
+    part.castShadow = true;
+    part.renderOrder = 5;
+  });
+  return accessory;
+}
+
+// 골드 러쉬 스킨용 소품 — 지금까지는 리컬러 + 반짝이 스프라이트만 있고
+// beta_red_* 계열처럼 머리에 붙는 실제 소품이 없었다. 캐릭터별로 구분되는
+// 골드 러쉬 테마 소품을 추가한다.
+function createGoldRushAccessory(skinId, headAttached = false) {
+  const accessory = new THREE.Group();
+  const goldMetal = new THREE.MeshStandardMaterial({
+    color: 0xffd34f, emissive: 0x7a4d00, emissiveIntensity: 0.4, metalness: 0.85, roughness: 0.2,
+  });
+  const darkMetal = new THREE.MeshStandardMaterial({ color: 0x3a2c12, metalness: 0.6, roughness: 0.4 });
+
+  if (skinId === "beta2_gold_yellow") {
+    // 채굴 램프 헬멧 — 머리띠 + 전방 램프
+    const bandGroup = new THREE.Group();
+    if (headAttached) {
+      bandGroup.visible = false;
+      bandGroup.userData.autoFitHeadwear = true;
+      bandGroup.userData.seatBottomY = -0.05;
+      bandGroup.userData.seatInset = 0.15;
+      accessory.userData.headwearPart = bandGroup;
+    } else {
+      bandGroup.position.y = 2.3;
+    }
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.055, 8, 28), goldMetal);
+    band.rotation.x = Math.PI / 2;
+    bandGroup.add(band);
+    const lampHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.11, 0.16, 10), darkMetal);
+    lampHousing.rotation.x = Math.PI / 2;
+    lampHousing.position.set(0, 0.02, -0.52);
+    bandGroup.add(lampHousing);
+    const lamp = new THREE.Mesh(
+      new THREE.SphereGeometry(0.09, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
+    );
+    lamp.position.set(0, 0.02, -0.62);
+    bandGroup.add(lamp);
+    accessory.add(bandGroup);
+  } else if (skinId === "beta2_gold_orange") {
+    // 교차 곡괭이
+    const pickGroup = new THREE.Group();
+    if (headAttached) {
+      pickGroup.visible = false;
+      pickGroup.userData.autoFitHeadwear = true;
+      pickGroup.userData.seatBottomY = 0.1;
+      pickGroup.userData.seatInset = 0.1;
+      accessory.userData.headwearPart = pickGroup;
+    } else {
+      pickGroup.position.y = 2.5;
+    }
+    for (const side of [-1, 1]) {
+      const pick = new THREE.Group();
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.9, 8), darkMetal);
+      pick.add(handle);
+      const head = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.42, 6), goldMetal);
+      head.position.y = 0.46;
+      head.rotation.z = Math.PI;
+      pick.add(head);
+      pick.rotation.z = side * THREE.MathUtils.degToRad(40);
+      pickGroup.add(pick);
+    }
+    accessory.add(pickGroup);
+  } else if (skinId === "beta2_gold_gold") {
+    // 원석 크리스탈 왕관 — 삐죽삐죽한 결정이 머리를 둘러싼다
+    const crownGroup = new THREE.Group();
+    if (headAttached) {
+      crownGroup.visible = false;
+      crownGroup.userData.autoFitHeadwear = true;
+      crownGroup.userData.seatBottomY = -0.05;
+      crownGroup.userData.seatInset = 0.12;
+      accessory.userData.headwearPart = crownGroup;
+    } else {
+      crownGroup.position.y = 2.3;
+    }
+    const crystalCount = 6;
+    for (let i = 0; i < crystalCount; i++) {
+      const angle = (i / crystalCount) * Math.PI * 2;
+      const height = 0.32 + (i % 2 === 0 ? 0.18 : 0);
+      const crystal = new THREE.Mesh(new THREE.ConeGeometry(0.09, height, 5), goldMetal);
+      crystal.position.set(Math.sin(angle) * 0.47, height / 2 - 0.05, Math.cos(angle) * 0.47);
+      crystal.rotation.y = angle;
+      crystal.rotation.z = (Math.random() - 0.5) * 0.3;
+      crownGroup.add(crystal);
+    }
+    accessory.add(crownGroup);
   } else {
     return null;
   }
@@ -3429,7 +3533,7 @@ function createCyanPreviewModel() {
 // 크림슨/골드는 시안 리그를 그대로 쓰지만 걷기 GLB(_cyanWalkGlb)의 기본 포즈가
 // 지저분해서(시안도 같은 이유로 별도 cyan_preview.glb를 씀) 시안 프리뷰 모델을
 // 캐릭터 색으로 리컬러해 재사용한다.
-function createCyanTemplatePreviewModel(charKey) {
+function createCyanTemplatePreviewModel(charKey, skinId) {
   if (!_cyanPreviewGlb) return null;
   const model = _cyanPreviewGlb.scene.clone(true);
   applyCyanTemplateLook(model, charKey);
@@ -3447,6 +3551,10 @@ function createCyanTemplatePreviewModel(charKey) {
     c.castShadow = true;
   });
   model.userData.isCyanPreview = true;
+  // 시안 리그를 공유하는 크림슨/골드도 스킨(리컬러·소품)을 로비 프리뷰에서
+  // 보여줘야 하는데, 이 프리뷰 전용 모델은 배틀용 createStickman과 분리돼
+  // 있어서 applySkin을 안 태우면 장착한 스킨이 프리뷰에 반영되지 않는다.
+  if (skinId) applySkin(model, skinId);
   return model;
 }
 
@@ -3610,7 +3718,7 @@ function setPreviewCharacter(charType) {
     previewScene.add(previewModel);
   } else if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType) && _cyanPreviewGlb) {
     previewIsGlb = true;
-    previewModel = fitModelForPreview(createCyanTemplatePreviewModel(charType));
+    previewModel = fitModelForPreview(createCyanTemplatePreviewModel(charType, skinId));
     previewScene.add(previewModel);
   } else {
     previewModel = createStickman(charDef.color, skinId);
