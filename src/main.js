@@ -7467,7 +7467,12 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
     }
   }
   const isGold = owner?.skinId === "beta2_gold_orange";
-  for (let i = 0; i < charDef.bombSplashCount; i++) {
+  // 직격 시엔 과즙 4개를 위에서 이미 확정 적중시켰으니, 남은 1개(5 - 4)만
+  // 날려서 근처 다른 대상을 노린다. 직격이 아니면 5개 다 그대로 날아간다.
+  const fragmentCount = directHitTarget
+    ? Math.max(0, charDef.bombSplashCount - charDef.bombDirectHitJuiceCount)
+    : charDef.bombSplashCount;
+  for (let i = 0; i < fragmentCount; i++) {
     const angle = (i / charDef.bombSplashCount) * Math.PI * 2;
     // 골드 러쉬 오렌지는 과즙 대신 동전이 튀는 모양으로 — 색만으론 안 바뀐 것처럼
     // 보인다는 피드백이 있어서 모양 자체를 과즙(구)에서 동전(원판)으로 바꾼다.
