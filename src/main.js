@@ -633,13 +633,15 @@ function createGoldRushAccessory(skinId, headAttached = false) {
     const dome = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.6, 0.34, 16), goldMetal);
     dome.position.y = 0.21;
     helmetGroup.add(brim, dome);
-    // 램프는 돔 위가 아니라 브림 앞쪽 가장자리에 낮게 붙여야 "머리에 얹힌 헬멧 램프"로
-    // 읽힌다 — 돔 꼭대기에 두면 크기가 작아서 그냥 얹힌 구슬처럼 보였다.
+    // helmetGroup의 y=0은 오토핏 시스템이 "머리 꼭대기 바로 아래"로 앉히는
+    // 기준점이라(브림이 그 높이에 있는 이유), 램프를 이마 높이로 내리려면
+    // 거기서 한참 아래로 내려야 한다. y=0.02(브림과 거의 같은 높이)로 두면
+    // 정수리 쪽에 붙어서 얼굴에서 한참 위로 떠 보였다.
     const lamp = new THREE.Mesh(
       new THREE.SphereGeometry(0.11, 10, 8),
       new THREE.MeshStandardMaterial({ color: 0xfff4c2, emissive: 0xffe066, emissiveIntensity: 1.4 }),
     );
-    lamp.position.set(0, 0.02, 0.66);
+    lamp.position.set(0, -0.45, 0.66);
     helmetGroup.add(lamp);
     accessory.add(helmetGroup);
   } else if (skinId === "beta2_gold_orange") {
