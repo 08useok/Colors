@@ -1847,21 +1847,21 @@ let dailyRewardComplete = false;
 // 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
 // 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
-const DAILY_REWARD_UPGRADE_CHANCE = 0.55;
+const DAILY_REWARD_UPGRADE_CHANCE = 0.12;
 let dailyRewardAttemptsUsed = 0;
 
 // 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다.
 const DAILY_REWARD_JUMP_WEIGHTS = [
-  { steps: 1, weight: 60 },
-  { steps: 2, weight: 40 },
-  { steps: 3, weight: 30 },
-  { steps: 4, weight: 25 },
-  { steps: 5, weight: 21 },
-  { steps: 6, weight: 10 },
-  { steps: 7, weight: 5 },
-  { steps: 8, weight: 3 },
-  { steps: 9, weight: 2 },
-  { steps: 10, weight: 1 },
+  { steps: 1, weight: 85 },
+  { steps: 2, weight: 10 },
+  { steps: 3, weight: 3 },
+  { steps: 4, weight: 1 },
+  { steps: 5, weight: 0.5 },
+  { steps: 6, weight: 0.25 },
+  { steps: 7, weight: 0.1 },
+  { steps: 8, weight: 0.05 },
+  { steps: 9, weight: 0.02 },
+  { steps: 10, weight: 0.01 },
 ];
 function rollUpgradeJumpSteps() {
   const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
@@ -2470,7 +2470,8 @@ function recolorSkinTintTexture(texture, targetHex) {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const saturation = max === 0 ? 0 : (max - min) / max;
-    if (saturation < 0.18) continue;
+    // 얼굴의 눈동자·눈썹·입과 흰자는 스킨 색상 변환에서 제외한다.
+    if (max < 92 || (min > 184 && saturation < 0.3) || saturation < 0.18) continue;
     const shade = THREE.MathUtils.clamp(max / 220, 0.3, 1.3);
     image.data[i] = Math.min(255, tr * shade);
     image.data[i + 1] = Math.min(255, tg * shade);
@@ -9539,7 +9540,11 @@ function updateBossAnimation(boss, dt) {
     fill.scale.x = ratio;
     fill.position.x = (-1.31 * (1 - ratio)) * 0.5;
     updateHealthNumberLabel(boss.healthBar.userData.label, boss.health, boss.maxHealth);
-    boss.healthBar.quaternion.copy(camera.quaternion);
+    // 체력바는 fighter.mesh의 자식이므로 카메라 회전을 그대로 대입하면
+    // 캐릭터 방향 회전이 한 번 더 누적된다. 부모의 월드 회전을 역산한다.
+    const bossParentWorldQuaternion = boss.healthBar.userData.parentWorldQuaternion ??= new THREE.Quaternion();
+    boss.mesh.getWorldQuaternion(bossParentWorldQuaternion);
+    boss.healthBar.quaternion.copy(bossParentWorldQuaternion).invert().multiply(camera.quaternion);
   }
 }
 
@@ -9964,7 +9969,10 @@ function updateFighterAnimation(fighter, dt) {
   fill.scale.x = THREE.MathUtils.clamp(healthRatio, 0, 1);
   fill.position.x = (-1.31 * (1 - fill.scale.x)) * 0.5;
   updateHealthNumberLabel(fighter.healthBar.userData.label, fighter.health, fighter.maxHealth);
-  fighter.healthBar.quaternion.copy(camera.quaternion);
+  // 캐릭터가 회전해도 체력바는 항상 카메라를 향하게 한다.
+  const parentWorldQuaternion = fighter.healthBar.userData.parentWorldQuaternion ??= new THREE.Quaternion();
+  fighter.mesh.getWorldQuaternion(parentWorldQuaternion);
+  fighter.healthBar.quaternion.copy(parentWorldQuaternion).invert().multiply(camera.quaternion);
 }
 
 function updateAmmoRegen(dt) {
@@ -10576,10 +10584,6 @@ function checkEndState() {
       state.resultRevealAt = Math.max(state.resultRevealAt, state.gameTime + 2);
       state.mouseHeld = false;
       state.scheduledHits = [];
-      if (!state.outcomeSfxPlayed) {
-        state.outcomeSfxPlayed = true;
-        audio.play("win");
-      }
     }
     if (state.gameTime < state.resultRevealAt) return;
     state.victoryCelebrating = false;
@@ -10596,10 +10600,6 @@ function checkEndState() {
       const totalText = account ? t("totalTrophy", account.trophies) : "";
       const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
 
-      if (!state.outcomeSfxPlayed) {
-        state.outcomeSfxPlayed = true;
-        audio.play(playerRank === 1 ? "win" : "lose");
-      }
       if (playerDead && alive.length > 1) {
         resultTitle.textContent = t("rankN", playerRank);
         resultBody.textContent = t("resultDead", deltaText, totalText);
@@ -10634,6 +10634,11 @@ function checkEndState() {
     }
     clearBattleMap();
     resultOverlay.style.display = "flex";
+    // 결과 화면을 표시한 다음 승리/패배 효과음을 재생해 순서를 맞춘다.
+    if (!state.outcomeSfxPlayed) {
+      state.outcomeSfxPlayed = true;
+      audio.play(playerRank === 1 ? "win" : "lose");
+    }
     document.exitPointerLock?.();
   }
 }

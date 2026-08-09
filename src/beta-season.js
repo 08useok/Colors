@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.4";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.2";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -51,7 +51,7 @@ const dailyRewardMessage = document.getElementById("daily-reward-message");
 const dailyRewardReturn = document.getElementById("daily-reward-return");
 const dailyRewardUpgradeAll = document.getElementById("daily-reward-upgrade-all");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "62";
+const CHARACTER_MODEL_VERSION = "64";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -497,7 +497,8 @@ function recolorSkinTintTexture(texture, targetHex) {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const saturation = max === 0 ? 0 : (max - min) / max;
-    if (saturation < 0.18) continue;
+    // 눈동자/눈썹/입처럼 어둡거나 흰색에 가까운 얼굴 디테일은 스킨 색에서 제외한다.
+    if (max < 92 || (min > 184 && saturation < 0.3) || saturation < 0.18) continue;
     const shade = THREE.MathUtils.clamp(max / 220, 0.3, 1.3);
     image.data[i] = Math.min(255, tr * shade);
     image.data[i + 1] = Math.min(255, tg * shade);
@@ -513,6 +514,8 @@ function recolorSkinTintTexture(texture, targetHex) {
 
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
+  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xd4a928 : null;
+  const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
   // 구별이 안 됐다 — 뚜렷한 골드 톤 + emissive 글로우로 대체.
   const tintHex = {
@@ -527,7 +530,19 @@ function applySkinPaletteToModel(model, characterId) {
     if (!child.isMesh) return;
     const materials = Array.isArray(child.material) ? child.material : [child.material];
     for (const material of materials) {
-      if (!material?.color || material.isMeshBasicMaterial) continue;
+      if (!material?.color) continue;
+      if (baseCharacterTint) {
+        // Shared Cyan GLB의 얼굴/눈 텍스처는 보존하고, 채도 높은 몸체 픽셀만 재색칠한다.
+        material.userData.baseSkinMap ??= material.map;
+        material.map = recolorSkinTintTexture(material.userData.baseSkinMap, baseCharacterTintHex);
+        material.color.set(0xffffff);
+        if ("emissive" in material) {
+          material.emissive.set(0x000000);
+          material.emissiveIntensity = 0;
+        }
+        continue;
+      }
+      if (material.isMeshBasicMaterial) continue;
       material.userData.baseSkinColor ??= material.color.clone();
       if ("baseSkinMap" in material.userData === false) material.userData.baseSkinMap = material.map;
       // color는 map 위에 곱해지는 값이라, 이미 색이 칠해진 텍스처 위에 lerp만 하면
@@ -660,7 +675,7 @@ function clearCharacterModel() {
 
 function prepareCharacterScene(model, characterId) {
   if (characterId === "blue") addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold"].includes(characterId)) {
     applyBetaToonRendering(model, characterId);
   }
   applySkinPaletteToModel(model, characterId);
@@ -681,10 +696,14 @@ function prepareCharacterScene(model, characterId) {
 }
 
 function loadCharacterMotionSet(characterId, token) {
+  const selectedSkinId = betaState.selectedSkins[characterId] || "";
+  const modelCharacterId = characterId === "ivory" && selectedSkinId === "beta2_ivory_shopkeeper"
+    ? "ivory/skin-shopkeeper"
+    : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
   const paths = {
-    start: `./assets/3d/${characterId}/walk-m1s.glb?v=${CHARACTER_MODEL_VERSION}`,
-    loop: `./assets/3d/${characterId}/walk-m2l.glb?v=${CHARACTER_MODEL_VERSION}`,
-    stop: `./assets/3d/${characterId}/walk-m3e.glb?v=${CHARACTER_MODEL_VERSION}`,
+    start: `./assets/3d/${modelCharacterId}/walk-m1s.glb?v=${CHARACTER_MODEL_VERSION}`,
+    loop: `./assets/3d/${modelCharacterId}/walk-m2l.glb?v=${CHARACTER_MODEL_VERSION}`,
+    stop: `./assets/3d/${modelCharacterId}/walk-m3e.glb?v=${CHARACTER_MODEL_VERSION}`,
   };
   Promise.all(Object.entries(paths).map(async ([key, path]) => [key, await characterLoader.loadAsync(path)]))
     .then((entries) => {
@@ -857,7 +876,7 @@ function updateModelAttackMotion(dt) {
 function setPlayerModel(characterId) {
   const token = ++characterLoadToken;
   clearCharacterModel();
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -1083,7 +1102,8 @@ function equipSkin(characterId, skinId) {
   if (!skin || skin.character !== characterId || !betaState.ownedSkins.includes(skinId)) return;
   betaState.selectedSkins[characterId] = skinId;
   saveBetaState();
-  applySelectedSkinVisual();
+  if (betaState.selectedCharacter === characterId && characterId === "ivory") setPlayerModel(characterId);
+  else applySelectedSkinVisual();
   renderCharacters();
   showToast(`${getSkinName(skin)} 장착`);
 }
@@ -1092,7 +1112,10 @@ function unequipSkin(characterId) {
   if (!betaState.selectedSkins[characterId]) return;
   delete betaState.selectedSkins[characterId];
   saveBetaState();
-  if (betaState.selectedCharacter === characterId) applySelectedSkinVisual();
+  if (betaState.selectedCharacter === characterId) {
+    if (characterId === "ivory") setPlayerModel(characterId);
+    else applySelectedSkinVisual();
+  }
   renderCharacters();
   showToast("스킨 착용 해제");
 }
@@ -1165,12 +1188,14 @@ function renderShop() {
 }
 
 function renderAssetShowroom() {
-  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple"]);
+  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold"]);
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
   modalContent.innerHTML = `<div class="beta-grid">${CHARACTERS.map((character) => {
     const usesGlb = glbCharacters.has(character.id);
-    const modelPath = usesGlb ? `assets/3d/${character.id}/walk-m1s.glb` : "Three.js 절차형 모델";
+    const modelPath = usesGlb
+      ? character.id === "ivory" ? "assets/3d/ivory/ivory_preview.glb" : ["crimson", "gold"].includes(character.id) ? "assets/3d/cyan/walk-m1s.glb" : `assets/3d/${character.id}/walk-m1s.glb`
+      : "Three.js 절차형 모델";
     const skinCount = seasonAssets.filter((skin) => skin.character === character.id).length;
     return `<article class="beta-card">
       <span class="rarity ${character.rarity}">${usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
@@ -1827,6 +1852,38 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   canvas.dataset.lastProjectileType = type;
 }
 
+function addIvorySprinkles(parent, radius = 0.34, yOffset = 0) {
+  const sprinkleColors = [0xff5f6d, 0x4cc9f0, 0xffc857, 0x9b5de5, 0x55d66b];
+  for (let i = 0; i < 12; i += 1) {
+    const angle = (i / 12) * Math.PI * 2;
+    const y = yOffset + 0.02 + (i % 4) * radius * 0.22;
+    const surfaceRadius = Math.sqrt(Math.max(0.02, radius * radius - (y - yOffset) * (y - yOffset)));
+    const sprinkle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.018, 0.12, 6),
+      new THREE.MeshStandardMaterial({ color: sprinkleColors[i % sprinkleColors.length], roughness: 0.48 }),
+    );
+    sprinkle.position.set(Math.cos(angle) * surfaceRadius, y, Math.sin(angle) * surfaceRadius);
+    sprinkle.rotation.set(Math.sin(angle) * 0.65, angle, Math.cos(angle) * 0.65);
+    parent.add(sprinkle);
+  }
+}
+
+function addIvoryGroundSprinkles(parent, radius) {
+  const colors = [0xff5f6d, 0x4cc9f0, 0xffc857, 0x9b5de5, 0x55d66b];
+  for (let i = 0; i < 18; i += 1) {
+    // 황금각 + sqrt 반지름으로 원 전체에 균등하게 배치한다.
+    const angle = i * 2.39996;
+    const distance = radius * 0.88 * Math.sqrt((i + 0.5) / 18);
+    const sprinkle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.014, 0.014, 0.11, 6),
+      new THREE.MeshStandardMaterial({ color: colors[i % colors.length], roughness: 0.5 }),
+    );
+    sprinkle.position.set(Math.cos(angle) * distance, 0.035, Math.sin(angle) * distance);
+    sprinkle.rotation.set(Math.PI / 2, angle, 0);
+    parent.add(sprinkle);
+  }
+}
+
 function createIvoryScoopMesh() {
   const scoop = new THREE.Group();
   const cream = new THREE.MeshStandardMaterial({ color: 0xffffe8, roughness: 0.72 });
@@ -1836,6 +1893,9 @@ function createIvoryScoopMesh() {
   wafer.position.y = -0.34;
   wafer.rotation.z = Math.PI;
   scoop.add(ball, wafer);
+
+  // 초희귀 점원 아이보리 전용 토핑: 아이스크림 표면에 색색의 스프링클을 고정한다.
+  addIvorySprinkles(scoop, 0.34, 0);
   return scoop;
 }
 
@@ -1870,9 +1930,11 @@ function createIvoryIceCreamZone(x, z, fromUltimate = false) {
     new THREE.MeshStandardMaterial({ color: 0xffffe8, emissive: 0x91dff2, emissiveIntensity: 0.16, transparent: true, opacity: 0.82, side: THREE.DoubleSide, depthWrite: false }),
   );
   puddle.rotation.x = -Math.PI / 2;
+  addIvoryGroundSprinkles(group, def.iceCreamZoneRadius);
   const overturnedScoop = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfffff2, roughness: 0.7 }));
   overturnedScoop.scale.y = 0.45;
   overturnedScoop.position.y = 0.12;
+  addIvorySprinkles(overturnedScoop, 0.58, 0);
   const uprightCone = new THREE.Mesh(
     new THREE.ConeGeometry(0.34, 0.9, 12),
     new THREE.MeshStandardMaterial({ color: 0xd7a45b, roughness: 0.88 }),
@@ -2843,8 +2905,21 @@ player.add(playerGoldRushHealthBar);
 const healthBarParentQuaternion = new THREE.Quaternion();
 
 function faceGoldRushHealthBarToCamera(bar) {
-  bar.parent.getWorldQuaternion(healthBarParentQuaternion);
-  bar.quaternion.copy(healthBarParentQuaternion.invert().multiply(camera.quaternion));
+  if (!bar.userData.worldBillboardHost) {
+    bar.userData.worldBillboardHost = bar.parent;
+    bar.userData.worldBillboardLocalPosition = bar.position.clone();
+    bar.userData.worldBillboardWorldPosition = new THREE.Vector3();
+    bar.userData.worldBillboardHost.localToWorld(
+      bar.userData.worldBillboardWorldPosition.copy(bar.userData.worldBillboardLocalPosition),
+    );
+    scene.attach(bar);
+  } else {
+    bar.userData.worldBillboardHost.localToWorld(
+      bar.userData.worldBillboardWorldPosition.copy(bar.userData.worldBillboardLocalPosition),
+    );
+  }
+  bar.position.copy(bar.userData.worldBillboardWorldPosition);
+  bar.quaternion.copy(camera.quaternion);
 }
 
 const goldMine = new THREE.Group();
@@ -2867,6 +2942,7 @@ scene.add(goldMine);
 function clearGoldRushBots() {
   for (const bot of goldRushBots) {
     scene.remove(bot.mesh);
+    scene.remove(bot.healthBar);
     const targetIndex = testTargets.indexOf(bot.mesh);
     if (targetIndex >= 0) testTargets.splice(targetIndex, 1);
     bot.mixer?.stopAllAction();
