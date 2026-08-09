@@ -3503,6 +3503,11 @@ _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripR
 _glbLoader.load('./assets/3d/purple/walk-m1s.glb', g => { _purpleGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/purple/walk-m2l.glb', g => {
   _purpleGlb.loop = _stripRootMotion(g);
+  // 경기 시작이 GLB 로딩보다 먼저 일어나면 절차형 모델이 잠시 표시될 수 있다.
+  // 퍼플 GLB가 도착하면 현재 플레이어 모델을 즉시 교체한다.
+  if (typeof player !== "undefined" && player?.characterType === "purple" && state.running) {
+    setPlayerModel("purple");
+  }
 });
 _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _stripRootMotion(g); });
 
@@ -8122,8 +8127,11 @@ function beginPoisonAttack(fighter) {
   if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   const yaw = fighter.yaw;
-  const isNeedle = fighter.attackIndex % 2 === 0;
-  fighter.attackIndex += 1;
+  // 오래된 세이브/네트워크 상태에 attackIndex가 없으면 NaN이 되어
+  // 독침 차례가 영원히 선택되지 않던 문제를 방지한다.
+  const attackIndex = Number.isFinite(fighter.attackIndex) ? fighter.attackIndex : 0;
+  const isNeedle = attackIndex % 2 === 0;
+  fighter.attackIndex = attackIndex + 1;
 
   if (isNeedle) {
     for (let i = 0; i < charDef.needleCount; i++) {
@@ -10637,7 +10645,8 @@ function checkEndState() {
     // 결과 화면을 표시한 다음 승리/패배 효과음을 재생해 순서를 맞춘다.
     if (!state.outcomeSfxPlayed) {
       state.outcomeSfxPlayed = true;
-      audio.play(playerRank === 1 ? "win" : "lose");
+      const outcomeSound = playerRank === 1 ? "win" : "lose";
+      requestAnimationFrame(() => requestAnimationFrame(() => audio.play(outcomeSound)));
     }
     document.exitPointerLock?.();
   }
@@ -10779,7 +10788,7 @@ function setupInput() {
         }
         html += `<div class="stats-divider"></div>`;
         html += `<div class="stats-row" style="font-weight:700">🪓 ${t("statsChopWood")}</div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
           const s = account.chopWoodCharStats?.[char];
           const name = char.charAt(0).toUpperCase() + char.slice(1);
           if (!s || s.games === 0) {
@@ -10804,7 +10813,7 @@ function setupInput() {
           html += `<div class="season-detail${expanded ? "" : " hidden"}" data-season-detail="${key}">`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -10825,7 +10834,7 @@ function setupInput() {
             html += `<div class="stats-char" style="padding-left:12px;font-size:11px">${t("charWinrate", cwRate, cwSeason.wins, cwGames)}</div>`;
           }
           if (cwSeasonChars) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
               const cs = cwSeasonChars[c];
               const name = c.charAt(0).toUpperCase() + c.slice(1);
               if (!cs || cs.games === 0) {
@@ -12004,6 +12013,31 @@ function setupInput() {
       state.effects = [];
   state.splashAccum = {};
     }
+    // 모드별 분기에서 빠져도 다시 시작 시 이전 경기 객체가 남지 않도록 공통 정리한다.
+    state.running = false;
+    state.gameOver = true;
+    state.mouseHeld = false;
+    state.players.forEach((fighter) => {
+      scene.remove(fighter.mesh);
+      scene.remove(fighter.shadow);
+    });
+    state.players = [];
+    state.projectiles.forEach((projectile) => scene.remove(projectile.mesh));
+    state.projectiles = [];
+    state.effects.forEach((effect) => scene.remove(effect.mesh));
+    state.effects = [];
+    state.goldRushItems.forEach((item) => scene.remove(item.mesh));
+    state.goldRushItems = [];
+    state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
+    state.malfunctionZones = [];
+    state.splashAccum = {};
+    state.scheduledHits = [];
+    state.deathOrder = [];
+    battleMapGroup.visible = false;
+    trainingMapGroup.visible = false;
+    chopWoodMapGroup.visible = false;
+    clearBattleMap();
+    stopAllBgm();
     showLobby();
   });
 

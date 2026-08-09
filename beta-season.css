@@ -9,6 +9,7 @@
 .hidden { display: none !important; }
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 button, a { font: inherit; }
+button { text-align: center; }
 
 #beta-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
 
@@ -99,7 +100,7 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .ultimate-btn.ready .ultimate-icon,.ultimate-btn.ready #ultimate-state { color: #fff1f2; }
 .ultimate-btn:active { transform: scale(.94); }
 .ultimate-connector { width: 3px; height: 16px; background: linear-gradient(#9b9da1,#55585d); box-shadow: 0 0 5px rgba(255,255,255,.25); }
-.attack-btn { width: 100%; padding: 13px 15px; border-radius: 16px; text-align: left; }
+.attack-btn { width: 100%; padding: 13px 15px; border-radius: 16px; text-align: center; }
 .attack-btn { border-color: rgba(255,104,104,.45); background: linear-gradient(145deg,rgba(91,26,34,.95),rgba(35,18,26,.95)); }
 .attack-btn small, .attack-btn span { display: block; color: #cdb8d7; font-size: 10px; }
 .attack-btn strong { display: block; margin: 3px 0; }

@@ -87,6 +87,10 @@ function loadBetaState() {
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
     ownedSkins,
     selectedSkins,
+    oneVsOne: {
+      wins: Math.max(0, Number(saved.oneVsOne?.wins) || 0),
+      losses: Math.max(0, Number(saved.oneVsOne?.losses) || 0),
+    },
     orderEvent: {
       progress: Math.max(0, Number(saved.orderEvent?.progress) || 0),
       claimed: saved.orderEvent?.claimed || [],
@@ -1222,12 +1226,15 @@ function buySkin(id) {
 function renderDaily(result = "") {
   const rewardCount = betaState.daily.winRewards || 0;
   const pending = betaState.daily.pendingRewards || 0;
+  const oneVsOneGames = betaState.oneVsOne.wins + betaState.oneVsOne.losses;
+  const oneVsOneRate = oneVsOneGames ? Math.round(betaState.oneVsOne.wins / oneVsOneGames * 100) : 0;
   const claimed = pending <= 0;
   modalTitle.textContent = "승리 별 보상";
   modalContent.innerHTML = `<div class="drop-box">
     <span class="rarity legendary">1승당 별 보상 1회</span>
     <h3>${claimed ? "승리해서 별을 획득하세요" : "별을 돌려 등급을 올려보세요"}</h3>
     <div class="drop-result">${result || `대기 ${pending}회 · 지금까지 ${rewardCount}회 수령`}</div>
+    <div class="drop-result">1vs1 전적: ${betaState.oneVsOne.wins}승 ${betaState.oneVsOne.losses}패 · 승률 ${oneVsOneRate}%</div>
     <p>승리할 때마다 별 보상 1회가 적립됩니다.</p>
     ${claimed ? "" : '<button type="button" data-daily-reveal>보상 연출 테스트</button>'}
   </div>`;
@@ -1759,7 +1766,7 @@ function createCyanPillMesh() {
 // 퍼플 — 얇고 뾰족한 독침 실루엣
 function createPurpleNeedleMesh() {
   const mesh = new THREE.Mesh(
-    new THREE.ConeGeometry(0.06, 0.55, 8),
+    new THREE.ConeGeometry(0.095, 0.78, 8),
     new THREE.MeshStandardMaterial({
       color: 0xc04cff, emissive: 0x6a1899, emissiveIntensity: 1.2,
       metalness: 0.2, roughness: 0.25, transparent: true, opacity: 0.95,
@@ -2351,7 +2358,11 @@ function performCharacterAttack({ manualAim = false } = {}) {
   } else if (id === "orange") {
     fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "orangeFruit" });
   } else if (id === "yellow") {
-    fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
+    setTimeout(() => {
+      if (!goldRushState.dead) {
+        fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
+      }
+    }, (def.attackDelay || 0) * 1000);
   } else if (id === "cyan") {
     for (let i = 0; i < def.spreadLineCount; i += 1) {
       const angle = (i - (def.spreadLineCount - 1) / 2) * def.betaAngleSpacing;
@@ -2362,13 +2373,14 @@ function performCharacterAttack({ manualAim = false } = {}) {
     if (vial) {
       fireBetaProjectile({ speed: def.vialSpeed, range: def.vialRange, damage: def.vialDamage, color: 0xc04cff, radius: 0.3, splash: def.vialSplashRadius, type: "vial" });
     } else {
-      for (let i = 0; i < def.needleCount; i += 1) {
+      const needleCount = Math.max(3, def.needleCount || 0);
+      for (let i = 0; i < needleCount; i += 1) {
         const angle = def.needleRadial
-          ? (i / def.needleCount) * Math.PI * 2
-          : def.needleCount > 1
-            ? -def.needleSpreadAngle / 2 + i * (def.needleSpreadAngle / (def.needleCount - 1))
+          ? (i / needleCount) * Math.PI * 2
+          : needleCount > 1
+            ? -def.needleSpreadAngle / 2 + i * (def.needleSpreadAngle / (needleCount - 1))
             : 0;
-        fireBetaProjectile({ angle, speed: def.needleSpeed, range: def.needleRange, damage: def.needleDamage, color: 0x8a25c7, radius: 0.11, type: "needle" });
+        fireBetaProjectile({ angle, speed: def.needleSpeed, range: def.needleRange, damage: def.needleDamage, color: 0x8a25c7, radius: 0.14, type: "needle" });
       }
     }
     attackComboState.textContent = vial ? "독 약병" : "독침";
@@ -3310,6 +3322,11 @@ function updateGoldRushHud() {
 }
 
 function endGoldRush(message, playerWon = false) {
+  if (goldRushState.mode === "showdown") {
+    if (playerWon) betaState.oneVsOne.wins += 1;
+    else betaState.oneVsOne.losses += 1;
+    saveBetaState();
+  }
   if (playerWon) {
     betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
     saveBetaState();
