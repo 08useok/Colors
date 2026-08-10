@@ -66,7 +66,8 @@ const CHARACTERS = [
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
 ];
 const BETA_SEASON_ID = "beta2";
-// 베타 시즌 2가 실제로 열리기 전에는 시즌 2 보상 스킨을 공개하지 않는다.
+// 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
+// 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
 const BETA_SEASON_ACTIVE = true;
 const BETA_SKINS = BETA_SEASON_ACTIVE ? getSkinsForSeason(BETA_SEASON_ID) : [];
 
@@ -1172,7 +1173,7 @@ function renderCharacters() {
       ${basicAttack ? `<p><strong>일반 공격 · ${basicAttack.name}</strong><br>${basicAttack.description}</p>` : ""}
       ${officialAbility ? `<p><strong>공식 능력 · ${officialAbility.name}</strong><br>${officialAbility.description}</p>` : ""}
       ${ultimate ? `<p><strong>궁극기 · ${ultimate.name}</strong><br>${ultimate.description}</p>` : ""}
-      <p>${character.id === "gold" ? "베타 시즌 2 신규 · 설치형 컨트롤러" : character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : "베타 시즌 캐릭터 등급 테스트"}</p>
+      <p>${character.id === "gold" ? "시즌 4 회귀 테스트 · 설치형 컨트롤러" : character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : "베타 시즌 4 캐릭터 테스트"}</p>
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
       ${skinList}
     </article>`;
@@ -1185,7 +1186,7 @@ function renderShop() {
     const owned = betaState.ownedSkins.includes(skin.id);
     return `<article class="beta-card">
       <span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span>
-      <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 베타 시즌 2</p>
+      <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 시즌 4 이식 테스트</p>
       <button data-skin="${skin.id}" ${owned ? "disabled" : ""}>${owned ? "보유 중" : skin.cost === 0 ? getBetaText("shopFree") : `${skin.cost.toLocaleString("ko-KR")} 코인`}</button>
     </article>`;
   }).join("")}</div>`;
@@ -1205,7 +1206,7 @@ function renderAssetShowroom() {
       <span class="rarity ${character.rarity}">${usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
       <p>${usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>베타 시즌 2 스킨 에셋 ${skinCount}개</p>
+      <p>시즌 4 이식 대상 스킨 에셋 ${skinCount}개</p>
       <code>${modelPath}</code>
     </article>`;
   }).join("")}</div>`;
