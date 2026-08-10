@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.146";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.177";
+import { CHARACTERS } from "./config/characters.js?v=1.5.178";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -316,7 +316,7 @@ const SEASONS = {
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
-const ULTIMATE_CHARACTERS = new Set(["green", "cyan", "crimson", "gold", "ivory"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -4064,6 +4064,7 @@ function makeFighter(options) {
     poisonSourceId: -1,
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
+    redUltimateCharge: 0,
     greenUltimateCharge: 0,
     ivoryUltimateCharge: 0,
     crimsonUltimateCharge: 0,
@@ -8113,10 +8114,34 @@ function tryUseGreenUltimate(fighter = getPlayer()) {
   return true;
 }
 
+function tryUseRedUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "red" || !state.running) return false;
+  const ultimate = CHARACTERS.red.ultimate;
+  if ((fighter.redUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.redUltimateCharge = 0;
+  const yaw = fighter.yaw;
+  const cosYaw = Math.cos(yaw), sinYaw = Math.sin(yaw);
+  for (const target of state.players) {
+    if (target.dead || target.id === fighter.id) continue;
+    const dx = target.mesh.position.x - fighter.mesh.position.x;
+    const dz = target.mesh.position.z - fighter.mesh.position.z;
+    const localX = dx * cosYaw - dz * sinYaw;
+    const localZ = dx * sinYaw + dz * cosYaw;
+    if (localZ < 0 || localZ > ultimate.range || Math.abs(localX) > ultimate.width) continue;
+    applyDamage(target, ultimate.damage, fighter);
+    target.galeKnockbackRemaining = ultimate.knockback;
+    target.galeKnockbackX = sinYaw;
+    target.galeKnockbackZ = cosYaw;
+  }
+  createCrimsonPunchEffect(fighter, yaw, ultimate.range * 0.65);
+  return true;
+}
+
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
+  if (fighter.characterType === "red") return tryUseRedUltimate(fighter);
   if (fighter.characterType === "ivory") return tryUseIvoryUltimate(fighter);
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
@@ -10356,6 +10381,9 @@ function updateBushVisuals() {
       fighter.greenUltimateBush = null;
     }
   }
+  if (targets.length > 0 && attacker.characterType === "red") {
+    attacker.redUltimateCharge = Math.min(CHARACTERS.red.ultimate.chargeRequired, (attacker.redUltimateCharge ?? 0) + 1);
+  }
   const player = getPlayer();
   if (!player) return;
   if (state.gameTime >= state.lastBushUpdateAt && state.gameTime - state.lastBushUpdateAt < 0.067) return;
@@ -10465,6 +10493,7 @@ function updateHud() {
     const isCrimson = player.characterType === "crimson";
     const ultimate = CHARACTERS[player.characterType].ultimate;
     const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0)
+      : player.characterType === "red" ? (player.redUltimateCharge ?? 0)
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)

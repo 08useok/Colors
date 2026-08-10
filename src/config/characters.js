@@ -7,6 +7,7 @@ export const CHARACTERS = {
     attackType: "punch",
     reloadDuration: 0.5,
     attackCooldown: 0.55,
+    ultimate: { name: "레드라인 러시", damage: 3200, range: 6, width: 2.8, knockback: 7, chargeRequired: 8 },
     moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },
