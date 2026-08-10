@@ -281,6 +281,9 @@ function createAttackRobot(x, z) {
   robot.userData.isRobot = true;
   robot.userData.nextAttackAt = 2.5;
   robot.userData.baseScale = 1;
+  robot.userData.healthBar = createGoldRushHealthBar(2.45);
+  robot.add(robot.userData.healthBar);
+  updateGoldRushHealthBar(robot.userData.healthBar, robot.userData.health, robot.userData.maxHealth);
   scene.add(robot);
   testTargets.push(robot);
   return robot;
@@ -1631,6 +1634,7 @@ function damageTarget(target, damage, causesKnockback = false) {
   const finalDamage = damage * (1 - guardReduction);
   createDamagePopup(target.position, finalDamage);
   target.userData.health -= finalDamage;
+  if (target.userData.healthBar) updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
   if (causesKnockback) {
     const pushX = target.position.x - player.position.x;
     const pushZ = target.position.z - player.position.z;
@@ -3857,6 +3861,10 @@ function animate() {
       updateGoldRushCombatHud();
       createDamagePopup(player.position, robotDamage);
     }
+  }
+  if (attackRobot?.userData.healthBar) {
+    attackRobot.userData.healthBar.visible = attackRobot.visible;
+    faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
   }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
