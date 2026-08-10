@@ -66,7 +66,7 @@ const CHARACTERS = [
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
   { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0x7fff00 },
 ];
-const BETA_SEASON_ID = "beta2";
+const BETA_SEASON_ID = "beta4";
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
 const BETA_SEASON_ACTIVE = true;
@@ -108,7 +108,9 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  if (!state.ownedCharacters.includes("ivory")) state.ownedCharacters.push("ivory");
+  for (const testCharacterId of ["ivory", "chartreuse"]) {
+    if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
+  }
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
   return state;
 }
@@ -281,6 +283,7 @@ function createAttackRobot(x, z) {
   robot.userData.isRobot = true;
   robot.userData.nextAttackAt = 2.5;
   robot.userData.nextRegenAt = 0;
+  robot.userData.lastCombatAt = -Infinity;
   robot.userData.baseScale = 1;
   robot.userData.healthBar = createGoldRushHealthBar(2.45);
   robot.add(robot.userData.healthBar);
@@ -1635,7 +1638,7 @@ function damageTarget(target, damage, causesKnockback = false) {
   const finalDamage = damage * (1 - guardReduction);
   createDamagePopup(target.position, finalDamage);
   target.userData.health -= finalDamage;
-  if (target.userData.isRobot) target.userData.nextRegenAt = clock.elapsedTime + 3;
+  if (target.userData.isRobot) target.userData.lastCombatAt = clock.elapsedTime;
   if (target.userData.healthBar) updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
   if (causesKnockback) {
     const pushX = target.position.x - player.position.x;
@@ -3863,20 +3866,23 @@ function animate() {
       const robotDamage = 450 * (1 - guardReduction);
       goldRushState.health = Math.max(0, goldRushState.health - robotDamage);
       goldRushState.lastDamageAt = clock.elapsedTime;
+      goldRushState.nextRegenAt = clock.elapsedTime + 3;
       updateGoldRushCombatHud();
       createDamagePopup(player.position, robotDamage);
     }
   }
   if (attackRobot?.userData.healthBar) {
-    if (attackRobot.visible && attackRobot.userData.health > 0 && attackRobot.userData.health < attackRobot.userData.maxHealth && clock.elapsedTime >= attackRobot.userData.nextRegenAt) {
-      attackRobot.userData.health = Math.min(attackRobot.userData.maxHealth, attackRobot.userData.health + 180 * dt);
+    if (attackRobot.visible && attackRobot.userData.health > 0 && attackRobot.userData.health < attackRobot.userData.maxHealth && clock.elapsedTime - attackRobot.userData.lastCombatAt >= 5 && clock.elapsedTime >= attackRobot.userData.nextRegenAt) {
+      attackRobot.userData.health = Math.min(attackRobot.userData.maxHealth, attackRobot.userData.health + attackRobot.userData.maxHealth * 0.25);
+      attackRobot.userData.nextRegenAt = clock.elapsedTime + 1;
       updateGoldRushHealthBar(attackRobot.userData.healthBar, attackRobot.userData.health, attackRobot.userData.maxHealth);
     }
     attackRobot.userData.healthBar.visible = attackRobot.visible;
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
   }
-  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth) {
-    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.10 * dt);
+  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 3 && clock.elapsedTime >= (goldRushState.nextRegenAt ?? -Infinity)) {
+    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.25);
+    goldRushState.nextRegenAt = clock.elapsedTime + 1;
     updateGoldRushCombatHud();
   }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
