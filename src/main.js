@@ -4017,6 +4017,7 @@ function makeFighter(options) {
     crimsonUltimateCharge: 0,
     goldUltimateCharge: 0,
     goldAttackCharges: new Map(),
+    ivoryZones: [],
     galeKnockbackRemaining: 0,
     galeKnockbackX: 0,
     galeKnockbackZ: 0,
@@ -7344,6 +7345,9 @@ function beginAttackCore(fighter) {
   if (fighter.characterType === "gold") {
     return beginGoldAttack(fighter);
   }
+  if (fighter.characterType === "ivory") {
+    return beginIvoryAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -7533,6 +7537,33 @@ function beginBoomerangAttack(fighter) {
     audio.play("projectileFire");
   }
   return true;
+}
+
+function beginIvoryAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const def = CHARACTERS.ivory;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + def.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + def.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.lastCombatTime = state.gameTime;
+  const yaw = fighter.yaw;
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 12), new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.35 }));
+  mesh.position.set(fighter.mesh.position.x + Math.sin(yaw), 1.2, fighter.mesh.position.z + Math.cos(yaw));
+  scene.add(mesh);
+  state.projectiles.push({ ownerId: fighter.id, x: mesh.position.x, z: mesh.position.z, vx: Math.sin(yaw) * def.iceCreamSpeed, vz: Math.cos(yaw) * def.iceCreamSpeed, damage: def.iceCreamDamage, range: def.iceCreamRange, farThreshold: Infinity, farMultiplier: 1, distTraveled: 0, launchAt: state.gameTime, mesh, isIvoryIceCream: true, projRadius: 0.42 });
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
+function spawnIvoryZone(x, z, ownerId) {
+  const def = CHARACTERS.ivory;
+  const mesh = new THREE.Mesh(new THREE.CircleGeometry(def.iceCreamZoneRadius, 32), new THREE.MeshBasicMaterial({ color: 0xfff8dc, transparent: true, opacity: 0.42, side: THREE.DoubleSide, depthWrite: false }));
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(x, 0.08, z);
+  scene.add(mesh);
+  state.ivoryZones.push({ mesh, x, z, ownerId, nextTickAt: state.gameTime, expiresAt: state.gameTime + def.iceCreamZoneDuration });
 }
 
 function createBombMesh(position, yaw, isGold) {
@@ -8443,6 +8474,7 @@ function updateProjectiles(dt) {
         let dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
         if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
+        if (proj.isIvoryIceCream) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
         proj.hitTargetIds?.add(target.id);
         if (proj.isSpreadLine && attacker?.characterType === "cyan" && dealt > 0) {
           attacker.cyanUltimateCharge = Math.min(
@@ -8557,11 +8589,33 @@ function updateProjectiles(dt) {
       continue;
     }
 
-    if (hit || (!proj.isBoomerang && proj.distTraveled >= proj.range)) {
+      if (hit || (!proj.isBoomerang && proj.distTraveled >= proj.range)) {
+      if (proj.isIvoryIceCream && !hit) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
       if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
       if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       scene.remove(proj.mesh);
       state.projectiles.splice(i, 1);
+    }
+  }
+}
+
+function updateIvoryZones() {
+  for (let i = state.ivoryZones.length - 1; i >= 0; i -= 1) {
+    const zone = state.ivoryZones[i];
+    if (state.gameTime >= zone.expiresAt) {
+      scene.remove(zone.mesh);
+      state.ivoryZones.splice(i, 1);
+      continue;
+    }
+    if (state.gameTime < zone.nextTickAt) continue;
+    zone.nextTickAt += CHARACTERS.ivory.iceCreamZoneTickInterval;
+    const owner = state.players.find((fighter) => fighter.id === zone.ownerId);
+    for (const target of state.players) {
+      if (target.dead || target.id === zone.ownerId) continue;
+      if (state.chopWoodMode && owner && target.team === owner.team) continue;
+      const dx = target.mesh.position.x - zone.x;
+      const dz = target.mesh.position.z - zone.z;
+      if (dx * dx + dz * dz <= CHARACTERS.ivory.iceCreamZoneRadius ** 2) applyDamage(target, CHARACTERS.ivory.iceCreamDamage, owner ?? null, true, true);
     }
   }
 }
@@ -10760,6 +10814,7 @@ function animate() {
       updateChopping(dt);
       updateScheduledHits();
       updateProjectiles(dt);
+      updateIvoryZones();
       updatePoisonTicks();
       updateMalfunctionZones();
       updateGoldRush(dt);
@@ -12091,6 +12146,8 @@ function setupInput() {
     state.goldRushItems = [];
     state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
     state.malfunctionZones = [];
+    state.ivoryZones.forEach((zone) => scene.remove(zone.mesh));
+    state.ivoryZones = [];
     state.splashAccum = {};
     state.scheduledHits = [];
     state.deathOrder = [];
