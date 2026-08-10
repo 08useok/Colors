@@ -280,6 +280,7 @@ function createAttackRobot(x, z) {
   robot.userData.kind = "attackRobot";
   robot.userData.isRobot = true;
   robot.userData.nextAttackAt = 2.5;
+  robot.userData.nextRegenAt = 0;
   robot.userData.baseScale = 1;
   robot.userData.healthBar = createGoldRushHealthBar(2.45);
   robot.add(robot.userData.healthBar);
@@ -1634,6 +1635,7 @@ function damageTarget(target, damage, causesKnockback = false) {
   const finalDamage = damage * (1 - guardReduction);
   createDamagePopup(target.position, finalDamage);
   target.userData.health -= finalDamage;
+  if (target.userData.isRobot) target.userData.nextRegenAt = clock.elapsedTime + 3;
   if (target.userData.healthBar) updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
   if (causesKnockback) {
     const pushX = target.position.x - player.position.x;
@@ -3863,6 +3865,10 @@ function animate() {
     }
   }
   if (attackRobot?.userData.healthBar) {
+    if (attackRobot.visible && attackRobot.userData.health > 0 && attackRobot.userData.health < attackRobot.userData.maxHealth && clock.elapsedTime >= attackRobot.userData.nextRegenAt) {
+      attackRobot.userData.health = Math.min(attackRobot.userData.maxHealth, attackRobot.userData.health + 180 * dt);
+      updateGoldRushHealthBar(attackRobot.userData.healthBar, attackRobot.userData.health, attackRobot.userData.maxHealth);
+    }
     attackRobot.userData.healthBar.visible = attackRobot.visible;
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
   }
