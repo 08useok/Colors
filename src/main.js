@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.146";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.176";
+import { CHARACTERS } from "./config/characters.js?v=1.5.177";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -781,6 +781,7 @@ const PROFILE_BGS = {
   bg_night:   { name: "밤하늘", css: "linear-gradient(135deg,#1a0066,#6600cc)",          price: 200 },
   bg_forest:  { name: "숲",     css: "linear-gradient(135deg,#1a5c00,#5c6600)",          price: 200 },
   bg_gold:    { name: "황금",   css: "linear-gradient(135deg,#cc8800,#ffee00)",          price: 400 },
+  bg_icecream: { name: "아이스크림 가게", css: "linear-gradient(135deg,#ffd6e7,#bdebe5)", price: 0 },
 };
 
 const BADGES = {
@@ -792,6 +793,7 @@ const BADGES = {
   badge_fire:  { emoji: "🔥", name: "불꽃",  price: 150 },
   badge_bolt:  { emoji: "⚡", name: "번개",  price: 150 },
   badge_gem:   { emoji: "💎", name: "보석",  price: 300 },
+  badge_icecream: { emoji: "🍦", name: "아이스크림", price: 0 },
 };
 
 const COIN_REWARDS = {
@@ -1414,10 +1416,10 @@ function updateLobbyUI(account) {
       if (next === 5) account.orderEvent.cosmetics.iceCreamPin = true;
       if (next === 10) account.coins += 200;
       if (next === 25) account.credits += 150;
-      if (next === 40) account.orderEvent.cosmetics.shopProfileBackground = true;
+      if (next === 40) { account.orderEvent.cosmetics.shopProfileBackground = true; account.cosmetics.ownedBgs.push("bg_icecream"); }
       if (next === 50) account.coins += 500;
       if (next === 75) account.credits += 300;
-      if (next === 90) account.orderEvent.cosmetics.shopProfileBadge = true;
+      if (next === 90) { account.orderEvent.cosmetics.shopProfileBadge = true; account.cosmetics.ownedBadges.push("badge_icecream"); }
       if (next === 100) account.orderEvent.cosmetics.specialVictoryEffect = true;
       account.orderEvent.claimed.push(next);
       saveAccount(account);
@@ -2777,6 +2779,7 @@ function createStickman(color, skinId) {
 
   if (color === 0xF4CDD3 && _pinkGlb.loop) return buildPinkRigModel(_pinkGlb, skinId);
   if (color === 0x800080 && _purpleGlb.loop) return buildPinkRigModel(_purpleGlb, skinId);
+  if (color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper" && _ivoryShopkeeperGlb.loop) return buildPinkRigModel(_ivoryShopkeeperGlb, skinId);
   if (color === 0xfffff0 && _ivoryGlb.loop) return buildPinkRigModel(_ivoryGlb, skinId);
 
   const group = new THREE.Group();
@@ -3505,6 +3508,7 @@ let _cyanPreviewGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
 const _purpleGlb = { start: null, loop: null, end: null };
 const _ivoryGlb = { start: null, loop: null, end: null };
+const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 _glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
   _bluePreviewGlb = g;
@@ -3575,6 +3579,9 @@ _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _st
 _glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m1s.glb', g => { _ivoryShopkeeperGlb.start = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => { _ivoryShopkeeperGlb.loop = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
 
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
