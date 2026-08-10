@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.145";
+import { LANGS } from "./LANGS/langs.js?v=1.5.146";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.174";
+import { CHARACTERS } from "./config/characters.js?v=1.5.175";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -321,7 +321,7 @@ const ULTIMATE_CHARACTERS = new Set(["green", "cyan", "crimson", "gold"]);
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary",
+  crimson: "hero", gold: "legendary", ivory: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
@@ -330,7 +330,7 @@ const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan",
 const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
 const ROSTER = ["beta2", "beta3"].includes(CURRENT_SEASON)
-  ? [...PRE_BETA_CHARACTERS, "crimson", "gold"]
+  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory"]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function getCharacterPrice(charKey) {

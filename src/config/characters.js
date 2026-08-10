@@ -172,4 +172,13 @@ export const CHARACTERS = {
     ultimate: { name: "Malfunction Zone", damage: 0, radius: 3, duration: 4, delay: 0.35, chargeRequired: 12 },
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
+  ivory: {
+    color: 0xfffff0,
+    maxHealth: 7200,
+    attackType: "punch",
+    reloadDuration: 0.8,
+    attackCooldown: 0.65,
+    moveSpeedMultiplier: 1.0,
+    walk: { cycleSpeed: 7, armAmp: 0.24, legAmp: 0.34, armRestZ: Math.PI * 0.05 },
+  },
 };
