@@ -3851,9 +3851,11 @@ function animate() {
       beam.lookAt(player.position);
       scene.add(beam);
       crimsonSlashes.push({ group: beam, mesh: beam, life: 0.18, maxLife: 0.18 });
-      goldRushState.health = Math.max(0, goldRushState.health - 450);
+      const guardReduction = player.userData.redGuardUntil > clock.elapsedTime ? (player.userData.redGuardReduction ?? 0) : 0;
+      const robotDamage = 450 * (1 - guardReduction);
+      goldRushState.health = Math.max(0, goldRushState.health - robotDamage);
       updateGoldRushCombatHud();
-      createDamagePopup(player.position, 450);
+      createDamagePopup(player.position, robotDamage);
     }
   }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
