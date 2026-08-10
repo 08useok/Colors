@@ -2943,7 +2943,7 @@ const goldRushBots = [];
 const goldRushAttackEffects = [];
 const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
 const goldRushState = {
-  active: false, ended: false, mode: "goldRush", gold: 0, startedAt: 0, nextSpawnAt: 0,
+  active: false, ended: false, mode: "goldRush", gold: 0, startedAt: 0, nextSpawnAt: 0, lastDamageAt: -Infinity,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
   mineGoldAvailable: true, mineGoldRespawnAt: 0, health: 1, maxHealth: 1,
   ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5,
@@ -3208,6 +3208,7 @@ function damageGoldRushBot(bot, damage) {
 function damageGoldRushPlayer(damage) {
   if (goldRushState.dead || clock.elapsedTime < goldRushState.invulnerableUntil) return;
   goldRushState.health = Math.max(0, goldRushState.health - damage);
+  goldRushState.lastDamageAt = clock.elapsedTime;
   updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
   canvas.dataset.playerGoldRushHealth = String(Math.ceil(goldRushState.health));
   if (goldRushState.health <= 0) killGoldRushPlayer();
@@ -3392,6 +3393,7 @@ function resetTestCombatHud() {
   goldRushState.ammo = goldRushState.maxAmmo;
   goldRushState.reloadTimer = 0;
   goldRushState.reloadDuration = def?.reloadDuration || 0.5;
+  goldRushState.lastDamageAt = -Infinity;
   chartreuseAmmoTypes = [];
   goldRushPlayerPanel.classList.remove("hidden");
   renderGoldRushAmmoFan(goldRushState.maxAmmo);
@@ -3860,6 +3862,7 @@ function animate() {
       const guardReduction = player.userData.redGuardUntil > clock.elapsedTime ? (player.userData.redGuardReduction ?? 0) : 0;
       const robotDamage = 450 * (1 - guardReduction);
       goldRushState.health = Math.max(0, goldRushState.health - robotDamage);
+      goldRushState.lastDamageAt = clock.elapsedTime;
       updateGoldRushCombatHud();
       createDamagePopup(player.position, robotDamage);
     }
@@ -3871,6 +3874,10 @@ function animate() {
     }
     attackRobot.userData.healthBar.visible = attackRobot.visible;
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
+  }
+  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 3) {
+    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.08 * dt);
+    updateGoldRushCombatHud();
   }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
