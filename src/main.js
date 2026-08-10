@@ -1700,6 +1700,7 @@ function updateEventCountdown() {
 function updateBetaPatchVisibility() {
   const patch = document.getElementById("beta-season-patch");
   patch?.classList.toggle("hidden", Date.now() < BETA_SEASON_START_AT);
+  document.getElementById("beta-season-3-patch")?.classList.toggle("hidden", CURRENT_SEASON !== "beta3");
   document.getElementById("beta-season-2-patch")?.classList.toggle("hidden", !["beta2", "beta3"].includes(CURRENT_SEASON));
 }
 
