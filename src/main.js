@@ -316,7 +316,7 @@ const SEASONS = {
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
-const ULTIMATE_CHARACTERS = new Set(["cyan", "crimson", "gold"]);
+const ULTIMATE_CHARACTERS = new Set(["green", "cyan", "crimson", "gold"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -4006,6 +4006,7 @@ function makeFighter(options) {
     poisonSourceId: -1,
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
+    greenUltimateCharge: 0,
     crimsonUltimateCharge: 0,
     goldUltimateCharge: 0,
     goldAttackCharges: new Map(),
@@ -7979,9 +7980,27 @@ function tryUseGoldUltimate(fighter = getPlayer()) {
   return true;
 }
 
+function tryUseGreenUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "green" || !state.running) return false;
+  const ultimate = CHARACTERS.green.ultimate;
+  if ((fighter.greenUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.greenUltimateCharge = 0;
+  if (fighter.greenUltimateBush) {
+    state.bushes = state.bushes.filter((bush) => bush !== fighter.greenUltimateBush);
+    scene.remove(fighter.greenUltimateBush.mesh);
+  }
+  const before = state.bushes.length;
+  createBush(fighter.mesh.position.x, fighter.mesh.position.z, ultimate.radius);
+  fighter.greenUltimateBush = state.bushes[before];
+  fighter.greenUltimateBush.expiresAt = state.gameTime + ultimate.duration;
+  fighter.revealedUntil = 0;
+  return true;
+}
+
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
+  if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
   return tryUseCyanUltimate(fighter);
@@ -8422,6 +8441,12 @@ function updateProjectiles(dt) {
           attacker.cyanUltimateCharge = Math.min(
             CHARACTERS.cyan.ultimate.chargeRequired,
             attacker.cyanUltimateCharge + 1,
+          );
+        }
+        if (proj.isBoomerang && attacker?.characterType === "green" && dealt > 0) {
+          attacker.greenUltimateCharge = Math.min(
+            CHARACTERS.green.ultimate.chargeRequired,
+            (attacker.greenUltimateCharge ?? 0) + 1,
           );
         }
         if (attacker && attacker.isPlayer) {
@@ -10180,6 +10205,14 @@ function updateAttackAimIndicator() {
 }
 
 function updateBushVisuals() {
+  for (const fighter of state.players) {
+    const bush = fighter.greenUltimateBush;
+    if (bush && bush.expiresAt <= state.gameTime) {
+      scene.remove(bush.mesh);
+      state.bushes = state.bushes.filter((entry) => entry !== bush);
+      fighter.greenUltimateBush = null;
+    }
+  }
   const player = getPlayer();
   if (!player) return;
   if (state.gameTime >= state.lastBushUpdateAt && state.gameTime - state.lastBushUpdateAt < 0.067) return;
@@ -10289,6 +10322,7 @@ function updateHud() {
     const isCrimson = player.characterType === "crimson";
     const ultimate = CHARACTERS[player.characterType].ultimate;
     const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0)
+      : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);

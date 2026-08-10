@@ -26,6 +26,13 @@ export const CHARACTERS = {
     boomerangFarThreshold: 3.5,
     boomerangFarMultiplier: 0.625,
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
+    ultimate: {
+      name: "은신 수풀",
+      radius: 1.5,
+      duration: 10,
+      revealDuration: 3,
+      chargeRequired: 7,
+    },
     walk: { cycleSpeed: 8, armAmp: 0.30, legAmp: 0.38, armRestZ: Math.PI * 0.06 },
   },
   blue: {
