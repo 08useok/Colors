@@ -4065,6 +4065,9 @@ function makeFighter(options) {
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
     redUltimateCharge: 0,
+    redGuardUntil: 0,
+    redGuardReduction: 0,
+    redGuardMesh: null,
     greenUltimateCharge: 0,
     ivoryUltimateCharge: 0,
     crimsonUltimateCharge: 0,
@@ -8119,21 +8122,13 @@ function tryUseRedUltimate(fighter = getPlayer()) {
   const ultimate = CHARACTERS.red.ultimate;
   if ((fighter.redUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
   fighter.redUltimateCharge = 0;
-  const yaw = fighter.yaw;
-  const cosYaw = Math.cos(yaw), sinYaw = Math.sin(yaw);
-  for (const target of state.players) {
-    if (target.dead || target.id === fighter.id) continue;
-    const dx = target.mesh.position.x - fighter.mesh.position.x;
-    const dz = target.mesh.position.z - fighter.mesh.position.z;
-    const localX = dx * cosYaw - dz * sinYaw;
-    const localZ = dx * sinYaw + dz * cosYaw;
-    if (localZ < 0 || localZ > ultimate.range || Math.abs(localX) > ultimate.width) continue;
-    applyDamage(target, ultimate.damage, fighter);
-    target.galeKnockbackRemaining = ultimate.knockback;
-    target.galeKnockbackX = sinYaw;
-    target.galeKnockbackZ = cosYaw;
-  }
-  createCrimsonPunchEffect(fighter, yaw, ultimate.range * 0.65);
+  fighter.redGuardUntil = state.gameTime + ultimate.duration;
+  fighter.redGuardReduction = ultimate.damageReduction;
+  if (fighter.redGuardMesh) fighter.mesh.remove(fighter.redGuardMesh);
+  fighter.redGuardMesh = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.09, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.9 }));
+  fighter.redGuardMesh.rotation.x = Math.PI / 2;
+  fighter.redGuardMesh.position.y = 1.25;
+  fighter.mesh.add(fighter.redGuardMesh);
   return true;
 }
 
@@ -8954,7 +8949,8 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
     return 0;
   }
 
-  const finalAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
+  const guardReduction = target.redGuardUntil > state.gameTime ? (target.redGuardReduction ?? 0) : 0;
+  const finalAmount = Math.round(((attacker && attacker.levelMult) ? amount * attacker.levelMult : amount) * (1 - guardReduction));
   const healthBefore = target.health;
   target.health = Math.max(0, target.health - finalAmount);
   target.flashTimer = 0.12;
@@ -10379,6 +10375,11 @@ function updateBushVisuals() {
       scene.remove(bush.mesh);
       state.bushes = state.bushes.filter((entry) => entry !== bush);
       fighter.greenUltimateBush = null;
+    }
+    if (fighter.redGuardMesh && fighter.redGuardUntil <= state.gameTime) {
+      fighter.mesh.remove(fighter.redGuardMesh);
+      fighter.redGuardMesh = null;
+      fighter.redGuardReduction = 0;
     }
   }
   if (targets.length > 0 && attacker.characterType === "red") {
