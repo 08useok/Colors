@@ -2135,6 +2135,8 @@ body {
 
 .order-event-lobby-card span { color: #ffd66e; font-weight: 900; }
 .order-event-lobby-card small { color: #cbb99f; line-height: 1.45; }
+.order-event-lobby-card button { justify-self: start; padding: 6px 10px; border: 1px solid rgba(255, 214, 110, 0.45); border-radius: 7px; background: #76552f; color: #fff4df; font-weight: 800; }
+.order-event-lobby-card button:disabled { opacity: 0.55; }
 
 .notice-schedule dd {
   margin: 0;

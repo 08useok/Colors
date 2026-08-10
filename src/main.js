@@ -1388,6 +1388,33 @@ function updateLobbyUI(account) {
   if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
   const orderEventProgress = document.getElementById("order-event-progress");
   if (orderEventProgress) orderEventProgress.textContent = `${account.orderEvent?.progress ?? 0} / 100승`;
+  const orderEventClaim = document.getElementById("order-event-claim");
+  if (orderEventClaim) {
+    const milestones = [1, 5, 10, 25, 40, 50, 75, 90, 100];
+    const claimed = account.orderEvent?.claimed ?? [];
+    const next = milestones.find((milestone) => (account.orderEvent?.progress ?? 0) >= milestone && !claimed.includes(milestone));
+    orderEventClaim.disabled = !next;
+    orderEventClaim.textContent = next ? `${next}승 보상 받기` : "보상 없음";
+    orderEventClaim.onclick = () => {
+      if (!next) return;
+      account.orderEvent ??= { progress: 0, claimed: [], cosmetics: {} };
+      account.orderEvent.claimed ??= [];
+      if (account.orderEvent.claimed.includes(next)) return;
+      if (next === 1) account.coins += 100;
+      if (next === 5) account.orderEvent.cosmetics.iceCreamPin = true;
+      if (next === 10) account.coins += 200;
+      if (next === 25) account.credits += 150;
+      if (next === 40) account.orderEvent.cosmetics.shopProfileBackground = true;
+      if (next === 50) account.coins += 500;
+      if (next === 75) account.credits += 300;
+      if (next === 90) account.orderEvent.cosmetics.shopProfileBadge = true;
+      if (next === 100) account.orderEvent.cosmetics.specialVictoryEffect = true;
+      account.orderEvent.claimed.push(next);
+      saveAccount(account);
+      updateLobbyUI(account);
+      showToast(`${next}승 이벤트 보상을 받았습니다.`);
+    };
+  }
   updateDailyRewardBadge();
   lobbyRecord.textContent = t("record", account.wins, account.losses);
   if (lobbyWinrate) {
