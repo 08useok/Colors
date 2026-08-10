@@ -2744,9 +2744,8 @@ ultimateButton.addEventListener("click", () => {
     player.userData.redGuardUntil = redGuardUntil;
     player.userData.redGuardReduction = def.damageReduction;
     if (redGuardMesh) player.remove(redGuardMesh);
-    redGuardMesh = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.09, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.9 }));
-    redGuardMesh.rotation.x = Math.PI / 2;
-    redGuardMesh.position.y = 1.25;
+    redGuardMesh = new THREE.Mesh(new THREE.SphereGeometry(1.55, 24, 16), new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide }));
+    redGuardMesh.position.y = 1.15;
     player.add(redGuardMesh);
     updateCrimsonUltimateGauge();
     return;
