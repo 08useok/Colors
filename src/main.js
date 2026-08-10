@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.146";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.178";
+import { CHARACTERS } from "./config/characters.js?v=1.5.179";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -316,17 +316,17 @@ const SEASONS = {
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
-const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory", "chartreuse"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
-const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
+const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "chartreuse"];
 const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
 const ROSTER = ["beta2", "beta3"].includes(CURRENT_SEASON)
@@ -1107,6 +1107,7 @@ function loadAccount() {
     if (!account.charStats.crimson) account.charStats.crimson = { wins: 0, games: 0 };
     if (!account.charStats.gold) { account.charStats.gold = { wins: 0, games: 0 }; migrated = true; }
     if (!account.charStats.ivory) { account.charStats.ivory = { wins: 0, games: 0 }; migrated = true; }
+    if (!account.charStats.chartreuse) { account.charStats.chartreuse = { wins: 0, games: 0 }; migrated = true; }
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -1115,7 +1116,7 @@ function loadAccount() {
       account.chopWoodCharStats = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse"]) {
       if (!account.chopWoodCharStats[char]) {
         account.chopWoodCharStats[char] = { wins: 0, games: 0 };
         migrated = true;
@@ -1151,6 +1152,7 @@ function loadAccount() {
       if (!s.crimson) s.crimson = { wins: 0, games: 0 };
       if (!s.gold) s.gold = { wins: 0, games: 0 };
       if (!s.ivory) s.ivory = { wins: 0, games: 0 };
+      if (!s.chartreuse) s.chartreuse = { wins: 0, games: 0 };
     }
     if (!account.seasonChopWoodStats) {
       account.seasonChopWoodStats = {};
@@ -1312,6 +1314,7 @@ function createAccount(id, nickname) {
       crimson: { wins: 0, games: 0 },
       gold: { wins: 0, games: 0 },
       ivory: { wins: 0, games: 0 },
+      chartreuse: { wins: 0, games: 0 },
     },
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
@@ -1338,6 +1341,7 @@ function createAccount(id, nickname) {
       crimson: { wins: 0, games: 0 },
       gold: { wins: 0, games: 0 },
       ivory: { wins: 0, games: 0 },
+      chartreuse: { wins: 0, games: 0 },
     },
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -1349,6 +1353,7 @@ function createAccount(id, nickname) {
         crimson: { wins: 0, games: 0 },
         gold: { wins: 0, games: 0 },
         ivory: { wins: 0, games: 0 },
+        chartreuse: { wins: 0, games: 0 },
       },
     },
     seasonChopWoodStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -1361,6 +1366,7 @@ function createAccount(id, nickname) {
         crimson: { wins: 0, games: 0 },
         gold: { wins: 0, games: 0 },
         ivory: { wins: 0, games: 0 },
+        chartreuse: { wins: 0, games: 0 },
       },
     },
   };
@@ -1442,7 +1448,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
@@ -4065,6 +4071,8 @@ function makeFighter(options) {
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
     redUltimateCharge: 0,
+    chartreuseUltimateCharge: 0,
+    chartreuseFocusUntil: 0,
     redGuardUntil: 0,
     redGuardReduction: 0,
     redGuardMesh: null,
@@ -7415,6 +7423,9 @@ function beginAttackCore(fighter) {
   if (fighter.characterType === "ivory") {
     return beginIvoryAttack(fighter);
   }
+  if (fighter.characterType === "chartreuse") {
+    return beginChartreuseAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -7479,6 +7490,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "pink") baseRange = CHARACTERS.pink.healCircleRange;
   else if (fighter.characterType === "crimson") baseRange = CHARACTERS.crimson.attackRange;
   else if (fighter.characterType === "gold") baseRange = CHARACTERS.gold.stage1Range;
+  else if (fighter.characterType === "chartreuse") baseRange = CHARACTERS.chartreuse.chartreuseRange;
   return baseRange;
 }
 
@@ -7620,6 +7632,53 @@ function beginIvoryAttack(fighter) {
   mesh.position.set(fighter.mesh.position.x + Math.sin(yaw), 1.2, fighter.mesh.position.z + Math.cos(yaw));
   scene.add(mesh);
   state.projectiles.push({ ownerId: fighter.id, x: mesh.position.x, z: mesh.position.z, vx: Math.sin(yaw) * def.iceCreamSpeed, vz: Math.cos(yaw) * def.iceCreamSpeed, damage: def.iceCreamDamage, range: def.iceCreamRange, farThreshold: Infinity, farMultiplier: 1, distTraveled: 0, launchAt: state.gameTime, mesh, isIvoryIceCream: true, projRadius: 0.42 });
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
+function createChartreuseRoundMesh(position, color) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.24, 10, 8),
+    new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.25, roughness: 0.35 }),
+  );
+  mesh.position.set(position.x, 1.2, position.z);
+  scene.add(mesh);
+  return mesh;
+}
+
+function beginChartreuseAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const def = CHARACTERS.chartreuse;
+  const focused = state.gameTime < (fighter.chartreuseFocusUntil ?? 0);
+  const roll = focused ? Math.floor(Math.random() * 3) : Math.random();
+  const roundType = focused ? ["enhanced", "cc", "plague"][roll] : roll < 0.45 ? "enhanced" : roll < 0.9 ? "cc" : roll < 0.95 ? "plague" : "blank";
+  const roundDamage = roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage;
+  const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
+  const yaw = fighter.yaw;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + def.attackCooldown;
+  fighter.attackSequenceEndsAt = state.gameTime + def.attackCooldown;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.lastCombatTime = state.gameTime;
+  const mesh = createChartreuseRoundMesh(fighter.mesh.position, color);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+    z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+    vx: Math.sin(yaw) * def.chartreuseSpeed,
+    vz: Math.cos(yaw) * def.chartreuseSpeed,
+    damage: roundDamage,
+    range: def.chartreuseRange,
+    farThreshold: Infinity,
+    farMultiplier: 1,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    mesh,
+    projRadius: 0.24,
+    isChartreuseRound: true,
+    chartreuseRoundType: roundType,
+  });
   if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
@@ -8137,6 +8196,7 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
   if (fighter.characterType === "red") return tryUseRedUltimate(fighter);
+  if (fighter.characterType === "chartreuse") return tryUseChartreuseUltimate(fighter);
   if (fighter.characterType === "ivory") return tryUseIvoryUltimate(fighter);
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
@@ -8460,16 +8520,18 @@ function updateProjectiles(dt) {
         continue;
       }
     } else {
-      const projectileY = proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2;
+      const projectileY = proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle || proj.isChartreuseRound) ? 1.3 : 1.2;
       proj.mesh.position.set(proj.x, projectileY, proj.z);
-      if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle && !proj.isGaleStrike) {
+      if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle && !proj.isChartreuseRound && !proj.isGaleStrike) {
         proj.mesh.rotation.z += dt * 10;
       }
     }
 
-    if (proj.isBullet || proj.isElectric || proj.isNeedle) {
-      const color = proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
-      const size = proj.isBullet ? 0.24 : proj.isElectric ? 0.28 : 0.2;
+    if (proj.isBullet || proj.isElectric || proj.isNeedle || proj.isChartreuseRound) {
+      const color = proj.isChartreuseRound
+        ? proj.mesh.material.color.getHex()
+        : proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
+      const size = proj.isChartreuseRound ? 0.2 : proj.isBullet ? 0.24 : proj.isElectric ? 0.28 : 0.2;
       const trail = new THREE.Mesh(
         new THREE.SphereGeometry(size, 4, 4),
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }),
@@ -8573,6 +8635,27 @@ function updateProjectiles(dt) {
         let dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
         if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
+        if (proj.isChartreuseRound && attacker?.characterType === "chartreuse") {
+          if (proj.chartreuseRoundType === "cc") {
+            const cc = ["slow", "malfunction", "reveal"][Math.floor(Math.random() * 3)];
+            if (cc === "slow") {
+              target.shockUntil = state.gameTime + 1.5;
+              target.shockSlowOverride = 0.55;
+            } else if (cc === "malfunction") {
+              target.malfunctionUntil = state.gameTime + 1.2;
+            } else {
+              target.revealedUntil = state.gameTime + 2.5;
+            }
+          } else if (proj.chartreuseRoundType === "plague") {
+            applyDamage(target, target.health, attacker);
+          }
+          if (dealt > 0) {
+            attacker.chartreuseUltimateCharge = Math.min(
+              CHARACTERS.chartreuse.ultimate.chargeRequired,
+              (attacker.chartreuseUltimateCharge ?? 0) + 1,
+            );
+          }
+        }
         if (proj.isIvoryIceCream) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
         if (proj.isIvoryIceCream && attacker?.characterType === "ivory" && dealt > 0) {
           attacker.ivoryUltimateCharge = Math.min(CHARACTERS.ivory.ultimate.chargeRequired, (attacker.ivoryUltimateCharge ?? 0) + 1);
@@ -8720,6 +8803,15 @@ function updateIvoryZones() {
       if (dx * dx + dz * dz <= CHARACTERS.ivory.iceCreamZoneRadius ** 2) applyDamage(target, CHARACTERS.ivory.iceCreamDamage, owner ?? null, true, true);
     }
   }
+}
+
+function tryUseChartreuseUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "chartreuse" || !state.running) return false;
+  const ultimate = CHARACTERS.chartreuse.ultimate;
+  if ((fighter.chartreuseUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.chartreuseUltimateCharge = 0;
+  fighter.chartreuseFocusUntil = state.gameTime + ultimate.duration;
+  return true;
 }
 
 function updatePoisonTicks() {
@@ -10478,6 +10570,7 @@ function updateHud() {
   player.characterType === "cyan" ? t("spreadLineAttack") :
   player.characterType === "purple" ? t("poisonAttack") :
   player.characterType === "pink" ? t("healCircleAttack") :
+  player.characterType === "chartreuse" ? "무슨 공격이지?" :
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
@@ -10498,6 +10591,7 @@ function updateHud() {
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
+      : player.characterType === "chartreuse" ? (player.chartreuseUltimateCharge ?? 0)
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
@@ -11627,7 +11721,7 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     const chars = [...ROSTER];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0", chartreuse: "#7fff00" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
@@ -11701,7 +11795,7 @@ function setupInput() {
   function renderShopCharacters() {
     const account = loadAccount();
     if (!account || !shopCharsContent) return;
-    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
+    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0", chartreuse: "#7fff00" };
     const buyable = Object.keys(CHARACTER_RARITY).filter((c) => getCharacterPrice(c) > 0);
     let html = '<div class="shop-grid">';
     for (const charKey of buyable) {
@@ -11713,7 +11807,8 @@ function setupInput() {
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
       html += `<div class="shop-card-name" style="color:${borderColor}">${name}</div>`;
       html += `<div class="shop-card-rarity rarity-${CHARACTER_RARITY[charKey]}">${t("rarity_" + CHARACTER_RARITY[charKey])}</div>`;
-      html += `<div class="shop-card-effect">${t(charKey + "Desc")}</div>`;
+      const description = charKey === "chartreuse" ? "랜덤 탄환과 군중 제어를 사용하는 컨트롤러 딜러" : t(charKey + "Desc");
+      html += `<div class="shop-card-effect">${description}</div>`;
       if (owned) {
         html += `<button class="shop-buy-btn disabled" type="button" disabled>${t("charOwned")}</button>`;
       } else {
