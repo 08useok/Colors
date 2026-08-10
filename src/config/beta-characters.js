@@ -190,4 +190,12 @@ export const BETA_CHARACTERS = {
       castRange: 20, patternRadius: 3.5, chargeRequired: 12,
     },
   },
+  chartreuse: {
+    maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.55, reloadDuration: 1.2, maxAmmo: 3,
+    chartreuseRange: 9.5, chartreuseSpeed: 22, chartreuseDamage: 1200, chartreuseEnhancedDamage: 2400,
+    description: "랜덤 탄환과 군중 제어를 사용하는 컨트롤러 성향의 딜러입니다.",
+    descriptionEn: "A controller-leaning random damage dealer.",
+    basicAttack: { name: "무슨 공격이지?", description: "강화탄, CC탄, 흑사병탄, 무탄 중 하나를 무작위로 발사합니다.", nameEn: "What Attack?", descriptionEn: "Fires one random round: enhanced, CC, plague, or blank." },
+    ultimate: { id: "clearMind", name: "49% 정신 차림", description: "6초 동안 무탄이 사라지고 세 탄환이 동일 확률로 등장합니다.", nameEn: "49% Clear Mind", descriptionEn: "For 6 seconds, blank rounds are removed and the other three appear equally.", chargeRequired: 8, duration: 6 },
+  },
 };

@@ -64,6 +64,7 @@ const CHARACTERS = [
   { id: "crimson", name: "Crimson", rarity: "legendary", price: 900, color: 0xa00000 },
   { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xd4a928 },
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
+  { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0x7fff00 },
 ];
 const BETA_SEASON_ID = "beta2";
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
@@ -2178,6 +2179,7 @@ function getBetaAttackRange(id, def) {
   if (id === "gold") return def.stage1Range;
   if (id === "ivory") return def.iceCreamRange;
   if (id === "crimson") return def.attackRange;
+  if (id === "chartreuse") return def.chartreuseRange;
   return 0;
 }
 
@@ -2427,6 +2429,14 @@ function performCharacterAttack({ manualAim = false } = {}) {
     const targetZ = player.position.z + Math.cos(player.rotation.y) * throwRange;
     fireIvoryIceCream(targetX, targetZ);
     attackComboState.textContent = "아이스크림 배달 중";
+  } else if (id === "chartreuse") {
+    const focused = clock.elapsedTime < chartreuseFocusUntil;
+    const roll = focused ? Math.floor(Math.random() * 3) : Math.random();
+    const roundType = focused ? ["enhanced", "cc", "plague"][roll] : roll < 0.45 ? "enhanced" : roll < 0.9 ? "cc" : roll < 0.95 ? "plague" : "blank";
+    const damage = roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage;
+    const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
+    fireBetaProjectile({ speed: def.chartreuseSpeed, range: def.chartreuseRange, damage, color, radius: 0.24, type: `chartreuse_${roundType}` });
+    attackComboState.textContent = roundType;
   } else if (id === "crimson") {
     CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
   }
@@ -2509,6 +2519,8 @@ let crimsonUltimateCharge = 0;
 let cyanUltimateCharge = 0;
 let ivoryUltimateCharge = 0;
 let greenUltimateCharge = 0;
+let chartreuseUltimateCharge = 0;
+let chartreuseFocusUntil = 0;
 let greenRevealedUntil = 0;
 
 function updateCrimsonUltimateGauge() {
@@ -2520,6 +2532,7 @@ function updateCrimsonUltimateGauge() {
     pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
     gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#e2ad20" },
     green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
+    chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#7fff00" },
   };
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
@@ -2736,6 +2749,14 @@ ultimateButton.addEventListener("click", () => {
     cyanUltimateCharge = 0;
     updateCrimsonUltimateGauge();
     performCyanUltimate();
+    return;
+  }
+  if (betaState.selectedCharacter === "chartreuse") {
+    const required = BETA_CHARACTERS.chartreuse.ultimate.chargeRequired;
+    if (chartreuseUltimateCharge < required) return;
+    chartreuseUltimateCharge = 0;
+    chartreuseFocusUntil = clock.elapsedTime + BETA_CHARACTERS.chartreuse.ultimate.duration;
+    updateCrimsonUltimateGauge();
     return;
   }
   if (betaState.selectedCharacter !== "crimson" || crimsonUltimateCharge < CRIMSON.ultimateChargeRequired) return;
@@ -3858,6 +3879,19 @@ function animate() {
         if (projectile.characterId === "green" && projectile.type === "boomerang") {
           greenUltimateCharge = Math.min(BETA_CHARACTERS.green.ultimate.chargeRequired, greenUltimateCharge + 1);
           if (betaState.selectedCharacter === "green") updateCrimsonUltimateGauge();
+        }
+        if (projectile.characterId === "chartreuse") {
+          if (projectile.type === "chartreuse_cc") {
+            const cc = ["slow", "malfunction", "reveal"][Math.floor(Math.random() * 3)];
+            if (cc === "slow") target.userData.slowUntil = clock.elapsedTime + 1.5;
+            if (cc === "malfunction") target.userData.malfunctionUntil = clock.elapsedTime + 1.2;
+            if (cc === "reveal") target.userData.revealedUntil = clock.elapsedTime + 2.5;
+          } else if (projectile.type === "chartreuse_plague") {
+            target.userData.health = 0;
+            target.visible = false;
+          }
+          chartreuseUltimateCharge = Math.min(BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, chartreuseUltimateCharge + 1);
+          if (betaState.selectedCharacter === "chartreuse") updateCrimsonUltimateGauge();
         }
         if (projectile.splash > 0) {
           createGroundPulse(projectile.splash, projectile.type === "orangeFruit" ? 0xff9b32 : 0xb13cff, target.position);
