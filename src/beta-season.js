@@ -2147,7 +2147,13 @@ function collectSlashTargets(length, halfWidth, angle, found) {
 function hitSlashes(length, halfWidth, angles, damage) {
   const found = new Set();
   for (const angle of angles) collectSlashTargets(length, halfWidth, angle, found);
-  for (const target of found) damageTarget(target, damage);
+  for (const target of found) {
+    damageTarget(target, damage);
+    if (betaState.selectedCharacter === "red") {
+      redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + 1);
+    }
+  }
+  if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
 }
 
 function autoAimAtNearestTarget(maxRange) {
