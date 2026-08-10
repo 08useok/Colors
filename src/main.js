@@ -3511,15 +3511,18 @@ const _ivoryGlb = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 
 function refreshLoadedIvoryModels() {
-  if (!_ivoryGlb.loop || !state?.players) return;
+  // GLB callback can fire before the game state is initialized.  Avoid touching
+  // the TDZ-bound state variable in that case; the next model refresh will retry.
+  if (!_ivoryGlb.loop || typeof state === "undefined" || !state?.players) return;
   for (const fighter of state.players) {
-    if (fighter.characterType !== "ivory" || fighter.mesh.userData.isGlbModel) continue;
+    if (fighter.characterType !== "ivory" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
     const oldMesh = fighter.mesh;
     const replacement = createStickman(CHARACTERS.ivory.color, fighter.skinId);
+    if (!replacement.userData.isGlbModel) continue;
     replacement.position.copy(oldMesh.position);
     replacement.rotation.copy(oldMesh.rotation);
-    replacement.add(fighter.healthBar);
-    replacement.add(fighter.nameLabel);
+    if (fighter.healthBar) replacement.add(fighter.healthBar);
+    if (fighter.nameLabel) replacement.add(fighter.nameLabel);
     scene.remove(oldMesh);
     scene.add(replacement);
     fighter.mesh = replacement;
