@@ -184,6 +184,7 @@ export const CHARACTERS = {
     iceCreamZoneRadius: 2.8,
     iceCreamZoneDuration: 4,
     iceCreamZoneTickInterval: 1,
+    ultimate: { name: "단체 주문", patternRadius: 3.2, castRange: 12, chargeRequired: 8 },
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.24, legAmp: 0.34, armRestZ: Math.PI * 0.05 },
   },

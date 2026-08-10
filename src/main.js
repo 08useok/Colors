@@ -316,7 +316,7 @@ const SEASONS = {
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
-const ULTIMATE_CHARACTERS = new Set(["green", "cyan", "crimson", "gold"]);
+const ULTIMATE_CHARACTERS = new Set(["green", "cyan", "crimson", "gold", "ivory"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -2021,6 +2021,7 @@ dailyRewardToggle?.addEventListener("click", () => {
 function recordGameResult(rank, mode = "showdown") {
   const account = loadAccount();
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
+  account.orderEvent ??= { progress: 0, claimed: [], cosmetics: {} };
 
   if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
 
@@ -2041,6 +2042,7 @@ function recordGameResult(rank, mode = "showdown") {
   scs.games += 1;
   if (seasonChopWoodChar) seasonChopWoodChar.games += 1;
   if (rank <= 4) {
+    if (CURRENT_SEASON === "beta3") account.orderEvent.progress = Math.min(100, account.orderEvent.progress + 1);
     account.wins += 1;
     if (mode === "chopwood") {
       account.chopWoodWins = (account.chopWoodWins || 0) + 1;
@@ -4014,6 +4016,7 @@ function makeFighter(options) {
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
     greenUltimateCharge: 0,
+    ivoryUltimateCharge: 0,
     crimsonUltimateCharge: 0,
     goldUltimateCharge: 0,
     goldAttackCharges: new Map(),
@@ -7566,6 +7569,21 @@ function spawnIvoryZone(x, z, ownerId) {
   state.ivoryZones.push({ mesh, x, z, ownerId, nextTickAt: state.gameTime, expiresAt: state.gameTime + def.iceCreamZoneDuration });
 }
 
+function tryUseIvoryUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "ivory" || !state.running) return false;
+  const ultimate = CHARACTERS.ivory.ultimate;
+  if ((fighter.ivoryUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.ivoryUltimateCharge = 0;
+  const yaw = fighter.yaw;
+  const centerX = fighter.mesh.position.x + Math.sin(yaw) * ultimate.castRange;
+  const centerZ = fighter.mesh.position.z + Math.cos(yaw) * ultimate.castRange;
+  const diagonal = ultimate.patternRadius / Math.sqrt(2);
+  for (const [ox, oz] of [[0, 0], [diagonal, diagonal], [-diagonal, diagonal], [diagonal, -diagonal], [-diagonal, -diagonal]]) {
+    spawnIvoryZone(centerX + ox, centerZ + oz, fighter.id);
+  }
+  return true;
+}
+
 function createBombMesh(position, yaw, isGold) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.24, 10, 8),
@@ -8039,6 +8057,7 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
+  if (fighter.characterType === "ivory") return tryUseIvoryUltimate(fighter);
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
   return tryUseCyanUltimate(fighter);
@@ -8475,6 +8494,9 @@ function updateProjectiles(dt) {
         if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
         if (proj.isIvoryIceCream) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
+        if (proj.isIvoryIceCream && attacker?.characterType === "ivory" && dealt > 0) {
+          attacker.ivoryUltimateCharge = Math.min(CHARACTERS.ivory.ultimate.chargeRequired, (attacker.ivoryUltimateCharge ?? 0) + 1);
+        }
         proj.hitTargetIds?.add(target.id);
         if (proj.isSpreadLine && attacker?.characterType === "cyan" && dealt > 0) {
           attacker.cyanUltimateCharge = Math.min(
@@ -10384,6 +10406,7 @@ function updateHud() {
     const ultimate = CHARACTERS[player.characterType].ultimate;
     const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0)
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
+      : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
