@@ -11580,7 +11580,7 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     const chars = [...ROSTER];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
