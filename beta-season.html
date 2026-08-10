@@ -29,7 +29,7 @@
       <button type="button" data-panel="shop">시즌 상점</button>
       <button type="button" data-panel="assets">에셋 쇼룸</button>
       <button type="button" data-panel="daily">일일 보상</button>
-      <button type="button" data-panel="orders">주문 왔어요~!</button>
+      <button id="chop-wood-open" type="button">찹 우드</button>
       <button id="gold-rush-toggle" type="button">골드 러쉬 시작</button>
       <button id="showdown-toggle" type="button">쇼다운 시작</button>
       <a href="./index.html">현재 게임</a>
@@ -49,6 +49,7 @@
       <button id="overview-btn" type="button">전체 보기</button>
       <button id="reset-btn" type="button">시작점 복귀</button>
       <button id="test-death-btn" type="button">테스트 사망</button>
+      <button id="test-ally-death-btn" type="button">아군 사망</button>
       <button id="slowmo-btn" type="button" aria-pressed="false">슬로우 모드</button>
     </div>
     <small>이 페이지의 플레이는 계정, 전적, 이벤트에 저장되지 않습니다.</small>
@@ -78,9 +79,9 @@
     </div>
     <div class="gold-rush-stat-row">
       <span id="gold-rush-health">0 / 0</span>
-      <span id="gold-rush-reload-state">탄약 가득</span>
+      <span id="gold-rush-reload-state" class="hidden" aria-hidden="true"></span>
     </div>
-    <div class="gold-rush-reload-outer"><div id="gold-rush-reload-bar" class="gold-rush-reload-inner"></div></div>
+    <div class="gold-rush-reload-outer hidden" aria-hidden="true"><div id="gold-rush-reload-bar" class="gold-rush-reload-inner"></div></div>
     <div class="gold-rush-stat-label gold-rush-ammo-label">탄약</div>
     <div id="gold-rush-ammo-fan" class="gold-rush-ammo-fan"></div>
   </div>
@@ -104,7 +105,7 @@
     <button id="aim-mode-btn" class="aim-mode-btn" type="button" aria-pressed="false">
       이동 모드 · 클릭 이동
     </button>
-    <button id="crimson-attack-btn" class="attack-btn" type="button">
+    <button id="crimson-attack-btn" class="attack-btn hidden" type="button">
       <small>마우스 좌클릭 · 일반 공격</small>
       <strong>3연속 펀치</strong>
       <span id="attack-combo-state">준비</span>
@@ -131,6 +132,10 @@
   </div>
 
   <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
+  <div id="chop-wood-embed" class="chop-wood-embed hidden" aria-label="찹 우드">
+    <button id="chop-wood-close" class="chop-wood-close" type="button">베타로 돌아가기</button>
+    <iframe title="메인 게임 찹 우드" src="./index.html#chop-wood"></iframe>
+  </div>
   <script type="module" src="./src/beta-season.js?v=0.6.0"></script>
 </body>
 </html>

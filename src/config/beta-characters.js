@@ -176,7 +176,7 @@ export const BETA_CHARACTERS = {
     maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.7, reloadDuration: 1.3, maxAmmo: 3,
     iceCreamDamage: 1100, iceCreamRange: 10, iceCreamSpeed: 14, iceCreamZoneRadius: 2.5,
     iceCreamZoneDuration: 4, iceCreamZoneTickInterval: 1,
-    description: "발랄한 아이스크림 가게 직원입니다. 잘 녹지 않는 아이스크림으로 전장을 장악합니다.",
+    description: "아이스크림 가게의 직원입니다. 근데 아이스크림을 너무 좋아해서 아이스크림이 자꾸 사라집니다.",
     descriptionEn: "A cheerful ice cream shop employee who controls the battlefield with ice cream that refuses to melt.",
     basicAttack: {
       name: "안 녹는 아이스크림",
@@ -194,7 +194,7 @@ export const BETA_CHARACTERS = {
   chartreuse: {
     maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.55, reloadDuration: 1.2, maxAmmo: 3,
     chartreuseRange: 9.5, chartreuseSpeed: 22, chartreuseDamage: 1200, chartreuseEnhancedDamage: 2400,
-    description: "랜덤 탄환과 군중 제어를 사용하는 컨트롤러 성향의 딜러입니다.",
+    description: "어딘가 나사빠지고 멍청해 보이는 캐릭터, 하지만 그가 만든 '샤단라'는 항상 이래서 평범합니다.",
     descriptionEn: "A controller-leaning random damage dealer.",
     basicAttack: { name: "무슨 공격이지?", description: "강화탄, CC탄, 흑사병탄, 무탄 중 하나를 무작위로 발사합니다.", nameEn: "What Attack?", descriptionEn: "Fires one random round: enhanced, CC, plague, or blank." },
     ultimate: { id: "clearMind", name: "49% 정신 차림", description: "6초 동안 무탄이 사라지고 세 탄환이 동일 확률로 등장합니다.", nameEn: "49% Clear Mind", descriptionEn: "For 6 seconds, blank rounds are removed and the other three appear equally.", chargeRequired: 8, duration: 6 },

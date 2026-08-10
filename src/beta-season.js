@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.4";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.5";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -29,6 +29,9 @@ const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
 const showdownToggle = document.getElementById("showdown-toggle");
+const chopWoodOpen = document.getElementById("chop-wood-open");
+const chopWoodEmbed = document.getElementById("chop-wood-embed");
+const chopWoodClose = document.getElementById("chop-wood-close");
 const goldRushHud = document.getElementById("gold-rush-hud");
 const goldCountEl = document.getElementById("gold-count");
 const goldRushPlayerPanel = document.getElementById("gold-rush-player-panel");
@@ -236,7 +239,7 @@ const testTargets = [];
 function createTestTarget(x, z, { ally = false } = {}) {
   const target = new THREE.Group();
   const mesh = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.38, 0.75, 4, 8),
+    ally ? new THREE.CylinderGeometry(0.42, 0.5, 1.25, 20) : new THREE.CapsuleGeometry(0.38, 0.75, 4, 8),
     new THREE.MeshStandardMaterial({ color: ally ? 0x64b5ff : 0xf4d36a, roughness: 0.65 }),
   );
   mesh.position.y = 0.78;
@@ -1652,7 +1655,10 @@ function damageTarget(target, damage, causesKnockback = false) {
   createHitImpact(target.position);
   createRedThemeHitEffect(target.position);
   flashTarget(target);
-  if (target.userData.health <= 0) target.visible = false;
+  if (target.userData.health <= 0) {
+    if (target.userData.isAlly && target.visible) createPinkAllyDeathEffect(target);
+    target.visible = false;
+  }
 }
 
 function getActiveRedThemeSkin() {
@@ -2265,13 +2271,88 @@ function updateAttackAimIndicator() {
 function createGroundPulse(radius, color, position = player.position) {
   const pulse = new THREE.Mesh(
     new THREE.RingGeometry(Math.max(0.15, radius - 0.22), radius, 40),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.82, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }),
   );
   pulse.rotation.x = -Math.PI / 2;
   pulse.position.copy(position);
   pulse.position.y += 0.12;
   scene.add(pulse);
-  crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.38, maxLife: 0.38 });
+  pulse.scale.setScalar(0.24);
+  crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.55, maxLife: 0.55, grow: 1.15 });
+}
+
+function createChartreuseStatusEffect(kind, target) {
+  const colors = { slow: 0x7fdbff, malfunction: 0xffc928, reveal: 0xff9d2e, poison: 0x75e34c, knockback: 0xff4d5a };
+  const durations = { slow: 1.5, malfunction: 1.2, reveal: 2.5, poison: 3, knockback: 0.8 };
+  const color = colors[kind] || 0xffffff;
+  const group = new THREE.Group();
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.35, 0.48, 36),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  const halo = new THREE.Mesh(
+    new THREE.TorusGeometry(0.62, 0.045, 8, 32),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending }),
+  );
+  halo.rotation.x = Math.PI / 2;
+  group.add(ring, halo);
+  if (kind === "reveal") {
+    const eye = new THREE.Mesh(
+      new THREE.SphereGeometry(0.24, 16, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffd27a, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending }),
+    );
+    const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 8), new THREE.MeshBasicMaterial({ color: 0x24113f }));
+    pupil.position.z = 0.22;
+    eye.add(pupil);
+    eye.position.y = 1.9;
+    group.add(eye);
+  }
+  if (kind === "poison") {
+    for (let i = 0; i < 6; i += 1) {
+      const bubble = new THREE.Mesh(
+        new THREE.SphereGeometry(0.12 + Math.random() * 0.08, 8, 8),
+        new THREE.MeshBasicMaterial({ color: i % 2 ? 0x66cc22 : 0x88ff44, transparent: true, opacity: 0.82, blending: THREE.AdditiveBlending }),
+      );
+      bubble.position.set((Math.random() - 0.5) * 0.9, 0.45 + Math.random() * 0.7, (Math.random() - 0.5) * 0.9);
+      bubble.userData.vy = 0.45 + Math.random() * 0.45;
+      group.add(bubble);
+    }
+  }
+  if (kind === "malfunction") {
+    for (const angle of [-Math.PI / 4, Math.PI / 4]) {
+      const shard = new THREE.Mesh(
+        new THREE.BoxGeometry(0.08, 0.72, 0.08),
+        new THREE.MeshBasicMaterial({ color: 0xff7a00, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending }),
+      );
+      shard.rotation.z = angle;
+      shard.position.y = 0.45;
+      group.add(shard);
+    }
+    for (let i = 0; i < 3; i += 1) {
+      const spark = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.09, 0),
+        new THREE.MeshBasicMaterial({ color: 0xfff1a6, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending }),
+      );
+      const angle = (i / 3) * Math.PI * 2;
+      spark.position.set(Math.sin(angle) * 0.9, 0.35 + (i % 2) * 0.2, Math.cos(angle) * 0.9);
+      group.add(spark);
+    }
+  }
+  if (kind === "slow") {
+    const arrowMaterial = new THREE.MeshBasicMaterial({ color: 0x9feaff, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending });
+    const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.42, 4), arrowMaterial);
+    arrow.rotation.x = Math.PI;
+    arrow.position.y = 1.75;
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.42, 8), arrowMaterial);
+    shaft.position.y = 2.05;
+    group.add(arrow, shaft);
+  }
+  group.position.copy(target.position);
+  group.position.y += 0.18;
+  scene.add(group);
+  const duration = durations[kind] || 0.8;
+  crimsonSlashes.push({ group, mesh: ring, life: duration, maxLife: duration, type: "chartreuseStatus", ring, halo, kind });
 }
 
 // 핑크 전용 — 8자 모양 동그란 음표 실루엣 하나
@@ -2314,6 +2395,34 @@ function createPinkNoteBurst(radius, position = player.position) {
       noteAngle: angle, noteRadius: radius, noteOrigin: position.clone(),
     });
   }
+}
+
+function createPinkReviveAura(target, duration = 12) {
+  const group = new THREE.Group();
+  const note = createPinkNoteMesh();
+  note.position.y = 4;
+  note.scale.setScalar(2.2);
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(0.72, 0.055, 8, 40),
+    new THREE.MeshBasicMaterial({ color: 0xff79b8, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending }),
+  );
+  const halo = new THREE.Mesh(
+    new THREE.RingGeometry(0.55, 0.7, 40),
+    new THREE.MeshBasicMaterial({ color: 0xffd6ea, transparent: true, opacity: 0.55, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }),
+  );
+  ring.rotation.x = Math.PI / 2;
+  halo.rotation.x = -Math.PI / 2;
+  group.add(ring, halo, note);
+  group.position.copy(target.position);
+  group.position.y = 0.12;
+  scene.add(group);
+  crimsonSlashes.push({ group, mesh: ring, life: duration, maxLife: duration, type: "pinkReviveAura", ring, halo, note, target });
+}
+
+function createPinkAllyDeathEffect(target) {
+  createGroundPulse(1.25, 0x8f2b68, target.position);
+  createPinkNoteBurst(1.5, target.position);
+  showToast("아군 사망 · 부활 대기");
 }
 
 // 레드처럼 정면으로 뻗는 공격용 이펙트. 원형 펄스와 달리 바라보는 방향으로
@@ -2450,8 +2559,6 @@ function performCharacterAttack({ manualAim = false } = {}) {
     // 베타 테스트 페이지엔 실제 게임의 로테이션 능력(껐다 켰다) 시스템이 없어서
     // abilityRangeMultiplier를 조건부로 걸 스위치가 없다 — 테스트 편의상 항상 적용.
     const healCircleRange = def.healCircleRange * def.abilityRangeMultiplier;
-    pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
-    updateCrimsonUltimateGauge();
     createGroundPulse(healCircleRange, 0xff9fcf);
     createPinkNoteBurst(healCircleRange);
     for (const target of testTargets) {
@@ -2461,6 +2568,8 @@ function performCharacterAttack({ manualAim = false } = {}) {
           target.userData.health = Math.min(target.userData.maxHealth, target.userData.health + def.healCircleHeal);
         } else {
           damageTarget(target, def.healCircleDamage);
+          pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
+          if (betaState.selectedCharacter === "pink") updateCrimsonUltimateGauge();
         }
       }
     }
@@ -2577,6 +2686,51 @@ function randomChartreuseRound(focused = clock.elapsedTime < chartreuseFocusUnti
 function chartreuseRoundColor(type) {
   return { enhanced: "#fff200", cc: "#9acd32", plague: "#111111", blank: "#ffffff" }[type] || "#ffffff";
 }
+
+function createChartreuseUltimateEffect() {
+  const group = new THREE.Group();
+  const burstGroup = new THREE.Group();
+  const burstColors = [0xdfff00, 0x65ffe0, 0xffffff];
+  for (let i = 0; i < 42; i += 1) {
+    const particle = new THREE.Mesh(
+      new THREE.SphereGeometry(0.035 + Math.random() * 0.035, 6, 4),
+      new THREE.MeshBasicMaterial({ color: burstColors[i % burstColors.length], transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending }),
+    );
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2.2 + Math.random() * 2.8;
+    particle.userData.velocity = new THREE.Vector3(Math.sin(angle) * speed, 1.2 + Math.random() * 2.4, Math.cos(angle) * speed);
+    burstGroup.add(particle);
+  }
+  burstGroup.position.copy(player.position);
+  burstGroup.position.y = 1.05;
+  scene.add(burstGroup);
+  crimsonSlashes.push({ group: burstGroup, mesh: burstGroup.children[0], life: 0.9, maxLife: 0.9, type: "chartreuseBurst" });
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(0.62, 20, 14),
+    new THREE.MeshBasicMaterial({ color: 0xdfff00, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending }),
+  );
+  const burst = new THREE.Mesh(
+    new THREE.RingGeometry(0.55, 0.66, 64),
+    new THREE.MeshBasicMaterial({ color: 0x65ffe0, transparent: true, opacity: 0.85, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }),
+  );
+  const outer = new THREE.Mesh(
+    new THREE.TorusGeometry(1.65, 0.075, 8, 64),
+    new THREE.MeshBasicMaterial({ color: 0xdfff00, transparent: true, opacity: 0.98, blending: THREE.AdditiveBlending }),
+  );
+  const inner = new THREE.Mesh(
+    new THREE.TorusGeometry(1.12, 0.04, 8, 48),
+    new THREE.MeshBasicMaterial({ color: 0x65ffe0, transparent: true, opacity: 0.86, blending: THREE.AdditiveBlending }),
+  );
+  burst.rotation.x = -Math.PI / 2;
+  outer.rotation.x = Math.PI / 2;
+  inner.rotation.x = Math.PI / 2;
+  group.add(core, burst, outer, inner);
+  group.position.copy(player.position);
+  group.position.y = 1.05;
+  scene.add(group);
+  crimsonSlashes.push({ group, mesh: outer, life: BETA_CHARACTERS.chartreuse.ultimate.duration, maxLife: BETA_CHARACTERS.chartreuse.ultimate.duration, type: "chartreuseUltimate", core, burst, outer, inner });
+}
+
 let greenRevealedUntil = 0;
 
 function updateCrimsonUltimateGauge() {
@@ -2608,15 +2762,28 @@ function updateCrimsonUltimateGauge() {
 function performPinkEncore() {
   const def = BETA_CHARACTERS.pink.ultimate;
   let revived = 0;
-  createGroundPulse(def.radius, 0xff79b8);
   for (const target of testTargets) {
-    if (!target.userData.isAlly || target.visible) continue;
+    if (!target.userData.isAlly) continue;
     if (Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z) > def.radius) continue;
+    if (target.visible) {
+      target.userData.revivePendingUntil = clock.elapsedTime + 12;
+      target.userData.reviveHealthRatio = def.reviveHealthRatio;
+      createPinkReviveAura(target, 12);
+      revived += 1;
+      continue;
+    }
     target.visible = true;
     target.userData.health = target.userData.maxHealth * def.reviveHealthRatio;
     target.userData.invulnerableUntil = clock.elapsedTime + def.invulnerabilityDuration;
+    target.userData.revivePendingUntil = 0;
     createGroundPulse(1.1, 0xffb3d7, target.position);
+    createPinkNoteBurst(1.8, target.position);
+    createPinkReviveAura(target, 12);
     revived += 1;
+  }
+  if (revived > 0) {
+    createGroundPulse(def.radius, 0xff79b8);
+    createPinkNoteBurst(def.radius, player.position);
   }
   attackComboState.textContent = revived ? `앙코르! · ${revived}명 부활` : "부활 대상 없음";
 }
@@ -2828,6 +2995,7 @@ ultimateButton.addEventListener("click", () => {
     chartreuseUltimateCharge = 0;
     chartreuseFocusUntil = clock.elapsedTime + BETA_CHARACTERS.chartreuse.ultimate.duration;
     chartreuseAmmoTypes = [];
+    createChartreuseUltimateEffect();
     renderGoldRushAmmoFan(goldRushState.maxAmmo);
     updateCrimsonUltimateGauge();
     return;
@@ -3786,6 +3954,8 @@ resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
 goldRushToggle.addEventListener("click", () => startGoldRush("goldRush"));
 showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
+chopWoodOpen.addEventListener("click", () => chopWoodEmbed.classList.remove("hidden"));
+chopWoodClose.addEventListener("click", () => chopWoodEmbed.classList.add("hidden"));
 document.getElementById("test-death-btn").addEventListener("click", () => {
   if (betaState.selectedCharacter === "pink") {
     let marked = 0;
@@ -3800,6 +3970,14 @@ document.getElementById("test-death-btn").addEventListener("click", () => {
     return;
   }
   killGoldRushPlayer();
+});
+document.getElementById("test-ally-death-btn").addEventListener("click", () => {
+  const ally = testTargets.find((target) => target.userData.isAlly && target.visible);
+  if (!ally) { showToast("살아있는 아군 없음"); return; }
+  ally.userData.deadPosition = ally.position.clone();
+  ally.userData.health = 0;
+  ally.visible = false;
+  createPinkAllyDeathEffect(ally);
 });
 document.getElementById("overview-btn").addEventListener("click", (event) => {
   overview = !overview;
@@ -4009,10 +4187,25 @@ function animate() {
         }
         if (projectile.characterId === "chartreuse") {
           if (projectile.type === "chartreuse_cc") {
-            const cc = ["slow", "malfunction", "reveal"][Math.floor(Math.random() * 3)];
+            const cc = ["slow", "malfunction", "reveal", "poison", "knockback"][Math.floor(Math.random() * 5)];
+            const ccNames = { slow: "둔화", malfunction: "고장", reveal: "발각", poison: "독", knockback: "넉백" };
+            showToast(`CC 적중 · ${ccNames[cc]}`);
+            createChartreuseStatusEffect(cc, target);
             if (cc === "slow") target.userData.slowUntil = clock.elapsedTime + 1.5;
             if (cc === "malfunction") target.userData.malfunctionUntil = clock.elapsedTime + 1.2;
             if (cc === "reveal") target.userData.revealedUntil = clock.elapsedTime + 2.5;
+            if (cc === "poison") {
+              target.userData.poisonUntil = clock.elapsedTime + 3;
+              target.userData.poisonNextTick = clock.elapsedTime;
+            }
+            if (cc === "knockback") {
+              const pushX = target.position.x - player.position.x;
+              const pushZ = target.position.z - player.position.z;
+              const pushLength = Math.hypot(pushX, pushZ) || 1;
+              target.userData.knockbackX = (pushX / pushLength) * 7;
+              target.userData.knockbackZ = (pushZ / pushLength) * 7;
+              target.userData.hitRecoil = 1;
+            }
           } else if (projectile.type === "chartreuse_plague") {
             target.userData.health = 0;
             target.visible = false;
@@ -4077,7 +4270,60 @@ function animate() {
     const progress = 1 - slash.life / slash.maxLife;
     // 처음엔 빠르게 밝고 뒤로 갈수록 천천히 사라지도록 감쇠 곡선을 준다
     const fade = (1 - progress) * (1 - progress);
-    if (slash.type === "redGlove") {
+    if (slash.type === "pinkReviveAura") {
+      if (!slash.target.visible) {
+        slash.life = 0;
+      } else {
+        slash.group.position.x = slash.target.position.x;
+        slash.group.position.z = slash.target.position.z;
+        slash.ring.rotation.z += dt * 2.4;
+        slash.note.quaternion.copy(camera.quaternion);
+        slash.note.rotation.y += dt * 2.2;
+        slash.note.position.y = 4 + Math.sin(clock.elapsedTime * 4) * 0.12;
+        slash.halo.scale.setScalar(1 + Math.sin(clock.elapsedTime * 4) * 0.08);
+        slash.ring.material.opacity = 0.72 + Math.sin(clock.elapsedTime * 5) * 0.16;
+        slash.halo.material.opacity = 0.35 + Math.sin(clock.elapsedTime * 6) * 0.12;
+      }
+    } else if (slash.type === "chartreuseStatus") {
+      slash.group.position.x = slash.group.position.x;
+      slash.group.position.z = slash.group.position.z;
+      slash.ring.scale.setScalar(0.8 + progress * 2.2);
+      slash.halo.rotation.z += dt * (slash.kind === "malfunction" ? 8 : 3.5);
+      slash.halo.scale.setScalar(1 + progress * 0.8);
+      const extra = slash.group.children.slice(2);
+      for (const child of extra) {
+        if (slash.kind === "poison") child.position.y += (child.userData.vy || 0.5) * dt;
+        if (slash.kind === "reveal") child.rotation.y += dt * 2.5;
+        if (slash.kind === "slow") {
+          child.position.y += Math.sin(clock.elapsedTime * 8) * dt * 0.08;
+          child.material.opacity = 0.55 + Math.sin(clock.elapsedTime * 9) * 0.35;
+        }
+      }
+      const statusOpacity = Math.max(0, 1 - progress);
+      slash.ring.material.opacity = 0.95 * statusOpacity;
+      slash.halo.material.opacity = 0.78 * statusOpacity;
+    } else if (slash.type === "chartreuseUltimate") {
+      slash.group.position.x = player.position.x;
+      slash.group.position.z = player.position.z;
+      slash.outer.rotation.z += dt * 3.2;
+      slash.inner.rotation.z -= dt * 4.6;
+      slash.burst.scale.setScalar(Math.min(3.8, 0.6 + progress * 3.2));
+      slash.burst.material.opacity = Math.max(0, progress < 0.18 ? 0.85 * (1 - progress / 0.18) : 0);
+      slash.core.scale.setScalar(1 + Math.sin(clock.elapsedTime * 12) * 0.12);
+      slash.core.material.opacity = 0.6 + Math.sin(clock.elapsedTime * 10) * 0.16;
+      slash.outer.material.opacity = Math.max(0, 0.98 * (slash.life < 0.45 ? slash.life / 0.45 : 1));
+      slash.inner.material.opacity = Math.max(0, 0.86 * (slash.life < 0.45 ? slash.life / 0.45 : 1));
+      const pulse = 1 + Math.sin(clock.elapsedTime * 10) * 0.08;
+      slash.group.scale.setScalar(pulse);
+    } else if (slash.type === "chartreuseBurst") {
+      slash.group.position.x = player.position.x;
+      slash.group.position.z = player.position.z;
+      for (const particle of slash.group.children) {
+        particle.position.addScaledVector(particle.userData.velocity, dt);
+        particle.userData.velocity.y -= 4.8 * dt;
+        particle.material.opacity = Math.max(0, 0.95 * (1 - progress));
+      }
+    } else if (slash.type === "redGlove") {
       slash.group.scale.setScalar(0.86 + progress * 0.64);
       for (const material of slash.materials) material.opacity = Math.max(0, 0.96 * fade);
     } else {
@@ -4175,6 +4421,39 @@ function animate() {
     for (const target of testTargets) target.userData.inMalfunctionZone = false;
   }
   for (const target of testTargets) {
+    if (!target.userData.goldRushBot && !target.visible && target.userData.health <= 0 && target.userData.revivePendingUntil > clock.elapsedTime) {
+      target.userData.reviveAt ??= clock.elapsedTime + 3;
+      if (clock.elapsedTime < target.userData.reviveAt) continue;
+      target.visible = true;
+      target.userData.health = target.userData.maxHealth * (target.userData.reviveHealthRatio || 0.4);
+      target.userData.invulnerableUntil = clock.elapsedTime + 2;
+      target.userData.revivePendingUntil = 0;
+      target.userData.reviveAt = 0;
+      createGroundPulse(1.1, 0xffb3d7, target.position);
+      createPinkNoteBurst(1.8, target.position);
+      createPinkReviveAura(target, 12);
+      showToast("앙코르! 아군 부활");
+      continue;
+    }
+    if (!target.userData.goldRushBot && !target.visible && target.userData.health <= 0) {
+      target.userData.respawnAt ??= clock.elapsedTime + 4;
+      if (clock.elapsedTime >= target.userData.respawnAt) {
+        target.userData.health = target.userData.maxHealth;
+        target.userData.respawnAt = 0;
+        target.position.copy(target.userData.deadPosition);
+        target.visible = true;
+        if (target.userData.healthBar) updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
+      }
+      continue;
+    }
+    if (target.visible && target.userData.health > 0) target.userData.respawnAt = 0;
+    if (target.visible && target.userData.poisonUntil > clock.elapsedTime && clock.elapsedTime >= (target.userData.poisonNextTick ?? 0)) {
+      const poisonDamage = 180;
+      target.userData.health = Math.max(0, target.userData.health - poisonDamage);
+      target.userData.poisonNextTick = clock.elapsedTime + 1;
+      createDamagePopup(target.position, poisonDamage, "#9acd32", "독 ");
+      if (target.userData.health <= 0) target.visible = false;
+    }
     const indicator = target.userData.malfunctionIndicator;
     if (target.userData.inMalfunctionZone) {
       const activeIndicator = indicator || ensureMalfunctionIndicator(target);

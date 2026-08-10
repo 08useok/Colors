@@ -133,6 +133,7 @@ export const CHARACTERS = {
     healCircleRange: 4.5,
     healCircleDamage: 2400,
     healCircleHeal: 1800,
+    ultimate: { name: "앙코르!", reviveHealthRatio: 0.4, duration: 12, reviveDelay: 3, invulnerabilityDuration: 2, radius: 8, chargeRequired: 15 },
     moveSpeedMultiplier: 1.4,
     walk: { cycleSpeed: 9, armAmp: 0.34, legAmp: 0.40, armRestZ: Math.PI * 0.1 },
   },

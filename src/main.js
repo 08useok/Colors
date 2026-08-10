@@ -316,7 +316,7 @@ const SEASONS = {
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
-const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory", "pink"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -329,7 +329,7 @@ const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = ["beta2", "beta3"].includes(CURRENT_SEASON)
+const ROSTER = ["beta2", "beta3", "beta4"].includes(CURRENT_SEASON)
   ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory"]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
@@ -3509,6 +3509,24 @@ const _pinkGlb = { start: null, loop: null, end: null };
 const _purpleGlb = { start: null, loop: null, end: null };
 const _ivoryGlb = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
+
+function refreshLoadedIvoryModels() {
+  if (!_ivoryGlb.loop || !state?.players) return;
+  for (const fighter of state.players) {
+    if (fighter.characterType !== "ivory" || fighter.mesh.userData.isGlbModel) continue;
+    const oldMesh = fighter.mesh;
+    const replacement = createStickman(CHARACTERS.ivory.color, fighter.skinId);
+    replacement.position.copy(oldMesh.position);
+    replacement.rotation.copy(oldMesh.rotation);
+    replacement.add(fighter.healthBar);
+    replacement.add(fighter.nameLabel);
+    scene.remove(oldMesh);
+    scene.add(replacement);
+    fighter.mesh = replacement;
+    fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
+    fighter.bodyMaterials = replacement.userData.bodyMaterials;
+  }
+}
 _glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
 _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
   _bluePreviewGlb = g;
@@ -3577,7 +3595,7 @@ _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _st
 
 // Ivory base model — the beta test uses the same three-phase animation rig.
 _glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); });
 _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m1s.glb', g => { _ivoryShopkeeperGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => { _ivoryShopkeeperGlb.loop = _stripRootMotion(g); });
@@ -4069,6 +4087,10 @@ function makeFighter(options) {
     ivoryUltimateCharge: 0,
     crimsonUltimateCharge: 0,
     goldUltimateCharge: 0,
+    pinkUltimateCharge: 0,
+    revivePendingUntil: 0,
+    reviveAt: 0,
+    reviveHealthRatio: 0.4,
     goldAttackCharges: new Map(),
     ivoryZones: [],
     galeKnockbackRemaining: 0,
@@ -8145,6 +8167,7 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (fighter.characterType === "ivory") return tryUseIvoryUltimate(fighter);
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
+  if (fighter.characterType === "pink") return tryUsePinkUltimate(fighter);
   return tryUseCyanUltimate(fighter);
 }
 
@@ -8218,6 +8241,7 @@ function beginHealCircleAttack(fighter) {
       if (fighter.isPlayer || target.isPlayer) audio.play("heal");
     } else if (!state.chopWoodMode || target.team !== fighter.team) {
       applyDamage(target, charDef.healCircleDamage, fighter);
+      fighter.pinkUltimateCharge = Math.min(CHARACTERS.pink.ultimate.chargeRequired, (fighter.pinkUltimateCharge ?? 0) + 1);
       if (fighter.isPlayer) {
         flashHitMarker();
         audio.play("hit");
@@ -8997,6 +9021,10 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
   }
 
   if (target.health <= 0) {
+    if (target.revivePendingUntil > state.gameTime && !target.reviveAt) {
+      target.reviveAt = state.gameTime + CHARACTERS.pink.ultimate.reviveDelay;
+      createHealEffect(target.mesh.position.x, target.mesh.position.z);
+    }
     target.dead = true;
     target.mesh.visible = false;
     target.shadow.visible = false;
@@ -10497,6 +10525,7 @@ function updateHud() {
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
+      : player.characterType === "pink" ? (player.pinkUltimateCharge ?? 0)
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
@@ -10913,6 +10942,7 @@ function animate() {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
       }
       updateAmmoRegen(dt);
+      updatePinkRevives();
       if (!mpConfig || mpConfig.isHost) updateNaturalRegen(dt);
       updateTrainingRespawn();
       updateChopWoodRespawn();
@@ -11601,12 +11631,56 @@ function setupInput() {
     enterMatchmaking("showdown");
   });
 
-  document.getElementById("mode-chopwood").addEventListener("click", async () => {
+document.getElementById("mode-chopwood").addEventListener("click", async () => {
     await initAudio();
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("active");
     startChopWood();
-  });
+});
+
+if (window.location.hash === "#chop-wood") {
+  queueMicrotask(() => document.getElementById("mode-chopwood")?.click());
+}
+
+function updatePinkRevives() {
+  for (const fighter of state.players) {
+    if (!fighter.dead || !fighter.reviveAt) continue;
+    if (state.gameTime > fighter.revivePendingUntil) {
+      fighter.reviveAt = 0;
+      continue;
+    }
+    if (state.gameTime < fighter.reviveAt) continue;
+    fighter.dead = false;
+    fighter.health = fighter.maxHealth * fighter.reviveHealthRatio;
+    fighter.invulnerableUntil = state.gameTime + CHARACTERS.pink.ultimate.invulnerabilityDuration;
+    fighter.mesh.visible = true;
+    fighter.shadow.visible = true;
+    fighter.healthBar.visible = true;
+    fighter.reviveAt = 0;
+    fighter.revivePendingUntil = 0;
+    createHealEffect(fighter.mesh.position.x, fighter.mesh.position.z);
+  }
+}
+
+function tryUsePinkUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "pink" || !state.running) return false;
+  const ultimate = CHARACTERS.pink.ultimate;
+  if ((fighter.pinkUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.pinkUltimateCharge = 0;
+  if (!state.chopWoodMode) return true;
+  for (const target of state.players) {
+    if (target.id === fighter.id || target.team !== fighter.team) continue;
+    const dx = target.mesh.position.x - fighter.mesh.position.x;
+    const dz = target.mesh.position.z - fighter.mesh.position.z;
+    if (dx * dx + dz * dz > ultimate.radius * ultimate.radius) continue;
+    target.revivePendingUntil = state.gameTime + ultimate.duration;
+    target.reviveHealthRatio = ultimate.reviveHealthRatio;
+    if (!target.dead) {
+      createHealEffect(target.mesh.position.x, target.mesh.position.z);
+    }
+  }
+  return true;
+}
 
   document.getElementById("mode-goldrush")?.addEventListener("click", async () => {
     await initAudio();
