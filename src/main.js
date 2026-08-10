@@ -1390,7 +1390,7 @@ function updateLobbyUI(account) {
   if (orderEventProgress) orderEventProgress.textContent = `${account.orderEvent?.progress ?? 0} / 100승`;
   const orderEventClaim = document.getElementById("order-event-claim");
   if (orderEventClaim) {
-    const milestones = [1, 5, 10, 25, 40, 50, 75, 90, 100];
+    const milestones = [1, 3, 5, 10, 25, 40, 50, 75, 90, 100];
     const claimed = account.orderEvent?.claimed ?? [];
     const next = milestones.find((milestone) => (account.orderEvent?.progress ?? 0) >= milestone && !claimed.includes(milestone));
     orderEventClaim.disabled = !next;
@@ -1401,6 +1401,7 @@ function updateLobbyUI(account) {
       account.orderEvent.claimed ??= [];
       if (account.orderEvent.claimed.includes(next)) return;
       if (next === 1) account.coins += 100;
+      if (next === 3) account.credits += 50;
       if (next === 5) account.orderEvent.cosmetics.iceCreamPin = true;
       if (next === 10) account.coins += 200;
       if (next === 25) account.credits += 150;
@@ -1430,7 +1431,7 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson"]) {
+  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
     const s = account.charStats[char];
