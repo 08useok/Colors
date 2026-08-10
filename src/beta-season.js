@@ -3875,8 +3875,8 @@ function animate() {
     attackRobot.userData.healthBar.visible = attackRobot.visible;
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
   }
-  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 3) {
-    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.08 * dt);
+  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth) {
+    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.10 * dt);
     updateGoldRushCombatHud();
   }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
