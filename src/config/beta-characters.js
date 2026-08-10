@@ -99,7 +99,7 @@ export const BETA_CHARACTERS = {
     maxHealth: 6000, moveSpeedMultiplier: 1, attackCooldown: 0.45, reloadDuration: 1.1, maxAmmo: 3,
     needleDamage: 700, needleRange: 13, needleSpeed: 18,
     poisonDPS: 760, poisonDuration: 4,
-    vialDamage: 2840, vialRange: 12, vialSpeed: 18, vialSplashRadius: 4,
+    vialDamage: 2840, vialRange: 11, vialSpeed: 18, vialSplashRadius: 4,
     description: "퍼플은 향수 가게의 사장님이자 의사 자격증이 있는 컬러입니다. 그녀의 향수 가게가 잘 되는 탓인지는 모르지만 그녀의 독침은 꽤나 아픕니다.",
     descriptionEn: "Purple runs a perfume shop and holds a medical license. Perhaps that is why business is good, but her needles sting badly.",
     basicAttack: {
@@ -110,7 +110,7 @@ export const BETA_CHARACTERS = {
     },
     officialAbility: { id: "wideNeedle", name: "광각 독침", description: "독침 3발을 -45도, 0도, +45도로 발사",
       nameEn: "Wide Needle", descriptionEn: "Fires three needles at -45, 0, and +45 degrees." },
-    needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(90),
+    needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(24),
   },
   pink: {
     maxHealth: 11500, moveSpeedMultiplier: 1.4, attackCooldown: 0.2, reloadDuration: 0.8, maxAmmo: 3,

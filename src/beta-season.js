@@ -1309,7 +1309,7 @@ let dailyRewardComplete = false;
 // 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
 // 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
-const DAILY_REWARD_UPGRADE_CHANCE = 0.55;
+const DAILY_REWARD_UPGRADE_CHANCE = 0.65;
 let dailyRewardAttemptsUsed = 0;
 
 function updateDailyRewardReveal() {
@@ -1351,12 +1351,24 @@ function showDailyRewardReveal() {
 
 function finishDailyReward() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
-  const rewardType = Math.random() < 0.5 ? "coins" : "credits";
-  const rewardAmount = tier[rewardType];
+  let rewardType = Math.random() < 0.5 ? "coins" : "credits";
+  let characterReward = null;
+  if (["ultra", "transcend", "unknown", "absolute"].includes(tier.id)) {
+    const available = CHARACTERS.filter((character) =>
+      ["rare", "legendary"].includes(character.rarity) && !betaState.ownedCharacters.includes(character.id),
+    );
+    if (available.length) {
+      const pool = available.flatMap((character) => Array(character.rarity === "legendary" ? 300 : 100).fill(character));
+      characterReward = pool[Math.floor(Math.random() * pool.length)];
+      rewardType = "character";
+    }
+  }
+  const rewardAmount = tier[rewardType] || 0;
   const rewardCurrency = rewardType === "coins" ? "코인" : "β 크레딧";
   dailyRewardComplete = true;
   updateDailyRewardReveal();
-  betaState[rewardType] += rewardAmount;
+  if (characterReward) betaState.ownedCharacters.push(characterReward.id);
+  else betaState[rewardType] += rewardAmount;
   betaState.daily.pendingRewards = Math.max(0, (betaState.daily.pendingRewards || 0) - 1);
   betaState.daily.winRewards = (betaState.daily.winRewards || 0) + 1;
   betaState.daily.rewardGrade = tier.name;

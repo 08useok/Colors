@@ -33,7 +33,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = CURRENT_SEASON === "beta2"
+  const seasonLabel = CURRENT_SEASON === "beta3"
+    ? (currentLang === "ko" ? "베타 시즌 3" : "Beta Season 3")
+    : CURRENT_SEASON === "beta2"
     ? (currentLang === "ko" ? "베타 시즌 2" : "Beta Season 2")
     : IS_BETA_SEASON
     ? (currentLang === "ko" ? "베타 시즌 1" : "Beta Season 1")
@@ -288,7 +290,10 @@ const turnSpeed = 4.4;
 const BETA_SEASON_START_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
 const BETA_SEASON_2_START_AT = new Date("2026-08-03T00:00:00+09:00").getTime();
 const BETA_SEASON_2_END_AT = new Date("2026-08-10T00:00:00+09:00").getTime();
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_2_START_AT && Date.now() < BETA_SEASON_2_END_AT
+const BETA_SEASON_3_START_AT = new Date("2026-08-10T00:00:00+09:00").getTime();
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_3_START_AT
+  ? "beta3"
+  : Date.now() >= BETA_SEASON_2_START_AT && Date.now() < BETA_SEASON_2_END_AT
   ? "beta2"
   : Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
 const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
@@ -302,6 +307,7 @@ const SEASONS = {
   alpha4: "알파 시즌 4",
   beta1: "베타 시즌 1",
   beta2: "베타 시즌 2",
+  beta3: "베타 시즌 3",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
@@ -320,7 +326,7 @@ const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = CURRENT_SEASON === "beta2"
+const ROSTER = ["beta2", "beta3"].includes(CURRENT_SEASON)
   ? [...PRE_BETA_CHARACTERS, "crimson", "gold"]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
@@ -1691,7 +1697,7 @@ function updateEventCountdown() {
 function updateBetaPatchVisibility() {
   const patch = document.getElementById("beta-season-patch");
   patch?.classList.toggle("hidden", Date.now() < BETA_SEASON_START_AT);
-  document.getElementById("beta-season-2-patch")?.classList.toggle("hidden", CURRENT_SEASON !== "beta2");
+  document.getElementById("beta-season-2-patch")?.classList.toggle("hidden", !["beta2", "beta3"].includes(CURRENT_SEASON));
 }
 
 // 베타 시즌 전용 UI(크레딧 잔액, 캐릭터 구매 탭)는 시즌이 열릴 때까지 숨긴다
@@ -1704,7 +1710,7 @@ function applySeasonVisibility() {
   ];
   for (const el of betaOnly) el?.classList.toggle("hidden", !IS_BETA_SEASON);
   document.querySelectorAll("[data-beta2-only]").forEach((el) => {
-    el.classList.toggle("hidden", CURRENT_SEASON !== "beta2");
+    el.classList.toggle("hidden", !["beta2", "beta3"].includes(CURRENT_SEASON));
   });
   // 계정이 없어 updateLobbyUI가 아직 안 돈 상태에서도 시즌 전 캐릭터는 숨겨야 한다
   document.querySelectorAll(".char-btn").forEach((btn) => {
@@ -1848,6 +1854,7 @@ let dailyRewardComplete = false;
 // 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
 const DAILY_REWARD_UPGRADE_CHANCE = 0.12;
+const DAILY_REWARD_COMMON_UPGRADE_CHANCE = 0.25;
 let dailyRewardAttemptsUsed = 0;
 
 // 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다.
@@ -1884,7 +1891,10 @@ function dailyRewardAtTopTier() {
 // 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
 function rollDailyRewardUpgrade() {
   const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
-  const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
+  const upgradeChance = dailyRewardTierIndex === 0
+    ? DAILY_REWARD_COMMON_UPGRADE_CHANCE
+    : DAILY_REWARD_UPGRADE_CHANCE;
+  const upgraded = canUpgrade && Math.random() < upgradeChance;
   if (upgraded) {
     const steps = rollUpgradeJumpSteps();
     dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
@@ -5955,18 +5965,22 @@ function createPurpleAimIndicator() {
   const range = CHARACTERS.purple.needleRange;
   const splashR = CHARACTERS.purple.vialSplashRadius;
 
-  const beam = new THREE.Mesh(
-    new THREE.PlaneGeometry(0.4, range),
-    new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.15,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    }),
-  );
-  beam.rotation.x = -Math.PI / 2;
-  beam.position.set(0, 0.08, range * 0.5);
+  const beamMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.15,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const beam = new THREE.Group();
+  const beams = [-1, 0, 1].map((direction) => {
+    const line = new THREE.Mesh(new THREE.PlaneGeometry(0.22, range), beamMaterial);
+    const angle = direction * CHARACTERS.purple.needleSpreadAngle / 2;
+    line.rotation.set(-Math.PI / 2, angle, 0);
+    line.position.set(Math.sin(angle) * range * 0.5, 0.08, Math.cos(angle) * range * 0.5);
+    beam.add(line);
+    return line;
+  });
   group.add(beam);
 
   const ringGeo = new THREE.RingGeometry(splashR - 0.12, splashR, 24);
@@ -6013,7 +6027,7 @@ function createPurpleAimIndicator() {
 
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { beam, ring, fill, dot };
+  group.userData = { beam, beams, ring, fill, dot };
   scene.add(group);
   return group;
 }
@@ -10135,7 +10149,9 @@ function updateAttackAimIndicator() {
     purpleAimIndicator.visible = true;
     purpleAimIndicator.position.set(pos.x, 0, pos.z);
     purpleAimIndicator.rotation.y = yaw;
-    purpleAimIndicator.userData.beam.material.opacity = unavailable ? 0.04 : 0.15;
+    purpleAimIndicator.userData.beams.forEach((beam) => {
+      beam.material.opacity = unavailable ? 0.04 : 0.15;
+    });
     purpleAimIndicator.userData.ring.visible = !isNeedle;
     purpleAimIndicator.userData.fill.visible = !isNeedle;
     purpleAimIndicator.userData.dot.visible = isNeedle;
