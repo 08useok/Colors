@@ -2436,8 +2436,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
     attackComboState.textContent = "아이스크림 배달 중";
   } else if (id === "chartreuse") {
     const focused = clock.elapsedTime < chartreuseFocusUntil;
-    const roll = focused ? Math.floor(Math.random() * 3) : Math.random();
-    const roundType = focused ? ["enhanced", "cc", "plague"][roll] : roll < 0.45 ? "enhanced" : roll < 0.9 ? "cc" : roll < 0.95 ? "plague" : "blank";
+    const roundType = chartreuseAmmoTypes.shift() || randomChartreuseRound();
     const damage = roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage;
     const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
     fireBetaProjectile({ speed: def.chartreuseSpeed, range: def.chartreuseRange, damage, color, radius: 0.24, type: `chartreuse_${roundType}` });
@@ -2526,6 +2525,16 @@ let ivoryUltimateCharge = 0;
 let greenUltimateCharge = 0;
 let chartreuseUltimateCharge = 0;
 let chartreuseFocusUntil = 0;
+let chartreuseAmmoTypes = [];
+
+function randomChartreuseRound(focused = clock.elapsedTime < chartreuseFocusUntil) {
+  const roll = focused ? Math.floor(Math.random() * 3) : Math.random();
+  return focused ? ["enhanced", "cc", "plague"][roll] : roll < 0.45 ? "enhanced" : roll < 0.9 ? "cc" : roll < 0.95 ? "plague" : "blank";
+}
+
+function chartreuseRoundColor(type) {
+  return { enhanced: "#fff200", cc: "#9acd32", plague: "#111111", blank: "#ffffff" }[type] || "#ffffff";
+}
 let greenRevealedUntil = 0;
 
 function updateCrimsonUltimateGauge() {
@@ -2777,6 +2786,8 @@ ultimateButton.addEventListener("click", () => {
     if (chartreuseUltimateCharge < required) return;
     chartreuseUltimateCharge = 0;
     chartreuseFocusUntil = clock.elapsedTime + BETA_CHARACTERS.chartreuse.ultimate.duration;
+    chartreuseAmmoTypes = [];
+    renderGoldRushAmmoFan(goldRushState.maxAmmo);
     updateCrimsonUltimateGauge();
     return;
   }
@@ -3302,12 +3313,19 @@ function renderGoldRushAmmoFan(count) {
   for (let i = 0; i < count; i += 1) {
     const segment = document.createElement("div");
     segment.className = "gold-rush-ammo-segment filled";
+    if (betaState.selectedCharacter === "chartreuse") {
+      const type = chartreuseAmmoTypes[i] || randomChartreuseRound();
+      chartreuseAmmoTypes[i] = type;
+      segment.style.background = chartreuseRoundColor(type);
+      segment.style.boxShadow = `0 0 8px ${chartreuseRoundColor(type)}`;
+    }
     segment.style.transform = `rotate(${count > 1 ? -spread / 2 + i * step : 0}deg)`;
     goldRushAmmoFan.appendChild(segment);
   }
 }
 
 function updateGoldRushCombatHud() {
+  if (betaState.selectedCharacter === "chartreuse") renderGoldRushAmmoFan(goldRushState.maxAmmo);
   const healthRatio = THREE.MathUtils.clamp(goldRushState.health / Math.max(1, goldRushState.maxHealth), 0, 1);
   goldRushHealthFill.style.width = `${healthRatio * 100}%`;
   goldRushHealthValue.textContent = String(Math.ceil(goldRushState.health));
@@ -3336,6 +3354,7 @@ function resetTestCombatHud() {
   goldRushState.ammo = goldRushState.maxAmmo;
   goldRushState.reloadTimer = 0;
   goldRushState.reloadDuration = def?.reloadDuration || 0.5;
+  chartreuseAmmoTypes = [];
   goldRushPlayerPanel.classList.remove("hidden");
   renderGoldRushAmmoFan(goldRushState.maxAmmo);
   updateGoldRushCombatHud();
