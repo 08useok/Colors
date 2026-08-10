@@ -2378,11 +2378,14 @@ function createLights() {
   scene.add(sun);
 }
 
-function createGround(group = scene) {
+function createGround(group = scene, theme = null) {
+  const groundColor = theme?.ground ?? 0xc8895a;
+  const gridMajor = theme?.gridMajor ?? 0xe2b27b;
+  const gridMinor = theme?.gridMinor ?? 0xd6a071;
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(120, 120, 40, 40),
     new THREE.MeshStandardMaterial({
-      color: 0xc8895a,
+      color: groundColor,
       roughness: 0.98,
       metalness: 0,
     }),
@@ -2391,7 +2394,7 @@ function createGround(group = scene) {
   ground.receiveShadow = true;
   group.add(ground);
 
-  const grid = new THREE.GridHelper(120, 24, 0xe2b27b, 0xd6a071);
+  const grid = new THREE.GridHelper(120, 24, gridMajor, gridMinor);
   grid.position.y = 0.05;
   grid.material.opacity = 0.18;
   grid.material.transparent = true;
@@ -4388,7 +4391,18 @@ function clearBattleMap() {
 function createMap(mapData) {
   clearBattleMap();
 
-  createGround(battleMapGroup);
+  const season3Theme = CURRENT_SEASON === "beta3"
+    ? { ground: [0xffe8c7, 0xdff6ef, 0xffd6e7][mapData.id % 3], gridMajor: 0xfff7df, gridMinor: 0xb7e7dd }
+    : null;
+  if (season3Theme) {
+    const sky = [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
+    scene.background = new THREE.Color(sky);
+    scene.fog.color.set(sky);
+  } else {
+    scene.background = new THREE.Color(0xc98353);
+    scene.fog.color.set(0xc98353);
+  }
+  createGround(battleMapGroup, season3Theme);
 
   mapData.wallSpecs.forEach((spec) => createWall(...spec, undefined, battleMapGroup, state.battleSolids));
 
