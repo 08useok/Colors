@@ -5,7 +5,7 @@ import { LANGS } from "./LANGS/langs.js?v=1.5.146";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.176";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
-import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.141";
+import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 // ── i18n ────────────────────────────────────────────────────────────────
@@ -11611,7 +11611,7 @@ function setupInput() {
   function renderShopCharacters() {
     const account = loadAccount();
     if (!account || !shopCharsContent) return;
-    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000" };
+    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
     const buyable = Object.keys(CHARACTER_RARITY).filter((c) => getCharacterPrice(c) > 0);
     let html = '<div class="shop-grid">';
     for (const charKey of buyable) {
@@ -11674,15 +11674,16 @@ function setupInput() {
   function renderShopSkins() {
     const account = loadAccount();
     if (!account) return;
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", pink: "#f4cdd3", crimson: "#a00000" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
     let html = '<div class="shop-grid">';
     for (const [skinId, skin] of Object.entries(SKINS)) {
       // 아직 안 열린 시즌의 스킨은 "시즌 종료"로 오해되지 않게 아예 숨긴다
-      if (skin.season !== CURRENT_SEASON) continue;
+      const seasonAvailable = skin.season === CURRENT_SEASON || (CURRENT_SEASON === "beta3" && skin.season === "beta2");
+      if (!seasonAvailable) continue;
       const owned = account.ownedSkins.includes(skinId);
       const equipped = account.selectedSkins[skin.character] === skinId;
       const canBuy = !owned && account.coins >= skin.cost;
-      const seasonOk = skin.season === CURRENT_SEASON;
+      const seasonOk = seasonAvailable;
       const borderColor = colorMap[skin.character] || "#fff";
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
       html += `<div class="shop-card-name" style="color:${borderColor}">${t(skin.nameKey)}</div>`;
