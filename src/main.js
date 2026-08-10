@@ -44,6 +44,7 @@ function applySeasonLabels() {
   const sidebarSeason = document.getElementById("sidebar-profile-season");
   if (tag) tag.textContent = seasonLabel;
   if (sidebarSeason) sidebarSeason.textContent = seasonLabel;
+  document.querySelectorAll(".lobby-version").forEach((el) => { el.textContent = CURRENT_VERSION; });
   if (IS_BETA_SEASON) return;
   document.querySelectorAll('[data-i18n="charCount"]').forEach((el) => {
     el.textContent = currentLang === "ko" ? "캐릭터 8종" : "8 Characters";
@@ -289,8 +290,10 @@ const turnSpeed = 4.4;
 // 자정을 넘기는 순간(새로고침 기준) 알아서 전환된다 — 수동 배포가 필요 없다.
 const BETA_SEASON_START_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
 const BETA_SEASON_2_START_AT = new Date("2026-08-03T00:00:00+09:00").getTime();
-const BETA_SEASON_2_END_AT = new Date("2026-08-10T00:00:00+09:00").getTime();
-const BETA_SEASON_3_START_AT = new Date("2026-08-10T00:00:00+09:00").getTime();
+// v1.5.3은 2026-08-10 16:00 KST에 예약 오픈된다.
+const BETA_SEASON_2_END_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
+const BETA_SEASON_3_START_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_3_START_AT
   ? "beta3"
   : Date.now() >= BETA_SEASON_2_START_AT && Date.now() < BETA_SEASON_2_END_AT
