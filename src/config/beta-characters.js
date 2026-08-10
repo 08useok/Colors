@@ -15,6 +15,7 @@ export const BETA_CHARACTERS = {
       nameEn: "Jab Jab",
       descriptionEn: "Red's signature move. He swings his left arm to the right, then his right arm to the left."
     },
+    ultimate: { id: "redGuard", name: "레드 가드", description: "8초 동안 피해를 60% 감소시키는 보호막을 생성합니다.", nameEn: "Red Guard", descriptionEn: "Creates a shield that reduces damage taken by 60% for 8 seconds.", duration: 8, damageReduction: 0.6, chargeRequired: 8 },
   },
   green: {
     maxHealth: 8400, moveSpeedMultiplier: 1.2, attackCooldown: 0.45, reloadDuration: 1.0, maxAmmo: 3,

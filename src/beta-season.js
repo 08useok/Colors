@@ -1546,6 +1546,9 @@ function createDamagePopup(position, amount, color = "#ffd27a", prefixOverride =
 }
 let purpleAttackIndex = 0;
 let goldUltimateCharge = 0;
+let redUltimateCharge = 0;
+let redGuardUntil = 0;
+let redGuardMesh = null;
 let pinkUltimateCharge = 0;
 let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
@@ -1597,8 +1600,10 @@ function damageTarget(target, damage, causesKnockback = false) {
     damageGoldRushBot(target.userData.goldRushBot, damage);
     return;
   }
-  createDamagePopup(target.position, damage);
-  target.userData.health -= damage;
+  const guardReduction = target.userData.redGuardUntil > clock.elapsedTime ? (target.userData.redGuardReduction ?? 0) : 0;
+  const finalDamage = damage * (1 - guardReduction);
+  createDamagePopup(target.position, finalDamage);
+  target.userData.health -= finalDamage;
   if (causesKnockback) {
     const pushX = target.position.x - player.position.x;
     const pushZ = target.position.z - player.position.z;
@@ -2526,6 +2531,7 @@ let greenRevealedUntil = 0;
 function updateCrimsonUltimateGauge() {
   const id = betaState.selectedCharacter;
   const configs = {
+    red: { charge: redUltimateCharge, required: BETA_CHARACTERS.red.ultimate.chargeRequired, name: BETA_CHARACTERS.red.ultimate.name, color: "#f01824" },
     ivory: { charge: ivoryUltimateCharge, required: BETA_CHARACTERS.ivory.ultimate.chargeRequired, name: "단체 주문", color: "#dff8ff" },
     cyan: { charge: cyanUltimateCharge, required: BETA_CHARACTERS.cyan.ultimate.chargeRequired, name: BETA_CHARACTERS.cyan.ultimate.name, color: "#0ff0fe" },
     crimson: { charge: crimsonUltimateCharge, required: CRIMSON.ultimateChargeRequired, name: BETA_CHARACTERS.crimson.ultimate.name, color: "#a00000" },
@@ -2715,6 +2721,21 @@ function performCyanUltimate() {
 
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
+  if (betaState.selectedCharacter === "red") {
+    const def = BETA_CHARACTERS.red.ultimate;
+    if (redUltimateCharge < def.chargeRequired) return;
+    redUltimateCharge = 0;
+    redGuardUntil = clock.elapsedTime + def.duration;
+    player.userData.redGuardUntil = redGuardUntil;
+    player.userData.redGuardReduction = def.damageReduction;
+    if (redGuardMesh) player.remove(redGuardMesh);
+    redGuardMesh = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.09, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.9 }));
+    redGuardMesh.rotation.x = Math.PI / 2;
+    redGuardMesh.position.y = 1.25;
+    player.add(redGuardMesh);
+    updateCrimsonUltimateGauge();
+    return;
+  }
   if (betaState.selectedCharacter === "ivory") {
     if (ivoryUltimateCharge < BETA_CHARACTERS.ivory.ultimate.chargeRequired) return;
     ivoryUltimateCharge = 0;
@@ -3762,6 +3783,12 @@ slowmoButton.addEventListener("click", () => {
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
+  if (redGuardMesh && clock.elapsedTime >= redGuardUntil) {
+    player.remove(redGuardMesh);
+    redGuardMesh = null;
+    player.userData.redGuardUntil = 0;
+    player.userData.redGuardReduction = 0;
+  }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
     let remove = false;
@@ -3867,6 +3894,10 @@ function animate() {
             ? projectile.damage * projectile.returnDamageMultiplier
             : projectile.damage;
           damageTarget(target, damage, projectile.causesKnockback);
+          if (projectile.characterId === "red") {
+            redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + 1);
+            if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
+          }
         }
         if (projectile.type === "orangeFruit") {
           shouldSplitOrange = true;
