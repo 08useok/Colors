@@ -1386,6 +1386,8 @@ function updateLobbyUI(account) {
   lobbyTrophies.textContent = account.trophies;
   if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
   if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
+  const orderEventProgress = document.getElementById("order-event-progress");
+  if (orderEventProgress) orderEventProgress.textContent = `${account.orderEvent?.progress ?? 0} / 100승`;
   updateDailyRewardBadge();
   lobbyRecord.textContent = t("record", account.wins, account.losses);
   if (lobbyWinrate) {

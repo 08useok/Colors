@@ -2123,6 +2123,19 @@ body {
   font-size: 11px;
 }
 
+.order-event-lobby-card {
+  display: grid;
+  gap: 5px;
+  margin: 12px 0;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 219, 128, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 218, 128, 0.08);
+}
+
+.order-event-lobby-card span { color: #ffd66e; font-weight: 900; }
+.order-event-lobby-card small { color: #cbb99f; line-height: 1.45; }
+
 .notice-schedule dd {
   margin: 0;
   color: #ffe29a;
