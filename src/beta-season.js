@@ -1132,7 +1132,7 @@ function updateCrimsonControls() {
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
-  const hideUltimate = !["crimson", "cyan", "pink", "gold", "ivory", "green"].includes(betaState.selectedCharacter);
+  const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse"].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
   ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
@@ -2189,7 +2189,7 @@ function getBetaAttackRange(id, def) {
 }
 
 function getBetaAttackHalfAngle(id, def) {
-  if (id === "red") return def.attackHalfAngle;
+  if (id === "red") return 20 * Math.PI / 180;
   if (id === "crimson") return def.attackHalfAngle;
   if (id === "purple") return def.needleSpreadAngle / 2;
   if (id === "green") return Math.max(...def.boomerangAngles.map((angle) => Math.abs(angle)));
