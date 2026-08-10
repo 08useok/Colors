@@ -1104,6 +1104,7 @@ function loadAccount() {
     if (!account.charStats.pink) account.charStats.pink = { wins: 0, games: 0 };
     if (!account.charStats.crimson) account.charStats.crimson = { wins: 0, games: 0 };
     if (!account.charStats.gold) { account.charStats.gold = { wins: 0, games: 0 }; migrated = true; }
+    if (!account.charStats.ivory) { account.charStats.ivory = { wins: 0, games: 0 }; migrated = true; }
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -1147,6 +1148,7 @@ function loadAccount() {
       if (!s.pink) s.pink = { wins: 0, games: 0 };
       if (!s.crimson) s.crimson = { wins: 0, games: 0 };
       if (!s.gold) s.gold = { wins: 0, games: 0 };
+      if (!s.ivory) s.ivory = { wins: 0, games: 0 };
     }
     if (!account.seasonChopWoodStats) {
       account.seasonChopWoodStats = {};
@@ -1181,6 +1183,7 @@ function loadAccount() {
     if (!account.charLevels.pink) { account.charLevels.pink = 1; migrated = true; }
     if (!account.charLevels.crimson) { account.charLevels.crimson = 1; migrated = true; }
     if (!account.charLevels.gold) { account.charLevels.gold = 1; migrated = true; }
+    if (!account.charLevels.ivory) { account.charLevels.ivory = 1; migrated = true; }
     // 베타 시즌 1 등급 시스템 — 기존 계정은 쓰던 8종을 그대로 보유, 크림슨만 신규 구매 대상
     if (!Array.isArray(account.ownedCharacters)) {
       account.ownedCharacters = [...PRE_BETA_CHARACTERS];
@@ -1306,6 +1309,7 @@ function createAccount(id, nickname) {
       pink:   { wins: 0, games: 0 },
       crimson: { wins: 0, games: 0 },
       gold: { wins: 0, games: 0 },
+      ivory: { wins: 0, games: 0 },
     },
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
@@ -1331,6 +1335,7 @@ function createAccount(id, nickname) {
       purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
       crimson: { wins: 0, games: 0 },
       gold: { wins: 0, games: 0 },
+      ivory: { wins: 0, games: 0 },
     },
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -1340,6 +1345,8 @@ function createAccount(id, nickname) {
         blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
         yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
         crimson: { wins: 0, games: 0 },
+        gold: { wins: 0, games: 0 },
+        ivory: { wins: 0, games: 0 },
       },
     },
     seasonChopWoodStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -1350,6 +1357,8 @@ function createAccount(id, nickname) {
         yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
         purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
         crimson: { wins: 0, games: 0 },
+        gold: { wins: 0, games: 0 },
+        ivory: { wins: 0, games: 0 },
       },
     },
   };
