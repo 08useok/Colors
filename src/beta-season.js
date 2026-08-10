@@ -260,6 +260,33 @@ for (const x of [35, 38, 41, 44, 47]) {
 }
 createTestTarget(-2.2, 1.5, { ally: true });
 createTestTarget(2.2, 1.5, { ally: true });
+
+function createAttackRobot(x, z) {
+  const robot = new THREE.Group();
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x566273, metalness: 0.7, roughness: 0.28 });
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff4c55, emissive: 0xff2030 });
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.15, 0.65), bodyMat);
+  body.position.y = 0.85;
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.58), bodyMat);
+  head.position.y = 1.7;
+  const eye = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.1, 0.04), eyeMat);
+  eye.position.set(0, 1.72, 0.3);
+  robot.add(body, head, eye);
+  const ground = groundHeightAt(x, z);
+  robot.position.set(x, ground > -5 ? ground + 0.05 : 1.55, z);
+  robot.userData.health = 9000;
+  robot.userData.maxHealth = 9000;
+  robot.userData.mesh = body;
+  robot.userData.kind = "attackRobot";
+  robot.userData.isRobot = true;
+  robot.userData.nextAttackAt = 2.5;
+  robot.userData.baseScale = 1;
+  scene.add(robot);
+  testTargets.push(robot);
+  return robot;
+}
+
+const attackRobot = createAttackRobot(9, -8);
 canvas.dataset.testTargetCount = String(testTargets.length);
 
 // 베타 시즌 포털
@@ -3812,6 +3839,22 @@ function animate() {
     redGuardMesh = null;
     player.userData.redGuardUntil = 0;
     player.userData.redGuardReduction = 0;
+  }
+  if (attackRobot?.visible && !goldRushState.active && !goldRushState.ended && clock.elapsedTime >= attackRobot.userData.nextAttackAt) {
+    const distance = Math.hypot(player.position.x - attackRobot.position.x, player.position.z - attackRobot.position.z);
+    attackRobot.userData.nextAttackAt = clock.elapsedTime + 2.4;
+    if (distance <= 14) {
+      attackRobot.lookAt(player.position.x, attackRobot.position.y, player.position.z);
+      const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, distance, 8), new THREE.MeshBasicMaterial({ color: 0xff4c55, transparent: true, opacity: 0.75 }));
+      beam.position.copy(attackRobot.position).lerp(player.position, 0.5);
+      beam.rotation.z = Math.PI / 2;
+      beam.lookAt(player.position);
+      scene.add(beam);
+      crimsonSlashes.push({ group: beam, mesh: beam, life: 0.18, maxLife: 0.18 });
+      goldRushState.health = Math.max(0, goldRushState.health - 450);
+      updateGoldRushCombatHud();
+      createDamagePopup(player.position, 450);
+    }
   }
   for (let i = betaProjectiles.length - 1; i >= 0; i -= 1) {
     const projectile = betaProjectiles[i];
