@@ -11622,6 +11622,9 @@ function setupInput() {
       return;
     }
     pendingCharacter = btn.dataset.char;
+    // Keep the gameplay selection synchronized with the card selection.
+    // The confirmation button still persists the choice to the account.
+    state.selectedCharacter = pendingCharacter;
     document.querySelectorAll(".char-btn").forEach((item) => {
       item.classList.toggle("selected", item.dataset.char === pendingCharacter);
     });
