@@ -4497,7 +4497,7 @@ function createTrainingMap() {
   // 콘크리트 바닥
   const ground = new THREE.Mesh(
     new THREE.PlaneGeometry(50, 85, 25, 42),
-    new THREE.MeshStandardMaterial({ color: 0x909090, roughness: 0.96, metalness: 0 }),
+    new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.96, metalness: 0 }),
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.set(0, 0.005, -7);
@@ -4505,7 +4505,7 @@ function createTrainingMap() {
   trainingMapGroup.add(ground);
 
   // 그리드
-  const grid = new THREE.GridHelper(50, 25, 0x6a6a6a, 0x7a7a7a);
+  const grid = new THREE.GridHelper(50, 25, 0x8a8a8a, 0x4a4a4a);
   grid.position.set(0, 0.055, -7);
   grid.material.opacity = 0.28;
   grid.material.transparent = true;
@@ -6745,6 +6745,9 @@ function startTraining() {
   mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
   state.safeCenter.set(0, 0);
   initTrainingPlayers();
+  battleMapGroup.visible = false;
+  trainingMapGroup.visible = true;
+  trainingMapGroup.traverse((object) => { object.visible = true; });
   rebuildAmmoPips();
   updateHud();
   resultOverlay.style.display = "none";
@@ -10413,9 +10416,6 @@ function updateBushVisuals() {
       state.bushes = state.bushes.filter((entry) => entry !== bush);
       fighter.greenUltimateBush = null;
     }
-  }
-  if (targets.length > 0 && attacker.characterType === "red") {
-    attacker.redUltimateCharge = Math.min(CHARACTERS.red.ultimate.chargeRequired, (attacker.redUltimateCharge ?? 0) + 1);
   }
   const player = getPlayer();
   if (!player) return;
