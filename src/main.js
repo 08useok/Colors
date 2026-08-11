@@ -2190,6 +2190,7 @@ const state = {
   battleLakeRects: [],
   battleBushes: [],
   trainingSolids: [],
+  showdownSolids: [],
   safeCenter: new THREE.Vector2(0, 0),
   scheduledHits: [],
   effects: [],
@@ -2241,6 +2242,9 @@ scene.add(battleMapGroup);
 const trainingMapGroup = new THREE.Group();
 scene.add(trainingMapGroup);
 trainingMapGroup.visible = false;
+const showdownMapGroup = new THREE.Group();
+scene.add(showdownMapGroup);
+showdownMapGroup.visible = false;
 
 const tempVec3 = new THREE.Vector3();
 const tempVec32 = new THREE.Vector3();
@@ -4489,6 +4493,39 @@ function createMap(mapData) {
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
+}
+
+function createShowdownThemeMap() {
+  showdownMapGroup.clear();
+  state.showdownSolids = [];
+  const ivory = new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.9 });
+  const sky = new THREE.MeshStandardMaterial({ color: 0x93def1, roughness: 0.84 });
+  const iceWall = new THREE.MeshStandardMaterial({ color: 0xfff2c9, emissive: 0x92d9e7, emissiveIntensity: 0.08, roughness: 0.72 });
+  const tile = (x, z, material) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), material);
+    mesh.position.set(x, 1.5, z);
+    mesh.receiveShadow = true;
+    showdownMapGroup.add(mesh);
+  };
+  for (let x = -4; x < 4; x += 1) {
+    for (let z = -4; z < 4; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
+  }
+  state.showdownSolids.push({ x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: showdownMapGroup });
+  const wall = (x, z, width, depth) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 2, depth), iceWall);
+    mesh.position.set(x, 2.55, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    showdownMapGroup.add(mesh);
+    state.showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: 3.55, mesh });
+  };
+  [[0,-20,40,1],[0,20,40,1],[-20,0,1,40],[20,0,1,40],[-8,-7,7,2],[8,7,7,2],[-8,8,2,7],[8,-8,2,7],[0,0,5,2]].forEach((spec) => wall(...spec));
+  [[-14,-14,0xff9fcf],[14,-14,0xb8edff],[-14,14,0xc7f29b],[14,14,0xffd38e]].forEach(([x,z,color]) => {
+    const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
+    scoop.position.set(x, 3.25, z);
+    scoop.castShadow = true;
+    showdownMapGroup.add(scoop);
+  });
 }
 
 function createTrainingMap() {
@@ -6790,8 +6827,14 @@ function resetGame() {
   stopAllBgm();
   crosshairEl.classList.remove("hidden");
   clock.getDelta();
-  battleMapGroup.visible = true;
+  const useIceCreamShowdown = CURRENT_SEASON === "beta3";
+  battleMapGroup.visible = !useIceCreamShowdown;
   trainingMapGroup.visible = false;
+  showdownMapGroup.visible = useIceCreamShowdown;
+  if (useIceCreamShowdown) {
+    scene.background = new THREE.Color(0x8ac9dc);
+    scene.fog.color.set(0x8ac9dc);
+  }
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
   state.goldRushMode = false;
@@ -6804,12 +6847,12 @@ function resetGame() {
   tdHud.classList.add("hidden");
   state.teams = null;
   state.playerTeam = null;
-  state.solids = state.battleSolids;
+  state.solids = useIceCreamShowdown ? state.showdownSolids : state.battleSolids;
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
   state.trainingMode = false;
   const currentMap = MAP_POOL[state.currentMapId];
-  mapNameEl.textContent = t("mapPrefix") + currentMap.name;
+  mapNameEl.textContent = useIceCreamShowdown ? "ICE CREAM SHOWDOWN" : t("mapPrefix") + currentMap.name;
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
   emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
@@ -12408,6 +12451,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
 createLights();
 createMap(MAP_POOL[0]);
 createTrainingMap();
+createShowdownThemeMap();
 setupInput();
 animate();
 rebuildAmmoPips();
