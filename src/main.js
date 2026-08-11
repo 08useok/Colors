@@ -10927,6 +10927,29 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+// Keep revive processing available to the main game loop. The original helper
+// lived inside setupInput(), so animate() could not resolve it at runtime.
+function updatePinkRevives() {
+  if (!state?.players) return;
+  for (const fighter of state.players) {
+    if (!fighter.dead || !fighter.reviveAt) continue;
+    if (state.gameTime > fighter.revivePendingUntil) {
+      fighter.reviveAt = 0;
+      continue;
+    }
+    if (state.gameTime < fighter.reviveAt) continue;
+    fighter.dead = false;
+    fighter.health = fighter.maxHealth * fighter.reviveHealthRatio;
+    fighter.invulnerableUntil = state.gameTime + CHARACTERS.pink.ultimate.invulnerabilityDuration;
+    fighter.mesh.visible = true;
+    fighter.shadow.visible = true;
+    fighter.healthBar.visible = true;
+    fighter.reviveAt = 0;
+    fighter.revivePendingUntil = 0;
+    createHealEffect(fighter.mesh.position.x, fighter.mesh.position.z);
+  }
+}
+
 function animate() {
   if (!inBackground) requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
