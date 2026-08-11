@@ -11110,6 +11110,17 @@ function setupInput() {
           html += `</div>`;
         }
         panel.innerHTML = html;
+        if (account.id === "sidebar-test") {
+          panel.insertAdjacentHTML("afterbegin", `<button id="test-grant-credits" class="side-nav-btn" type="button">테스트 크레딧 +1,000</button>`);
+          panel.querySelector("#test-grant-credits")?.addEventListener("click", () => {
+            const acc = loadAccount();
+            if (!acc || acc.id !== "sidebar-test") return;
+            acc.credits = (acc.credits ?? 0) + 1000;
+            saveAccount(acc);
+            updateLobbyUI(acc);
+            panel.querySelector("#test-grant-credits").textContent = "크레딧 지급 완료";
+          });
+        }
         panel.querySelectorAll(".season-toggle").forEach((row) => {
           row.addEventListener("click", () => {
             const detail = panel.querySelector(`.season-detail[data-season-detail="${row.dataset.season}"]`);
