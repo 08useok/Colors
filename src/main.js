@@ -5879,6 +5879,32 @@ const zoneRing = (() => {
 
 const attackAimIndicator = createAttackAimIndicator();
 
+function addIvorySprinkles(parent, radius, y = 0.12, ground = false) {
+  const colors = [0xff5f6d, 0x4cc9f0, 0xffc857, 0x9b5de5, 0x55d66b];
+  for (let i = 0; i < 12; i += 1) {
+    const angle = (i / 12) * Math.PI * 2;
+    const distance = radius * (ground ? 0.35 + (i % 4) * 0.14 : 0.55 + (i % 3) * 0.12);
+    const sprinkle = new THREE.Mesh(
+      new THREE.BoxGeometry(ground ? 0.16 : 0.12, ground ? 0.035 : 0.08, ground ? 0.045 : 0.035),
+      new THREE.MeshStandardMaterial({ color: colors[i % colors.length], roughness: 0.45 }),
+    );
+    sprinkle.position.set(Math.cos(angle) * distance, y, Math.sin(angle) * distance);
+    sprinkle.rotation.y = angle + i * 0.7;
+    parent.add(sprinkle);
+  }
+}
+
+function createIvoryScoopMesh() {
+  const group = new THREE.Group();
+  const scoop = new THREE.Mesh(
+    new THREE.SphereGeometry(0.42, 16, 12),
+    new THREE.MeshStandardMaterial({ color: 0xffffe8, roughness: 0.55, emissive: 0x173b42, emissiveIntensity: 0.08 }),
+  );
+  addIvorySprinkles(scoop, 0.4, 0.18);
+  group.add(scoop);
+  return group;
+}
+
 function createGreenAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.green.boomerangRange;
@@ -7686,7 +7712,7 @@ function beginIvoryAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.lastCombatTime = state.gameTime;
   const yaw = fighter.yaw;
-  const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 12), new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.35 }));
+  const mesh = createIvoryScoopMesh();
   mesh.position.set(fighter.mesh.position.x + Math.sin(yaw), 1.2, fighter.mesh.position.z + Math.cos(yaw));
   scene.add(mesh);
   state.projectiles.push({ ownerId: fighter.id, x: mesh.position.x, z: mesh.position.z, vx: Math.sin(yaw) * def.iceCreamSpeed, vz: Math.cos(yaw) * def.iceCreamSpeed, damage: def.iceCreamDamage, range: def.iceCreamRange, farThreshold: Infinity, farMultiplier: 1, distTraveled: 0, launchAt: state.gameTime, mesh, isIvoryIceCream: true, projRadius: 0.42 });
@@ -7696,8 +7722,17 @@ function beginIvoryAttack(fighter) {
 
 function spawnIvoryZone(x, z, ownerId) {
   const def = CHARACTERS.ivory;
-  const mesh = new THREE.Mesh(new THREE.CircleGeometry(def.iceCreamZoneRadius, 32), new THREE.MeshBasicMaterial({ color: 0xfff8dc, transparent: true, opacity: 0.42, side: THREE.DoubleSide, depthWrite: false }));
-  mesh.rotation.x = -Math.PI / 2;
+  const mesh = new THREE.Group();
+  const puddle = new THREE.Mesh(new THREE.CircleGeometry(def.iceCreamZoneRadius, 36), new THREE.MeshStandardMaterial({ color: 0xffffe8, emissive: 0x91dff2, emissiveIntensity: 0.16, transparent: true, opacity: 0.82, side: THREE.DoubleSide, depthWrite: false }));
+  puddle.rotation.x = -Math.PI / 2;
+  const overturnedScoop = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfffff2, roughness: 0.7 }));
+  overturnedScoop.scale.y = 0.45;
+  overturnedScoop.position.y = 0.12;
+  addIvorySprinkles(overturnedScoop, 0.58, 0.13);
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.9, 12), new THREE.MeshStandardMaterial({ color: 0xd7a45b, roughness: 0.88 }));
+  cone.position.y = 0.55;
+  addIvorySprinkles(mesh, def.iceCreamZoneRadius, 0.035, true);
+  mesh.add(puddle, overturnedScoop, cone);
   mesh.position.set(x, 0.08, z);
   scene.add(mesh);
   state.ivoryZones.push({ mesh, x, z, ownerId, nextTickAt: state.gameTime, expiresAt: state.gameTime + def.iceCreamZoneDuration });
