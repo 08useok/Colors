@@ -4964,6 +4964,7 @@ function startTakeDown() {
   state.scheduledHits = [];
   state.projectiles.forEach((p) => scene.remove(p.mesh));
   state.projectiles = [];
+  state.ivoryZones = [];
   state.deathOrder = [];
   state.effects.forEach((e) => scene.remove(e.mesh));
   state.effects = [];
