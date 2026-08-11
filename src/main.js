@@ -6716,7 +6716,9 @@ function initTrainingPlayers() {
 function startTraining() {
   pauseLobbyBgm();
   clock.getDelta();
+  if (pendingCharacter) state.selectedCharacter = pendingCharacter;
   battleMapGroup.visible = false;
+  chopWoodMapGroup.visible = false;
   trainingMapGroup.visible = true;
   state.solids = state.trainingSolids;
   state.lakeRects = [];
@@ -6746,6 +6748,8 @@ function startTraining() {
   mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
   state.safeCenter.set(0, 0);
   initTrainingPlayers();
+  // Keep the training arena visible even when the previous mode hid map groups.
+  trainingMapGroup.visible = true;
   rebuildAmmoPips();
   updateHud();
   resultOverlay.style.display = "none";
