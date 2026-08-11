@@ -1655,7 +1655,8 @@ function showDailyLogin(account) {
   const locked = isLockedToday(account);
   dailyIdInput.disabled = locked;
   dailyLoginBtn.disabled = locked;
-  accountRecoveryBtn.style.display = locked ? "block" : "none";
+  // ID를 잊어도 로그인 창에서 바로 확인할 수 있도록 항상 노출한다.
+  accountRecoveryBtn.style.display = "block";
 
   if (locked) {
     dailyLoginError.textContent = t("loginExceeded");
