@@ -2177,6 +2177,7 @@ const state = {
   gameOver: false,
   players: [],
   projectiles: [],
+  ivoryZones: [],
   deathOrder: [],
   resultRevealAt: 0,
   forceSpectatorExit: false,
