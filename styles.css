@@ -2141,6 +2141,15 @@ body.lobby-active #takedown-hud {
   font-size: 11px;
 }
 
+.lobby-preview-area {
+  margin-top: 14px;
+  margin-bottom: 18px;
+}
+
+.lobby-preview-area canvas {
+  max-width: min(480px, 80vw);
+}
+
 .order-event-lobby-card {
   display: grid;
   gap: 5px;
