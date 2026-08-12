@@ -3802,8 +3802,14 @@ const PREVIEW_FEET_Y = -1.85;
 
 function fitModelForPreview(model) {
   if (!model) return model;
+  // Skin accessories (crowns/horns) must not change the body reference height.
+  // Otherwise equipping a skin makes the whole character appear smaller.
+  const skinParts = [model.userData?.skinAccessory, model.userData?.crown].filter(Boolean);
+  const skinVisibility = skinParts.map((part) => part.visible);
+  skinParts.forEach((part) => { part.visible = false; });
   model.updateMatrixWorld(true);
   const size = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
+  skinParts.forEach((part, index) => { part.visible = skinVisibility[index]; });
   if (size.y < 0.001) return model;
   const targetHeight = model.userData.isCyanTemplatePreview ? PREVIEW_HEIGHT * 2.1 : PREVIEW_HEIGHT;
   model.scale.multiplyScalar(targetHeight / size.y);
