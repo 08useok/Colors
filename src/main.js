@@ -2617,7 +2617,6 @@ function buildCyanRigModel(gltf, charKey = "cyan") {
   });
   group.userData = {
     isGlbModel: true, isCyanGlb: true, cyanModel: model,
-    baseBodyScale: model.scale.clone(),
     cyanTemplateCharacter: charKey,
     cyanMixer, cyanWalkAction, cyanArmBones, cyanArmBind, bodyMaterials, guitar: null,
   };
@@ -2702,8 +2701,6 @@ function buildPinkRigModel(glbSet, skinId) {
     pinkRootMotionNodes: rootMotionNodes,
   };
   if (skinId) applySkin(group, skinId);
-  // Keep skin accessories from changing the imported body rig scale.
-  model.scale.copy(group.userData.baseBodyScale);
   return group;
 }
 
