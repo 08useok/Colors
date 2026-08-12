@@ -3437,6 +3437,8 @@ function createNameLabel(name, hexColor) {
 // ── Lobby 3D character preview ──
 const previewCanvas = document.getElementById("char-preview-canvas");
 const lobbyPreviewCanvas = document.getElementById("lobby-preview-canvas");
+const lobbyPreviewWrap = document.getElementById("lobby-preview-wrap");
+const characterPreviewWrap = document.getElementById("char-preview-wrap");
 const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
 const lobbyPreviewRenderer = new THREE.WebGLRenderer({ canvas: lobbyPreviewCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
 previewRenderer.setPixelRatio(UI_PIXEL_RATIO);
@@ -3890,6 +3892,8 @@ function setPreviewCharacter(charType) {
   const key = charType + (skinId || "");
   if (previewChar === key && previewModel) return;
   if (previewModel) previewScene.remove(previewModel);
+  lobbyPreviewWrap?.classList.add("preview-pending");
+  characterPreviewWrap?.classList.add("preview-pending");
   previewChar = key;
   previewCharType = charType;
   const charDef = CHARACTERS[charType];
@@ -3913,6 +3917,8 @@ function setPreviewCharacter(charType) {
       m.userData = {};
       previewModel = fitModelForPreview(m);
       previewScene.add(previewModel);
+      lobbyPreviewWrap?.classList.remove("preview-pending");
+      characterPreviewWrap?.classList.remove("preview-pending");
     };
     if (_pinkGlb.loop) {
       setupPinkPreview(_pinkGlb.loop);
@@ -3923,20 +3929,28 @@ function setPreviewCharacter(charType) {
     previewIsGlb = true;
     previewModel = fitModelForPreview(createBluePreviewModel());
     previewScene.add(previewModel);
+    lobbyPreviewWrap?.classList.remove("preview-pending");
+    characterPreviewWrap?.classList.remove("preview-pending");
   } else if (charType === "cyan" && _cyanPreviewGlb) {
     previewIsGlb = true;
     previewModel = fitModelForPreview(createCyanPreviewModel(skinId));
     previewScene.add(previewModel);
+    lobbyPreviewWrap?.classList.remove("preview-pending");
+    characterPreviewWrap?.classList.remove("preview-pending");
   } else if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType) && _cyanPreviewGlb) {
     previewIsGlb = true;
     previewModel = fitModelForPreview(createCyanTemplatePreviewModel(charType, skinId));
     previewScene.add(previewModel);
+    lobbyPreviewWrap?.classList.remove("preview-pending");
+    characterPreviewWrap?.classList.remove("preview-pending");
   } else {
     previewModel = createStickman(charDef.color, skinId);
     previewIsGlb = Boolean(previewModel.userData.isGlbModel);
     previewModel.position.y = 0;
     fitModelForPreview(previewModel);
     previewScene.add(previewModel);
+    lobbyPreviewWrap?.classList.remove("preview-pending");
+    characterPreviewWrap?.classList.remove("preview-pending");
   }
 }
 

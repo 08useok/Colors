@@ -2153,6 +2153,10 @@ body.lobby-active #takedown-hud {
   pointer-events: none;
 }
 
+.preview-pending {
+  visibility: hidden;
+}
+
 .lobby-preview-area canvas,
 .character-preview-area canvas {
   width: 100%;
