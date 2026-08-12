@@ -3801,7 +3801,9 @@ function setupFrontModel(charType) {
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
   } else if (charType === 'cyan' && _cyanPreviewGlb) {
-    pinkFrontModel = fitModelForPreview(createCyanPreviewModel());
+    const acc = loadAccount();
+    const skinId = acc?.selectedSkins?.cyan || null;
+    pinkFrontModel = fitModelForPreview(createCyanPreviewModel(skinId));
     pinkFrontSk = null;
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
