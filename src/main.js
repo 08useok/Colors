@@ -798,6 +798,14 @@ const PROFILE_BGS = {
   bg_icecream: { name: "아이스크림 가게", css: "linear-gradient(135deg,#ffd6e7,#bdebe5)", price: 0 },
 };
 
+const SEASON_LOBBY_BACKGROUNDS = {
+  alpha4: "radial-gradient(circle at 50% 38%, rgba(110, 74, 46, 0.42), rgba(14, 9, 7, 0.88) 78%)",
+  beta1: "radial-gradient(circle at 50% 38%, rgba(166, 54, 42, 0.42), rgba(18, 7, 7, 0.9) 78%)",
+  beta2: "radial-gradient(circle at 50% 38%, rgba(222, 166, 55, 0.42), rgba(24, 13, 5, 0.9) 78%)",
+  beta3: "radial-gradient(circle at 50% 38%, rgba(100, 196, 214, 0.38), rgba(7, 22, 28, 0.9) 78%)",
+  beta4: "radial-gradient(circle at 50% 38%, rgba(255, 214, 231, 0.38), rgba(17, 37, 40, 0.9) 78%)",
+};
+
 const BADGES = {
   badge_none:  { emoji: "",   name: "없음",  price: 0 },
   badge_star:  { emoji: "⭐", name: "스타",  price: 150 },
@@ -1823,6 +1831,7 @@ function showLobby() {
   ultimateButton?.classList.add("hidden");
   document.getElementById("emote-btns")?.classList.add("hidden");
   messageOverlay.style.display = "flex";
+  messageOverlay.style.background = SEASON_LOBBY_BACKGROUNDS[CURRENT_SEASON] || SEASON_LOBBY_BACKGROUNDS.alpha4;
   resultOverlay.style.display = "none";
   showdownBgm.pause();
   showdownMusic.pause();
@@ -1849,6 +1858,7 @@ function showLobby() {
     showLobbyEventMapIfActive();
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
+    characterPanel.classList.remove("hidden");
     dailyLogin.classList.add("hidden");
     sidePanel.classList.remove("hidden");
     colorButtons.classList.remove("hidden");
