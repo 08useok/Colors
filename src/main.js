@@ -3685,6 +3685,7 @@ function createCyanPreviewModel(skinId = null) {
       const headPoint = new THREE.Vector3(0, bodyBox.max.y - 0.62, 0);
       model.worldToLocal(headPoint);
       crown.position.copy(headPoint);
+      crown.visible = true;
     }
   }
   return model;
