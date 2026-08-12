@@ -1859,7 +1859,7 @@ function showLobby() {
     showLobbyEventMapIfActive();
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
-    characterPanel.classList.remove("hidden");
+    characterPanel.classList.add("hidden");
     dailyLogin.classList.add("hidden");
     sidePanel.classList.remove("hidden");
     colorButtons.classList.remove("hidden");
