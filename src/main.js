@@ -1860,6 +1860,7 @@ function showLobby() {
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     characterPanel.classList.add("hidden");
+    lobbyPreviewWrap?.classList.remove("preview-suppressed");
     dailyLogin.classList.add("hidden");
     sidePanel.classList.remove("hidden");
     colorButtons.classList.remove("hidden");
@@ -11849,6 +11850,7 @@ function setupInput() {
       }
     }
     characterPanel.classList.toggle("hidden", !willShow);
+    lobbyPreviewWrap?.classList.toggle("preview-suppressed", willShow);
     modeSelector.classList.add("hidden");
     characterToggle.classList.toggle("active", willShow);
     startBattleBtn.classList.remove("active");
@@ -11873,6 +11875,7 @@ function setupInput() {
     modeSelector.classList.add("hidden");
     characterPanel.classList.add("hidden");
     characterToggle.classList.remove("active");
+    lobbyPreviewWrap?.classList.remove("preview-suppressed");
     startBattleBtn.classList.remove("active");
   });
 

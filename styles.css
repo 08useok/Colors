@@ -2186,6 +2186,11 @@ body.lobby-active #takedown-hud {
   visibility: hidden;
 }
 
+.preview-suppressed {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .lobby-preview-area canvas,
 .character-preview-area canvas {
   width: 100%;
