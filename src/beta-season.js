@@ -25,6 +25,7 @@ const attackComboState = document.getElementById("attack-combo-state");
 const attackTitle = crimsonAttackButton.querySelector("strong");
 const attackHint = crimsonAttackButton.querySelector("small");
 const ultimateButton = document.getElementById("ultimate-btn");
+const betaThumbdownEmoteButton = document.getElementById("beta-emote-thumbdown-btn");
 const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
@@ -3979,6 +3980,10 @@ document.getElementById("test-ally-death-btn").addEventListener("click", () => {
   ally.visible = false;
   createPinkAllyDeathEffect(ally);
 });
+betaThumbdownEmoteButton?.addEventListener("click", () => {
+  showToast("👎 역따봉");
+});
+
 document.getElementById("overview-btn").addEventListener("click", (event) => {
   overview = !overview;
   event.currentTarget.textContent = overview ? "플레이 시점" : "전체 보기";
