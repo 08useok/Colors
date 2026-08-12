@@ -4056,15 +4056,15 @@ function animate() {
   }
   if (attackRobot?.userData.healthBar) {
     if (attackRobot.visible && attackRobot.userData.health > 0 && attackRobot.userData.health < attackRobot.userData.maxHealth && clock.elapsedTime - attackRobot.userData.lastCombatAt >= 5 && clock.elapsedTime >= attackRobot.userData.nextRegenAt) {
-      attackRobot.userData.health = Math.min(attackRobot.userData.maxHealth, attackRobot.userData.health + attackRobot.userData.maxHealth * 0.25);
+      attackRobot.userData.health = Math.min(attackRobot.userData.maxHealth, attackRobot.userData.health + attackRobot.userData.maxHealth * 0.1);
       attackRobot.userData.nextRegenAt = clock.elapsedTime + 1;
       updateGoldRushHealthBar(attackRobot.userData.healthBar, attackRobot.userData.health, attackRobot.userData.maxHealth);
     }
     attackRobot.userData.healthBar.visible = attackRobot.visible;
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
   }
-  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 3 && clock.elapsedTime >= (goldRushState.nextRegenAt ?? -Infinity)) {
-    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.25);
+  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 5 && clock.elapsedTime >= (goldRushState.nextRegenAt ?? -Infinity)) {
+    goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.1);
     goldRushState.nextRegenAt = clock.elapsedTime + 1;
     updateGoldRushCombatHud();
   }
