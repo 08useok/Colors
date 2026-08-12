@@ -3667,7 +3667,7 @@ function createCyanPreviewModel(skinId = null) {
     const crown = model.userData.crown;
     if (crown) {
       model.updateMatrixWorld(true);
-      const headPoint = new THREE.Vector3(0, bodyBox.max.y - 0.18, 0);
+      const headPoint = new THREE.Vector3(0, bodyBox.max.y - 1.05, 0);
       model.worldToLocal(headPoint);
       crown.position.copy(headPoint);
     }
