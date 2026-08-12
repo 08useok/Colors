@@ -3681,7 +3681,12 @@ function createCyanPreviewModel(skinId = null) {
     model.updateMatrixWorld(true);
     const bodyBox = new THREE.Box3().setFromObject(model);
     applySkin(model, skinId);
-    const crown = model.userData.crown;
+    let crown = model.userData.crown;
+    if (!crown) {
+      crown = createHighPolyCrown(getCrownVariant("alpha_champion_cyan"));
+      model.add(crown);
+      model.userData.crown = crown;
+    }
     if (crown) {
       model.updateMatrixWorld(true);
       const headPoint = new THREE.Vector3(0, bodyBox.max.y - 1, 0);
