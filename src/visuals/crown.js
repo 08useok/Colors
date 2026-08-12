@@ -73,7 +73,7 @@ export function createHighPolyCrown(variant = "champion") {
     part.castShadow = true;
     part.receiveShadow = true;
   });
-  crown.scale.setScalar(0.6);
+  crown.scale.setScalar(0.36);
   crown.userData.approximateTriangles = 18944 + style.spikeCount * 80;
   crown.userData.bottomY = -0.118;
   crown.userData.variant = variant;
