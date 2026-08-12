@@ -3645,7 +3645,7 @@ function createBluePreviewModel() {
   return model;
 }
 
-function createCyanPreviewModel() {
+function createCyanPreviewModel(skinId = null) {
   if (!_cyanPreviewGlb) return null;
   const model = _cyanPreviewGlb.scene.clone(true);
   model.updateMatrixWorld(true);
@@ -3662,6 +3662,7 @@ function createCyanPreviewModel() {
     c.castShadow = true;
   });
   model.userData.isCyanPreview = true;
+  if (skinId) applySkin(model, skinId);
   return model;
 }
 
@@ -3866,7 +3867,7 @@ function setPreviewCharacter(charType) {
     previewScene.add(previewModel);
   } else if (charType === "cyan" && _cyanPreviewGlb) {
     previewIsGlb = true;
-    previewModel = fitModelForPreview(createCyanPreviewModel());
+    previewModel = fitModelForPreview(createCyanPreviewModel(skinId));
     previewScene.add(previewModel);
   } else if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType) && _cyanPreviewGlb) {
     previewIsGlb = true;
