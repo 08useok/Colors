@@ -6942,6 +6942,8 @@ function resetGame() {
   battleMapGroup.visible = !useIceCreamShowdown;
   trainingMapGroup.visible = false;
   showdownMapGroup.visible = useIceCreamShowdown;
+  // 쇼다운 진입 때 맵 그룹의 자식(벽 포함)이 이전 모드 상태로 숨겨지지 않도록 보장한다.
+  if (useIceCreamShowdown) showdownMapGroup.traverse((node) => { node.visible = true; });
   if (useIceCreamShowdown) {
     scene.background = new THREE.Color(0x8ac9dc);
     scene.fog.color.set(0x8ac9dc);
