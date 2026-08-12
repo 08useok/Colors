@@ -734,6 +734,7 @@ const skinModelBounds = new THREE.Box3();
 function getHeadwearModel(group) {
   if (group.userData.cyanModel) return group.userData.cyanModel;
   if (group.userData.blueModel) return group.userData.blueModel;
+  if (group.userData.fallbackHead) return group.userData.fallbackHead;
   const scenes = Object.values(group.userData.pinkScenes ?? {});
   return scenes.find((sceneModel) => sceneModel?.visible) ?? scenes[0] ?? null;
 }
@@ -743,14 +744,19 @@ function updateHeadAttachedSkin(group) {
   if (!hat?.userData.autoFitHeadwear) return;
   const model = getHeadwearModel(group);
   const headBone = model?.getObjectByName("CC_Base_Head");
-  if (!headBone) {
+  if (!headBone && !model?.isMesh) {
     hat.visible = false;
     return;
   }
   group.updateWorldMatrix(true, true);
-  headBone.updateWorldMatrix(true, false);
-  headBone.getWorldPosition(skinHeadPosition);
-  headBone.getWorldQuaternion(skinHeadWorldQuaternion);
+  if (headBone) {
+    headBone.updateWorldMatrix(true, false);
+    headBone.getWorldPosition(skinHeadPosition);
+    headBone.getWorldQuaternion(skinHeadWorldQuaternion);
+  } else {
+    model.getWorldPosition(skinHeadPosition);
+    model.getWorldQuaternion(skinHeadWorldQuaternion);
+  }
   if (!Number.isFinite(hat.userData.seatY)) {
     skinModelBounds.setFromObject(model);
     skinHatTopPosition.set(skinHeadPosition.x, skinModelBounds.max.y, skinHeadPosition.z);
@@ -2821,6 +2827,7 @@ function createStickman(color, skinId) {
   head.position.y = 1.7;
   head.castShadow = true;
   group.add(head);
+  group.userData.fallbackHead = head;
 
   // 얼굴 (캔버스 텍스처 — 캐릭터별 표정)
   const faceCanvas = document.createElement('canvas');
