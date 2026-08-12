@@ -563,8 +563,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 35%, rgba(100, 65, 45, 0.55), rgba(8, 5, 4, 0.78) 75%);
-  backdrop-filter: blur(6px);
+  background: transparent;
+  backdrop-filter: none;
   pointer-events: auto;
 }
 
