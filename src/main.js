@@ -3555,6 +3555,7 @@ const _pinkGlb = { start: null, loop: null, end: null };
 const _purpleGlb = { start: null, loop: null, end: null };
 const _ivoryGlb = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
+let _ivoryPreviewGlb = null;
 
 function refreshLoadedIvoryModels() {
   // GLB callback can fire before the game state is initialized.  Avoid touching
@@ -3652,6 +3653,7 @@ _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _st
 _glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); refreshLoadedPreviewCharacter("ivory"); });
 _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/ivory/ivory_preview.glb', g => { _ivoryPreviewGlb = g; refreshLoadedPreviewCharacter("ivory"); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m1s.glb', g => { _ivoryShopkeeperGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => { _ivoryShopkeeperGlb.loop = _stripRootMotion(g); refreshLoadedPreviewCharacter("ivory"); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
@@ -3942,6 +3944,14 @@ function setPreviewCharacter(charType) {
   } else if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType) && _cyanPreviewGlb) {
     previewIsGlb = true;
     previewModel = fitModelForPreview(createCyanTemplatePreviewModel(charType, skinId));
+    previewScene.add(previewModel);
+    lobbyPreviewWrap?.classList.remove("preview-pending");
+    characterPreviewWrap?.classList.remove("preview-pending");
+  } else if (charType === "ivory" && _ivoryPreviewGlb) {
+    previewIsGlb = true;
+    const model = skeletonClone(_ivoryPreviewGlb.scene);
+    model.traverse((part) => { if (part.isMesh) part.frustumCulled = false; });
+    previewModel = fitModelForPreview(model);
     previewScene.add(previewModel);
     lobbyPreviewWrap?.classList.remove("preview-pending");
     characterPreviewWrap?.classList.remove("preview-pending");
