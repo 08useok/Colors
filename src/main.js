@@ -3660,7 +3660,17 @@ function createCyanPreviewModel(skinId = null) {
     c.castShadow = true;
   });
   model.userData.isCyanPreview = true;
-  if (skinId) applySkin(model, skinId);
+  if (skinId) {
+    applySkin(model, skinId);
+    const crown = model.userData.crown;
+    if (crown) {
+      model.updateMatrixWorld(true);
+      const bodyBox = new THREE.Box3().setFromObject(model);
+      const headPoint = new THREE.Vector3(0, bodyBox.max.y - 0.18, 0);
+      model.worldToLocal(headPoint);
+      crown.position.copy(headPoint);
+    }
+  }
   return model;
 }
 
