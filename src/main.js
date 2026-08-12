@@ -6937,7 +6937,8 @@ function resetGame() {
   stopAllBgm();
   crosshairEl.classList.remove("hidden");
   clock.getDelta();
-  const useIceCreamShowdown = CURRENT_SEASON === "beta3";
+  // 베타 쇼다운은 시즌 번호와 관계없이 베타 쇼다운 테마를 사용한다.
+  const useIceCreamShowdown = IS_BETA_SEASON;
   battleMapGroup.visible = !useIceCreamShowdown;
   trainingMapGroup.visible = false;
   showdownMapGroup.visible = useIceCreamShowdown;
