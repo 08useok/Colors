@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.137">
+  <link rel="stylesheet" href="./styles.css?v=1.5.138">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -701,6 +701,10 @@
 
         <div id="color-buttons" class="color-buttons hidden"></div>
 
+        <div id="lobby-preview-wrap" class="char-preview-wrap lobby-preview-area">
+          <canvas id="lobby-preview-canvas"></canvas>
+        </div>
+
         <div id="lobby-main" class="message-card hidden">
           <div class="lobby-header">
             <div class="lobby-left">
@@ -725,10 +729,6 @@
                 <div id="streak-display" class="lobby-streak hidden"></div>
               </div>
             </div>
-          </div>
-
-          <div id="lobby-preview-wrap" class="char-preview-wrap lobby-preview-area">
-            <canvas id="lobby-preview-canvas"></canvas>
           </div>
 
           <div id="character-panel" class="hidden">
@@ -959,6 +959,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.3.37"></script>
+  <script type="module" src="./src/main.js?v=1.5.3.38"></script>
 </body>
 </html>
