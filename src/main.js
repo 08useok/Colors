@@ -3698,7 +3698,9 @@ function createCyanTemplatePreviewModel(charKey, skinId) {
   if (accessory) {
     const headwear = accessory.userData.headwearPart ?? accessory;
     // Preview models have no head bone, so place the crown directly above the body.
-    headwear.position.set(0, box.max.y - 0.42, 0);
+    const headPoint = new THREE.Vector3(0, box.max.y - 0.18, 0);
+    model.worldToLocal(headPoint);
+    headwear.position.copy(headPoint);
   }
   return model;
 }
