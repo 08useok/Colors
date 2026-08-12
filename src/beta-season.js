@@ -211,7 +211,8 @@ iceCreamShowdownMap.visible = false;
 scene.add(iceCreamShowdownMap);
 const ivoryTileMaterial = new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.9 });
 const skyTileMaterial = new THREE.MeshStandardMaterial({ color: 0x93def1, roughness: 0.84 });
-const iceWallMaterial = new THREE.MeshStandardMaterial({ color: 0xfff2c9, emissive: 0x92d9e7, emissiveIntensity: 0.08, roughness: 0.72 });
+// 쇼다운 바닥은 베타 테마를 유지하되, 벽은 메인 게임의 석재 테마를 사용한다.
+const iceWallMaterial = new THREE.MeshStandardMaterial({ color: 0x40545a, roughness: 0.92, metalness: 0 });
 function showdownBox(x, y, z, width, height, depth, material = iceWallMaterial, solid = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
