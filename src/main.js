@@ -782,6 +782,7 @@ function updateHeadAttachedSkin(group) {
 
 const EMOTES = {
   emote_thumbs: { emoji: "👍", name: "엄지척", price: 300 },
+  emote_thumbdown: { emoji: "👎", name: "역따봉", price: 300 },
   emote_laugh:  { emoji: "😂", name: "웃음",   price: 300 },
   emote_cool:   { emoji: "😎", name: "선글라스", price: 300 },
   emote_fire:   { emoji: "🔥", name: "불꽃",   price: 300 },
