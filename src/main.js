@@ -389,6 +389,7 @@ function applySkin(group, skinId) {
       crown.visible = false;
       crown.userData.autoFitHeadwear = true;
       crown.userData.seatBottomY = crown.userData.bottomY;
+      crown.userData.seatInset = 0.22;
       group.userData.headwear = crown;
     } else {
       fitCrownToHead(crown, 2.38);
