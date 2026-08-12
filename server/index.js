@@ -78,7 +78,7 @@ wss.on("connection", (ws) => {
       player.nickname = msg.nickname || "플레이어";
       player.charType = msg.charType || "red";
       player.newAbilityChars = Array.isArray(msg.newAbilityChars)
-        ? [...new Set(msg.newAbilityChars.filter((charType) => ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"].includes(charType)))]
+        ? [...new Set(msg.newAbilityChars.filter((charType) => ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"].includes(charType)))]
         : [];
 
       let room = Object.values(rooms).find(
