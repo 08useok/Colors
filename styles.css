@@ -487,6 +487,24 @@ body {
   display: none !important;
 }
 
+/* 로비에서는 인게임 맵과 전투 HUD를 완전히 분리한다. */
+body.lobby-active #game-canvas,
+body.lobby-active #hud > .panel,
+body.lobby-active #crosshair,
+body.lobby-active #mobile-joystick,
+body.lobby-active #mobile-attack-button,
+body.lobby-active #showdown-announce,
+body.lobby-active #game-title-announce,
+body.lobby-active #kill-feed,
+body.lobby-active #warning,
+body.lobby-active #spectator-exit-button,
+body.lobby-active #boss-direction-indicator,
+body.lobby-active #chop-wood-hud,
+body.lobby-active #takedown-hud {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 #kill-feed {
   position: absolute;
   right: 18px;

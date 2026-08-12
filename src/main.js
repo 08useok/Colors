@@ -1826,6 +1826,7 @@ function syncLobbyStartButton() {
 }
 
 function showLobby() {
+  document.body.classList.add("lobby-active");
   crosshairEl.classList.add("hidden");
   // 전투 HUD 잔여물 정리 — updateHud가 로비에서는 안 돌아 궁극기 버튼이 남는다
   ultimateButton?.classList.add("hidden");
@@ -6950,6 +6951,7 @@ function exitTraining() {
 }
 
 function resetGame() {
+  document.body.classList.remove("lobby-active");
   audio.play("gameStart");
   stopAllBgm();
   crosshairEl.classList.remove("hidden");
