@@ -3650,10 +3650,10 @@ _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _st
 
 // Ivory base model — the beta test uses the same three-phase animation rig.
 _glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); });
+_glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); refreshLoadedPreviewCharacter("ivory"); });
 _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m1s.glb', g => { _ivoryShopkeeperGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => { _ivoryShopkeeperGlb.loop = _stripRootMotion(g); });
+_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => { _ivoryShopkeeperGlb.loop = _stripRootMotion(g); refreshLoadedPreviewCharacter("ivory"); });
 _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
 
 function createBluePreviewModel() {
@@ -3954,6 +3954,15 @@ function setPreviewCharacter(charType) {
     lobbyPreviewWrap?.classList.remove("preview-pending");
     characterPreviewWrap?.classList.remove("preview-pending");
   }
+}
+
+function refreshLoadedPreviewCharacter(charType) {
+  if (typeof previewCharType === "undefined" || previewCharType !== charType) return;
+  if (previewModel?.userData?.isGlbModel) return;
+  if (previewModel) previewScene.remove(previewModel);
+  previewModel = null;
+  previewChar = null;
+  setPreviewCharacter(charType);
 }
 
 function renderPreview(dt) {
