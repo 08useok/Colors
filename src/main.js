@@ -3552,6 +3552,11 @@ _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
 });
 _glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
   _cyanWalkGlb = _stripRootMotion(g);
+  // The shared rig contains an authored scale track that is useful for the
+  // source animation preview but shrinks Crimson/Gold during gameplay.
+  for (const clip of (_cyanWalkGlb.animations ?? [])) {
+    clip.tracks = clip.tracks.filter((track) => !/\.scale$/.test(track.name));
+  }
   refreshLoadedCyanTemplateModels();
   for (const charKey of CYAN_RIG_TEMPLATE_CHARACTERS) {
     if (previewCharType === charKey) {
