@@ -2141,6 +2141,35 @@ body.lobby-active #takedown-hud {
   font-size: 11px;
 }
 
+/* 캐릭터 선택 시 로비 전체를 덮는 독립 화면 */
+#character-panel:not(.hidden) {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  padding: 28px 24px 120px;
+  background: radial-gradient(circle at 50% 28%, rgba(92, 55, 35, 0.98), rgba(10, 6, 5, 0.99) 78%);
+}
+
+#character-panel:not(.hidden) .lobby-divider,
+#character-panel:not(.hidden) .char-select-label,
+#character-panel:not(.hidden) .char-select-row,
+#character-panel:not(.hidden) .color-info,
+#character-panel:not(.hidden) .character-actions {
+  width: min(920px, 94vw);
+}
+
+#character-panel:not(.hidden) .character-preview-area {
+  order: -1;
+  width: min(480px, 80vw);
+  height: min(480px, 52vh);
+  margin: 0 auto 10px;
+}
+
 .lobby-preview-area {
   position: fixed;
   left: 50%;
