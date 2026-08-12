@@ -13,6 +13,10 @@ export const SKINS = {
   beta2_ivory_shopkeeper: { id: "beta2_ivory_shopkeeper", name: "점원 아이보리", nameKey: "skinBeta2IvoryShopkeeperName", character: "ivory", season: "beta2", rarity: "epic", cost: 2500, desc: "skinBeta2IvoryShopkeeperDesc" },
 };
 
-export const SKIN_ID_MIGRATION = { red_orange: "beta_red_orange", red_crimson: "beta_red_crimson", red_red: "beta_red_red" };
+export const SKIN_ID_MIGRATION = {
+  red_orange: "beta_red_orange", red_crimson: "beta_red_crimson", red_red: "beta_red_red",
+  champion_cyan: "alpha_champion_cyan", cyan_champion: "alpha_champion_cyan",
+  alpha_cyan_champion: "alpha_champion_cyan", championCyan: "alpha_champion_cyan",
+};
 export function migrateSkinId(skinId) { return SKIN_ID_MIGRATION[skinId] || skinId; }
 export function getSkinsForSeason(season) { return Object.values(SKINS).filter((skin) => skin.season === season); }
