@@ -743,7 +743,14 @@ function updateHeadAttachedSkin(group) {
   const hat = group.userData.headwear;
   if (!hat?.userData.autoFitHeadwear) return;
   const model = getHeadwearModel(group);
-  const headBone = model?.getObjectByName("CC_Base_Head");
+  let headBone = model?.getObjectByName("CC_Base_Head")
+    ?? model?.getObjectByName("Head")
+    ?? model?.getObjectByName("head");
+  if (!headBone && model) {
+    model.traverse((node) => {
+      if (!headBone && /(^|[_-])(head|cc_base_head)([_-]|$)/i.test(node.name ?? "")) headBone = node;
+    });
+  }
   if (!headBone && !model?.isMesh) {
     hat.visible = false;
     return;
