@@ -2144,7 +2144,12 @@ body.lobby-active #takedown-hud {
 /* 캐릭터 선택 시 로비 전체를 덮는 독립 화면 */
 #character-panel:not(.hidden) {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: none;
+  box-sizing: border-box;
   z-index: 100;
   display: flex;
   flex-direction: column;
