@@ -11827,7 +11827,12 @@ function setupInput() {
       const account = loadAccount();
       pendingCharacter = null;
       characterActions.classList.add("hidden");
-      if (account) updateLobbyUI(account);
+      if (account) {
+        previewTime = 0;
+        previewChar = null;
+        updateLobbyUI(account);
+        setPreviewCharacter(account.selectedCharacter);
+      }
     }
     characterPanel.classList.toggle("hidden", !willShow);
     modeSelector.classList.add("hidden");
