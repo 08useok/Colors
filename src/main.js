@@ -3695,9 +3695,10 @@ function createCyanTemplatePreviewModel(charKey, skinId) {
   // 달라 소품이 머리에서 한참 떨어져 붕 뜬다. applySkin 호출 전에 계산해둔
   // 원본(스케일 적용 전) 바운딩 박스의 머리 꼭대기로 다시 앉혀준다.
   const accessory = model.userData.skinAccessory;
-  if (accessory && !model.userData.headwear) {
+  if (accessory) {
     const headwear = accessory.userData.headwearPart ?? accessory;
-    headwear.position.set(0, box.max.y - 0.12, 0);
+    // Preview models have no head bone, so place the crown directly above the body.
+    headwear.position.set(0, box.max.y - 0.42, 0);
   }
   return model;
 }
