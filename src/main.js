@@ -3802,7 +3802,9 @@ function setupFrontModel(charType) {
     pinkFrontScene.add(pinkFrontModel);
   } else if (charType === 'cyan' && _cyanPreviewGlb) {
     const acc = loadAccount();
-    const skinId = acc?.selectedSkins?.cyan || null;
+    const skinId = acc?.selectedSkins?.cyan
+      || (acc?.ownedSkins?.includes("alpha_champion_cyan") ? "alpha_champion_cyan" : null)
+      || (acc?.ownedSkins?.includes("crown_cyan") ? "crown_cyan" : null);
     pinkFrontModel = fitModelForPreview(createCyanPreviewModel(skinId));
     pinkFrontSk = null;
     _applyCamera();
@@ -3859,7 +3861,9 @@ function fitModelForPreview(model) {
 
 function setPreviewCharacter(charType) {
   const acc = loadAccount();
-  const skinId = acc?.selectedSkins?.[charType] || null;
+  const skinId = acc?.selectedSkins?.[charType]
+    || (charType === "cyan" && acc?.ownedSkins?.includes("alpha_champion_cyan") ? "alpha_champion_cyan" : null)
+    || (charType === "cyan" && acc?.ownedSkins?.includes("crown_cyan") ? "crown_cyan" : null);
   const key = charType + (skinId || "");
   if (previewChar === key && previewModel) return;
   if (previewModel) previewScene.remove(previewModel);
