@@ -3551,6 +3551,7 @@ _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
 });
 _glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
   _cyanWalkGlb = _stripRootMotion(g);
+  refreshLoadedCyanTemplateModels();
   for (const charKey of CYAN_RIG_TEMPLATE_CHARACTERS) {
     if (previewCharType === charKey) {
       previewChar = null;
@@ -4497,6 +4498,26 @@ function createMap(mapData) {
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
   state.bushes = state.battleBushes;
+}
+
+function refreshLoadedCyanTemplateModels() {
+  if (!_cyanWalkGlb || typeof state === "undefined" || !state?.players) return;
+  for (const fighter of state.players) {
+    if (!CYAN_RIG_TEMPLATE_CHARACTERS.includes(fighter.characterType) || !fighter.mesh) continue;
+    if (fighter.mesh.userData.isCyanGlb && !fighter.mesh.userData.awaitingRigModel) continue;
+    const oldMesh = fighter.mesh;
+    const replacement = createStickman(CHARACTERS[fighter.characterType].color, fighter.skinId);
+    if (!replacement.userData.isCyanGlb) continue;
+    replacement.position.copy(oldMesh.position);
+    replacement.rotation.copy(oldMesh.rotation);
+    if (fighter.healthBar) replacement.add(fighter.healthBar);
+    if (fighter.nameLabel) replacement.add(fighter.nameLabel);
+    scene.remove(oldMesh);
+    scene.add(replacement);
+    fighter.mesh = replacement;
+    fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
+    fighter.bodyMaterials = replacement.userData.bodyMaterials;
+  }
 }
 
 function createShowdownThemeMap() {
