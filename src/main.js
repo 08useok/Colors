@@ -96,6 +96,7 @@ const mobileEventToggle = document.getElementById("mobile-event-toggle");
 const eventCountdown = document.getElementById("event-countdown");
 const modeSelector = document.getElementById("mode-selector");
 const characterPanel = document.getElementById("character-panel");
+const characterPanelClose = document.getElementById("character-panel-close");
 const characterToggle = document.getElementById("character-toggle");
 const characterActions = document.getElementById("character-actions");
 const tryCharacterBtn = document.getElementById("try-character-btn");
@@ -11854,6 +11855,14 @@ function setupInput() {
     modeSelector.classList.add("hidden");
     characterToggle.classList.toggle("active", willShow);
     startBattleBtn.classList.remove("active");
+  });
+
+  characterPanelClose?.addEventListener("click", () => {
+    characterPanel.classList.add("hidden");
+    characterActions.classList.add("hidden");
+    characterToggle.classList.remove("active");
+    lobbyPreviewWrap?.classList.remove("preview-suppressed");
+    pendingCharacter = null;
   });
 
   mobileEventToggle.addEventListener("click", (event) => {
