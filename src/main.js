@@ -3659,6 +3659,7 @@ function createCyanPreviewModel() {
     c.castShadow = true;
   });
   model.userData.isCyanPreview = true;
+  model.userData.isCyanTemplatePreview = true;
   return model;
 }
 
@@ -3805,7 +3806,8 @@ function fitModelForPreview(model) {
   model.updateMatrixWorld(true);
   const size = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
   if (size.y < 0.001) return model;
-  model.scale.multiplyScalar(PREVIEW_HEIGHT / size.y);
+  const targetHeight = model.userData.isCyanTemplatePreview ? PREVIEW_HEIGHT * 1.6 : PREVIEW_HEIGHT;
+  model.scale.multiplyScalar(targetHeight / size.y);
   model.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(model);
   const center = box.getCenter(new THREE.Vector3());
