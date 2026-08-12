@@ -3674,6 +3674,7 @@ function createCyanPreviewModel(skinId = null) {
     c.castShadow = true;
   });
   model.userData.isCyanPreview = true;
+  model.userData.cyanModel = model;
   if (skinId) {
     model.updateMatrixWorld(true);
     const bodyBox = new THREE.Box3().setFromObject(model);
@@ -3710,6 +3711,7 @@ function createCyanTemplatePreviewModel(charKey, skinId) {
     c.castShadow = true;
   });
   model.userData.isCyanPreview = true;
+  model.userData.cyanModel = model;
   // 시안 리그를 공유하는 크림슨/골드도 스킨(리컬러·소품)을 로비 프리뷰에서
   // 보여줘야 하는데, 이 프리뷰 전용 모델은 배틀용 createStickman과 분리돼
   // 있어서 applySkin을 안 태우면 장착한 스킨이 프리뷰에 반영되지 않는다.
