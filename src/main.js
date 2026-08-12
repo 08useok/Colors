@@ -11839,22 +11839,26 @@ function setupInput() {
   // 전투 시작
   characterToggle.addEventListener("click", () => {
     const willShow = characterPanel.classList.contains("hidden");
-    if (willShow) {
-      const account = loadAccount();
-      pendingCharacter = null;
-      characterActions.classList.add("hidden");
-      if (account) {
-        previewTime = 0;
-        previewChar = null;
-        updateLobbyUI(account);
-        setPreviewCharacter(account.selectedCharacter);
-      }
-    }
+    // 화면 전환을 먼저 반영해 버튼 클릭 즉시 선택 화면을 보여준다.
     characterPanel.classList.toggle("hidden", !willShow);
     lobbyPreviewWrap?.classList.toggle("preview-suppressed", willShow);
     modeSelector.classList.add("hidden");
     characterToggle.classList.toggle("active", willShow);
     startBattleBtn.classList.remove("active");
+    if (willShow) {
+      const account = loadAccount();
+      pendingCharacter = null;
+      characterActions.classList.add("hidden");
+      if (account) {
+        requestAnimationFrame(() => {
+          if (characterPanel.classList.contains("hidden")) return;
+          previewTime = 0;
+          previewChar = null;
+          updateLobbyUI(account);
+          setPreviewCharacter(account.selectedCharacter);
+        });
+      }
+    }
   });
 
   characterPanelClose?.addEventListener("click", () => {
