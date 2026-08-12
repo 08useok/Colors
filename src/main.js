@@ -3659,6 +3659,8 @@ function createBluePreviewModel() {
 
 function createCyanPreviewModel(skinId = null) {
   if (!_cyanPreviewGlb) return null;
+  // Cyan's champion preview always shows its signature crown.
+  skinId ||= "alpha_champion_cyan";
   const model = _cyanPreviewGlb.scene.clone(true);
   model.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(model);
