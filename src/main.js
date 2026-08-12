@@ -2576,7 +2576,7 @@ function buildCyanRigModel(gltf, charKey = "cyan") {
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
-  const templateScale = CYAN_RIG_TEMPLATE_CHARACTERS.includes(charKey) ? 1.25 : 1;
+  const templateScale = CYAN_RIG_TEMPLATE_CHARACTERS.includes(charKey) ? 1.6 : 1;
   const scale = (CYAN_BATTLE_HEIGHT * templateScale) / Math.max(size.y, 0.001);
   model.scale.setScalar(scale);
   model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
