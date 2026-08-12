@@ -2633,10 +2633,14 @@ function buildPinkRigModel(glbSet, skinId) {
     s.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(s);
     const sz = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
     // 파이터 group은 항상 world y=1.85 → 발이 group local y=-1.85에 와야 지면에 닿는다
     const sc = GLB_BATTLE_HEIGHT / Math.max(sz.y, 0.001);
     s.scale.setScalar(sc);
-    s.position.set(0, -box.min.y * sc + GLB_FEET_Y, 0);
+    // Keep the imported rig centered like the beta build.  Ivory's GLB has
+    // accessory meshes offset from the scene origin; without this correction
+    // they appear detached and floating above the body in battle.
+    s.position.set(-center.x * sc, -box.min.y * sc + GLB_FEET_Y, -center.z * sc);
     _applyPinkToon(s);
     s.traverse(c => { if (c.isMesh) { c.frustumCulled = false; c.castShadow = true; } });
     s.visible = visible;
