@@ -3436,10 +3436,15 @@ function createNameLabel(name, hexColor) {
 
 // ── Lobby 3D character preview ──
 const previewCanvas = document.getElementById("char-preview-canvas");
+const lobbyPreviewCanvas = document.getElementById("lobby-preview-canvas");
 const previewRenderer = new THREE.WebGLRenderer({ canvas: previewCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+const lobbyPreviewRenderer = new THREE.WebGLRenderer({ canvas: lobbyPreviewCanvas, antialias: true, alpha: true, powerPreference: "high-performance" });
 previewRenderer.setPixelRatio(UI_PIXEL_RATIO);
 previewRenderer.setSize(480, 480);
+ lobbyPreviewRenderer.setPixelRatio(UI_PIXEL_RATIO);
+ lobbyPreviewRenderer.setSize(480, 480);
 previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
+lobbyPreviewRenderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const previewScene = new THREE.Scene();
 const previewCamera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
@@ -3936,7 +3941,7 @@ function setPreviewCharacter(charType) {
 }
 
 function renderPreview(dt) {
-  if (!previewModel || previewCanvas.offsetParent === null) return;
+  if (!previewModel || (previewCanvas.offsetParent === null && lobbyPreviewCanvas.offsetParent === null)) return;
   previewTime += dt;
   const charDef = CHARACTERS[previewCharType];
   if (!charDef) return;
@@ -3949,7 +3954,8 @@ function renderPreview(dt) {
   // 재생 코드를 그대로 재사용하면서 걷는 도중 프레임에서 멈춘 것처럼 보였다)
   if (previewIsGlb) {
     updateHeadAttachedSkin(previewModel);
-    previewRenderer.render(previewScene, previewCamera);
+    if (previewCanvas.offsetParent !== null) previewRenderer.render(previewScene, previewCamera);
+    if (lobbyPreviewCanvas.offsetParent !== null) lobbyPreviewRenderer.render(previewScene, previewCamera);
     return;
   }
 
@@ -4026,7 +4032,8 @@ function renderPreview(dt) {
   parts.body.rotation.z = Math.sin(previewTime * 1.2) * 0.02;
   parts.head.rotation.x = headX;
 
-  previewRenderer.render(previewScene, previewCamera);
+  if (previewCanvas.offsetParent !== null) previewRenderer.render(previewScene, previewCamera);
+  if (lobbyPreviewCanvas.offsetParent !== null) lobbyPreviewRenderer.render(previewScene, previewCamera);
 }
 
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다

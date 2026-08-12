@@ -2153,7 +2153,8 @@ body.lobby-active #takedown-hud {
   pointer-events: none;
 }
 
-.lobby-preview-area canvas {
+.lobby-preview-area canvas,
+.character-preview-area canvas {
   width: 100%;
   height: 100%;
   max-width: none;
