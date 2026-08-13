@@ -3955,7 +3955,14 @@ function setPreviewCharacter(charType) {
       if (!part.isMesh || !part.material) return;
       const materials = Array.isArray(part.material) ? part.material : [part.material];
       materials.forEach((material) => {
-        if (material.color) material.color.setHex(0xfffff0);
+        if (!material.color) return;
+        const r = material.color.r;
+        const g = material.color.g;
+        const b = material.color.b;
+        const brightness = (r + g + b) / 3;
+        const neutral = Math.max(r, g, b) - Math.min(r, g, b) < 0.12;
+        // 밝은 본체·모자만 아이보리로 보정하고, 눈·입 같은 어두운 재질은 보존한다.
+        if (neutral && brightness > 0.28) material.color.setHex(0xfffff0);
       });
     });
     model.traverse((part) => { if (part.isMesh) part.frustumCulled = false; });
