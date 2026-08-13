@@ -6821,7 +6821,8 @@ function initPlayers() {
       const fighter = makeFighter({
         id: index,
         name: participant.nickname,
-        characterType: participant.charType,
+        // 로컬 플레이어는 서버의 이전/기본값보다 현재 선택 상태를 우선한다.
+        characterType: isLocal ? state.selectedCharacter : participant.charType,
         newAbilityChars: participant.newAbilityChars,
         isPlayer: isLocal,
         position: spawns[index % spawns.length],
