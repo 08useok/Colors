@@ -7198,8 +7198,12 @@ function intersectsRect(x, z, radius, rect) {
     const closestZ = THREE.MathUtils.clamp(localZ, -rect.depth * 0.5, rect.depth * 0.5);
     return (localX - closestX) ** 2 + (localZ - closestZ) ** 2 < radius * radius;
   }
-  const closestX = THREE.MathUtils.clamp(x, rect.minX, rect.maxX);
-  const closestZ = THREE.MathUtils.clamp(z, rect.minZ, rect.maxZ);
+  const minX = rect.minX ?? (rect.x - (rect.halfW ?? rect.width * 0.5));
+  const maxX = rect.maxX ?? (rect.x + (rect.halfW ?? rect.width * 0.5));
+  const minZ = rect.minZ ?? (rect.z - (rect.halfD ?? rect.depth * 0.5));
+  const maxZ = rect.maxZ ?? (rect.z + (rect.halfD ?? rect.depth * 0.5));
+  const closestX = THREE.MathUtils.clamp(x, minX, maxX);
+  const closestZ = THREE.MathUtils.clamp(z, minZ, maxZ);
   const dx = x - closestX;
   const dz = z - closestZ;
   return dx * dx + dz * dz < radius * radius;
