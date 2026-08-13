@@ -3947,7 +3947,7 @@ function setPreviewCharacter(charType) {
     previewScene.add(previewModel);
     lobbyPreviewWrap?.classList.remove("preview-pending");
     characterPreviewWrap?.classList.remove("preview-pending");
-  } else if (charType === "ivory" && _ivoryPreviewGlb) {
+  } else if (charType === "ivory" && _ivoryPreviewGlb && characterPanel?.classList.contains("hidden")) {
     previewIsGlb = true;
     const model = skeletonClone(_ivoryPreviewGlb.scene);
     _applyPinkToon(model);
