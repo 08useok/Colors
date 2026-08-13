@@ -3950,7 +3950,17 @@ function setPreviewCharacter(charType) {
   } else if (charType === "ivory" && _ivoryPreviewGlb) {
     previewIsGlb = true;
     const model = skeletonClone(_ivoryPreviewGlb.scene);
+    _applyPinkToon(model);
+    model.traverse((part) => {
+      if (!part.isMesh || !part.material) return;
+      const materials = Array.isArray(part.material) ? part.material : [part.material];
+      materials.forEach((material) => {
+        if (material.color) material.color.setHex(0xfffff0);
+      });
+    });
     model.traverse((part) => { if (part.isMesh) part.frustumCulled = false; });
+    model.userData.isGlbModel = true;
+    model.userData.isIvoryPreview = true;
     previewModel = fitModelForPreview(model);
     previewScene.add(previewModel);
     lobbyPreviewWrap?.classList.remove("preview-pending");
