@@ -7041,7 +7041,9 @@ function resetGame() {
   state.playerTeam = null;
   state.solids = useIceCreamShowdown ? state.showdownSolids : state.battleSolids;
   state.lakeRects = state.battleLakeRects;
-  state.bushes = state.battleBushes;
+  // 쇼다운 맵에는 일반 전투 맵의 풀 은신 판정을 적용하지 않는다.
+  // 기존 목록을 그대로 쓰면 카운트다운 후 AI가 풀숲에 숨은 것으로 판정되어 사라진다.
+  state.bushes = useIceCreamShowdown ? [] : state.battleBushes;
   state.trainingMode = false;
   const currentMap = MAP_POOL[state.currentMapId];
   mapNameEl.textContent = useIceCreamShowdown ? "ICE CREAM SHOWDOWN" : t("mapPrefix") + currentMap.name;
