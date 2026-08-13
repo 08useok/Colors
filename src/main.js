@@ -7252,19 +7252,23 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
       continue;
     }
 
-    const left = Math.abs((solid.minX - radius) - position.x);
-    const right = Math.abs((solid.maxX + radius) - position.x);
-    const top = Math.abs((solid.minZ - radius) - position.z);
-    const bottom = Math.abs((solid.maxZ + radius) - position.z);
+    const minX = solid.minX ?? (solid.x - (solid.halfW ?? solid.width * 0.5));
+    const maxX = solid.maxX ?? (solid.x + (solid.halfW ?? solid.width * 0.5));
+    const minZ = solid.minZ ?? (solid.z - (solid.halfD ?? solid.depth * 0.5));
+    const maxZ = solid.maxZ ?? (solid.z + (solid.halfD ?? solid.depth * 0.5));
+    const left = Math.abs((minX - radius) - position.x);
+    const right = Math.abs((maxX + radius) - position.x);
+    const top = Math.abs((minZ - radius) - position.z);
+    const bottom = Math.abs((maxZ + radius) - position.z);
     const minPush = Math.min(left, right, top, bottom);
     if (minPush === left) {
-      position.x = solid.minX - radius;
+      position.x = minX - radius;
     } else if (minPush === right) {
-      position.x = solid.maxX + radius;
+      position.x = maxX + radius;
     } else if (minPush === top) {
-      position.z = solid.minZ - radius;
+      position.z = minZ - radius;
     } else {
-      position.z = solid.maxZ + radius;
+      position.z = maxZ + radius;
     }
   }
 
