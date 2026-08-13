@@ -4664,7 +4664,7 @@ function createShowdownThemeMap() {
   for (let x = -4; x < 4; x += 1) {
     for (let z = -4; z < 4; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
   }
-  state.showdownSolids.push({ x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: showdownMapGroup });
+  state.showdownSolids.push({ type: "platform", x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: showdownMapGroup });
   const wall = (x, z, width, depth) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 2, depth), iceWall);
     mesh.position.set(x, 2.55, z);
@@ -7229,6 +7229,7 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
   }
 
   for (const solid of state.solids) {
+    if (solid.type === "platform") continue;
     if (!intersectsRect(position.x, position.z, radius, solid)) {
       continue;
     }
@@ -7280,6 +7281,7 @@ function isWallAhead(fighter, dirX, dirZ, lookahead) {
   const checkX = fighter.mesh.position.x + (dirX / len) * lookahead;
   const checkZ = fighter.mesh.position.z + (dirZ / len) * lookahead;
   for (const solid of state.solids) {
+    if (solid.type === "platform") continue;
     if (intersectsRect(checkX, checkZ, fighter.radius, solid)) return true;
   }
   for (const rect of state.lakeRects) {
@@ -8824,7 +8826,7 @@ function updateProjectiles(dt) {
         resolved = true;
         break;
       }
-      if (!resolved) resolved = state.solids.some((solid) => intersectsRect(proj.x, proj.z, proj.projRadius, solid));
+      if (!resolved) resolved = state.solids.some((solid) => solid.type !== "platform" && intersectsRect(proj.x, proj.z, proj.projRadius, solid));
       if (resolved || proj.distTraveled >= proj.range) {
         if (attacker && proj.goldStage < 3) splitGoldProjectile(proj, attacker);
         scene.remove(proj.mesh);
@@ -8956,6 +8958,7 @@ function updateProjectiles(dt) {
     // 벽 충돌 시 소멸 (폭탄은 벽에 맞아도 폭발, 독병은 공중이면 무시)
     if (!hit && !(proj.isVial && proj.y > 1.5)) {
       for (const solid of state.solids) {
+        if (solid.type === "platform") continue;
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
           if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
           if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
