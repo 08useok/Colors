@@ -4657,21 +4657,21 @@ function createShowdownThemeMap() {
   const iceWall = new THREE.MeshStandardMaterial({ color: 0xfff2c9, emissive: 0x92d9e7, emissiveIntensity: 0.08, roughness: 0.72 });
   const tile = (x, z, material) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), material);
-    mesh.position.set(x, 1.5, z);
+    mesh.position.set(x, 0.06, z);
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
   };
   for (let x = -6; x < 6; x += 1) {
     for (let z = -6; z < 6; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
   }
-  state.showdownSolids.push({ type: "platform", x: 0, z: 0, halfW: 30, halfD: 30, top: 1.56, mesh: showdownMapGroup });
+  state.showdownSolids.push({ type: "platform", x: 0, z: 0, halfW: 30, halfD: 30, top: 0.12, mesh: showdownMapGroup });
   const wall = (x, z, width, depth) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 2, depth), iceWall);
-    mesh.position.set(x, 2.55, z);
+    mesh.position.set(x, 1.0, z);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
-    state.showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: 3.55, mesh });
+    state.showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: 2.0, mesh });
   };
   [[0,-30,60,1],[0,30,60,1],[-30,0,1,60],[30,0,1,60],[-12,-10,9,2],[12,10,9,2],[-12,12,2,9],[12,-12,2,9],[0,0,7,2]].forEach((spec) => wall(...spec));
   [[-22,-22,0xff9fcf],[22,-22,0xb8edff],[-22,22,0xc7f29b],[22,22,0xffd38e]].forEach(([x,z,color]) => {
