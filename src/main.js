@@ -9959,6 +9959,15 @@ function updateBot(bot, dt, zone) {
 
   bot.mesh.rotation.y = bot.yaw;
   moveFighter(bot, tempVec3, dt);
+  if (mpConfig?.mode === "showdown") {
+    // 쇼다운 플랫폼 바깥으로 AI가 이탈하면 화면과 전투에서 사라진 것처럼 보인다.
+    // 벽에 닿기 전 안쪽으로 고정해 항상 전장에 남도록 한다.
+    const edge = 18.2;
+    bot.mesh.position.x = THREE.MathUtils.clamp(bot.mesh.position.x, -edge, edge);
+    bot.mesh.position.z = THREE.MathUtils.clamp(bot.mesh.position.z, -edge, edge);
+    bot.shadow.position.x = bot.mesh.position.x;
+    bot.shadow.position.z = bot.mesh.position.z;
+  }
 }
 
 function updateBossAnimation(boss, dt) {
