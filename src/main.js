@@ -10565,9 +10565,8 @@ function updateCamera(dt) {
   } else {
     // 쇼다운은 전장이 넓고 AI가 여러 방향으로 이동하므로, 기본 전투 줌으로는
     // 살아 있는 AI가 화면 밖으로 빠져 사라진 것처럼 보인다.
-    const cameraHeight = showdownMapGroup.visible || mpConfig?.mode === "showdown" ? 42 : CAMERA_HEIGHT;
-    cameraDesired.y += cameraHeight;
-    cameraDesired.z += Math.tan(THREE.MathUtils.degToRad(CAMERA_TILT_DEGREES)) * cameraHeight;
+    cameraDesired.y += CAMERA_HEIGHT;
+    cameraDesired.z += CAMERA_DEPTH_OFFSET;
   }
   camera.up.set(0, 0, -1);
   camera.position.lerp(cameraDesired, 1 - Math.exp(-dt * 10));
@@ -11279,6 +11278,14 @@ function animate() {
     updateBossDirectionIndicator();
     updateAttackAimIndicator();
     updateBushVisuals();
+    if (showdownMapGroup.visible) {
+      for (const fighter of state.players) {
+        if (fighter.isPlayer || fighter.dead) continue;
+        fighter.mesh.visible = true;
+        fighter.shadow.visible = true;
+        if (fighter.healthBar) fighter.healthBar.visible = true;
+      }
+    }
     updateHud();
 
     if (countdownFrozen) {
