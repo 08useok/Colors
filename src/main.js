@@ -5822,6 +5822,24 @@ function showMultiplayerToast(message) {
 function updateNetworkPlayers(dt) {
   const now = performance.now() / 1000;
   for (const f of Object.values(mpNetFighters)) {
+    // 첫 SSTATE 패킷을 받기 전에도 봇을 숨기지 않는다.
+    // 전투 시작 직후 AI가 전부 사라지고 공격만 남는 현상을 막는다.
+    if (f.syncId?.startsWith("bot-") && !f.dead && !f.netStateReady) {
+      const player = getPlayer();
+      if (player) {
+        const dx = f.mesh.position.x - player.mesh.position.x;
+        const dz = f.mesh.position.z - player.mesh.position.z;
+        const distance = Math.hypot(dx, dz);
+        if (distance > 14) {
+          const scale = 14 / distance;
+          f.mesh.position.x = player.mesh.position.x + dx * scale;
+          f.mesh.position.z = player.mesh.position.z + dz * scale;
+        }
+        f.mesh.visible = true;
+        f.shadow.visible = true;
+        if (f.healthBar) f.healthBar.visible = true;
+      }
+    }
     if (!f.netStateReady || f.dead) continue;
     const age = Math.min(Math.max(0, now - f.netReceivedAt), MP_MAX_PREDICTION);
     const targetX = f.netTargetX + f.netVelocityX * age;
