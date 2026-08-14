@@ -11357,6 +11357,7 @@ function animate() {
       && !state.goldRushMode
       && (showdownMapGroup.visible || mpConfig?.mode === "showdown");
     if (inShowdownBattle) {
+      const cameraPlayer = getPlayer();
       for (const fighter of state.players) {
         if (fighter.dead || fighter.health <= 0) {
           fighter.dead = true;
@@ -11366,6 +11367,18 @@ function animate() {
           continue;
         }
         if (fighter.isPlayer) continue;
+        if (cameraPlayer) {
+          const dx = fighter.mesh.position.x - cameraPlayer.mesh.position.x;
+          const dz = fighter.mesh.position.z - cameraPlayer.mesh.position.z;
+          const distance = Math.hypot(dx, dz);
+          if (distance > 14) {
+            const scale = 14 / distance;
+            fighter.mesh.position.x = cameraPlayer.mesh.position.x + dx * scale;
+            fighter.mesh.position.z = cameraPlayer.mesh.position.z + dz * scale;
+            fighter.shadow.position.x = fighter.mesh.position.x;
+            fighter.shadow.position.z = fighter.mesh.position.z;
+          }
+        }
         fighter.mesh.visible = true;
         fighter.shadow.visible = true;
         if (fighter.healthBar) fighter.healthBar.visible = true;
