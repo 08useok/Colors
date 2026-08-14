@@ -5591,6 +5591,7 @@ function syncMp(dt) {
     mp.relay("SSTATE", {
       players: state.players.map((f) => ({
         id: f.networkId ?? f.syncId,
+        characterType: f.characterType,
         x: f.mesh.position.x,
         z: f.mesh.position.z,
         yaw: f.mesh.rotation.y,
@@ -5739,7 +5740,22 @@ function setupMpHandlers() {
       applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
     } else if (msg.relayType === "SSTATE" && !mpConfig?.isHost && mpConfig?.mode === "showdown") {
       for (const playerState of msg.players || []) {
-        const fighter = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        let fighter = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        if (!fighter && String(playerState.id).startsWith("bot-")) {
+          const botIndex = Number(String(playerState.id).slice(4)) || state.players.length;
+          fighter = makeFighter({
+            id: 1000 + state.players.length,
+            name: `AI ${botIndex + 1}`,
+            characterType: playerState.characterType || ROSTER[botIndex % ROSTER.length],
+            isPlayer: false,
+            position: new THREE.Vector3(playerState.x || 0, 1.85, playerState.z || 0),
+            yaw: playerState.yaw || 0,
+          });
+          fighter.syncId = playerState.id;
+          fighter.isNetworkPlayer = true;
+          mpNetFighters[playerState.id] = fighter;
+          state.players.push(fighter);
+        }
         if (!fighter) continue;
         const previousHealth = fighter.health;
         const wasDead = fighter.dead;
