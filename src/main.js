@@ -8710,6 +8710,15 @@ function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
 
+    // 사망한 AI가 남긴 투사체가 계속 피해를 주면
+    // 보이지 않는 AI에게 공격받는 것처럼 보인다.
+    const owner = state.players.find((fighter) => fighter.id === proj.ownerId);
+    if (!owner || owner.dead || owner.health <= 0) {
+      scene.remove(proj.mesh);
+      state.projectiles.splice(i, 1);
+      continue;
+    }
+
     if (state.gameTime < proj.launchAt) {
       continue;
     }
@@ -9362,6 +9371,9 @@ function updateScheduledHits() {
     }
     state.scheduledHits.splice(i, 1);
     const attacker = state.players.find((player) => player.id === hit.attackerId);
+    if (!attacker || attacker.dead || attacker.health <= 0) {
+      continue;
+    }
     resolveAttack(attacker, hit.hitIndex, hit.damage);
   }
 }
