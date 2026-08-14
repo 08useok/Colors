@@ -10802,6 +10802,23 @@ function updateBushVisuals() {
   }
 }
 
+// 카운트다운 종료 시 GLB의 루트는 살아 있지만 내부 씬이 숨겨진 채 남는
+// 경우가 있다. 쇼다운의 생존 AI는 은신 처리와 관계없이 실제 모델 전체를
+// 계속 렌더링해야 하므로, 전투 프레임마다 하위 노드까지 표시 상태를 복구한다.
+function keepShowdownModelsVisible() {
+  if (!state.running || state.trainingMode || state.chopWoodMode
+    || state.takedownMode || state.goldRushMode) return;
+  for (const fighter of state.players) {
+    if (fighter.isPlayer || fighter.dead || fighter.health <= 0 || !fighter.mesh) continue;
+    fighter.mesh.visible = true;
+    fighter.mesh.traverse((node) => {
+      if (node.isMesh || node.isSkinnedMesh || node.isGroup || node.isObject3D) node.visible = true;
+    });
+    if (fighter.shadow) fighter.shadow.visible = true;
+    if (fighter.healthBar) fighter.healthBar.visible = true;
+  }
+}
+
 function triggerGameTitleAnnounce() {
   gameTitleAnnounceEl.classList.remove("title-pop");
   void gameTitleAnnounceEl.offsetWidth;
@@ -11357,6 +11374,7 @@ function animate() {
     updateBossDirectionIndicator();
     updateAttackAimIndicator();
     updateBushVisuals();
+    keepShowdownModelsVisible();
     const inShowdownBattle = state.running
       && !state.trainingMode
       && !state.chopWoodMode
