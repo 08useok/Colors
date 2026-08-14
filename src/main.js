@@ -11334,7 +11334,13 @@ function animate() {
     updateBossDirectionIndicator();
     updateAttackAimIndicator();
     updateBushVisuals();
-    if (showdownMapGroup.visible) {
+    const inShowdownBattle = state.running
+      && !state.trainingMode
+      && !state.chopWoodMode
+      && !state.takedownMode
+      && !state.goldRushMode
+      && (showdownMapGroup.visible || mpConfig?.mode === "showdown");
+    if (inShowdownBattle) {
       for (const fighter of state.players) {
         if (fighter.dead || fighter.health <= 0) {
           fighter.dead = true;
