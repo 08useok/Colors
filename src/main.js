@@ -11280,7 +11280,13 @@ function animate() {
     updateBushVisuals();
     if (showdownMapGroup.visible) {
       for (const fighter of state.players) {
-        if (fighter.isPlayer || fighter.dead) continue;
+        if (fighter.dead) {
+          fighter.mesh.visible = false;
+          fighter.shadow.visible = false;
+          if (fighter.healthBar) fighter.healthBar.visible = false;
+          continue;
+        }
+        if (fighter.isPlayer) continue;
         fighter.mesh.visible = true;
         fighter.shadow.visible = true;
         if (fighter.healthBar) fighter.healthBar.visible = true;
