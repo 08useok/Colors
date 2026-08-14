@@ -10716,7 +10716,7 @@ function updateBushVisuals() {
     const revealed = state.gameTime < fighter.revealedUntil;
     // 쇼다운에서는 AI 모델을 숨기지 않는다. 생존 인원에는 남아 있는데
     // 은신 가시성 갱신으로 모델만 사라지는 현상을 방지한다.
-    const shouldHide = mpConfig?.mode !== "showdown"
+    const shouldHide = !showdownMapGroup.visible && mpConfig?.mode !== "showdown"
       && inBush && !revealed && distSq > bushStealthRevealRangeSq;
     fighter.mesh.visible = !shouldHide && !fighter.dead;
     fighter.shadow.visible = !shouldHide && !fighter.dead;
@@ -12591,7 +12591,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   });
 
   playAgainButton.addEventListener("click", () => {
-    if (mpConfig?.mode === "showdown") {
+  if (showdownMapGroup.visible || mpConfig?.mode === "showdown") {
       mp.disconnect();
       mpConfig = null;
       resultOverlay.style.display = "none";
