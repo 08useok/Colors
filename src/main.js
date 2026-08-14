@@ -6842,8 +6842,9 @@ function initPlayers() {
 
   const mapData = MAP_POOL[state.currentMapId];
   let spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  const isShowdown = showdownMapGroup.visible || mpConfig?.mode === "showdown";
 
-  if (mpConfig?.mode === "showdown") {
+  if (isShowdown) {
     // 아이스크림 쇼다운은 기존 맵 스폰을 재사용하면 일부 캐릭터가 맵 밖에 생성된다.
     // 40×40 쇼다운 판 안쪽의 고정 스폰만 사용한다.
     spawns = [
