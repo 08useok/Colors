@@ -1668,6 +1668,7 @@ function showDailyLogin(account) {
   dailyLoginError.style.display = "none";
   dailyLoginError.textContent = "";
   accountRecoveryInfo.style.display = "none";
+  accountRecoveryInfo.classList.add("hidden");
 
   // 날짜가 바뀌었으면 시도 횟수 리셋
   if (account.lastLoginDate !== getTodayString()) {
@@ -11853,6 +11854,7 @@ function setupInput() {
     const account = loadAccount();
     if (!account) return;
     accountRecoveryInfo.textContent = t("myId", account.id);
+    accountRecoveryInfo.classList.remove("hidden");
     accountRecoveryInfo.style.display = "block";
   });
 
