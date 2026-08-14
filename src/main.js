@@ -6827,6 +6827,13 @@ function createDamagePopup(position, amount, color = "#ffd27a", prefixOverride =
 }
 
 function initPlayers() {
+  // 혼자 시작한 쇼다운은 네트워크 동기화 경로를 타면
+  // 카운트다운 후 AI 객체가 클라이언트에서 누락될 수 있다.
+  // 단독 큐는 로컬 봇 전투로 전환해 동일한 AI 객체를 유지한다.
+  if (mpConfig?.mode === "showdown" && (mpConfig.players?.length ?? 0) <= 1) {
+    mpConfig = null;
+    Object.keys(mpNetFighters).forEach((key) => delete mpNetFighters[key]);
+  }
   state.players.forEach((fighter) => {
     scene.remove(fighter.mesh);
     scene.remove(fighter.shadow);
