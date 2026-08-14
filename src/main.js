@@ -11363,10 +11363,6 @@ function animate() {
       && !state.takedownMode
       && !state.goldRushMode;
     if (inShowdownBattle) {
-      if (!window.__showdownDebugLogged && state.gameTime > 6) {
-        window.__showdownDebugLogged = true;
-        console.log("SHOWDOWN_AI_DEBUG", state.players.map((fighter) => ({ id: fighter.id, name: fighter.name, player: fighter.isPlayer, dead: fighter.dead, health: fighter.health, visible: fighter.mesh.visible })));
-      }
       const cameraPlayer = getPlayer();
       for (const fighter of state.players) {
         if (fighter.dead || fighter.health <= 0) {
