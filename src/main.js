@@ -4661,10 +4661,10 @@ function createShowdownThemeMap() {
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
   };
-  for (let x = -4; x < 4; x += 1) {
-    for (let z = -4; z < 4; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
+  for (let x = -6; x < 6; x += 1) {
+    for (let z = -6; z < 6; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
   }
-  state.showdownSolids.push({ type: "platform", x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: showdownMapGroup });
+  state.showdownSolids.push({ type: "platform", x: 0, z: 0, halfW: 30, halfD: 30, top: 1.56, mesh: showdownMapGroup });
   const wall = (x, z, width, depth) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 2, depth), iceWall);
     mesh.position.set(x, 2.55, z);
@@ -4673,8 +4673,8 @@ function createShowdownThemeMap() {
     showdownMapGroup.add(mesh);
     state.showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: 3.55, mesh });
   };
-  [[0,-20,40,1],[0,20,40,1],[-20,0,1,40],[20,0,1,40],[-8,-7,7,2],[8,7,7,2],[-8,8,2,7],[8,-8,2,7],[0,0,5,2]].forEach((spec) => wall(...spec));
-  [[-14,-14,0xff9fcf],[14,-14,0xb8edff],[-14,14,0xc7f29b],[14,14,0xffd38e]].forEach(([x,z,color]) => {
+  [[0,-30,60,1],[0,30,60,1],[-30,0,1,60],[30,0,1,60],[-12,-10,9,2],[12,10,9,2],[-12,12,2,9],[12,-12,2,9],[0,0,7,2]].forEach((spec) => wall(...spec));
+  [[-22,-22,0xff9fcf],[22,-22,0xb8edff],[-22,22,0xc7f29b],[22,22,0xffd38e]].forEach(([x,z,color]) => {
     const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
     scoop.position.set(x, 3.25, z);
     scoop.castShadow = true;
@@ -6786,9 +6786,9 @@ function initPlayers() {
     // 아이스크림 쇼다운은 기존 맵 스폰을 재사용하면 일부 캐릭터가 맵 밖에 생성된다.
     // 40×40 쇼다운 판 안쪽의 고정 스폰만 사용한다.
     spawns = [
-      [-14, -14], [14, -14], [-14, 14], [14, 14],
-      [0, -14], [0, 14], [-14, 0], [14, 0],
-      [-8, -8], [8, 8],
+      [-22, -22], [22, -22], [-22, 22], [22, 22],
+      [0, -22], [0, 22], [-22, 0], [22, 0],
+      [-12, -12], [12, 12],
     ].map(([x, z]) => new THREE.Vector3(x, 0, z));
     let seed = 2166136261;
     const seedText = mpConfig.spawnSeed || `${mpConfig.hostId}:${state.currentMapId}:${mpConfig.players.map((p) => p.id).join(",")}`;
@@ -9962,7 +9962,7 @@ function updateBot(bot, dt, zone) {
   if (mpConfig?.mode === "showdown") {
     // 쇼다운 플랫폼 바깥으로 AI가 이탈하면 화면과 전투에서 사라진 것처럼 보인다.
     // 벽에 닿기 전 안쪽으로 고정해 항상 전장에 남도록 한다.
-    const edge = 18.2;
+    const edge = 28.2;
     bot.mesh.position.x = THREE.MathUtils.clamp(bot.mesh.position.x, -edge, edge);
     bot.mesh.position.z = THREE.MathUtils.clamp(bot.mesh.position.z, -edge, edge);
     bot.shadow.position.x = bot.mesh.position.x;
