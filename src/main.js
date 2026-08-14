@@ -6786,9 +6786,9 @@ function initPlayers() {
     // 아이스크림 쇼다운은 기존 맵 스폰을 재사용하면 일부 캐릭터가 맵 밖에 생성된다.
     // 40×40 쇼다운 판 안쪽의 고정 스폰만 사용한다.
     spawns = [
-      [-22, -22], [22, -22], [-22, 22], [22, 22],
-      [0, -22], [0, 22], [-22, 0], [22, 0],
-      [-12, -12], [12, 12],
+      [-8, -8], [8, -8], [-8, 8], [8, 8],
+      [0, -8], [0, 8], [-8, 0], [8, 0],
+      [-4, -4], [4, 4],
     ].map(([x, z]) => new THREE.Vector3(x, 0, z));
     let seed = 2166136261;
     const seedText = mpConfig.spawnSeed || `${mpConfig.hostId}:${state.currentMapId}:${mpConfig.players.map((p) => p.id).join(",")}`;
