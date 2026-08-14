@@ -5836,6 +5836,25 @@ function updateNetworkPlayers(dt) {
     f.mesh.rotation.y = moveAngleToward(f.mesh.rotation.y, f.netTargetYaw, dt * 20);
     f.shadow.position.x = f.mesh.position.x;
     f.shadow.position.z = f.mesh.position.z;
+    if (f.syncId?.startsWith("bot-") && !f.dead) {
+      const player = getPlayer();
+      if (player) {
+        const dx = f.mesh.position.x - player.mesh.position.x;
+        const dz = f.mesh.position.z - player.mesh.position.z;
+        const distance = Math.hypot(dx, dz);
+        const maxDistance = 14;
+        if (distance > maxDistance) {
+          const scale = maxDistance / distance;
+          f.mesh.position.x = player.mesh.position.x + dx * scale;
+          f.mesh.position.z = player.mesh.position.z + dz * scale;
+          f.netTargetX = f.mesh.position.x;
+          f.netTargetZ = f.mesh.position.z;
+        }
+        f.mesh.visible = true;
+        f.shadow.visible = true;
+        if (f.healthBar) f.healthBar.visible = true;
+      }
+    }
   }
 }
 
