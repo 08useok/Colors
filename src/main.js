@@ -9177,7 +9177,7 @@ function resolveAttack(attacker, hitIndex, damage) {
   const hitTargets = [];
 
   for (const target of state.players) {
-    if (target.id === attacker.id || target.dead) {
+    if (target.id === attacker.id || target.dead || target.health <= 0) {
       continue;
     }
     if (state.chopWoodMode && target.team === attacker.team) continue;
@@ -9224,6 +9224,7 @@ function resolveAttack(attacker, hitIndex, damage) {
 }
 
 function applyDamage(target, amount, attacker = null, updateCombatTime = true, noPopup = false) {
+  if (!target || target.dead || target.health <= 0) return 0;
   if (target.dead) {
     return 0;
   }
@@ -11280,7 +11281,8 @@ function animate() {
     updateBushVisuals();
     if (showdownMapGroup.visible) {
       for (const fighter of state.players) {
-        if (fighter.dead) {
+        if (fighter.dead || fighter.health <= 0) {
+          fighter.dead = true;
           fighter.mesh.visible = false;
           fighter.shadow.visible = false;
           if (fighter.healthBar) fighter.healthBar.visible = false;
