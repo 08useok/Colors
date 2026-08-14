@@ -10565,7 +10565,7 @@ function updateCamera(dt) {
   } else {
     // 쇼다운은 전장이 넓고 AI가 여러 방향으로 이동하므로, 기본 전투 줌으로는
     // 살아 있는 AI가 화면 밖으로 빠져 사라진 것처럼 보인다.
-    const cameraHeight = mpConfig?.mode === "showdown" ? 28 : CAMERA_HEIGHT;
+    const cameraHeight = showdownMapGroup.visible || mpConfig?.mode === "showdown" ? 42 : CAMERA_HEIGHT;
     cameraDesired.y += cameraHeight;
     cameraDesired.z += Math.tan(THREE.MathUtils.degToRad(CAMERA_TILT_DEGREES)) * cameraHeight;
   }
