@@ -6852,6 +6852,11 @@ function initPlayers() {
       [0, -8], [0, 8], [-8, 0], [8, 0],
       [-4, -4], [4, 4],
     ].map(([x, z]) => new THREE.Vector3(x, 0, z));
+  }
+
+  // 단독 쇼다운은 위 고정 스폰을 사용하되 로컬 AI 생성 경로로 내려간다.
+  // 실제 네트워크 참가 정보가 남아 있을 때만 동기화 스폰을 계산한다.
+  if (mpConfig?.mode === "showdown") {
     let seed = 2166136261;
     const seedText = mpConfig.spawnSeed || `${mpConfig.hostId}:${state.currentMapId}:${mpConfig.players.map((p) => p.id).join(",")}`;
     for (let i = 0; i < seedText.length; i += 1) {
@@ -7074,6 +7079,9 @@ function exitTraining() {
 
 function resetGame() {
   document.body.classList.remove("lobby-active");
+  // 전투 초기화 중 오류가 나더라도 로비 UI와 결과창이 겹치지 않도록 먼저 닫는다.
+  messageOverlay.style.display = "none";
+  resultOverlay.style.display = "none";
   audio.play("gameStart");
   stopAllBgm();
   crosshairEl.classList.remove("hidden");
