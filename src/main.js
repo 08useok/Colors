@@ -11354,8 +11354,7 @@ function animate() {
       && !state.trainingMode
       && !state.chopWoodMode
       && !state.takedownMode
-      && !state.goldRushMode
-      && (showdownMapGroup.visible || mpConfig?.mode === "showdown");
+      && !state.goldRushMode;
     if (inShowdownBattle) {
       const cameraPlayer = getPlayer();
       for (const fighter of state.players) {
