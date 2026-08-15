@@ -4694,7 +4694,7 @@ function createShowdownThemeMap() {
     });
   };
   [[0,-40,80,1],[0,40,80,1],[-40,0,1,80],[40,0,1,80],[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach((spec) => wall(...spec));
-  [[-32,-32,0xff9fcf],[32,-32,0xb8edff],[-32,32,0xc7f29b],[32,32,0xffd38e]].forEach(([x,z,color]) => {
+  [[-35,-35,0xff9fcf],[35,-35,0xb8edff],[-35,35,0xc7f29b],[35,35,0xffd38e]].forEach(([x,z,color]) => {
     const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
     scoop.position.set(x, 3.25, z);
     scoop.castShadow = true;
@@ -6867,9 +6867,8 @@ function initPlayers() {
     // 아이스크림 쇼다운은 기존 맵 스폰을 재사용하면 일부 캐릭터가 맵 밖에 생성된다.
     // 80×80 쇼다운 판에 참가자를 넓게 분산해 시작 직후 교전을 줄인다.
     spawns = [
-      [-24, -24], [24, -24], [-24, 24], [24, 24],
-      [0, -24], [0, 24], [-24, 0], [24, 0],
-      [-10, -10], [10, 10],
+      [0, -31], [20, -25], [31, -10], [31, 10], [20, 25],
+      [0, 31], [-20, 25], [-31, 10], [-31, -10], [-20, -25],
     ].map(([x, z]) => new THREE.Vector3(x, 0, z));
   }
 
