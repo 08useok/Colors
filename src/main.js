@@ -1138,7 +1138,7 @@ function loadAccount() {
       account.chopWoodCharStats = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
       if (!account.chopWoodCharStats[char]) {
         account.chopWoodCharStats[char] = { wins: 0, games: 0 };
         migrated = true;
@@ -11473,7 +11473,7 @@ function setupInput() {
         html += `<div class="stats-row">${t("showdownWins", account.showdownWins || 0)}</div>`;
         html += `<div class="stats-row">${t("chopWoodWins", account.chopWoodWins || 0)}</div>`;
         html += `<div class="stats-divider"></div>`;
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
+    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
@@ -11484,7 +11484,7 @@ function setupInput() {
         }
         html += `<div class="stats-divider"></div>`;
         html += `<div class="stats-row" style="font-weight:700">🪓 ${t("statsChopWood")}</div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
+        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
           const s = account.chopWoodCharStats?.[char];
           const name = char.charAt(0).toUpperCase() + char.slice(1);
           if (!s || s.games === 0) {
@@ -11509,7 +11509,7 @@ function setupInput() {
           html += `<div class="season-detail${expanded ? "" : " hidden"}" data-season-detail="${key}">`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
+            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
