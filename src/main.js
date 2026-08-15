@@ -1939,7 +1939,7 @@ let dailyRewardAttemptsUsed = 0;
 
 // 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다.
 const DAILY_REWARD_JUMP_WEIGHTS = [
-  { steps: 1, weight: 85 },
+  { steps: 1, weight: 84.08 },
   { steps: 2, weight: 10 },
   { steps: 3, weight: 3 },
   { steps: 4, weight: 1 },
@@ -1948,7 +1948,7 @@ const DAILY_REWARD_JUMP_WEIGHTS = [
   { steps: 7, weight: 0.1 },
   { steps: 8, weight: 0.05 },
   { steps: 9, weight: 0.02 },
-  { steps: 10, weight: 0.01 },
+  { steps: 10, weight: 1 },
 ];
 function formatDailyRewardChance(value) {
   return `${Number((value * 100).toFixed(2))}%`;
