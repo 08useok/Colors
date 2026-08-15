@@ -1818,7 +1818,7 @@ body.lobby-active #takedown-hud {
   backdrop-filter: blur(4px);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 640px) {
   .lobby-side-panel {
     top: 10px;
     bottom: auto;
