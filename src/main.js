@@ -7029,6 +7029,7 @@ function startTraining() {
   messageOverlay.style.display = "none";
   resultOverlay.style.display = "none";
   crosshairEl.classList.remove("hidden");
+  crosshairEl.style.visibility = "visible";
   pauseLobbyBgm();
   clock.getDelta();
   battleMapGroup.visible = false;
@@ -10737,7 +10738,7 @@ function updateAttackAimIndicator() {
   const yaw = player.yaw;
   const unavailable = player.ammo <= 0;
   // 쇼다운 타일의 윗면은 Y=0.12이므로 바닥 조준 표시를 그보다 높게 둔다.
-  const aimGroundY = showdownMapGroup.visible ? 0.16 : 0;
+  const aimGroundY = showdownMapGroup.visible ? 0.16 : trainingMapGroup.visible ? 0.08 : 0;
 
   attackAimIndicator.visible = false;
   greenAimIndicator.visible = false;
