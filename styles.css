@@ -154,6 +154,8 @@ body {
 
 .exit-training-btn {
   display: block;
+  position: relative;
+  z-index: 80;
   margin-top: 10px;
   padding: 8px 14px;
   border: 1px solid rgba(255, 210, 158, 0.3);
@@ -164,6 +166,12 @@ body {
   font-weight: 700;
   cursor: pointer;
   transition: opacity 120ms, background 120ms;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.top-left:has(.exit-training-btn:not(.hidden)) {
+  z-index: 79;
   pointer-events: auto;
 }
 

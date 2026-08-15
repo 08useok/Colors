@@ -7030,6 +7030,8 @@ function startTraining() {
   resultOverlay.style.display = "none";
   crosshairEl.classList.remove("hidden");
   crosshairEl.style.visibility = "visible";
+  exitTrainingBtn.classList.remove("hidden");
+  exitTrainingBtn.disabled = false;
   pauseLobbyBgm();
   clock.getDelta();
   battleMapGroup.visible = false;
@@ -12222,6 +12224,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   // 훈련장 시작
   // 훈련장 나가기
   exitTrainingBtn.addEventListener("click", () => {
+    if (!state.trainingMode) return;
     exitTraining();
   });
 
