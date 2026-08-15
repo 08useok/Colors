@@ -4663,8 +4663,8 @@ function createShowdownThemeMap() {
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
   };
-  for (let x = -6; x < 6; x += 1) {
-    for (let z = -6; z < 6; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
+  for (let x = -8; x < 8; x += 1) {
+    for (let z = -8; z < 8; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
   }
   // 바닥은 시각 요소일 뿐 충돌체가 아니다. 충돌 목록에는 벽만 등록한다.
   const wall = (x, z, width, depth) => {
@@ -4693,8 +4693,8 @@ function createShowdownThemeMap() {
       mesh,
     });
   };
-  [[0,-30,60,1],[0,30,60,1],[-30,0,1,60],[30,0,1,60],[-12,-10,9,2],[12,10,9,2],[-12,12,2,9],[12,-12,2,9],[0,0,7,2]].forEach((spec) => wall(...spec));
-  [[-22,-22,0xff9fcf],[22,-22,0xb8edff],[-22,22,0xc7f29b],[22,22,0xffd38e]].forEach(([x,z,color]) => {
+  [[0,-40,80,1],[0,40,80,1],[-40,0,1,80],[40,0,1,80],[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach((spec) => wall(...spec));
+  [[-32,-32,0xff9fcf],[32,-32,0xb8edff],[-32,32,0xc7f29b],[32,32,0xffd38e]].forEach(([x,z,color]) => {
     const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
     scoop.position.set(x, 3.25, z);
     scoop.castShadow = true;
@@ -6865,11 +6865,11 @@ function initPlayers() {
 
   if (isShowdown) {
     // 아이스크림 쇼다운은 기존 맵 스폰을 재사용하면 일부 캐릭터가 맵 밖에 생성된다.
-    // 40×40 쇼다운 판 안쪽의 고정 스폰만 사용한다.
+    // 80×80 쇼다운 판에 참가자를 넓게 분산해 시작 직후 교전을 줄인다.
     spawns = [
-      [-8, -8], [8, -8], [-8, 8], [8, 8],
-      [0, -8], [0, 8], [-8, 0], [8, 0],
-      [-4, -4], [4, 4],
+      [-24, -24], [24, -24], [-24, 24], [24, 24],
+      [0, -24], [0, 24], [-24, 0], [24, 0],
+      [-10, -10], [10, 10],
     ].map(([x, z]) => new THREE.Vector3(x, 0, z));
   }
 
