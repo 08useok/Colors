@@ -7030,8 +7030,6 @@ function startTraining() {
   resultOverlay.style.display = "none";
   crosshairEl.classList.remove("hidden");
   crosshairEl.style.visibility = "visible";
-  exitTrainingBtn.classList.remove("hidden");
-  exitTrainingBtn.disabled = false;
   pauseLobbyBgm();
   clock.getDelta();
   battleMapGroup.visible = false;
@@ -11276,6 +11274,7 @@ function checkEndState() {
   const playerDead = !!player?.dead;
   const soloPlayerWatchingAi = !mpConfig && playerDead && alive.length > 1;
   spectatorExitButton.classList.toggle("hidden", !soloPlayerWatchingAi);
+  spectatorExitButton.disabled = !soloPlayerWatchingAi;
   if (soloPlayerWatchingAi && !state.forceSpectatorExit) return;
   if (alive.length <= 1 || playerDead) {
     const winner = alive[0];
@@ -12224,7 +12223,6 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   // 훈련장 시작
   // 훈련장 나가기
   exitTrainingBtn.addEventListener("click", () => {
-    if (!state.trainingMode) return;
     exitTraining();
   });
 
@@ -12781,9 +12779,11 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   }
 
   // 다시 시작
-  spectatorExitButton.addEventListener("click", () => {
+  spectatorExitButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     const player = getPlayer();
-    if (!state.running || !player?.dead || mpConfig) return;
+    if (!state.running || !player?.dead) return;
     state.forceSpectatorExit = true;
     state.resultRevealAt = state.gameTime;
     spectatorExitButton.classList.add("hidden");
