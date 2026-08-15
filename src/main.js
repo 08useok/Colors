@@ -4655,7 +4655,8 @@ function createShowdownThemeMap() {
   state.showdownSolids = [];
   const ivory = new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.9 });
   const sky = new THREE.MeshStandardMaterial({ color: 0x93def1, roughness: 0.84 });
-  const iceWall = new THREE.MeshStandardMaterial({ color: 0xfff2c9, emissive: 0x92d9e7, emissiveIntensity: 0.08, roughness: 0.72 });
+  const iceWall = new THREE.MeshStandardMaterial({ color: 0x667f8d, emissive: 0x274d59, emissiveIntensity: 0.12, roughness: 0.78 });
+  const iceWallTop = new THREE.MeshStandardMaterial({ color: 0xa8dce6, emissive: 0x4d8e9e, emissiveIntensity: 0.1, roughness: 0.62 });
   const tile = (x, z, material) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), material);
     mesh.position.set(x, 0.06, z);
@@ -4665,14 +4666,32 @@ function createShowdownThemeMap() {
   for (let x = -6; x < 6; x += 1) {
     for (let z = -6; z < 6; z += 1) tile(x * 5 + 2.5, z * 5 + 2.5, (x + z) % 2 ? sky : ivory);
   }
-  state.showdownSolids.push({ type: "platform", x: 0, z: 0, halfW: 30, halfD: 30, top: 0.12, mesh: showdownMapGroup });
+  // 바닥은 시각 요소일 뿐 충돌체가 아니다. 충돌 목록에는 벽만 등록한다.
   const wall = (x, z, width, depth) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 2, depth), iceWall);
     mesh.position.set(x, 1.0, z);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
-    state.showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: 2.0, mesh });
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(width + 0.08, 0.14, depth + 0.08), iceWallTop);
+    cap.position.set(x, 2.07, z);
+    cap.castShadow = true;
+    showdownMapGroup.add(cap);
+    state.showdownSolids.push({
+      type: "wall",
+      x,
+      z,
+      width,
+      depth,
+      halfW: width / 2,
+      halfD: depth / 2,
+      minX: x - width / 2,
+      maxX: x + width / 2,
+      minZ: z - depth / 2,
+      maxZ: z + depth / 2,
+      top: 2.0,
+      mesh,
+    });
   };
   [[0,-30,60,1],[0,30,60,1],[-30,0,1,60],[30,0,1,60],[-12,-10,9,2],[12,10,9,2],[-12,12,2,9],[12,-12,2,9],[0,0,7,2]].forEach((spec) => wall(...spec));
   [[-22,-22,0xff9fcf],[22,-22,0xb8edff],[-22,22,0xc7f29b],[22,22,0xffd38e]].forEach(([x,z,color]) => {
