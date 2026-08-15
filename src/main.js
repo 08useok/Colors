@@ -84,6 +84,11 @@ const dailyRewardAttempts = document.getElementById("daily-reward-attempts");
 const dailyRewardMessage = document.getElementById("daily-reward-message");
 const dailyRewardReturn = document.getElementById("daily-reward-return");
 const dailyRewardUpgradeAll = document.getElementById("daily-reward-upgrade-all");
+const dailyRewardHelp = document.getElementById("daily-reward-help");
+const dailyRewardOdds = document.getElementById("daily-reward-odds");
+const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
+const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
+const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
 const accountRecoveryBtn = document.getElementById("account-recovery-btn");
 const accountRecoveryInfo = document.getElementById("account-recovery-info");
 const accountSwitch = document.getElementById("account-switch");
@@ -1945,6 +1950,30 @@ const DAILY_REWARD_JUMP_WEIGHTS = [
   { steps: 9, weight: 0.02 },
   { steps: 10, weight: 0.01 },
 ];
+function formatDailyRewardChance(value) {
+  return `${Number((value * 100).toFixed(2))}%`;
+}
+
+function renderDailyRewardOdds() {
+  if (!dailyRewardUpgradeOddsBody || !dailyRewardJumpOddsBody) return;
+  const bulkCommon = Math.min(1, DAILY_REWARD_COMMON_UPGRADE_CHANCE + DAILY_REWARD_UPGRADE_ALL_BONUS);
+  const bulkLater = Math.min(1, DAILY_REWARD_UPGRADE_CHANCE + DAILY_REWARD_UPGRADE_ALL_BONUS);
+  dailyRewardUpgradeOddsBody.innerHTML = `
+    <tr><td>별 클릭</td><td>${formatDailyRewardChance(DAILY_REWARD_COMMON_UPGRADE_CHANCE)}</td><td>${formatDailyRewardChance(DAILY_REWARD_UPGRADE_CHANCE)}</td></tr>
+    <tr><td>한 번에 사용</td><td>${formatDailyRewardChance(bulkCommon)}</td><td>${formatDailyRewardChance(bulkLater)}</td></tr>
+  `;
+  const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
+  const cells = DAILY_REWARD_JUMP_WEIGHTS.map(({ steps, weight }) =>
+    `<td>${steps}단계</td><td>${formatDailyRewardChance(weight / totalWeight)}</td>`
+  );
+  dailyRewardJumpOddsBody.innerHTML = Array.from({ length: Math.ceil(cells.length / 4) }, (_, row) =>
+    `<tr>${cells.slice(row * 4, row * 4 + 4).join("")}</tr>`
+  ).join("");
+}
+
+function setDailyRewardOddsOpen(open) {
+  dailyRewardOdds?.classList.toggle("hidden", !open);
+}
 function rollUpgradeJumpSteps() {
   const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
   let roll = Math.random() * totalWeight;
@@ -2008,6 +2037,7 @@ function showDailyRewardReveal() {
   dailyRewardUpgradeAll.disabled = false;
   dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
   dailyRewardReturn.classList.add("hidden");
+  setDailyRewardOddsOpen(false);
   updateDailyRewardReveal();
   dailyRewardReveal.classList.remove("hidden");
   return true;
@@ -2733,6 +2763,20 @@ function buildPinkRigModel(glbSet, skinId) {
   if (skinId) applySkin(group, skinId);
   return group;
 }
+
+dailyRewardHelp?.addEventListener("click", () => {
+  renderDailyRewardOdds();
+  setDailyRewardOddsOpen(true);
+});
+dailyRewardOddsClose?.addEventListener("click", () => setDailyRewardOddsOpen(false));
+dailyRewardOdds?.addEventListener("click", (event) => {
+  if (event.target === dailyRewardOdds) setDailyRewardOddsOpen(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !dailyRewardOdds?.classList.contains("hidden")) {
+    setDailyRewardOddsOpen(false);
+  }
+});
 
 function createStickman(color, skinId, normalizeBattleModel = false) {
   if (color === 0x0000ff && _blueWalkGlb) {

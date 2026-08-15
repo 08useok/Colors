@@ -3408,6 +3408,21 @@ body.lobby-active #takedown-hud {
   text-align: center;
 }
 .daily-reward-reveal .reward-kicker { color: #a9bdd2; font-size: 11px; font-weight: 900; letter-spacing: .22em; }
+.daily-reward-help {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(18px, env(safe-area-inset-right));
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgba(255, 255, 255, .65);
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(12, 20, 31, .74);
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.daily-reward-help:hover { transform: scale(1.06); background: rgba(44, 67, 92, .9); }
 #daily-reward-grade { color: #e9f2f7; font-size: 24px; text-shadow: 0 0 20px currentColor; }
 .daily-reward-star {
   width: 170px;
@@ -3463,6 +3478,50 @@ body.lobby-active #takedown-hud {
   cursor: pointer;
 }
 .daily-reward-upgrade-all:disabled { opacity: .45; cursor: default; }
+.daily-reward-odds {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(2, 6, 12, .78);
+}
+.daily-reward-odds-card {
+  position: relative;
+  width: min(560px, calc(100vw - 36px));
+  max-height: min(720px, calc(100vh - 36px));
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 228, 161, .42);
+  border-radius: 20px;
+  padding: 24px;
+  color: #f7f3e8;
+  background: linear-gradient(145deg, #172433, #0c121b);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+  text-align: left;
+}
+.daily-reward-odds-card h3 { margin: 0 42px 18px 0; color: #ffe4a1; font-size: 24px; }
+.daily-reward-odds-card h4 { margin: 18px 0 8px; color: #cbd8e5; }
+.daily-reward-odds-card table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.daily-reward-odds-card th,
+.daily-reward-odds-card td { border-bottom: 1px solid rgba(255,255,255,.12); padding: 9px 6px; text-align: center; }
+.daily-reward-odds-card th { color: #9db5ca; font-size: 12px; }
+.daily-reward-odds-card td { font-weight: 800; }
+.daily-reward-odds-card p { margin: 16px 0 0; color: #a9bdd2; font-size: 13px; }
+.daily-reward-odds-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  font-size: 25px;
+  cursor: pointer;
+}
 @keyframes daily-star-spin {
   0% { transform: rotate(0) scale(1); }
   55% { transform: rotate(540deg) scale(1.24); filter: drop-shadow(0 0 42px currentColor) brightness(1.8); }

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.148">
+  <link rel="stylesheet" href="./styles.css?v=1.5.149">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -878,6 +878,7 @@
   </div>
 
   <div id="daily-reward-reveal" class="daily-reward-reveal hidden" aria-live="polite">
+    <button id="daily-reward-help" class="daily-reward-help" type="button" aria-label="일일 보상 확률 보기">?</button>
     <span class="reward-kicker">DAILY REWARD</span>
     <strong id="daily-reward-grade">일반</strong>
     <button id="daily-reward-star" class="daily-reward-star" type="button" aria-label="일일 보상 별 열기">★</button>
@@ -885,6 +886,23 @@
     <button id="daily-reward-upgrade-all" class="daily-reward-upgrade-all" type="button">남은 기회 한 번에 사용</button>
     <p id="daily-reward-message">별을 클릭해 보상을 확인하세요</p>
     <button id="daily-reward-return" class="daily-reward-return hidden" type="button">로비로 돌아가기</button>
+    <div id="daily-reward-odds" class="daily-reward-odds hidden" role="dialog" aria-modal="true" aria-labelledby="daily-reward-odds-title">
+      <section class="daily-reward-odds-card">
+        <button id="daily-reward-odds-close" class="daily-reward-odds-close" type="button" aria-label="확률표 닫기">×</button>
+        <h3 id="daily-reward-odds-title">일일 보상 확률</h3>
+        <h4>업그레이드 성공 확률</h4>
+        <table>
+          <thead><tr><th>사용 방식</th><th>일반</th><th>희귀 이상</th></tr></thead>
+          <tbody id="daily-reward-upgrade-odds-body"></tbody>
+        </table>
+        <h4>성공 시 상승 단계</h4>
+        <table>
+          <thead><tr><th>상승</th><th>확률</th><th>상승</th><th>확률</th></tr></thead>
+          <tbody id="daily-reward-jump-odds-body"></tbody>
+        </table>
+        <p>업그레이드 성공 시 기회는 줄어들지 않습니다.</p>
+      </section>
+    </div>
   </div>
 
   <div id="matchmaking-overlay" class="hidden">
@@ -968,6 +986,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.3.73"></script>
+  <script type="module" src="./src/main.js?v=1.5.3.74"></script>
 </body>
 </html>
