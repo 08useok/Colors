@@ -10639,11 +10639,24 @@ function updateCamera(dt) {
     return;
   }
 
+  const hasFinitePosition = (fighter) => fighter?.mesh
+    && Number.isFinite(fighter.mesh.position.x)
+    && Number.isFinite(fighter.mesh.position.y)
+    && Number.isFinite(fighter.mesh.position.z);
   const spectatorTarget = player.dead
-    ? state.players.find((fighter) => !fighter.dead) || player
-    : player;
-  cameraTarget.copy(spectatorTarget.mesh.position);
-  cameraTarget.y = 0.8;
+    ? state.players.find((fighter) => !fighter.dead && hasFinitePosition(fighter))
+      || (hasFinitePosition(player) ? player : null)
+    : (hasFinitePosition(player) ? player : null);
+
+  // 충돌·관전 대상 전환 중 잘못된 좌표가 한 번 들어오면 카메라에 붙은
+  // AudioListener가 매 프레임 non-finite AudioParam 오류를 발생시킨다.
+  // 유효한 대상을 찾지 못하면 안전한 월드 중앙으로 즉시 복구한다.
+  if (spectatorTarget) {
+    cameraTarget.copy(spectatorTarget.mesh.position);
+    cameraTarget.y = 0.8;
+  } else {
+    cameraTarget.set(0, 0.8, 0);
+  }
 
   cameraDesired.copy(cameraTarget);
   if (state.victoryCelebrating) {
@@ -10657,7 +10670,14 @@ function updateCamera(dt) {
     cameraDesired.z += CAMERA_DEPTH_OFFSET;
   }
   camera.up.set(0, 0, -1);
-  camera.position.lerp(cameraDesired, 1 - Math.exp(-dt * 10));
+  const cameraIsFinite = Number.isFinite(camera.position.x)
+    && Number.isFinite(camera.position.y)
+    && Number.isFinite(camera.position.z);
+  if (cameraIsFinite) {
+    camera.position.lerp(cameraDesired, 1 - Math.exp(-dt * 10));
+  } else {
+    camera.position.copy(cameraDesired);
+  }
   camera.lookAt(cameraTarget);
 }
 
