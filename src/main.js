@@ -3406,10 +3406,31 @@ function createStickman(color, skinId) {
     group.userData.prop = rgGroup;
   }
 
-  if (skinId) applySkin(group, skinId);
-  _applyPinkToon(group);
+  // 크림슨과 골드는 아직 절차형 모델을 사용하므로 GLB 캐릭터와 동일한
+  // 전투 높이로 외형만 정규화한다. 바깥 그룹은 스케일하지 않아 이후 붙는
+  // 체력바·이름표의 크기와 전투 판정에는 영향을 주지 않는다.
+  let resultGroup = group;
+  if (color === 0xa00000 || color === 0xd4a928) {
+    group.updateMatrixWorld(true);
+    const modelBox = new THREE.Box3().setFromObject(group);
+    const modelSize = modelBox.getSize(new THREE.Vector3());
+    const modelCenter = modelBox.getCenter(new THREE.Vector3());
+    const modelScale = GLB_BATTLE_HEIGHT / Math.max(modelSize.y, 0.001);
+    group.scale.setScalar(modelScale);
+    group.position.set(
+      -modelCenter.x * modelScale,
+      -modelBox.min.y * modelScale + GLB_FEET_Y,
+      -modelCenter.z * modelScale,
+    );
+    resultGroup = new THREE.Group();
+    resultGroup.userData = group.userData;
+    resultGroup.add(group);
+  }
 
-  return group;
+  if (skinId) applySkin(resultGroup, skinId);
+  _applyPinkToon(resultGroup);
+
+  return resultGroup;
 }
 
 function createNameLabel(name, hexColor) {
