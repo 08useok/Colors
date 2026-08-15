@@ -7337,6 +7337,15 @@ function clampToWorld(position, radius) {
   }
 }
 
+function clampToShowdownBounds(position, radius) {
+  if (!showdownMapGroup.visible && mpConfig?.mode !== "showdown") return;
+  // 외곽 벽 중심은 ±40, 두께는 1이므로 안쪽 면(±39.5)에 투명 경계를 맞춘다.
+  const innerEdge = 39.5;
+  const limit = Math.max(0, innerEdge - radius);
+  position.x = THREE.MathUtils.clamp(position.x, -limit, limit);
+  position.z = THREE.MathUtils.clamp(position.z, -limit, limit);
+}
+
 function clampToZone(position, radius, zoneRadius) {
   const dx = position.x - state.safeCenter.x;
   const dz = position.z - state.safeCenter.y;
@@ -7374,6 +7383,7 @@ function intersectsRect(x, z, radius, rect) {
 
 function resolveMovementCollision(position, radius, zoneRadius = null) {
   clampToWorld(position, radius);
+  clampToShowdownBounds(position, radius);
 
   if (zoneRadius !== null) {
     clampToZone(position, radius, zoneRadius);
@@ -7438,6 +7448,7 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
   if (zoneRadius !== null) {
     clampToZone(position, radius, zoneRadius);
   }
+  clampToShowdownBounds(position, radius);
 }
 
 function isWallAhead(fighter, dirX, dirZ, lookahead) {
