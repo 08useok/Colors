@@ -1929,6 +1929,7 @@ let dailyRewardComplete = false;
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
 const DAILY_REWARD_UPGRADE_CHANCE = 0.12;
 const DAILY_REWARD_COMMON_UPGRADE_CHANCE = 0.25;
+const DAILY_REWARD_UPGRADE_ALL_BONUS = 0.03;
 let dailyRewardAttemptsUsed = 0;
 
 // 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다.
@@ -1963,11 +1964,12 @@ function dailyRewardAtTopTier() {
 }
 
 // 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
-function rollDailyRewardUpgrade() {
+function rollDailyRewardUpgrade(chanceBonus = 0) {
   const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
-  const upgradeChance = dailyRewardTierIndex === 0
+  const baseUpgradeChance = dailyRewardTierIndex === 0
     ? DAILY_REWARD_COMMON_UPGRADE_CHANCE
     : DAILY_REWARD_UPGRADE_CHANCE;
+  const upgradeChance = Math.min(1, baseUpgradeChance + chanceBonus);
   const upgraded = canUpgrade && Math.random() < upgradeChance;
   if (upgraded) {
     const steps = rollUpgradeJumpSteps();
@@ -2045,7 +2047,7 @@ dailyRewardUpgradeAll?.addEventListener("click", () => {
   const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
   setTimeout(() => {
     while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
-      rollDailyRewardUpgrade();
+      rollDailyRewardUpgrade(DAILY_REWARD_UPGRADE_ALL_BONUS);
     }
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
