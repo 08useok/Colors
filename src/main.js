@@ -2636,8 +2636,9 @@ function buildCyanRigModel(gltf, charKey = "cyan") {
   const box = new THREE.Box3().setFromObject(model);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
-  const templateScale = CYAN_RIG_TEMPLATE_CHARACTERS.includes(charKey) ? 1.6 : 1;
-  const scale = (CYAN_BATTLE_HEIGHT * templateScale) / Math.max(size.y, 0.001);
+  // 크림슨·골드도 전투에서는 시안 및 다른 GLB 캐릭터와 같은 높이를 쓴다.
+  // 템플릿 캐릭터에만 적용되던 1.6배 보정은 전투 모델을 과도하게 키웠다.
+  const scale = CYAN_BATTLE_HEIGHT / Math.max(size.y, 0.001);
   model.scale.setScalar(scale);
   model.position.set(-center.x * scale, -box.min.y * scale + GLB_FEET_Y, -center.z * scale);
   model.rotation.y = 0;
