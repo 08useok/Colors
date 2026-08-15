@@ -10736,6 +10736,8 @@ function updateAttackAimIndicator() {
   const pos = player.mesh.position;
   const yaw = player.yaw;
   const unavailable = player.ammo <= 0;
+  // 쇼다운 타일의 윗면은 Y=0.12이므로 바닥 조준 표시를 그보다 높게 둔다.
+  const aimGroundY = showdownMapGroup.visible ? 0.16 : 0;
 
   attackAimIndicator.visible = false;
   greenAimIndicator.visible = false;
@@ -10752,38 +10754,38 @@ function updateAttackAimIndicator() {
 
   if (charType === "red") {
     attackAimIndicator.visible = true;
-    attackAimIndicator.position.set(pos.x, 0, pos.z);
+    attackAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     attackAimIndicator.rotation.y = yaw;
     attackAimIndicator.userData.rects.forEach((r) => { r.material.opacity = alpha; });
   } else if (charType === "green") {
     greenAimIndicator.visible = true;
-    greenAimIndicator.position.set(pos.x, 0, pos.z);
+    greenAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     greenAimIndicator.rotation.y = yaw;
     greenAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.13;
   } else if (charType === "blue") {
     blueAimIndicator.visible = true;
-    blueAimIndicator.position.set(pos.x, 0, pos.z);
+    blueAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     blueAimIndicator.rotation.y = yaw;
     blueAimIndicator.userData.beam.scale.set(1, 1, 1);
     blueAimIndicator.userData.beam.material.opacity = unavailable ? 0.07 : 0.22;
     blueAimIndicator.userData.dot.material.opacity = unavailable ? 0.15 : 0.50;
   } else if (charType === "orange") {
     orangeAimIndicator.visible = true;
-    orangeAimIndicator.position.set(pos.x, 0, pos.z);
+    orangeAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     orangeAimIndicator.rotation.y = yaw;
     orangeAimIndicator.userData.beam.scale.set(1, 1, 1);
     orangeAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     orangeAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   } else if (charType === "yellow") {
     yellowAimIndicator.visible = true;
-    yellowAimIndicator.position.set(pos.x, 0, pos.z);
+    yellowAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     yellowAimIndicator.rotation.y = yaw;
     yellowAimIndicator.userData.beam.scale.set(1, 1, 1);
     yellowAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     yellowAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
   } else if (charType === "cyan") {
     cyanAimIndicator.visible = true;
-    cyanAimIndicator.position.set(pos.x, 0, pos.z);
+    cyanAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     cyanAimIndicator.rotation.y = yaw;
     cyanAimIndicator.userData.beam.scale.set(1, 1, 1);
     cyanAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
@@ -10791,7 +10793,7 @@ function updateAttackAimIndicator() {
   } else if (charType === "purple") {
     const isNeedle = (player.attackIndex ?? 0) % 2 === 0;
     purpleAimIndicator.visible = true;
-    purpleAimIndicator.position.set(pos.x, 0, pos.z);
+    purpleAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     purpleAimIndicator.rotation.y = yaw;
     purpleAimIndicator.userData.beams.forEach((beam) => {
       beam.material.opacity = unavailable ? 0.04 : 0.15;
@@ -10807,13 +10809,13 @@ function updateAttackAimIndicator() {
     }
   } else if (charType === "pink") {
     pinkAimIndicator.visible = true;
-    pinkAimIndicator.position.set(pos.x, 0, pos.z);
+    pinkAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     pinkAimIndicator.scale.setScalar(player.hasPinkAreaHealAbility ? PINK_AREA_HEAL_ABILITY_MULTIPLIER : 1);
     pinkAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.35;
     pinkAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.06;
   } else if (charType === "crimson") {
     crimsonAimIndicator.visible = true;
-    crimsonAimIndicator.position.set(pos.x, 0, pos.z);
+    crimsonAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     crimsonAimIndicator.rotation.y = yaw;
     crimsonAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.06 : 0.2;
   }
