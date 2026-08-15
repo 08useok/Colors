@@ -7024,6 +7024,11 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
+  // 로비에서 바로 진입할 때 남아 있는 로비 상태가 캔버스와 HUD를 숨기지 않게 한다.
+  document.body.classList.remove("lobby-active");
+  messageOverlay.style.display = "none";
+  resultOverlay.style.display = "none";
+  crosshairEl.classList.remove("hidden");
   pauseLobbyBgm();
   clock.getDelta();
   battleMapGroup.visible = false;
@@ -7061,8 +7066,6 @@ function startTraining() {
   trainingMapGroup.traverse((object) => { object.visible = true; });
   rebuildAmmoPips();
   updateHud();
-  resultOverlay.style.display = "none";
-  messageOverlay.style.display = "none";
 }
 
 function exitTraining() {
