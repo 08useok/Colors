@@ -7990,8 +7990,20 @@ function beginIvoryAttack(fighter) {
 function spawnIvoryZone(x, z, ownerId) {
   const def = CHARACTERS.ivory;
   const mesh = new THREE.Group();
-  const puddle = new THREE.Mesh(new THREE.CircleGeometry(def.iceCreamZoneRadius, 36), new THREE.MeshStandardMaterial({ color: 0xffffe8, emissive: 0x91dff2, emissiveIntensity: 0.16, transparent: true, opacity: 0.82, side: THREE.DoubleSide, depthWrite: false }));
+  const puddle = new THREE.Mesh(new THREE.CircleGeometry(def.iceCreamZoneRadius, 36), new THREE.MeshStandardMaterial({
+    color: 0xffffe8,
+    emissive: 0x91dff2,
+    emissiveIntensity: 0.24,
+    transparent: true,
+    opacity: 0.9,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    polygonOffset: true,
+    polygonOffsetFactor: -2,
+    polygonOffsetUnits: -2,
+  }));
   puddle.rotation.x = -Math.PI / 2;
+  puddle.renderOrder = 3;
   const overturnedScoop = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfffff2, roughness: 0.7 }));
   overturnedScoop.scale.y = 0.45;
   overturnedScoop.position.y = 0.12;
@@ -8000,7 +8012,8 @@ function spawnIvoryZone(x, z, ownerId) {
   cone.position.y = 0.55;
   addIvorySprinkles(mesh, def.iceCreamZoneRadius, 0.035, true);
   mesh.add(puddle, overturnedScoop, cone);
-  mesh.position.set(x, 0.08, z);
+  // 쇼다운 타일 윗면(Y=0.12)보다 높게 배치해 장판이 바닥에 묻히지 않게 한다.
+  mesh.position.set(x, 0.16, z);
   scene.add(mesh);
   state.ivoryZones.push({ mesh, x, z, ownerId, nextTickAt: state.gameTime, expiresAt: state.gameTime + def.iceCreamZoneDuration });
 }
