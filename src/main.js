@@ -2732,7 +2732,7 @@ function buildPinkRigModel(glbSet, skinId) {
   return group;
 }
 
-function createStickman(color, skinId) {
+function createStickman(color, skinId, normalizeBattleModel = false) {
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
     const model = skeletonClone(_blueWalkGlb.scene);
@@ -3410,7 +3410,7 @@ function createStickman(color, skinId) {
   // 전투 높이로 외형만 정규화한다. 바깥 그룹은 스케일하지 않아 이후 붙는
   // 체력바·이름표의 크기와 전투 판정에는 영향을 주지 않는다.
   let resultGroup = group;
-  if (color === 0xa00000 || color === 0xd4a928) {
+  if (normalizeBattleModel && (color === 0xa00000 || color === 0xd4a928)) {
     group.updateMatrixWorld(true);
     const modelBox = new THREE.Box3().setFromObject(group);
     const modelSize = modelBox.getSize(new THREE.Vector3());
@@ -4264,7 +4264,7 @@ function makeFighter(options) {
     galeKnockbackSpeed: 0,
   };
 
-  fighter.mesh = createStickman(charDef.color, skinId);
+  fighter.mesh = createStickman(charDef.color, skinId, true);
   fighter.mesh.position.set(options.position.x, 1.85, options.position.z);
   fighter.mesh.rotation.y = fighter.yaw;
   if (fighter.mesh.userData.guitar) fighter.mesh.userData.guitar.visible = false;
