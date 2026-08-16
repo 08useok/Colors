@@ -3406,6 +3406,40 @@ body.lobby-active #takedown-hud {
   gap: 14px;
   background: radial-gradient(circle at center, rgba(59, 85, 117, .58), rgba(3, 7, 14, .96) 68%);
   text-align: center;
+  overflow: hidden;
+}
+.daily-reward-fx { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.daily-reward-reveal > :not(.daily-reward-fx):not(.daily-reward-odds) { z-index: 1; }
+.daily-reward-reveal.high-tier {
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--reward-fx) 34%, transparent), transparent 34%), radial-gradient(circle at center, rgba(20,26,42,.72), rgba(2,5,11,.98) 72%);
+}
+.daily-reward-reveal.high-tier .daily-reward-fx::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: min(115vmax, 1100px); aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--reward-fx) 42%, transparent) 0 3deg, transparent 3deg 14deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 15%, #000 36%, transparent 72%);
+  mask: radial-gradient(circle, transparent 0 15%, #000 36%, transparent 72%);
+  animation: daily-reward-rays 11s linear infinite; opacity: .72;
+}
+.daily-reward-reveal.high-tier .daily-reward-star { animation: daily-reward-legendary-pulse 1.45s ease-in-out infinite; filter: drop-shadow(0 0 18px currentColor) drop-shadow(0 0 55px var(--reward-fx)); }
+.daily-reward-reveal.high-tier .daily-reward-star.spinning { animation: daily-star-spin .9s cubic-bezier(.32,.02,.27,1); }
+.daily-reward-fx.burst::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle at center, #fff 0, var(--reward-fx) 8%, transparent 48%);
+  animation: daily-reward-flash .9s ease-out both;
+}
+.daily-reward-particle {
+  position: absolute; left: 50%; top: 50%; width: var(--particle-size); height: var(--particle-size); border-radius: 50%;
+  background: #fff; box-shadow: 0 0 8px 2px var(--reward-fx), 0 0 22px 5px var(--reward-fx);
+  animation: daily-reward-particle 1.35s cubic-bezier(.12,.72,.24,1) var(--particle-delay) both;
+}
+@keyframes daily-reward-rays { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes daily-reward-legendary-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+@keyframes daily-reward-flash { 0% { opacity: 1; transform: scale(.2); } 55% { opacity: .72; } 100% { opacity: 0; transform: scale(1.35); } }
+@keyframes daily-reward-particle {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) scale(.05); }
 }
 .daily-reward-reveal .reward-kicker { color: #a9bdd2; font-size: 11px; font-weight: 900; letter-spacing: .22em; }
 .daily-reward-help {
