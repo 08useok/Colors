@@ -1963,6 +1963,7 @@ function renderDailyRewardOdds() {
   dailyRewardUpgradeOddsBody.innerHTML = `
     <tr><td>별 클릭</td><td>${formatDailyRewardChance(DAILY_REWARD_COMMON_UPGRADE_CHANCE)}</td><td>${formatDailyRewardChance(DAILY_REWARD_UPGRADE_CHANCE)}</td></tr>
     <tr><td>한 번에 사용</td><td>${formatDailyRewardChance(bulkCommon)}</td><td>${formatDailyRewardChance(bulkLater)}</td></tr>
+    <tr><td>일반 마지막 기회</td><td>100%</td><td>-</td></tr>
   `;
   const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
   const cells = DAILY_REWARD_JUMP_WEIGHTS.map(({ steps, weight }) =>
@@ -1995,7 +1996,8 @@ function dailyRewardAtTopTier() {
 }
 
 function triggerDailyRewardTierEffect(tierIndex) {
-  if (!dailyRewardFx || tierIndex < 3 || tierIndex === dailyRewardLastEffectTier) return;
+  const legendaryTierIndex = DAILY_REWARD_TIERS.findIndex((tier) => tier.id === "legendary");
+  if (!dailyRewardFx || tierIndex < legendaryTierIndex || tierIndex === dailyRewardLastEffectTier) return;
   dailyRewardLastEffectTier = tierIndex;
   const tier = DAILY_REWARD_TIERS[tierIndex];
   const colors = {
@@ -2005,7 +2007,7 @@ function triggerDailyRewardTierEffect(tierIndex) {
   dailyRewardReveal.style.setProperty("--reward-fx", colors[tier.id] ?? "#ffd84d");
   dailyRewardReveal.classList.add("high-tier");
   dailyRewardFx.replaceChildren();
-  const particleCount = Math.min(84, 34 + (tierIndex - 3) * 8);
+  const particleCount = Math.min(84, 34 + (tierIndex - legendaryTierIndex) * 8);
   for (let index = 0; index < particleCount; index += 1) {
     const particle = document.createElement("i");
     particle.className = "daily-reward-particle";
@@ -2026,11 +2028,13 @@ function triggerDailyRewardTierEffect(tierIndex) {
 // 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
 function rollDailyRewardUpgrade(chanceBonus = 0) {
   const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
+  // 일반 보상이 연속 확정되지 않도록 마지막 기회에는 최소 희귀를 보장한다.
+  const guaranteedCommonUpgrade = dailyRewardTierIndex === 0 && dailyRewardAttemptsLeft() === 1;
   const baseUpgradeChance = dailyRewardTierIndex === 0
     ? DAILY_REWARD_COMMON_UPGRADE_CHANCE
     : DAILY_REWARD_UPGRADE_CHANCE;
   const upgradeChance = Math.min(1, baseUpgradeChance + chanceBonus);
-  const upgraded = canUpgrade && Math.random() < upgradeChance;
+  const upgraded = canUpgrade && (guaranteedCommonUpgrade || Math.random() < upgradeChance);
   if (upgraded) {
     const steps = rollUpgradeJumpSteps();
     dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
