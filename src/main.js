@@ -6976,8 +6976,8 @@ function initPlayers() {
     // 중앙 한곳에 전원이 몰려 시작하는 현상을 줄이면서도 초반 교전은 남긴다.
     spawns = [
       [-6, 0], [6, 0],
-      [-32, -32], [0, -34], [32, -32], [34, 0],
-      [32, 32], [0, 34], [-32, 32], [-34, 0],
+      [-37.2, -37.2], [0, -37.5], [37.2, -37.2], [37.5, 0],
+      [37.2, 37.2], [0, 37.5], [-37.2, 37.2], [-37.5, 0],
     ].map(([x, z]) => new THREE.Vector3(x, 0, z));
   }
 
@@ -7422,8 +7422,9 @@ function intersectsRect(x, z, radius, rect) {
 }
 
 function resolveMovementCollision(position, radius, zoneRadius = null) {
-  clampToWorld(position, radius);
-  clampToShowdownBounds(position, radius);
+  const isShowdown = showdownMapGroup.visible || mpConfig?.mode === "showdown";
+  if (isShowdown) clampToShowdownBounds(position, radius);
+  else clampToWorld(position, radius);
 
   if (zoneRadius !== null) {
     clampToZone(position, radius, zoneRadius);
