@@ -2000,24 +2000,50 @@ function triggerDailyRewardTierEffect(tierIndex) {
   if (!dailyRewardFx || tierIndex < legendaryTierIndex || tierIndex === dailyRewardLastEffectTier) return;
   dailyRewardLastEffectTier = tierIndex;
   const tier = DAILY_REWARD_TIERS[tierIndex];
+  const tierNumber = tierIndex + 1;
+  const isTierSevenPlus = tierNumber >= 7;
+  const isMaxTier = tierNumber === DAILY_REWARD_TIERS.length;
   const colors = {
     legendary: "#ffd84d", mythic: "#ff657a", unique: "#b06bff",
     ultra: "#ff8a1e", transcend: "#00e5ff", unknown: "#e0aaff", absolute: "#ffffff",
   };
   dailyRewardReveal.style.setProperty("--reward-fx", colors[tier.id] ?? "#ffd84d");
   dailyRewardReveal.classList.add("high-tier");
+  dailyRewardReveal.classList.toggle("tier-7-plus", isTierSevenPlus);
+  dailyRewardReveal.classList.toggle("max-tier", isMaxTier);
   dailyRewardFx.replaceChildren();
-  const particleCount = Math.min(84, 34 + (tierIndex - legendaryTierIndex) * 8);
+  const particleCount = isMaxTier ? 220 : isTierSevenPlus ? 96 + (tierNumber - 7) * 32 : 34 + (tierIndex - legendaryTierIndex) * 8;
   for (let index = 0; index < particleCount; index += 1) {
     const particle = document.createElement("i");
     particle.className = "daily-reward-particle";
     const angle = Math.random() * Math.PI * 2;
-    const distance = 150 + Math.random() * Math.min(window.innerWidth, window.innerHeight) * .48;
+    const distanceScale = isMaxTier ? .88 : isTierSevenPlus ? .68 : .48;
+    const distance = 150 + Math.random() * Math.min(window.innerWidth, window.innerHeight) * distanceScale;
     particle.style.setProperty("--particle-x", `${Math.cos(angle) * distance}px`);
     particle.style.setProperty("--particle-y", `${Math.sin(angle) * distance}px`);
-    particle.style.setProperty("--particle-size", `${3 + Math.random() * 8}px`);
+    particle.style.setProperty("--particle-size", `${3 + Math.random() * (isMaxTier ? 15 : isTierSevenPlus ? 11 : 8)}px`);
     particle.style.setProperty("--particle-delay", `${Math.random() * .18}s`);
     dailyRewardFx.appendChild(particle);
+  }
+  if (isTierSevenPlus) {
+    const waveCount = isMaxTier ? 6 : 2 + (tierNumber - 7);
+    for (let index = 0; index < waveCount; index += 1) {
+      const wave = document.createElement("i");
+      wave.className = "daily-reward-wave";
+      wave.style.setProperty("--wave-delay", `${index * .12}s`);
+      dailyRewardFx.appendChild(wave);
+    }
+    const shardCount = isMaxTier ? 56 : 18 + (tierNumber - 7) * 8;
+    for (let index = 0; index < shardCount; index += 1) {
+      const shard = document.createElement("i");
+      shard.className = "daily-reward-shard";
+      const angle = (index / shardCount) * Math.PI * 2 + Math.random() * .08;
+      const distance = (isMaxTier ? 52 : 38) + Math.random() * 32;
+      shard.style.setProperty("--shard-angle", `${angle}rad`);
+      shard.style.setProperty("--shard-distance", `${distance}vmin`);
+      shard.style.setProperty("--shard-delay", `${Math.random() * .22}s`);
+      dailyRewardFx.appendChild(shard);
+    }
   }
   dailyRewardFx.classList.remove("burst");
   void dailyRewardFx.offsetWidth;
@@ -2070,6 +2096,7 @@ function showDailyRewardReveal() {
   dailyRewardAttemptsUsed = 0;
   dailyRewardLastEffectTier = -1;
   dailyRewardReveal.classList.remove("high-tier");
+  dailyRewardReveal.classList.remove("tier-7-plus", "max-tier");
   dailyRewardReveal.style.removeProperty("--reward-fx");
   dailyRewardFx?.replaceChildren();
   dailyRewardStar.disabled = false;
