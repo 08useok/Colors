@@ -1928,6 +1928,7 @@ const DAILY_REWARD_TIERS = [
   { id: "absolute", name: "절대", credits: 5000, coins: 20000 },
 ];
 let dailyRewardTierIndex = 0;
+let dailyRewardMaxTierIndex = DAILY_REWARD_TIERS.length - 1;
 let dailyRewardSpinning = false;
 let dailyRewardComplete = false;
 // 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
@@ -1992,7 +1993,7 @@ function dailyRewardAttemptsLeft() {
 }
 
 function dailyRewardAtTopTier() {
-  return dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
+  return dailyRewardTierIndex >= dailyRewardMaxTierIndex;
 }
 
 function triggerDailyRewardTierEffect(tierIndex) {
@@ -2053,7 +2054,7 @@ function triggerDailyRewardTierEffect(tierIndex) {
 
 // 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
 function rollDailyRewardUpgrade(chanceBonus = 0) {
-  const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
+  const canUpgrade = dailyRewardTierIndex < dailyRewardMaxTierIndex;
   // 일반 보상이 연속 확정되지 않도록 마지막 기회에는 최소 희귀를 보장한다.
   const guaranteedCommonUpgrade = dailyRewardTierIndex === 0 && dailyRewardAttemptsLeft() === 1;
   const baseUpgradeChance = dailyRewardTierIndex === 0
@@ -2063,7 +2064,7 @@ function rollDailyRewardUpgrade(chanceBonus = 0) {
   const upgraded = canUpgrade && (guaranteedCommonUpgrade || Math.random() < upgradeChance);
   if (upgraded) {
     const steps = rollUpgradeJumpSteps();
-    dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
+    dailyRewardTierIndex = Math.min(dailyRewardMaxTierIndex, dailyRewardTierIndex + steps);
   } else {
     dailyRewardAttemptsUsed += 1;
   }
@@ -2091,6 +2092,11 @@ function showDailyRewardReveal() {
     return false;
   }
   dailyRewardTierIndex = 0;
+  // 절대 등급은 연속으로 지급하지 않는다. 직전 최종 보상이 절대였다면
+  // 이번 보상만 최고 단계를 ???(9단계)로 제한한다.
+  dailyRewardMaxTierIndex = account?.daily?.lastRewardTierId === "absolute"
+    ? DAILY_REWARD_TIERS.length - 2
+    : DAILY_REWARD_TIERS.length - 1;
   dailyRewardSpinning = false;
   dailyRewardComplete = false;
   dailyRewardAttemptsUsed = 0;
@@ -2123,6 +2129,7 @@ function finishDailyReward() {
     if (!account.daily) account.daily = { winRewards: 0, pendingRewards: 0 };
     account.daily.pendingRewards = Math.max(0, (account.daily.pendingRewards || 0) - 1);
     account.daily.winRewards = (account.daily.winRewards || 0) + 1;
+    account.daily.lastRewardTierId = tier.id;
     saveAccount(account);
     updateDailyRewardBadge();
     if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
