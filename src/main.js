@@ -11687,7 +11687,6 @@ function animate() {
       && !state.takedownMode
       && !state.goldRushMode;
     if (inShowdownBattle) {
-      const cameraPlayer = getPlayer();
       for (const fighter of state.players) {
         if (fighter.dead || fighter.health <= 0) {
           fighter.dead = true;
@@ -11697,18 +11696,8 @@ function animate() {
           continue;
         }
         if (fighter.isPlayer) continue;
-        if (cameraPlayer) {
-          const dx = fighter.mesh.position.x - cameraPlayer.mesh.position.x;
-          const dz = fighter.mesh.position.z - cameraPlayer.mesh.position.z;
-          const distance = Math.hypot(dx, dz);
-          if (distance > 14) {
-            const scale = 14 / distance;
-            fighter.mesh.position.x = cameraPlayer.mesh.position.x + dx * scale;
-            fighter.mesh.position.z = cameraPlayer.mesh.position.z + dz * scale;
-            fighter.shadow.position.x = fighter.mesh.position.x;
-            fighter.shadow.position.z = fighter.mesh.position.z;
-          }
-        }
+        // 화면 밖 모델도 렌더링 상태만 유지한다. 위치를 플레이어 주변으로
+        // 끌어오면 외곽 스폰 8개가 한곳에 압축되어 시작부터 전원이 몰린다.
         fighter.mesh.visible = true;
         fighter.shadow.visible = true;
         if (fighter.healthBar) fighter.healthBar.visible = true;
