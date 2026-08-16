@@ -3474,9 +3474,9 @@ body.lobby-active #takedown-hud {
 .daily-reward-star.spinning { animation: daily-star-spin .9s cubic-bezier(.32,.02,.27,1); pointer-events: none; }
 .daily-reward-attempts { display: block; margin-top: 10px; color: #ffe4a1; font-size: 13px; font-weight: 900; letter-spacing: .04em; }
 .daily-reward-reveal[data-tier="rare"] .daily-reward-star,
-.daily-reward-reveal[data-tier="rare"] #daily-reward-grade { color: #62c7ff; }
+.daily-reward-reveal[data-tier="rare"] #daily-reward-grade { color: #39ffb0; }
 .daily-reward-reveal[data-tier="epic"] .daily-reward-star,
-.daily-reward-reveal[data-tier="epic"] #daily-reward-grade { color: #39ffb0; }
+.daily-reward-reveal[data-tier="epic"] #daily-reward-grade { color: #62c7ff; }
 .daily-reward-reveal[data-tier="legendary"] .daily-reward-star,
 .daily-reward-reveal[data-tier="legendary"] #daily-reward-grade { color: #ffd84d; }
 .daily-reward-reveal[data-tier="mythic"] .daily-reward-star,
