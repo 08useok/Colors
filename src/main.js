@@ -6470,24 +6470,56 @@ function createPurpleAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.purple.needleRange;
   const splashR = CHARACTERS.purple.vialSplashRadius;
+  const halfAngle = CHARACTERS.purple.needleSpreadAngle * 0.5;
 
-  const beamMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.15,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  });
-  const beam = new THREE.Group();
-  const beams = [-1, 0, 1].map((direction) => {
-    const line = new THREE.Mesh(new THREE.PlaneGeometry(0.22, range), beamMaterial);
-    const angle = direction * CHARACTERS.purple.needleSpreadAngle / 2;
-    line.rotation.set(-Math.PI / 2, angle, 0);
-    line.position.set(Math.sin(angle) * range * 0.5, 0.08, Math.cos(angle) * range * 0.5);
-    beam.add(line);
-    return line;
-  });
-  group.add(beam);
+  const fanShape = new THREE.Shape();
+  fanShape.moveTo(0, 0);
+  for (let i = 0; i <= 32; i += 1) {
+    const angle = -halfAngle + (i / 32) * halfAngle * 2;
+    fanShape.lineTo(Math.sin(angle) * range, Math.cos(angle) * range);
+  }
+  fanShape.lineTo(0, 0);
+  const fanMesh = new THREE.Mesh(
+    new THREE.ShapeGeometry(fanShape),
+    new THREE.MeshBasicMaterial({
+      color: 0xb76cff,
+      transparent: true,
+      opacity: 0.18,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      depthTest: false,
+    }),
+  );
+  fanMesh.rotation.x = Math.PI / 2;
+  fanMesh.position.y = 0.08;
+  fanMesh.renderOrder = 20;
+  group.add(fanMesh);
+
+  const fanLines = [];
+  for (const angle of [-halfAngle, 0, halfAngle]) {
+    const line = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0.1, 0),
+        new THREE.Vector3(Math.sin(angle) * range, 0.1, Math.cos(angle) * range),
+      ]),
+      new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthTest: false }),
+    );
+    line.renderOrder = 21;
+    group.add(line);
+    fanLines.push(line);
+  }
+
+  const arcPoints = [];
+  for (let i = 0; i <= 32; i += 1) {
+    const angle = -halfAngle + (i / 32) * halfAngle * 2;
+    arcPoints.push(new THREE.Vector3(Math.sin(angle) * range, 0.1, Math.cos(angle) * range));
+  }
+  const fanArc = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(arcPoints),
+    new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthTest: false }),
+  );
+  fanArc.renderOrder = 21;
+  group.add(fanArc);
 
   const ringGeo = new THREE.RingGeometry(splashR - 0.12, splashR, 24);
   const ring = new THREE.Mesh(
@@ -6533,7 +6565,7 @@ function createPurpleAimIndicator() {
 
   group.renderOrder = 4;
   group.visible = false;
-  group.userData = { beam, beams, ring, fill, dot };
+  group.userData = { fanMesh, fanLines, fanArc, ring, fill, dot };
   scene.add(group);
   return group;
 }
@@ -10927,15 +10959,16 @@ function updateAttackAimIndicator() {
     purpleAimIndicator.visible = true;
     purpleAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     purpleAimIndicator.rotation.y = yaw;
-    purpleAimIndicator.userData.beams.forEach((beam) => {
-      beam.material.opacity = unavailable ? 0.04 : 0.15;
-    });
+    purpleAimIndicator.userData.fanMesh.visible = isNeedle;
+    purpleAimIndicator.userData.fanLines.forEach((line) => { line.visible = isNeedle; });
+    purpleAimIndicator.userData.fanArc.visible = isNeedle;
+    purpleAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.05 : 0.18;
+    purpleAimIndicator.userData.fanLines.forEach((line) => { line.material.opacity = unavailable ? 0.16 : 0.55; });
+    purpleAimIndicator.userData.fanArc.material.opacity = unavailable ? 0.16 : 0.55;
     purpleAimIndicator.userData.ring.visible = !isNeedle;
     purpleAimIndicator.userData.fill.visible = !isNeedle;
-    purpleAimIndicator.userData.dot.visible = isNeedle;
-    if (isNeedle) {
-      purpleAimIndicator.userData.dot.material.opacity = unavailable ? 0.12 : 0.45;
-    } else {
+    purpleAimIndicator.userData.dot.visible = false;
+    if (!isNeedle) {
       purpleAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.4;
       purpleAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.08;
     }
