@@ -10319,9 +10319,18 @@ function updateGaleKnockback(dt) {
   for (const fighter of state.players) {
     if (fighter.dead || fighter.galeKnockbackRemaining <= 0) continue;
     const step = Math.min(fighter.galeKnockbackRemaining, fighter.galeKnockbackSpeed * dt);
-    fighter.mesh.position.x += fighter.galeKnockbackX * step;
-    fighter.mesh.position.z += fighter.galeKnockbackZ * step;
+    const beforeX = fighter.mesh.position.x;
+    const beforeZ = fighter.mesh.position.z;
+    tempVec3.set(
+      fighter.galeKnockbackX * fighter.galeKnockbackSpeed,
+      0,
+      fighter.galeKnockbackZ * fighter.galeKnockbackSpeed,
+    );
+    moveFighter(fighter, tempVec3, step / Math.max(fighter.galeKnockbackSpeed, 0.001));
+    const moved = Math.hypot(fighter.mesh.position.x - beforeX, fighter.mesh.position.z - beforeZ);
     fighter.galeKnockbackRemaining -= step;
+    // 벽에 막혔는데 남은 넉백을 계속 적용하면 모서리를 타고 넘어갈 수 있다.
+    if (moved < step * 0.5) fighter.galeKnockbackRemaining = 0;
   }
 }
 
