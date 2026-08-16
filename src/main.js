@@ -2394,6 +2394,36 @@ const POISON_EMISSIVE = new THREE.Color(0x44aa22);
 const NO_EMISSIVE = new THREE.Color(0x000000);
 const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit"]);
 
+function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false } = {}) {
+  if (!root) return;
+  root.removeFromParent();
+  root.traverse((object) => {
+    if (disposeGeometry) object.geometry?.dispose?.();
+    if (!object.material) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    for (const material of materials) {
+      if (disposeMaps) {
+        for (const key of ["map", "alphaMap", "emissiveMap", "normalMap", "roughnessMap", "metalnessMap"]) {
+          material[key]?.dispose?.();
+        }
+      }
+      material.dispose?.();
+    }
+  });
+}
+
+function disposeFighter(fighter) {
+  if (!fighter) return;
+  const data = fighter.mesh?.userData ?? {};
+  for (const mixer of [data.cyanMixer, data.blueMixer, ...Object.values(data.pinkMixers ?? {})]) {
+    mixer?.stopAllAction?.();
+    if (mixer?.getRoot?.()) mixer.uncacheRoot(mixer.getRoot());
+  }
+  // GLB 복제본은 원본과 geometry를 공유하므로 재질만 해제한다.
+  disposeSceneObject(fighter.mesh, { disposeGeometry: !data.isGlbModel });
+  disposeSceneObject(fighter.shadow);
+}
+
 function moveAngleToward(current, target, maxStep) {
   const delta = THREE.MathUtils.euclideanModulo(target - current + Math.PI, Math.PI * 2) - Math.PI;
   if (Math.abs(delta) <= maxStep) {
@@ -5064,10 +5094,7 @@ function createAxeIndicator() {
 }
 
 function initChopWoodPlayers() {
-  state.players.forEach((fighter) => {
-    scene.remove(fighter.mesh);
-    scene.remove(fighter.shadow);
-  });
+  state.players.forEach(disposeFighter);
   state.players = [];
 
   const botTypes = [...ROSTER];
@@ -5304,10 +5331,12 @@ function startTakeDown() {
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
   state.goldRushMode = false;
-  state.goldRushItems.forEach((item) => scene.remove(item.mesh));
+  state.goldRushItems.forEach((item) => disposeSceneObject(item.mesh));
   state.goldRushItems = [];
-  state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
+  state.malfunctionZones.forEach((zone) => disposeSceneObject(zone.mesh));
   state.malfunctionZones = [];
+  state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.ivoryZones = [];
   state.teams = null;
   state.playerTeam = null;
   state.trainingMode = false;
@@ -5330,7 +5359,7 @@ function startTakeDown() {
   state.gameOver = false;
   state.mouseHeld = false;
   state.scheduledHits = [];
-  state.projectiles.forEach((p) => scene.remove(p.mesh));
+  state.projectiles.forEach((p) => disposeSceneObject(p.mesh));
   state.projectiles = [];
   state.deathOrder = [];
   state.effects.forEach((e) => scene.remove(e.mesh));
@@ -6209,7 +6238,9 @@ function startChopWood() {
   state.projectiles.forEach((p) => scene.remove(p.mesh));
   state.projectiles = [];
   state.deathOrder = [];
-  state.effects.forEach((effect) => scene.remove(effect.mesh));
+  state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
+    disposeMaps: effect.type === "damagePopup" || effect.type === "emote",
+  }));
   state.effects = [];
   state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
@@ -7042,10 +7073,7 @@ function initPlayers() {
     mpConfig = null;
     Object.keys(mpNetFighters).forEach((key) => delete mpNetFighters[key]);
   }
-  state.players.forEach((fighter) => {
-    scene.remove(fighter.mesh);
-    scene.remove(fighter.shadow);
-  });
+  state.players.forEach(disposeFighter);
   state.players = [];
 
   const mapData = MAP_POOL[state.currentMapId];
@@ -7313,10 +7341,12 @@ function resetGame() {
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
   state.goldRushMode = false;
-  state.goldRushItems.forEach((item) => scene.remove(item.mesh));
+  state.goldRushItems.forEach((item) => disposeSceneObject(item.mesh));
   state.goldRushItems = [];
-  state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
+  state.malfunctionZones.forEach((zone) => disposeSceneObject(zone.mesh));
   state.malfunctionZones = [];
+  state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.ivoryZones = [];
   state.takedownMode = false;
   state.tdBoss = null;
   tdHud.classList.add("hidden");
@@ -7342,7 +7372,7 @@ function resetGame() {
   state.gameOver = false;
   state.mouseHeld = false;
   state.scheduledHits = [];
-  state.projectiles.forEach((p) => scene.remove(p.mesh));
+  state.projectiles.forEach((p) => disposeSceneObject(p.mesh));
   state.projectiles = [];
   state.deathOrder = [];
   state.resultRevealAt = 0;
@@ -7360,7 +7390,9 @@ function resetGame() {
     showdownBgm.volume = 0.5;
     showdownBgm.play().catch(() => {});
   }
-  state.effects.forEach((effect) => scene.remove(effect.mesh));
+  state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
+    disposeMaps: effect.type === "damagePopup" || effect.type === "emote",
+  }));
   state.effects = [];
   state.splashAccum = {};
   state.feedback.hitFlashUntil = 0;
@@ -9024,7 +9056,7 @@ function updateProjectiles(dt) {
     // 보이지 않는 AI에게 공격받는 것처럼 보인다.
     const owner = state.players.find((fighter) => fighter.id === proj.ownerId);
     if (!owner || owner.dead || owner.health <= 0) {
-      scene.remove(proj.mesh);
+      disposeSceneObject(proj.mesh);
       state.projectiles.splice(i, 1);
       continue;
     }
@@ -9037,7 +9069,7 @@ function updateProjectiles(dt) {
     if (proj.isBoomerang && proj.isReturning) {
       const owner = state.players.find((fighter) => fighter.id === proj.ownerId && !fighter.dead);
       if (!owner) {
-        scene.remove(proj.mesh);
+        disposeSceneObject(proj.mesh);
         state.projectiles.splice(i, 1);
         continue;
       }
@@ -9045,7 +9077,7 @@ function updateProjectiles(dt) {
       const returnZ = owner.mesh.position.z - proj.z;
       const returnDistance = Math.hypot(returnX, returnZ);
       if (returnDistance < owner.radius + 0.35) {
-        scene.remove(proj.mesh);
+        disposeSceneObject(proj.mesh);
         state.projectiles.splice(i, 1);
         continue;
       }
@@ -9068,7 +9100,7 @@ function updateProjectiles(dt) {
         else spawnVialSplash(proj.x, proj.z, proj.ownerId);
         tempVec3.set(proj.x, 0.5, proj.z);
         createHitSpark(tempVec3);
-        scene.remove(proj.mesh);
+        disposeSceneObject(proj.mesh);
         state.projectiles.splice(i, 1);
         continue;
       }
@@ -9100,7 +9132,7 @@ function updateProjectiles(dt) {
         } else if (proj.isVial) {
           createVialSplashEffect(proj.x, proj.z);
         }
-        scene.remove(proj.mesh);
+        disposeSceneObject(proj.mesh);
         state.projectiles.splice(i, 1);
       }
       continue;
@@ -9132,7 +9164,7 @@ function updateProjectiles(dt) {
       }
       proj.mesh.material.opacity = 0.82 + Math.sin(proj.distTraveled * 3) * 0.1;
       if (proj.distTraveled >= proj.range) {
-        scene.remove(proj.mesh);
+        disposeSceneObject(proj.mesh);
         state.projectiles.splice(i, 1);
       }
       continue;
@@ -9155,9 +9187,7 @@ function updateProjectiles(dt) {
       if (!resolved) resolved = state.solids.some((solid) => solid.type !== "platform" && intersectsRect(proj.x, proj.z, proj.projRadius, solid));
       if (resolved || proj.distTraveled >= proj.range) {
         if (attacker && proj.goldStage < 3) splitGoldProjectile(proj, attacker);
-        scene.remove(proj.mesh);
-        proj.mesh.geometry?.dispose();
-        proj.mesh.material?.dispose();
+        disposeSceneObject(proj.mesh);
         state.projectiles.splice(i, 1);
       }
       continue;
@@ -9309,7 +9339,7 @@ function updateProjectiles(dt) {
       if (proj.isIvoryIceCream && !hit) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
       if (proj.isBomb && !hit) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
       if (proj.isVial && !hit) spawnVialSplash(proj.x, proj.z, proj.ownerId);
-      scene.remove(proj.mesh);
+      disposeSceneObject(proj.mesh);
       state.projectiles.splice(i, 1);
     }
   }
@@ -9319,7 +9349,7 @@ function updateIvoryZones() {
   for (let i = state.ivoryZones.length - 1; i >= 0; i -= 1) {
     const zone = state.ivoryZones[i];
     if (state.gameTime >= zone.expiresAt) {
-      scene.remove(zone.mesh);
+      disposeSceneObject(zone.mesh);
       state.ivoryZones.splice(i, 1);
       continue;
     }
@@ -9756,11 +9786,9 @@ function updateEffects(dt) {
     const effect = state.effects[i];
     effect.life -= dt;
     if (effect.life <= 0) {
-      scene.remove(effect.mesh);
-      if (effect.type === "damagePopup" || effect.type === "emote") {
-        effect.mesh.material.map?.dispose();
-        effect.mesh.material.dispose();
-      }
+      disposeSceneObject(effect.mesh, {
+        disposeMaps: effect.type === "damagePopup" || effect.type === "emote",
+      });
       state.effects.splice(i, 1);
       continue;
     }
@@ -13036,11 +13064,13 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
       tdMapOpen = false;
       state.running = false;
       state.gameOver = true;
-      state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
+      state.players.forEach(disposeFighter);
       state.players = [];
-      state.projectiles.forEach((p) => scene.remove(p.mesh));
+      state.projectiles.forEach((p) => disposeSceneObject(p.mesh));
       state.projectiles = [];
-      state.effects.forEach((e) => { scene.remove(e.mesh); });
+      state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
+        disposeMaps: effect.type === "damagePopup" || effect.type === "emote",
+      }));
       state.effects = [];
   state.splashAccum = {};
     } else if (state.chopWoodMode) {
@@ -13051,11 +13081,13 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
       cwHud.classList.add("hidden");
       state.running = false;
       state.gameOver = true;
-      state.players.forEach((f) => { scene.remove(f.mesh); scene.remove(f.shadow); });
+      state.players.forEach(disposeFighter);
       state.players = [];
-      state.projectiles.forEach((p) => scene.remove(p.mesh));
+      state.projectiles.forEach((p) => disposeSceneObject(p.mesh));
       state.projectiles = [];
-      state.effects.forEach((e) => { scene.remove(e.mesh); });
+      state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
+        disposeMaps: effect.type === "damagePopup" || effect.type === "emote",
+      }));
       state.effects = [];
   state.splashAccum = {};
     }
@@ -13063,20 +13095,19 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     state.running = false;
     state.gameOver = true;
     state.mouseHeld = false;
-    state.players.forEach((fighter) => {
-      scene.remove(fighter.mesh);
-      scene.remove(fighter.shadow);
-    });
+    state.players.forEach(disposeFighter);
     state.players = [];
-    state.projectiles.forEach((projectile) => scene.remove(projectile.mesh));
+    state.projectiles.forEach((projectile) => disposeSceneObject(projectile.mesh));
     state.projectiles = [];
-    state.effects.forEach((effect) => scene.remove(effect.mesh));
+    state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
+      disposeMaps: effect.type === "damagePopup" || effect.type === "emote",
+    }));
     state.effects = [];
-    state.goldRushItems.forEach((item) => scene.remove(item.mesh));
+    state.goldRushItems.forEach((item) => disposeSceneObject(item.mesh));
     state.goldRushItems = [];
-    state.malfunctionZones.forEach((zone) => scene.remove(zone.mesh));
+    state.malfunctionZones.forEach((zone) => disposeSceneObject(zone.mesh));
     state.malfunctionZones = [];
-    state.ivoryZones.forEach((zone) => scene.remove(zone.mesh));
+    state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
     state.ivoryZones = [];
     state.splashAccum = {};
     state.scheduledHits = [];
