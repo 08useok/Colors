@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.147";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.178";
+import { CHARACTERS } from "./config/characters.js?v=1.5.179";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -8320,24 +8320,27 @@ function beginElectricAttack(fighter) {
   fighter.lastCombatTime = state.gameTime;
   if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
-  const yaw = fighter.yaw;
-  const mesh = createElectricMesh(fighter.mesh.position, yaw);
-  state.projectiles.push({
-    ownerId: fighter.id,
-    x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
-    z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
-    vx: Math.sin(yaw) * charDef.electricSpeed,
-    vz: Math.cos(yaw) * charDef.electricSpeed,
-    damage: charDef.electricDamage,
-    range: charDef.electricRange,
-    farThreshold: Infinity,
-    farMultiplier: 1,
-    distTraveled: 0,
-    launchAt: state.gameTime,
-    mesh,
-    isElectric: true,
-  });
-  if (fighter.isPlayer) audio.play("projectileFire");
+  setTimeout(() => {
+    if (fighter.dead || !fighter.mesh?.parent) return;
+    const yaw = fighter.yaw;
+    const mesh = createElectricMesh(fighter.mesh.position, yaw);
+    state.projectiles.push({
+      ownerId: fighter.id,
+      x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+      z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+      vx: Math.sin(yaw) * charDef.electricSpeed,
+      vz: Math.cos(yaw) * charDef.electricSpeed,
+      damage: charDef.electricDamage,
+      range: charDef.electricRange,
+      farThreshold: Infinity,
+      farMultiplier: 1,
+      distTraveled: 0,
+      launchAt: state.gameTime,
+      mesh,
+      isElectric: true,
+    });
+    if (fighter.isPlayer) audio.play("projectileFire");
+  }, charDef.attackDelay * 1000);
   return true;
 }
 
