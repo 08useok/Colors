@@ -3750,6 +3750,8 @@ _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripR
 _glbLoader.load('./assets/3d/purple/walk-m1s.glb', g => { _purpleGlb.start = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/purple/walk-m2l.glb', g => {
   _purpleGlb.loop = _stripRootMotion(g);
+  refreshLoadedPreviewCharacter("purple");
+  if (frontModelCharType === "purple") setupFrontModel("purple");
   // 경기 시작이 GLB 로딩보다 먼저 일어나면 절차형 모델이 잠시 표시될 수 있다.
   // 퍼플 GLB가 도착하면 현재 플레이어 모델을 즉시 교체한다.
   if (typeof player !== "undefined" && player?.characterType === "purple" && state.running) {
@@ -4012,10 +4014,12 @@ function setPreviewCharacter(charType) {
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
 
-  if (charType === "pink") {
+  if (charType === "pink" || charType === "purple") {
     previewIsGlb = true;
+    const previewGlbSet = charType === "pink" ? _pinkGlb : _purpleGlb;
+    const previewGlbPath = `./assets/3d/${charType}/walk-m2l.glb`;
     const setupPinkPreview = (gltf) => {
-      if (previewCharType !== "pink") return;
+      if (previewCharType !== charType) return;
       if (previewModel) previewScene.remove(previewModel);
       const m = skeletonClone(gltf.scene);
       m.updateMatrixWorld(true);
@@ -4033,10 +4037,10 @@ function setPreviewCharacter(charType) {
       lobbyPreviewWrap?.classList.remove("preview-pending");
       characterPreviewWrap?.classList.remove("preview-pending");
     };
-    if (_pinkGlb.loop) {
-      setupPinkPreview(_pinkGlb.loop);
+    if (previewGlbSet.loop) {
+      setupPinkPreview(previewGlbSet.loop);
     } else {
-      _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setupPinkPreview);
+      _glbLoader.load(previewGlbPath, setupPinkPreview);
     }
   } else if (charType === "blue" && _bluePreviewGlb) {
     previewIsGlb = true;
