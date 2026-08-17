@@ -19,9 +19,9 @@ export const BETA_CHARACTERS = {
   },
   green: {
     maxHealth: 8400, moveSpeedMultiplier: 1.2, attackCooldown: 0.45, reloadDuration: 1.0, maxAmmo: 3,
-    boomerangDamage: 1050, boomerangRange: 7.5, boomerangSpeed: 20,
+    boomerangDamage: 1000, boomerangRange: 6.5, boomerangSpeed: 20,
     boomerangReturnSpeedMultiplier: 1.1,
-    boomerangReturnDamageMultiplier: 0.4,
+    boomerangReturnDamageMultiplier: 0.3,
     boomerangFarThreshold: 3.5, boomerangFarMultiplier: 0.625,
     boomerangAngles: [-25, -25 / 3, 25 / 3, 25].map(degrees),
     description: "그린은 유일하게 항구 출신이 아닌 캐릭터입니다. 그가 살던 곳은 평범한 시골인데, 돈을 벌어서 이사 가려고 이 대회에 참가하게 되었습니다.",
@@ -39,7 +39,7 @@ export const BETA_CHARACTERS = {
     },
   },
   blue: {
-    maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 0.65, maxAmmo: 3,
+    maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.3, reloadDuration: 0.5, maxAmmo: 3,
     bulletDamage: 1000, bulletRange: 16, bulletSpeed: 35.2,
     description: "블루는 평범한 일반인입니다. 하지만 그의 손만큼 빠른 사람은 없습니다. 아마도요?",
     descriptionEn: "Blue is an ordinary guy. But nobody has hands as fast as his. Probably.",
@@ -52,8 +52,8 @@ export const BETA_CHARACTERS = {
   },
   orange: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 1.0, maxAmmo: 3,
-    bombDamage: 750, bombRange: 8.5, bombSpeed: 22,
-    bombSplashDamage: 600, bombSplashCount: 5, bombDirectHitJuiceCount: 3,
+    bombDamage: 750, bombRange: 9, bombSpeed: 22,
+    bombSplashDamage: 700, bombSplashCount: 5, bombDirectHitJuiceCount: 4,
     bombSplashSpeed: 10, bombSplashRange: 4.4, bombSplashHitRadius: 0.75,
     description: "오렌지는 평범한 오렌지 농부입니다. 하지만 컬러스의 첫 번째 우승자가 되려고 합니다. 오직 오렌지 하나만으로요...",
     descriptionEn: "Orange is a plain orange farmer, yet he intends to become the first champion of Colors. Armed with nothing but oranges...",
@@ -69,7 +69,7 @@ export const BETA_CHARACTERS = {
   },
   yellow: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.45, reloadDuration: 0.9, maxAmmo: 3,
-    electricDamage: 2200, electricRange: 12, electricSpeed: 16, attackDelay: 0.12, shockSlowPercent: 0.3, shockDuration: 2,
+    electricDamage: 2200, electricRange: 12, electricSpeed: 16, attackDelay: 0.12, shockSlowPercent: 0.25, shockDuration: 2,
     description: "옐로우는 평범한 전기 기술자입니다. 그가 월세를 벌고자 이 대회에 참가했습니다.",
     descriptionEn: "Yellow is an ordinary electrician who joined the tournament to cover his rent.",
     basicAttack: {
@@ -81,7 +81,7 @@ export const BETA_CHARACTERS = {
   },
   cyan: {
     maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 1.1, maxAmmo: 3,
-    spreadLineDamage: 600, spreadLineRange: 8.33, spreadLineSpeed: 18, spreadLineCount: 6, betaAngleSpacing: 0.095,
+    spreadLineDamage: 650, spreadLineRange: 8.33, spreadLineSpeed: 18, spreadLineCount: 6, betaAngleSpacing: 0.095,
     description: "시안은 평범하게 사는 컬러이지만, 아무래도 수상합니다. 그가 다녔던 회사의 제품은 다 이상한 걸까요?",
     descriptionEn: "Cyan lives an ordinary life, but something about him is off. Was every product at his old company this strange?",
     basicAttack: {
@@ -93,14 +93,14 @@ export const BETA_CHARACTERS = {
     ultimate: {
       id: "galeStrike", name: "질풍 강타", description: "전방으로 거대한 강풍을 발사해 피해를 주고 강하게 밀쳐냅니다.",
       nameEn: "Gale Strike", descriptionEn: "Unleashes a massive gust forward that damages and strongly knocks back everything it hits.",
-      damage: 1200, range: 10, projectileRadius: 4, speedMultiplier: 5 / 3, knockback: 8, chargeRequired: 12,
+      damage: 1300, range: 10, projectileRadius: 4, speedMultiplier: 5 / 3, knockback: 8, chargeRequired: 12,
     },
   },
   purple: {
     maxHealth: 6000, moveSpeedMultiplier: 1, attackCooldown: 0.45, reloadDuration: 1.1, maxAmmo: 3,
     needleDamage: 700, needleRange: 13, needleSpeed: 18,
     poisonDPS: 760, poisonDuration: 4,
-    vialDamage: 2840, vialRange: 11, vialSpeed: 18, vialSplashRadius: 4,
+    vialDamage: 2700, vialRange: 11, vialSpeed: 18, vialSplashRadius: 4,
     description: "퍼플은 향수 가게의 사장님이자 의사 자격증이 있는 컬러입니다. 그녀의 향수 가게가 잘 되는 탓인지는 모르지만 그녀의 독침은 꽤나 아픕니다.",
     descriptionEn: "Purple runs a perfume shop and holds a medical license. Perhaps that is why business is good, but her needles sting badly.",
     basicAttack: {
@@ -114,8 +114,8 @@ export const BETA_CHARACTERS = {
     needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(24),
   },
   pink: {
-    maxHealth: 10000, moveSpeedMultiplier: 1.2, attackCooldown: 0.35, reloadDuration: 0.8, maxAmmo: 3,
-    healCircleDamage: 2000, healCircleHeal: 1200, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
+    maxHealth: 11000, moveSpeedMultiplier: 1.3, attackCooldown: 0.3, reloadDuration: 0.8, maxAmmo: 3,
+    healCircleDamage: 2200, healCircleHeal: 1500, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
     description: "핑크는 음악을 좋아하는 스트리머입니다. 그녀는 음악이 너무 좋아서 돈벌이를 까먹는 바람에 돈을 벌려고 대회에 나갔다가 우승해버립니다.",
     descriptionEn: "Pink is a streamer who loves music so much she forgets to earn a living. She entered the tournament for the prize money and ended up winning it.",
     basicAttack: {
