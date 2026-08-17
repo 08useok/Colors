@@ -105,12 +105,12 @@ export const BETA_CHARACTERS = {
     descriptionEn: "Purple runs a perfume shop and holds a medical license. Perhaps that is why business is good, but her needles sting badly.",
     basicAttack: {
       name: "독침과 독병",
-      description: "첫 번째 일반 공격은 독침 3발을 전방 90도 부채꼴로 발사하여 적에게 피해를 입힙니다. 명중한 적은 일정 시간 동안 독에 걸립니다. 두 번째 일반 공격은 벽을 넘어가는 독병을 던집니다. 독병은 착지 후 깨지며 주변 적에게 광역 피해를 부여합니다.",
+      description: "첫 번째 일반 공격은 독침 3발을 전방 24도 부채꼴로 발사하여 적에게 피해를 입힙니다. 명중한 적은 일정 시간 동안 독에 걸립니다. 두 번째 일반 공격은 벽을 넘어가는 독병을 던집니다. 독병은 착지 후 깨지며 주변 적에게 광역 피해를 부여합니다.",
       nameEn: "Needle & Vial",
-      descriptionEn: "The first attack fires three needles in a 90-degree forward fan, poisoning anyone they hit. The second lobs a vial over walls that shatters on landing for area damage."
+      descriptionEn: "The first attack fires three needles in a 24-degree forward fan, poisoning anyone they hit. The second lobs a vial over walls that shatters on landing for area damage."
     },
-    officialAbility: { id: "wideNeedle", name: "광각 독침", description: "독침 3발을 -45도, 0도, +45도로 발사",
-      nameEn: "Wide Needle", descriptionEn: "Fires three needles at -45, 0, and +45 degrees." },
+    officialAbility: { id: "wideNeedle", name: "광각 독침", description: "독침 3발을 -12도, 0도, +12도로 발사",
+      nameEn: "Wide Needle", descriptionEn: "Fires three needles at -12, 0, and +12 degrees." },
     needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(24),
   },
   pink: {
