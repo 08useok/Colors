@@ -10717,7 +10717,7 @@ function updateFighterAnimation(fighter, dt) {
         }
       }
     } else {
-    const moving = speed > 0.5;
+    const moving = speed >= (fighter.characterType === "ivory" ? 0.1 : 0.5);
     const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
     let state = body.pinkWalkState;
 
