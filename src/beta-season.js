@@ -86,15 +86,29 @@ function loadBetaState() {
   }
   const ownedSkins = [...new Set((saved.ownedSkins || []).map(migrateSkinId))]
     .filter((skinId) => Boolean(SKINS[skinId]));
+  const selectedCharacter = saved.selectedCharacter || "red";
+  const characterTrophies = Object.fromEntries(CHARACTERS.map((character) => [
+    character.id,
+    Math.max(0, Math.floor(Number(saved.characterTrophies?.[character.id]) || 0)),
+  ]));
+  const characterShowdownWins = Object.fromEntries(CHARACTERS.map((character) => [
+    character.id,
+    Math.max(0, Math.floor(Number(saved.characterShowdownWins?.[character.id]) || 0)),
+  ]));
+  const existingShowdownWins = Math.max(0, Math.floor(Number(saved.oneVsOne?.wins) || 0));
+  if (!saved.characterTrophyRankMigration) {
+    characterShowdownWins[selectedCharacter] += existingShowdownWins;
+    characterTrophies[selectedCharacter] += existingShowdownWins * 4;
+  }
   const state = {
     credits: Number.isFinite(saved.credits) ? saved.credits : 1500,
     coins: Number.isFinite(saved.coins) ? saved.coins : 3000,
-    selectedCharacter: saved.selectedCharacter || "red",
+    selectedCharacter,
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
-    characterTrophies: Object.fromEntries(CHARACTERS.map((character) => [
-      character.id,
-      Math.max(0, Math.floor(Number(saved.characterTrophies?.[character.id]) || 0)),
-    ])),
+    characterTrophies,
+    characterShowdownWins,
+    characterTrophyRankMigration: true,
+    showdownWinStreak: Math.max(0, Math.floor(Number(saved.showdownWinStreak) || 0)),
     ownedSkins,
     selectedSkins,
     oneVsOne: {
@@ -1212,7 +1226,7 @@ function renderCharacters() {
     return `<article class="beta-card${selected ? " selected" : ""}">
       <div class="character-card-badges">
         <span class="rarity ${character.rarity}">${rarityName(character.rarity)}</span>
-        <span class="character-trophy" title="${character.name} 트로피">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
+        <span class="character-trophy" title="${character.name} 쇼다운 ${(betaState.characterShowdownWins[character.id] || 0).toLocaleString("ko-KR")}승">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
       </div>
       <h3>${character.name}</h3>
       ${characterDescription ? `<p><strong>캐릭터 소개</strong><br>${characterDescription}</p>` : ""}
@@ -3614,23 +3628,42 @@ function updateGoldRushHud() {
   }
 }
 
-function endGoldRush(message, playerWon = false) {
+function calcShowdownTrophyChange(rank) {
+  return 12 - THREE.MathUtils.clamp(rank, 1, 10) * 2;
+}
+
+function calcShowdownStreakBonus(streak) {
+  if (streak <= 1) return 0;
+  return Math.min(streak - 1, 4);
+}
+
+function endGoldRush(message, playerWon = false, showdownRank = null) {
   if (goldRushState.ended) return;
-  const trophyDelta = playerWon ? 8 : -2;
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
-  betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
-  saveBetaState();
+  let trophyDelta = playerWon ? 8 : -2;
   if (goldRushState.mode === "showdown") {
-    if (playerWon) betaState.oneVsOne.wins += 1;
-    else betaState.oneVsOne.losses += 1;
-    saveBetaState();
-  }
-  if (playerWon) {
+    const rank = THREE.MathUtils.clamp(Math.floor(Number(showdownRank) || (playerWon ? 1 : 10)), 1, 10);
+    const placedInTopFour = rank <= 4;
+    if (placedInTopFour) {
+      betaState.showdownWinStreak += 1;
+      betaState.oneVsOne.wins += 1;
+      betaState.characterShowdownWins[characterId] = (betaState.characterShowdownWins[characterId] || 0) + 1;
+      betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
+      betaState.orderEvent.progress = Math.min(100, betaState.orderEvent.progress + 1);
+      playOrderVictoryEffect();
+    } else {
+      betaState.showdownWinStreak = 0;
+      betaState.oneVsOne.losses += 1;
+    }
+    trophyDelta = calcShowdownTrophyChange(rank) + calcShowdownStreakBonus(betaState.showdownWinStreak);
+    message = `${rank}위 · ${placedInTopFour ? "승리" : "패배"}`;
+  } else if (playerWon) {
     betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
-    saveBetaState();
     playOrderVictoryEffect();
   }
+  betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
+  saveBetaState();
   goldRushState.ended = true;
   goldRushState.winCountdownStartedAt = null;
   playerGoldRushHealthBar.visible = false;
@@ -3712,7 +3745,8 @@ function killGoldRushPlayer() {
   if (goldRushState.mode === "showdown") {
     goldRushState.health = 0;
     goldRushState.dead = true;
-    endGoldRush("쇼다운 패배");
+    const rank = goldRushBots.filter((bot) => !bot.dead).length + 1;
+    endGoldRush("쇼다운 패배", false, rank);
     return;
   }
   dropGoldRushGold(goldRushState, player.position);
@@ -3764,9 +3798,7 @@ function updateGoldRush(dt) {
     goldRushRivalsEl.textContent = `${survivors}명 생존`;
     goldRushStatusEl.textContent = "마지막 1명까지 살아남으세요";
     if (!goldRushState.dead && survivors === 1) {
-      betaState.orderEvent.progress = Math.min(100, betaState.orderEvent.progress + 1);
-      saveBetaState();
-      endGoldRush("쇼다운 승리! · 주문 이벤트 +1승", true);
+      endGoldRush("쇼다운 승리!", true, 1);
     }
     return;
   }
