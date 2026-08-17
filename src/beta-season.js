@@ -91,6 +91,10 @@ function loadBetaState() {
     coins: Number.isFinite(saved.coins) ? saved.coins : 3000,
     selectedCharacter: saved.selectedCharacter || "red",
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
+    characterTrophies: Object.fromEntries(CHARACTERS.map((character) => [
+      character.id,
+      Math.max(0, Math.floor(Number(saved.characterTrophies?.[character.id]) || 0)),
+    ])),
     ownedSkins,
     selectedSkins,
     oneVsOne: {
@@ -1206,7 +1210,10 @@ function renderCharacters() {
       }).join("")}</div>`
       : `<p>보유 스킨 없음</p>`;
     return `<article class="beta-card${selected ? " selected" : ""}">
-      <span class="rarity ${character.rarity}">${rarityName(character.rarity)}</span>
+      <div class="character-card-badges">
+        <span class="rarity ${character.rarity}">${rarityName(character.rarity)}</span>
+        <span class="character-trophy" title="${character.name} 트로피">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
+      </div>
       <h3>${character.name}</h3>
       ${characterDescription ? `<p><strong>캐릭터 소개</strong><br>${characterDescription}</p>` : ""}
       ${basicAttack ? `<p><strong>일반 공격 · ${basicAttack.name}</strong><br>${basicAttack.description}</p>` : ""}
@@ -3608,6 +3615,12 @@ function updateGoldRushHud() {
 }
 
 function endGoldRush(message, playerWon = false) {
+  if (goldRushState.ended) return;
+  const trophyDelta = playerWon ? 8 : -2;
+  const characterId = betaState.selectedCharacter;
+  const previousTrophies = betaState.characterTrophies[characterId] || 0;
+  betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
+  saveBetaState();
   if (goldRushState.mode === "showdown") {
     if (playerWon) betaState.oneVsOne.wins += 1;
     else betaState.oneVsOne.losses += 1;
@@ -3623,7 +3636,9 @@ function endGoldRush(message, playerWon = false) {
   playerGoldRushHealthBar.visible = false;
   goldRushPlayerPanel.classList.add("hidden");
   goldRushStatusEl.textContent = message;
-  showToast(message);
+  const appliedTrophyDelta = betaState.characterTrophies[characterId] - previousTrophies;
+  const trophyDeltaLabel = appliedTrophyDelta > 0 ? `+${appliedTrophyDelta}` : String(appliedTrophyDelta);
+  showToast(`${message} · 🏆 ${trophyDeltaLabel}`);
   clearGoldRushBots();
   goldMine.visible = false;
   goldRushHud.classList.add("hidden");
