@@ -2855,11 +2855,17 @@ function setPlayerConcealedVisual(concealed) {
       const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
       for (const mat of materials) {
         if (!greenConcealMaterialCache.has(mat)) {
-          greenConcealMaterialCache.set(mat, { transparent: mat.transparent, opacity: mat.opacity });
+          greenConcealMaterialCache.set(mat, {
+            transparent: mat.transparent,
+            opacity: mat.opacity,
+            depthWrite: mat.depthWrite,
+          });
         }
         const original = greenConcealMaterialCache.get(mat);
         mat.transparent = concealed ? true : original.transparent;
         mat.opacity = concealed ? GREEN_CONCEAL_OPACITY : original.opacity;
+        mat.depthWrite = concealed ? false : original.depthWrite;
+        mat.needsUpdate = true;
       }
     });
   }
