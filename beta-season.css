@@ -16,6 +16,88 @@ button { text-align: center; }
 
 #beta-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
 
+.season-background-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.season-sky-glow {
+  position: absolute;
+  top: -24vh;
+  left: 50%;
+  width: min(78vw, 1100px);
+  height: 52vh;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(232, 252, 255, .25), rgba(126, 226, 245, .08) 48%, transparent 72%);
+  filter: blur(8px);
+}
+.season-cloud {
+  position: absolute;
+  width: 180px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(240, 253, 255, .13);
+  box-shadow: 42px -18px 0 -4px rgba(240, 253, 255, .1), 92px 3px 0 -9px rgba(240, 253, 255, .09);
+  filter: blur(.3px);
+  animation: season-cloud-drift 9s ease-in-out infinite alternate;
+}
+.season-cloud-left { top: 23%; left: -70px; }
+.season-cloud-right { top: 42%; right: -55px; transform: scale(.72); animation-delay: -4s; }
+.season-scoop {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  opacity: .15;
+  filter: saturate(.85);
+  box-shadow: inset -18px -22px 0 rgba(24, 51, 62, .12), 0 18px 45px rgba(5, 18, 25, .18);
+  animation: season-scoop-float 5s ease-in-out infinite alternate;
+}
+.season-scoop::after {
+  content: "";
+  position: absolute;
+  left: 36px;
+  bottom: -92px;
+  width: 78px;
+  height: 105px;
+  background: linear-gradient(145deg, rgba(255, 225, 158, .8), rgba(201, 139, 70, .75));
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.season-scoop-pink { left: -46px; bottom: 7%; background: #ff9fca; }
+.season-scoop-mint { right: -36px; top: 15%; width: 118px; height: 118px; background: #9cf0d0; animation-delay: -2.5s; }
+.season-scoop-mint::after { left: 28px; bottom: -72px; width: 62px; height: 82px; }
+.season-sprinkles i {
+  position: absolute;
+  width: 22px;
+  height: 6px;
+  border-radius: 999px;
+  background: #ffe07c;
+  opacity: .28;
+  transform: rotate(28deg);
+  animation: season-sprinkle-twinkle 3.6s ease-in-out infinite;
+}
+.season-sprinkles i:nth-child(1) { left: 7%; top: 18%; background: #ff89b9; transform: rotate(72deg); }
+.season-sprinkles i:nth-child(2) { left: 13%; top: 55%; background: #83ecdc; transform: rotate(-35deg); animation-delay: -.8s; }
+.season-sprinkles i:nth-child(3) { left: 22%; top: 82%; background: #ffd56c; transform: rotate(15deg); animation-delay: -1.6s; }
+.season-sprinkles i:nth-child(4) { left: 36%; top: 14%; background: #ad9cff; transform: rotate(-58deg); animation-delay: -2.4s; }
+.season-sprinkles i:nth-child(5) { left: 47%; top: 88%; background: #ff98a0; transform: rotate(52deg); animation-delay: -.4s; }
+.season-sprinkles i:nth-child(6) { left: 59%; top: 12%; background: #8fe6ff; transform: rotate(9deg); animation-delay: -1.2s; }
+.season-sprinkles i:nth-child(7) { left: 69%; top: 83%; background: #9cf0b6; transform: rotate(-65deg); animation-delay: -2s; }
+.season-sprinkles i:nth-child(8) { left: 78%; top: 21%; background: #ffd96f; transform: rotate(36deg); animation-delay: -2.8s; }
+.season-sprinkles i:nth-child(9) { left: 88%; top: 59%; background: #ff8fc4; transform: rotate(-18deg); animation-delay: -.6s; }
+.season-sprinkles i:nth-child(10) { left: 95%; top: 78%; background: #91e8ee; transform: rotate(62deg); animation-delay: -1.4s; }
+.season-sprinkles i:nth-child(11) { left: 4%; top: 73%; background: #b59cff; transform: rotate(-8deg); animation-delay: -2.2s; }
+.season-sprinkles i:nth-child(12) { left: 92%; top: 31%; background: #ffcf77; transform: rotate(84deg); animation-delay: -3s; }
+@keyframes season-cloud-drift { to { translate: 24px 8px; } }
+@keyframes season-scoop-float { to { translate: 0 -14px; rotate: 2deg; } }
+@keyframes season-sprinkle-twinkle { 50% { opacity: .52; scale: 1.18; } }
+@media (prefers-reduced-motion: reduce) {
+  .season-background-decor * { animation: none !important; }
+}
+
 .beta-header, .test-panel, .location-card {
   position: fixed;
   z-index: 2;
