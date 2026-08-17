@@ -6201,7 +6201,6 @@ async function enterMatchmaking(mode = "takedown") {
     startBattleBtn.classList.remove("hidden");
     if (mpConfig.mode === "showdown") {
       state.currentMapId = Number.isInteger(data.mapId) ? data.mapId % MAP_POOL.length : 0;
-      createMap(MAP_POOL[state.currentMapId]);
       resetGame();
     } else {
       startTakeDown();
@@ -7354,7 +7353,9 @@ function resetGame() {
   state.teams = null;
   state.playerTeam = null;
   state.solids = useIceCreamShowdown ? state.showdownSolids : state.battleSolids;
-  state.lakeRects = state.battleLakeRects;
+  // 얼음 쇼다운에서는 이전 일반 쇼다운 맵의 호수/지형 충돌을 완전히 분리한다.
+  // 보이지 않는 battleLakeRects가 남으면 과거 테마의 히트박스처럼 이동을 막는다.
+  state.lakeRects = useIceCreamShowdown ? [] : state.battleLakeRects;
   // 쇼다운 맵에는 일반 전투 맵의 풀 은신 판정을 적용하지 않는다.
   // 기존 목록을 그대로 쓰면 카운트다운 후 AI가 풀숲에 숨은 것으로 판정되어 사라진다.
   state.bushes = useIceCreamShowdown ? [] : state.battleBushes;
