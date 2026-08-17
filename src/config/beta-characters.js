@@ -5,7 +5,7 @@ const degrees = (value) => value * (Math.PI / 180);
 export const BETA_CHARACTERS = {
   red: {
     maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.55, reloadDuration: 0.9, maxAmmo: 3,
-    attackRange: 5, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
+    attackRange: 5.5, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
     attackDamage: 2200, attackCount: 2, attackIntervalMs: 240,
     description: "레드는 TV에 나오는 복싱 선수입니다. 하지만 때로는 무식해서 펀치를 잘 못 때리죠.",
     descriptionEn: "Red is a boxer you see on TV. He is not always the sharpest, though, so his punches sometimes miss.",
@@ -19,9 +19,9 @@ export const BETA_CHARACTERS = {
   },
   green: {
     maxHealth: 8400, moveSpeedMultiplier: 1.2, attackCooldown: 0.45, reloadDuration: 1.0, maxAmmo: 3,
-    boomerangDamage: 1000, boomerangRange: 6.5, boomerangSpeed: 20,
+    boomerangDamage: 1000, boomerangRange: 7, boomerangSpeed: 20,
     boomerangReturnSpeedMultiplier: 1.1,
-    boomerangReturnDamageMultiplier: 0.3,
+    boomerangReturnDamageMultiplier: 0.35,
     boomerangFarThreshold: 3.5, boomerangFarMultiplier: 0.625,
     boomerangAngles: [-25, -25 / 3, 25 / 3, 25].map(degrees),
     description: "그린은 유일하게 항구 출신이 아닌 캐릭터입니다. 그가 살던 곳은 평범한 시골인데, 돈을 벌어서 이사 가려고 이 대회에 참가하게 되었습니다.",
@@ -114,8 +114,8 @@ export const BETA_CHARACTERS = {
     needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(24),
   },
   pink: {
-    maxHealth: 11000, moveSpeedMultiplier: 1.3, attackCooldown: 0.3, reloadDuration: 0.8, maxAmmo: 3,
-    healCircleDamage: 2200, healCircleHeal: 1500, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
+    maxHealth: 10500, moveSpeedMultiplier: 1.3, attackCooldown: 0.3, reloadDuration: 0.8, maxAmmo: 3,
+    healCircleDamage: 2100, healCircleHeal: 1400, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
     description: "핑크는 음악을 좋아하는 스트리머입니다. 그녀는 음악이 너무 좋아서 돈벌이를 까먹는 바람에 돈을 벌려고 대회에 나갔다가 우승해버립니다.",
     descriptionEn: "Pink is a streamer who loves music so much she forgets to earn a living. She entered the tournament for the prize money and ended up winning it.",
     basicAttack: {
