@@ -11103,6 +11103,12 @@ function updateBushVisuals() {
     });
   }
 
+  const greenVisualActive = player.characterType === "green"
+    && Boolean(player.greenUltimateBush)
+    && player.greenUltimateBush.expiresAt > state.gameTime
+    && state.gameTime >= player.revealedUntil;
+  setGreenConcealedVisual(player, greenVisualActive);
+
   for (const fighter of state.players) {
     if (fighter.isPlayer || fighter.dead) continue;
     const inBush = isInBush(fighter);
@@ -11135,6 +11141,36 @@ function keepShowdownModelsVisible() {
     if (fighter.shadow) fighter.shadow.visible = true;
     if (fighter.healthBar) fighter.healthBar.visible = true;
   }
+}
+
+const GREEN_CONCEAL_OPACITY = 0.28;
+
+function setGreenConcealedVisual(fighter, concealed) {
+  if (!fighter?.mesh || fighter.greenConcealedVisual === concealed) return;
+  fighter.greenConcealedVisual = concealed;
+  fighter.greenConcealMaterialCache ??= new Map();
+  const excluded = new Set();
+  for (const root of [fighter.healthBar, fighter.nameLabel, fighter.teamMarker]) {
+    root?.traverse((node) => excluded.add(node));
+  }
+  fighter.mesh.traverse((node) => {
+    if (!node.isMesh || !node.material || excluded.has(node)) return;
+    const materials = Array.isArray(node.material) ? node.material : [node.material];
+    for (const material of materials) {
+      if (!fighter.greenConcealMaterialCache.has(material)) {
+        fighter.greenConcealMaterialCache.set(material, {
+          transparent: material.transparent,
+          opacity: material.opacity,
+          depthWrite: material.depthWrite,
+        });
+      }
+      const original = fighter.greenConcealMaterialCache.get(material);
+      material.transparent = concealed ? true : original.transparent;
+      material.opacity = concealed ? GREEN_CONCEAL_OPACITY : original.opacity;
+      material.depthWrite = concealed ? false : original.depthWrite;
+      material.needsUpdate = true;
+    }
+  });
 }
 
 function triggerGameTitleAnnounce() {
