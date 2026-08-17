@@ -74,6 +74,8 @@
 
 ## 6. 밸런스 패치 1차 기획안
 
+상세 적용 내역과 검증 절차는 [`beta-season-4-balance-patch.md`](beta-season-4-balance-patch.md)를 따른다.
+
 ### 6.1 목표
 
 - 레드와 그린의 낮은 실전 성과를 개선한다.

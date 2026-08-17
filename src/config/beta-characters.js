@@ -5,7 +5,7 @@ const degrees = (value) => value * (Math.PI / 180);
 export const BETA_CHARACTERS = {
   red: {
     maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.55, reloadDuration: 0.9, maxAmmo: 3,
-    attackRange: 5, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
+    attackRange: 6, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
     attackDamage: 2200, attackCount: 2, attackIntervalMs: 240,
     description: "레드는 TV에 나오는 복싱 선수입니다. 하지만 때로는 무식해서 펀치를 잘 못 때리죠.",
     descriptionEn: "Red is a boxer you see on TV. He is not always the sharpest, though, so his punches sometimes miss.",
@@ -15,13 +15,13 @@ export const BETA_CHARACTERS = {
       nameEn: "Jab Jab",
       descriptionEn: "Red's signature move. He swings his left arm to the right, then his right arm to the left."
     },
-    ultimate: { id: "redGuard", name: "레드 가드", description: "8초 동안 피해를 60% 감소시키는 보호막을 생성합니다.", nameEn: "Red Guard", descriptionEn: "Creates a shield that reduces damage taken by 60% for 8 seconds.", duration: 8, damageReduction: 0.6, chargeRequired: 8 },
+    ultimate: { id: "redGuard", name: "레드 가드", description: "8초 동안 피해를 60% 감소시키는 보호막을 생성합니다.", nameEn: "Red Guard", descriptionEn: "Creates a shield that reduces damage taken by 60% for 8 seconds.", duration: 8, damageReduction: 0.6, chargeRequired: 7 },
   },
   green: {
     maxHealth: 8400, moveSpeedMultiplier: 1.2, attackCooldown: 0.45, reloadDuration: 1.0, maxAmmo: 3,
-    boomerangDamage: 950, boomerangRange: 6.5, boomerangSpeed: 20,
+    boomerangDamage: 1050, boomerangRange: 7.5, boomerangSpeed: 20,
     boomerangReturnSpeedMultiplier: 1.1,
-    boomerangReturnDamageMultiplier: 0.25,
+    boomerangReturnDamageMultiplier: 0.4,
     boomerangFarThreshold: 3.5, boomerangFarMultiplier: 0.625,
     boomerangAngles: [-25, -25 / 3, 25 / 3, 25].map(degrees),
     description: "그린은 유일하게 항구 출신이 아닌 캐릭터입니다. 그가 살던 곳은 평범한 시골인데, 돈을 벌어서 이사 가려고 이 대회에 참가하게 되었습니다.",
@@ -39,7 +39,7 @@ export const BETA_CHARACTERS = {
     },
   },
   blue: {
-    maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.3, reloadDuration: 0.5, maxAmmo: 3,
+    maxHealth: 5200, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 0.65, maxAmmo: 3,
     bulletDamage: 1000, bulletRange: 16, bulletSpeed: 35.2,
     description: "블루는 평범한 일반인입니다. 하지만 그의 손만큼 빠른 사람은 없습니다. 아마도요?",
     descriptionEn: "Blue is an ordinary guy. But nobody has hands as fast as his. Probably.",
@@ -52,8 +52,8 @@ export const BETA_CHARACTERS = {
   },
   orange: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 1.0, maxAmmo: 3,
-    bombDamage: 750, bombRange: 9, bombSpeed: 22,
-    bombSplashDamage: 700, bombSplashCount: 5, bombDirectHitJuiceCount: 4,
+    bombDamage: 750, bombRange: 8.5, bombSpeed: 22,
+    bombSplashDamage: 600, bombSplashCount: 5, bombDirectHitJuiceCount: 3,
     bombSplashSpeed: 10, bombSplashRange: 4.4, bombSplashHitRadius: 0.75,
     description: "오렌지는 평범한 오렌지 농부입니다. 하지만 컬러스의 첫 번째 우승자가 되려고 합니다. 오직 오렌지 하나만으로요...",
     descriptionEn: "Orange is a plain orange farmer, yet he intends to become the first champion of Colors. Armed with nothing but oranges...",
@@ -114,8 +114,8 @@ export const BETA_CHARACTERS = {
     needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(24),
   },
   pink: {
-    maxHealth: 11500, moveSpeedMultiplier: 1.4, attackCooldown: 0.2, reloadDuration: 0.8, maxAmmo: 3,
-    healCircleDamage: 2400, healCircleHeal: 1800, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
+    maxHealth: 10000, moveSpeedMultiplier: 1.2, attackCooldown: 0.35, reloadDuration: 0.8, maxAmmo: 3,
+    healCircleDamage: 2000, healCircleHeal: 1200, healCircleRange: 4.5, abilityRangeMultiplier: 1.2,
     description: "핑크는 음악을 좋아하는 스트리머입니다. 그녀는 음악이 너무 좋아서 돈벌이를 까먹는 바람에 돈을 벌려고 대회에 나갔다가 우승해버립니다.",
     descriptionEn: "Pink is a streamer who loves music so much she forgets to earn a living. She entered the tournament for the prize money and ended up winning it.",
     basicAttack: {
@@ -131,7 +131,7 @@ export const BETA_CHARACTERS = {
     },
   },
   crimson: {
-    maxHealth: 9800, moveSpeedMultiplier: 1.5, attackCooldown: 0.74, reloadDuration: 0.8, maxAmmo: 3,
+    maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.74, reloadDuration: 0.9, maxAmmo: 3,
     attackRange: 6, attackDamage: 4000 / 3, attackDamages: [1333, 1333, 1334], attackCount: 3, attackIntervalMs: 120,
     attackHalfAngle: degrees(42), attackAngles: [-25, 0, 25].map(degrees),
     description: "크림슨은 레드를 보고 권투를 시작해서 세계적인 권투 선수가 되었습니다. 근데 정작 자기는 레드를 못 이긴다고 하네요.",
