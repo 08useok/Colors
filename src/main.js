@@ -2855,8 +2855,15 @@ function buildPinkRigModel(glbSet, skinId) {
     ms.forEach(m => { if (!bMats.includes(m)) bMats.push(m); });
   }
 
-  // 기본: loop 재생 대기 (이동 시 timeScale 조정)
-  if (actions.loop) { actions.loop.play(); actions.loop.paused = true; }
+  // 기본: loop의 첫 애니메이션 포즈를 즉시 계산한 뒤 재생 대기한다.
+  // 평가 전 스킨드 메시를 표시하면 GLB 바인드 포즈(T포즈)가 걷기 시작 전이나
+  // 정지 후 장면 전환 순간에 노출될 수 있다.
+  if (actions.loop) {
+    actions.loop.play();
+    actions.loop.paused = false;
+    mixers.loop.update(0);
+    actions.loop.paused = true;
+  }
 
   function showScene(key) {
     for (const k of Object.keys(scenes)) { if (scenes[k]) scenes[k].visible = (k === key); }
