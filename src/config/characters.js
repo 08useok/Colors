@@ -29,7 +29,7 @@ export const CHARACTERS = {
     boomerangAngles: [-15, -5, 5, 15].map((d) => d * (Math.PI / 180)),
     ultimate: {
       name: "은신 수풀",
-      radius: 1.5,
+      radius: 2.2,
       duration: 10,
       revealDuration: 3,
       chargeRequired: 7,
