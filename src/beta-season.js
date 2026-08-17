@@ -139,7 +139,7 @@ function loadBetaState() {
 const betaState = loadBetaState();
 function saveBetaState() { localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(betaState)); updateWallet(); }
 function updateWallet() { creditValue.textContent = betaState.credits.toLocaleString("ko-KR"); }
-function rarityName(rarity) { return ({ common: "일반", rare: "희귀", epic: "초희귀", legendary: "영웅" })[rarity]; }
+function rarityName(rarity) { return ({ common: "일반", rare: "희귀", epic: "초희귀", hero: "영웅", legendary: "영웅" })[rarity]; }
 function getSkinName(skin) {
   const lang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
   return LANGS[lang]?.[skin.nameKey] || skin.name;
@@ -288,7 +288,7 @@ createTestTarget(2.2, 1.5, { ally: true });
 function createAttackRobot(x, z) {
   const robot = new THREE.Group();
   const bodyMat = new THREE.MeshStandardMaterial({ color: 0x566273, metalness: 0.7, roughness: 0.28 });
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff4c55, emissive: 0xff2030 });
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff4c55 });
   const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.15, 0.65), bodyMat);
   body.position.y = 0.85;
   const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.55, 0.58), bodyMat);

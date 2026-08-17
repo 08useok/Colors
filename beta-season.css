@@ -226,6 +226,7 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .rarity.common { color: #d9e4e8; background: #46545a; }
 .rarity.rare { color: #bde9ff; background: #285777; }
 .rarity.epic { color: #efc8ff; background: #6c347f; }
+.rarity.hero,
 .rarity.legendary { color: #ffe89a; background: #80671f; }
 .drop-box { text-align: center; padding: 28px; border: 1px dashed #397084; border-radius: 18px; background: rgba(36,112,134,.1); }
 .drop-result { min-height: 28px; margin: 15px 0; color: #ffe095; font-weight: 800; }
