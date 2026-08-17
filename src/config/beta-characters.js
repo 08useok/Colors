@@ -69,7 +69,7 @@ export const BETA_CHARACTERS = {
   },
   yellow: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.45, reloadDuration: 0.9, maxAmmo: 3,
-    electricDamage: 2200, electricRange: 12, electricSpeed: 16, attackDelay: 0.12, shockSlowPercent: 0.12, shockDuration: 1.5,
+    electricDamage: 2200, electricRange: 12, electricSpeed: 16, attackDelay: 0.12, shockSlowPercent: 0.3, shockDuration: 2,
     description: "옐로우는 평범한 전기 기술자입니다. 그가 월세를 벌고자 이 대회에 참가했습니다.",
     descriptionEn: "Yellow is an ordinary electrician who joined the tournament to cover his rent.",
     basicAttack: {

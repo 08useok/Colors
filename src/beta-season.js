@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.7";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.8";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -2303,7 +2303,7 @@ function createGroundPulse(radius, color, position = player.position) {
   crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.55, maxLife: 0.55, grow: 1.15 });
 }
 
-function createChartreuseStatusEffect(kind, target) {
+function createChartreuseStatusEffect(kind, target, durationOverride = null) {
   const colors = { slow: 0x7fdbff, malfunction: 0xffc928, reveal: 0xff9d2e, poison: 0x75e34c, knockback: 0xff4d5a };
   const durations = { slow: 1.5, malfunction: 1.2, reveal: 2.5, poison: 3, knockback: 0.8 };
   const color = colors[kind] || 0xffffff;
@@ -2373,7 +2373,7 @@ function createChartreuseStatusEffect(kind, target) {
   group.position.copy(target.position);
   group.position.y += 0.18;
   scene.add(group);
-  const duration = durations[kind] || 0.8;
+  const duration = durationOverride ?? durations[kind] ?? 0.8;
   crimsonSlashes.push({ group, mesh: ring, life: duration, maxLife: duration, type: "chartreuseStatus", ring, halo, kind });
 }
 
@@ -3507,7 +3507,10 @@ function updateGoldRushBots(dt) {
     const dz = targetZ - bot.mesh.position.z;
     const distance = Math.hypot(dx, dz);
     if (distance > 0.05) {
-      const step = Math.min(distance, bot.speed * dt);
+      const slowMultiplier = bot.mesh.userData.slowUntil > clock.elapsedTime
+        ? (bot.mesh.userData.slowMultiplier ?? 1)
+        : 1;
+      const step = Math.min(distance, bot.speed * slowMultiplier * dt);
       bot.mesh.position.x += (dx / distance) * step;
       bot.mesh.position.z += (dz / distance) * step;
       bot.mesh.rotation.y = Math.atan2(dx, dz);
@@ -4234,6 +4237,12 @@ function animate() {
         if (projectile.type === "orangeFruit") {
           shouldSplitOrange = true;
           orangeDirectHitTarget = target;
+        }
+        if (projectile.type === "electric") {
+          const yellow = BETA_CHARACTERS.yellow;
+          target.userData.slowUntil = clock.elapsedTime + yellow.shockDuration;
+          target.userData.slowMultiplier = 1 - yellow.shockSlowPercent;
+          createChartreuseStatusEffect("slow", target, yellow.shockDuration);
         }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
