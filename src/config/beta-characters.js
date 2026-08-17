@@ -5,7 +5,7 @@ const degrees = (value) => value * (Math.PI / 180);
 export const BETA_CHARACTERS = {
   red: {
     maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.55, reloadDuration: 0.9, maxAmmo: 3,
-    attackRange: 6, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
+    attackRange: 5, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,
     attackDamage: 2200, attackCount: 2, attackIntervalMs: 240,
     description: "레드는 TV에 나오는 복싱 선수입니다. 하지만 때로는 무식해서 펀치를 잘 못 때리죠.",
     descriptionEn: "Red is a boxer you see on TV. He is not always the sharpest, though, so his punches sometimes miss.",
