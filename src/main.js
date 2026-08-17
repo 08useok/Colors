@@ -2414,6 +2414,7 @@ function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false 
 
 function disposeFighter(fighter) {
   if (!fighter) return;
+  removeGreenUltimateBush(fighter);
   const data = fighter.mesh?.userData ?? {};
   for (const mixer of [data.cyanMixer, data.blueMixer, ...Object.values(data.pinkMixers ?? {})]) {
     mixer?.stopAllAction?.();
@@ -4537,6 +4538,15 @@ function createBush(x, z, radius = 1.35, group = scene, bushArr = state.bushes) 
   bush.position.set(x, 0, z);
   group.add(bush);
   bushArr.push({ x, z, radius: radius + 0.25, mesh: bush });
+}
+
+function removeGreenUltimateBush(fighter) {
+  const bush = fighter?.greenUltimateBush;
+  if (!bush) return;
+  state.bushes = state.bushes.filter((entry) => entry !== bush);
+  // 수풀 덩어리는 공용 geometry를 사용하므로 복제 재질만 정리한다.
+  disposeSceneObject(bush.mesh, { disposeGeometry: false });
+  fighter.greenUltimateBush = null;
 }
 
 function createSkullCluster(x, z, count = 7, group = scene) {
@@ -8740,10 +8750,7 @@ function tryUseGreenUltimate(fighter = getPlayer()) {
   const ultimate = CHARACTERS.green.ultimate;
   if ((fighter.greenUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
   fighter.greenUltimateCharge = 0;
-  if (fighter.greenUltimateBush) {
-    state.bushes = state.bushes.filter((bush) => bush !== fighter.greenUltimateBush);
-    scene.remove(fighter.greenUltimateBush.mesh);
-  }
+  removeGreenUltimateBush(fighter);
   const before = state.bushes.length;
   createBush(fighter.mesh.position.x, fighter.mesh.position.z, ultimate.radius);
   fighter.greenUltimateBush = state.bushes[before];
@@ -9651,6 +9658,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
     }
     target.dead = true;
+    removeGreenUltimateBush(target);
     target.mesh.visible = false;
     target.shadow.visible = false;
     target.healthBar.visible = false;
@@ -11072,11 +11080,7 @@ function updateAttackAimIndicator() {
 function updateBushVisuals() {
   for (const fighter of state.players) {
     const bush = fighter.greenUltimateBush;
-    if (bush && bush.expiresAt <= state.gameTime) {
-      scene.remove(bush.mesh);
-      state.bushes = state.bushes.filter((entry) => entry !== bush);
-      fighter.greenUltimateBush = null;
-    }
+    if (bush && (fighter.dead || bush.expiresAt <= state.gameTime)) removeGreenUltimateBush(fighter);
   }
   const player = getPlayer();
   if (!player) return;
