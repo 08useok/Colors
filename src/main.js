@@ -2537,10 +2537,11 @@ const audio = {
       pulse({ wave: "sine", from: 500, to: 900, duration: 0.2, peak: 0.18 });
       pulse({ wave: "sine", from: 700, to: 1100, duration: 0.18, peak: 0.15, delay: 0.06 });
     } else if (type === "showdownStart") {
-      pulse({ wave: "sawtooth", from: 118, to: 72, duration: 0.55, peak: 0.2 });
-      pulse({ wave: "square", from: 240, to: 380, duration: 0.18, peak: 0.14, delay: 0.08 });
-      pulse({ wave: "triangle", from: 430, to: 760, duration: 0.28, peak: 0.16, delay: 0.24 });
-      pulse({ wave: "sine", from: 820, to: 1240, duration: 0.2, peak: 0.12, delay: 0.48 });
+      // 승리 팡파르와 겹치지 않는 낮고 하강하는 결전 경고음.
+      pulse({ wave: "sawtooth", from: 150, to: 58, duration: 0.62, peak: 0.24 });
+      pulse({ wave: "square", from: 92, to: 54, duration: 0.2, peak: 0.16, delay: 0.12 });
+      pulse({ wave: "triangle", from: 210, to: 105, duration: 0.3, peak: 0.14, delay: 0.32 });
+      pulse({ wave: "sine", from: 72, to: 48, duration: 0.42, peak: 0.11, delay: 0.48 });
     } else if (type === "zoneShrink") {
       pulse({ wave: "triangle", from: 400, to: 150, duration: 0.4, peak: 0.2 });
     } else if (type === "win") {
