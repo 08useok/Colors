@@ -54,6 +54,12 @@ const dailyRewardAttempts = document.getElementById("daily-reward-attempts");
 const dailyRewardMessage = document.getElementById("daily-reward-message");
 const dailyRewardReturn = document.getElementById("daily-reward-return");
 const dailyRewardUpgradeAll = document.getElementById("daily-reward-upgrade-all");
+const dailyRewardFx = document.getElementById("daily-reward-fx");
+const dailyRewardHelp = document.getElementById("daily-reward-help");
+const dailyRewardOdds = document.getElementById("daily-reward-odds");
+const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
+const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
+const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
 const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
 const CHARACTER_MODEL_VERSION = "64";
 const CHARACTERS = [
@@ -127,6 +133,7 @@ function loadBetaState() {
       rewardType: saved.daily?.rewardType,
       rewardAmount: saved.daily?.rewardAmount,
       rewardCurrency: saved.daily?.rewardCurrency,
+      lastRewardTierId: saved.daily?.lastRewardTierId,
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
@@ -1365,17 +1372,125 @@ const DAILY_REWARD_TIERS = [
   { id: "absolute", name: "절대", credits: 5000, coins: 20000 },
 ];
 let dailyRewardTierIndex = 0;
+let dailyRewardMaxTierIndex = DAILY_REWARD_TIERS.length - 1;
 let dailyRewardSpinning = false;
 let dailyRewardComplete = false;
-// 성공하면 기회를 1회 돌려주므로 실질적으로 기회를 소모하지 않는다.
-// 즉 실패를 이 횟수만큼 쌓으면 종료된다.
 const DAILY_REWARD_UPGRADE_ATTEMPTS = 4;
-const DAILY_REWARD_UPGRADE_CHANCE = 0.65;
+const DAILY_REWARD_UPGRADE_CHANCE = 0.12;
+const DAILY_REWARD_COMMON_UPGRADE_CHANCE = 0.25;
+const DAILY_REWARD_UPGRADE_ALL_BONUS = 0.03;
 let dailyRewardAttemptsUsed = 0;
+let dailyRewardLastEffectTier = -1;
+
+const DAILY_REWARD_JUMP_WEIGHTS = [
+  { steps: 1, weight: 40 }, { steps: 2, weight: 20 },
+  { steps: 3, weight: 12 }, { steps: 4, weight: 8 },
+  { steps: 5, weight: 6 }, { steps: 6, weight: 5 },
+  { steps: 7, weight: 4 }, { steps: 8, weight: 2.5 },
+  { steps: 9, weight: 1.5 }, { steps: 10, weight: 1 },
+];
+
+function formatDailyRewardChance(value) { return `${Number((value * 100).toFixed(2))}%`; }
+
+function renderDailyRewardOdds() {
+  if (!dailyRewardUpgradeOddsBody || !dailyRewardJumpOddsBody) return;
+  const bulkCommon = Math.min(1, DAILY_REWARD_COMMON_UPGRADE_CHANCE + DAILY_REWARD_UPGRADE_ALL_BONUS);
+  const bulkLater = Math.min(1, DAILY_REWARD_UPGRADE_CHANCE + DAILY_REWARD_UPGRADE_ALL_BONUS);
+  dailyRewardUpgradeOddsBody.innerHTML = `
+    <tr><td>별 클릭</td><td>${formatDailyRewardChance(DAILY_REWARD_COMMON_UPGRADE_CHANCE)}</td><td>${formatDailyRewardChance(DAILY_REWARD_UPGRADE_CHANCE)}</td></tr>
+    <tr><td>한 번에 사용</td><td>${formatDailyRewardChance(bulkCommon)}</td><td>${formatDailyRewardChance(bulkLater)}</td></tr>
+    <tr><td>일반 마지막 기회</td><td>100%</td><td>-</td></tr>`;
+  const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
+  const cells = DAILY_REWARD_JUMP_WEIGHTS.map(({ steps, weight }) =>
+    `<td>${steps}단계</td><td>${formatDailyRewardChance(weight / totalWeight)}</td>`);
+  dailyRewardJumpOddsBody.innerHTML = Array.from({ length: Math.ceil(cells.length / 4) }, (_, row) =>
+    `<tr>${cells.slice(row * 4, row * 4 + 4).join("")}</tr>`).join("");
+}
+
+function setDailyRewardOddsOpen(open) { dailyRewardOdds?.classList.toggle("hidden", !open); }
+
+function rollUpgradeJumpSteps() {
+  const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
+  let roll = Math.random() * totalWeight;
+  for (const { steps, weight } of DAILY_REWARD_JUMP_WEIGHTS) {
+    if (roll < weight) return steps;
+    roll -= weight;
+  }
+  return 1;
+}
+
+function dailyRewardAttemptsLeft() {
+  return Math.max(0, DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed);
+}
+
+function dailyRewardAtTopTier() { return dailyRewardTierIndex >= dailyRewardMaxTierIndex; }
+
+function triggerDailyRewardTierEffect(tierIndex) {
+  const legendaryTierIndex = DAILY_REWARD_TIERS.findIndex((tier) => tier.id === "legendary");
+  if (!dailyRewardFx || tierIndex < legendaryTierIndex || tierIndex === dailyRewardLastEffectTier) return;
+  dailyRewardLastEffectTier = tierIndex;
+  const tier = DAILY_REWARD_TIERS[tierIndex];
+  const tierNumber = tierIndex + 1;
+  const isTierSevenPlus = tierNumber >= 7;
+  const isMaxTier = tierNumber === DAILY_REWARD_TIERS.length;
+  const colors = { legendary: "#ffd84d", mythic: "#ff657a", unique: "#b06bff", ultra: "#ff8a1e", transcend: "#00e5ff", unknown: "#e0aaff", absolute: "#ffffff" };
+  dailyRewardReveal.style.setProperty("--reward-fx", colors[tier.id] ?? "#ffd84d");
+  dailyRewardReveal.classList.add("high-tier");
+  dailyRewardReveal.classList.toggle("tier-7-plus", isTierSevenPlus);
+  dailyRewardReveal.classList.toggle("max-tier", isMaxTier);
+  dailyRewardFx.replaceChildren();
+  const particleCount = isMaxTier ? 220 : isTierSevenPlus ? 96 + (tierNumber - 7) * 32 : 34 + (tierIndex - legendaryTierIndex) * 8;
+  for (let index = 0; index < particleCount; index += 1) {
+    const particle = document.createElement("i");
+    particle.className = "daily-reward-particle";
+    const angle = Math.random() * Math.PI * 2;
+    const distanceScale = isMaxTier ? .88 : isTierSevenPlus ? .68 : .48;
+    const distance = 150 + Math.random() * Math.min(window.innerWidth, window.innerHeight) * distanceScale;
+    particle.style.setProperty("--particle-x", `${Math.cos(angle) * distance}px`);
+    particle.style.setProperty("--particle-y", `${Math.sin(angle) * distance}px`);
+    particle.style.setProperty("--particle-size", `${3 + Math.random() * (isMaxTier ? 15 : isTierSevenPlus ? 11 : 8)}px`);
+    particle.style.setProperty("--particle-delay", `${Math.random() * .18}s`);
+    dailyRewardFx.appendChild(particle);
+  }
+  if (isTierSevenPlus) {
+    const waveCount = isMaxTier ? 6 : 2 + (tierNumber - 7);
+    for (let index = 0; index < waveCount; index += 1) {
+      const wave = document.createElement("i");
+      wave.className = "daily-reward-wave";
+      wave.style.setProperty("--wave-delay", `${index * .12}s`);
+      dailyRewardFx.appendChild(wave);
+    }
+    const shardCount = isMaxTier ? 56 : 18 + (tierNumber - 7) * 8;
+    for (let index = 0; index < shardCount; index += 1) {
+      const shard = document.createElement("i");
+      shard.className = "daily-reward-shard";
+      const angle = (index / shardCount) * Math.PI * 2 + Math.random() * .08;
+      const distance = (isMaxTier ? 52 : 38) + Math.random() * 32;
+      shard.style.setProperty("--shard-angle", `${angle}rad`);
+      shard.style.setProperty("--shard-distance", `${distance}vmin`);
+      shard.style.setProperty("--shard-delay", `${Math.random() * .22}s`);
+      dailyRewardFx.appendChild(shard);
+    }
+  }
+  dailyRewardFx.classList.remove("burst");
+  void dailyRewardFx.offsetWidth;
+  dailyRewardFx.classList.add("burst");
+  setTimeout(() => dailyRewardFx.classList.remove("burst"), 1500);
+}
+
+function rollDailyRewardUpgrade(chanceBonus = 0) {
+  const canUpgrade = dailyRewardTierIndex < dailyRewardMaxTierIndex;
+  const guaranteedCommonUpgrade = dailyRewardTierIndex === 0 && dailyRewardAttemptsLeft() === 1;
+  const baseChance = dailyRewardTierIndex === 0 ? DAILY_REWARD_COMMON_UPGRADE_CHANCE : DAILY_REWARD_UPGRADE_CHANCE;
+  const upgraded = canUpgrade && (guaranteedCommonUpgrade || Math.random() < Math.min(1, baseChance + chanceBonus));
+  if (upgraded) dailyRewardTierIndex = Math.min(dailyRewardMaxTierIndex, dailyRewardTierIndex + rollUpgradeJumpSteps());
+  else dailyRewardAttemptsUsed += 1;
+  return upgraded;
+}
 
 function updateDailyRewardReveal() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
-  const remaining = Math.max(0, DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed);
+  const remaining = dailyRewardAttemptsLeft();
   dailyRewardReveal.dataset.tier = tier.id;
   dailyRewardReveal.dataset.upgradeAttemptsUsed = String(dailyRewardAttemptsUsed);
   dailyRewardReveal.dataset.upgradeAttemptsRemaining = String(remaining);
@@ -1387,6 +1502,7 @@ function updateDailyRewardReveal() {
   const showUpgradeAll = !dailyRewardComplete && remaining > 0 && !dailyRewardAtTopTier();
   dailyRewardUpgradeAll.classList.toggle("hidden", !showUpgradeAll);
   dailyRewardUpgradeAll.textContent = `남은 ${remaining}회 한 번에 사용`;
+  triggerDailyRewardTierEffect(dailyRewardTierIndex);
 }
 
 function showDailyRewardReveal() {
@@ -1395,14 +1511,21 @@ function showDailyRewardReveal() {
     return false;
   }
   dailyRewardTierIndex = 0;
+  dailyRewardMaxTierIndex = betaState.daily.lastRewardTierId === "absolute"
+    ? DAILY_REWARD_TIERS.length - 2 : DAILY_REWARD_TIERS.length - 1;
   dailyRewardSpinning = false;
   dailyRewardComplete = false;
   dailyRewardAttemptsUsed = 0;
+  dailyRewardLastEffectTier = -1;
+  dailyRewardReveal.classList.remove("high-tier", "tier-7-plus", "max-tier");
+  dailyRewardReveal.style.removeProperty("--reward-fx");
+  dailyRewardFx?.replaceChildren();
   dailyRewardStar.disabled = false;
   dailyRewardStar.classList.remove("spinning");
   dailyRewardUpgradeAll.disabled = false;
   dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
   dailyRewardReturn.classList.add("hidden");
+  setDailyRewardOddsOpen(false);
   updateDailyRewardReveal();
   modal.classList.add("hidden");
   document.body.classList.add("daily-reveal-active");
@@ -1412,80 +1535,23 @@ function showDailyRewardReveal() {
 
 function finishDailyReward() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
-  let rewardType = Math.random() < 0.5 ? "coins" : "credits";
-  let characterReward = null;
-  if (["ultra", "transcend", "unknown", "absolute"].includes(tier.id)) {
-    const available = CHARACTERS.filter((character) =>
-      ["rare", "legendary"].includes(character.rarity) && !betaState.ownedCharacters.includes(character.id),
-    );
-    if (available.length) {
-      const pool = available.flatMap((character) => Array(character.rarity === "legendary" ? 300 : 100).fill(character));
-      characterReward = pool[Math.floor(Math.random() * pool.length)];
-      rewardType = "character";
-    }
-  }
-  const rewardAmount = tier[rewardType] || 0;
+  const rewardType = Math.random() < 0.5 ? "coins" : "credits";
+  const rewardAmount = tier[rewardType];
   const rewardCurrency = rewardType === "coins" ? "코인" : "β 크레딧";
   dailyRewardComplete = true;
   updateDailyRewardReveal();
-  if (characterReward) betaState.ownedCharacters.push(characterReward.id);
-  else betaState[rewardType] += rewardAmount;
+  betaState[rewardType] += rewardAmount;
   betaState.daily.pendingRewards = Math.max(0, (betaState.daily.pendingRewards || 0) - 1);
   betaState.daily.winRewards = (betaState.daily.winRewards || 0) + 1;
   betaState.daily.rewardGrade = tier.name;
   betaState.daily.rewardType = rewardType;
   betaState.daily.rewardAmount = rewardAmount;
   betaState.daily.rewardCurrency = rewardCurrency;
+  betaState.daily.lastRewardTierId = tier.id;
   saveBetaState();
   dailyRewardStar.disabled = true;
   dailyRewardMessage.textContent = `${tier.name} 보상 · ${rewardAmount} ${rewardCurrency} 획득!`;
   dailyRewardReturn.classList.remove("hidden");
-}
-
-// 성공 시 몇 단계를 뛰어넘을지 가중치 분포로 결정한다. 예: 일반→희귀(1단계)는
-// 60, 일반→초희귀(2단계)는 40 식으로 단계가 클수록 가중치가 낮아진다.
-const DAILY_REWARD_JUMP_WEIGHTS = [
-  { steps: 1, weight: 60 },
-  { steps: 2, weight: 40 },
-  { steps: 3, weight: 30 },
-  { steps: 4, weight: 25 },
-  { steps: 5, weight: 21 },
-  { steps: 6, weight: 10 },
-  { steps: 7, weight: 5 },
-  { steps: 8, weight: 3 },
-  { steps: 9, weight: 2 },
-  { steps: 10, weight: 1 },
-];
-function rollUpgradeJumpSteps() {
-  const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
-  let roll = Math.random() * totalWeight;
-  for (const { steps, weight } of DAILY_REWARD_JUMP_WEIGHTS) {
-    if (roll < weight) return steps;
-    roll -= weight;
-  }
-  return DAILY_REWARD_JUMP_WEIGHTS[0].steps;
-}
-
-// 업그레이드 1회 판정. 최고 등급이면 더 오르지 않는다.
-// 굴림 1회. 성공하면 기회를 1회 돌려주므로 실패했을 때만 기회가 준다.
-function rollDailyRewardUpgrade() {
-  const canUpgrade = dailyRewardTierIndex < DAILY_REWARD_TIERS.length - 1;
-  const upgraded = canUpgrade && Math.random() < DAILY_REWARD_UPGRADE_CHANCE;
-  if (upgraded) {
-    const steps = rollUpgradeJumpSteps();
-    dailyRewardTierIndex = Math.min(DAILY_REWARD_TIERS.length - 1, dailyRewardTierIndex + steps);
-  } else {
-    dailyRewardAttemptsUsed += 1;
-  }
-  return upgraded;
-}
-
-function dailyRewardAttemptsLeft() {
-  return Math.max(0, DAILY_REWARD_UPGRADE_ATTEMPTS - dailyRewardAttemptsUsed);
-}
-
-function dailyRewardAtTopTier() {
-  return dailyRewardTierIndex >= DAILY_REWARD_TIERS.length - 1;
 }
 
 // 남은 기회를 한 번에 소모한다. 판정 확률은 한 번씩 누르는 것과 같다.
@@ -1501,7 +1567,7 @@ dailyRewardUpgradeAll.addEventListener("click", () => {
   const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
   setTimeout(() => {
     while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
-      rollDailyRewardUpgrade();
+      rollDailyRewardUpgrade(DAILY_REWARD_UPGRADE_ALL_BONUS);
     }
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
@@ -1539,6 +1605,18 @@ dailyRewardStar.addEventListener("click", () => {
 dailyRewardReturn.addEventListener("click", () => {
   dailyRewardReveal.classList.add("hidden");
   document.body.classList.remove("daily-reveal-active");
+});
+
+dailyRewardHelp?.addEventListener("click", () => {
+  renderDailyRewardOdds();
+  setDailyRewardOddsOpen(true);
+});
+dailyRewardOddsClose?.addEventListener("click", () => setDailyRewardOddsOpen(false));
+dailyRewardOdds?.addEventListener("click", (event) => {
+  if (event.target === dailyRewardOdds) setDailyRewardOddsOpen(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !dailyRewardOdds?.classList.contains("hidden")) setDailyRewardOddsOpen(false);
 });
 
 function openPanel(panel) {
