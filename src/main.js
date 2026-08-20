@@ -396,7 +396,9 @@ function applySkin(group, skinId) {
       crown.visible = false;
       crown.userData.autoFitHeadwear = true;
       crown.userData.seatBottomY = crown.userData.bottomY;
-      crown.userData.seatInset = 0.22;
+      // 0.22였을 때 왕관의 절반 이상이 머리 속에 파묻혀 보이던 문제 — 다른 머리
+      // 장식(투구 0.02 등)과 비슷한 수준의 살짝 얹힌 느낌으로 줄임
+      crown.userData.seatInset = 0.04;
       group.userData.headwear = crown;
     } else {
       fitCrownToHead(crown, 2.38);
