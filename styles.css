@@ -630,6 +630,15 @@ body.lobby-active #takedown-hud {
   display: none !important;
 }
 
+/* #character-panel/#mode-selector는 position:fixed로 뷰포트 전체를 덮게 되어 있는데,
+   .message-card의 진입 애니메이션이 남기는 transform이 #lobby-main을 새 containing
+   block으로 만들어버려 화면 전체가 아니라 #lobby-main의 작은 박스 안에 갇혀 보이지
+   않던 문제가 있었다. 패널이 열려 있는 동안은 transform을 제거해 뷰포트 기준으로 되돌린다. */
+#lobby-main:has(#character-panel:not(.hidden), #mode-selector:not(.hidden)) {
+  transform: none;
+  animation: none;
+}
+
 .lobby-button-click {
   animation: lobbyButtonClick 300ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }
