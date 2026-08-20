@@ -3935,6 +3935,22 @@ function ensureIvoryShopkeeperGlbLoading() {
   _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
 }
 
+// 지연 로딩 때문에 캐릭터 버튼을 누를 때마다 ~1초씩 GLB가 늦게 뜨는 게
+// 거슬려서, 처음 뜬 화면이 자리잡을 시간을 준 뒤 나머지 캐릭터들을
+// 백그라운드로 미리 받아둔다. 점원 스킨(17MB, 잘 안 쓰는 코스메틱)은
+// 여기 포함하지 않고 계속 완전 지연 로딩으로 둔다.
+setTimeout(() => {
+  ensureBlueGlbLoading();
+  ensureBluePreviewGlbLoading();
+  ensureCyanWalkGlbLoading();
+  ensureCyanPreviewGlbLoading();
+  for (const charKey of CYAN_RIG_CHARACTERS) ensureCyanRigCharGlbLoading(charKey);
+  ensurePinkGlbLoading();
+  ensurePurpleGlbLoading();
+  ensureIvoryGlbLoading();
+  ensureIvoryPreviewGlbLoading();
+}, 1500);
+
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
   const model = _bluePreviewGlb.scene.clone(true);
