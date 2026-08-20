@@ -1956,6 +1956,47 @@ function createPurpleVialMesh() {
   return group;
 }
 
+// 레드 궁극기(레드 가드) — 저면체 와이어프레임 껍질 + 은은한 채움 구체로
+// 밋밋한 반투명 구체 대신 에너지 실드처럼 보이게 한다.
+function createRedGuardShield() {
+  const group = new THREE.Group();
+  const fill = new THREE.Mesh(
+    new THREE.SphereGeometry(1.5, 20, 14),
+    new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide }),
+  );
+  const shellGeo = new THREE.IcosahedronGeometry(1.55, 1);
+  const shell = new THREE.Mesh(
+    shellGeo,
+    new THREE.MeshBasicMaterial({ color: 0xffe487, wireframe: true, transparent: true, opacity: 0.55, depthWrite: false }),
+  );
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(1.58, 0.03, 8, 48),
+    new THREE.MeshBasicMaterial({ color: 0xfff2c4, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  ring.rotation.x = Math.PI / 2;
+  group.add(fill, shell, ring);
+  return group;
+}
+
+// 샤트뢰즈 — 어떤 탄이 나올지 모르는 컨셉에 맞춰 불안정하게 뒤틀린 저면체
+// 실루엣. 탄종마다 색·발광 강도만 다르고 형태는 동일해 "무작위 탄환" 느낌을 준다.
+function createChartreuseRoundMesh(roundType) {
+  const paint = {
+    enhanced: { color: 0xfff200, emissive: 0xc8a600, emissiveIntensity: 1.6, opacity: 0.98 },
+    cc: { color: 0x9acd32, emissive: 0x5c8a12, emissiveIntensity: 1.2, opacity: 0.96 },
+    plague: { color: 0x241832, emissive: 0x3fae2a, emissiveIntensity: 1.3, opacity: 0.95 },
+    blank: { color: 0xffffff, emissive: 0x888888, emissiveIntensity: 0.4, opacity: 0.6 },
+  }[roundType] || { color: 0xffffff, emissive: 0x888888, emissiveIntensity: 0.6, opacity: 0.9 };
+  const mesh = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.17, 0),
+    new THREE.MeshStandardMaterial({
+      color: paint.color, emissive: paint.emissive, emissiveIntensity: paint.emissiveIntensity,
+      metalness: 0.25, roughness: 0.35, transparent: true, opacity: paint.opacity,
+    }),
+  );
+  return mesh;
+}
+
 function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false }) {
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
@@ -1968,6 +2009,10 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     cyanShot: createCyanPillMesh,
     needle: createPurpleNeedleMesh,
     vial: createPurpleVialMesh,
+    chartreuse_enhanced: () => createChartreuseRoundMesh("enhanced"),
+    chartreuse_cc: () => createChartreuseRoundMesh("cc"),
+    chartreuse_plague: () => createChartreuseRoundMesh("plague"),
+    chartreuse_blank: () => createChartreuseRoundMesh("blank"),
   };
   const mesh = CUSTOM_PROJECTILE_MESHES[type]
     ? CUSTOM_PROJECTILE_MESHES[type]()
@@ -3052,8 +3097,11 @@ ultimateButton.addEventListener("click", () => {
     redGuardUntil = clock.elapsedTime + def.duration;
     player.userData.redGuardUntil = redGuardUntil;
     player.userData.redGuardReduction = def.damageReduction;
-    if (redGuardMesh) player.remove(redGuardMesh);
-    redGuardMesh = new THREE.Mesh(new THREE.SphereGeometry(1.55, 24, 16), new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide }));
+    if (redGuardMesh) {
+      player.remove(redGuardMesh);
+      redGuardMesh.traverse((part) => { part.geometry?.dispose(); part.material?.dispose(); });
+    }
+    redGuardMesh = createRedGuardShield();
     redGuardMesh.position.y = 1.15;
     player.add(redGuardMesh);
     updateCrimsonUltimateGauge();
@@ -4162,11 +4210,16 @@ slowmoButton.addEventListener("click", () => {
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
-  if (redGuardMesh && clock.elapsedTime >= redGuardUntil) {
-    player.remove(redGuardMesh);
-    redGuardMesh = null;
-    player.userData.redGuardUntil = 0;
-    player.userData.redGuardReduction = 0;
+  if (redGuardMesh) {
+    if (clock.elapsedTime >= redGuardUntil) {
+      player.remove(redGuardMesh);
+      redGuardMesh.traverse((part) => { part.geometry?.dispose(); part.material?.dispose(); });
+      redGuardMesh = null;
+      player.userData.redGuardUntil = 0;
+      player.userData.redGuardReduction = 0;
+    } else {
+      redGuardMesh.rotation.y += dt * 0.6;
+    }
   }
   if (attackRobot?.visible && !goldRushState.active && !goldRushState.ended && clock.elapsedTime >= attackRobot.userData.nextAttackAt) {
     const distance = Math.hypot(player.position.x - attackRobot.position.x, player.position.z - attackRobot.position.z);
