@@ -2989,7 +2989,10 @@ function createStickman(color, skinId, normalizeBattleModel = false) {
 
   if (color === 0xF4CDD3 && _pinkGlb.loop) return buildPinkRigModel(_pinkGlb, skinId);
   if (color === 0x800080 && _purpleGlb.loop) return buildPinkRigModel(_purpleGlb, skinId);
-  if (color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper" && _ivoryShopkeeperGlb.loop) return buildPinkRigModel(_ivoryShopkeeperGlb, skinId);
+  if (color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper") {
+    ensureIvoryShopkeeperGlbLoading();
+    if (_ivoryShopkeeperGlb.loop) return buildPinkRigModel(_ivoryShopkeeperGlb, skinId);
+  }
   if (color === 0xfffff0 && _ivoryGlb.loop) return buildPinkRigModel(_ivoryGlb, skinId);
 
   const group = new THREE.Group();
@@ -3849,9 +3852,21 @@ _glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stri
 _glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); refreshLoadedPreviewCharacter("ivory"); });
 _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
 _glbLoader.load('./assets/3d/ivory/ivory_preview.glb', g => { _ivoryPreviewGlb = g; refreshLoadedPreviewCharacter("ivory"); });
-_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m1s.glb', g => { _ivoryShopkeeperGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => { _ivoryShopkeeperGlb.loop = _stripRootMotion(g); refreshLoadedPreviewCharacter("ivory"); });
-_glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
+
+// 아이보리 점원 스킨 3종(약 17MB)은 초기 로드 때 항상 받지 않고, 실제로 그
+// 스킨이 필요해질 때(createStickman에서 처음 요청될 때)만 내려받는다.
+let _ivoryShopkeeperGlbRequested = false;
+function ensureIvoryShopkeeperGlbLoading() {
+  if (_ivoryShopkeeperGlbRequested) return;
+  _ivoryShopkeeperGlbRequested = true;
+  _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m1s.glb', g => { _ivoryShopkeeperGlb.start = _stripRootMotion(g); });
+  _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb', g => {
+    _ivoryShopkeeperGlb.loop = _stripRootMotion(g);
+    refreshLoadedIvoryModels();
+    refreshLoadedPreviewCharacter("ivory");
+  });
+  _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
+}
 
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
