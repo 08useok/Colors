@@ -1574,20 +1574,42 @@ function statBar(label, value) {
     + `</div>`;
 }
 
+// 캐릭터별 일반 공격의 대표 피해량 필드 — 카드에 실제 수치를 보여줄 때 쓴다
+function getPrimaryAttackDamage(charKey, charDef) {
+  if (!charDef) return null;
+  // 레드는 캐릭터 설정이 아니라 공용 attackEvents 상수에서 펀치 데미지를 가져온다
+  if (charKey === "red") return attackEvents[0]?.damage;
+  if (charKey === "crimson") return charDef.attackDamage;
+  if (charKey === "green") return charDef.boomerangDamage;
+  if (charKey === "blue") return charDef.bulletDamage;
+  if (charKey === "orange") return charDef.bombDamage;
+  if (charKey === "yellow") return charDef.electricDamage;
+  if (charKey === "cyan") return charDef.spreadLineDamage;
+  if (charKey === "purple") return charDef.needleDamage;
+  if (charKey === "pink") return charDef.healCircleDamage;
+  if (charKey === "gold") return charDef.stage1Damage;
+  if (charKey === "ivory") return charDef.iceCreamDamage;
+  return null;
+}
+
 // 베타 전용 페이지에 있던 캐릭터 소개·기술 설명을 본 게임 캐릭터 정보에 그대로 보여준다
-function characterLoreHtml(charKey) {
+function characterLoreHtml(charKey, levelMult = 1) {
   const beta = BETA_CHARACTERS[charKey];
   if (!beta) return "";
   // 영어일 때는 ~En 필드를 쓰고, 번역이 없으면 한국어 원문으로 되돌아간다
   const pick = (source, field) => (currentLang === "en" ? source?.[`${field}En`] : null) ?? source?.[field];
-  const block = (label, body) => body
-    ? `<div class="ci-lore-block"><strong>${label}</strong><p>${body}</p></div>`
+  const block = (label, body, extra = "") => body
+    ? `<div class="ci-lore-block"><strong>${label}</strong><p>${body}</p>${extra}</div>`
     : "";
-  const skill = (labelKey, source) => source
-    ? block(`${t(labelKey)} · ${pick(source, "name")}`, pick(source, "description"))
+  const skill = (labelKey, source, extra = "") => source
+    ? block(`${t(labelKey)} · ${pick(source, "name")}`, pick(source, "description"), extra)
+    : "";
+  const baseDamage = getPrimaryAttackDamage(charKey, CHARACTERS[charKey]);
+  const damageHtml = Number.isFinite(baseDamage)
+    ? `<p class="ci-lore-damage">${t("loreAttackDamage", Math.round(baseDamage * levelMult))}</p>`
     : "";
   const html = block(t("loreIntro"), pick(beta, "description"))
-    + skill("loreBasicAttack", beta.basicAttack)
+    + skill("loreBasicAttack", beta.basicAttack, damageHtml)
     + skill("loreAbility", beta.officialAbility)
     + skill("loreUltimate", ULTIMATE_CHARACTERS.has(charKey) ? beta.ultimate : null);
   return html ? `<div class="ci-lore">${html}</div>` : "";
@@ -1637,7 +1659,7 @@ function updateColorInfo(charKey, account) {
   el.innerHTML = `<div class="ci-name">${name}</div>`
     + `<div class="ci-hp">HP ${effectiveHp}</div>`
     + `<div class="ci-desc">${desc}</div>`
-    + characterLoreHtml(charKey)
+    + characterLoreHtml(charKey, mult)
     + `<div class="ci-stats">`
     + statBar(t("statHp"), bars.hp)
     + statBar(t("statAtk"), bars.atk)

@@ -1463,6 +1463,12 @@ body.lobby-active #takedown-hud {
   color: var(--muted);
 }
 
+.ci-lore-damage {
+  margin-top: 4px !important;
+  color: #ffd166 !important;
+  font-weight: 700;
+}
+
 .ci-stats {
   margin-top: 8px;
   display: flex;
