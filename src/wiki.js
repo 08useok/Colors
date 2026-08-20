@@ -24,7 +24,7 @@ const copy = {
     searchPlaceholder: "캐릭터, 스킬, 맵을 검색하세요", battleRules: "전투 규칙", categories: "카테고리",
     liveData: "베타 데이터 연동", liveDataDesc: "능력치와 일반 공격은 베타 설정 기준입니다.",
     footer: "이 위키의 수치 정보는 게임 설정을 기준으로 자동 표시됩니다.", backGame: "게임으로 돌아가기 →",
-    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 9명의 파이터를 만나보세요.",
+    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 11명의 파이터를 만나보세요.",
     viewAll: "모두 보기", beginnerGuides: "초보자 가이드", guideDesc: "처음 전장에 들어가기 전에 알아둘 핵심 정보",
     latestPatch: "최근 업데이트", seasonDesc: "베타 시즌 1의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
     speed: "이동 속도", cooldown: "공격 간격", reload: "장전", role: "역할", basicAttack: "일반 공격",
@@ -42,7 +42,7 @@ const copy = {
     searchPlaceholder: "Search characters, skills, and maps", battleRules: "Combat Rules", categories: "Categories",
     liveData: "Beta game data", liveDataDesc: "Stats and basic attacks use the Beta config.",
     footer: "Numerical information is loaded from the current game configuration.", backGame: "Back to game →",
-    allCharacters: "All Characters", charDesc: "Meet nine fighters with distinct colors and combat styles.",
+    allCharacters: "All Characters", charDesc: "Meet eleven fighters with distinct colors and combat styles.",
     viewAll: "View all", beginnerGuides: "Beginner Guides", guideDesc: "Essentials to know before your first battle",
     latestPatch: "Latest Updates", seasonDesc: "Recent changes in Beta Season 1", hp: "HP", damage: "Damage", range: "Range",
     speed: "Move Speed", cooldown: "Cooldown", reload: "Reload", role: "Role", basicAttack: "Basic Attack",
@@ -114,6 +114,12 @@ const characterMeta = {
     desc: ["2x2 금광석이 적중하면 좌우 분열 후 금괴 여섯 발로 한 번 더 갈라집니다. 단계별 적중으로 고장 지대를 충전합니다.", "A 2x2 gold ore splits left and right on impact, then each fragment bursts into six gold bars. Stage hits charge Malfunction Zone."],
     tip: ["첫 광석은 벽이나 적에게 맞혀야 분열합니다. 궁극기는 근접 전투에서 상대의 공격과 이동을 동시에 끊는 데 사용하세요.", "Land the first ore on a wall or enemy to trigger the split. Use the ultimate in close fights to deny attacks and movement together."],
     range: 8, damage: 4000,
+  },
+  ivory: {
+    role: ["지역 제어", "Area Control"], attack: ["안 녹는 아이스크림", "Unmelting Ice Cream"],
+    desc: ["아이스크림 투척과 지속 장판으로 전장을 제어하는 파이터입니다.", "An area-control fighter who uses ice cream throws and lingering zones to control the battlefield."],
+    tip: ["적의 현재 위치보다 이동할 길목에 아이스크림을 던지세요. 장판이 남아 있는 동안은 무리하게 추격하지 않아도 공간을 지킬 수 있습니다.", "Throw ice cream at routes the enemy will take, not only their current position. The lingering zone can hold space without over-chasing."],
+    range: 10, damage: 1100,
   },
 };
 
@@ -211,6 +217,16 @@ characterDetails.gold = {
   other: ["궁극기는 일반 공격 단계별 적중으로 최대 12 충전됩니다. 한 번의 일반 공격에서 얻는 충전량은 최대 6입니다.", "The ultimate needs 12 charge from stage hits. A single basic attack can contribute at most 6 charge."]
 };
 
+characterDetails.ivory = {
+  setting: ["아이스크림 가게의 직원입니다. 아이스크림을 던져 착탄 지점과 주변 길목을 장악하는 지역 제어형 파이터입니다.", "An ice cream shop employee who controls impact points and nearby lanes with thrown ice cream."],
+  attack: ["최대 사거리 10타일에 아이스크림을 던집니다. 착탄 시 1,100 피해를 주고, 4초 동안 매초 1,100 피해를 주는 장판을 만듭니다. 장판 피해는 중첩되지 않습니다.", "Throws ice cream up to 10 tiles. It deals 1,100 impact damage and leaves a four-second zone that deals 1,100 damage each second. Zone damage does not stack."],
+  strong: ["좁은 길에서 이동 경로가 제한된 파이터", "Fighters whose movement is limited in narrow lanes"],
+  weak: ["장판 밖에서 긴 사거리로 견제하는 파이터", "Fighters who can poke from long range outside the zone"],
+  matchup: ["직접 명중만 노리기보다 도주로와 수풀 입구를 장판으로 막으세요. 궁극기 단체 주문은 여러 길목을 동시에 막거나 한 지역에 압박을 몰아줄 때 효과적입니다.", "Block escape routes and bush entrances with zones instead of relying only on direct hits. Group Order is effective for covering multiple lanes or concentrating pressure on one area."],
+  history: [["v1.5.3", "베타 시즌 3 신규 플레이어블 캐릭터로 추가", "v1.5.3", "Added as a new playable fighter in Beta Season 3"]],
+  other: ["궁극기 단체 주문은 목표 지점의 중앙과 네 방향에 아이스크림 5개를 던집니다. 궁극기 게이지는 일반 공격과 장판 피해가 적중할 때 충전됩니다.", "Group Order throws five ice creams at the target area: one in the center and one in each cardinal direction. Its gauge charges when basic attacks and zone damage hit."],
+};
+
 const guides = [
   { id:"beta2", icon:"β2", title:["베타 시즌 2", "Beta Season 2"], desc:["v1.5.2 정식 시즌 업데이트", "The v1.5.2 live season update"], body:["베타 시즌 2는 2026년 8월 3일 00:00 KST에 시작해 8월 10일 00:00 KST에 종료됩니다. Gold와 Gold Rush, 시즌 한정 스킨을 포함합니다.", "Beta Season 2 runs from August 3, 2026 00:00 KST to August 10, 2026 00:00 KST. It includes Gold, Gold Rush, and seasonal skins."], sections:[[["핵심 콘텐츠", "Highlights"], ["신규 전설 캐릭터 Gold, 연쇄 금광석과 고장 지대 궁극기, Gold Rush 경쟁 모드를 추가했습니다.", "Added Gold, the Chain Gold Ore and Malfunction Zone kit, and the Gold Rush competitive mode."]], [["기간", "Schedule"], ["시작 2026.08.03 00:00 KST · 종료 2026.08.10 00:00 KST", "Starts 2026.08.03 00:00 KST · Ends 2026.08.10 00:00 KST"]]] },
   { id:"goldrush", icon:"🪙", title:["골드 러쉬", "Gold Rush"], desc:["금 10개를 지켜 승리하는 10인 모드", "A 10-player mode won by holding 10 gold"], body:["중앙 금광과 맵에 생성되는 금을 자동으로 획득합니다. 금 10개를 모은 뒤 10초간 보유하면 즉시 승리합니다. AI 9명이 함께 경쟁합니다.", "Gold spawning at the center and around the map is collected automatically. Hold 10 gold for 10 seconds to win instantly against nine AI rivals."], sections:[[["승리 조건", "Win condition"], ["금 10개 보유 후 10초 유지. 3분이 끝나면 가장 많은 금을 보유한 플레이어가 승리합니다.", "Hold 10 gold for 10 seconds. At three minutes, the fighter holding the most gold wins."]]] },
@@ -290,6 +306,7 @@ function betaAttackStats(id) {
   if (id === "cyan") return { damage: stats.spreadLineDamage * stats.spreadLineCount, range: stats.spreadLineRange };
   if (id === "crimson") return { damage: stats.attackDamage * stats.attackCount, range: stats.attackRange };
   if (id === "gold") return { damage: stats.stage1Damage, range: stats.stage1Range };
+  if (id === "ivory") return { damage: stats.iceCreamDamage, range: stats.iceCreamRange };
   if (id === "purple") return { damage: stats.vialDamage, range: stats.vialRange };
   return { damage: stats.healCircleDamage, range: stats.healCircleRange };
 }

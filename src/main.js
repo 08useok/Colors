@@ -12089,6 +12089,20 @@ function setupInput() {
     noticeToggle.textContent = noticePanel.classList.contains("hidden") ? "📢 공지" : "닫기";
   });
 
+  document.querySelectorAll("[data-notice-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.noticeTab;
+      document.querySelectorAll("[data-notice-tab]").forEach((button) => {
+        const selected = button === tab;
+        button.classList.toggle("active", selected);
+        button.setAttribute("aria-selected", String(selected));
+      });
+      document.querySelectorAll("[data-notice-content]").forEach((content) => {
+        content.classList.toggle("hidden", content.dataset.noticeContent !== target);
+      });
+    });
+  });
+
   document.getElementById("pinkfront-toggle").addEventListener("click", () => {
     const canvas = document.getElementById("pink-front-canvas");
     pinkFrontActive = !pinkFrontActive;
