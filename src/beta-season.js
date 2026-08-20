@@ -2866,14 +2866,22 @@ function createChartreuseUltimateEffect() {
     new THREE.TorusGeometry(1.12, 0.04, 8, 48),
     new THREE.MeshBasicMaterial({ color: 0x65ffe0, transparent: true, opacity: 0.86, blending: THREE.AdditiveBlending }),
   );
+  // 발밑 발광 링 — 위쪽 토러스 2개는 시야각에 따라 잘 안 보일 수 있어
+  // 어느 각도에서도 확실히 눈에 띄도록 바닥에 넓은 링을 깐다
+  const groundRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.9, 1.35, 48),
+    new THREE.MeshBasicMaterial({ color: 0xccff33, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  groundRing.rotation.x = -Math.PI / 2;
+  groundRing.position.y = -1.0; // group 자체는 가슴 높이(y=1.05)라 여기서 상쇄해 발밑(y≈0.05)에 놓는다
   burst.rotation.x = -Math.PI / 2;
   outer.rotation.x = Math.PI / 2;
   inner.rotation.x = Math.PI / 2;
-  group.add(core, burst, outer, inner);
+  group.add(core, burst, outer, inner, groundRing);
   group.position.copy(player.position);
   group.position.y = 1.05;
   scene.add(group);
-  crimsonSlashes.push({ group, mesh: outer, life: BETA_CHARACTERS.chartreuse.ultimate.duration, maxLife: BETA_CHARACTERS.chartreuse.ultimate.duration, type: "chartreuseUltimate", core, burst, outer, inner });
+  crimsonSlashes.push({ group, mesh: outer, life: BETA_CHARACTERS.chartreuse.ultimate.duration, maxLife: BETA_CHARACTERS.chartreuse.ultimate.duration, type: "chartreuseUltimate", core, burst, outer, inner, groundRing });
 }
 
 let greenRevealedUntil = 0;
@@ -4511,6 +4519,8 @@ function animate() {
       slash.core.material.opacity = 0.6 + Math.sin(clock.elapsedTime * 10) * 0.16;
       slash.outer.material.opacity = Math.max(0, 0.98 * (slash.life < 0.45 ? slash.life / 0.45 : 1));
       slash.inner.material.opacity = Math.max(0, 0.86 * (slash.life < 0.45 ? slash.life / 0.45 : 1));
+      slash.groundRing.rotation.z += dt * 1.6;
+      slash.groundRing.material.opacity = Math.max(0, (0.4 + Math.sin(clock.elapsedTime * 6) * 0.15) * (slash.life < 0.45 ? slash.life / 0.45 : 1));
       const pulse = 1 + Math.sin(clock.elapsedTime * 10) * 0.08;
       slash.group.scale.setScalar(pulse);
     } else if (slash.type === "chartreuseBurst") {
