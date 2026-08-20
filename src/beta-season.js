@@ -1756,7 +1756,10 @@ function damageTarget(target, damage, causesKnockback = false) {
   createRedThemeHitEffect(target.position);
   flashTarget(target);
   if (target.userData.health <= 0) {
-    if (target.userData.isAlly && target.visible) createPinkAllyDeathEffect(target);
+    if (target.userData.isAlly && target.visible) {
+      target.userData.deadPosition = target.position.clone();
+      createPinkAllyDeathEffect(target);
+    }
     target.visible = false;
   }
 }
@@ -2568,6 +2571,63 @@ function createPinkAllyDeathEffect(target) {
   createGroundPulse(1.25, 0x8f2b68, target.position);
   createPinkNoteBurst(1.5, target.position);
   showToast("아군 사망 · 부활 대기");
+}
+
+function ensurePinkDeadAllyMarker(target) {
+  if (target.userData.pinkDeadAllyMarker) return target.userData.pinkDeadAllyMarker;
+  const group = new THREE.Group();
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff79b8, transparent: true, opacity: 0.92,
+    side: THREE.DoubleSide, depthWrite: false, depthTest: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.58, 0.82, 40), ringMaterial);
+  ring.rotation.x = -Math.PI / 2;
+  const beam = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.05, 0.22, 3.2, 16, 1, true),
+    new THREE.MeshBasicMaterial({
+      color: 0xff9fce, transparent: true, opacity: 0.42,
+      side: THREE.DoubleSide, depthWrite: false, depthTest: false,
+      blending: THREE.AdditiveBlending,
+    }),
+  );
+  beam.position.y = 1.6;
+  const note = createPinkNoteMesh();
+  note.position.y = 3.5;
+  note.scale.setScalar(1.8);
+  note.traverse((part) => { if (part.material) part.material.depthTest = false; });
+  group.add(ring, beam, note);
+  group.renderOrder = 50;
+  group.visible = false;
+  scene.add(group);
+  target.userData.pinkDeadAllyMarker = group;
+  return group;
+}
+
+function updatePinkDeadAllyMarkers() {
+  const pinkSelected = betaState.selectedCharacter === "pink";
+  for (const target of testTargets) {
+    if (!target.userData.isAlly) continue;
+    const dead = !target.visible && target.userData.health <= 0;
+    if (dead && !target.userData.pinkDeadLocationRecorded) {
+      target.userData.deadPosition = target.position.clone();
+      target.userData.pinkDeadLocationRecorded = true;
+    } else if (!dead) {
+      target.userData.pinkDeadLocationRecorded = false;
+    }
+    const marker = target.userData.pinkDeadAllyMarker;
+    if (!pinkSelected || !dead) {
+      if (marker) marker.visible = false;
+      continue;
+    }
+    const activeMarker = marker || ensurePinkDeadAllyMarker(target);
+    activeMarker.position.copy(target.userData.deadPosition || target.position);
+    activeMarker.position.y = Math.max(0.12, groundHeightAt(activeMarker.position.x, activeMarker.position.z) + 0.12);
+    activeMarker.visible = true;
+    activeMarker.rotation.y = clock.elapsedTime * 1.2;
+    const pulse = 1 + Math.sin(clock.elapsedTime * 5.5) * 0.12;
+    activeMarker.scale.setScalar(pulse);
+  }
 }
 
 // 레드처럼 정면으로 뻗는 공격용 이펙트. 원형 펄스와 달리 바라보는 방향으로
@@ -4747,6 +4807,7 @@ function animate() {
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
   updateGoldRush(dt);
   updateTestCombatHud(dt);
+  updatePinkDeadAllyMarkers();
   // 골드 러쉬 밖에서도 체력바가 캐릭터 머리 위에 항상 고정되어 보이도록 매 프레임 갱신한다
   playerGoldRushHealthBar.visible = player.visible;
   if (player.visible) {
