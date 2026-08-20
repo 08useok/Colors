@@ -1237,6 +1237,12 @@ body.lobby-active #takedown-hud {
   box-shadow: 0 6px 18px rgba(160, 0, 0, 0.5);
 }
 
+.char-icon-ivory {
+  background: radial-gradient(circle at 35% 35%, #ffffff, #d8cfa8 70%);
+  box-shadow: 0 6px 18px rgba(230, 220, 190, 0.5);
+  color: #6b5a3a;
+}
+
 /* ── 베타 시즌 1: 미보유 캐릭터 잠금 ── */
 .char-btn.locked {
   opacity: 0.5;
