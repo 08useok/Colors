@@ -12484,6 +12484,9 @@ function setupInput() {
     const willShow = characterPanel.classList.contains("hidden");
     // 화면 전환을 먼저 반영해 버튼 클릭 즉시 선택 화면을 보여준다.
     characterPanel.classList.toggle("hidden", !willShow);
+    // 직전 결과창을 안 닫고 캐릭터 패널을 열면, 투명한 3D 미리보기 캔버스
+    // 뒤로 이전 전투의 "데미지: N" 문구가 비쳐 보이는 문제가 있었다.
+    if (willShow) resultOverlay.style.display = "none";
     lobbyPreviewWrap?.classList.toggle("preview-suppressed", willShow);
     modeSelector.classList.add("hidden");
     characterToggle.classList.toggle("active", willShow);
