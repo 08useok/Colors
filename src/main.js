@@ -2906,6 +2906,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function createStickman(color, skinId, normalizeBattleModel = false) {
+  if (color === 0x0000ff) ensureBlueGlbLoading();
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
     const model = skeletonClone(_blueWalkGlb.scene);
@@ -2975,6 +2976,13 @@ function createStickman(color, skinId, normalizeBattleModel = false) {
   }
 
   // 시안 리그를 공유하는 캐릭터들(시안 + 시안에서 리컬러한 green/orange/red/yellow)
+  if (color === CHARACTERS.cyan.color) {
+    ensureCyanWalkGlbLoading();
+  } else if (CYAN_RIG_COLOR_TO_CHAR.has(color)) {
+    const pendingCharKey = CYAN_RIG_COLOR_TO_CHAR.get(color);
+    if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(pendingCharKey)) ensureCyanWalkGlbLoading();
+    else ensureCyanRigCharGlbLoading(pendingCharKey);
+  }
   const rigGltf = getCyanRigGltf(color);
   if (rigGltf) {
     const rigCharKey = color === CHARACTERS.cyan.color ? "cyan" : CYAN_RIG_COLOR_TO_CHAR.get(color);
@@ -2989,13 +2997,22 @@ function createStickman(color, skinId, normalizeBattleModel = false) {
     return group;
   }
 
-  if (color === 0xF4CDD3 && _pinkGlb.loop) return buildPinkRigModel(_pinkGlb, skinId);
-  if (color === 0x800080 && _purpleGlb.loop) return buildPinkRigModel(_purpleGlb, skinId);
+  if (color === 0xF4CDD3) {
+    ensurePinkGlbLoading();
+    if (_pinkGlb.loop) return buildPinkRigModel(_pinkGlb, skinId);
+  }
+  if (color === 0x800080) {
+    ensurePurpleGlbLoading();
+    if (_purpleGlb.loop) return buildPinkRigModel(_purpleGlb, skinId);
+  }
   if (color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper") {
     ensureIvoryShopkeeperGlbLoading();
     if (_ivoryShopkeeperGlb.loop) return buildPinkRigModel(_ivoryShopkeeperGlb, skinId);
   }
-  if (color === 0xfffff0 && _ivoryGlb.loop) return buildPinkRigModel(_ivoryGlb, skinId);
+  if (color === 0xfffff0) {
+    ensureIvoryGlbLoading();
+    if (_ivoryGlb.loop) return buildPinkRigModel(_ivoryGlb, skinId);
+  }
 
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
@@ -3775,41 +3792,66 @@ function refreshLoadedIvoryModels() {
     fighter.bodyMaterials = replacement.userData.bodyMaterials;
   }
 }
-_glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
-_glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
-  _bluePreviewGlb = g;
-  if (previewCharType === 'blue') {
-    previewChar = null;
-    setPreviewCharacter('blue');
-  }
-  if (frontModelCharType === 'blue') setupFrontModel('blue');
-});
-_glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
-  _cyanWalkGlb = _stripRootMotion(g);
-  // The shared rig contains an authored scale track that is useful for the
-  // source animation preview but shrinks Crimson/Gold during gameplay.
-  for (const clip of (_cyanWalkGlb.animations ?? [])) {
-    clip.tracks = clip.tracks.filter((track) => !/\.scale$/.test(track.name));
-  }
-  refreshLoadedCyanTemplateModels();
-  for (const charKey of CYAN_RIG_TEMPLATE_CHARACTERS) {
-    if (previewCharType === charKey) {
+// 모든 캐릭터 GLB는 페이지 로드 시 한꺼번에 받지 않고, 실제로 그 캐릭터가
+// 선택/미리보기/스폰될 때 처음 한 번만 지연 로딩한다 — 초기 로드 용량과
+// 네트워크 동시 요청 경합을 줄여서, 방금 고른 캐릭터의 다운로드가 다른
+// 캐릭터들 뒤에 밀리지 않게 한다.
+let _blueGlbRequested = false;
+function ensureBlueGlbLoading() {
+  if (_blueGlbRequested) return;
+  _blueGlbRequested = true;
+  _glbLoader.load('./assets/3d/blue/blue_walk.glb', g => { _blueWalkGlb = _stripBlueHipMotion(g); });
+}
+let _bluePreviewGlbRequested = false;
+function ensureBluePreviewGlbLoading() {
+  if (_bluePreviewGlbRequested) return;
+  _bluePreviewGlbRequested = true;
+  _glbLoader.load('./assets/3d/blue/blue_preview.glb', g => {
+    _bluePreviewGlb = g;
+    if (previewCharType === 'blue') {
+      previewChar = null;
+      setPreviewCharacter('blue');
+    }
+    if (frontModelCharType === 'blue') setupFrontModel('blue');
+  });
+}
+
+let _cyanWalkGlbRequested = false;
+function ensureCyanWalkGlbLoading() {
+  if (_cyanWalkGlbRequested) return;
+  _cyanWalkGlbRequested = true;
+  _glbLoader.load('./assets/3d/cyan/walk-m2l.glb', g => {
+    _cyanWalkGlb = _stripRootMotion(g);
+    // The shared rig contains an authored scale track that is useful for the
+    // source animation preview but shrinks Crimson/Gold during gameplay.
+    for (const clip of (_cyanWalkGlb.animations ?? [])) {
+      clip.tracks = clip.tracks.filter((track) => !/\.scale$/.test(track.name));
+    }
+    refreshLoadedCyanTemplateModels();
+    for (const charKey of CYAN_RIG_TEMPLATE_CHARACTERS) {
+      if (previewCharType === charKey) {
+        previewChar = null;
+        setPreviewCharacter(charKey);
+      }
+      if (frontModelCharType === charKey) setupFrontModel(charKey);
+    }
+  });
+}
+let _cyanPreviewGlbRequested = false;
+// 로비 프리뷰 전용 시안 모델 (애니메이션 없는 원본 포즈)
+function ensureCyanPreviewGlbLoading() {
+  if (_cyanPreviewGlbRequested) return;
+  _cyanPreviewGlbRequested = true;
+  _glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
+    _cyanPreviewGlb = g;
+    if (previewCharType === 'cyan' || CYAN_RIG_TEMPLATE_CHARACTERS.includes(previewCharType)) {
+      const charKey = previewCharType;
       previewChar = null;
       setPreviewCharacter(charKey);
     }
-    if (frontModelCharType === charKey) setupFrontModel(charKey);
-  }
-});
-// 로비 프리뷰 전용 시안 모델 (애니메이션 없는 원본 포즈)
-_glbLoader.load('./assets/3d/cyan/cyan_preview.glb', g => {
-  _cyanPreviewGlb = g;
-  if (previewCharType === 'cyan' || CYAN_RIG_TEMPLATE_CHARACTERS.includes(previewCharType)) {
-    const charKey = previewCharType;
-    previewChar = null;
-    setPreviewCharacter(charKey);
-  }
-  if (frontModelCharType === 'cyan') setupFrontModel('cyan');
-});
+    if (frontModelCharType === 'cyan') setupFrontModel('cyan');
+  });
+}
 // 시안 리그를 리컬러해서 만든 캐릭터들 — 리그와 걷기 클립이 시안과 동일하다
 const CYAN_RIG_CHARACTERS = ["green", "orange", "red", "yellow"];
 const CYAN_RIG_TEMPLATE_CHARACTERS = ["crimson", "gold"];
@@ -3818,7 +3860,10 @@ const CYAN_RIG_COLOR_TO_CHAR = new Map(
   [...CYAN_RIG_CHARACTERS, ...CYAN_RIG_TEMPLATE_CHARACTERS]
     .map((charKey) => [CHARACTERS[charKey].color, charKey]),
 );
-for (const charKey of CYAN_RIG_CHARACTERS) {
+const _cyanRigGlbRequested = {};
+function ensureCyanRigCharGlbLoading(charKey) {
+  if (_cyanRigGlbRequested[charKey]) return;
+  _cyanRigGlbRequested[charKey] = true;
   _glbLoader.load(`./assets/3d/${charKey}/walk-m2l.glb`, g => {
     _cyanRigGlb[charKey] = _stripRootMotion(g);
     if (previewCharType === charKey) {
@@ -3829,31 +3874,51 @@ for (const charKey of CYAN_RIG_CHARACTERS) {
   });
 }
 
-_glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
-  _pinkGlb.loop = _stripRootMotion(g);
-});
-_glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
+let _pinkGlbRequested = false;
+function ensurePinkGlbLoading() {
+  if (_pinkGlbRequested) return;
+  _pinkGlbRequested = true;
+  _glbLoader.load('./assets/3d/pink/walk-m1s.glb', g => { _pinkGlb.start = _stripRootMotion(g); });
+  _glbLoader.load('./assets/3d/pink/walk-m2l.glb', g => {
+    _pinkGlb.loop = _stripRootMotion(g);
+  });
+  _glbLoader.load('./assets/3d/pink/walk-m3e.glb', g => { _pinkGlb.end   = _stripRootMotion(g); });
+}
 
 // 핑크 리그를 리컬러해서 만든 퍼플 (walk-m1s/m2l/m3e 3단계 애니메이션 구조를 그대로 재사용)
-_glbLoader.load('./assets/3d/purple/walk-m1s.glb', g => { _purpleGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/purple/walk-m2l.glb', g => {
-  _purpleGlb.loop = _stripRootMotion(g);
-  refreshLoadedPreviewCharacter("purple");
-  if (frontModelCharType === "purple") setupFrontModel("purple");
-  // 경기 시작이 GLB 로딩보다 먼저 일어나면 절차형 모델이 잠시 표시될 수 있다.
-  // 퍼플 GLB가 도착하면 현재 플레이어 모델을 즉시 교체한다.
-  if (typeof player !== "undefined" && player?.characterType === "purple" && state.running) {
-    setPlayerModel("purple");
-  }
-});
-_glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _stripRootMotion(g); });
+let _purpleGlbRequested = false;
+function ensurePurpleGlbLoading() {
+  if (_purpleGlbRequested) return;
+  _purpleGlbRequested = true;
+  _glbLoader.load('./assets/3d/purple/walk-m1s.glb', g => { _purpleGlb.start = _stripRootMotion(g); });
+  _glbLoader.load('./assets/3d/purple/walk-m2l.glb', g => {
+    _purpleGlb.loop = _stripRootMotion(g);
+    refreshLoadedPreviewCharacter("purple");
+    if (frontModelCharType === "purple") setupFrontModel("purple");
+    // 경기 시작이 GLB 로딩보다 먼저 일어나면 절차형 모델이 잠시 표시될 수 있다.
+    // 퍼플 GLB가 도착하면 현재 플레이어 모델을 즉시 교체한다.
+    if (typeof player !== "undefined" && player?.characterType === "purple" && state.running) {
+      setPlayerModel("purple");
+    }
+  });
+  _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _stripRootMotion(g); });
+}
 
 // Ivory base model — the beta test uses the same three-phase animation rig.
-_glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); refreshLoadedPreviewCharacter("ivory"); });
-_glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
-_glbLoader.load('./assets/3d/ivory/ivory_preview.glb', g => { _ivoryPreviewGlb = g; refreshLoadedPreviewCharacter("ivory"); });
+let _ivoryGlbRequested = false;
+function ensureIvoryGlbLoading() {
+  if (_ivoryGlbRequested) return;
+  _ivoryGlbRequested = true;
+  _glbLoader.load('./assets/3d/ivory/walk-m1s.glb', g => { _ivoryGlb.start = _stripRootMotion(g); });
+  _glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); refreshLoadedPreviewCharacter("ivory"); });
+  _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
+}
+let _ivoryPreviewGlbRequested = false;
+function ensureIvoryPreviewGlbLoading() {
+  if (_ivoryPreviewGlbRequested) return;
+  _ivoryPreviewGlbRequested = true;
+  _glbLoader.load('./assets/3d/ivory/ivory_preview.glb', g => { _ivoryPreviewGlb = g; refreshLoadedPreviewCharacter("ivory"); });
+}
 
 // 아이보리 점원 스킨 3종(약 17MB)은 초기 로드 때 항상 받지 않고, 실제로 그
 // 스킨이 필요해질 때(createStickman에서 처음 요청될 때)만 내려받는다.
@@ -3997,6 +4062,8 @@ let frontModelCharType = null;
 function setupFrontModel(charType) {
   if (pinkFrontModel) { pinkFrontScene.remove(pinkFrontModel); pinkFrontModel = null; }
   frontModelCharType = charType;
+  if (charType === "blue") ensureBluePreviewGlbLoading();
+  else if (charType === "cyan" || CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType)) ensureCyanPreviewGlbLoading();
 
   const _applyCamera = () => {
     const w = pinkFrontCanvas.clientWidth || 200;
@@ -4114,6 +4181,9 @@ function setPreviewCharacter(charType) {
   previewCharType = charType;
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
+  if (charType === "blue") ensureBluePreviewGlbLoading();
+  else if (charType === "cyan" || CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType)) ensureCyanPreviewGlbLoading();
+  else if (charType === "ivory") ensureIvoryPreviewGlbLoading();
 
   if (charType === "pink" || charType === "purple") {
     previewIsGlb = true;
