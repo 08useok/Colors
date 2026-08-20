@@ -125,8 +125,8 @@ export const BETA_CHARACTERS = {
       descriptionEn: "Releases notes that spread in a circle, damaging enemies and healing allies."
     },
     ultimate: {
-      id: "encore", name: "앙코르!", description: "반경 8타일 안에서 쓰러진 아군을 체력 40%와 2초 무적으로 부활시킵니다.",
-      nameEn: "Encore!", descriptionEn: "Revives fallen allies within 8 tiles at 40% health with 2 seconds of invulnerability.",
+      id: "encore", name: "앙코르!", description: "반경 8타일 안의 모든 아군에게 12초 동안 부활 효과를 부여합니다. 효과를 받은 아군이 사망하면 그 자리에서 체력 40%와 2초 무적으로 부활하며, 이미 쓰러진 아군은 즉시 부활합니다.",
+      nameEn: "Encore!", descriptionEn: "Grants every ally within 8 tiles a 12-second revival effect. If an affected ally falls, they revive in place at 40% health with 2 seconds of invulnerability; already-fallen allies revive immediately.",
       chargeRequired: 15, radius: 8, reviveHealthRatio: 0.4, invulnerabilityDuration: 2,
     },
   },
@@ -186,8 +186,8 @@ export const BETA_CHARACTERS = {
     },
     ultimate: {
       id: "groupOrder", name: "단체 주문",
-      description: "최대 20타일 거리의 중앙과 네 방향에 아이스크림 5개를 던집니다.",
-      nameEn: "Group Order", descriptionEn: "Throws five ice creams at a target area up to 20 tiles away: one in the center and one in each cardinal direction.",
+      description: "최대 20타일 거리의 중앙과 대각선 네 방향에 아이스크림 5개를 던집니다.",
+      nameEn: "Group Order", descriptionEn: "Throws five ice creams at a target area up to 20 tiles away: one in the center and one in each diagonal direction.",
       castRange: 20, patternRadius: 3.5, chargeRequired: 12,
     },
   },
