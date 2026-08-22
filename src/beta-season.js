@@ -383,6 +383,32 @@ const attackAimBeam = new THREE.Mesh(
 attackAimBeam.rotation.x = -Math.PI / 2;
 attackAimBeam.renderOrder = 0;
 attackAimIndicator.add(attackAimBeam);
+const redAimOutline = new THREE.Mesh(
+  new THREE.PlaneGeometry(1, 1),
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.72,
+    toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+  }),
+);
+redAimOutline.rotation.x = -Math.PI / 2;
+redAimOutline.position.y = -0.006;
+redAimOutline.visible = false;
+attackAimIndicator.add(redAimOutline);
+const redAimArrowShape = new THREE.Shape();
+redAimArrowShape.moveTo(0, 0.42);
+redAimArrowShape.lineTo(-0.32, -0.24);
+redAimArrowShape.lineTo(0.32, -0.24);
+redAimArrowShape.closePath();
+const redAimArrow = new THREE.Mesh(
+  new THREE.ShapeGeometry(redAimArrowShape),
+  new THREE.MeshBasicMaterial({
+    color: 0xf01824, transparent: true, opacity: 0.86,
+    toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+  }),
+);
+redAimArrow.rotation.x = -Math.PI / 2;
+redAimArrow.visible = false;
+attackAimIndicator.add(redAimArrow);
 // 근접(펀치) 캐릭터는 직선 대신 사정거리 원형 가이드를 쓴다
 const attackAimRing = new THREE.Mesh(
   new THREE.RingGeometry(0.92, 1, 48),
@@ -2364,7 +2390,7 @@ function autoAimAtNearestTarget(maxRange) {
 }
 
 // 부채꼴(각도) 스윙·확산 공격 — 실제 사격 각도를 파이 모양으로 보여준다
-const FAN_AIM_CHARACTERS = new Set(["red", "crimson", "purple", "green"]);
+const FAN_AIM_CHARACTERS = new Set(["crimson", "purple", "green"]);
 // 자기 중심 범위(광역) 공격 — 방향과 무관하게 반경만 보여준다
 const AREA_AIM_CHARACTERS = new Set(["pink"]);
 
@@ -2392,15 +2418,51 @@ function getBetaAttackHalfAngle(id, def) {
   return 0;
 }
 
+function getAimDistanceToWall(maxRange) {
+  const directionX = Math.sin(player.rotation.y);
+  const directionZ = Math.cos(player.rotation.y);
+  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  let nearest = maxRange;
+  for (const solid of arenaSolids) {
+    if (solid.top <= player.position.y + 0.5) continue;
+    const minX = solid.x - solid.halfW;
+    const maxX = solid.x + solid.halfW;
+    const minZ = solid.z - solid.halfD;
+    const maxZ = solid.z + solid.halfD;
+    let near = 0;
+    let far = nearest;
+    for (const [origin, direction, min, max] of [
+      [player.position.x, directionX, minX, maxX],
+      [player.position.z, directionZ, minZ, maxZ],
+    ]) {
+      if (Math.abs(direction) < 1e-6) {
+        if (origin < min || origin > max) { near = Infinity; break; }
+        continue;
+      }
+      const first = (min - origin) / direction;
+      const second = (max - origin) / direction;
+      near = Math.max(near, Math.min(first, second));
+      far = Math.min(far, Math.max(first, second));
+      if (near > far) { near = Infinity; break; }
+    }
+    if (near >= 0.05 && near < nearest) nearest = near;
+  }
+  return nearest;
+}
+
 function updateAttackAimIndicator() {
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
-  const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
+  const fullRange = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
+  const isRed = betaState.selectedCharacter === "red";
+  const range = isRed ? getAimDistanceToWall(fullRange) : fullRange;
   const isPurpleVial = betaState.selectedCharacter === "purple" && purpleAttackIndex % 2 === 1;
   const isFan = FAN_AIM_CHARACTERS.has(betaState.selectedCharacter) && !isPurpleVial;
   const isArea = AREA_AIM_CHARACTERS.has(betaState.selectedCharacter);
   attackAimBeam.visible = !isFan && !isArea;
   attackAimRing.visible = isArea || isPurpleVial;
   attackAimFan.visible = isFan;
+  redAimOutline.visible = isRed;
+  redAimArrow.visible = isRed;
   if (isFan) {
     const halfAngle = Math.max(0.01, getBetaAttackHalfAngle(betaState.selectedCharacter, definition));
     attackAimFan.geometry.dispose();
@@ -2419,13 +2481,22 @@ function updateAttackAimIndicator() {
   } else {
     attackAimRing.position.z = 0;
     attackAimRing.material.color.setHex(0xffffff);
-    attackAimBeam.scale.set(0.42, range, 1);
+    const redReady = isRed && redUltimateCharge >= BETA_CHARACTERS.red.ultimate.chargeRequired;
+    const beamWidth = isRed ? (redReady ? 0.38 : 0.24) : 0.42;
+    attackAimBeam.scale.set(beamWidth, range, 1);
     attackAimBeam.position.z = range / 2;
-    attackAimBeam.material.color.setHex(0xffffff);
+    attackAimBeam.material.color.setHex(isRed ? 0xf01824 : 0xffffff);
+    attackAimBeam.material.opacity = isRed ? (redReady ? 0.9 : 0.62) : 0.5;
+    if (isRed) {
+      redAimOutline.scale.set(beamWidth + 0.1, range, 1);
+      redAimOutline.position.z = range / 2;
+      redAimArrow.position.z = Math.max(0.2, range - 0.25);
+      redAimArrow.material.opacity = redReady ? 1 : 0.86;
+    }
   }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isRed ? "red-wall-clipped-line-arrow" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
@@ -4291,6 +4362,7 @@ slowmoButton.addEventListener("click", () => {
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
+  if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   if (redGuardMesh) {
     if (clock.elapsedTime >= redGuardUntil) {
       player.remove(redGuardMesh);
