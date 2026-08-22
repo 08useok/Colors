@@ -409,6 +409,21 @@ const redAimArrow = new THREE.Mesh(
 redAimArrow.rotation.x = -Math.PI / 2;
 redAimArrow.visible = false;
 attackAimIndicator.add(redAimArrow);
+const redAimSideBeams = [-20, 20].map((degrees) => degrees * (Math.PI / 180)).map((angle) => {
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({
+      color: 0xff4a52, transparent: true, opacity: 0.58,
+      toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+    }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.rotation.z = angle;
+  beam.visible = false;
+  beam.userData.aimAngle = angle;
+  attackAimIndicator.add(beam);
+  return beam;
+});
 // 근접(펀치) 캐릭터는 직선 대신 사정거리 원형 가이드를 쓴다
 const attackAimRing = new THREE.Mesh(
   new THREE.RingGeometry(0.92, 1, 48),
@@ -2418,9 +2433,10 @@ function getBetaAttackHalfAngle(id, def) {
   return 0;
 }
 
-function getAimDistanceToWall(maxRange) {
-  const directionX = Math.sin(player.rotation.y);
-  const directionZ = Math.cos(player.rotation.y);
+function getAimDistanceToWall(maxRange, yawOffset = 0) {
+  const aimYaw = player.rotation.y + yawOffset;
+  const directionX = Math.sin(aimYaw);
+  const directionZ = Math.cos(aimYaw);
   const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
   let nearest = maxRange;
   for (const solid of arenaSolids) {
@@ -2463,6 +2479,7 @@ function updateAttackAimIndicator() {
   attackAimFan.visible = isFan;
   redAimOutline.visible = isRed;
   redAimArrow.visible = isRed;
+  for (const sideBeam of redAimSideBeams) sideBeam.visible = isRed;
   if (isFan) {
     const halfAngle = Math.max(0.01, getBetaAttackHalfAngle(betaState.selectedCharacter, definition));
     attackAimFan.geometry.dispose();
@@ -2492,11 +2509,18 @@ function updateAttackAimIndicator() {
       redAimOutline.position.z = range / 2;
       redAimArrow.position.z = Math.max(0.2, range - 0.25);
       redAimArrow.material.opacity = redReady ? 1 : 0.86;
+      for (const sideBeam of redAimSideBeams) {
+        const angle = sideBeam.userData.aimAngle;
+        const sideRange = getAimDistanceToWall(fullRange, angle);
+        sideBeam.scale.set(redReady ? 0.22 : 0.16, sideRange, 1);
+        sideBeam.position.set(Math.sin(angle) * sideRange / 2, 0.004, Math.cos(angle) * sideRange / 2);
+        sideBeam.material.opacity = redReady ? 0.82 : 0.58;
+      }
     }
   }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = isRed ? "red-wall-clipped-line-arrow" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isRed ? "red-three-prong-wall-clipped-arrow" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
