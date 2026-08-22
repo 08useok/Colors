@@ -2375,7 +2375,7 @@ function getBetaAttackRange(id, def) {
   if (id === "orange") return def.bombRange;
   if (id === "yellow") return def.electricRange;
   if (id === "cyan") return def.spreadLineRange;
-  if (id === "purple") return def.needleRange;
+  if (id === "purple") return purpleAttackIndex % 2 === 1 ? def.vialRange : def.needleRange;
   if (id === "pink") return def.healCircleRange * def.abilityRangeMultiplier;
   if (id === "gold") return def.stage1Range;
   if (id === "ivory") return def.iceCreamRange;
@@ -2395,25 +2395,37 @@ function getBetaAttackHalfAngle(id, def) {
 function updateAttackAimIndicator() {
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
   const range = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
-  const isFan = FAN_AIM_CHARACTERS.has(betaState.selectedCharacter);
+  const isPurpleVial = betaState.selectedCharacter === "purple" && purpleAttackIndex % 2 === 1;
+  const isFan = FAN_AIM_CHARACTERS.has(betaState.selectedCharacter) && !isPurpleVial;
   const isArea = AREA_AIM_CHARACTERS.has(betaState.selectedCharacter);
   attackAimBeam.visible = !isFan && !isArea;
-  attackAimRing.visible = isArea;
+  attackAimRing.visible = isArea || isPurpleVial;
   attackAimFan.visible = isFan;
   if (isFan) {
     const halfAngle = Math.max(0.01, getBetaAttackHalfAngle(betaState.selectedCharacter, definition));
     attackAimFan.geometry.dispose();
     attackAimFan.geometry = new THREE.ShapeGeometry(buildFanShape(halfAngle, range));
   } else if (isArea) {
+    attackAimRing.position.z = 0;
+    attackAimRing.material.color.setHex(0xffffff);
     attackAimRing.scale.setScalar(range);
+  } else if (isPurpleVial) {
+    attackAimBeam.scale.set(0.28, range, 1);
+    attackAimBeam.position.z = range / 2;
+    attackAimBeam.material.color.setHex(0xc04cff);
+    attackAimRing.position.z = range;
+    attackAimRing.scale.setScalar(definition.vialSplashRadius);
+    attackAimRing.material.color.setHex(0xc04cff);
   } else {
+    attackAimRing.position.z = 0;
+    attackAimRing.material.color.setHex(0xffffff);
     attackAimBeam.scale.set(0.42, range, 1);
     attackAimBeam.position.z = range / 2;
     attackAimBeam.material.color.setHex(0xffffff);
   }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = isFan ? "white-fan-wedge" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
@@ -2760,6 +2772,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
       }
     }
     attackComboState.textContent = vial ? "독 약병" : "독침";
+    updateAttackAimIndicator();
   } else if (id === "pink") {
     // 베타 테스트 페이지엔 실제 게임의 로테이션 능력(껐다 켰다) 시스템이 없어서
     // abilityRangeMultiplier를 조건부로 걸 스위치가 없다 — 테스트 편의상 항상 적용.
