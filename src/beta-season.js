@@ -418,7 +418,7 @@ const redAimSideBeams = [-20, 20].map((degrees) => degrees * (Math.PI / 180)).ma
     }),
   );
   beam.rotation.x = -Math.PI / 2;
-  beam.rotation.z = angle;
+  beam.rotation.z = -angle;
   beam.visible = false;
   beam.userData.aimAngle = angle;
   attackAimIndicator.add(beam);
@@ -2474,10 +2474,10 @@ function updateAttackAimIndicator() {
   const isPurpleVial = betaState.selectedCharacter === "purple" && purpleAttackIndex % 2 === 1;
   const isFan = FAN_AIM_CHARACTERS.has(betaState.selectedCharacter) && !isPurpleVial;
   const isArea = AREA_AIM_CHARACTERS.has(betaState.selectedCharacter);
-  attackAimBeam.visible = !isFan && !isArea;
+  attackAimBeam.visible = !isFan && !isArea && !isRed;
   attackAimRing.visible = isArea || isPurpleVial;
   attackAimFan.visible = isFan;
-  redAimOutline.visible = isRed;
+  redAimOutline.visible = false;
   redAimArrow.visible = isRed;
   for (const sideBeam of redAimSideBeams) sideBeam.visible = isRed;
   if (isFan) {
@@ -2505,8 +2505,6 @@ function updateAttackAimIndicator() {
     attackAimBeam.material.color.setHex(isRed ? 0xf01824 : 0xffffff);
     attackAimBeam.material.opacity = isRed ? (redReady ? 0.9 : 0.62) : 0.5;
     if (isRed) {
-      redAimOutline.scale.set(beamWidth + 0.1, range, 1);
-      redAimOutline.position.z = range / 2;
       redAimArrow.position.z = Math.max(0.2, range - 0.25);
       redAimArrow.material.opacity = redReady ? 1 : 0.86;
       for (const sideBeam of redAimSideBeams) {
@@ -2520,7 +2518,7 @@ function updateAttackAimIndicator() {
   }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = isRed ? "red-three-prong-wall-clipped-arrow" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isRed ? "red-inward-two-prong-wall-clipped-arrow" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
