@@ -4443,6 +4443,17 @@ function animate() {
           target.userData.slowMultiplier = 1 - yellow.shockSlowPercent;
           createChartreuseStatusEffect("slow", target, yellow.shockDuration);
         }
+        if (projectile.characterId === "purple" && projectile.type === "needle") {
+          const purple = BETA_CHARACTERS.purple;
+          const poisonWasInactive = !target.userData.poisonUntil || target.userData.poisonUntil <= clock.elapsedTime;
+          target.userData.poisonUntil = clock.elapsedTime + purple.poisonDuration;
+          target.userData.poisonDamage = purple.poisonDPS;
+          if (poisonWasInactive || !target.userData.poisonNextTick) {
+            target.userData.poisonNextTick = clock.elapsedTime + 1;
+          }
+          createChartreuseStatusEffect("poison", target, purple.poisonDuration);
+          canvas.dataset.lastPurplePoison = `damage:${purple.poisonDPS},duration:${purple.poisonDuration}`;
+        }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
@@ -4463,6 +4474,7 @@ function animate() {
             if (cc === "poison") {
               target.userData.poisonUntil = clock.elapsedTime + 3;
               target.userData.poisonNextTick = clock.elapsedTime;
+              target.userData.poisonDamage = 180;
             }
             if (cc === "knockback") {
               const pushX = target.position.x - player.position.x;
@@ -4716,7 +4728,7 @@ function animate() {
     }
     if (target.visible && target.userData.health > 0) target.userData.respawnAt = 0;
     if (target.visible && target.userData.poisonUntil > clock.elapsedTime && clock.elapsedTime >= (target.userData.poisonNextTick ?? 0)) {
-      const poisonDamage = 180;
+      const poisonDamage = target.userData.poisonDamage ?? 180;
       target.userData.health = Math.max(0, target.userData.health - poisonDamage);
       target.userData.poisonNextTick = clock.elapsedTime + 1;
       createDamagePopup(target.position, poisonDamage, "#9acd32", "독 ");
