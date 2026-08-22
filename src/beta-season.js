@@ -2690,7 +2690,7 @@ function createRedGloveEffect(angle = 0) {
 }
 
 // 독병 포물선의 최고 높이. 벽을 넘길 수 있을 만큼 띄운다.
-const VIAL_ARC_HEIGHT = 3.4;
+const VIAL_ARC_HEIGHT = 6.8;
 
 // 독병이 착지해 깨질 때 — 주변 적에게 광역 피해
 function breakVial(projectile) {
@@ -4397,7 +4397,8 @@ function animate() {
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
     }
-    if (!remove && projectile.type !== "ivoryIceCream") {
+    // 독병은 공중 경로에서 직접 충돌하지 않고 착지 폭발로만 피해를 준다.
+    if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial") {
       for (const target of testTargets) {
         if (!target.visible || target.userData.isAlly || projectile.hit.has(target)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
