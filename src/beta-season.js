@@ -252,10 +252,10 @@ box(0, 2.55, -4.2, 2.2 * 2.25, 2.1, 0.55, stoneMaterial, true, true);
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
 scene.add(iceCreamShowdownMap);
-const ivoryTileMaterial = new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.9 });
-const skyTileMaterial = new THREE.MeshStandardMaterial({ color: 0x93def1, roughness: 0.84 });
-const iceWallMaterial = new THREE.MeshStandardMaterial({ color: 0xfff2c9, emissive: 0x92d9e7, emissiveIntensity: 0.08, roughness: 0.72 });
-function showdownBox(x, y, z, width, height, depth, material = iceWallMaterial, solid = true) {
+const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: 0x252b30, roughness: 0.94 });
+const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: 0x444d54, roughness: 0.9 });
+const cityWallMaterial = new THREE.MeshStandardMaterial({ color: 0x65717a, roughness: 0.82 });
+function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial, solid = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
   mesh.castShadow = true;
@@ -266,19 +266,13 @@ function showdownBox(x, y, z, width, height, depth, material = iceWallMaterial, 
 }
 for (let x = -4; x < 4; x += 1) {
   for (let z = -4; z < 4; z += 1) {
-    showdownBox(x * 5 + 2.5, 1.5, z * 5 + 2.5, 5, 0.12, 5, (x + z) % 2 ? skyTileMaterial : ivoryTileMaterial, false);
+    showdownBox(x * 5 + 2.5, 1.5, z * 5 + 2.5, 5, 0.12, 5, (x + z) % 2 ? asphaltTileMaterial : concreteTileMaterial, false);
   }
 }
 showdownSolids.push({ x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: iceCreamShowdownMap });
 for (const [x, z, w, d] of [[0,-20,40,1], [0,20,40,1], [-20,0,1,40], [20,0,1,40], [-8,-7,7,2], [8,7,7,2], [-8,8,2,7], [8,-8,2,7], [0,0,5,2]]) {
   showdownBox(x, 2.55, z, w, 2, d);
 }
-for (const [x, z, color] of [[-14,-14,0xff9fcf], [14,-14,0xb8edff], [-14,14,0xc7f29b], [14,14,0xffd38e]]) {
-  const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
-  scoop.position.set(x, 3.25, z);
-  iceCreamShowdownMap.add(scoop);
-}
-
 const testTargets = [];
 function createTestTarget(x, z, { ally = false } = {}) {
   const target = new THREE.Group();
