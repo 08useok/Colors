@@ -1,12 +1,31 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.11";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.13";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
+const beta4Bgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1");
+beta4Bgm.loop = true;
+beta4Bgm.volume = 0.45;
+beta4Bgm.preload = "auto";
+let beta4MusicStarted = false;
+
+function startBeta4Music() {
+  beta4MusicStarted = true;
+  beta4Bgm.play().catch(() => {});
+  window.removeEventListener("pointerdown", startBeta4Music, true);
+  window.removeEventListener("keydown", startBeta4Music, true);
+}
+
+window.addEventListener("pointerdown", startBeta4Music, { once: true, capture: true });
+window.addEventListener("keydown", startBeta4Music, { once: true, capture: true });
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) beta4Bgm.pause();
+  else if (beta4MusicStarted) beta4Bgm.play().catch(() => {});
+});
 const galeStrikeTexture = new THREE.TextureLoader().load("./assets/vfx/gale-strike.png");
 galeStrikeTexture.colorSpace = THREE.SRGBColorSpace;
 // 원본 PNG의 실제 바람은 Y=416~471px에만 있다. 투명 여백을 제외하고 바람 부분만 확대한다.
@@ -227,9 +246,8 @@ for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[-
   box(x, 5.5, z, w, 3, d, stoneMaterial);
 }
 
-// 크림슨 궁극기의 벽 파괴를 확인하는 중앙 시험 벽
-box(-1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
-box(1.35, 2.55, -4.2, 2.2, 2.1, 0.55, stoneMaterial, true, true);
+// 첫 스폰 앞 시험 벽: 두 조각을 하나로 정리하고 기존 한 조각의 2.25배 길이로 확장한다.
+box(0, 2.55, -4.2, 2.2 * 2.25, 2.1, 0.55, stoneMaterial, true, true);
 
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
@@ -383,47 +401,36 @@ const attackAimBeam = new THREE.Mesh(
 attackAimBeam.rotation.x = -Math.PI / 2;
 attackAimBeam.renderOrder = 0;
 attackAimIndicator.add(attackAimBeam);
-const redAimOutline = new THREE.Mesh(
-  new THREE.PlaneGeometry(1, 1),
-  new THREE.MeshBasicMaterial({
-    color: 0xffffff, transparent: true, opacity: 0.72,
-    toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
-  }),
-);
-redAimOutline.rotation.x = -Math.PI / 2;
-redAimOutline.position.y = -0.006;
-redAimOutline.visible = false;
-attackAimIndicator.add(redAimOutline);
-const redAimArrowShape = new THREE.Shape();
-redAimArrowShape.moveTo(0, 0.42);
-redAimArrowShape.lineTo(-0.32, -0.24);
-redAimArrowShape.lineTo(0.32, -0.24);
-redAimArrowShape.closePath();
-const redAimArrow = new THREE.Mesh(
-  new THREE.ShapeGeometry(redAimArrowShape),
-  new THREE.MeshBasicMaterial({
-    color: 0xf01824, transparent: true, opacity: 0.86,
-    toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
-  }),
-);
-redAimArrow.rotation.x = -Math.PI / 2;
-redAimArrow.visible = false;
-attackAimIndicator.add(redAimArrow);
 const redAimSideBeams = [-20, 20].map((degrees) => degrees * (Math.PI / 180)).map((angle) => {
   const beam = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
+    new THREE.BufferGeometry(),
     new THREE.MeshBasicMaterial({
-      color: 0xff4a52, transparent: true, opacity: 0.58,
+      color: 0xffffff, transparent: true, opacity: 0.58,
       toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
     }),
   );
-  beam.rotation.x = -Math.PI / 2;
-  beam.rotation.z = -angle;
+  beam.position.y = 0.004;
   beam.visible = false;
   beam.userData.aimAngle = angle;
   attackAimIndicator.add(beam);
   return beam;
 });
+function updateRedAimSideBeam(beam, endpoint, width) {
+  const { startX, startZ, endX, endZ } = endpoint;
+  const deltaX = endX - startX;
+  const deltaZ = endZ - startZ;
+  const length = Math.max(0.001, Math.hypot(deltaX, deltaZ));
+  const sideX = deltaZ / length * width / 2;
+  const sideZ = -deltaX / length * width / 2;
+  beam.geometry.setAttribute("position", new THREE.Float32BufferAttribute([
+    startX - sideX, 0, startZ - sideZ,
+    startX + sideX, 0, startZ + sideZ,
+    endX + sideX, 0, endZ + sideZ,
+    endX - sideX, 0, endZ - sideZ,
+  ], 3));
+  beam.geometry.setIndex([0, 1, 2, 0, 2, 3]);
+  beam.geometry.computeBoundingSphere();
+}
 // 근접(펀치) 캐릭터는 직선 대신 사정거리 원형 가이드를 쓴다
 const attackAimRing = new THREE.Mesh(
   new THREE.RingGeometry(0.92, 1, 48),
@@ -2005,20 +2012,15 @@ function createPurpleVialMesh() {
 function createRedGuardShield() {
   const group = new THREE.Group();
   const fill = new THREE.Mesh(
-    new THREE.SphereGeometry(1.5, 20, 14),
+    new THREE.SphereGeometry(1.75, 20, 14),
     new THREE.MeshBasicMaterial({ color: 0xffd34e, transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide }),
   );
-  const shellGeo = new THREE.IcosahedronGeometry(1.55, 1);
+  const shellGeo = new THREE.IcosahedronGeometry(1.8, 1);
   const shell = new THREE.Mesh(
     shellGeo,
     new THREE.MeshBasicMaterial({ color: 0xffe487, wireframe: true, transparent: true, opacity: 0.55, depthWrite: false }),
   );
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(1.58, 0.03, 8, 48),
-    new THREE.MeshBasicMaterial({ color: 0xfff2c4, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending }),
-  );
-  ring.rotation.x = Math.PI / 2;
-  group.add(fill, shell, ring);
+  group.add(fill, shell);
   return group;
 }
 
@@ -2352,6 +2354,7 @@ function applyGoldProjectileHit(projectile, target) {
 
 // 레드 일자 공격의 폭. 판정과 이펙트가 같은 값을 쓴다.
 const RED_BASE_ATTACK_WIDTH = 1.7;
+const RED_AIM_HORIZONTAL_WIDTH = 3.4;
 
 // X자를 이루는 두 타격의 기울기. 본 게임 레드의 이펙트 각도와 같다.
 const RED_SLASH_ANGLES = [-20, 20].map((deg) => deg * (Math.PI / 180));
@@ -2466,6 +2469,50 @@ function getAimDistanceToWall(maxRange, yawOffset = 0) {
   return nearest;
 }
 
+function getRedAimEndpoint(maxRange, sideSign, attackWidth) {
+  const halfWidth = attackWidth / 2;
+  const startX = sideSign * halfWidth;
+  const startZ = 0.28;
+  const targetX = -sideSign * halfWidth;
+  const targetZ = maxRange;
+  const localDeltaX = targetX - startX;
+  const localDeltaZ = targetZ - startZ;
+  const fullLength = Math.hypot(localDeltaX, localDeltaZ);
+  const yaw = player.rotation.y;
+  const worldStartX = player.position.x + startX * Math.cos(yaw) + startZ * Math.sin(yaw);
+  const worldStartZ = player.position.z - startX * Math.sin(yaw) + startZ * Math.cos(yaw);
+  const worldDirectionX = (localDeltaX * Math.cos(yaw) + localDeltaZ * Math.sin(yaw)) / fullLength;
+  const worldDirectionZ = (-localDeltaX * Math.sin(yaw) + localDeltaZ * Math.cos(yaw)) / fullLength;
+  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  let visibleLength = fullLength;
+  for (const solid of arenaSolids) {
+    if (solid.top <= player.position.y + 0.5) continue;
+    let near = 0;
+    let far = visibleLength;
+    for (const [origin, direction, min, max] of [
+      [worldStartX, worldDirectionX, solid.x - solid.halfW, solid.x + solid.halfW],
+      [worldStartZ, worldDirectionZ, solid.z - solid.halfD, solid.z + solid.halfD],
+    ]) {
+      if (Math.abs(direction) < 1e-6) {
+        if (origin < min || origin > max) { near = Infinity; break; }
+        continue;
+      }
+      const first = (min - origin) / direction;
+      const second = (max - origin) / direction;
+      near = Math.max(near, Math.min(first, second));
+      far = Math.min(far, Math.max(first, second));
+      if (near > far) { near = Infinity; break; }
+    }
+    if (near >= 0.05 && near < visibleLength) visibleLength = near;
+  }
+  const ratio = visibleLength / fullLength;
+  return {
+    startX, startZ,
+    endX: startX + localDeltaX * ratio,
+    endZ: startZ + localDeltaZ * ratio,
+  };
+}
+
 function updateAttackAimIndicator() {
   const definition = BETA_CHARACTERS[betaState.selectedCharacter];
   const fullRange = Math.max(0.5, getBetaAttackRange(betaState.selectedCharacter, definition));
@@ -2477,8 +2524,6 @@ function updateAttackAimIndicator() {
   attackAimBeam.visible = !isFan && !isArea && !isRed;
   attackAimRing.visible = isArea || isPurpleVial;
   attackAimFan.visible = isFan;
-  redAimOutline.visible = false;
-  redAimArrow.visible = isRed;
   for (const sideBeam of redAimSideBeams) sideBeam.visible = isRed;
   if (isFan) {
     const halfAngle = Math.max(0.01, getBetaAttackHalfAngle(betaState.selectedCharacter, definition));
@@ -2491,10 +2536,10 @@ function updateAttackAimIndicator() {
   } else if (isPurpleVial) {
     attackAimBeam.scale.set(0.28, range, 1);
     attackAimBeam.position.z = range / 2;
-    attackAimBeam.material.color.setHex(0xc04cff);
+    attackAimBeam.material.color.setHex(0xffffff);
     attackAimRing.position.z = range;
     attackAimRing.scale.setScalar(definition.vialSplashRadius);
-    attackAimRing.material.color.setHex(0xc04cff);
+    attackAimRing.material.color.setHex(0xffffff);
   } else {
     attackAimRing.position.z = 0;
     attackAimRing.material.color.setHex(0xffffff);
@@ -2502,23 +2547,23 @@ function updateAttackAimIndicator() {
     const beamWidth = isRed ? (redReady ? 0.38 : 0.24) : 0.42;
     attackAimBeam.scale.set(beamWidth, range, 1);
     attackAimBeam.position.z = range / 2;
-    attackAimBeam.material.color.setHex(isRed ? 0xf01824 : 0xffffff);
+    attackAimBeam.material.color.setHex(0xffffff);
     attackAimBeam.material.opacity = isRed ? (redReady ? 0.9 : 0.62) : 0.5;
     if (isRed) {
-      redAimArrow.position.z = Math.max(0.2, range - 0.25);
-      redAimArrow.material.opacity = redReady ? 1 : 0.86;
+      const redAimHorizontalWidth = RED_AIM_HORIZONTAL_WIDTH;
+      // X자의 각 획 굵기는 실제 레드 공격 판정 너비와 동일하게 표시한다.
+      const redAimStrokeWidth = RED_BASE_ATTACK_WIDTH * definition.attackWidthMultiplier;
       for (const sideBeam of redAimSideBeams) {
-        const angle = sideBeam.userData.aimAngle;
-        const sideRange = getAimDistanceToWall(fullRange, angle);
-        sideBeam.scale.set(redReady ? 0.22 : 0.16, sideRange, 1);
-        sideBeam.position.set(Math.sin(angle) * sideRange / 2, 0.004, Math.cos(angle) * sideRange / 2);
+        const sideSign = Math.sign(sideBeam.userData.aimAngle);
+        const endpoint = getRedAimEndpoint(fullRange, sideSign, redAimHorizontalWidth);
+        updateRedAimSideBeam(sideBeam, endpoint, redAimStrokeWidth);
         sideBeam.material.opacity = redReady ? 0.82 : 0.58;
       }
     }
   }
   attackAimIndicator.visible = true;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = isRed ? "red-inward-two-prong-wall-clipped-arrow" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isRed ? "red-x-shaped-attack-width-wall-clipped" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
