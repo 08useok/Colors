@@ -1867,8 +1867,8 @@ body.lobby-active #takedown-hud {
   .sidebar-profile-card,
   .stats-panel,
   .leaderboard-panel,
-  .matchup-table,
-  .patchnotes {
+  .lobby-side-panel .matchup-table,
+  .lobby-side-panel .patchnotes {
     display: none;
   }
 
@@ -2113,6 +2113,7 @@ body.lobby-active #takedown-hud {
   pointer-events: auto;
 }
 
+.patchnotes-dock #matchup-toggle,
 .patchnotes-dock #patchnotes-toggle,
 .patchnotes-dock .notice-toggle {
   min-width: 108px;
@@ -2142,6 +2143,23 @@ body.lobby-active #takedown-hud {
   border: 1px solid rgba(255, 215, 112, 0.42);
   border-radius: 14px;
   background: linear-gradient(155deg, rgba(63, 39, 14, 0.98), rgba(21, 13, 8, 0.98));
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.48);
+}
+
+.patchnotes-dock #matchup-toggle {
+  color: #d7efff;
+  border-color: rgba(112, 196, 255, 0.58);
+  background: linear-gradient(135deg, rgba(24, 67, 91, 0.97), rgba(10, 31, 46, 0.97));
+}
+
+.patchnotes-dock .matchup-table {
+  box-sizing: border-box;
+  width: 100%;
+  max-height: min(720px, calc(100vh - 110px));
+  padding: 14px;
+  overflow: auto;
+  border-color: rgba(112, 196, 255, 0.42);
+  background: linear-gradient(155deg, rgba(20, 54, 75, 0.98), rgba(9, 24, 35, 0.98));
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.48);
 }
 

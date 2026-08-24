@@ -120,7 +120,11 @@ const noticeToggle = document.getElementById("notice-toggle");
 const noticePanel = document.getElementById("notice-panel");
 const patchnotesToggle = document.getElementById("patchnotes-toggle");
 const patchnotesPanel = document.getElementById("patchnotes");
+const matchupToggle = document.getElementById("matchup-toggle");
+const matchupPanel = document.getElementById("matchup-table");
+lobbyDockActions.prepend(matchupToggle);
 lobbyDockActions.append(patchnotesToggle);
+patchnotesDock.append(matchupPanel);
 patchnotesDock.append(patchnotesPanel);
 const lobbyTrophies = document.getElementById("lobby-trophies");
 const lobbyRecord = document.getElementById("lobby-record");
@@ -12205,16 +12209,20 @@ function setupInput() {
     }
   });
 
-  document.getElementById("matchup-toggle").addEventListener("click", () => {
-    const table = document.getElementById("matchup-table");
-    const btn = document.getElementById("matchup-toggle");
-    table.classList.toggle("hidden");
-    btn.textContent = table.classList.contains("hidden") ? t("matchupBtn") : t("matchupBtnClose");
+  matchupToggle.addEventListener("click", () => {
+    noticePanel.classList.add("hidden");
+    noticeToggle.textContent = "📢 공지";
+    patchnotesPanel.classList.add("hidden");
+    patchnotesToggle.textContent = t("patchnotesBtn");
+    matchupPanel.classList.toggle("hidden");
+    matchupToggle.textContent = matchupPanel.classList.contains("hidden") ? t("matchupBtn") : t("matchupBtnClose");
   });
 
   patchnotesToggle.addEventListener("click", () => {
     noticePanel.classList.add("hidden");
     noticeToggle.textContent = "📢 공지";
+    matchupPanel.classList.add("hidden");
+    matchupToggle.textContent = t("matchupBtn");
     patchnotesPanel.classList.toggle("hidden");
     patchnotesToggle.textContent = patchnotesPanel.classList.contains("hidden") ? t("patchnotesBtn") : t("patchnotesBtnClose");
   });
@@ -12222,6 +12230,8 @@ function setupInput() {
   noticeToggle.addEventListener("click", () => {
     patchnotesPanel.classList.add("hidden");
     patchnotesToggle.textContent = t("patchnotesBtn");
+    matchupPanel.classList.add("hidden");
+    matchupToggle.textContent = t("matchupBtn");
     noticePanel.classList.toggle("hidden");
     noticeToggle.textContent = noticePanel.classList.contains("hidden") ? "📢 공지" : "닫기";
   });
