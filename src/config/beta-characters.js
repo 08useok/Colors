@@ -220,9 +220,9 @@ export const BETA_CHARACTERS = {
     },
     special: {
       id: "iceCreamField", name: "아이스크림 장판",
-      description: "지정한 위치에 6초 동안 반경 3타일의 얼음 장판을 생성합니다. 적은 미끄러지고 1초마다 얼음 수치가 20 누적됩니다.",
-      nameEn: "Ice Cream Field", descriptionEn: "Creates a 3-tile ice field for 6 seconds. Enemies slide and gain 20 ice each second.",
-      castRange: 10, radius: 3, duration: 6, icePerSecond: 20, cooldown: 8, slideStrength: 3.2,
+      description: "지정한 위치에 10초 동안 반경 9타일의 얼음 장판을 생성합니다. 적은 미끄러지고 매초 300 피해와 얼음 수치 5%를 받습니다.",
+      nameEn: "Ice Cream Field", descriptionEn: "Creates a 9-tile ice field for 10 seconds. Enemies slide and take 300 damage plus 5% ice each second.",
+      castRange: 10, radius: 9, duration: 10, icePerSecond: 5, damagePerSecond: 300, cooldown: 8, slideStrength: 3.2,
     },
   },
 };
