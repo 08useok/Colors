@@ -2131,8 +2131,12 @@ body.lobby-active #takedown-hud {
 
 .lobby-notice {
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  max-height: min(720px, calc(100vh - 110px));
   padding: 20px;
+  overflow: hidden;
   color: #fff4df;
   text-align: left;
   border: 1px solid rgba(255, 215, 112, 0.42);
@@ -2140,6 +2144,19 @@ body.lobby-active #takedown-hud {
   background: linear-gradient(155deg, rgba(63, 39, 14, 0.98), rgba(21, 13, 8, 0.98));
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.48);
 }
+
+.notice-content {
+  min-height: 0;
+  padding-right: 8px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 214, 110, 0.72) rgba(255, 255, 255, 0.08);
+}
+
+.notice-content::-webkit-scrollbar { width: 8px; }
+.notice-content::-webkit-scrollbar-track { border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+.notice-content::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(255, 214, 110, 0.72); }
 
 .notice-tabs {
   display: flex;
