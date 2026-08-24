@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.147";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.180";
+import { CHARACTERS } from "./config/characters.js?v=1.5.181";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -33,7 +33,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = CURRENT_SEASON === "beta3"
+  const seasonLabel = CURRENT_SEASON === "beta4"
+    ? (currentLang === "ko" ? "베타 시즌 4" : "Beta Season 4")
+    : CURRENT_SEASON === "beta3"
     ? (currentLang === "ko" ? "베타 시즌 3" : "Beta Season 3")
     : CURRENT_SEASON === "beta2"
     ? (currentLang === "ko" ? "베타 시즌 2" : "Beta Season 2")
@@ -152,11 +154,14 @@ const betaLobbyBgm = new Audio("./assets/beta-lobby-bgm.mp3");
 betaLobbyBgm.loop = true;
 const beta2LobbyBgm = new Audio("./assets/beta2-lobby-bgm.mp3?v=1.5.2");
 beta2LobbyBgm.loop = true;
+const beta4LobbyBgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1.5.4");
+beta4LobbyBgm.loop = true;
 
 function pauseLobbyBgm() {
   lobbyBgm.pause();
   betaLobbyBgm.pause();
   beta2LobbyBgm.pause();
+  beta4LobbyBgm.pause();
 }
 
 function stopAllBgm() {
@@ -169,8 +174,8 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  const activeLobbyBgm = CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
-  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
+  const activeLobbyBgm = CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
   activeLobbyBgm.volume = 0.45;
   activeLobbyBgm.play().catch(() => {});
 }
@@ -300,8 +305,11 @@ const BETA_SEASON_2_START_AT = new Date("2026-08-03T00:00:00+09:00").getTime();
 // v1.5.3은 2026-08-10 16:00 KST에 예약 오픈된다.
 const BETA_SEASON_2_END_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
 const BETA_SEASON_3_START_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_3_START_AT
+const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_4_START_AT
+  ? "beta4"
+  : Date.now() >= BETA_SEASON_3_START_AT
   ? "beta3"
   : Date.now() >= BETA_SEASON_2_START_AT && Date.now() < BETA_SEASON_2_END_AT
   ? "beta2"
@@ -318,18 +326,19 @@ const SEASONS = {
   beta1: "베타 시즌 1",
   beta2: "베타 시즌 2",
   beta3: "베타 시즌 3",
+  beta4: "베타 시즌 4",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set(["green", "cyan", "crimson", "gold", "ivory", "pink"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "legendary",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
@@ -338,7 +347,7 @@ const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan",
 const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
 const ROSTER = ["beta2", "beta3", "beta4"].includes(CURRENT_SEASON)
-  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory"]
+  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(CURRENT_SEASON === "beta4" ? ["chartreuse"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function getCharacterPrice(charKey) {
@@ -4554,6 +4563,10 @@ function makeFighter(options) {
     crimsonUltimateCharge: 0,
     goldUltimateCharge: 0,
     pinkUltimateCharge: 0,
+    chartreuseUltimateCharge: 0,
+    chartreuseFocusedUntil: 0,
+    redGuardUntil: 0,
+    redGuardMesh: null,
     revivePendingUntil: 0,
     reviveAt: 0,
     reviveHealthRatio: 0.4,
@@ -4984,10 +4997,10 @@ function refreshLoadedCyanTemplateModels() {
 function createShowdownThemeMap() {
   showdownMapGroup.clear();
   state.showdownSolids = [];
-  const ivory = new THREE.MeshStandardMaterial({ color: 0xfff8dc, roughness: 0.9 });
-  const sky = new THREE.MeshStandardMaterial({ color: 0x93def1, roughness: 0.84 });
-  const iceWall = new THREE.MeshStandardMaterial({ color: 0x667f8d, emissive: 0x274d59, emissiveIntensity: 0.12, roughness: 0.78 });
-  const iceWallTop = new THREE.MeshStandardMaterial({ color: 0xa8dce6, emissive: 0x4d8e9e, emissiveIntensity: 0.1, roughness: 0.62 });
+  const ivory = new THREE.MeshStandardMaterial({ color: 0x252b30, roughness: 0.94 });
+  const sky = new THREE.MeshStandardMaterial({ color: 0x444d54, roughness: 0.9 });
+  const iceWall = new THREE.MeshStandardMaterial({ color: 0x65717a, emissive: 0x26323a, emissiveIntensity: 0.08, roughness: 0.82 });
+  const iceWallTop = new THREE.MeshStandardMaterial({ color: 0x8b969e, emissive: 0x39464f, emissiveIntensity: 0.06, roughness: 0.72 });
   const tile = (x, z, material) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), material);
     mesh.position.set(x, 0.06, z);
@@ -5025,12 +5038,6 @@ function createShowdownThemeMap() {
     });
   };
   [[0,-40,80,1],[0,40,80,1],[-40,0,1,80],[40,0,1,80],[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach((spec) => wall(...spec));
-  [[-35,-35,0xff9fcf],[35,-35,0xb8edff],[-35,35,0xc7f29b],[35,35,0xffd38e]].forEach(([x,z,color]) => {
-    const scoop = new THREE.Mesh(new THREE.SphereGeometry(1.2, 18, 12), new THREE.MeshStandardMaterial({ color, roughness: 0.68 }));
-    scoop.position.set(x, 3.25, z);
-    scoop.castShadow = true;
-    showdownMapGroup.add(scoop);
-  });
 }
 
 function createTrainingMap() {
@@ -8161,6 +8168,9 @@ function beginAttackCore(fighter) {
   if (fighter.characterType === "ivory") {
     return beginIvoryAttack(fighter);
   }
+  if (fighter.characterType === "chartreuse") {
+    return beginChartreuseAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -8225,6 +8235,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "pink") baseRange = CHARACTERS.pink.healCircleRange;
   else if (fighter.characterType === "crimson") baseRange = CHARACTERS.crimson.attackRange;
   else if (fighter.characterType === "gold") baseRange = CHARACTERS.gold.stage1Range;
+  else if (fighter.characterType === "chartreuse") baseRange = CHARACTERS.chartreuse.chartreuseRange;
   return baseRange;
 }
 
@@ -8890,21 +8901,72 @@ function tryUseRedUltimate(fighter = getPlayer()) {
   const ultimate = CHARACTERS.red.ultimate;
   if ((fighter.redUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
   fighter.redUltimateCharge = 0;
-  const yaw = fighter.yaw;
-  const cosYaw = Math.cos(yaw), sinYaw = Math.sin(yaw);
-  for (const target of state.players) {
-    if (target.dead || target.id === fighter.id) continue;
-    const dx = target.mesh.position.x - fighter.mesh.position.x;
-    const dz = target.mesh.position.z - fighter.mesh.position.z;
-    const localX = dx * cosYaw - dz * sinYaw;
-    const localZ = dx * sinYaw + dz * cosYaw;
-    if (localZ < 0 || localZ > ultimate.range || Math.abs(localX) > ultimate.width) continue;
-    applyDamage(target, ultimate.damage, fighter);
-    target.galeKnockbackRemaining = ultimate.knockback;
-    target.galeKnockbackX = sinYaw;
-    target.galeKnockbackZ = cosYaw;
+  fighter.redGuardUntil = state.gameTime + ultimate.duration;
+  if (!fighter.redGuardMesh) {
+    fighter.redGuardMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1.45, 24, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, depthWrite: false, side: THREE.DoubleSide }),
+    );
+    fighter.redGuardMesh.position.y = 0.05;
+    fighter.mesh.add(fighter.redGuardMesh);
   }
-  createCrimsonPunchEffect(fighter, yaw, ultimate.range * 0.65);
+  fighter.redGuardMesh.visible = true;
+  return true;
+}
+
+function rollChartreuseAmmo(fighter) {
+  const focused = (fighter.chartreuseFocusedUntil ?? 0) > state.gameTime;
+  const roll = Math.random();
+  if (focused) return roll < 1 / 3 ? "enhanced" : roll < 2 / 3 ? "cc" : "plague";
+  if (roll < 0.45) return "enhanced";
+  if (roll < 0.9) return "cc";
+  if (roll < 0.95) return "plague";
+  return "blank";
+}
+
+function beginChartreuseAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.chartreuse;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = fighter.nextAttackAt;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.lastCombatTime = state.gameTime;
+  const ammoType = rollChartreuseAmmo(fighter);
+  if (ammoType === "blank") {
+    createAttackEffect(fighter, 0);
+    return true;
+  }
+  const yaw = fighter.yaw;
+  const colors = { enhanced: 0x7fff00, cc: 0x55ccff, plague: 0x151018 };
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(ammoType === "plague" ? 0.24 : 0.19, 10, 8),
+    new THREE.MeshBasicMaterial({ color: colors[ammoType] }),
+  );
+  mesh.position.set(fighter.mesh.position.x + Math.sin(yaw) * 0.9, 1.3, fighter.mesh.position.z + Math.cos(yaw) * 0.9);
+  scene.add(mesh);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: mesh.position.x, z: mesh.position.z,
+    vx: Math.sin(yaw) * charDef.chartreuseSpeed,
+    vz: Math.cos(yaw) * charDef.chartreuseSpeed,
+    damage: ammoType === "enhanced" ? charDef.chartreuseEnhancedDamage : charDef.chartreuseDamage,
+    range: charDef.chartreuseRange,
+    farThreshold: Infinity, farMultiplier: 1, distTraveled: 0,
+    launchAt: state.gameTime, mesh, projRadius: 0.22,
+    isChartreuse: true, chartreuseAmmoType: ammoType,
+  });
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
+function tryUseChartreuseUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "chartreuse" || !state.running) return false;
+  const ultimate = CHARACTERS.chartreuse.ultimate;
+  if ((fighter.chartreuseUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.chartreuseUltimateCharge = 0;
+  fighter.chartreuseFocusedUntil = state.gameTime + ultimate.duration;
   return true;
 }
 
@@ -8917,6 +8979,7 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (fighter.characterType === "crimson") return tryUseCrimsonUltimate(fighter);
   if (fighter.characterType === "gold") return tryUseGoldUltimate(fighter);
   if (fighter.characterType === "pink") return tryUsePinkUltimate(fighter);
+  if (fighter.characterType === "chartreuse") return tryUseChartreuseUltimate(fighter);
   return tryUseCyanUltimate(fighter);
 }
 
@@ -9247,7 +9310,7 @@ function updateProjectiles(dt) {
         continue;
       }
     } else {
-      const projectileY = proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle) ? 1.3 : 1.2;
+      const projectileY = proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle || proj.isChartreuse) ? 1.3 : 1.2;
       proj.mesh.position.set(proj.x, projectileY, proj.z);
       if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle && !proj.isGaleStrike) {
         proj.mesh.rotation.z += dt * 10;
@@ -9356,6 +9419,7 @@ function updateProjectiles(dt) {
         }
         const isFar = proj.distTraveled > proj.farThreshold;
         let dmg = isFar ? proj.damage * proj.farMultiplier : proj.damage;
+        if (proj.isChartreuse && proj.chartreuseAmmoType === "plague") dmg = target.health;
         if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
         if (proj.isIvoryIceCream) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
@@ -9374,6 +9438,33 @@ function updateProjectiles(dt) {
             CHARACTERS.green.ultimate.chargeRequired,
             (attacker.greenUltimateCharge ?? 0) + 1,
           );
+        }
+        if (proj.isChartreuse && attacker?.characterType === "chartreuse" && dealt > 0) {
+          attacker.chartreuseUltimateCharge = Math.min(
+            CHARACTERS.chartreuse.ultimate.chargeRequired,
+            (attacker.chartreuseUltimateCharge ?? 0) + 1,
+          );
+          if (proj.chartreuseAmmoType === "cc" && !target.dead) {
+            const ccType = ["slow", "malfunction", "reveal", "poison", "knockback"][Math.floor(Math.random() * 5)];
+            if (ccType === "slow") {
+              target.shockUntil = state.gameTime + 2;
+              target.shockSlowOverride = 0.35;
+            } else if (ccType === "malfunction") {
+              target.malfunctionUntil = state.gameTime + 2;
+            } else if (ccType === "reveal") {
+              target.revealedUntil = state.gameTime + 4;
+            } else if (ccType === "poison") {
+              target.poisonUntil = state.gameTime + 4;
+              target.poisonSourceId = attacker.id;
+              target.poisonNextTick = state.gameTime + 1;
+            } else {
+              const speed = Math.hypot(proj.vx, proj.vz) || 1;
+              target.galeKnockbackX = proj.vx / speed;
+              target.galeKnockbackZ = proj.vz / speed;
+              target.galeKnockbackRemaining = 3.5;
+              target.galeKnockbackSpeed = 12;
+            }
+          }
         }
         if (attacker && attacker.isPlayer) {
           flashHitMarker();
@@ -9678,7 +9769,7 @@ function resolveAttack(attacker, hitIndex, damage) {
     const deltaZ = target.mesh.position.z - attacker.mesh.position.z;
     const localX = deltaX * cosYaw - deltaZ * sinYaw - spreadOffset;
     const localZ = deltaX * sinYaw + deltaZ * cosYaw;
-    if (localZ < 0 || localZ > attackDepth) {
+    if (localZ < 0 || localZ > getAttackRange(attacker)) {
       continue;
     }
     if (Math.abs(localX - punchSide) > redAttackHalfWidth) {
@@ -9704,7 +9795,10 @@ function resolveAttack(attacker, hitIndex, damage) {
   const targets = penetrate ? hitTargets : (bestTarget ? [bestTarget] : []);
 
   for (const t of targets) {
-    applyDamage(t, damage, attacker);
+    const dealt = applyDamage(t, damage, attacker);
+    if (attacker.characterType === "red" && dealt > 0) {
+      attacker.redUltimateCharge = Math.min(CHARACTERS.red.ultimate.chargeRequired, (attacker.redUltimateCharge ?? 0) + 1);
+    }
     tempVec3.copy(t.mesh.position);
     tempVec3.y = 1.6;
     createHitSpark(tempVec3);
@@ -9736,7 +9830,9 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
     return 0;
   }
 
-  const finalAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
+  const scaledAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
+  const guardActive = target.characterType === "red" && (target.redGuardUntil ?? 0) > state.gameTime;
+  const finalAmount = guardActive ? Math.round(scaledAmount * (1 - CHARACTERS.red.ultimate.damageReduction)) : scaledAmount;
   const healthBefore = target.health;
   target.health = Math.max(0, target.health - finalAmount);
   target.flashTimer = 0.12;
@@ -11205,6 +11301,7 @@ function updateAttackAimIndicator() {
 
 function updateBushVisuals() {
   for (const fighter of state.players) {
+    if (fighter.redGuardMesh) fighter.redGuardMesh.visible = !fighter.dead && (fighter.redGuardUntil ?? 0) > state.gameTime;
     const bush = fighter.greenUltimateBush;
     if (bush && (fighter.dead || bush.expiresAt <= state.gameTime)) removeGreenUltimateBush(fighter);
   }
@@ -11357,6 +11454,7 @@ function updateHud() {
   player.characterType === "cyan" ? t("spreadLineAttack") :
   player.characterType === "purple" ? t("poisonAttack") :
   player.characterType === "pink" ? t("healCircleAttack") :
+  player.characterType === "chartreuse" ? "샤단라" :
   t("doublePunch");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
@@ -11378,6 +11476,7 @@ function updateHud() {
       : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
       : player.characterType === "pink" ? (player.pinkUltimateCharge ?? 0)
+      : player.characterType === "chartreuse" ? (player.chartreuseUltimateCharge ?? 0)
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
