@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.15";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.16";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -2755,7 +2755,7 @@ function applyMintIce(target, amount) {
   showToast("빙결! · 2초 행동 불가");
 }
 
-let mintSpecialReadyAt = 0;
+let mintUltimateCharge = 0;
 let blueSpecialReadyAt = 0;
 let betaElapsedTime = 0;
 
@@ -2780,8 +2780,8 @@ function performBlueBounceShot() {
 
 function performMintSpecial() {
   const def = BETA_CHARACTERS.mint.special;
-  if (betaElapsedTime < mintSpecialReadyAt) return;
-  mintSpecialReadyAt = betaElapsedTime + def.cooldown;
+  if (mintUltimateCharge < def.chargeRequired) return;
+  mintUltimateCharge = 0;
   const yaw = player.rotation.y;
   const x = player.position.x + Math.sin(yaw) * def.castRange;
   const z = player.position.z + Math.cos(yaw) * def.castRange;
@@ -3340,8 +3340,8 @@ function updateCrimsonUltimateGauge() {
     green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
     chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#7fff00" },
     mint: {
-      charge: Math.min(BETA_CHARACTERS.mint.special.cooldown, Math.max(0, BETA_CHARACTERS.mint.special.cooldown - (mintSpecialReadyAt - betaElapsedTime))),
-      required: BETA_CHARACTERS.mint.special.cooldown,
+      charge: mintUltimateCharge,
+      required: BETA_CHARACTERS.mint.special.chargeRequired,
       name: BETA_CHARACTERS.mint.special.name,
       color: "#98ffed",
     },
@@ -3363,7 +3363,8 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.setAttribute("aria-valuemax", String(required));
   const isSpecial = IS_BETA5_TEST && ["blue", "mint"].includes(id);
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
-  ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}초`;
+  const remainingUnit = id === "blue" ? "초" : "회";
+  ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
   ultimateState.textContent = ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
 }
 
@@ -4945,6 +4946,8 @@ function animate() {
         }
         if (projectile.characterId === "mint" && projectile.type === "mintIceCream") {
           applyMintIce(target, BETA_CHARACTERS.mint.icePerHit);
+          mintUltimateCharge = Math.min(BETA_CHARACTERS.mint.special.chargeRequired, mintUltimateCharge + 1);
+          if (betaState.selectedCharacter === "mint") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
