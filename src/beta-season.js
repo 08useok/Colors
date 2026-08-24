@@ -373,6 +373,9 @@ function createTestTarget(x, z, { ally = false } = {}) {
   target.userData.maxHealth = 6000;
   target.userData.deadPosition = target.position.clone();
   target.userData.baseScale = 1;
+  target.userData.healthBar = createGoldRushHealthBar(ally ? 2.15 : 2.05);
+  target.add(target.userData.healthBar);
+  updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
   scene.add(target);
   testTargets.push(target);
 }
@@ -5358,6 +5361,13 @@ function animate() {
   alphaBoss.rotation.y = Math.sin(clock.elapsedTime * 0.45) * 0.16;
   alphaBoss.position.y = 4.8 + Math.sin(clock.elapsedTime * 1.15) * 0.08;
   for (const target of testTargets) {
+    if (target.userData.healthBar) {
+      target.userData.healthBar.visible = target.visible;
+      if (target.visible) {
+        faceGoldRushHealthBarToCamera(target.userData.healthBar);
+        updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
+      }
+    }
     if (!target.userData.inMalfunctionZone && (target.userData.mintFrozenUntil || 0) <= clock.elapsedTime) {
       target.userData.moveSpeedMultiplier = 1;
     }
