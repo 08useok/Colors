@@ -3045,6 +3045,10 @@ function createStickman(color, skinId, normalizeBattleModel = false) {
     ensureIvoryGlbLoading();
     if (_ivoryGlb.loop) return buildPinkRigModel(_ivoryGlb, skinId);
   }
+  if (color === 0x7fff00) {
+    ensureChartreuseGlbLoading();
+    if (_chartreuseGlb.loop) return buildPinkRigModel(_chartreuseGlb, skinId);
+  }
 
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
@@ -3801,6 +3805,7 @@ let _cyanPreviewGlb = null;
 const _pinkGlb = { start: null, loop: null, end: null };
 const _purpleGlb = { start: null, loop: null, end: null };
 const _ivoryGlb = { start: null, loop: null, end: null };
+const _chartreuseGlb = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 let _ivoryPreviewGlb = null;
 
@@ -3812,6 +3817,25 @@ function refreshLoadedIvoryModels() {
     if (fighter.characterType !== "ivory" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
     const oldMesh = fighter.mesh;
     const replacement = createStickman(CHARACTERS.ivory.color, fighter.skinId);
+    if (!replacement.userData.isGlbModel) continue;
+    replacement.position.copy(oldMesh.position);
+    replacement.rotation.copy(oldMesh.rotation);
+    if (fighter.healthBar) replacement.add(fighter.healthBar);
+    if (fighter.nameLabel) replacement.add(fighter.nameLabel);
+    scene.remove(oldMesh);
+    scene.add(replacement);
+    fighter.mesh = replacement;
+    fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
+    fighter.bodyMaterials = replacement.userData.bodyMaterials;
+  }
+}
+
+function refreshLoadedChartreuseModels() {
+  if (!_chartreuseGlb.loop || typeof state === "undefined" || !state?.players) return;
+  for (const fighter of state.players) {
+    if (fighter.characterType !== "chartreuse" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
+    const oldMesh = fighter.mesh;
+    const replacement = createStickman(CHARACTERS.chartreuse.color, fighter.skinId);
     if (!replacement.userData.isGlbModel) continue;
     replacement.position.copy(oldMesh.position);
     replacement.rotation.copy(oldMesh.rotation);
@@ -3945,6 +3969,19 @@ function ensureIvoryGlbLoading() {
   _glbLoader.load('./assets/3d/ivory/walk-m2l.glb', g => { _ivoryGlb.loop = _stripRootMotion(g); refreshLoadedIvoryModels(); refreshLoadedPreviewCharacter("ivory"); });
   _glbLoader.load('./assets/3d/ivory/walk-m3e.glb', g => { _ivoryGlb.end = _stripRootMotion(g); });
 }
+let _chartreuseGlbRequested = false;
+function ensureChartreuseGlbLoading() {
+  if (_chartreuseGlbRequested) return;
+  _chartreuseGlbRequested = true;
+  _glbLoader.load('./assets/3d/chartreuse/walk-m1s.glb', g => { _chartreuseGlb.start = _stripRootMotion(g); });
+  _glbLoader.load('./assets/3d/chartreuse/walk-m2l.glb', g => {
+    _chartreuseGlb.loop = _stripRootMotion(g);
+    refreshLoadedChartreuseModels();
+    refreshLoadedPreviewCharacter("chartreuse");
+    if (frontModelCharType === "chartreuse") setupFrontModel("chartreuse");
+  });
+  _glbLoader.load('./assets/3d/chartreuse/walk-m3e.glb', g => { _chartreuseGlb.end = _stripRootMotion(g); });
+}
 let _ivoryPreviewGlbRequested = false;
 function ensureIvoryPreviewGlbLoading() {
   if (_ivoryPreviewGlbRequested) return;
@@ -3981,6 +4018,7 @@ setTimeout(() => {
   ensurePurpleGlbLoading();
   ensureIvoryGlbLoading();
   ensureIvoryPreviewGlbLoading();
+  ensureChartreuseGlbLoading();
 }, 1500);
 
 function createBluePreviewModel() {
@@ -4233,9 +4271,9 @@ function setPreviewCharacter(charType) {
   else if (charType === "cyan" || CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType)) ensureCyanPreviewGlbLoading();
   else if (charType === "ivory") ensureIvoryPreviewGlbLoading();
 
-  if (charType === "pink" || charType === "purple") {
+  if (charType === "pink" || charType === "purple" || charType === "chartreuse") {
     previewIsGlb = true;
-    const previewGlbSet = charType === "pink" ? _pinkGlb : _purpleGlb;
+    const previewGlbSet = charType === "pink" ? _pinkGlb : charType === "purple" ? _purpleGlb : _chartreuseGlb;
     const previewGlbPath = `./assets/3d/${charType}/walk-m2l.glb`;
     const setupPinkPreview = (gltf) => {
       if (previewCharType !== charType) return;
