@@ -2036,6 +2036,7 @@ body.lobby-active #takedown-hud {
 
 .matchup-table table {
   width: 100%;
+  min-width: 1080px;
   border-collapse: collapse;
   font-size: 13px;
 }
@@ -2154,7 +2155,7 @@ body.lobby-active #takedown-hud {
 
 .patchnotes-dock .matchup-table {
   box-sizing: border-box;
-  width: 100%;
+  width: min(1180px, calc(100vw - 32px));
   max-height: min(720px, calc(100vh - 110px));
   padding: 14px;
   overflow: auto;
