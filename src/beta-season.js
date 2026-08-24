@@ -3725,8 +3725,8 @@ let lastPointerX = 0;
 let lastPointerY = 0;
 let pointerTravel = 0;
 let manualAimActive = false;
-// 좌클릭은 공격, 누른 채 0.5초를 넘기면 수동 에임으로 넘어간다
-const AIM_HOLD_SECONDS = 0.5;
+// 좌클릭은 공격, 누른 채 0.2초를 넘기면 수동 에임으로 넘어간다
+const AIM_HOLD_SECONDS = 0.2;
 let pointerHoldTimer = null;
 let holdAiming = false;
 const manualAimRaycaster = new THREE.Raycaster();
