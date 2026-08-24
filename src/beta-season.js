@@ -2739,6 +2739,7 @@ function applyMintIce(target, amount) {
   if (!target.visible || target.userData.isAlly) return;
   const def = BETA_CHARACTERS.mint;
   target.userData.mintIce = Math.min(def.freezeThreshold, (target.userData.mintIce || 0) + amount);
+  updateTargetMintIceIndicator(target);
   createDamagePopup(target.position, amount, "#8ffff0", `얼음 ${Math.round(target.userData.mintIce)}/${def.freezeThreshold} `);
   if (target.userData.mintIce < def.freezeThreshold) return;
   target.userData.mintIce = 0;
@@ -2747,6 +2748,7 @@ function applyMintIce(target, amount) {
   target.userData.attackDisabled = true;
   target.userData.specialDisabled = true;
   ensureMintFreezeShell(target).visible = true;
+  updateTargetMintIceIndicator(target);
   showToast("빙결! · 2초 행동 불가");
 }
 
@@ -3779,6 +3781,56 @@ function updateHealthNumberLabel(label, health, maxHealth) {
   texture.needsUpdate = true;
 }
 
+function createMintIceIndicator() {
+  const indicatorCanvas = document.createElement("canvas");
+  indicatorCanvas.width = 128;
+  indicatorCanvas.height = 64;
+  const ctx = indicatorCanvas.getContext("2d");
+  const texture = new THREE.CanvasTexture(indicatorCanvas);
+  texture.minFilter = THREE.LinearFilter;
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.68, 0.34), material);
+  mesh.position.set(1.04, 0, 0.004);
+  mesh.renderOrder = 33;
+  mesh.visible = false;
+  mesh.userData.canvas = indicatorCanvas;
+  mesh.userData.ctx = ctx;
+  mesh.userData.texture = texture;
+  mesh.userData.lastState = "";
+  return mesh;
+}
+
+function updateMintIceIndicator(indicator, ice = 0, threshold = 100, frozen = false) {
+  if (!indicator) return;
+  const value = Math.max(0, Math.round(ice));
+  indicator.visible = frozen || value > 0;
+  const state = frozen ? "frozen" : `${value}/${threshold}`;
+  if (!indicator.visible || indicator.userData.lastState === state) return;
+  indicator.userData.lastState = state;
+  const { ctx, canvas: indicatorCanvas, texture } = indicator.userData;
+  ctx.clearRect(0, 0, indicatorCanvas.width, indicatorCanvas.height);
+  ctx.fillStyle = frozen ? "rgba(47, 184, 255, .96)" : "rgba(30, 122, 171, .92)";
+  ctx.beginPath();
+  ctx.roundRect(3, 5, 122, 54, 22);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(225, 253, 255, .96)";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.font = "bold 25px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(frozen ? "❄ 빙결" : `❄ ${value}`, 64, 33);
+  texture.needsUpdate = true;
+}
+
+function updateTargetMintIceIndicator(target) {
+  const bar = target?.userData.healthBar || target?.userData.goldRushBot?.healthBar;
+  if (!bar?.userData.mintIceIndicator) return;
+  const frozen = (target.userData.mintFrozenUntil || 0) > clock.elapsedTime;
+  updateMintIceIndicator(bar.userData.mintIceIndicator, target.userData.mintIce || 0, BETA_CHARACTERS.mint.freezeThreshold, frozen);
+}
+
 function createGoldRushHealthBar(height = 3.15) {
   const group = new THREE.Group();
   group.position.y = height;
@@ -3790,11 +3842,13 @@ function createGoldRushHealthBar(height = 3.15) {
   fill.position.z = 0.001;
   fill.renderOrder = 31;
   const label = createHealthNumberLabel();
-  group.add(background, fill, label);
+  const mintIceIndicator = createMintIceIndicator();
+  group.add(background, fill, label, mintIceIndicator);
   group.userData.fill = fill;
   group.userData.label = label;
-  group.userData.materials = [backgroundMaterial, fillMaterial, label.material];
-  group.userData.geometries = [background.geometry, fill.geometry, label.geometry];
+  group.userData.mintIceIndicator = mintIceIndicator;
+  group.userData.materials = [backgroundMaterial, fillMaterial, label.material, mintIceIndicator.material];
+  group.userData.geometries = [background.geometry, fill.geometry, label.geometry, mintIceIndicator.geometry];
   return group;
 }
 
@@ -5169,6 +5223,7 @@ function animate() {
   }
   for (const target of testTargets) {
     const mintFrozen = (target.userData.mintFrozenUntil || 0) > clock.elapsedTime;
+    updateTargetMintIceIndicator(target);
     if (!mintFrozen && target.userData.mintFreezeShell) target.userData.mintFreezeShell.visible = false;
     if (!target.userData.goldRushBot && !target.visible && target.userData.health <= 0 && target.userData.revivePendingUntil > clock.elapsedTime) {
       target.userData.reviveAt ??= clock.elapsedTime + 3;
