@@ -8,24 +8,27 @@ import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
-const beta4Bgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1");
-beta4Bgm.loop = true;
-beta4Bgm.volume = 0.45;
-beta4Bgm.preload = "auto";
-let beta4MusicStarted = false;
+const requestedMusicSeason = new URLSearchParams(location.search).get("test");
+const betaSeasonBgm = new Audio(requestedMusicSeason === "beta5"
+  ? "./assets/beta5-clockwork-midway.mp3?v=1"
+  : "./assets/beta4-rooftop-motion.mp3?v=1");
+betaSeasonBgm.loop = true;
+betaSeasonBgm.volume = 0.45;
+betaSeasonBgm.preload = "auto";
+let betaSeasonMusicStarted = false;
 
-function startBeta4Music() {
-  beta4MusicStarted = true;
-  beta4Bgm.play().catch(() => {});
-  window.removeEventListener("pointerdown", startBeta4Music, true);
-  window.removeEventListener("keydown", startBeta4Music, true);
+function startBetaSeasonMusic() {
+  betaSeasonMusicStarted = true;
+  betaSeasonBgm.play().catch(() => {});
+  window.removeEventListener("pointerdown", startBetaSeasonMusic, true);
+  window.removeEventListener("keydown", startBetaSeasonMusic, true);
 }
 
-window.addEventListener("pointerdown", startBeta4Music, { once: true, capture: true });
-window.addEventListener("keydown", startBeta4Music, { once: true, capture: true });
+window.addEventListener("pointerdown", startBetaSeasonMusic, { once: true, capture: true });
+window.addEventListener("keydown", startBetaSeasonMusic, { once: true, capture: true });
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) beta4Bgm.pause();
-  else if (beta4MusicStarted) beta4Bgm.play().catch(() => {});
+  if (document.hidden) betaSeasonBgm.pause();
+  else if (betaSeasonMusicStarted) betaSeasonBgm.play().catch(() => {});
 });
 const galeStrikeTexture = new THREE.TextureLoader().load("./assets/vfx/gale-strike.png");
 galeStrikeTexture.colorSpace = THREE.SRGBColorSpace;
