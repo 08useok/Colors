@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.16";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.17";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -2792,7 +2792,14 @@ function performMintSpecial() {
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(x, ground > -5 ? ground + 0.14 : 0.14, z);
   scene.add(mesh);
-  mintIceZones.push({ mesh, x, z, radius: def.radius, expiresAt: clock.elapsedTime + def.duration, nextTickAt: clock.elapsedTime, slideStrength: def.slideStrength });
+  mintIceZones.push({
+    mesh, x, z, radius: def.radius,
+    startedAt: clock.elapsedTime,
+    expiresAt: clock.elapsedTime + def.duration,
+    nextTickAt: clock.elapsedTime,
+    slideStrength: def.slideStrength,
+    slideAcceleration: def.slideAcceleration,
+  });
   createGroundPulse(def.radius, 0x8fffe9, mesh.position);
   attackComboState.textContent = "아이스크림 장판 설치";
   canvas.dataset.lastMintField = `${x.toFixed(2)},${z.toFixed(2)}`;
@@ -5175,6 +5182,9 @@ function animate() {
     }
     const tickDue = clock.elapsedTime >= zone.nextTickAt;
     if (tickDue) zone.nextTickAt += 1;
+    const slideElapsed = Math.max(0, clock.elapsedTime - zone.startedAt);
+    const currentSlideSpeed = zone.slideStrength + zone.slideAcceleration * slideElapsed;
+    canvas.dataset.mintSlideSpeed = currentSlideSpeed.toFixed(2);
     for (const target of testTargets) {
       if (!target.visible || target.userData.isAlly) continue;
       const dx = target.position.x - zone.x;
@@ -5188,8 +5198,8 @@ function animate() {
       }
       if ((target.userData.mintFrozenUntil || 0) <= clock.elapsedTime) {
         const length = distance || 1;
-        target.position.x += (dx / length) * zone.slideStrength * dt;
-        target.position.z += (dz / length) * zone.slideStrength * dt;
+        target.position.x += (dx / length) * currentSlideSpeed * dt;
+        target.position.z += (dz / length) * currentSlideSpeed * dt;
       }
     }
   }
