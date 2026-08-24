@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.14";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.15";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.138";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
