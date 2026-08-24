@@ -1806,8 +1806,8 @@ function updateEventCountdown() {
 function updateBetaPatchVisibility() {
   const patch = document.getElementById("beta-season-patch");
   patch?.classList.toggle("hidden", Date.now() < BETA_SEASON_START_AT);
-  document.getElementById("beta-season-3-patch")?.classList.toggle("hidden", CURRENT_SEASON !== "beta3");
-  document.getElementById("beta-season-2-patch")?.classList.toggle("hidden", !["beta2", "beta3"].includes(CURRENT_SEASON));
+  document.getElementById("beta-season-3-patch")?.classList.toggle("hidden", !["beta3", "beta4"].includes(CURRENT_SEASON));
+  document.getElementById("beta-season-2-patch")?.classList.toggle("hidden", !["beta2", "beta3", "beta4"].includes(CURRENT_SEASON));
 }
 
 // 베타 시즌 전용 UI(크레딧 잔액, 캐릭터 구매 탭)는 시즌이 열릴 때까지 숨긴다
