@@ -49,6 +49,13 @@ export const BETA_CHARACTERS = {
       nameEn: "Speed Marble",
       descriptionEn: "Hurls marbles at blistering speed. One barely stings, but a few in a row will hurt."
     },
+    special: {
+      id: "bounceShot", name: "바운스 샷",
+      description: "탄환 8발을 빠르게 발사합니다. 탄환은 벽에 최대 3번 반사되고 적을 관통하며 계속 이동합니다.",
+      nameEn: "Bounce Shot", descriptionEn: "Rapidly fires eight piercing bullets that can bounce off walls up to three times.",
+      projectileCount: 8, intervalMs: 70, spreadAngle: degrees(18), damage: 650,
+      speed: 28, range: 22, maxBounces: 3, cooldown: 10,
+    },
   },
   orange: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 1.0, maxAmmo: 3,
@@ -198,5 +205,24 @@ export const BETA_CHARACTERS = {
     descriptionEn: "A controller-leaning random damage dealer.",
     basicAttack: { name: "무슨 공격이지?", description: "강화탄, CC탄, 흑사병탄, 무탄 중 하나를 무작위로 발사합니다.", nameEn: "What Attack?", descriptionEn: "Fires one random round: enhanced, CC, plague, or blank." },
     ultimate: { id: "clearMind", name: "49% 정신 차림", description: "6초 동안 무탄이 사라지고 세 탄환이 동일 확률로 등장합니다.", nameEn: "49% Clear Mind", descriptionEn: "For 6 seconds, blank rounds are removed and the other three appear equally.", chargeRequired: 8, duration: 6 },
+  },
+  mint: {
+    maxHealth: 6600, moveSpeedMultiplier: 1.05, attackCooldown: 0.75, reloadDuration: 1.15, maxAmmo: 3,
+    iceBulletDamage: 700, iceBulletRange: 10, iceBulletSpeed: 20,
+    burstCount: 3, burstIntervalMs: 120, icePerHit: 25, freezeThreshold: 100, freezeDuration: 2,
+    description: "차가운 아이스크림으로 적의 움직임을 얼려 버리는 베타 시즌 5 신규 컨트롤러입니다.",
+    descriptionEn: "A Beta Season 5 controller who freezes enemy movement with ice-cold ice cream.",
+    basicAttack: {
+      name: "아이스크림 탄",
+      description: "아이스크림 탄환을 3발 연속 발사합니다. 적중할 때마다 얼음 수치가 25 누적되며, 100이 되면 적이 2초 동안 빙결됩니다.",
+      nameEn: "Ice Cream Bullets",
+      descriptionEn: "Fires three ice cream bullets in succession. Each hit adds 25 ice; at 100, the target freezes for 2 seconds.",
+    },
+    special: {
+      id: "iceCreamField", name: "아이스크림 장판",
+      description: "지정한 위치에 6초 동안 반경 3타일의 얼음 장판을 생성합니다. 적은 미끄러지고 1초마다 얼음 수치가 20 누적됩니다.",
+      nameEn: "Ice Cream Field", descriptionEn: "Creates a 3-tile ice field for 6 seconds. Enemies slide and gain 20 ice each second.",
+      castRange: 10, radius: 3, duration: 6, icePerSecond: 20, cooldown: 8, slideStrength: 3.2,
+    },
   },
 };

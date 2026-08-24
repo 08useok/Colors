@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.13";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
@@ -79,8 +80,11 @@ const dailyRewardOdds = document.getElementById("daily-reward-odds");
 const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
 const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
 const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
-const BETA_STORAGE_KEY = "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "64";
+const requestedBetaSeason = new URLSearchParams(location.search).get("test");
+const BETA_SEASON_ID = requestedBetaSeason === "beta5" ? "beta5" : "beta4";
+const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
+const BETA_STORAGE_KEY = IS_BETA5_TEST ? "colorsBetaSeason5Test" : "colorsBetaSeasonTest";
+const CHARACTER_MODEL_VERSION = "69";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -94,12 +98,21 @@ const CHARACTERS = [
   { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xd4a928 },
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
   { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0x7fff00 },
+  ...(IS_BETA5_TEST ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
 ];
-const BETA_SEASON_ID = "beta4";
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
 const BETA_SEASON_ACTIVE = true;
 const BETA_SKINS = BETA_SEASON_ACTIVE ? getSkinsForSeason(BETA_SEASON_ID) : [];
+if (IS_BETA5_TEST) {
+  document.body.classList.add("beta-season-5-theme");
+  document.title = "Colors - Beta Season 5 Test";
+  const heading = document.querySelector(".beta-header h1");
+  const rankChip = document.querySelector(".rank-chip");
+  if (heading) heading.textContent = "베타 시즌 5 테스트";
+  if (rankChip) rankChip.textContent = "베타 시즌 5 테스트";
+  if (locationName) locationName.textContent = "컬러 놀이공원";
+}
 
 function loadBetaState() {
   let saved = {};
@@ -156,7 +169,7 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  for (const testCharacterId of ["ivory", "chartreuse"]) {
+  for (const testCharacterId of ["ivory", "chartreuse", ...(IS_BETA5_TEST ? ["mint"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
   }
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
@@ -182,8 +195,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x8ac9dc);
-scene.fog = new THREE.FogExp2(0x8ac9dc, 0.012);
+const seasonSkyColor = IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
+scene.background = new THREE.Color(seasonSkyColor);
+scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA5_TEST ? 0.009 : 0.012);
 
 const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 300);
 const hemi = new THREE.HemisphereLight(0xe8fbff, 0x38515b, 2.2);
@@ -203,9 +217,9 @@ scene.add(map);
 const solids = [];
 const showdownSolids = [];
 let currentArenaMode = "lobby";
-const platformMaterial = new THREE.MeshStandardMaterial({ color: 0x6a7773, roughness: 0.88 });
-const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x79d5d2, roughness: 0.42, metalness: 0.25 });
-const stoneMaterial = new THREE.MeshStandardMaterial({ color: 0x40545a, roughness: 0.92 });
+const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
+const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
+const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
 
 function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
@@ -249,12 +263,64 @@ for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[-
 // 첫 스폰 앞 시험 벽: 두 조각을 하나로 정리하고 기존 한 조각의 2.25배 길이로 확장한다.
 box(0, 2.55, -4.2, 2.2 * 2.25, 2.1, 0.55, stoneMaterial, true, true);
 
+function createBeta5AmusementParkDecor() {
+  if (!IS_BETA5_TEST) return;
+  const decor = new THREE.Group();
+  decor.name = "beta5-amusement-park-decor";
+  const white = new THREE.MeshStandardMaterial({ color: 0xfffbef, roughness: 0.55 });
+  const pink = new THREE.MeshStandardMaterial({ color: 0xff6fae, roughness: 0.52 });
+  const mint = new THREE.MeshStandardMaterial({ color: 0x65e6c4, roughness: 0.52 });
+  const yellow = new THREE.MeshStandardMaterial({ color: 0xffd85e, roughness: 0.5 });
+  const purple = new THREE.MeshStandardMaterial({ color: 0x8b68d8, roughness: 0.58 });
+  const wheel = new THREE.Group();
+  wheel.add(new THREE.Mesh(new THREE.TorusGeometry(7, 0.32, 12, 48), pink));
+  for (let i = 0; i < 8; i += 1) {
+    const angle = (i / 8) * Math.PI * 2;
+    const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.12, 6.8, 0.12), white);
+    spoke.position.set(Math.sin(angle) * 3.4, Math.cos(angle) * 3.4, 0);
+    spoke.rotation.z = -angle;
+    wheel.add(spoke);
+    const cabin = new THREE.Mesh(new THREE.SphereGeometry(0.72, 14, 10), i % 2 ? mint : yellow);
+    cabin.position.set(Math.sin(angle) * 7, Math.cos(angle) * 7, 0);
+    wheel.add(cabin);
+  }
+  wheel.position.set(-18, 12, -48);
+  decor.add(wheel);
+  const carousel = new THREE.Group();
+  const canopy = new THREE.Mesh(new THREE.ConeGeometry(6, 3.2, 16), pink);
+  canopy.position.y = 6.6;
+  carousel.add(canopy);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(5.3, 5.3, 0.8, 24), purple);
+  base.position.y = 1.9;
+  carousel.add(base);
+  for (let i = 0; i < 8; i += 1) {
+    const angle = (i / 8) * Math.PI * 2;
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 4.6, 8), white);
+    pole.position.set(Math.sin(angle) * 3.7, 4.2, Math.cos(angle) * 3.7);
+    carousel.add(pole);
+  }
+  carousel.position.set(47, 0, 4);
+  decor.add(carousel);
+  for (const [x, z, color, height] of [[-5, 10, pink, 7], [0, 11, yellow, 8.5], [5, 10, mint, 7.6]]) {
+    const string = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, height - 2, 6), white);
+    string.position.set(x, height / 2, z);
+    const balloon = new THREE.Mesh(new THREE.SphereGeometry(0.85, 16, 12), color);
+    balloon.scale.y = 1.25;
+    balloon.position.set(x, height, z);
+    decor.add(string, balloon);
+  }
+  map.add(decor);
+  canvas.dataset.seasonTheme = "amusement-park";
+}
+
+createBeta5AmusementParkDecor();
+
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
 scene.add(iceCreamShowdownMap);
-const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: 0x252b30, roughness: 0.94 });
-const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: 0x444d54, roughness: 0.9 });
-const cityWallMaterial = new THREE.MeshStandardMaterial({ color: 0x65717a, roughness: 0.82 });
+const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
+const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
+const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
 function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial, solid = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
@@ -272,6 +338,21 @@ for (let x = -4; x < 4; x += 1) {
 showdownSolids.push({ x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: iceCreamShowdownMap });
 for (const [x, z, w, d] of [[0,-20,40,1], [0,20,40,1], [-20,0,1,40], [20,0,1,40], [-8,-7,7,2], [8,7,7,2], [-8,8,2,7], [8,-8,2,7], [0,0,5,2]]) {
   showdownBox(x, 2.55, z, w, 2, d);
+}
+if (IS_BETA5_TEST) {
+  const stripePink = new THREE.MeshStandardMaterial({ color: 0xff6fae, roughness: 0.55 });
+  const stripeYellow = new THREE.MeshStandardMaterial({ color: 0xffd85e, roughness: 0.55 });
+  const lampMaterial = new THREE.MeshStandardMaterial({ color: 0xfff8dc, emissive: 0xffc85a, emissiveIntensity: 1.4 });
+  // 놀이공원 광장 안내선과 조명. 전투 충돌에는 포함하지 않는다.
+  for (const z of [-15, -5, 5, 15]) {
+    showdownBox(0, 1.59, z, 32, 0.035, 0.32, z % 10 === 5 ? stripePink : stripeYellow, false);
+  }
+  for (const [x, z] of [[-17,-17], [17,-17], [-17,17], [17,17]]) {
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.48, 14, 10), lampMaterial);
+    lamp.position.set(x, 4.1, z);
+    iceCreamShowdownMap.add(lamp);
+  }
+  iceCreamShowdownMap.userData.theme = "amusement-park";
 }
 const testTargets = [];
 function createTestTarget(x, z, { ally = false } = {}) {
@@ -514,6 +595,7 @@ player.add(crown);
 const skinAccessory = new THREE.Group();
 player.add(skinAccessory);
 const characterLoader = new GLTFLoader();
+const staticCharacterLoader = new FBXLoader();
 let activeCharacterModel = null;
 let activeCharacterMixer = null;
 let activeCharacterAction = null;
@@ -522,6 +604,8 @@ let activeCharacterMotion = null;
 let modelAttackMotionTime = -1;
 let modelAttackCharacter = null;
 let modelAttackPoseRestore = [];
+let chartreuseStaticWalkPhase = 0;
+let chartreuseStaticWalkBlend = 0;
 let characterLoadToken = 0;
 let betaToonGradient = null;
 
@@ -625,7 +709,7 @@ function recolorSkinTintTexture(texture, targetHex) {
 
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
-  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xd4a928 : null;
+  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xd4a928 : characterId === "chartreuse" ? 0x7fff00 : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
   // 구별이 안 됐다 — 뚜렷한 골드 톤 + emissive 글로우로 대체.
@@ -781,12 +865,14 @@ function clearCharacterModel() {
   modelAttackMotionTime = -1;
   modelAttackCharacter = null;
   modelAttackPoseRestore = [];
+  chartreuseStaticWalkPhase = 0;
+  chartreuseStaticWalkBlend = 0;
   canvas.dataset.characterModel = "primitive";
 }
 
 function prepareCharacterScene(model, characterId) {
   if (characterId === "blue") addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"].includes(characterId)) {
     applyBetaToonRendering(model, characterId);
   }
   applySkinPaletteToModel(model, characterId);
@@ -844,7 +930,9 @@ function loadCharacterMotionSet(characterId, token) {
       if (actions.stop) {
         actions.stop.play();
         actions.stop.time = Math.max(0, actions.stop.getClip().duration - 0.001);
-        mixers.stop.update(0);
+        // update(0) does not reliably evaluate the pose on a freshly loaded
+        // mixer. Set the time explicitly so the bind/T-pose never flashes.
+        mixers.stop.setTime(actions.stop.time);
         actions.stop.paused = true;
       }
       player.add(group);
@@ -861,6 +949,42 @@ function loadCharacterMotionSet(characterId, token) {
     });
 }
 
+// The supplied Chartreuse mesh is a generated, single-piece model. Keeping
+// its original static form avoids arm/torso collapse from automatic weights.
+function loadChartreuseStaticModel(token) {
+  staticCharacterLoader.load(
+    `./assets/3d/chartreuse/chartreuse.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    (model) => {
+      if (token !== characterLoadToken || betaState.selectedCharacter !== "chartreuse") return;
+      const prepared = prepareCharacterScene(model, "chartreuse");
+      prepared.userData.staticChartreuse = true;
+      prepared.userData.staticWalkBaseY = prepared.position.y;
+      player.add(prepared);
+      activeCharacterModel = prepared;
+      canvas.dataset.characterModel = "chartreuse";
+      canvas.dataset.characterMotion = "static-bob";
+    },
+    undefined,
+    () => {
+      if (token !== characterLoadToken) return;
+      body.visible = true;
+      visor.visible = true;
+      showToast("샤트 모델을 불러오지 못했습니다.");
+    },
+  );
+}
+
+function updateStaticChartreuseMotion(isMoving, dt) {
+  const model = activeCharacterModel;
+  if (!model?.userData.staticChartreuse) return;
+  const blendRate = 1 - Math.exp(-10 * dt);
+  chartreuseStaticWalkBlend += ((isMoving ? 1 : 0) - chartreuseStaticWalkBlend) * blendRate;
+  if (isMoving) chartreuseStaticWalkPhase += dt * 9;
+  const sway = Math.sin(chartreuseStaticWalkPhase);
+  model.position.y = model.userData.staticWalkBaseY + sway * 0.035 * chartreuseStaticWalkBlend;
+  model.rotation.z = sway * 0.018 * chartreuseStaticWalkBlend;
+}
+
 function updateCharacterMotion(isMoving, dt) {
   const motion = activeCharacterMotion;
   if (!motion) return;
@@ -869,6 +993,9 @@ function updateCharacterMotion(isMoving, dt) {
     if (!action) return false;
     motion.show(key);
     action.reset().play();
+    // Evaluate the first pose before this scene becomes visible on screen.
+    // This prevents a one-frame bind/T-pose during start/loop/stop hand-offs.
+    motion.mixers[key]?.setTime(0);
     action.paused = false;
     motion.current = key;
     return true;
@@ -876,6 +1003,10 @@ function updateCharacterMotion(isMoving, dt) {
   if (motion.state === "idle" && isMoving) {
     motion.state = play("start") ? "starting" : "looping";
     if (motion.state === "looping") play("loop");
+  } else if (motion.state === "starting" && !isMoving) {
+    // Do not wait for walk-m1s to finish: releasing movement immediately
+    // hands off to walk-m3e, just like an interrupted walk should.
+    motion.state = play("stop") ? "stopping" : "idle";
   } else if (motion.state === "looping" && !isMoving) {
     motion.state = play("stop") ? "stopping" : "idle";
   } else if (motion.state === "stopping" && isMoving) {
@@ -940,6 +1071,14 @@ const MODEL_ATTACK_POSES = {
     ["CC_Base_L_Upperarm", 0.3, 0, -0.12],
     ["CC_Base_Spine02", 0.1, -0.1, 0],
   ] },
+  // Chartreuse uses the custom walk rig rather than the CC_Base skeleton.
+  // The firing arm follows the opposing walking arm smoothly, instead of
+  // freezing while the projectile is spawned.
+  chartreuse: { duration: 0.42, peak: 0.32, bones: [
+    ["upper_arm.R", -0.88, 0, 0.16], ["forearm.R", -0.42, 0, 0.06],
+    ["upper_arm.L", 0.18, 0, -0.06], ["spine", 0, -0.14, 0],
+    ["head", 0, 0.05, 0],
+  ] },
 };
 
 function startModelAttackMotion(characterId = betaState.selectedCharacter) {
@@ -987,6 +1126,12 @@ function updateModelAttackMotion(dt) {
 function setPlayerModel(characterId) {
   const token = ++characterLoadToken;
   clearCharacterModel();
+  if (characterId === "chartreuse") {
+    body.visible = false;
+    visor.visible = false;
+    loadCharacterMotionSet(characterId, token);
+    return;
+  }
   if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
@@ -1237,7 +1382,8 @@ function updateCrimsonControls() {
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
-  const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse"].includes(betaState.selectedCharacter);
+  const specialCharacters = IS_BETA5_TEST ? ["blue", "mint"] : [];
+  const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...specialCharacters].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
   ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
@@ -1282,7 +1428,8 @@ function renderCharacters() {
       ${basicAttack ? `<p><strong>일반 공격 · ${basicAttack.name}</strong><br>${basicAttack.description}</p>` : ""}
       ${officialAbility ? `<p><strong>공식 능력 · ${officialAbility.name}</strong><br>${officialAbility.description}</p>` : ""}
       ${ultimate ? `<p><strong>궁극기 · ${ultimate.name}</strong><br>${ultimate.description}</p>` : ""}
-      <p>${character.id === "gold" ? "시즌 4 회귀 테스트 · 설치형 컨트롤러" : character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : "베타 시즌 4 캐릭터 테스트"}</p>
+      ${IS_BETA5_TEST && BETA_CHARACTERS[character.id]?.special ? `<p><strong>특수 공격 · ${BETA_CHARACTERS[character.id].special.name}</strong><br>${BETA_CHARACTERS[character.id].special.description}</p>` : ""}
+      <p>${character.id === "mint" ? "베타 시즌 5 전용 · 빙결 컨트롤러" : character.id === "gold" ? "시즌 4 회귀 테스트 · 설치형 컨트롤러" : character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : `베타 시즌 ${IS_BETA5_TEST ? "5" : "4"} 캐릭터 테스트`}</p>
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
       ${skinList}
     </article>`;
@@ -1302,7 +1449,7 @@ function renderShop() {
 }
 
 function renderAssetShowroom() {
-  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold"]);
+  const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"]);
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
   modalContent.innerHTML = `<div class="beta-grid">${CHARACTERS.map((character) => {
@@ -1734,6 +1881,7 @@ const goldAttackCharge = new Map();
 const goldStageHits = new Map();
 const malfunctionZones = [];
 const ivoryIceCreamZones = [];
+const mintIceZones = [];
 const greenBushes = [];
 const GREEN_BUSH_REVEAL_RANGE = 3;
 let greenStealthIndicator = null;
@@ -2037,7 +2185,7 @@ function createChartreuseRoundMesh(roundType) {
   return mesh;
 }
 
-function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false }) {
+function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false, pierces = false, maxBounces = 0 }) {
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
   const redThemeColor = redThemeSkin === "beta_red_crimson" ? 0x8f0019 : redThemeSkin === "beta_red_red" ? 0xff2842 : 0xd72834;
@@ -2100,7 +2248,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     player.position.z - Math.sin(yaw) * lateralOffset,
   );
   scene.add(mesh);
-  betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, returnDamageMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, launchY: mesh.position.y });
+  betaProjectiles.push({ mesh, characterId: betaState.selectedCharacter, vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed, speed, returnSpeedMultiplier, returnDamageMultiplier, traveled: 0, returnTraveled: 0, range, damage, splash, type, hitRadius: radius, hit: new Set(), causesKnockback, pierces, bouncesRemaining: maxBounces, bounceCount: 0, launchY: mesh.position.y });
   canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
   canvas.dataset.lastProjectileType = type;
 }
@@ -2419,6 +2567,7 @@ function getBetaAttackRange(id, def) {
   if (id === "ivory") return def.iceCreamRange;
   if (id === "crimson") return def.attackRange;
   if (id === "chartreuse") return def.chartreuseRange;
+  if (id === "mint") return def.iceBulletRange;
   return 0;
 }
 
@@ -2571,6 +2720,79 @@ function createGroundPulse(radius, color, position = player.position) {
   scene.add(pulse);
   pulse.scale.setScalar(0.24);
   crimsonSlashes.push({ group: pulse, mesh: pulse, life: 0.55, maxLife: 0.55, grow: 1.15 });
+}
+
+function ensureMintFreezeShell(target) {
+  if (target.userData.mintFreezeShell) return target.userData.mintFreezeShell;
+  const shell = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(target.userData.kind === "alphaBoss" ? 2.2 : 0.95, 1),
+    new THREE.MeshStandardMaterial({ color: 0x9fffee, emissive: 0x4bdacb, emissiveIntensity: 0.75, transparent: true, opacity: 0.48, roughness: 0.2 }),
+  );
+  shell.position.y = target.userData.kind === "alphaBoss" ? 3.8 : 1.05;
+  shell.visible = false;
+  target.add(shell);
+  target.userData.mintFreezeShell = shell;
+  return shell;
+}
+
+function applyMintIce(target, amount) {
+  if (!target.visible || target.userData.isAlly) return;
+  const def = BETA_CHARACTERS.mint;
+  target.userData.mintIce = Math.min(def.freezeThreshold, (target.userData.mintIce || 0) + amount);
+  createDamagePopup(target.position, amount, "#8ffff0", `얼음 ${Math.round(target.userData.mintIce)}/${def.freezeThreshold} `);
+  if (target.userData.mintIce < def.freezeThreshold) return;
+  target.userData.mintIce = 0;
+  target.userData.mintFrozenUntil = clock.elapsedTime + def.freezeDuration;
+  target.userData.moveSpeedMultiplier = 0;
+  target.userData.attackDisabled = true;
+  target.userData.specialDisabled = true;
+  ensureMintFreezeShell(target).visible = true;
+  showToast("빙결! · 2초 행동 불가");
+}
+
+let mintSpecialReadyAt = 0;
+let blueSpecialReadyAt = 0;
+let betaElapsedTime = 0;
+
+function performBlueBounceShot() {
+  const def = BETA_CHARACTERS.blue.special;
+  if (!IS_BETA5_TEST || betaElapsedTime < blueSpecialReadyAt) return;
+  blueSpecialReadyAt = betaElapsedTime + def.cooldown;
+  canvas.dataset.lastBlueBounceBurst = "0";
+  for (let i = 0; i < def.projectileCount; i += 1) {
+    setTimeout(() => {
+      if (betaState.selectedCharacter !== "blue" || goldRushState.dead) return;
+      const angle = def.projectileCount > 1
+        ? -def.spreadAngle / 2 + (def.spreadAngle * i) / (def.projectileCount - 1)
+        : 0;
+      fireBetaProjectile({ angle, speed: def.speed, range: def.range, damage: def.damage, color: 0x74d8ff, radius: 0.16, type: "blueBounce", pierces: true, maxBounces: def.maxBounces });
+      canvas.dataset.lastBlueBounceBurst = String(i + 1);
+      attackComboState.textContent = `바운스 샷 ${i + 1}/${def.projectileCount}`;
+    }, i * def.intervalMs);
+  }
+  updateCrimsonUltimateGauge();
+}
+
+function performMintSpecial() {
+  const def = BETA_CHARACTERS.mint.special;
+  if (betaElapsedTime < mintSpecialReadyAt) return;
+  mintSpecialReadyAt = betaElapsedTime + def.cooldown;
+  const yaw = player.rotation.y;
+  const x = player.position.x + Math.sin(yaw) * def.castRange;
+  const z = player.position.z + Math.cos(yaw) * def.castRange;
+  const ground = groundHeightAt(x, z);
+  const mesh = new THREE.Mesh(
+    new THREE.CircleGeometry(def.radius, 56),
+    new THREE.MeshStandardMaterial({ color: 0x8fffe9, emissive: 0x38cfc4, emissiveIntensity: 0.55, transparent: true, opacity: 0.62, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(x, ground > -5 ? ground + 0.14 : 0.14, z);
+  scene.add(mesh);
+  mintIceZones.push({ mesh, x, z, radius: def.radius, expiresAt: clock.elapsedTime + def.duration, nextTickAt: clock.elapsedTime, slideStrength: def.slideStrength });
+  createGroundPulse(def.radius, 0x8fffe9, mesh.position);
+  attackComboState.textContent = "아이스크림 장판 설치";
+  canvas.dataset.lastMintField = `${x.toFixed(2)},${z.toFixed(2)}`;
+  updateCrimsonUltimateGauge();
 }
 
 function createChartreuseStatusEffect(kind, target, durationOverride = null) {
@@ -2942,6 +3164,16 @@ function performCharacterAttack({ manualAim = false } = {}) {
     const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
     fireBetaProjectile({ speed: def.chartreuseSpeed, range: def.chartreuseRange, damage, color, radius: 0.24, type: `chartreuse_${roundType}` });
     attackComboState.textContent = roundType;
+  } else if (id === "mint") {
+    canvas.dataset.lastMintBurst = "0";
+    for (let i = 0; i < def.burstCount; i += 1) {
+      setTimeout(() => {
+        if (betaState.selectedCharacter !== "mint" || goldRushState.dead) return;
+        fireBetaProjectile({ speed: def.iceBulletSpeed, range: def.iceBulletRange, damage: def.iceBulletDamage, color: 0x98ffed, radius: 0.22, type: "mintIceCream" });
+        canvas.dataset.lastMintBurst = String(i + 1);
+        attackComboState.textContent = `아이스크림 탄 ${i + 1}/${def.burstCount}`;
+      }, i * def.burstIntervalMs);
+    }
   } else if (id === "crimson") {
     CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
   }
@@ -3102,6 +3334,18 @@ function updateCrimsonUltimateGauge() {
     gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#e2ad20" },
     green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
     chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#7fff00" },
+    mint: {
+      charge: Math.min(BETA_CHARACTERS.mint.special.cooldown, Math.max(0, BETA_CHARACTERS.mint.special.cooldown - (mintSpecialReadyAt - betaElapsedTime))),
+      required: BETA_CHARACTERS.mint.special.cooldown,
+      name: BETA_CHARACTERS.mint.special.name,
+      color: "#98ffed",
+    },
+    blue: {
+      charge: IS_BETA5_TEST ? Math.min(BETA_CHARACTERS.blue.special.cooldown, Math.max(0, BETA_CHARACTERS.blue.special.cooldown - (blueSpecialReadyAt - betaElapsedTime))) : 0,
+      required: BETA_CHARACTERS.blue.special.cooldown,
+      name: BETA_CHARACTERS.blue.special.name,
+      color: "#56bfff",
+    },
   };
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
@@ -3112,8 +3356,9 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.classList.toggle("ready", ready);
   ultimateButton.setAttribute("aria-valuenow", String(charge));
   ultimateButton.setAttribute("aria-valuemax", String(required));
-  ultimateButton.setAttribute("aria-label", `${id} 궁극기 ${config.name}`);
-  ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `궁극기 ${charge}/${required}`;
+  const isSpecial = IS_BETA5_TEST && ["blue", "mint"].includes(id);
+  ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
+  ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}초`;
   ultimateState.textContent = ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
 }
 
@@ -3303,6 +3548,14 @@ function performCyanUltimate() {
 
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
+  if (betaState.selectedCharacter === "blue" && IS_BETA5_TEST) {
+    performBlueBounceShot();
+    return;
+  }
+  if (betaState.selectedCharacter === "mint") {
+    performMintSpecial();
+    return;
+  }
   if (betaState.selectedCharacter === "red") {
     const def = BETA_CHARACTERS.red.ultimate;
     if (redUltimateCharge < def.chargeRequired) return;
@@ -4074,7 +4327,7 @@ function startGoldRush(mode = "goldRush") {
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
   createGoldRushBots();
   if (mode === "showdown") {
-    goldRushHud.querySelector("strong").textContent = "ICE CREAM SHOWDOWN";
+    goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "AMUSEMENT PARK SHOWDOWN" : "ICE CREAM SHOWDOWN";
     goldCountEl.parentElement.style.display = "none";
     goldRushTimerEl.textContent = "생존";
     goldRushRivalsEl.textContent = "10명 생존";
@@ -4395,7 +4648,7 @@ function groundHeightAt(x, z) {
 
 function updateLocation() {
   if (currentArenaMode === "showdown") {
-    locationName.textContent = "아이스크림 쇼다운";
+    locationName.textContent = IS_BETA5_TEST ? "놀이공원 쇼다운" : "아이스크림 쇼다운";
     return;
   }
   const { x, z } = player.position;
@@ -4403,7 +4656,7 @@ function updateLocation() {
   else if (z > 28) locationName.textContent = "상층 정원";
   else if (x < -28) locationName.textContent = "침식 유적";
   else if (x > 28) locationName.textContent = "낮은 부두";
-  else locationName.textContent = "베타 광장";
+  else locationName.textContent = IS_BETA5_TEST ? "컬러 놀이공원" : "베타 광장";
 }
 
 const clock = new THREE.Clock();
@@ -4423,6 +4676,7 @@ slowmoButton.addEventListener("click", () => {
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
+  betaElapsedTime = clock.elapsedTime;
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   if (redGuardMesh) {
     if (clock.elapsedTime >= redGuardUntil) {
@@ -4489,6 +4743,8 @@ function animate() {
       }
     }
     const step = Math.hypot(projectile.vx, projectile.vz) * dt;
+    const previousX = projectile.mesh.position.x;
+    const previousZ = projectile.mesh.position.z;
     if (!remove && !projectile.ivoryLandedAt) {
       projectile.mesh.position.x += projectile.vx * dt;
       projectile.mesh.position.z += projectile.vz * dt;
@@ -4502,6 +4758,35 @@ function animate() {
           + Math.sin(progress * Math.PI) * arcHeight
           - progress * (projectile.launchY - 0.35);
         projectile.mesh.rotation.x += dt * 6;
+      }
+    }
+    if (!remove && projectile.type === "blueBounce") {
+      const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+      for (const solid of arenaSolids) {
+        if (solid.top < projectile.mesh.position.y - projectile.hitRadius) continue;
+        const insideX = Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius;
+        const insideZ = Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius;
+        if (!insideX || !insideZ) continue;
+        projectile.mesh.position.x = previousX;
+        projectile.mesh.position.z = previousZ;
+        if (projectile.bouncesRemaining <= 0) {
+          remove = true;
+          break;
+        }
+        const cameFromX = Math.abs(previousX - solid.x) > solid.halfW + projectile.hitRadius;
+        const cameFromZ = Math.abs(previousZ - solid.z) > solid.halfD + projectile.hitRadius;
+        if (cameFromX) projectile.vx *= -1;
+        if (cameFromZ) projectile.vz *= -1;
+        if (!cameFromX && !cameFromZ) {
+          if (Math.abs(projectile.vx) >= Math.abs(projectile.vz)) projectile.vx *= -1;
+          else projectile.vz *= -1;
+        }
+        projectile.bouncesRemaining -= 1;
+        projectile.bounceCount += 1;
+        projectile.mesh.material.color?.setHex(0xc9fbff);
+        createGroundPulse(0.42, 0x69dfff, projectile.mesh.position);
+        canvas.dataset.lastBlueBounceCount = String(projectile.bounceCount);
+        break;
       }
     }
     if (projectile.goldStage && solids.some((solid) =>
@@ -4601,6 +4886,9 @@ function animate() {
           createChartreuseStatusEffect("poison", target, purple.poisonDuration);
           canvas.dataset.lastPurplePoison = `damage:${purple.poisonDPS},duration:${purple.poisonDuration}`;
         }
+        if (projectile.characterId === "mint" && projectile.type === "mintIceCream") {
+          applyMintIce(target, BETA_CHARACTERS.mint.icePerHit);
+        }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
@@ -4644,7 +4932,7 @@ function animate() {
             if (other !== target && other.visible && Math.hypot(other.position.x - target.position.x, other.position.z - target.position.z) <= projectile.splash) damageTarget(other, projectile.damage);
           }
         }
-        if (!projectile.goldStage && projectile.type !== "boomerang" && projectile.type !== "cyanUltimate") remove = true;
+        if (!projectile.goldStage && projectile.type !== "boomerang" && projectile.type !== "cyanUltimate" && !projectile.pierces) remove = true;
         if (remove) break;
       }
     }
@@ -4813,6 +5101,38 @@ function animate() {
   }
   canvas.dataset.ivoryZones = String(ivoryIceCreamZones.length);
 
+  for (const target of testTargets) target.userData.inMintIceZone = false;
+  for (let i = mintIceZones.length - 1; i >= 0; i -= 1) {
+    const zone = mintIceZones[i];
+    const remaining = zone.expiresAt - clock.elapsedTime;
+    zone.mesh.material.opacity = 0.48 + Math.sin(clock.elapsedTime * 5 + i) * 0.1;
+    zone.mesh.rotation.z += dt * 0.08;
+    if (remaining <= 0) {
+      scene.remove(zone.mesh);
+      zone.mesh.geometry.dispose();
+      zone.mesh.material.dispose();
+      mintIceZones.splice(i, 1);
+      continue;
+    }
+    const tickDue = clock.elapsedTime >= zone.nextTickAt;
+    if (tickDue) zone.nextTickAt += 1;
+    for (const target of testTargets) {
+      if (!target.visible || target.userData.isAlly) continue;
+      const dx = target.position.x - zone.x;
+      const dz = target.position.z - zone.z;
+      const distance = Math.hypot(dx, dz);
+      if (distance > zone.radius) continue;
+      target.userData.inMintIceZone = true;
+      if (tickDue) applyMintIce(target, BETA_CHARACTERS.mint.special.icePerSecond);
+      if ((target.userData.mintFrozenUntil || 0) <= clock.elapsedTime) {
+        const length = distance || 1;
+        target.position.x += (dx / length) * zone.slideStrength * dt;
+        target.position.z += (dz / length) * zone.slideStrength * dt;
+      }
+    }
+  }
+  canvas.dataset.mintIceZones = String(mintIceZones.length);
+
   for (let i = malfunctionZones.length - 1; i >= 0; i -= 1) {
     if (i === malfunctionZones.length - 1) {
       for (const target of testTargets) target.userData.inMalfunctionZone = false;
@@ -4848,6 +5168,8 @@ function animate() {
     for (const target of testTargets) target.userData.inMalfunctionZone = false;
   }
   for (const target of testTargets) {
+    const mintFrozen = (target.userData.mintFrozenUntil || 0) > clock.elapsedTime;
+    if (!mintFrozen && target.userData.mintFreezeShell) target.userData.mintFreezeShell.visible = false;
     if (!target.userData.goldRushBot && !target.visible && target.userData.health <= 0 && target.userData.revivePendingUntil > clock.elapsedTime) {
       target.userData.reviveAt ??= clock.elapsedTime + 3;
       if (clock.elapsedTime < target.userData.reviveAt) continue;
@@ -4889,7 +5211,7 @@ function animate() {
       const pulse = 1 + Math.sin(clock.elapsedTime * 10) * 0.12;
       activeIndicator.scale.setScalar(pulse);
       activeIndicator.userData.material.emissiveIntensity = 1.2 + Math.sin(clock.elapsedTime * 12) * 0.5;
-    } else {
+    } else if (!mintFrozen) {
       target.userData.moveSpeedMultiplier = 1;
       target.userData.attackDisabled = false;
       target.userData.specialDisabled = false;
@@ -4960,12 +5282,14 @@ function animate() {
     activeCharacterWasMoving = isMoving;
     updateModelAttackMotion(dt);
   }
+  updateStaticChartreuseMotion(isMoving, dt);
   updateHeadAttachedSkinAccessory();
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
   updateGoldRush(dt);
   updateTestCombatHud(dt);
+  if (IS_BETA5_TEST && ["blue", "mint"].includes(betaState.selectedCharacter)) updateCrimsonUltimateGauge();
   updatePinkDeadAllyMarkers();
   // 골드 러쉬 밖에서도 체력바가 캐릭터 머리 위에 항상 고정되어 보이도록 매 프레임 갱신한다
   playerGoldRushHealthBar.visible = player.visible;
@@ -4979,7 +5303,7 @@ function animate() {
   alphaBoss.rotation.y = Math.sin(clock.elapsedTime * 0.45) * 0.16;
   alphaBoss.position.y = 4.8 + Math.sin(clock.elapsedTime * 1.15) * 0.08;
   for (const target of testTargets) {
-    if (!target.userData.inMalfunctionZone) {
+    if (!target.userData.inMalfunctionZone && (target.userData.mintFrozenUntil || 0) <= clock.elapsedTime) {
       target.userData.moveSpeedMultiplier = 1;
     }
     const galeKnockbackRemaining = target.userData.galeKnockbackRemaining || 0;
