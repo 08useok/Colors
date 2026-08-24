@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.147";
+import { LANGS } from "./LANGS/langs.js?v=1.5.148";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.181";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
@@ -338,7 +338,7 @@ const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "legendary",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
