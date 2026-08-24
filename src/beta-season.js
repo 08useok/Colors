@@ -2743,7 +2743,6 @@ function applyMintIce(target, amount) {
   const def = BETA_CHARACTERS.mint;
   target.userData.mintIce = Math.min(def.freezeThreshold, (target.userData.mintIce || 0) + amount);
   updateTargetMintIceIndicator(target);
-  createDamagePopup(target.position, amount, "#8ffff0", `얼음 ${Math.round(target.userData.mintIce)}/${def.freezeThreshold} `);
   if (target.userData.mintIce < def.freezeThreshold) return;
   target.userData.mintIce = 0;
   target.userData.mintFrozenUntil = clock.elapsedTime + def.freezeDuration;
