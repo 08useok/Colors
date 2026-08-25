@@ -136,6 +136,10 @@ function loadBetaState() {
     character.id,
     Math.max(0, Math.floor(Number(saved.characterShowdownWins?.[character.id]) || 0)),
   ]));
+  const characterShowdownKills = Object.fromEntries(CHARACTERS.map((character) => [
+    character.id,
+    Math.max(0, Math.floor(Number(saved.characterShowdownKills?.[character.id]) || 0)),
+  ]));
   const existingShowdownWins = Math.max(0, Math.floor(Number(saved.oneVsOne?.wins) || 0));
   if (!saved.characterTrophyRankMigration) {
     characterShowdownWins[selectedCharacter] += existingShowdownWins;
@@ -148,6 +152,8 @@ function loadBetaState() {
     ownedCharacters: saved.ownedCharacters || ["red", "green", "blue"],
     characterTrophies,
     characterShowdownWins,
+    characterShowdownKills,
+    bestShowdownKills: Math.max(0, Math.floor(Number(saved.bestShowdownKills) || 0)),
     characterTrophyRankMigration: true,
     showdownWinStreak: Math.max(0, Math.floor(Number(saved.showdownWinStreak) || 0)),
     ownedSkins,
@@ -1427,7 +1433,7 @@ function renderCharacters() {
     return `<article class="beta-card${selected ? " selected" : ""}">
       <div class="character-card-badges">
         <span class="rarity ${character.rarity}">${rarityName(character.rarity)}</span>
-        <span class="character-trophy" title="${character.name} 쇼다운 ${(betaState.characterShowdownWins[character.id] || 0).toLocaleString("ko-KR")}승">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
+        <span class="character-trophy" title="${character.name} 쇼다운 ${(betaState.characterShowdownWins[character.id] || 0).toLocaleString("ko-KR")}승${IS_BETA5_TEST ? ` · 누적 처치 ${(betaState.characterShowdownKills[character.id] || 0).toLocaleString("ko-KR")}` : ""}">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
       </div>
       <h3>${character.name}</h3>
       ${characterDescription ? `<p><strong>캐릭터 소개</strong><br>${characterDescription}</p>` : ""}
@@ -1930,7 +1936,7 @@ function ensureMalfunctionIndicator(target) {
 function damageTarget(target, damage, causesKnockback = false) {
   if (!target.visible) return;
   if (target.userData.goldRushBot) {
-    damageGoldRushBot(target.userData.goldRushBot, damage);
+    damageGoldRushBot(target.userData.goldRushBot, damage, true);
     return;
   }
   const guardReduction = target.userData.redGuardUntil > clock.elapsedTime ? (target.userData.redGuardReduction ?? 0) : 0;
@@ -3752,7 +3758,7 @@ const goldRushState = {
   active: false, ended: false, mode: "goldRush", gold: 0, startedAt: 0, nextSpawnAt: 0, lastDamageAt: -Infinity,
   winCountdownStartedAt: null, dead: false, respawnAt: 0, invulnerableUntil: 0,
   mineGoldAvailable: true, mineGoldRespawnAt: 0, health: 1, maxHealth: 1,
-  ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5,
+  ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5, kills: 0,
 };
 
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
@@ -4044,7 +4050,7 @@ function dropGoldRushGold(owner, position) {
   );
 }
 
-function damageGoldRushBot(bot, damage) {
+function damageGoldRushBot(bot, damage, fromPlayer = false) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
   bot.health = Math.max(0, bot.health - damage);
   bot.mesh.userData.health = bot.health;
@@ -4058,6 +4064,8 @@ function damageGoldRushBot(bot, damage) {
   if (bot.health > 0) return;
   if (goldRushState.mode === "goldRush") dropGoldRushGold(bot, bot.mesh.position);
   bot.dead = true;
+  // SHOWDOWN+: 플레이어가 마지막 타격을 준 처치만 점수로 인정한다 (봇끼리의 처치는 제외)
+  if (fromPlayer && goldRushState.mode === "showdown") goldRushState.kills += 1;
   bot.respawnAt = clock.elapsedTime + 5;
   bot.mesh.visible = false;
   canvas.dataset.lastGoldRushDeath = `ai-${bot.id}`;
@@ -4296,6 +4304,9 @@ function updateGoldRushHud() {
   }
 }
 
+// SHOWDOWN+ (베타 시즌 5) — 처치 1회당 트로피 가산량. 상한 없음.
+const SHOWDOWN_PLUS_KILL_SCORE = 2;
+
 function calcShowdownTrophyChange(rank) {
   return 12 - THREE.MathUtils.clamp(rank, 1, 10) * 2;
 }
@@ -4324,8 +4335,15 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
       betaState.showdownWinStreak = 0;
       betaState.oneVsOne.losses += 1;
     }
-    trophyDelta = calcShowdownTrophyChange(rank) + calcShowdownStreakBonus(betaState.showdownWinStreak);
-    message = `${rank}위 · ${placedInTopFour ? "승리" : "패배"}`;
+    // SHOWDOWN+: 최종 등수는 생존 순위 그대로 두고, 처치 점수는 트로피에만 가산한다
+    const showdownKills = Math.max(0, Math.floor(goldRushState.kills) || 0);
+    const killBonus = IS_BETA5_TEST ? showdownKills * SHOWDOWN_PLUS_KILL_SCORE : 0;
+    if (IS_BETA5_TEST) {
+      betaState.characterShowdownKills[characterId] = (betaState.characterShowdownKills[characterId] || 0) + showdownKills;
+      betaState.bestShowdownKills = Math.max(betaState.bestShowdownKills || 0, showdownKills);
+    }
+    trophyDelta = calcShowdownTrophyChange(rank) + calcShowdownStreakBonus(betaState.showdownWinStreak) + killBonus;
+    message = `${rank}위 · ${placedInTopFour ? "승리" : "패배"}${IS_BETA5_TEST ? ` · 처치 ${showdownKills}` : ""}`;
   } else if (playerWon) {
     betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
     playOrderVictoryEffect();
@@ -4364,6 +4382,7 @@ function startGoldRush(mode = "goldRush") {
   goldRushState.active = true;
   goldRushState.ended = false;
   goldRushState.gold = 0;
+  goldRushState.kills = 0;
   goldRushState.startedAt = clock.elapsedTime;
   goldRushState.nextSpawnAt = clock.elapsedTime + 2.5;
   goldRushState.winCountdownStartedAt = null;
@@ -4394,11 +4413,11 @@ function startGoldRush(mode = "goldRush") {
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
   createGoldRushBots();
   if (mode === "showdown") {
-    goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "AMUSEMENT PARK SHOWDOWN" : "ICE CREAM SHOWDOWN";
+    goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "SHOWDOWN+" : "ICE CREAM SHOWDOWN";
     goldCountEl.parentElement.style.display = "none";
-    goldRushTimerEl.textContent = "생존";
+    goldRushTimerEl.textContent = IS_BETA5_TEST ? "처치 0" : "생존";
     goldRushRivalsEl.textContent = "10명 생존";
-    goldRushStatusEl.textContent = "마지막 1명까지 살아남으세요";
+    goldRushStatusEl.textContent = IS_BETA5_TEST ? `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존` : "마지막 1명까지 살아남으세요";
     showdownToggle.textContent = "쇼다운 재시작";
     canvas.dataset.betaMode = "ice-cream-showdown";
   } else {
@@ -4464,7 +4483,12 @@ function updateGoldRush(dt) {
   if (goldRushState.mode === "showdown") {
     const survivors = goldRushBots.filter((bot) => !bot.dead).length + (goldRushState.dead ? 0 : 1);
     goldRushRivalsEl.textContent = `${survivors}명 생존`;
-    goldRushStatusEl.textContent = "마지막 1명까지 살아남으세요";
+    if (IS_BETA5_TEST) {
+      goldRushTimerEl.textContent = `처치 ${goldRushState.kills}`;
+      goldRushStatusEl.textContent = `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존`;
+    } else {
+      goldRushStatusEl.textContent = "마지막 1명까지 살아남으세요";
+    }
     if (!goldRushState.dead && survivors === 1) {
       endGoldRush("쇼다운 승리!", true, 1);
     }
