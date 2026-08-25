@@ -2790,7 +2790,7 @@ function performMintSpecial() {
   const ground = groundHeightAt(x, z);
   const mesh = new THREE.Mesh(
     new THREE.CircleGeometry(def.radius, 56),
-    new THREE.MeshStandardMaterial({ color: 0x8fffe9, emissive: 0x38cfc4, emissiveIntensity: 0.55, transparent: true, opacity: 0.62, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.MeshStandardMaterial({ color: 0x8fffe9, emissive: 0x38cfc4, emissiveIntensity: 0.55, side: THREE.DoubleSide }),
   );
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(x, ground > -5 ? ground + 0.14 : 0.14, z);
@@ -5174,7 +5174,6 @@ function animate() {
   for (let i = mintIceZones.length - 1; i >= 0; i -= 1) {
     const zone = mintIceZones[i];
     const remaining = zone.expiresAt - clock.elapsedTime;
-    zone.mesh.material.opacity = 0.48 + Math.sin(clock.elapsedTime * 5 + i) * 0.1;
     zone.mesh.rotation.z += dt * 0.08;
     if (remaining <= 0) {
       scene.remove(zone.mesh);
