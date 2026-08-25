@@ -2244,6 +2244,60 @@ body.lobby-active #takedown-hud {
 .public-roadmap .roadmap-testing > span { background: #73d9f2; }
 .public-roadmap .roadmap-next > span { background: #ffd66e; }
 
+.public-roadmap .roadmap-season {
+  align-items: start;
+}
+
+.public-roadmap .roadmap-season > span {
+  margin-top: 1px;
+  color: #fff;
+  background: linear-gradient(135deg, #7657c8, #3f2d82);
+}
+
+.public-roadmap .roadmap-season-5 > span { color: #25352f; background: linear-gradient(135deg, #ff9dcc, #83efd2); }
+.public-roadmap .roadmap-season-6 > span { background: linear-gradient(135deg, #42bff2, #225fbd); }
+.public-roadmap .roadmap-season-7 > span { color: #3d260d; background: linear-gradient(135deg, #f2c56b, #bd7b32); }
+.public-roadmap .roadmap-season-8 > span { background: linear-gradient(135deg, #f47b32, #6d2c8f); }
+.public-roadmap .roadmap-season-9 > span { color: #332105; background: linear-gradient(135deg, #ffe67d, #d69a24); }
+
+.public-roadmap small b { color: #ffe096; }
+
+.champions-schedule {
+  display: grid;
+  gap: 4px;
+  margin: 5px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.champions-schedule li {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  gap: 7px;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(255, 224, 126, 0.07);
+  color: #cbb99f;
+  font-size: 10px;
+}
+
+.champions-schedule b { color: #ffe096; }
+
+.champion-reward-card {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+  padding: 13px;
+  border: 1px solid rgba(255, 222, 102, 0.52);
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgba(100, 67, 13, 0.42), rgba(42, 25, 6, 0.72));
+  box-shadow: inset 0 0 24px rgba(255, 209, 72, 0.08);
+}
+
+.champion-reward-card span { color: #ffd85f; font-size: 11px; font-weight: 900; letter-spacing: 0.08em; }
+.champion-reward-card strong { color: #fff1c4; font-size: 12px; line-height: 1.5; }
+
 .notice-kicker {
   margin-bottom: 5px;
   color: #ffd66e;
