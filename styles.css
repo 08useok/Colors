@@ -2203,6 +2203,47 @@ body.lobby-active #takedown-hud {
   color: #fff1ad;
 }
 
+.public-roadmap {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.public-roadmap li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 218, 128, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.public-roadmap li > span {
+  padding: 5px 7px;
+  border-radius: 999px;
+  color: #160f09;
+  background: #d9c8ae;
+  font-size: 10px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.public-roadmap li > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.public-roadmap strong { color: #fff1d5; font-size: 12px; }
+.public-roadmap small { color: #cbb99f; line-height: 1.4; }
+.public-roadmap .roadmap-done > span { background: #72d89a; }
+.public-roadmap .roadmap-testing > span { background: #73d9f2; }
+.public-roadmap .roadmap-next > span { background: #ffd66e; }
+
 .notice-kicker {
   margin-bottom: 5px;
   color: #ffd66e;
