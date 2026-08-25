@@ -15,6 +15,11 @@
 
 - [`beta-season-transition.md`](beta-season-transition.md) — 베타 시즌 1 전환
 - [`beta-season-2.md`](beta-season-2.md) — 베타 시즌 2 골드 러쉬
+- [`beta-season-3.md`](beta-season-3.md) — 베타 시즌 3 아이보리
+- [`beta-season-4.md`](beta-season-4.md) — 베타 시즌 4 샤르트뢰즈·레드 가드
+- [`beta-season-4-balance-patch.md`](beta-season-4-balance-patch.md) — 베타 시즌 4 밸런스 패치
+- [`beta-season-5.md`](beta-season-5.md) — 베타 시즌 5 놀이공원·민트·바운스 샷
+- [`beta-season-5-app.md`](beta-season-5-app.md) — 베타 시즌 5 앱 전환 기획
 
 ## 작성 규칙
 
