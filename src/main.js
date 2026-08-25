@@ -354,6 +354,26 @@ const ROSTER = ["beta2", "beta3", "beta4"].includes(CURRENT_SEASON)
   ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(CURRENT_SEASON === "beta4" ? ["chartreuse"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
+function createCharacterStats(characterIds = ROSTER) {
+  return Object.fromEntries(characterIds.map((characterId) => [characterId, { wins: 0, games: 0 }]));
+}
+
+function ensureCharacterStats(stats, characterIds = ROSTER) {
+  let changed = false;
+  for (const characterId of characterIds) {
+    if (!stats[characterId]) {
+      stats[characterId] = { wins: 0, games: 0 };
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+function getSeasonCharacterIds(stats) {
+  const recordedIds = Object.keys(stats || {});
+  return [...ROSTER, ...recordedIds.filter((characterId) => !ROSTER.includes(characterId))];
+}
+
 function getCharacterPrice(charKey) {
   return RARITY_PRICE[CHARACTER_RARITY[charKey]] ?? 0;
 }
@@ -1137,21 +1157,9 @@ function loadAccount() {
     }
     let migrated = false;
     if (!account.charStats) {
-      account.charStats = {
-        red:   { wins: 0, games: 0 },
-        green: { wins: 0, games: 0 },
-        blue:  { wins: 0, games: 0 },
-        orange: { wins: 0, games: 0 },
-      };
-    }
-    if (!account.charStats.orange) account.charStats.orange = { wins: 0, games: 0 };
-    if (!account.charStats.yellow) account.charStats.yellow = { wins: 0, games: 0 };
-    if (!account.charStats.cyan) account.charStats.cyan = { wins: 0, games: 0 };
-    if (!account.charStats.purple) account.charStats.purple = { wins: 0, games: 0 };
-    if (!account.charStats.pink) account.charStats.pink = { wins: 0, games: 0 };
-    if (!account.charStats.crimson) account.charStats.crimson = { wins: 0, games: 0 };
-    if (!account.charStats.gold) { account.charStats.gold = { wins: 0, games: 0 }; migrated = true; }
-    if (!account.charStats.ivory) { account.charStats.ivory = { wins: 0, games: 0 }; migrated = true; }
+      account.charStats = createCharacterStats();
+      migrated = true;
+    } else if (ensureCharacterStats(account.charStats)) migrated = true;
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -1160,12 +1168,7 @@ function loadAccount() {
       account.chopWoodCharStats = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
-      if (!account.chopWoodCharStats[char]) {
-        account.chopWoodCharStats[char] = { wins: 0, games: 0 };
-        migrated = true;
-      }
-    }
+    if (ensureCharacterStats(account.chopWoodCharStats)) migrated = true;
     if (!account.lang) account.lang = "ko";
     if (!account.daily) { account.daily = { winRewards: 0, pendingRewards: 0 }; migrated = true; }
     if (!account.seasonStats) {
@@ -1182,21 +1185,9 @@ function loadAccount() {
       };
     }
     if (!account.seasonCharStats[CURRENT_SEASON]) {
-      account.seasonCharStats[CURRENT_SEASON] = {
-        red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
-        blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
-      };
-    }
-    for (const s of Object.values(account.seasonCharStats)) {
-      if (!s.yellow) s.yellow = { wins: 0, games: 0 };
-      if (!s.cyan) s.cyan = { wins: 0, games: 0 };
-      if (!s.purple) s.purple = { wins: 0, games: 0 };
-      if (!s.pink) s.pink = { wins: 0, games: 0 };
-      if (!s.crimson) s.crimson = { wins: 0, games: 0 };
-      if (!s.gold) s.gold = { wins: 0, games: 0 };
-      if (!s.ivory) s.ivory = { wins: 0, games: 0 };
-    }
+      account.seasonCharStats[CURRENT_SEASON] = createCharacterStats();
+      migrated = true;
+    } else if (ensureCharacterStats(account.seasonCharStats[CURRENT_SEASON])) migrated = true;
     if (!account.seasonChopWoodStats) {
       account.seasonChopWoodStats = {};
       migrated = true;
@@ -1213,12 +1204,7 @@ function loadAccount() {
       account.seasonChopWoodCharStats[CURRENT_SEASON] = {};
       migrated = true;
     }
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
-      if (!account.seasonChopWoodCharStats[CURRENT_SEASON][char]) {
-        account.seasonChopWoodCharStats[CURRENT_SEASON][char] = { wins: 0, games: 0 };
-        migrated = true;
-      }
-    }
+    if (ensureCharacterStats(account.seasonChopWoodCharStats[CURRENT_SEASON])) migrated = true;
     if (account.coins === undefined) { account.coins = 0; migrated = true; }
     if (!account.charLevels) {
       account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1 };
@@ -1345,19 +1331,7 @@ function createAccount(id, nickname) {
     selectedCharacter: "red",
     lastLoginDate: getTodayString(),
     loginAttempts: 0,
-    charStats: {
-      red:    { wins: 0, games: 0 },
-      green:  { wins: 0, games: 0 },
-      blue:   { wins: 0, games: 0 },
-      orange: { wins: 0, games: 0 },
-      yellow: { wins: 0, games: 0 },
-      cyan:   { wins: 0, games: 0 },
-      purple: { wins: 0, games: 0 },
-      pink:   { wins: 0, games: 0 },
-      crimson: { wins: 0, games: 0 },
-      gold: { wins: 0, games: 0 },
-      ivory: { wins: 0, games: 0 },
-    },
+    charStats: createCharacterStats(),
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
     },
@@ -1375,38 +1349,15 @@ function createAccount(id, nickname) {
     bestStreak: 0,
     showdownWins: 0,
     chopWoodWins: 0,
-    chopWoodCharStats: {
-      red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
-      blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-      yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
-      purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
-      crimson: { wins: 0, games: 0 },
-      gold: { wins: 0, games: 0 },
-      ivory: { wins: 0, games: 0 },
-    },
+    chopWoodCharStats: createCharacterStats(),
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
     seasonCharStats: {
-      [CURRENT_SEASON]: {
-        red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
-        blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 }, purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
-        crimson: { wins: 0, games: 0 },
-        gold: { wins: 0, games: 0 },
-        ivory: { wins: 0, games: 0 },
-      },
+      [CURRENT_SEASON]: createCharacterStats(),
     },
     seasonChopWoodStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
     seasonChopWoodCharStats: {
-      [CURRENT_SEASON]: {
-        red: { wins: 0, games: 0 }, green: { wins: 0, games: 0 },
-        blue: { wins: 0, games: 0 }, orange: { wins: 0, games: 0 },
-        yellow: { wins: 0, games: 0 }, cyan: { wins: 0, games: 0 },
-        purple: { wins: 0, games: 0 }, pink: { wins: 0, games: 0 },
-        crimson: { wins: 0, games: 0 },
-        gold: { wins: 0, games: 0 },
-        ivory: { wins: 0, games: 0 },
-      },
+      [CURRENT_SEASON]: createCharacterStats(),
     },
   };
   initRotationState(account);
@@ -12111,7 +12062,7 @@ function setupInput() {
           html += `<div class="season-detail${expanded ? "" : " hidden"}" data-season-detail="${key}">`;
           const scs = account.seasonCharStats?.[key];
           if (scs) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
+            for (const c of getSeasonCharacterIds(scs)) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
@@ -12132,7 +12083,7 @@ function setupInput() {
             html += `<div class="stats-char" style="padding-left:12px;font-size:11px">${t("charWinrate", cwRate, cwSeason.wins, cwGames)}</div>`;
           }
           if (cwSeasonChars) {
-            for (const c of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold"]) {
+            for (const c of getSeasonCharacterIds(cwSeasonChars)) {
               const cs = cwSeasonChars[c];
               const name = c.charAt(0).toUpperCase() + c.slice(1);
               if (!cs || cs.games === 0) {
