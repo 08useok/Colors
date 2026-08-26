@@ -7758,12 +7758,13 @@ function isWallAhead(fighter, dirX, dirZ, lookahead) {
   }
   const checkX = fighter.mesh.position.x + (dirX / len) * lookahead;
   const checkZ = fighter.mesh.position.z + (dirZ / len) * lookahead;
+  const movementRadius = fighter.characterType === "chartreuse" ? 1.55 : fighter.radius;
   for (const solid of state.solids) {
     if (solid.type === "platform") continue;
-    if (intersectsRect(checkX, checkZ, fighter.radius, solid)) return true;
+    if (intersectsRect(checkX, checkZ, movementRadius, solid)) return true;
   }
   for (const rect of state.lakeRects) {
-    if (intersectsRect(checkX, checkZ, fighter.radius, rect)) return true;
+    if (intersectsRect(checkX, checkZ, movementRadius, rect)) return true;
   }
   return false;
 }
@@ -7879,7 +7880,10 @@ function moveFighter(fighter, desiredMove, dt) {
   next.x += desiredMove.x * dt;
   next.z += desiredMove.z * dt;
   const zone = (fighter.isPlayer && !state.chopWoodMode && !state.trainingMode && !state.takedownMode) ? getCurrentZone() : null;
-  resolveMovementCollision(next, fighter.radius, zone ? zone.radius : null);
+  // 샤르트뢰즈 GLB는 기본 파이터보다 몸의 가로 폭이 넓다. 실제 피격 판정은
+  // 유지하되 이동 충돌만 넓혀서 벽 안으로 몸이 파고들어 보이지 않게 한다.
+  const movementRadius = fighter.characterType === "chartreuse" ? 1.55 : fighter.radius;
+  resolveMovementCollision(next, movementRadius, zone ? zone.radius : null);
 
   pos.x = next.x;
   pos.z = next.z;
