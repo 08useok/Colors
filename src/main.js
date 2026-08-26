@@ -369,6 +369,23 @@ function ensureCharacterStats(stats, characterIds = ROSTER) {
   return changed;
 }
 
+// 계정 전체 트로피와 별개로 캐릭터별 트로피를 추적한다. 계산식과 적용 지점은
+// 계정 트로피와 동일(recordGameResult)하되, 저장 위치만 캐릭터별로 나뉜다.
+function createCharacterTrophies(characterIds = ROSTER) {
+  return Object.fromEntries(characterIds.map((characterId) => [characterId, 0]));
+}
+
+function ensureCharacterTrophies(trophies, characterIds = ROSTER) {
+  let changed = false;
+  for (const characterId of characterIds) {
+    if (typeof trophies[characterId] !== "number") {
+      trophies[characterId] = 0;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
 function getSeasonCharacterIds(stats) {
   const recordedIds = Object.keys(stats || {});
   return [...ROSTER, ...recordedIds.filter((characterId) => !ROSTER.includes(characterId))];
@@ -1160,6 +1177,10 @@ function loadAccount() {
       account.charStats = createCharacterStats();
       migrated = true;
     } else if (ensureCharacterStats(account.charStats)) migrated = true;
+    if (!account.charTrophies) {
+      account.charTrophies = createCharacterTrophies();
+      migrated = true;
+    } else if (ensureCharacterTrophies(account.charTrophies)) migrated = true;
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -1332,6 +1353,7 @@ function createAccount(id, nickname) {
     lastLoginDate: getTodayString(),
     loginAttempts: 0,
     charStats: createCharacterStats(),
+    charTrophies: createCharacterTrophies(),
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
     },
@@ -1448,6 +1470,13 @@ function updateLobbyUI(account) {
       const rate = Math.round((s.wins / s.games) * 100);
       el.textContent = t("winrate", rate, s.wins, s.games);
     }
+  }
+
+  // 캐릭터별 트로피 — winrate 루프와 달리 ROSTER를 그대로 써서 시즌에 새로
+  // 추가되는 캐릭터(예: chartreuse)가 배지 렌더링에서 누락되지 않게 한다.
+  for (const char of ROSTER) {
+    const trophyEl = document.getElementById(`trophy-${char}`);
+    if (trophyEl) trophyEl.textContent = `🏆 ${account.charTrophies[char] ?? 0}`;
   }
 
   // 연승 표시
@@ -2243,6 +2272,7 @@ function recordGameResult(rank, mode = "showdown") {
   account.coins = (account.coins || 0) + coinsEarned;
   const delta = calcTrophyChange(rank);
   account.trophies = Math.max(0, account.trophies + delta + bonus);
+  account.charTrophies[char] = Math.max(0, (account.charTrophies[char] ?? 0) + delta + bonus);
   saveAccount(account);
 
   for (const bot of leaderboardBots) {

@@ -1367,6 +1367,19 @@ body.lobby-active #takedown-hud {
   line-height: 1.4
 }
 
+.char-trophy {
+  width: 100%;
+  margin-top: 4px;
+  font-size: 10px;
+  color: #ffcf6b;
+  font-weight: 700;
+  line-height: 1.4
+}
+
+.char-trophy:empty {
+  display: none;
+}
+
 #streak-display {
   font-size: 12px;
   font-weight: 800;
