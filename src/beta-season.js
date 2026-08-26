@@ -4104,6 +4104,49 @@ function updateGoldRushAttackEffects(dt) {
   }
 }
 
+const SHOWDOWN_BOT_COLLISION_RADIUS = 0.9;
+
+function resolveShowdownBotWallCollision(position, radius = SHOWDOWN_BOT_COLLISION_RADIUS) {
+  let corrected = false;
+  // 모서리에서 두 벽이 동시에 겹칠 수 있어 두 번 보정한다.
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (const solid of showdownSolids) {
+      // 쇼다운 바닥도 높이 계산을 위해 solids에 들어 있으므로 벽만 충돌시킨다.
+      if (solid.top <= 2) continue;
+      const minX = solid.x - solid.halfW;
+      const maxX = solid.x + solid.halfW;
+      const minZ = solid.z - solid.halfD;
+      const maxZ = solid.z + solid.halfD;
+      const nearestX = THREE.MathUtils.clamp(position.x, minX, maxX);
+      const nearestZ = THREE.MathUtils.clamp(position.z, minZ, maxZ);
+      const offsetX = position.x - nearestX;
+      const offsetZ = position.z - nearestZ;
+      const distanceSquared = offsetX * offsetX + offsetZ * offsetZ;
+      if (distanceSquared >= radius * radius) continue;
+
+      corrected = true;
+      if (distanceSquared > 0.000001) {
+        const distance = Math.sqrt(distanceSquared);
+        const push = radius - distance;
+        position.x += (offsetX / distance) * push;
+        position.z += (offsetZ / distance) * push;
+        continue;
+      }
+
+      // AI 중심이 이미 벽 안에 들어간 경우 가장 가까운 바깥쪽으로 즉시 밀어낸다.
+      const exits = [
+        { distance: Math.abs(position.x - (minX - radius)), axis: "x", value: minX - radius },
+        { distance: Math.abs(position.x - (maxX + radius)), axis: "x", value: maxX + radius },
+        { distance: Math.abs(position.z - (minZ - radius)), axis: "z", value: minZ - radius },
+        { distance: Math.abs(position.z - (maxZ + radius)), axis: "z", value: maxZ + radius },
+      ];
+      exits.sort((a, b) => a.distance - b.distance);
+      position[exits[0].axis] = exits[0].value;
+    }
+  }
+  return corrected;
+}
+
 function spawnGoldPickup(position = null, dropped = false) {
   const naturalCount = goldPickups.filter((pickup) => !pickup.dropped).length;
   if (!dropped && naturalCount >= 20) return;
@@ -4180,6 +4223,11 @@ function updateGoldRushBots(dt) {
       const step = Math.min(distance, bot.speed * slowMultiplier * dt);
       bot.mesh.position.x += (dx / distance) * step;
       bot.mesh.position.z += (dz / distance) * step;
+      if (currentArenaMode === "showdown" && resolveShowdownBotWallCollision(bot.mesh.position)) {
+        canvas.dataset.showdownBotWallCorrection = String(
+          Number(canvas.dataset.showdownBotWallCorrection || 0) + 1,
+        );
+      }
       bot.mesh.rotation.y = Math.atan2(dx, dz);
       const ground = groundHeightAt(bot.mesh.position.x, bot.mesh.position.z);
       if (ground > -5) bot.mesh.position.y = THREE.MathUtils.damp(bot.mesh.position.y, ground + 0.05, 12, dt);
