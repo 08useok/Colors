@@ -4446,6 +4446,39 @@ function killGoldRushPlayer() {
   updateGoldRushHud();
 }
 
+// 연습용 공격 로봇(비매치 상태)에게 맞아 죽는 경우 전용 사망 처리.
+// killGoldRushPlayer()는 매치(active) 전용이라 여기서는 재사용하지 않고,
+// 부활 연출만 가볍게 재사용한다.
+function killPracticePlayer() {
+  if (goldRushState.dead) return;
+  goldRushState.health = 0;
+  goldRushState.dead = true;
+  goldRushState.respawnAt = clock.elapsedTime + 3;
+  player.visible = false;
+  playerGoldRushHealthBar.visible = false;
+  respawnOverlay.classList.remove("hidden");
+}
+
+// updateGoldRush()는 매치가 active일 때만 도는데, 연습 사망은 매치 밖에서
+// 일어나므로 매 프레임 별도로 부활 카운트다운을 처리해야 한다.
+function updatePracticeRespawn() {
+  if (goldRushState.active || !goldRushState.dead) return;
+  const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
+  respawnCountdownEl.textContent = String(Math.ceil(remaining));
+  if (remaining > 0) return;
+  goldRushState.dead = false;
+  goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+  goldRushState.health = goldRushState.maxHealth;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  resetPlayer();
+  player.visible = true;
+  playerGoldRushHealthBar.visible = true;
+  updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
+  respawnOverlay.classList.add("hidden");
+}
+
 function updateGoldRush(dt) {
   if (!goldRushState.active || goldRushState.ended) return;
   faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
@@ -4780,7 +4813,7 @@ function animate() {
       redGuardMesh.rotation.y += dt * 0.6;
     }
   }
-  if (attackRobot?.visible && !goldRushState.active && !goldRushState.ended && clock.elapsedTime >= attackRobot.userData.nextAttackAt) {
+  if (attackRobot?.visible && !goldRushState.active && !goldRushState.ended && !goldRushState.dead && clock.elapsedTime >= attackRobot.userData.nextAttackAt) {
     const distance = Math.hypot(player.position.x - attackRobot.position.x, player.position.z - attackRobot.position.z);
     attackRobot.userData.nextAttackAt = clock.elapsedTime + 2.4;
     if (distance <= 14) {
@@ -4798,6 +4831,7 @@ function animate() {
       goldRushState.nextRegenAt = clock.elapsedTime + 3;
       updateGoldRushCombatHud();
       createDamagePopup(player.position, robotDamage);
+      if (goldRushState.health <= 0) killPracticePlayer();
     }
   }
   if (attackRobot?.userData.healthBar) {
@@ -5387,6 +5421,7 @@ function animate() {
   if (ground < -5) resetPlayer();
   else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
   updateGoldRush(dt);
+  updatePracticeRespawn();
   updateTestCombatHud(dt);
   if (IS_BETA5_TEST && ["blue", "mint"].includes(betaState.selectedCharacter)) updateCrimsonUltimateGauge();
   updatePinkDeadAllyMarkers();
