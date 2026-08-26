@@ -3002,7 +3002,12 @@ function createStickman(color, skinId, normalizeBattleModel = false) {
   }
   if (color === 0x7fff00) {
     ensureChartreuseGlbLoading();
-    if (_chartreuseGlb.loop) return buildPinkRigModel(_chartreuseGlb, skinId);
+    // 쇼다운 AI는 짧게 이동·정지를 반복해 start/end 장면 전환이 겹치기 쉽다.
+    // 샤르트뢰즈는 전투에서 loop GLB 하나만 사용해 걷기 모델과 T포즈 모델이
+    // 동시에 보이는 현상을 원천 차단한다.
+    if (_chartreuseGlb.loop) {
+      return buildPinkRigModel({ start: null, loop: _chartreuseGlb.loop, end: null }, skinId);
+    }
   }
 
   const group = new THREE.Group();
