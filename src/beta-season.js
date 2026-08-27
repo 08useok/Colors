@@ -2111,9 +2111,11 @@ function createMintIceCreamMesh() {
     new THREE.ConeGeometry(scoopRadius, coneLength, 8, 1, true),
     new THREE.MeshStandardMaterial({ color: 0xd9a24d, roughness: 0.78, metalness: 0 }),
   );
-  // 콘의 뾰족한 끝(로컬 +Y)이 진행 방향의 반대(뒤쪽)를 향하도록 -90도 회전
+  // 콘의 뾰족한 끝(로컬 +Y)이 진행 방향의 반대(뒤쪽)를 향하도록 -90도 회전.
+  // 콘 밑면 반지름이 스쿱 반지름과 같아졌으므로, 스쿱 뒷면(z=-scoopRadius)에
+  // 정확히 맞닿도록 배치한다.
   cone.rotation.x = -Math.PI / 2;
-  cone.position.z = -(scoopRadius + coneLength / 2 - 0.06);
+  cone.position.z = -(scoopRadius + coneLength / 2);
   group.add(cone);
   return group;
 }
