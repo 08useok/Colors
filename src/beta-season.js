@@ -2108,7 +2108,7 @@ function createMintIceCreamMesh() {
   const coneLength = 0.34;
   const cone = new THREE.Mesh(
     // openEnded로 바닥면을 없애 스쿱 뒤에 자연스럽게 이어지도록 한다
-    new THREE.ConeGeometry(0.13, coneLength, 8, 1, true),
+    new THREE.ConeGeometry(scoopRadius, coneLength, 8, 1, true),
     new THREE.MeshStandardMaterial({ color: 0xd9a24d, roughness: 0.78, metalness: 0 }),
   );
   // 콘의 뾰족한 끝(로컬 +Y)이 진행 방향의 반대(뒤쪽)를 향하도록 -90도 회전
