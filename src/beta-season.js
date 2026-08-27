@@ -2811,13 +2811,39 @@ function performBlueBounceShot() {
   updateCrimsonUltimateGauge();
 }
 
+const MINT_SPECIAL_THROW_SPEED = 14;
+
+// 즉시 설치하지 않고 아이보리 아이스크림 투척과 같은 방식으로 포물선을
+// 그리며 날아가 착지 지점에서 장판이 생성되도록 한다.
 function performMintSpecial() {
   const def = BETA_CHARACTERS.mint.special;
   if (mintUltimateCharge < def.chargeRequired) return;
   mintUltimateCharge = 0;
   const yaw = player.rotation.y;
-  const x = player.position.x + Math.sin(yaw) * def.castRange;
-  const z = player.position.z + Math.cos(yaw) * def.castRange;
+  const targetX = player.position.x + Math.sin(yaw) * def.castRange;
+  const targetZ = player.position.z + Math.cos(yaw) * def.castRange;
+  const dx = targetX - player.position.x;
+  const dz = targetZ - player.position.z;
+  const range = Math.max(0.01, Math.hypot(dx, dz));
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.34, 14, 10),
+    new THREE.MeshStandardMaterial({ color: 0x8fffe9, emissive: 0x38cfc4, emissiveIntensity: 0.5, roughness: 0.35 }),
+  );
+  mesh.position.set(player.position.x, player.position.y + 1.35, player.position.z);
+  scene.add(mesh);
+  betaProjectiles.push({
+    mesh, characterId: "mint", vx: (dx / range) * MINT_SPECIAL_THROW_SPEED, vz: (dz / range) * MINT_SPECIAL_THROW_SPEED,
+    speed: MINT_SPECIAL_THROW_SPEED, traveled: 0, returnTraveled: 0, range, damage: 0,
+    splash: 0, type: "mintSpecial", hitRadius: 0.4, hit: new Set(), causesKnockback: false,
+    launchY: mesh.position.y, landingX: targetX, landingZ: targetZ,
+  });
+  attackComboState.textContent = "아이스크림 장판 투척";
+  canvas.dataset.lastMintField = `${targetX.toFixed(2)},${targetZ.toFixed(2)}`;
+  updateCrimsonUltimateGauge();
+}
+
+function createMintIceZone(x, z) {
+  const def = BETA_CHARACTERS.mint.special;
   const ground = groundHeightAt(x, z);
   const mesh = new THREE.Mesh(
     new THREE.CircleGeometry(def.radius, 56),
@@ -2836,8 +2862,6 @@ function performMintSpecial() {
   });
   createGroundPulse(def.radius, 0x8fffe9, mesh.position);
   attackComboState.textContent = "아이스크림 장판 설치";
-  canvas.dataset.lastMintField = `${x.toFixed(2)},${z.toFixed(2)}`;
-  updateCrimsonUltimateGauge();
 }
 
 function createChartreuseStatusEffect(kind, target, durationOverride = null) {
@@ -4928,10 +4952,10 @@ function animate() {
       projectile.mesh.position.z += projectile.vz * dt;
       if (projectile.returned) projectile.returnTraveled += step;
       else projectile.traveled += step;
-      // 독병은 던지는 무기 — 사거리 중간이 가장 높은 포물선을 그린다
-      if (projectile.type === "vial" || projectile.type === "ivoryIceCream") {
+      // 독병/아이스크림 투척류는 던지는 무기 — 사거리 중간이 가장 높은 포물선을 그린다
+      if (projectile.type === "vial" || projectile.type === "ivoryIceCream" || projectile.type === "mintSpecial") {
         const progress = Math.min(1, projectile.traveled / projectile.range);
-        const arcHeight = projectile.type === "ivoryIceCream" ? 4.2 : VIAL_ARC_HEIGHT;
+        const arcHeight = projectile.type === "vial" ? VIAL_ARC_HEIGHT : 4.2;
         projectile.mesh.position.y = projectile.launchY
           + Math.sin(progress * Math.PI) * arcHeight
           - progress * (projectile.launchY - 0.35);
@@ -4993,8 +5017,8 @@ function animate() {
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
     }
-    // 독병은 공중 경로에서 직접 충돌하지 않고 착지 폭발로만 피해를 준다.
-    if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial") {
+    // 독병/아이스크림 투척류는 공중 경로에서 직접 충돌하지 않고 착지 시점에만 효과를 낸다.
+    if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial" && projectile.type !== "mintSpecial") {
       for (const target of testTargets) {
         if (!target.visible || target.userData.isAlly || projectile.hit.has(target)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
@@ -5123,11 +5147,12 @@ function animate() {
     if (projectile.type === "boomerang") {
       if (projectile.returnTraveled >= projectile.range * 2) remove = true;
     } else if (projectile.traveled >= projectile.range) {
-      if (projectile.type === "ivoryIceCream" && !projectile.ivoryLandedAt) {
+      const isArcLandingType = projectile.type === "ivoryIceCream" || projectile.type === "mintSpecial";
+      if (isArcLandingType && !projectile.ivoryLandedAt) {
         projectile.mesh.position.set(projectile.landingX, 0.35, projectile.landingZ);
         projectile.traveled = projectile.range;
         projectile.ivoryLandedAt = clock.elapsedTime;
-      } else if (projectile.type !== "ivoryIceCream" || clock.elapsedTime - projectile.ivoryLandedAt >= 0.08) {
+      } else if (!isArcLandingType || clock.elapsedTime - projectile.ivoryLandedAt >= 0.08) {
         remove = true;
       }
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
@@ -5140,6 +5165,9 @@ function animate() {
           projectile.landingZ - directionZ,
           projectile.fromUltimate,
         );
+      }
+      if (remove && projectile.type === "mintSpecial") {
+        createMintIceZone(projectile.landingX, projectile.landingZ);
       }
       // 독병은 착지 지점에서 깨지며 주변에 광역 피해를 준다
       if (projectile.type === "vial" && projectile.splash > 0) shouldBreakVial = true;
