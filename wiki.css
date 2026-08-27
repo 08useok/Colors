@@ -240,3 +240,11 @@ footer > a:last-child { color:#fff; font-weight:800; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; transition:none !important; }
 }
+.patch-season-group { margin: 0 0 28px; }
+.patch-season-group > summary { display:flex; align-items:center; gap:14px; padding:18px 20px; margin-bottom:14px; border:1px solid rgba(177,72,72,.28); border-radius:16px; background:rgba(255,255,255,.78); cursor:pointer; list-style:none; user-select:none; }
+.patch-season-group > summary::-webkit-details-marker { display:none; }
+.patch-season-group > summary span:last-child { display:flex; align-items:baseline; gap:10px; }
+.patch-season-group > summary strong { font-size:1.25rem; }
+.patch-season-group > summary small { color:var(--muted); }
+.patch-season-arrow { width:11px; height:11px; border-right:3px solid var(--red); border-bottom:3px solid var(--red); transform:rotate(-45deg); transition:transform .18s ease; }
+.patch-season-group[open] .patch-season-arrow { transform:rotate(45deg); }

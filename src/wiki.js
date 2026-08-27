@@ -263,6 +263,47 @@ const guides = [
   { id:"currency", icon:"◇", title:["재화", "Currencies"], desc:["코인, 크레딧과 트로피를 어디서 얻고 사용하는지 확인하세요.", "How to earn and spend coins, credits, and trophies."], body:["코인은 꾸미기 아이템 상점에서 사용합니다. 크레딧은 캐릭터 구매와 성장에 사용되며, 베타 크레딧은 시즌 테스트에서 별도로 관리됩니다. 트로피는 경기 결과와 연승 보너스로 오르거나 내려갑니다.", "Coins buy cosmetics. Credits unlock and upgrade characters, while beta credits are stored separately for season tests. Trophies rise or fall through match results and streak bonuses."] },
 ];
 
+const legacyPatch = (version, date, titleKo, titleEn, itemsKo) => ({
+  version, date, title:[titleKo, titleEn],
+  items: itemsKo.map((item) => [item, item]),
+  summary:[`${titleKo}의 주요 변경 사항을 기록한 이전 버전 아카이브입니다.`, `Archived changes from ${titleEn}.`],
+  impact:["해당 버전 당시의 시스템·캐릭터·전투 환경 변경을 확인할 수 있습니다.", "Shows how systems, fighters, and combat changed in this historical version."],
+});
+
+const legacyPatches = [
+  legacyPatch("v1.4.10", "2026.07.05", "퍼플·Take Down 대규모 개선", "Purple & Take Down Overhaul", ["퍼플 체력 4,800→6,000, 독침 직격 피해·발각 추가", "퍼플 독병 피해·사거리와 지속 독 피해 상향", "Orange 재장전·사거리·폭발 범위 상향 및 광역 폭발 능력 구현", "Take Down 캐릭터 선택과 멀티플레이 자동 매칭 추가", "전 캐릭터 AI 거리 유지·후퇴 로직 개선"]),
+  legacyPatch("v1.4.9", "2026.06.30", "레드 공격 범위 조정", "Red Attack Range", ["Red 펀치 가로 사거리 2타일 증가"]),
+  legacyPatch("v1.4.8", "2026.06.30", "알파 시즌 4", "Alpha Season 4", ["알파 시즌 4 전환", "Rotation Mode 이벤트 시스템 추가", "Take Down 이벤트와 전용 8방향 대칭 맵 추가", "Take Down AI 캐릭터 중복 방지와 통계 반영"]),
+  legacyPatch("v1.4.7", "2026.06.29", "모델·이펙트·상점 개선", "Models, Effects & Shop", ["캐릭터 관절 구체 제거와 모델 외형 개선", "Pink 기타 디테일과 음파 이펙트 추가", "상점 레벨업 UI와 스킨 장착·해제 기능 개선", "캐릭터별 재장전 시간을 1발 기준으로 정리"]),
+  legacyPatch("v1.4.6", "2026.06.28", "핑크 출시", "Pink Release", ["탱커·서포터 Pink 추가", "상성표를 8캐릭터로 갱신", "Purple 약병 범위 6→5 하향"]),
+  legacyPatch("v1.4.5", "2026.06.28", "상태 효과와 AI 개선", "Status Effects & AI", ["둔화·독·피격 발광을 전신에 적용", "봇의 벽·호수 우회 경로 탐색 개선", "클릭 공격 시 가장 가까운 적 자동 조준 추가"]),
+  legacyPatch("v1.4.4", "2026.06.28", "퍼플과 스킨 시스템", "Purple & Skins", ["포이즌 컨트롤러 Purple 추가", "Alpha Red 한정 스킨과 스킨 시스템 추가", "전 캐릭터 적중·상태·투사체 꼬리 이펙트 추가", "수동 공격과 탭 전환 프리즈 문제 수정"]),
+  legacyPatch("v1.4.3", "2026.06.27", "레벨 6과 전투 모델 개선", "Level 6 & Combat Models", ["캐릭터 최대 레벨 6 추가", "팔꿈치·무릎 관절과 전용 자세 개선", "Yellow·Green·Blue·Orange 밸런스 조정", "벽·호수와 겹친 수풀 제거"]),
+  legacyPatch("v1.4.2", "2026.06.25", "성장 시스템과 알파 시즌 3", "Progression & Alpha Season 3", ["코인·캐릭터 레벨·마스터리 시스템 추가", "캐릭터 성장 상점 추가", "알파 시즌 3 전환", "Orange 파편 피해·재장전·범위 조정"]),
+  legacyPatch("v1.4.1", "2026.06.25", "캐릭터 밸런스", "Fighter Balance", ["Red 체력·공격 속도 상향", "Orange 체력·직격 피해 하향", "Yellow 사거리·감전 지속시간 하향"]),
+  legacyPatch("v1.4.0", "2026.06.25", "시안 출시", "Cyan Release", ["컨트롤 파이터 Cyan 추가", "상성표를 7캐릭터로 갱신", "Chop Wood 맵 세로 배치와 캐릭터 색상 통일"]),
+  legacyPatch("v1.3.9", "2026.06.25", "캐릭터 선택 화면 개선", "Character Select Improvements", ["선택 캐릭터 강조와 3D 미리보기 확대", "체력·공격·사거리·기동 스탯 바 추가", "시즌·버전과 캐릭터 설명 배치 개선"]),
+  legacyPatch("v1.3.8", "2026.06.25", "캐릭터 모델 개선", "Character Model Update", ["캐릭터 모델에 어깨·허벅지 관절 추가"]),
+  legacyPatch("v1.3.7", "2026.06.24", "옐로우 출시", "Yellow Release", ["전기 투사체와 감속을 사용하는 Yellow 추가", "5캐릭터 상성표와 경합 단계 추가", "캐릭터 선택 버튼과 인게임 수치 동기화 개선"]),
+  legacyPatch("v1.3.6", "2026.06.22", "알파 시즌 2와 리더보드", "Alpha Season 2 & Leaderboard", ["내 정보·리더보드와 AI 이름 추가", "시즌별 승률과 알파 시즌 2 추가", "Red·Green·Orange 밸런스와 AI 교전 거리 조정"]),
+  legacyPatch("v1.3.5", "2026.06.22", "오렌지·레드 상향", "Orange & Red Buffs", ["Orange 파편 피해와 투사체 판정 상향", "Red 공격력 10% 상향", "탄약 UI 갱신 문제 수정"]),
+  legacyPatch("v1.3.4", "2026.06.22", "Chop Wood 조정", "Chop Wood Tuning", ["Chop Wood 자기장과 이동 제한 제거", "나무 체력 100→50, 벌목 시간 2초→1초"]),
+  legacyPatch("v1.3.3", "2026.06.22", "게임 모드 선택", "Mode Selection", ["Showdown·Chop Wood 모드 선택 UI 추가", "Chop Wood 팀 마커와 킬피드 색상 추가", "Red 공격력 10% 상향"]),
+  legacyPatch("v1.3.2", "2026.06.22", "전투 밸런스와 정리", "Combat Balance & Cleanup", ["Orange 파편 사거리 하향", "Red 이동 속도 상향, Blue 공격 속도 하향", "미사용 코드 정리와 Chop Wood 기획 추가"]),
+  legacyPatch("v1.3.1", "2026.06.21", "UI·맵 안정성 개선", "UI & Map Stability", ["Orange 조준선과 4캐릭터 상성표 추가", "맵 외부 오브젝트 제거와 경계 벽 추가", "승리 결과 화면·로비 UI·번역 구조 개선"]),
+  legacyPatch("v1.3.0", "2026.06.21", "오렌지 출시", "Orange Release", ["폭탄과 5갈래 폭발을 사용하는 Orange 추가", "자기장 색상·축소 시간 조정", "받은 피해 팝업과 Orange 사거리 적용"]),
+  legacyPatch("v1.2.9", "2026.06.20", "AI·수풀·로딩 개선", "AI, Bushes & Loading", ["AI 타겟·자기장·캐릭터별 전략 개선", "공격·피격 시 3초 발각되는 수풀 전투 추가", "이동 속도와 Green 판정 조정", "훈련장·로딩·백그라운드 진행 안정화"]),
+  legacyPatch("v1.2.8", "2026.06.19", "알파 시즌 1 전투 경험 개선", "Alpha Season 1 Polish", ["알파 시즌 1 UI와 전투 경험 개선", "캐릭터 카드와 재장전·피격 UI 개선", "킬 로그·승률·최고 기록 추가"]),
+  legacyPatch("v1.2.6", "2026.06.19", "그린과 통계 조정", "Green & Stats", ["Green 공격 간격 0.40→0.45초", "캐릭터 통계 표시와 기타 버그 개선"]),
+  legacyPatch("v1.2.5", "2026.06.19", "훈련장·로딩·밸런스", "Training, Loading & Balance", ["훈련장 더미 자동 부활과 킬로그 정리", "로딩 화면·무한 로딩 문제 개선", "이동 속도와 Green 부메랑 판정 조정"]),
+  legacyPatch("v1.2.3", "2026.06.19", "다국어 지원", "Localization", ["한국어·영어 다국어 시스템 추가"]),
+  legacyPatch("v1.2.2", "2026.06.19", "로비 메뉴 배치", "Lobby Menu Layout", ["상성표와 패치노트를 로비 우측 상단으로 이동"]),
+  legacyPatch("v1.2.1", "2026.06.19", "알파 시즌 1 시작", "Alpha Season 1 Launch", ["알파 시즌 1 시작", "상성표 설명과 패치노트 스크롤 개선"]),
+  legacyPatch("v1.2", "2026.06.19", "전적·연승·상성표", "Records, Streaks & Matchups", ["캐릭터별 승률·판수·승리 횟수 추가", "연승 보너스 트로피 시스템 추가", "상성표와 패치노트 추가"]),
+  legacyPatch("v1.1", "2026.06.18", "회복·수풀·AI 개선", "Healing, Bushes & AI", ["전투 이탈 후 일괄 회복 방식으로 변경", "수풀 매복 정지와 자기장 중 회복 문제 수정", "수풀 GPU와 AI 타겟팅 최적화"]),
+  legacyPatch("v1.0", "2026.06.14", "COLORS 최초 출시", "COLORS Initial Release", ["Red·Green·Blue 3종 캐릭터", "배틀 맵 3종 로테이션", "트로피·순위·수풀 은신·훈련장 시스템"]),
+];
+
 const patches = [
   { version:"v1.5.4", date:"2026.08.24", title:["베타 시즌 4 업데이트", "Beta Season 4 Update"], items:[
     ["신규 영웅 캐릭터 샤르트뢰즈와 무작위 탄환 4종 추가", "Added the new Hero fighter Chartreuse and four randomized ammo types"],
@@ -292,6 +333,11 @@ const patches = [
     ["AI 9명과 경쟁하는 Gold Rush 모드 추가", "Added Gold Rush with nine AI rivals"],
     ["전체 상성표와 시즌 위키 갱신", "Updated the full matchup table and season wiki"],
   ], summary:["베타 시즌 2는 Gold와 Gold Rush를 중심으로 한 일주일 정식 시즌입니다.", "Beta Season 2 is a one-week live season centered on Gold and Gold Rush."], impact:["Gold의 분열 경로와 고장 지대가 좁은 길 교전에 새로운 제어 선택지를 만듭니다.", "Gold's split paths and Malfunction Zone add new control decisions in chokepoint fights."] },
+  { version:"v1.5.1", date:"2026.08.01", title:["베타 시즌 1 업데이트", "Beta Season 1 Update"], items:[
+    ["Green·Orange·Red·Yellow 전용 3D 모델과 전 캐릭터 카툰 셰이딩 적용", "Added dedicated 3D models for Green, Orange, Red, and Yellow plus cartoon shading for all fighters"],
+    ["Crimson 조준선과 멀티플레이 타격 이펙트·사운드 동기화 개선", "Improved Crimson aiming and multiplayer hit effect/audio synchronization"],
+    ["상성표·카메라·캐릭터별 사거리와 시즌 로비 UI 개선", "Updated matchups, camera, per-fighter ranges, and the seasonal lobby UI"],
+  ], summary:["베타 시즌 1의 3D 표현과 전투 동기화, 로비 정보를 다듬은 업데이트입니다.", "A Beta Season 1 update polishing 3D presentation, combat sync, and lobby information."], impact:["캐릭터 구분과 조준 피드백이 선명해지고 원격 전투 표현이 안정화되었습니다.", "Fighters are easier to read, aiming feedback is clearer, and remote combat presentation is more stable."] },
   { version:"v1.5.0", date:"2026.07.27", title:["베타 시즌 1 시작", "Beta Season 1 Launch"], items:[
     ["신규 영웅 캐릭터 Crimson과 KO 스트레이트 궁극기 추가", "Added the new Hero fighter Crimson and KO Straight ultimate"],
     ["캐릭터 등급, 구매 상점과 β 크레딧 도입", "Introduced character rarities, character shop, and Beta Credits"],
@@ -317,6 +363,7 @@ const patches = [
     ["캐릭터별 전용 자세와 소품 추가", "Added unique poses and props for characters"],
     ["Take Down 캐릭터 선택 화면 개선", "Improved Take Down character selection"],
   ], summary:["캐릭터의 개성을 강화하고 Take Down 출전 준비 과정을 알아보기 쉽게 만든 시각 개선 업데이트입니다.", "A visual update that strengthens character identity and clarifies the Take Down preparation flow."], impact:["로비에서 캐릭터를 구분하기 쉬워졌으며, Take Down에서 출전 가능한 캐릭터를 더 빠르게 선택할 수 있습니다.", "Characters are easier to distinguish in the lobby, and eligible Take Down fighters can be selected more quickly."] },
+  ...legacyPatches,
 ];
 
 let lang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
@@ -439,12 +486,12 @@ function renderPatches() {
   </article>`;
   const betaPatches = patches.filter((patch) => Number(patch.version.match(/^v1\.(\d+)/)?.[1] ?? 0) >= 5);
   const alphaPatches = patches.filter((patch) => !betaPatches.includes(patch));
-  const group = (title, entries) => `<section class="patch-season-group">
-    <div class="section-head"><div><h2>${title}</h2><p>${entries.length}${lang === "ko" ? "개 업데이트" : " updates"}</p></div></div>
+  const group = (title, entries, open = false) => `<details class="patch-season-group" ${open ? "open" : ""}>
+    <summary><span class="patch-season-arrow" aria-hidden="true"></span><span><strong>${title}</strong><small>${entries.length}${lang === "ko" ? "개 업데이트" : " updates"}</small></span></summary>
     <div class="patch-list">${entries.map(patchCard).join("")}</div>
-  </section>`;
+  </details>`;
   return `${sectionHead(tr("patchTitle"), tr("patchDesc"))}
-    ${group(lang === "ko" ? "베타 시즌" : "Beta Seasons", betaPatches)}
+    ${group(lang === "ko" ? "베타 시즌" : "Beta Seasons", betaPatches, true)}
     ${group(lang === "ko" ? "알파 시즌" : "Alpha Seasons", alphaPatches)}`;
 }
 
