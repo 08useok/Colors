@@ -246,6 +246,28 @@ const guides = [
 ];
 
 const patches = [
+  { version:"v1.5.4", date:"2026.08.24", title:["베타 시즌 4 업데이트", "Beta Season 4 Update"], items:[
+    ["신규 영웅 캐릭터 샤르트뢰즈와 무작위 탄환 4종 추가", "Added the new Hero fighter Chartreuse and four randomized ammo types"],
+    ["샤르트뢰즈 궁극기 ‘49% 정신 차림’ 추가", "Added Chartreuse's 49% Focus ultimate"],
+    ["레드 궁극기 ‘레드 가드’: 8초 보호막과 받는 피해 60% 감소", "Added Red Guard: an eight-second shield with 60% damage reduction"],
+    ["쇼다운을 회색 벽·아스팔트·콘크리트 바닥의 도시 테마로 변경", "Changed Showdown to an urban theme with gray walls, asphalt, and concrete"],
+    ["도시 봉쇄 작전 이벤트와 Take Down 복각", "Added the City Lockdown event and brought back Take Down"],
+    ["시즌 전용 음악, 샤르트뢰즈 GLB 걷기 모델과 전투 이펙트 추가", "Added seasonal music, Chartreuse's GLB walk model, and combat effects"],
+    ["레드·그린·시안 버프, 핑크·크림슨 너프, 퍼플·옐로우 조정", "Buffed Red, Green, and Cyan; nerfed Pink and Crimson; adjusted Purple and Yellow"],
+  ], summary:["샤르트뢰즈와 레드 궁극기를 출시하고 쇼다운 전장을 도시 테마로 개편한 베타 시즌 4 업데이트입니다.", "Beta Season 4 introduces Chartreuse and Red's ultimate while rebuilding Showdown around an urban battlefield."], impact:["무작위 탄환과 보호막이 새로운 변수로 추가되며, 수풀이 없는 도시 맵에서는 벽과 사거리 관리가 더 중요해집니다.", "Random ammo and shielding add new variables, while the bushless city map puts more emphasis on walls and range control."] },
+  { version:"v1.5.3.1", date:"2026.08.12", title:["핑크 궁극기 패치", "Pink Ultimate Patch"], items:[
+    ["핑크 궁극기를 모든 아군에게 부활 효과를 부여하는 능력으로 리워크", "Reworked Pink's ultimate to grant revival to all allies"],
+    ["부활 대상은 사망 위치에서 3초 연출 후 부활", "Revive targets return at their death position after a three-second sequence"],
+    ["부활 대상 음표 표시와 강화된 부활 이펙트 추가", "Added a musical-note marker and enhanced revival effects"],
+    ["로비와 캐릭터 미리보기를 분리하고 GLB 전환 안정성 개선", "Separated lobby and character previews and improved GLB transition stability"],
+  ], summary:["핑크의 궁극기를 팀 전체 부활 지원 능력으로 재설계하고 캐릭터 미리보기 구조를 안정화했습니다.", "This patch redesigns Pink's ultimate as a team-wide revival tool and stabilizes character previews."], impact:["핑크는 전투 전에 아군에게 부활 기회를 미리 부여해 팀 교전의 흐름을 뒤집을 수 있습니다.", "Pink can pre-apply revival to allies and potentially reverse the outcome of a team fight."] },
+  { version:"v1.5.3", date:"2026.08.10", title:["베타 시즌 3 업데이트", "Beta Season 3 Update"], items:[
+    ["신규 캐릭터 아이보리와 아이스크림 투사체·지속 장판 추가", "Added Ivory with ice-cream projectiles and persistent zones"],
+    ["그린 궁극기와 ‘주문 왔어요~!’ 승리 누적 이벤트 추가", "Added Green's ultimate and the Orders Up win-streak event"],
+    ["베타 시즌 3 맵 테마, 시즌 스킨과 이벤트 보상 추가", "Added the Beta Season 3 map theme, seasonal skins, and event rewards"],
+    ["재시작 후 잔여 이펙트·오브젝트와 쇼다운 시작 승리음 문제 수정", "Fixed leftover effects after restart and the Showdown victory sound at match start"],
+    ["옐로우 공격력·쿨다운 조정과 퍼플 독침 확산각·독병 사거리 조정", "Adjusted Yellow's damage and cooldown plus Purple's needle spread and poison-bottle range"],
+  ], summary:["지역 제어형 캐릭터 아이보리와 새로운 시즌 이벤트를 중심으로 전투 표현과 안정성을 개선한 업데이트입니다.", "Beta Season 3 centers on the area-control fighter Ivory and a new seasonal event while improving combat presentation and stability."], impact:["아이보리의 지속 장판이 좁은 길과 목표 지역을 통제하며, 캐릭터별 사거리와 재장전 관리의 중요성이 커집니다.", "Ivory's persistent zones control chokepoints and objectives, increasing the importance of character range and reload management."] },
   { version:"v1.5.2", date:"2026.08.03", title:["베타 시즌 2 업데이트", "Beta Season 2 Update"], items:[
     ["베타 시즌 2 정식 시작 및 Gold 추가", "Launched Beta Season 2 and added Gold"],
     ["연쇄 금광석 3단 분열과 고장 지대 궁극기 추가", "Added three-stage Chain Gold Ore and Malfunction Zone"],
