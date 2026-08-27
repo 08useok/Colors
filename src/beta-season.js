@@ -4680,13 +4680,13 @@ let directionalUltimateKeyboardAiming = false;
 addEventListener("keydown", (event) => {
   keys.add(event.code);
   if (event.repeat || modal.classList.contains("hidden") === false) return;
-  if (event.code === "KeyQ" && betaState.selectedCharacter === "ivory") {
+  if ((event.code === "KeyQ" || event.code === "Space") && betaState.selectedCharacter === "ivory") {
     event.preventDefault();
     ivoryUltimateKeyboardAiming = true;
     ivoryUltimateAiming = true;
     ivoryUltimateAimIndicator.visible = true;
     canvas.dataset.ultimateAim = "keyboard-manual";
-  } else if (event.code === "KeyQ" && DIRECTIONAL_ULTIMATE_CHARACTERS.has(betaState.selectedCharacter)) {
+  } else if ((event.code === "KeyQ" || event.code === "Space") && DIRECTIONAL_ULTIMATE_CHARACTERS.has(betaState.selectedCharacter)) {
     event.preventDefault();
     directionalUltimateKeyboardAiming = true;
     directionalUltimateAiming = true;
@@ -4698,7 +4698,7 @@ addEventListener("keydown", (event) => {
 });
 addEventListener("keyup", (event) => {
   keys.delete(event.code);
-  if (event.code !== "KeyQ") return;
+  if (event.code !== "KeyQ" && event.code !== "Space") return;
   if (ivoryUltimateKeyboardAiming) {
     event.preventDefault();
     ivoryUltimateKeyboardAiming = false;
