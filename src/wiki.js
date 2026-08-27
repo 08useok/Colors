@@ -24,9 +24,9 @@ const copy = {
     searchPlaceholder: "캐릭터, 스킬, 맵을 검색하세요", battleRules: "전투 규칙", categories: "카테고리",
     liveData: "베타 데이터 연동", liveDataDesc: "능력치와 일반 공격은 베타 설정 기준입니다.",
     footer: "이 위키의 수치 정보는 게임 설정을 기준으로 자동 표시됩니다.", backGame: "게임으로 돌아가기 →",
-    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 11명의 파이터를 만나보세요.",
+    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 12명의 파이터를 만나보세요.",
     viewAll: "모두 보기", beginnerGuides: "초보자 가이드", guideDesc: "처음 전장에 들어가기 전에 알아둘 핵심 정보",
-    latestPatch: "최근 업데이트", seasonDesc: "베타 시즌 1의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
+    latestPatch: "최근 업데이트", seasonDesc: "v1.5.4까지의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
     speed: "이동 속도", cooldown: "공격 간격", reload: "장전", role: "역할", basicAttack: "일반 공격",
     strategy: "초보자 운영 팁", related: "관련 문서", open: "문서 보기", allGuides: "게임 가이드",
     guidePageDesc: "전투 규칙부터 계정 성장까지, 플레이에 필요한 시스템을 익혀보세요.",
@@ -42,9 +42,9 @@ const copy = {
     searchPlaceholder: "Search characters, skills, and maps", battleRules: "Combat Rules", categories: "Categories",
     liveData: "Beta game data", liveDataDesc: "Stats and basic attacks use the Beta config.",
     footer: "Numerical information is loaded from the current game configuration.", backGame: "Back to game →",
-    allCharacters: "All Characters", charDesc: "Meet eleven fighters with distinct colors and combat styles.",
+    allCharacters: "All Characters", charDesc: "Meet twelve fighters with distinct colors and combat styles.",
     viewAll: "View all", beginnerGuides: "Beginner Guides", guideDesc: "Essentials to know before your first battle",
-    latestPatch: "Latest Updates", seasonDesc: "Recent changes in Beta Season 1", hp: "HP", damage: "Damage", range: "Range",
+    latestPatch: "Latest Updates", seasonDesc: "Latest changes through v1.5.4", hp: "HP", damage: "Damage", range: "Range",
     speed: "Move Speed", cooldown: "Cooldown", reload: "Reload", role: "Role", basicAttack: "Basic Attack",
     strategy: "Beginner Strategy", related: "Related articles", open: "Open article", allGuides: "Game Guide",
     guidePageDesc: "Learn the systems you need, from combat rules to account progression.",
@@ -120,6 +120,12 @@ const characterMeta = {
     desc: ["아이스크림 투척과 지속 장판으로 전장을 제어하는 파이터입니다.", "An area-control fighter who uses ice cream throws and lingering zones to control the battlefield."],
     tip: ["적의 현재 위치보다 이동할 길목에 아이스크림을 던지세요. 장판이 남아 있는 동안은 무리하게 추격하지 않아도 공간을 지킬 수 있습니다.", "Throw ice cream at routes the enemy will take, not only their current position. The lingering zone can hold space without over-chasing."],
     range: 10, damage: 1100,
+  },
+  chartreuse: {
+    role: ["변칙형 딜러", "Wildcard Damage"], attack: ["샤단라", "Shadanra"],
+    desc: ["강화탄·CC탄·흑사병탄·무탄 중 하나를 무작위로 발사해 매 공격의 결과가 달라지는 영웅 파이터입니다.", "A Hero fighter whose Shadanra randomly fires an enhanced, CC, plague, or blank round."],
+    tip: ["탄환 UI의 색을 확인하고 다음 효과에 맞춰 움직이세요. 궁극기는 무탄을 제거해 6초 동안 안정적으로 압박할 때 사용합니다.", "Read the ammo UI color and adapt to the next effect. Use the ultimate to remove blank rounds and pressure reliably for six seconds."],
+    range: 9.5, damage: 1200,
   },
 };
 
@@ -227,7 +233,19 @@ characterDetails.ivory = {
   other: ["궁극기 단체 주문은 목표 지점의 중앙과 네 방향에 아이스크림 5개를 던집니다. 궁극기 게이지는 일반 공격과 장판 피해가 적중할 때 충전됩니다.", "Group Order throws five ice creams at the target area: one in the center and one in each cardinal direction. Its gauge charges when basic attacks and zone damage hit."],
 };
 
+characterDetails.chartreuse = {
+  setting: ["어딘가 나사 빠지고 멍청해 보이지만, 그가 만든 ‘샤단라’는 늘 이런 식이라 본인에게는 평범한 영웅 파이터입니다.", "He may look absent-minded, but the strange Shadanra he built is perfectly ordinary by his standards."],
+  attack: ["샤단라는 공격할 때마다 네 탄환 중 하나를 무작위로 선택합니다. 강화탄은 2,400 피해, CC탄은 무작위 CC·디버프, 흑사병탄은 즉사 판정, 무탄은 피해 없이 발사됩니다. 기본 사거리는 9.5타일입니다.", "Shadanra randomly selects one of four rounds per attack. Enhanced rounds deal 2,400 damage, CC rounds apply a random crowd-control effect or debuff, plague rounds execute, and blank rounds deal no damage. Base range is 9.5 tiles."],
+  strong: ["상태 이상에 취약하거나 예측하기 쉬운 이동을 하는 상대", "Targets vulnerable to status effects or moving predictably"],
+  weak: ["무탄이 나온 순간 빠르게 진입하는 근접 파이터", "Melee fighters who engage during a blank-round window"],
+  matchup: ["탄환별 UI 색상으로 현재 탄환을 확인하세요. ‘49% 정신 차림’ 사용 중에는 무탄이 제외되고 나머지 세 탄환이 같은 확률로 등장합니다.", "Check the ammo UI color before firing. During 49% Focus, blank rounds are removed and the other three rounds appear at equal rates."],
+  history: [["v1.5.4", "베타 시즌 4 신규 영웅 캐릭터로 추가", "v1.5.4", "Added as the new Hero fighter for Beta Season 4"]],
+  other: ["궁극기는 8회 충전이 필요하며 6초간 지속됩니다. CC탄에는 넉백·고장·독·둔화·발각 등 CC기와 디버프가 포함됩니다.", "The ultimate requires 8 charge and lasts 6 seconds. CC rounds may apply effects such as knockback, malfunction, poison, slow, or reveal."],
+};
+
 const guides = [
+  { id:"beta4", icon:"β4", title:["베타 시즌 4", "Beta Season 4"], desc:["v1.5.4 도시 테마 업데이트", "The v1.5.4 urban-theme update"], body:["베타 시즌 4는 샤르트뢰즈, 레드 가드, 도시형 쇼다운과 도시 봉쇄 작전을 추가했습니다. 회색 빌딩 벽과 아스팔트·콘크리트 바닥을 사용하며 수풀은 등장하지 않습니다.", "Beta Season 4 adds Chartreuse, Red Guard, urban Showdown, and City Lockdown. Its battlefield uses gray building walls with asphalt and concrete floors and contains no bushes."], sections:[[["신규 전투 콘텐츠", "New combat content"], ["샤르트뢰즈의 무작위 탄환 4종과 ‘49% 정신 차림’, 레드의 8초 보호막 궁극기 ‘레드 가드’가 추가되었습니다.", "Added Chartreuse's four random rounds and 49% Focus plus Red's eight-second Red Guard shield."]], [["도시 쇼다운", "Urban Showdown"], ["수풀이 없는 도시 전장에서는 빌딩 벽, 사거리와 시야 관리가 핵심입니다.", "Without bushes, the urban arena emphasizes building walls, range, and sightline control."]], [["이벤트", "Event"], ["도시 봉쇄 작전이 추가되고 Take Down이 복각되었습니다.", "City Lockdown was added and Take Down returned."]]] },
+  { id:"beta3", icon:"β3", title:["베타 시즌 3", "Beta Season 3"], desc:["v1.5.3 아이스크림 테마 업데이트", "The v1.5.3 ice-cream-theme update"], body:["베타 시즌 3는 지역 제어형 캐릭터 아이보리, 그린 궁극기와 시즌 이벤트를 추가했습니다.", "Beta Season 3 adds the area-control fighter Ivory, Green's ultimate, and seasonal events."], sections:[[["아이보리", "Ivory"], ["아이스크림 투척과 4초 지속 장판으로 길목을 통제하며, 궁극기 단체 주문은 다섯 장판을 배치합니다.", "Ivory controls lanes with ice-cream throws and four-second zones; Group Order deploys five zones."]], [["핑크 궁극기 패치", "Pink ultimate patch"], ["v1.5.3.1에서 핑크 궁극기가 모든 아군에게 부활 기회를 부여하도록 변경되었습니다.", "v1.5.3.1 changed Pink's ultimate to grant every ally a revival opportunity."]]] },
   { id:"beta2", icon:"β2", title:["베타 시즌 2", "Beta Season 2"], desc:["v1.5.2 정식 시즌 업데이트", "The v1.5.2 live season update"], body:["베타 시즌 2는 2026년 8월 3일 00:00 KST에 시작해 8월 10일 00:00 KST에 종료됩니다. Gold와 Gold Rush, 시즌 한정 스킨을 포함합니다.", "Beta Season 2 runs from August 3, 2026 00:00 KST to August 10, 2026 00:00 KST. It includes Gold, Gold Rush, and seasonal skins."], sections:[[["핵심 콘텐츠", "Highlights"], ["신규 전설 캐릭터 Gold, 연쇄 금광석과 고장 지대 궁극기, Gold Rush 경쟁 모드를 추가했습니다.", "Added Gold, the Chain Gold Ore and Malfunction Zone kit, and the Gold Rush competitive mode."]], [["기간", "Schedule"], ["시작 2026.08.03 00:00 KST · 종료 2026.08.10 00:00 KST", "Starts 2026.08.03 00:00 KST · Ends 2026.08.10 00:00 KST"]]] },
   { id:"goldrush", icon:"🪙", title:["골드 러쉬", "Gold Rush"], desc:["금 10개를 지켜 승리하는 10인 모드", "A 10-player mode won by holding 10 gold"], body:["중앙 금광과 맵에 생성되는 금을 자동으로 획득합니다. 금 10개를 모은 뒤 10초간 보유하면 즉시 승리합니다. AI 9명이 함께 경쟁합니다.", "Gold spawning at the center and around the map is collected automatically. Hold 10 gold for 10 seconds to win instantly against nine AI rivals."], sections:[[["승리 조건", "Win condition"], ["금 10개 보유 후 10초 유지. 3분이 끝나면 가장 많은 금을 보유한 플레이어가 승리합니다.", "Hold 10 gold for 10 seconds. At three minutes, the fighter holding the most gold wins."]]] },
   { id:"beta1", icon:"β", title:["베타 시즌 1", "Beta Season 1"], desc:["v1.5.0에서 시작된 COLORS의 첫 베타 시즌과 핵심 변화를 소개합니다.", "Meet the first Beta season of COLORS and its major v1.5.0 changes."], body:["2026년 7월 27일 시작된 베타 시즌 1은 신규 영웅 캐릭터 Crimson, 캐릭터 등급과 구매, β 크레딧, 시즌 한정 스킨을 도입했습니다. 알파 시즌 1~4의 전적은 그대로 보존되며 새로운 경기는 beta1 전적으로 따로 누적됩니다.", "Beta Season 1 launched on July 27, 2026 with the new Hero fighter Crimson, character rarities and purchases, Beta Credits, and seasonal skins. Alpha Season 1–4 records remain intact while new matches are tracked separately under beta1."], sections:[
@@ -329,6 +347,7 @@ function betaAttackStats(id) {
   if (id === "crimson") return { damage: stats.attackDamage * stats.attackCount, range: stats.attackRange };
   if (id === "gold") return { damage: stats.stage1Damage, range: stats.stage1Range };
   if (id === "ivory") return { damage: stats.iceCreamDamage, range: stats.iceCreamRange };
+  if (id === "chartreuse") return { damage: stats.chartreuseDamage, range: stats.chartreuseRange };
   if (id === "purple") return { damage: stats.vialDamage, range: stats.vialRange };
   return { damage: stats.healCircleDamage, range: stats.healCircleRange };
 }
@@ -393,7 +412,14 @@ function renderSystems() {
 
 function renderShop() {
   const skins = Object.values(SKINS);
+  const fighters = [
+    ["Red · Green · Blue", "common", 0],
+    ["Orange · Yellow · Cyan · Purple · Pink", "rare", 200],
+    ["Crimson · Ivory · Chartreuse", "hero", 900],
+    ["Gold", "legendary", 1200],
+  ];
   return `${sectionHead(tr("shopTitle"), tr("shopDesc"))}
+    <div class="home-panels"><section class="info-panel"><h3>${lang === "ko" ? "캐릭터 해금" : "Character Unlocks"}</h3><p>${lang === "ko" ? "크레딧으로 캐릭터를 해금합니다. 이미 보유한 캐릭터는 다시 구매할 필요가 없습니다." : "Unlock fighters with Credits. Fighters already owned never need to be purchased again."}</p>${fighters.map(([names, rarity, cost]) => `<div class="patch-line"><b>${names}</b><span>${rarity} · ${cost ? `◇ ${fmt(cost)}` : tr("free")}</span></div>`).join("")}</section><section class="info-panel"><h3>${lang === "ko" ? "수집품 상점" : "Collection Shop"}</h3><p>${lang === "ko" ? "시즌 스킨은 코인으로 구매하며 순위 보상 스킨은 조건을 달성하면 무료로 지급됩니다." : "Seasonal skins cost Coins, while placement reward skins are granted free when their conditions are met."}</p></section></div>
     <div class="skin-grid">${skins.map((skin) => `<article class="skin-card">
       <div class="skin-swatch">${skin.character[0].toUpperCase()}</div>
       <h3>${skin.name}</h3><p>${skin.character[0].toUpperCase()+skin.character.slice(1)} · ${skin.season.toUpperCase()}</p>
@@ -493,7 +519,7 @@ function openCharacter(id, updateUrl = true) {
       </section>
 
       <section class="character-section" id="char-section-8"><h3><span>8</span>${labels[7]}</h3><p>${loc(detail.other)}</p>
-        <p><button class="guide-link" data-dialog-open="guide:combat"><span>⚔</span>${loc(guides[0].title)}</button></p>
+        <p><button class="guide-link" data-dialog-open="guide:combat"><span>⚔</span>${loc(guides.find((guide) => guide.id === "combat").title)}</button></p>
       </section>
     </div>`;
   document.title = `${id[0].toUpperCase()+id.slice(1)} | COLORS 위키`;
