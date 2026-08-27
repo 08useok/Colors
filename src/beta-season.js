@@ -3733,21 +3733,34 @@ ultimateButton.addEventListener("click", () => {
 });
 
 let ivoryUltimateAiming = false;
+// 민트는 아이보리처럼 거리를 조절하진 않고 방향만 조준한다 — 장판은 항상
+// 바라보는 방향 고정 거리(castRange)에 생성된다.
+let mintSpecialAiming = false;
 ultimateButton.addEventListener("pointerdown", (event) => {
-  if (betaState.selectedCharacter !== "ivory") return;
-  ivoryUltimateAiming = true;
-  ivoryUltimateAimIndicator.visible = true;
-  ultimateButton.setPointerCapture(event.pointerId);
-  canvas.dataset.ultimateAim = "manual";
+  if (betaState.selectedCharacter === "ivory") {
+    ivoryUltimateAiming = true;
+    ivoryUltimateAimIndicator.visible = true;
+    ultimateButton.setPointerCapture(event.pointerId);
+    canvas.dataset.ultimateAim = "manual";
+  } else if (betaState.selectedCharacter === "mint") {
+    mintSpecialAiming = true;
+    ultimateButton.setPointerCapture(event.pointerId);
+    canvas.dataset.ultimateAim = "manual";
+  }
 });
 addEventListener("pointermove", (event) => {
   if (ivoryUltimateAiming) aimPlayerAtPointer(event, "ultimate");
+  else if (mintSpecialAiming) aimPlayerAtPointer(event);
 });
 addEventListener("pointerup", () => {
-  if (!ivoryUltimateAiming) return;
-  ivoryUltimateAiming = false;
-  ivoryUltimateAimIndicator.visible = false;
-  canvas.dataset.ultimateAim = "released";
+  if (ivoryUltimateAiming) {
+    ivoryUltimateAiming = false;
+    ivoryUltimateAimIndicator.visible = false;
+    canvas.dataset.ultimateAim = "released";
+  } else if (mintSpecialAiming) {
+    mintSpecialAiming = false;
+    canvas.dataset.ultimateAim = "released";
+  }
 });
 bodyMat.color.setHex(CHARACTERS.find((item) => item.id === betaState.selectedCharacter)?.color ?? 0xef3c58);
 setPlayerModel(betaState.selectedCharacter);
@@ -4662,6 +4675,7 @@ aimModeButton.addEventListener("click", () => {
 aimModeButton.textContent = "좌클릭 공격 · 길게 눌러 조준";
 
 let ivoryUltimateKeyboardAiming = false;
+let mintSpecialKeyboardAiming = false;
 addEventListener("keydown", (event) => {
   keys.add(event.code);
   if (event.repeat || modal.classList.contains("hidden") === false) return;
@@ -4671,6 +4685,11 @@ addEventListener("keydown", (event) => {
     ivoryUltimateAiming = true;
     ivoryUltimateAimIndicator.visible = true;
     canvas.dataset.ultimateAim = "keyboard-manual";
+  } else if (event.code === "KeyQ" && betaState.selectedCharacter === "mint") {
+    event.preventDefault();
+    mintSpecialKeyboardAiming = true;
+    mintSpecialAiming = true;
+    canvas.dataset.ultimateAim = "keyboard-manual";
   } else if (event.code === "Space" || event.code === "KeyQ") {
     event.preventDefault();
     document.getElementById("ultimate-btn").click();
@@ -4678,13 +4697,21 @@ addEventListener("keydown", (event) => {
 });
 addEventListener("keyup", (event) => {
   keys.delete(event.code);
-  if (event.code !== "KeyQ" || !ivoryUltimateKeyboardAiming) return;
-  event.preventDefault();
-  ivoryUltimateKeyboardAiming = false;
-  ivoryUltimateAiming = false;
-  ivoryUltimateAimIndicator.visible = false;
-  canvas.dataset.ultimateAim = "keyboard-released";
-  document.getElementById("ultimate-btn").click();
+  if (event.code !== "KeyQ") return;
+  if (ivoryUltimateKeyboardAiming) {
+    event.preventDefault();
+    ivoryUltimateKeyboardAiming = false;
+    ivoryUltimateAiming = false;
+    ivoryUltimateAimIndicator.visible = false;
+    canvas.dataset.ultimateAim = "keyboard-released";
+    document.getElementById("ultimate-btn").click();
+  } else if (mintSpecialKeyboardAiming) {
+    event.preventDefault();
+    mintSpecialKeyboardAiming = false;
+    mintSpecialAiming = false;
+    canvas.dataset.ultimateAim = "keyboard-released";
+    document.getElementById("ultimate-btn").click();
+  }
 });
 function stopHoldAim() {
   if (pointerHoldTimer !== null) {
