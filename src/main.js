@@ -7394,9 +7394,16 @@ function initPlayers() {
     return;
   }
 
+  // 봇마다 독립적으로 뽑으면 로스터가 9명보다 커도 캐릭터가 자주 겹친다.
+  // 로스터를 한 번 섞어서 봇 슬롯에 순서대로 배정해 중복 없이 다양하게 나오게 한다.
+  const shuffledBotTypes = [...ROSTER];
+  for (let i = shuffledBotTypes.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledBotTypes[i], shuffledBotTypes[j]] = [shuffledBotTypes[j], shuffledBotTypes[i]];
+  }
+  let botTypeIndex = 0;
   spawns.forEach((spawn, index) => {
-    const botTypes = [...ROSTER];
-    const characterType = index === 0 ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
+    const characterType = index === 0 ? state.selectedCharacter : shuffledBotTypes[botTypeIndex++ % shuffledBotTypes.length];
     const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = index === 0 ? label : randomBotName();
     const fighter = makeFighter({
