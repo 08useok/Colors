@@ -2699,7 +2699,9 @@ function recolorCyanTemplateTexture(texture, targetHex) {
     const b = image.data[i + 2];
     // 시안 피부만 교체하고 흰자·눈동자·입처럼 채도가 낮은 얼굴 요소는 보존한다.
     if (g < r * 1.45 || b < r * 1.55 || b < 105) continue;
-    const shade = THREE.MathUtils.clamp(Math.max(r, g, b) / 200, 0.28, 1.25);
+    // 얼굴은 그대로 두고 몸통 명암 대비만 줄여 더 선명한 단색으로 보이게 한다
+    // (원래 범위 0.28~1.25 → 0.55~1.1로 압축).
+    const shade = THREE.MathUtils.clamp(Math.max(r, g, b) / 200, 0.55, 1.1);
     image.data[i] = Math.min(255, tr * shade);
     image.data[i + 1] = Math.min(255, tg * shade);
     image.data[i + 2] = Math.min(255, tb * shade);
