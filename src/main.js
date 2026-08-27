@@ -1181,6 +1181,21 @@ function loadAccount() {
       account.charTrophies = createCharacterTrophies();
       migrated = true;
     } else if (ensureCharacterTrophies(account.charTrophies)) migrated = true;
+    // charTrophies 도입 이전 승리는 순위별 정확한 델타가 남아있지 않아 재계산이
+    // 불가능하다. 계정 전체 트로피를 캐릭터별 승수 비중으로 나눠 근사치로
+    // 한 번만 채워 넣는다 (예: 전체 900트로피, 전체 100승 중 Red 60승 → 540).
+    if (!account.charTrophiesBackfillDone) {
+      const totalWins = Object.values(account.charStats).reduce((sum, s) => sum + (s.wins || 0), 0);
+      if (totalWins > 0 && account.trophies > 0) {
+        for (const [characterId, stat] of Object.entries(account.charStats)) {
+          if (stat.wins > 0) {
+            account.charTrophies[characterId] = Math.round(account.trophies * stat.wins / totalWins);
+          }
+        }
+      }
+      account.charTrophiesBackfillDone = true;
+      migrated = true;
+    }
     if (account.winStreak === undefined) account.winStreak = 0;
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
@@ -1354,6 +1369,7 @@ function createAccount(id, nickname) {
     loginAttempts: 0,
     charStats: createCharacterStats(),
     charTrophies: createCharacterTrophies(),
+    charTrophiesBackfillDone: true,
     charLevels: {
       red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
     },
