@@ -2938,7 +2938,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-function createStickman(color, skinId, normalizeBattleModel = false) {
+function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false) {
   if (color === 0x0000ff) ensureBlueGlbLoading();
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
@@ -3032,7 +3032,12 @@ function createStickman(color, skinId, normalizeBattleModel = false) {
 
   if (color === 0xF4CDD3) {
     ensurePinkGlbLoading();
-    if (_pinkGlb.loop) return buildPinkRigModel(_pinkGlb, skinId);
+    // 쇼다운 AI는 짧게 이동·정지를 반복해 start/end 장면 전환이 겹치기 쉽다
+    // (샤르트뢰즈와 동일 원인). AI 봇에 한해 loop GLB 하나만 사용해 걷기
+    // 시작/정지 모델과 T포즈 모델이 동시에 보이는 현상을 차단한다.
+    if (_pinkGlb.loop) {
+      return buildPinkRigModel(isAiBot ? { start: null, loop: _pinkGlb.loop, end: null } : _pinkGlb, skinId);
+    }
   }
   if (color === 0x800080) {
     ensurePurpleGlbLoading();
@@ -4622,7 +4627,7 @@ function makeFighter(options) {
     galeKnockbackSpeed: 0,
   };
 
-  fighter.mesh = createStickman(charDef.color, skinId, true);
+  fighter.mesh = createStickman(charDef.color, skinId, true, !fighter.isPlayer);
   fighter.mesh.position.set(options.position.x, 1.85, options.position.z);
   fighter.mesh.rotation.y = fighter.yaw;
   if (fighter.mesh.userData.guitar) fighter.mesh.userData.guitar.visible = false;
