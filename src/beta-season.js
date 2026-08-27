@@ -2096,6 +2096,28 @@ function createBlueMarbleMesh() {
   return group;
 }
 
+// 민트 — 아이스크림 스쿱 + 뒤쪽 와플콘 실루엣
+function createMintIceCreamMesh() {
+  const group = new THREE.Group();
+  const scoopRadius = 0.22;
+  const scoop = new THREE.Mesh(
+    new THREE.SphereGeometry(scoopRadius, 12, 10),
+    new THREE.MeshStandardMaterial({ color: 0x98ffed, emissive: 0x2fae8f, emissiveIntensity: 0.35, roughness: 0.4, metalness: 0.05 }),
+  );
+  group.add(scoop);
+  const coneLength = 0.34;
+  const cone = new THREE.Mesh(
+    // openEnded로 바닥면을 없애 스쿱 뒤에 자연스럽게 이어지도록 한다
+    new THREE.ConeGeometry(0.13, coneLength, 8, 1, true),
+    new THREE.MeshStandardMaterial({ color: 0xd9a24d, roughness: 0.78, metalness: 0 }),
+  );
+  // 콘의 뾰족한 끝(로컬 +Y)이 진행 방향의 반대(뒤쪽)를 향하도록 -90도 회전
+  cone.rotation.x = -Math.PI / 2;
+  cone.position.z = -(scoopRadius + coneLength / 2 - 0.06);
+  group.add(cone);
+  return group;
+}
+
 // 옐로우 — 지그재그 번개 모양 실루엣
 function createYellowBoltMesh() {
   const shape = new THREE.Shape();
@@ -2209,6 +2231,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     cyanShot: createCyanPillMesh,
     needle: createPurpleNeedleMesh,
     vial: createPurpleVialMesh,
+    mintIceCream: createMintIceCreamMesh,
     chartreuse_enhanced: () => createChartreuseRoundMesh("enhanced"),
     chartreuse_cc: () => createChartreuseRoundMesh("cc"),
     chartreuse_plague: () => createChartreuseRoundMesh("plague"),
@@ -2248,7 +2271,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     mesh.add(stem, leaf);
   }
   if (redThemeSkin) mesh.scale.setScalar(redThemeSkin === "beta_red_red" ? 1.25 : 1.12);
-  if (type === "marble" || type === "needle") {
+  if (type === "marble" || type === "needle" || type === "mintIceCream") {
     // 콘 모양은 로컬 +Z를 향하도록 rotation.x를 먼저 눕혔으므로,
     // YXZ 순서로 y(yaw)를 더해야 발사 방향을 그대로 따라간다.
     mesh.rotation.order = "YXZ";
@@ -4932,9 +4955,9 @@ function animate() {
       // Rotate in the camera-facing plane, using the viewer's up-axis as the reference.
       projectile.mesh.quaternion.copy(camera.quaternion);
       projectile.mesh.rotateZ(dt * 8);
-    } else if (projectile.type !== "cyanUltimate" && projectile.type !== "marble" && projectile.type !== "needle") {
-      // marble/needle는 발사 방향에 맞춰 뾰족한 끝을 고정해 두었으므로
-      // 범용 스핀을 적용하면 방향이 계속 흐트러진다.
+    } else if (projectile.type !== "cyanUltimate" && projectile.type !== "marble" && projectile.type !== "needle" && projectile.type !== "mintIceCream") {
+      // marble/needle/mintIceCream은 발사 방향에 맞춰 뾰족한 끝(콘)을 고정해
+      // 두었으므로 범용 스핀을 적용하면 방향이 계속 흐트러진다.
       projectile.mesh.rotation.y += dt * 9;
     }
     if (projectile.type === "cyanUltimate") {
