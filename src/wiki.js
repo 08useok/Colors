@@ -429,14 +429,23 @@ function renderShop() {
 }
 
 function renderPatches() {
-  return `${sectionHead(tr("patchTitle"), tr("patchDesc"))}<div class="patch-list">${patches.map(p => `<article class="patch-card">
+  const patchCard = (p) => `<article class="patch-card">
     <time>${p.date}</time>
     <h3>${p.version} · ${loc(p.title)}</h3>
     <p class="patch-summary">${loc(p.summary)}</p>
     <h4>${lang === "ko" ? "주요 변경 사항" : "Key changes"}</h4>
     <ul>${p.items.map(i=>`<li>${loc(i)}</li>`).join("")}</ul>
     <div class="patch-impact"><strong>${lang === "ko" ? "플레이 영향" : "Gameplay impact"}</strong><p>${loc(p.impact)}</p></div>
-  </article>`).join("")}</div>`;
+  </article>`;
+  const betaPatches = patches.filter((patch) => Number(patch.version.match(/^v1\.(\d+)/)?.[1] ?? 0) >= 5);
+  const alphaPatches = patches.filter((patch) => !betaPatches.includes(patch));
+  const group = (title, entries) => `<section class="patch-season-group">
+    <div class="section-head"><div><h2>${title}</h2><p>${entries.length}${lang === "ko" ? "개 업데이트" : " updates"}</p></div></div>
+    <div class="patch-list">${entries.map(patchCard).join("")}</div>
+  </section>`;
+  return `${sectionHead(tr("patchTitle"), tr("patchDesc"))}
+    ${group(lang === "ko" ? "베타 시즌" : "Beta Seasons", betaPatches)}
+    ${group(lang === "ko" ? "알파 시즌" : "Alpha Seasons", alphaPatches)}`;
 }
 
 const routePaths = {

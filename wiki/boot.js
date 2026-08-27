@@ -20,4 +20,4 @@ for (const el of document.querySelectorAll("[href^='/'], [src^='/']")) {
   }
 }
 
-await import(`${BASE}src/wiki.js?v=1.5.4`);
+await import(`${BASE}src/wiki.js?v=1.5.4.1`);
