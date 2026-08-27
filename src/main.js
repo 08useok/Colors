@@ -2178,20 +2178,22 @@ dailyRewardUpgradeAll?.addEventListener("click", () => {
   if (dailyRewardSpinning || dailyRewardComplete) return;
   if (dailyRewardAttemptsLeft() <= 0 || dailyRewardAtTopTier()) return;
   dailyRewardSpinning = true;
-  dailyRewardStar.classList.add("spinning");
   dailyRewardUpgradeAll.disabled = true;
-  dailyRewardMessage.textContent = "남은 기회를 한 번에 사용합니다…";
   const startTierIndex = dailyRewardTierIndex;
   const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  // 등급 판정을 먼저 끝낸 뒤, 확정된 등급의 색상과 이펙트로 회전한다.
+  while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
+    rollDailyRewardUpgrade(DAILY_REWARD_UPGRADE_ALL_BONUS);
+  }
+  const gained = dailyRewardTierIndex - startTierIndex;
+  const endTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  updateDailyRewardReveal();
+  dailyRewardMessage.textContent = `${endTier} 등급 확정 · 회전 연출 중…`;
+  void dailyRewardStar.offsetWidth;
+  dailyRewardStar.classList.add("spinning");
   setTimeout(() => {
-    while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
-      rollDailyRewardUpgrade(DAILY_REWARD_UPGRADE_ALL_BONUS);
-    }
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
-    const gained = dailyRewardTierIndex - startTierIndex;
-    const endTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
-    updateDailyRewardReveal();
     finishDailyReward();
     dailyRewardMessage.textContent = gained > 0
       ? `${startTier} → ${endTier} · ${gained}단계 상승! ${dailyRewardMessage.textContent}`
@@ -2202,14 +2204,17 @@ dailyRewardUpgradeAll?.addEventListener("click", () => {
 dailyRewardStar?.addEventListener("click", () => {
   if (dailyRewardSpinning || dailyRewardComplete) return;
   dailyRewardSpinning = true;
+  // 클릭 즉시 등급을 확정하고 UI를 바꾼 뒤 회전 연출을 시작한다.
+  const upgraded = rollDailyRewardUpgrade();
+  updateDailyRewardReveal();
+  const attemptsRemaining = dailyRewardAttemptsLeft();
+  const resultTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  dailyRewardMessage.textContent = `${resultTier} 등급 확정 · 회전 연출 중…`;
+  void dailyRewardStar.offsetWidth;
   dailyRewardStar.classList.add("spinning");
-  dailyRewardMessage.textContent = "별이 회전하고 있습니다…";
   setTimeout(() => {
     dailyRewardStar.classList.remove("spinning");
     dailyRewardSpinning = false;
-    const upgraded = rollDailyRewardUpgrade();
-    updateDailyRewardReveal();
-    const attemptsRemaining = dailyRewardAttemptsLeft();
     if (attemptsRemaining <= 0 || dailyRewardAtTopTier()) {
       finishDailyReward();
       return;
