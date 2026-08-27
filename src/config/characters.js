@@ -84,11 +84,11 @@ export const CHARACTERS = {
   },
   cyan: {
     color: 0x0ff0fe,
-    maxHealth: 6200,
+    maxHealth: 7200,
     attackType: "spreadLine",
     reloadDuration: 1.1,
     attackCooldown: 0.35,
-    spreadLineDamage: 650,
+    spreadLineDamage: 750,
     spreadLineRange: 8.33,
     spreadLineSpeed: 18,
     spreadLineCount: 6,
