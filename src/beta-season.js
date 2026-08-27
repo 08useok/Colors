@@ -5447,8 +5447,12 @@ function animate() {
     const moveZ = input.y * cos + input.x * sin;
     player.position.x += moveX;
     player.position.z += moveZ;
-    // 수동 에임 중에는 진행 방향으로 몸을 돌리지 않는다 — 조준 방향을 유지
-    if (!manualAimActive && !holdAiming) player.rotation.y = Math.atan2(moveX, moveZ);
+    // 수동 에임 중에는 진행 방향으로 몸을 돌리지 않는다 — 조준 방향을 유지.
+    // 궁극기 조준 중에도 마찬가지로, 안 그러면 이동하면서 조준한 방향이
+    // 매 프레임 이동 방향으로 되돌아가 버린다.
+    if (!manualAimActive && !holdAiming && !ivoryUltimateAiming && !directionalUltimateAiming) {
+      player.rotation.y = Math.atan2(moveX, moveZ);
+    }
   }
   restoreModelAttackPose();
   if (activeCharacterMotion) {
