@@ -2943,6 +2943,17 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// 쇼다운 AI는 짧게 이동·정지를 반복해 걷기 시작(walk-m1s)/정지(walk-m3e)
+// GLB 장면 전환이 겹치기 쉽고, 그 틈에 애니메이션이 아직 안 먹은 바인드
+// 포즈(T포즈)가 노출된다. buildPinkRigModel을 공유하는 캐릭터(핑크·퍼플·
+// 아이보리·샤르트뢰즈)는 이 함수로 걷기 GLB 세트를 결정해 중복 없이
+// 동일하게 방어한다. forceLoopOnly는 샤르트뢰즈처럼 플레이어가 직접 조작할
+// 때도 항상 loop만 쓰기로 한 캐릭터용이다.
+function resolveWalkGlbSet(glbSet, isAiBot, forceLoopOnly = false) {
+  if (!forceLoopOnly && !isAiBot) return glbSet;
+  return { start: null, loop: glbSet.loop, end: null };
+}
+
 function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false) {
   if (color === 0x0000ff) ensureBlueGlbLoading();
   if (color === 0x0000ff && _blueWalkGlb) {
@@ -3037,33 +3048,25 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
 
   if (color === 0xF4CDD3) {
     ensurePinkGlbLoading();
-    // 쇼다운 AI는 짧게 이동·정지를 반복해 start/end 장면 전환이 겹치기 쉽다
-    // (샤르트뢰즈와 동일 원인). AI 봇에 한해 loop GLB 하나만 사용해 걷기
-    // 시작/정지 모델과 T포즈 모델이 동시에 보이는 현상을 차단한다.
-    if (_pinkGlb.loop) {
-      return buildPinkRigModel(isAiBot ? { start: null, loop: _pinkGlb.loop, end: null } : _pinkGlb, skinId);
-    }
+    if (_pinkGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_pinkGlb, isAiBot), skinId);
   }
   if (color === 0x800080) {
     ensurePurpleGlbLoading();
-    if (_purpleGlb.loop) return buildPinkRigModel(_purpleGlb, skinId);
+    if (_purpleGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_purpleGlb, isAiBot), skinId);
   }
   if (color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper") {
     ensureIvoryShopkeeperGlbLoading();
-    if (_ivoryShopkeeperGlb.loop) return buildPinkRigModel(_ivoryShopkeeperGlb, skinId);
+    if (_ivoryShopkeeperGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_ivoryShopkeeperGlb, isAiBot), skinId);
   }
   if (color === 0xfffff0) {
     ensureIvoryGlbLoading();
-    if (_ivoryGlb.loop) return buildPinkRigModel(_ivoryGlb, skinId);
+    if (_ivoryGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_ivoryGlb, isAiBot), skinId);
   }
   if (color === 0x7fff00) {
     ensureChartreuseGlbLoading();
-    // 쇼다운 AI는 짧게 이동·정지를 반복해 start/end 장면 전환이 겹치기 쉽다.
-    // 샤르트뢰즈는 전투에서 loop GLB 하나만 사용해 걷기 모델과 T포즈 모델이
-    // 동시에 보이는 현상을 원천 차단한다.
-    if (_chartreuseGlb.loop) {
-      return buildPinkRigModel({ start: null, loop: _chartreuseGlb.loop, end: null }, skinId);
-    }
+    // 샤르트뢰즈는 플레이어가 직접 조작할 때도 항상 loop만 사용하도록 이미
+    // 확정되어 있어(커밋 1962daf) forceLoopOnly로 그 동작을 그대로 유지한다.
+    if (_chartreuseGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_chartreuseGlb, isAiBot, true), skinId);
   }
 
   const group = new THREE.Group();
@@ -3832,7 +3835,7 @@ function refreshLoadedIvoryModels() {
   for (const fighter of state.players) {
     if (fighter.characterType !== "ivory" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
     const oldMesh = fighter.mesh;
-    const replacement = createStickman(CHARACTERS.ivory.color, fighter.skinId);
+    const replacement = createStickman(CHARACTERS.ivory.color, fighter.skinId, false, !fighter.isPlayer);
     if (!replacement.userData.isGlbModel) continue;
     replacement.position.copy(oldMesh.position);
     replacement.rotation.copy(oldMesh.rotation);
@@ -3851,7 +3854,7 @@ function refreshLoadedChartreuseModels() {
   for (const fighter of state.players) {
     if (fighter.characterType !== "chartreuse" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
     const oldMesh = fighter.mesh;
-    const replacement = createStickman(CHARACTERS.chartreuse.color, fighter.skinId);
+    const replacement = createStickman(CHARACTERS.chartreuse.color, fighter.skinId, false, !fighter.isPlayer);
     if (!replacement.userData.isGlbModel) continue;
     replacement.position.copy(oldMesh.position);
     replacement.rotation.copy(oldMesh.rotation);
