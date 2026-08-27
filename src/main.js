@@ -8436,8 +8436,11 @@ function beginIvoryAttack(fighter) {
   const yaw = fighter.yaw;
   const mesh = createIvoryScoopMesh();
   mesh.position.set(fighter.mesh.position.x + Math.sin(yaw), 1.2, fighter.mesh.position.z + Math.cos(yaw));
+  // 아이보리는 직선 즉발탄이 아니라 손에서 잠깐 준비한 뒤 포물선으로 던진다.
+  // launchAt 전에는 숨겨 두어 클릭 순간 투사체가 먼저 튀어나오는 현상도 막는다.
+  mesh.visible = false;
   scene.add(mesh);
-  state.projectiles.push({ ownerId: fighter.id, x: mesh.position.x, z: mesh.position.z, vx: Math.sin(yaw) * def.iceCreamSpeed, vz: Math.cos(yaw) * def.iceCreamSpeed, damage: def.iceCreamDamage, range: def.iceCreamRange, farThreshold: Infinity, farMultiplier: 1, distTraveled: 0, launchAt: state.gameTime, mesh, isIvoryIceCream: true, projRadius: 0.42 });
+  state.projectiles.push({ ownerId: fighter.id, x: mesh.position.x, z: mesh.position.z, vx: Math.sin(yaw) * def.iceCreamSpeed, vz: Math.cos(yaw) * def.iceCreamSpeed, damage: def.iceCreamDamage, range: def.iceCreamRange, farThreshold: Infinity, farMultiplier: 1, distTraveled: 0, launchAt: state.gameTime + 0.2, mesh, isIvoryIceCream: true, projRadius: 0.42 });
   if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
@@ -9371,7 +9374,10 @@ function updateProjectiles(dt) {
         continue;
       }
     } else {
-      const projectileY = proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle || proj.isChartreuse) ? 1.3 : 1.2;
+      const ivoryProgress = proj.isIvoryIceCream ? Math.min(1, proj.distTraveled / Math.max(0.01, proj.range)) : 0;
+      const projectileY = proj.isIvoryIceCream
+        ? 1.2 + Math.sin(ivoryProgress * Math.PI) * 4.2 - ivoryProgress * 0.85
+        : proj.isBossWave ? 2 : proj.isGaleStrike ? 1.05 : (proj.isBullet || proj.isElectric || proj.isSpreadLine || proj.isNeedle || proj.isChartreuse) ? 1.3 : 1.2;
       proj.mesh.position.set(proj.x, projectileY, proj.z);
       if (!proj.isBullet && !proj.isElectric && !proj.isSpreadLine && !proj.isNeedle && !proj.isGaleStrike) {
         proj.mesh.rotation.z += dt * 10;
