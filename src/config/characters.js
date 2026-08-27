@@ -100,7 +100,7 @@ export const CHARACTERS = {
       width: 10,
       speedMultiplier: 5 / 3,
       knockback: 8,
-      chargeRequired: 12,
+      chargeRequired: 6,
     },
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
