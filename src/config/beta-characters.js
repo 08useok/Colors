@@ -87,7 +87,7 @@ export const BETA_CHARACTERS = {
     },
   },
   cyan: {
-    maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 1.1, maxAmmo: 3,
+    maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.35, reloadDuration: 0.8, maxAmmo: 3,
     spreadLineDamage: 650, spreadLineRange: 8.33, spreadLineSpeed: 18, spreadLineCount: 6, betaAngleSpacing: 0.095,
     description: "시안은 평범하게 사는 컬러이지만, 아무래도 수상합니다. 그가 다녔던 회사의 제품은 다 이상한 걸까요?",
     descriptionEn: "Cyan lives an ordinary life, but something about him is off. Was every product at his old company this strange?",

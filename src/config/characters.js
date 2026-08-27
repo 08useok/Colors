@@ -86,7 +86,7 @@ export const CHARACTERS = {
     color: 0x0ff0fe,
     maxHealth: 7200,
     attackType: "spreadLine",
-    reloadDuration: 1.1,
+    reloadDuration: 0.8,
     attackCooldown: 0.35,
     spreadLineDamage: 750,
     spreadLineRange: 8.33,

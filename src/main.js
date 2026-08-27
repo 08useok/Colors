@@ -11583,10 +11583,7 @@ function updateHud() {
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
     ultimateButton.classList.toggle("ready", ratio >= 1);
-    // 시안은 일반 공격 명중 횟수로 궁극기를 충전하므로, 퍼센트보다 실제 누적량을 보여준다.
-    ultimateStateEl.textContent = ratio >= 1
-      ? "READY"
-      : player.characterType === "cyan" ? `${charge}/${ultimate.chargeRequired}` : `${Math.round(ratio * 100)}%`;
+    ultimateStateEl.textContent = ratio >= 1 ? "READY" : `${Math.round(ratio * 100)}%`;
     ultimateButton.title = ratio >= 1
       ? `Space 또는 Q · ${ultimate.name}`
       : `궁극기 ${charge}/${ultimate.chargeRequired}`;

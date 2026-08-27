@@ -3429,8 +3429,7 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
   const remainingUnit = id === "blue" ? "초" : "회";
   ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
-  // 시안은 명중 횟수 충전형이므로 베타에서도 실제 충전량을 표시한다.
-  ultimateState.textContent = ready ? "READY" : id === "cyan" ? `${charge}/${required}` : `${Math.round(chargeRatio * 100)}%`;
+  ultimateState.textContent = ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
 }
 
 function performPinkEncore() {
