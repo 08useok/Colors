@@ -2238,6 +2238,19 @@ function recordGameResult(rank, mode = "showdown") {
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
   account.orderEvent ??= { progress: 0, claimed: [], cosmetics: {} };
 
+  // 도시 봉쇄 작전 (베타 시즌 4 이벤트) — 쇼다운·테이크다운 참여마다 점수를 준다.
+  // 찹 우드·골드 러쉬는 이벤트 대상이 아니다. 참여 +10, 4위 이내 +20, 1위 +40
+  // (등수 구간은 배타적, 중복 합산하지 않음), 테이크다운 중앙 공격 로봇을
+  // 처치했고 그 처치에 데미지로 참여했다면 +30 추가.
+  if (CURRENT_SEASON === "beta4" && mode !== "chopwood" && !state.goldRushMode) {
+    let eventScore = rank === 1 ? 40 : rank <= 4 ? 20 : 10;
+    const eventPlayer = getPlayer();
+    if (state.takedownMode && state.tdBoss && state.tdBoss.health <= 0 && (eventPlayer?.tdBossDmg || 0) > 0) {
+      eventScore += 30;
+    }
+    account.orderEvent.progress = Math.min(100, account.orderEvent.progress + eventScore);
+  }
+
   if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
 
   const char = account.selectedCharacter;
@@ -2257,7 +2270,6 @@ function recordGameResult(rank, mode = "showdown") {
   scs.games += 1;
   if (seasonChopWoodChar) seasonChopWoodChar.games += 1;
   if (rank <= 4) {
-    if (CURRENT_SEASON === "beta3") account.orderEvent.progress = Math.min(100, account.orderEvent.progress + 1);
     account.wins += 1;
     if (mode === "chopwood") {
       account.chopWoodWins = (account.chopWoodWins || 0) + 1;
