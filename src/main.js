@@ -2850,7 +2850,18 @@ function buildPinkRigModel(glbSet, skinId) {
   function addScene(gltf, visible) {
     const s = skeletonClone(gltf.scene);
     s.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(s);
+    // 아이보리처럼 장신구(스킨드 메시가 아닌 고정 프롭)가 몸통보다 위로 튀어나온
+    // GLB는, 전체 바운딩 박스로 스케일을 정하면 장신구 때문에 몸통이 다른
+    // 캐릭터보다 작게 렌더링된다. 스킨드 메시(실제 몸통)가 있으면 그것만으로
+    // 높이를 재서 캐릭터 간 체감 크기를 맞춘다.
+    const skinnedMeshes = [];
+    s.traverse((c) => { if (c.isSkinnedMesh) skinnedMeshes.push(c); });
+    const box = new THREE.Box3();
+    if (skinnedMeshes.length > 0) {
+      for (const mesh of skinnedMeshes) box.expandByObject(mesh);
+    } else {
+      box.setFromObject(s);
+    }
     const sz = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     // 파이터 group은 항상 world y=1.85 → 발이 group local y=-1.85에 와야 지면에 닿는다
@@ -3804,7 +3815,7 @@ function _applyPinkToon(scene) {
         new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.BackSide })
       );
       ol.bind(c.skeleton, c.bindMatrix);
-      ol.scale.setScalar(1.07);
+      ol.scale.setScalar(1.12);
       ol.frustumCulled = false;
       ol.userData.characterToonOutline = true;
       c.parent.add(ol);
