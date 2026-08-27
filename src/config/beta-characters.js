@@ -139,7 +139,8 @@ export const BETA_CHARACTERS = {
   },
   crimson: {
     maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.74, reloadDuration: 0.9, maxAmmo: 3,
-    attackRange: 6, attackDamage: 4000 / 3, attackDamages: [1333, 1333, 1334], attackCount: 3, attackIntervalMs: 120,
+    // 근접 3연타의 실제 사거리. 이전 두 배 값 때문에 보이는 거리보다 멀리 맞던 문제를 수정한다.
+    attackRange: 3, attackDamage: 4000 / 3, attackDamages: [1333, 1333, 1334], attackCount: 3, attackIntervalMs: 120,
     attackHalfAngle: degrees(42), attackAngles: [-25, 0, 25].map(degrees),
     description: "크림슨은 레드를 보고 권투를 시작해서 세계적인 권투 선수가 되었습니다. 근데 정작 자기는 레드를 못 이긴다고 하네요.",
     descriptionEn: "Crimson took up boxing after watching Red and became world class, yet he still says he cannot beat Red.",

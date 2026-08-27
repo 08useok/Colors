@@ -147,7 +147,8 @@ export const CHARACTERS = {
     attackCooldown: 0.74,
     // 게임 내 최고 이동속도 — Pink/Red(1.4)보다 빠르다
     moveSpeedMultiplier: 1.4,
-    attackRange: 7,
+    // 근접 3연타가 조준선 밖의 적까지 닿지 않도록 실제 사거리를 유지한다.
+    attackRange: 3.5,
     attackDamage: 4000 / 3,
     attackCount: 3,
     attackIntervalMs: 120,
