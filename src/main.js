@@ -3783,8 +3783,11 @@ function _getPinkToonGrad() {
   const canvas = document.createElement('canvas');
   canvas.width = 3; canvas.height = 1;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = 'rgb(50,50,50)';    ctx.fillRect(0, 0, 1, 1);
-  ctx.fillStyle = 'rgb(155,155,155)'; ctx.fillRect(1, 0, 1, 1);
+  // 모든 카툰 캐릭터가 이 그라디언트 하나를 공유하므로, 여기서 밝기를 올리면
+  // 텍스처와 무관하게 전 캐릭터가 균일하게 밝아진다 (기존 대비 어두운/중간
+  // 음영 구간을 10% 밝게. 하이라이트는 이미 최대값이라 변화 없음).
+  ctx.fillStyle = 'rgb(55,55,55)';    ctx.fillRect(0, 0, 1, 1);
+  ctx.fillStyle = 'rgb(171,171,171)'; ctx.fillRect(1, 0, 1, 1);
   ctx.fillStyle = 'rgb(255,255,255)'; ctx.fillRect(2, 0, 1, 1);
   const tex = new THREE.CanvasTexture(canvas);
   tex.minFilter = THREE.NearestFilter;
