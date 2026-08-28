@@ -53,7 +53,7 @@ export const BETA_CHARACTERS = {
       id: "blueDash", name: "돌진",
       description: "빠르게 굴러 전진합니다. 벽에 부딪히면 튕겨 나가며, 경로의 적에게 피해와 넉백을 줍니다.",
       nameEn: "Ricochet Dash", descriptionEn: "Roll forward at high speed, bouncing off walls and damaging and knocking back enemies in your path.",
-      damage: 1600, speed: 24, duration: 1.15, maxBounces: 4, hitRadius: 1.2, cooldown: 10,
+      damage: 1600, speed: 24, duration: 1.15, maxBounces: 6, hitRadius: 1.2, chargeRequired: 4,
     },
   },
   orange: {

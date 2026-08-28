@@ -2790,14 +2790,14 @@ function applyMintIce(target, amount) {
 }
 
 let mintUltimateCharge = 0;
-let blueSpecialReadyAt = 0;
+let blueSpecialCharge = 0;
 let betaElapsedTime = 0;
 let blueDashState = null;
 
 function performBlueDash() {
   const def = BETA_CHARACTERS.blue.special;
-  if (!IS_BETA5_TEST || blueDashState || betaElapsedTime < blueSpecialReadyAt) return;
-  blueSpecialReadyAt = betaElapsedTime + def.cooldown;
+  if (!IS_BETA5_TEST || blueDashState || blueSpecialCharge < def.chargeRequired) return;
+  blueSpecialCharge = 0;
   blueDashState = {
     directionX: Math.sin(player.rotation.y), directionZ: Math.cos(player.rotation.y),
     remaining: def.duration, bouncesRemaining: def.maxBounces, hitTargets: new Set(),
@@ -3467,8 +3467,8 @@ function updateCrimsonUltimateGauge() {
       color: "#98ffed",
     },
     blue: {
-      charge: IS_BETA5_TEST ? Math.min(BETA_CHARACTERS.blue.special.cooldown, Math.max(0, BETA_CHARACTERS.blue.special.cooldown - (blueSpecialReadyAt - betaElapsedTime))) : 0,
-      required: BETA_CHARACTERS.blue.special.cooldown,
+      charge: IS_BETA5_TEST ? blueSpecialCharge : 0,
+      required: BETA_CHARACTERS.blue.special.chargeRequired,
       name: BETA_CHARACTERS.blue.special.name,
       color: "#56bfff",
     },
@@ -3484,7 +3484,7 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.setAttribute("aria-valuemax", String(required));
   const isSpecial = IS_BETA5_TEST && ["blue", "mint"].includes(id);
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
-  const remainingUnit = id === "blue" ? "초" : "회";
+  const remainingUnit = "회";
   ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
   ultimateState.textContent = ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
 }
@@ -5093,6 +5093,10 @@ function animate() {
           if (projectile.characterId === "red") {
             redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + 1);
             if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
+          }
+          if (projectile.characterId === "blue") {
+            blueSpecialCharge = Math.min(BETA_CHARACTERS.blue.special.chargeRequired, blueSpecialCharge + 1);
+            if (betaState.selectedCharacter === "blue") updateCrimsonUltimateGauge();
           }
         }
         if (projectile.type === "orangeFruit") {
