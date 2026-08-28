@@ -9098,6 +9098,9 @@ function createNeedleMesh(position, yaw) {
   return mesh;
 }
 
+// 독병은 일반 벽(2.8)보다 높은 위치에서 출발한다.
+const VIAL_LAUNCH_HEIGHT = 3.4;
+
 function createVialMesh(position, yaw) {
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(0.22, 8, 6),
@@ -9105,7 +9108,7 @@ function createVialMesh(position, yaw) {
   );
   mesh.position.set(
     position.x + Math.sin(yaw) * 0.9,
-    1.3,
+    VIAL_LAUNCH_HEIGHT,
     position.z + Math.cos(yaw) * 0.9,
   );
   scene.add(mesh);
@@ -9281,7 +9284,7 @@ function beginPoisonAttack(fighter) {
       ownerId: fighter.id,
       x: fighter.mesh.position.x + Math.sin(yaw) * 0.9,
       z: fighter.mesh.position.z + Math.cos(yaw) * 0.9,
-      y: 1.3,
+      y: VIAL_LAUNCH_HEIGHT,
       vx: Math.sin(yaw) * charDef.vialSpeed,
       vz: Math.cos(yaw) * charDef.vialSpeed,
       vy: vy0,

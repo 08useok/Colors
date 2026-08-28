@@ -2279,9 +2279,10 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     mesh.rotation.order = "YXZ";
     mesh.rotation.y = yaw;
   }
+  const launchHeight = type === "vial" ? VIAL_LAUNCH_HEIGHT : 1.25;
   mesh.position.set(
     player.position.x + Math.cos(yaw) * lateralOffset,
-    player.position.y + 1.25,
+    player.position.y + launchHeight,
     player.position.z - Math.sin(yaw) * lateralOffset,
   );
   scene.add(mesh);
@@ -3112,6 +3113,9 @@ function createRedGloveEffect(angle = 0) {
   crimsonSlashes.push({ group: glove, mesh: palm, materials: [red, highlight, cuffMat], life: 0.22, maxLife: 0.22, grow: 1.5, type: "redGlove" });
 }
 
+// 독병은 발사 순간부터 쇼다운 벽 상단보다 높게 시작한다.
+// 초반에 인접한 벽과 겹치거나 시야에서 사라지는 일을 막는다.
+const VIAL_LAUNCH_HEIGHT = 4.1;
 // 독병 포물선의 최고 높이. 벽을 넘길 수 있을 만큼 띄운다.
 const VIAL_ARC_HEIGHT = 6.8;
 
