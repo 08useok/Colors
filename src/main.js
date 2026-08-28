@@ -6971,15 +6971,33 @@ function createCrimsonAimIndicator() {
 
 const crimsonAimIndicator = createCrimsonAimIndicator();
 
+function chartreuseAmmoColor(type) {
+  return { enhanced: "#c1f80a", cc: "#9acd32", plague: "#111111", blank: "#ffffff" }[type] || "#ffffff";
+}
+
+function ensureChartreuseAmmoQueue(fighter, count = fighter?.maxAmmo ?? 0) {
+  if (!fighter || fighter.characterType !== "chartreuse") return;
+  fighter.chartreuseAmmoTypes ??= [];
+  while (fighter.chartreuseAmmoTypes.length < count) {
+    fighter.chartreuseAmmoTypes.push(rollChartreuseAmmo(fighter));
+  }
+}
+
 function rebuildAmmoPips() {
   const player = getPlayer();
   const count = player?.maxAmmo ?? maxAmmo;
+  ensureChartreuseAmmoQueue(player, count);
   ammoPips.innerHTML = "";
   const spread = 64;
   const step = count > 1 ? spread / (count - 1) : 0;
   for (let i = 0; i < count; i += 1) {
     const pip = document.createElement("div");
     pip.className = "ammo-fan-segment filled";
+    if (player?.characterType === "chartreuse") {
+      const color = chartreuseAmmoColor(player.chartreuseAmmoTypes[i]);
+      pip.style.background = color;
+      pip.style.boxShadow = `0 0 8px ${color}`;
+    }
     const angle = count > 1 ? -spread / 2 + i * step : 0;
     pip.style.transform = `rotate(${angle}deg)`;
     ammoPips.appendChild(pip);
@@ -6987,8 +7005,15 @@ function rebuildAmmoPips() {
 }
 
 function updateAmmoPips(value) {
+  const player = getPlayer();
+  ensureChartreuseAmmoQueue(player, player?.maxAmmo ?? 0);
   [...ammoPips.children].forEach((pip, index) => {
     pip.classList.toggle("filled", index < value);
+    if (player?.characterType === "chartreuse") {
+      const color = chartreuseAmmoColor(player.chartreuseAmmoTypes[index]);
+      pip.style.background = color;
+      pip.style.boxShadow = `0 0 8px ${color}`;
+    }
   });
 }
 
@@ -9037,7 +9062,10 @@ function beginChartreuseAttack(fighter) {
   fighter.attackSwing = 1;
   fighter.attackAnimTime = 0;
   fighter.lastCombatTime = state.gameTime;
-  const ammoType = rollChartreuseAmmo(fighter);
+  ensureChartreuseAmmoQueue(fighter);
+  const ammoType = fighter.chartreuseAmmoTypes?.shift() || rollChartreuseAmmo(fighter);
+  ensureChartreuseAmmoQueue(fighter);
+  if (fighter.isPlayer) rebuildAmmoPips();
   if (ammoType === "blank") {
     createAttackEffect(fighter, 0);
     return true;
