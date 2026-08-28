@@ -2792,24 +2792,77 @@ function applyMintIce(target, amount) {
 let mintUltimateCharge = 0;
 let blueSpecialReadyAt = 0;
 let betaElapsedTime = 0;
+let blueDashState = null;
 
-function performBlueBounceShot() {
+function performBlueDash() {
   const def = BETA_CHARACTERS.blue.special;
-  if (!IS_BETA5_TEST || betaElapsedTime < blueSpecialReadyAt) return;
+  if (!IS_BETA5_TEST || blueDashState || betaElapsedTime < blueSpecialReadyAt) return;
   blueSpecialReadyAt = betaElapsedTime + def.cooldown;
-  canvas.dataset.lastBlueBounceBurst = "0";
-  for (let i = 0; i < def.projectileCount; i += 1) {
-    setTimeout(() => {
-      if (betaState.selectedCharacter !== "blue" || goldRushState.dead) return;
-      const angle = def.projectileCount > 1
-        ? -def.spreadAngle / 2 + (def.spreadAngle * i) / (def.projectileCount - 1)
-        : 0;
-      fireBetaProjectile({ angle, speed: def.speed, range: def.range, damage: def.damage, color: 0x74d8ff, radius: 0.16, type: "blueBounce", pierces: true, maxBounces: def.maxBounces });
-      canvas.dataset.lastBlueBounceBurst = String(i + 1);
-      attackComboState.textContent = `바운스 샷 ${i + 1}/${def.projectileCount}`;
-    }, i * def.intervalMs);
-  }
+  blueDashState = {
+    directionX: Math.sin(player.rotation.y), directionZ: Math.cos(player.rotation.y),
+    remaining: def.duration, bouncesRemaining: def.maxBounces, hitTargets: new Set(),
+  };
+  attackComboState.textContent = "돌진!";
+  canvas.dataset.lastBlueDashBounces = "0";
   updateCrimsonUltimateGauge();
+}
+
+function updateBlueDash(dt) {
+  if (!blueDashState || goldRushState.dead || betaState.selectedCharacter !== "blue") {
+    blueDashState = null;
+    return false;
+  }
+  const def = BETA_CHARACTERS.blue.special;
+  const dash = blueDashState;
+  const steps = Math.max(1, Math.ceil((def.speed * dt) / 0.3));
+  const stepDistance = (def.speed * dt) / steps;
+  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+
+  for (let step = 0; step < steps; step += 1) {
+    const previousX = player.position.x;
+    const previousZ = player.position.z;
+    player.position.x += dash.directionX * stepDistance;
+    player.position.z += dash.directionZ * stepDistance;
+    let collided = null;
+    for (const solid of arenaSolids) {
+      if (solid.top <= player.position.y + 0.5) continue;
+      if (Math.abs(player.position.x - solid.x) <= solid.halfW + 0.55
+        && Math.abs(player.position.z - solid.z) <= solid.halfD + 0.55) {
+        collided = solid;
+        break;
+      }
+    }
+    if (collided) {
+      player.position.set(previousX, player.position.y, previousZ);
+      const collidedOnX = Math.abs(previousX - collided.x) > collided.halfW;
+      const collidedOnZ = Math.abs(previousZ - collided.z) > collided.halfD;
+      if (collidedOnX) dash.directionX *= -1;
+      if (collidedOnZ) dash.directionZ *= -1;
+      if (!collidedOnX && !collidedOnZ) {
+        if (Math.abs(dash.directionX) >= Math.abs(dash.directionZ)) dash.directionX *= -1;
+        else dash.directionZ *= -1;
+      }
+      dash.bouncesRemaining -= 1;
+      player.rotation.y = Math.atan2(dash.directionX, dash.directionZ);
+      createGroundPulse(0.62, 0x71dfff, player.position);
+      canvas.dataset.lastBlueDashBounces = String(def.maxBounces - dash.bouncesRemaining);
+      if (dash.bouncesRemaining <= 0) {
+        blueDashState = null;
+        break;
+      }
+    }
+    for (const target of testTargets) {
+      if (!target.visible || target.userData.isAlly || dash.hitTargets.has(target)) continue;
+      if (Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z) > def.hitRadius) continue;
+      dash.hitTargets.add(target);
+      damageTarget(target, def.damage, true);
+    }
+  }
+  if (!blueDashState) return true;
+  dash.remaining -= dt;
+  player.rotation.y = Math.atan2(dash.directionX, dash.directionZ);
+  if (dash.remaining <= 0) blueDashState = null;
+  return true;
 }
 
 const MINT_SPECIAL_THROW_SPEED = 14;
@@ -3623,7 +3676,7 @@ function performCyanUltimate() {
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
   if (betaState.selectedCharacter === "blue" && IS_BETA5_TEST) {
-    performBlueBounceShot();
+    performBlueDash();
     return;
   }
   if (betaState.selectedCharacter === "mint") {
@@ -4966,35 +5019,6 @@ function animate() {
         projectile.mesh.rotation.x += dt * 6;
       }
     }
-    if (!remove && projectile.type === "blueBounce") {
-      const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
-      for (const solid of arenaSolids) {
-        if (solid.top < projectile.mesh.position.y - projectile.hitRadius) continue;
-        const insideX = Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius;
-        const insideZ = Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius;
-        if (!insideX || !insideZ) continue;
-        projectile.mesh.position.x = previousX;
-        projectile.mesh.position.z = previousZ;
-        if (projectile.bouncesRemaining <= 0) {
-          remove = true;
-          break;
-        }
-        const cameFromX = Math.abs(previousX - solid.x) > solid.halfW + projectile.hitRadius;
-        const cameFromZ = Math.abs(previousZ - solid.z) > solid.halfD + projectile.hitRadius;
-        if (cameFromX) projectile.vx *= -1;
-        if (cameFromZ) projectile.vz *= -1;
-        if (!cameFromX && !cameFromZ) {
-          if (Math.abs(projectile.vx) >= Math.abs(projectile.vz)) projectile.vx *= -1;
-          else projectile.vz *= -1;
-        }
-        projectile.bouncesRemaining -= 1;
-        projectile.bounceCount += 1;
-        projectile.mesh.material.color?.setHex(0xc9fbff);
-        createGroundPulse(0.42, 0x69dfff, projectile.mesh.position);
-        canvas.dataset.lastBlueBounceCount = String(projectile.bounceCount);
-        break;
-      }
-    }
     if (projectile.goldStage && solids.some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
       && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
@@ -5470,7 +5494,10 @@ function animate() {
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
   let isMoving = false;
-  if (!goldRushState.dead && input.lengthSq() > 0) {
+  const blueDashing = updateBlueDash(dt);
+  if (blueDashing) {
+    isMoving = true;
+  } else if (!goldRushState.dead && input.lengthSq() > 0) {
     isMoving = true;
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);

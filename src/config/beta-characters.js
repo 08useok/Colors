@@ -50,11 +50,10 @@ export const BETA_CHARACTERS = {
       descriptionEn: "Hurls marbles at blistering speed. One barely stings, but a few in a row will hurt."
     },
     special: {
-      id: "bounceShot", name: "바운스 샷",
-      description: "탄환 8발을 빠르게 발사합니다. 탄환은 벽에 최대 3번 반사되고 적을 관통하며 계속 이동합니다.",
-      nameEn: "Bounce Shot", descriptionEn: "Rapidly fires eight piercing bullets that can bounce off walls up to three times.",
-      projectileCount: 8, intervalMs: 70, spreadAngle: degrees(18), damage: 650,
-      speed: 28, range: 22, maxBounces: 3, cooldown: 10,
+      id: "blueDash", name: "돌진",
+      description: "빠르게 굴러 전진합니다. 벽에 부딪히면 튕겨 나가며, 경로의 적에게 피해와 넉백을 줍니다.",
+      nameEn: "Ricochet Dash", descriptionEn: "Roll forward at high speed, bouncing off walls and damaging and knocking back enemies in your path.",
+      damage: 1600, speed: 24, duration: 1.15, maxBounces: 6, hitRadius: 1.2, cooldown: 10,
     },
   },
   orange: {
