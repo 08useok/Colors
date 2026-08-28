@@ -4622,6 +4622,8 @@ function makeFighter(options) {
     dead: false,
     zoneDamageTick: 0,
     botDecisionAt: 0,
+    botAimTargetId: null,
+    botAimReadyAt: 0,
     botMoveTarget: new THREE.Vector3(options.position.x, 0, options.position.z),
     botStrafeDir: Math.random() > 0.5 ? 1 : -1,
     botDifficulty: 1,
@@ -10417,6 +10419,26 @@ const BOT_DIFF = [
   { speedMult: 1.0, aimMult: 0.9, fleePct: 0.35, reactDelay: 0 },
 ];
 
+// AI는 목표를 사거리 안에 포착한 즉시 발사하지 않는다.
+// 첫 발에는 조준 시간을, 연사 사이에는 재조준 시간을 둬 플레이어가 대응할 틈을 만든다.
+function tryBotAttackWithWindup(bot, target) {
+  const now = state.gameTime;
+  const melee = ["red", "crimson"].includes(bot.characterType);
+  const firstAimDelay = melee ? 0.42 : 0.3;
+  const followUpAimDelay = melee ? 0.2 : 0.18;
+
+  if (bot.botAimTargetId !== target.id) {
+    bot.botAimTargetId = target.id;
+    bot.botAimReadyAt = now + firstAimDelay;
+    return false;
+  }
+  if (now < bot.botAimReadyAt) return false;
+  if (!beginAttack(bot)) return false;
+
+  bot.botAimReadyAt = Math.max(bot.nextAttackAt, now) + followUpAimDelay;
+  return true;
+}
+
 function updateBot(bot, dt, zone) {
   if (bot.dead || bot.isDummy || bot.isBoss || bot.isNetworkPlayer) {
     return;
@@ -10442,7 +10464,7 @@ function updateBot(bot, dt, zone) {
       const toTargetZ = target.mesh.position.z - botPos.z;
       if (Math.hypot(toTargetX, toTargetZ) <= getAttackRange(bot) * 1.05) {
         bot.yaw = Math.atan2(toTargetX, toTargetZ);
-        beginAttack(bot);
+        tryBotAttackWithWindup(bot, target);
       }
     }
   } else if (bot.health < bot.maxHealth * diff.fleePct && target) {
@@ -10471,7 +10493,7 @@ function updateBot(bot, dt, zone) {
     }
     if (distance <= getAttackRange(bot) * 1.05) {
       bot.yaw = Math.atan2(toTargetX, toTargetZ);
-      beginAttack(bot);
+      tryBotAttackWithWindup(bot, target);
     }
   } else if (target) {
     const nav = findNavTarget(bot, target.mesh.position.x, target.mesh.position.z);
@@ -10596,7 +10618,7 @@ function updateBot(bot, dt, zone) {
       if (ct === "gold" && (bot.goldUltimateCharge ?? 0) >= CHARACTERS.gold.ultimate.chargeRequired && distance < 5) {
         tryUseGoldUltimate(bot);
       }
-      beginAttack(bot);
+      tryBotAttackWithWindup(bot, target);
     }
   } else if (state.chopWoodMode) {
     const enemyTree = getChopWoodEnemyTree(bot);
