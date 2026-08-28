@@ -9824,6 +9824,11 @@ function isInBush(fighter) {
 
 function isFighterVisible(observer, target) {
   if (state.gameTime < target.revealedUntil) return true;
+  // 그린 궁극기 은신은 일반 수풀의 근거리 감지 규칙과 별개다.
+  // 발각 디버프가 없으면 AI와 자동 조준 모두에게 완전히 숨긴다.
+  if (target.characterType === "green" && target.greenUltimateBush?.expiresAt > state.gameTime) {
+    return false;
+  }
   const dx = target.mesh.position.x - observer.mesh.position.x;
   const dz = target.mesh.position.z - observer.mesh.position.z;
   if (isInBush(target) && dx * dx + dz * dz > bushStealthRevealRangeSq) {
@@ -10397,6 +10402,10 @@ function chooseBotTarget(bot) {
     const dz = fighter.mesh.position.z - bot.mesh.position.z;
     const distanceSq = dx * dx + dz * dz;
     if (distanceSq > visionRange * visionRange) continue;
+    const greenUltimateConcealed = fighter.characterType === "green"
+      && fighter.greenUltimateBush?.expiresAt > state.gameTime
+      && state.gameTime >= fighter.revealedUntil;
+    if (greenUltimateConcealed) continue;
     if (!isFighterVisible(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) continue;
     if (isInBush(fighter) && distanceSq > bushStealthRevealRangeSq) continue;
 
