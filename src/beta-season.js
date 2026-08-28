@@ -2800,7 +2800,7 @@ function performBlueDash() {
   blueSpecialCharge = 0;
   blueDashState = {
     directionX: Math.sin(player.rotation.y), directionZ: Math.cos(player.rotation.y),
-    remaining: def.duration, bouncesRemaining: def.maxBounces, hitTargets: new Set(),
+    remaining: def.duration, bounceCount: 0, hitTargets: new Set(),
   };
   attackComboState.textContent = "돌진!";
   canvas.dataset.lastBlueDashBounces = "0";
@@ -2842,14 +2842,10 @@ function updateBlueDash(dt) {
         if (Math.abs(dash.directionX) >= Math.abs(dash.directionZ)) dash.directionX *= -1;
         else dash.directionZ *= -1;
       }
-      dash.bouncesRemaining -= 1;
+      dash.bounceCount += 1;
       player.rotation.y = Math.atan2(dash.directionX, dash.directionZ);
       createGroundPulse(0.62, 0x71dfff, player.position);
-      canvas.dataset.lastBlueDashBounces = String(def.maxBounces - dash.bouncesRemaining);
-      if (dash.bouncesRemaining <= 0) {
-        blueDashState = null;
-        break;
-      }
+      canvas.dataset.lastBlueDashBounces = String(dash.bounceCount);
     }
     for (const target of testTargets) {
       if (!target.visible || target.userData.isAlly || dash.hitTargets.has(target)) continue;
