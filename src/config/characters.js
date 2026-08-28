@@ -194,7 +194,7 @@ export const CHARACTERS = {
     walk: { cycleSpeed: 7, armAmp: 0.24, legAmp: 0.34, armRestZ: Math.PI * 0.05 },
   },
   chartreuse: {
-    color: 0x7fff00,
+    color: 0xc1f80a,
     maxHealth: 6200,
     attackType: "chartreuse",
     reloadDuration: 1.2,

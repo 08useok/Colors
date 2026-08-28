@@ -100,7 +100,7 @@ const CHARACTERS = [
   { id: "crimson", name: "Crimson", rarity: "legendary", price: 900, color: 0xa00000 },
   { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xffd770 },
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
-  { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0x7fff00 },
+  { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0xc1f80a },
   ...(IS_BETA5_TEST ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
@@ -728,7 +728,7 @@ function recolorSkinTintTexture(texture, targetHex) {
 
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
-  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd770 : characterId === "chartreuse" ? 0x7fff00 : null;
+  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd770 : characterId === "chartreuse" ? 0xc1f80a : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
   // 구별이 안 됐다 — 뚜렷한 골드 톤 + emissive 글로우로 대체.
@@ -3467,7 +3467,7 @@ function updateCrimsonUltimateGauge() {
     pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
     gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#ffd770" },
     green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
-    chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#7fff00" },
+    chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#c1f80a" },
     mint: {
       charge: mintUltimateCharge,
       required: BETA_CHARACTERS.mint.special.chargeRequired,

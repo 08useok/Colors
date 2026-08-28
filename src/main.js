@@ -3087,7 +3087,7 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     ensureIvoryGlbLoading();
     if (_ivoryGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_ivoryGlb, isAiBot), skinId);
   }
-  if (color === 0x7fff00) {
+  if (color === 0xc1f80a) {
     ensureChartreuseGlbLoading();
     // 샤르트뢰즈는 플레이어가 직접 조작할 때도 항상 loop만 사용하도록 이미
     // 확정되어 있어(커밋 1962daf) forceLoopOnly로 그 동작을 그대로 유지한다.
@@ -9043,7 +9043,7 @@ function beginChartreuseAttack(fighter) {
     return true;
   }
   const yaw = fighter.yaw;
-  const colors = { enhanced: 0x7fff00, cc: 0x55ccff, plague: 0x151018 };
+  const colors = { enhanced: 0xc1f80a, cc: 0x55ccff, plague: 0x151018 };
   const mesh = new THREE.Mesh(
     new THREE.SphereGeometry(ammoType === "plague" ? 0.24 : 0.19, 10, 8),
     new THREE.MeshBasicMaterial({ color: colors[ammoType] }),
