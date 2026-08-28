@@ -4567,6 +4567,9 @@ function createHealthBarMesh() {
 
 function makeFighter(options) {
   const charDef = CHARACTERS[options.characterType ?? "red"];
+  const isMeleeBot = !options.isPlayer && ["red", "crimson"].includes(options.characterType ?? "red");
+  // 근접 AI가 전투 시작 프레임에 바로 펀치로 처치하지 않도록 대응 시간을 보장한다.
+  const openingAttackDelay = isMeleeBot ? 1.4 : 0;
   let levelMult = 1;
   let skinId = null;
   const acc = loadAccount();
@@ -4608,7 +4611,7 @@ function makeFighter(options) {
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
     ammo: charDef.maxAmmo ?? maxAmmo,
     reloadTimer: 0,
-    nextAttackAt: 0,
+    nextAttackAt: (state.gameTime ?? 0) + openingAttackDelay,
     attackSequenceEndsAt: 0,
     spread: 0,
     spreadRecovery: 0,
