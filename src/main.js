@@ -2444,7 +2444,7 @@ const FLASH_EMISSIVE = new THREE.Color(0x7f0f0f);
 const SHOCK_EMISSIVE = new THREE.Color(0x2299cc);
 const POISON_EMISSIVE = new THREE.Color(0x44aa22);
 const NO_EMISSIVE = new THREE.Color(0x000000);
-const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit"]);
+const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit", "chartreuseUltimate", "chartreuseBurst"]);
 
 function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false } = {}) {
   if (!root) return;
@@ -9093,12 +9093,64 @@ function beginChartreuseAttack(fighter) {
   return true;
 }
 
+function createChartreuseUltimateEffect(fighter) {
+  const burstGroup = new THREE.Group();
+  const burstColors = [0xc1f80a, 0x65ffe0, 0xffffff];
+  for (let i = 0; i < 42; i += 1) {
+    const particle = new THREE.Mesh(
+      new THREE.SphereGeometry(0.035 + Math.random() * 0.035, 6, 4),
+      new THREE.MeshBasicMaterial({ color: burstColors[i % burstColors.length], transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending }),
+    );
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2.2 + Math.random() * 2.8;
+    particle.userData.velocity = new THREE.Vector3(Math.sin(angle) * speed, 1.2 + Math.random() * 2.4, Math.cos(angle) * speed);
+    burstGroup.add(particle);
+  }
+  burstGroup.position.copy(fighter.mesh.position);
+  burstGroup.position.y += 1.05;
+  scene.add(burstGroup);
+  state.effects.push({ mesh: burstGroup, life: 0.9, maxLife: 0.9, type: "chartreuseBurst", owner: fighter });
+
+  const group = new THREE.Group();
+  const core = new THREE.Mesh(
+    new THREE.SphereGeometry(0.62, 20, 14),
+    new THREE.MeshBasicMaterial({ color: 0xc1f80a, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending }),
+  );
+  const burst = new THREE.Mesh(
+    new THREE.RingGeometry(0.55, 0.66, 64),
+    new THREE.MeshBasicMaterial({ color: 0x65ffe0, transparent: true, opacity: 0.85, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }),
+  );
+  const outer = new THREE.Mesh(
+    new THREE.TorusGeometry(1.65, 0.075, 8, 64),
+    new THREE.MeshBasicMaterial({ color: 0xc1f80a, transparent: true, opacity: 0.98, blending: THREE.AdditiveBlending }),
+  );
+  const inner = new THREE.Mesh(
+    new THREE.TorusGeometry(1.12, 0.04, 8, 48),
+    new THREE.MeshBasicMaterial({ color: 0x65ffe0, transparent: true, opacity: 0.86, blending: THREE.AdditiveBlending }),
+  );
+  const groundRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.9, 1.35, 48),
+    new THREE.MeshBasicMaterial({ color: 0xc1f80a, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }),
+  );
+  burst.rotation.x = -Math.PI / 2;
+  outer.rotation.x = Math.PI / 2;
+  inner.rotation.x = Math.PI / 2;
+  groundRing.rotation.x = -Math.PI / 2;
+  groundRing.position.y = -1.0;
+  group.add(core, burst, outer, inner, groundRing);
+  group.position.copy(fighter.mesh.position);
+  group.position.y += 1.05;
+  scene.add(group);
+  state.effects.push({ mesh: group, life: CHARACTERS.chartreuse.ultimate.duration, maxLife: CHARACTERS.chartreuse.ultimate.duration, type: "chartreuseUltimate", owner: fighter, core, burst, outer, inner, groundRing });
+}
+
 function tryUseChartreuseUltimate(fighter = getPlayer()) {
   if (!fighter || fighter.dead || fighter.characterType !== "chartreuse" || !state.running) return false;
   const ultimate = CHARACTERS.chartreuse.ultimate;
   if ((fighter.chartreuseUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
   fighter.chartreuseUltimateCharge = 0;
   fighter.chartreuseFocusedUntil = state.gameTime + ultimate.duration;
+  createChartreuseUltimateEffect(fighter);
   return true;
 }
 
@@ -10207,6 +10259,40 @@ function updateEffects(dt) {
       }
       effect.mesh.scale.set(scale, scale, 1);
       effect.mesh.material.opacity = opacity;
+      continue;
+    }
+    if (effect.type === "chartreuseUltimate") {
+      const owner = effect.owner;
+      if (!owner?.dead) {
+        effect.mesh.position.copy(owner.mesh.position);
+        effect.mesh.position.y += 1.05;
+      }
+      effect.outer.rotation.z += dt * 3.2;
+      effect.inner.rotation.z -= dt * 4.6;
+      effect.burst.scale.setScalar(Math.min(3.8, 0.6 + (1 - effect.life / effect.maxLife) * 3.2));
+      effect.burst.material.opacity = effect.life > effect.maxLife * 0.82 ? 0.85 * ((effect.life - effect.maxLife * 0.82) / (effect.maxLife * 0.18)) : 0;
+      effect.core.scale.setScalar(1 + Math.sin(state.gameTime * 12) * 0.12);
+      effect.core.material.opacity = 0.6 + Math.sin(state.gameTime * 10) * 0.16;
+      const fadeIn = effect.life < 0.45 ? effect.life / 0.45 : 1;
+      effect.outer.material.opacity = Math.max(0, 0.98 * fadeIn);
+      effect.inner.material.opacity = Math.max(0, 0.86 * fadeIn);
+      effect.groundRing.rotation.z += dt * 1.6;
+      effect.groundRing.material.opacity = Math.max(0, (0.4 + Math.sin(state.gameTime * 6) * 0.15) * fadeIn);
+      effect.mesh.scale.setScalar(1 + Math.sin(state.gameTime * 10) * 0.08);
+      continue;
+    }
+    if (effect.type === "chartreuseBurst") {
+      const owner = effect.owner;
+      if (!owner?.dead) {
+        effect.mesh.position.x = owner.mesh.position.x;
+        effect.mesh.position.z = owner.mesh.position.z;
+      }
+      const burstAlpha = effect.life / effect.maxLife;
+      for (const particle of effect.mesh.children) {
+        particle.position.addScaledVector(particle.userData.velocity, dt);
+        particle.userData.velocity.y -= 4.8 * dt;
+        particle.material.opacity = Math.max(0, 0.95 * burstAlpha);
+      }
       continue;
     }
     const alpha = effect.life / effect.maxLife;
