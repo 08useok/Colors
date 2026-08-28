@@ -3138,8 +3138,8 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     fctx.beginPath(); fctx.arc(cx - r * 0.28, cy - r * 0.28, r * 0.22, 0, Math.PI * 2); fctx.fill();
   };
 
-  if (color === 0xd4a928) {
-    const goldMat = new THREE.MeshStandardMaterial({ color: 0xffd34f, emissive: 0x744400, emissiveIntensity: 0.3, metalness: 0.78, roughness: 0.2 });
+  if (color === 0xffd770) {
+    const goldMat = new THREE.MeshStandardMaterial({ color: 0xffd770, emissive: 0x744400, emissiveIntensity: 0.3, metalness: 0.78, roughness: 0.2 });
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x3b2a12, roughness: 0.7, metalness: 0.15 });
     const hardHat = new THREE.Mesh(new THREE.SphereGeometry(0.73, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), goldMat);
     hardHat.position.set(0, 2.12, 0);
@@ -3683,7 +3683,7 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
   // 전투 높이로 외형만 정규화한다. 바깥 그룹은 스케일하지 않아 이후 붙는
   // 체력바·이름표의 크기와 전투 판정에는 영향을 주지 않는다.
   let resultGroup = group;
-  if (normalizeBattleModel && (color === 0xa00000 || color === 0xd4a928)) {
+  if (normalizeBattleModel && (color === 0xa00000 || color === 0xffd770)) {
     group.updateMatrixWorld(true);
     const modelBox = new THREE.Box3().setFromObject(group);
     const modelSize = modelBox.getSize(new THREE.Vector3());
@@ -12894,7 +12894,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     const account = loadAccount();
     if (!account) return;
     const chars = [...ROSTER];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd770", ivory: "#fffaf0" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
@@ -12968,7 +12968,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   function renderShopCharacters() {
     const account = loadAccount();
     if (!account || !shopCharsContent) return;
-    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
+    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd770", ivory: "#fffaf0" };
     const buyable = Object.keys(CHARACTER_RARITY).filter((c) => getCharacterPrice(c) > 0);
     let html = '<div class="shop-grid">';
     for (const charKey of buyable) {
@@ -13031,7 +13031,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   function renderShopSkins() {
     const account = loadAccount();
     if (!account) return;
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", pink: "#f4cdd3", crimson: "#a00000", gold: "#d4a928", ivory: "#fffaf0" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd770", ivory: "#fffaf0" };
     let html = '<div class="shop-grid">';
     for (const [skinId, skin] of Object.entries(SKINS)) {
       // 아직 안 열린 시즌의 스킨은 "시즌 종료"로 오해되지 않게 아예 숨긴다

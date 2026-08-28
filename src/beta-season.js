@@ -98,7 +98,7 @@ const CHARACTERS = [
   { id: "purple", name: "Purple", rarity: "rare", price: 200, color: 0x9252d7 },
   { id: "pink", name: "Pink", rarity: "rare", price: 200, color: 0xf28cba },
   { id: "crimson", name: "Crimson", rarity: "legendary", price: 900, color: 0xa00000 },
-  { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xd4a928 },
+  { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xffd770 },
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
   { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0x7fff00 },
   ...(IS_BETA5_TEST ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
@@ -647,7 +647,8 @@ function applyBetaToonRendering(model, characterId) {
   for (const mesh of meshes) {
     if (mesh.name.startsWith("GreenTShirt")) continue;
     const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-    const toonMaterials = materials.map((material) => new THREE.MeshToonMaterial({
+    const toonMaterials = materials.map((material) => {
+      const toon = new THREE.MeshToonMaterial({
       map: material.map || null,
       color: material.color?.clone() || new THREE.Color(0xffffff),
       gradientMap,
@@ -655,7 +656,13 @@ function applyBetaToonRendering(model, characterId) {
       opacity: material.opacity ?? 1,
       alphaTest: material.alphaTest || 0,
       side: material.side,
-    }));
+      });
+      if (material.emissive && toon.emissive) {
+        toon.emissive.copy(material.emissive);
+        toon.emissiveIntensity = material.emissiveIntensity ?? 1;
+      }
+      return toon;
+    });
     mesh.material = toonMaterials.length === 1 ? toonMaterials[0] : toonMaterials;
     if (characterId === "blue") continue;
     if (!mesh.isSkinnedMesh) continue;
@@ -721,7 +728,7 @@ function recolorSkinTintTexture(texture, targetHex) {
 
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
-  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xd4a928 : characterId === "chartreuse" ? 0x7fff00 : null;
+  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd770 : characterId === "chartreuse" ? 0x7fff00 : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
   // 구별이 안 됐다 — 뚜렷한 골드 톤 + emissive 글로우로 대체.
@@ -744,8 +751,13 @@ function applySkinPaletteToModel(model, characterId) {
         material.map = recolorSkinTintTexture(material.userData.baseSkinMap, baseCharacterTintHex);
         material.color.set(0xffffff);
         if ("emissive" in material) {
-          material.emissive.set(0x000000);
-          material.emissiveIntensity = 0;
+          if (characterId === "gold") {
+            material.emissive.set(0xffd770);
+            material.emissiveIntensity = 0.16;
+          } else {
+            material.emissive.set(0x000000);
+            material.emissiveIntensity = 0;
+          }
         }
         continue;
       }
@@ -3453,7 +3465,7 @@ function updateCrimsonUltimateGauge() {
     cyan: { charge: cyanUltimateCharge, required: BETA_CHARACTERS.cyan.ultimate.chargeRequired, name: BETA_CHARACTERS.cyan.ultimate.name, color: "#0ff0fe" },
     crimson: { charge: crimsonUltimateCharge, required: CRIMSON.ultimateChargeRequired, name: BETA_CHARACTERS.crimson.ultimate.name, color: "#a00000" },
     pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
-    gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#e2ad20" },
+    gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#ffd770" },
     green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
     chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#7fff00" },
     mint: {
