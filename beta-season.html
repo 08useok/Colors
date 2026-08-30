@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season 4 Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.5.11">
+  <link rel="stylesheet" href="./beta-season.css?v=0.5.13">
+  <script>
+    if (new URLSearchParams(location.search).get("test") === "beta5") {
+      document.documentElement.classList.add("beta5-loading");
+    }
+  </script>
   <script type="importmap">
   {
     "imports": {
@@ -16,6 +21,15 @@
   </script>
 </head>
 <body>
+  <div id="beta5-loading-screen" class="beta5-loading-screen" role="status" aria-live="polite" aria-label="베타 시즌 5 불러오는 중">
+    <img src="./assets/beta5-loading.png?v=1" alt="Colors 놀이공원에서 캐릭터들이 즐기는 베타 시즌 5">
+    <div class="beta5-loading-shade"></div>
+    <div class="beta5-loading-status">
+      <strong>BETA SEASON 5</strong>
+      <div class="beta5-loading-bar"><i></i></div>
+      <span>놀이공원 입장 준비 중…</span>
+    </div>
+  </div>
   <canvas id="beta-canvas"></canvas>
 
   <div class="season-background-decor" aria-hidden="true">
@@ -168,6 +182,6 @@
     <button id="chop-wood-close" class="chop-wood-close" type="button">베타로 돌아가기</button>
     <iframe title="메인 게임 찹 우드" src="./index.html#chop-wood"></iframe>
   </div>
-  <script type="module" src="./src/beta-season.js?v=0.7.25"></script>
+  <script type="module" src="./src/beta-season.js?v=0.7.37"></script>
 </body>
 </html>

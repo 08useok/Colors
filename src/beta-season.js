@@ -3,8 +3,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.17";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.3";
-import { LANGS } from "./LANGS/langs.js?v=1.5.138";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.4";
+import { LANGS } from "./LANGS/langs.js?v=1.5.139";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
@@ -86,8 +86,24 @@ const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-
 const requestedBetaSeason = new URLSearchParams(location.search).get("test");
 const BETA_SEASON_ID = requestedBetaSeason === "beta5" ? "beta5" : "beta4";
 const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
+const beta5LoadingScreen = document.getElementById("beta5-loading-screen");
+
+function finishBeta5LoadingScreen() {
+  if (!IS_BETA5_TEST || !beta5LoadingScreen || beta5LoadingScreen.classList.contains("is-complete")) return;
+  beta5LoadingScreen.classList.add("is-complete");
+  setTimeout(() => {
+    beta5LoadingScreen.remove();
+    document.documentElement.classList.remove("beta5-loading");
+  }, 700);
+}
+
+if (IS_BETA5_TEST) {
+  const finishAfterMinimumDisplay = () => setTimeout(finishBeta5LoadingScreen, 850);
+  if (document.readyState === "complete") finishAfterMinimumDisplay();
+  else window.addEventListener("load", finishAfterMinimumDisplay, { once: true });
+}
 const BETA_STORAGE_KEY = IS_BETA5_TEST ? "colorsBetaSeason5Test" : "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "69";
+const CHARACTER_MODEL_VERSION = "76";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -557,6 +573,34 @@ attackAimFan.visible = false;
 attackAimIndicator.add(attackAimFan);
 attackAimIndicator.position.y = 0.12;
 player.add(attackAimIndicator);
+const mintUltimateAimIndicator = new THREE.Group();
+const mintUltimateAimBeam = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.3, BETA_CHARACTERS.mint.special.castRange),
+  new THREE.MeshBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.58,
+    toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+  }),
+);
+mintUltimateAimBeam.rotation.x = -Math.PI / 2;
+mintUltimateAimBeam.position.z = BETA_CHARACTERS.mint.special.castRange / 2;
+mintUltimateAimIndicator.add(mintUltimateAimBeam);
+const mintUltimateAimRing = new THREE.Mesh(
+  new THREE.RingGeometry(
+    Math.max(0.1, BETA_CHARACTERS.mint.special.radius - 0.16),
+    BETA_CHARACTERS.mint.special.radius,
+    56,
+  ),
+  new THREE.MeshBasicMaterial({
+    color: 0xa9fff0, transparent: true, opacity: 0.72,
+    toneMapped: false, side: THREE.DoubleSide, depthWrite: false, depthTest: true,
+  }),
+);
+mintUltimateAimRing.rotation.x = -Math.PI / 2;
+mintUltimateAimRing.position.z = BETA_CHARACTERS.mint.special.castRange;
+mintUltimateAimIndicator.add(mintUltimateAimRing);
+mintUltimateAimIndicator.position.y = 0.15;
+mintUltimateAimIndicator.visible = false;
+player.add(mintUltimateAimIndicator);
 const ivoryUltimateAimIndicator = new THREE.Group();
 const ivoryUltimateAimBeam = new THREE.Mesh(
   new THREE.PlaneGeometry(0.34, BETA_CHARACTERS.ivory.ultimate.castRange),
@@ -895,52 +939,98 @@ function clearCharacterModel() {
 }
 
 function prepareCharacterScene(model, characterId) {
+  const usesFbxRig = characterId === "mint"
+    || (characterId === "pink" && betaState.selectedSkins.pink === "beta5_pink_cotton_candy");
+  // Meshy FBX는 Z-up으로 제작됐다. 게임은 Y-up 좌표계를 쓰므로
+  // 바닥에 눕지 않게 변환을 먼저 적용한 뒤 크기와 발 위치를 계산한다.
+  if (usesFbxRig) model.rotateX(-Math.PI / 2);
   if (characterId === "blue") addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint"].includes(characterId)) {
     applyBetaToonRendering(model, characterId);
   }
   applySkinPaletteToModel(model, characterId);
-  const box = new THREE.Box3().setFromObject(model);
+  // Skinned FBX needs a precise bound after axis conversion. The default
+  // approximate bound keeps the pre-rotation Y/Z extents and over-scales
+  // Mint by roughly 2.56x while also producing the wrong center offset.
+  model.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(model, true);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
-  const scale = 2.7 / Math.max(size.y, 0.001);
-  model.scale.setScalar(scale);
-  model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
-  model.rotation.y = 0;
+  // Mint has a deliberately oversized head, unlike the older narrow-body
+  // rigs. Keep its visual footprint close to the actual player hit area.
+  const targetHeight = 2.7;
+  const scale = targetHeight / Math.max(size.y, 0.001);
+  const horizontalScale = characterId === "ivory" ? 1.3 : 1;
+  const verticalScale = characterId === "ivory" ? 1.3 : 1;
+  // FBX animation tracks may write to Mint's root position. Keep alignment
+  // on a parent pivot so the model remains centered on its aim origin and
+  // grounded even while a clip updates the source root.
+  const sceneRoot = usesFbxRig ? new THREE.Group() : model;
+  if (usesFbxRig) {
+    sceneRoot.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+    sceneRoot.scale.setScalar(scale);
+    sceneRoot.add(model);
+  } else {
+    model.scale.set(
+      scale * horizontalScale,
+      scale * verticalScale,
+      scale * horizontalScale,
+    );
+    model.position.set(
+      -center.x * scale * horizontalScale,
+      -box.min.y * scale * verticalScale,
+      -center.z * scale * horizontalScale,
+    );
+    model.rotation.y = 0;
+  }
   model.traverse((child) => {
     if (!child.isMesh) return;
     child.castShadow = true;
     child.receiveShadow = true;
     child.frustumCulled = false;
   });
-  return model;
+  return sceneRoot;
 }
 
 function loadCharacterMotionSet(characterId, token) {
   const selectedSkinId = betaState.selectedSkins[characterId] || "";
+  const cottonCandyPink = characterId === "pink" && selectedSkinId === "beta5_pink_cotton_candy";
   const modelCharacterId = characterId === "ivory" && selectedSkinId === "beta2_ivory_shopkeeper"
     ? "ivory/skin-shopkeeper"
-    : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
+    : cottonCandyPink
+      ? "pink/skin-cotton-candy"
+      : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
+  // Mint's supplied walk set is FBX rather than GLB, but it follows the
+  // same start → loop → stop structure used by the other character rigs.
+  const usesFbxMotion = characterId === "mint" || cottonCandyPink;
+  const extension = usesFbxMotion ? "fbx" : "glb";
   const paths = {
-    start: `./assets/3d/${modelCharacterId}/walk-m1s.glb?v=${CHARACTER_MODEL_VERSION}`,
-    loop: `./assets/3d/${modelCharacterId}/walk-m2l.glb?v=${CHARACTER_MODEL_VERSION}`,
-    stop: `./assets/3d/${modelCharacterId}/walk-m3e.glb?v=${CHARACTER_MODEL_VERSION}`,
+    start: `./assets/3d/${modelCharacterId}/walk-m1s.${extension}?v=${CHARACTER_MODEL_VERSION}`,
+    loop: `./assets/3d/${modelCharacterId}/walk-m2l.${extension}?v=${CHARACTER_MODEL_VERSION}`,
+    stop: `./assets/3d/${modelCharacterId}/walk-m3e.${extension}?v=${CHARACTER_MODEL_VERSION}`,
   };
-  Promise.all(Object.entries(paths).map(async ([key, path]) => [key, await characterLoader.loadAsync(path)]))
+  const motionLoader = usesFbxMotion ? staticCharacterLoader : characterLoader;
+  Promise.all(Object.entries(paths).map(async ([key, path]) => [key, await motionLoader.loadAsync(path)]))
     .then((entries) => {
       if (token !== characterLoadToken || betaState.selectedCharacter !== characterId) return;
       const group = new THREE.Group();
       const scenes = {};
       const mixers = {};
       const actions = {};
-      for (const [key, gltf] of entries) {
-        const sceneModel = prepareCharacterScene(gltf.scene, characterId);
+      for (const [key, asset] of entries) {
+        const scene = usesFbxMotion ? asset : asset.scene;
+        const { animations } = asset;
+        const sceneModel = prepareCharacterScene(scene, characterId);
         sceneModel.visible = key === "stop";
         scenes[key] = sceneModel;
         group.add(sceneModel);
-        const clip = gltf.animations[0];
+        const clip = animations[0];
         if (!clip) continue;
-        clip.tracks = clip.tracks.filter((track) => !/^RootMotion\.position/.test(track.name));
+        // Keep the hip and limb position tracks that form the walk, but never
+        // animate the FBX root or the rendered mesh object itself.
+        clip.tracks = usesFbxMotion
+          ? clip.tracks.filter((track) => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name))
+          : clip.tracks.filter((track) => !/^(?:RootMotion|RL_BoneRoot)\.position/.test(track.name));
         const mixer = new THREE.AnimationMixer(sceneModel);
         const action = mixer.clipAction(clip);
         action.setLoop(key === "loop" ? THREE.LoopRepeat : THREE.LoopOnce, key === "loop" ? Infinity : 1);
@@ -951,6 +1041,25 @@ function loadCharacterMotionSet(characterId, token) {
       const show = (key) => {
         for (const [sceneKey, sceneModel] of Object.entries(scenes)) sceneModel.visible = sceneKey === key;
       };
+      // The Mint FBX clips move the rig's authored resting point upward.
+      // Re-anchor every phase after its first evaluated pose so feet always
+      // meet the game floor when switching start, loop, and stop clips.
+      if (usesFbxMotion) {
+        for (const [key, sceneModel] of Object.entries(scenes)) {
+          const action = actions[key];
+          const mixer = mixers[key];
+          if (!action || !mixer) continue;
+          action.reset().play();
+          action.paused = true;
+          mixer.setTime(key === "stop" ? Math.max(0, action.getClip().duration - 0.001) : 0);
+          sceneModel.updateMatrixWorld(true);
+          const bounds = new THREE.Box3().setFromObject(sceneModel, true);
+          const center = bounds.getCenter(new THREE.Vector3());
+          sceneModel.position.x -= center.x;
+          sceneModel.position.y -= bounds.min.y;
+          sceneModel.position.z -= center.z;
+        }
+      }
       if (actions.stop) {
         actions.stop.play();
         actions.stop.time = Math.max(0, actions.stop.getClip().duration - 0.001);
@@ -1095,6 +1204,14 @@ const MODEL_ATTACK_POSES = {
     ["CC_Base_L_Upperarm", 0.3, 0, -0.12],
     ["CC_Base_Spine02", 0.1, -0.1, 0],
   ] },
+  // Mint uses the same AccuRig CC_Base skeleton as the GLB characters.
+  // Give every ice-cream bullet a short two-handed firing pulse so its
+  // three-round burst remains visible while standing or walking.
+  mint: { duration: 0.24, peak: 0.34, bones: [
+    ["CC_Base_R_Upperarm", 1.08, -0.08, 0.28], ["CC_Base_R_Forearm", 0.52, 0, 0.08],
+    ["CC_Base_L_Upperarm", 0.82, 0.08, -0.24], ["CC_Base_L_Forearm", 0.38, 0, -0.06],
+    ["CC_Base_Spine02", 0.14, -0.12, 0], ["CC_Base_Head", -0.05, 0, 0],
+  ] },
   // Chartreuse uses the custom walk rig rather than the CC_Base skeleton.
   // The firing arm follows the opposing walking arm smoothly, instead of
   // freezing while the projectile is spawned.
@@ -1156,7 +1273,7 @@ function setPlayerModel(characterId) {
     loadCharacterMotionSet(characterId, token);
     return;
   }
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -1382,7 +1499,7 @@ function equipSkin(characterId, skinId) {
   if (!skin || skin.character !== characterId || !betaState.ownedSkins.includes(skinId)) return;
   betaState.selectedSkins[characterId] = skinId;
   saveBetaState();
-  if (betaState.selectedCharacter === characterId && characterId === "ivory") setPlayerModel(characterId);
+  if (betaState.selectedCharacter === characterId && ["ivory", "pink"].includes(characterId)) setPlayerModel(characterId);
   else applySelectedSkinVisual();
   renderCharacters();
   showToast(`${getSkinName(skin)} 장착`);
@@ -1393,7 +1510,7 @@ function unequipSkin(characterId) {
   delete betaState.selectedSkins[characterId];
   saveBetaState();
   if (betaState.selectedCharacter === characterId) {
-    if (characterId === "ivory") setPlayerModel(characterId);
+    if (["ivory", "pink"].includes(characterId)) setPlayerModel(characterId);
     else applySelectedSkinVisual();
   }
   renderCharacters();
@@ -1472,11 +1589,154 @@ function renderShop() {
   }).join("")}</div>`;
 }
 
+let assetShowroomViewer = null;
+
+function closeAssetShowroomViewer() {
+  if (!assetShowroomViewer) return;
+  cancelAnimationFrame(assetShowroomViewer.frameId);
+  assetShowroomViewer.resizeObserver.disconnect();
+  assetShowroomViewer.scene.traverse((child) => {
+    child.geometry?.dispose?.();
+    const materials = Array.isArray(child.material) ? child.material : child.material ? [child.material] : [];
+    for (const material of materials) {
+      for (const value of Object.values(material)) value?.isTexture && value.dispose();
+      material.dispose();
+    }
+  });
+  assetShowroomViewer.renderer.dispose();
+  assetShowroomViewer.host.replaceChildren();
+  assetShowroomViewer = null;
+}
+
+function openAssetShowroomViewer(modelPath, modelName) {
+  closeAssetShowroomViewer();
+  const host = modalContent.querySelector("[data-asset-viewer-host]");
+  const title = modalContent.querySelector("[data-asset-viewer-title]");
+  const status = modalContent.querySelector("[data-asset-viewer-status]");
+  const viewer = modalContent.querySelector(".asset-showroom-viewer");
+  if (!host || !title || !status || !viewer) return;
+
+  viewer.classList.remove("hidden");
+  title.textContent = modelName;
+  status.textContent = "GLB 불러오는 중…";
+  host.replaceChildren();
+
+  const previewScene = new THREE.Scene();
+  const previewCamera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
+  const previewRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  previewRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  previewRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  previewRenderer.shadowMap.enabled = true;
+  previewRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  host.append(previewRenderer.domElement);
+
+  previewScene.add(new THREE.HemisphereLight(0xeafaff, 0x18313b, 2.6));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
+  keyLight.position.set(4, 7, 5);
+  keyLight.castShadow = true;
+  previewScene.add(keyLight);
+  const rimLight = new THREE.DirectionalLight(0x65dfff, 1.8);
+  rimLight.position.set(-5, 3, -4);
+  previewScene.add(rimLight);
+
+  const modelPivot = new THREE.Group();
+  previewScene.add(modelPivot);
+  let mixer = null;
+  let cameraDistance = 5;
+  let dragging = false;
+  let pointerX = 0;
+  let pointerY = 0;
+
+  const resize = () => {
+    const width = Math.max(1, host.clientWidth);
+    const height = Math.max(1, host.clientHeight);
+    previewRenderer.setSize(width, height, false);
+    previewCamera.aspect = width / height;
+    previewCamera.updateProjectionMatrix();
+  };
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(host);
+  resize();
+
+  const updateCamera = () => {
+    previewCamera.position.set(0, 0.15, cameraDistance);
+    previewCamera.lookAt(0, 0, 0);
+  };
+  updateCamera();
+
+  previewRenderer.domElement.addEventListener("pointerdown", (event) => {
+    dragging = true;
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+    previewRenderer.domElement.setPointerCapture(event.pointerId);
+  });
+  previewRenderer.domElement.addEventListener("pointermove", (event) => {
+    if (!dragging) return;
+    modelPivot.rotation.y += (event.clientX - pointerX) * 0.012;
+    modelPivot.rotation.x = THREE.MathUtils.clamp(modelPivot.rotation.x + (event.clientY - pointerY) * 0.008, -0.55, 0.55);
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+  });
+  previewRenderer.domElement.addEventListener("pointerup", () => { dragging = false; });
+  previewRenderer.domElement.addEventListener("pointercancel", () => { dragging = false; });
+  previewRenderer.domElement.addEventListener("wheel", (event) => {
+    event.preventDefault();
+    cameraDistance = THREE.MathUtils.clamp(cameraDistance + event.deltaY * 0.004, 2.1, 9);
+    updateCamera();
+  }, { passive: false });
+
+  const clock = new THREE.Clock();
+  const state = { renderer: previewRenderer, resizeObserver, host, scene: previewScene, frameId: 0 };
+  assetShowroomViewer = state;
+  const animate = () => {
+    if (assetShowroomViewer !== state) return;
+    state.frameId = requestAnimationFrame(animate);
+    const delta = Math.min(clock.getDelta(), 0.05);
+    if (mixer) mixer.update(delta);
+    if (!dragging) modelPivot.rotation.y += delta * 0.28;
+    previewRenderer.render(previewScene, previewCamera);
+  };
+  animate();
+
+  new GLTFLoader().load(modelPath, (gltf) => {
+    if (assetShowroomViewer !== state) return;
+    const model = gltf.scene;
+    model.traverse((child) => {
+      if (!child.isMesh) return;
+      child.castShadow = true;
+      child.receiveShadow = true;
+    });
+    model.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(model, true);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    const maxSize = Math.max(size.x, size.y, size.z, 0.001);
+    const scale = 2.8 / maxSize;
+    model.scale.setScalar(scale);
+    model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+    modelPivot.add(model);
+    cameraDistance = 5.2;
+    updateCamera();
+    if (gltf.animations.length) {
+      mixer = new THREE.AnimationMixer(model);
+      mixer.clipAction(gltf.animations[0]).play();
+    }
+    status.textContent = gltf.animations.length ? "드래그 회전 · 휠 확대 · 애니메이션 재생 중" : "드래그 회전 · 휠 확대";
+  }, undefined, () => {
+    if (assetShowroomViewer === state) status.textContent = "GLB를 불러오지 못했습니다.";
+  });
+}
+
 function renderAssetShowroom() {
+  closeAssetShowroomViewer();
   const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"]);
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
-  modalContent.innerHTML = `<div class="beta-grid">${CHARACTERS.map((character) => {
+  modalContent.innerHTML = `<section class="asset-showroom-viewer hidden" aria-live="polite">
+    <div class="asset-showroom-viewer-head"><div><span>GLB PREVIEW</span><h3 data-asset-viewer-title>모델 미리보기</h3></div><button type="button" data-close-asset-viewer aria-label="미리보기 닫기">×</button></div>
+    <div class="asset-showroom-canvas" data-asset-viewer-host></div>
+    <p data-asset-viewer-status>GLB를 선택하세요.</p>
+  </section><div class="beta-grid asset-showroom-grid">${CHARACTERS.map((character) => {
     const usesGlb = glbCharacters.has(character.id);
     const modelPath = usesGlb
       ? character.id === "ivory" ? "assets/3d/ivory/ivory_preview.glb" : ["crimson", "gold"].includes(character.id) ? "assets/3d/cyan/walk-m1s.glb" : `assets/3d/${character.id}/walk-m1s.glb`
@@ -1488,6 +1748,7 @@ function renderAssetShowroom() {
       <p>${usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
       <p>시즌 4 이식 대상 스킨 에셋 ${skinCount}개</p>
       <code>${modelPath}</code>
+      ${usesGlb ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">GLB 보기</button>` : ""}
     </article>`;
   }).join("")}</div>`;
 }
@@ -1833,6 +2094,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function openPanel(panel) {
+  closeAssetShowroomViewer();
   modal.classList.remove("hidden");
   if (panel === "characters") renderCharacters();
   if (panel === "shop") renderShop();
@@ -1841,9 +2103,19 @@ function openPanel(panel) {
   if (panel === "orders") renderOrderEvent();
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
-document.getElementById("modal-close").addEventListener("click", () => modal.classList.add("hidden"));
-modal.addEventListener("click", (event) => { if (event.target === modal) modal.classList.add("hidden"); });
+function closeBetaModal() {
+  closeAssetShowroomViewer();
+  modal.classList.add("hidden");
+}
+document.getElementById("modal-close").addEventListener("click", closeBetaModal);
+modal.addEventListener("click", (event) => { if (event.target === modal) closeBetaModal(); });
 modalContent.addEventListener("click", (event) => {
+  const glbButton = event.target.closest("[data-view-glb]");
+  if (glbButton) openAssetShowroomViewer(glbButton.dataset.viewGlb, glbButton.dataset.viewGlbName || "GLB 모델");
+  if (event.target.closest("[data-close-asset-viewer]")) {
+    closeAssetShowroomViewer();
+    modalContent.querySelector(".asset-showroom-viewer")?.classList.add("hidden");
+  }
   const characterButton = event.target.closest("[data-character]");
   if (characterButton) characterButton.dataset.action === "buy" ? buyCharacter(characterButton.dataset.character) : selectCharacter(characterButton.dataset.character);
   const skinButton = event.target.closest("[data-skin]");
@@ -2754,7 +3026,8 @@ function updateAttackAimIndicator() {
       }
     }
   }
-  attackAimIndicator.visible = true;
+  // 궁극기 조준 중에는 일반 공격 조준선이 위에 겹치지 않게 한다.
+  attackAimIndicator.visible = !ivoryUltimateAiming && !directionalUltimateAiming;
   canvas.dataset.aimRange = String(range);
   canvas.dataset.aimStyle = isRed ? "red-x-shaped-attack-width-wall-clipped" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
@@ -3303,6 +3576,9 @@ function performCharacterAttack({ manualAim = false } = {}) {
     for (let i = 0; i < def.burstCount; i += 1) {
       setTimeout(() => {
         if (betaState.selectedCharacter !== "mint" || goldRushState.dead) return;
+        // Restart the pose for each projectile instead of animating only at
+        // the beginning of the complete burst.
+        startModelAttackMotion("mint");
         fireBetaProjectile({ speed: def.iceBulletSpeed, range: def.iceBulletRange, damage: def.iceBulletDamage, color: 0x98ffed, radius: 0.22, type: "mintIceCream" });
         canvas.dataset.lastMintBurst = String(i + 1);
         attackComboState.textContent = `아이스크림 탄 ${i + 1}/${def.burstCount}`;
@@ -3834,6 +4110,8 @@ ultimateButton.addEventListener("pointerdown", (event) => {
     canvas.dataset.ultimateAim = "manual";
   } else if (DIRECTIONAL_ULTIMATE_CHARACTERS.has(betaState.selectedCharacter)) {
     directionalUltimateAiming = true;
+    attackAimIndicator.visible = false;
+    mintUltimateAimIndicator.visible = betaState.selectedCharacter === "mint";
     ultimateButton.setPointerCapture(event.pointerId);
     canvas.dataset.ultimateAim = "manual";
   }
@@ -3849,6 +4127,8 @@ addEventListener("pointerup", () => {
     canvas.dataset.ultimateAim = "released";
   } else if (directionalUltimateAiming) {
     directionalUltimateAiming = false;
+    mintUltimateAimIndicator.visible = false;
+    updateAttackAimIndicator();
     canvas.dataset.ultimateAim = "released";
   }
 });
@@ -4779,6 +5059,8 @@ addEventListener("keydown", (event) => {
     event.preventDefault();
     directionalUltimateKeyboardAiming = true;
     directionalUltimateAiming = true;
+    attackAimIndicator.visible = false;
+    mintUltimateAimIndicator.visible = betaState.selectedCharacter === "mint";
     canvas.dataset.ultimateAim = "keyboard-manual";
   } else if (event.code === "Space" || event.code === "KeyQ") {
     event.preventDefault();
@@ -4799,6 +5081,8 @@ addEventListener("keyup", (event) => {
     event.preventDefault();
     directionalUltimateKeyboardAiming = false;
     directionalUltimateAiming = false;
+    mintUltimateAimIndicator.visible = false;
+    updateAttackAimIndicator();
     canvas.dataset.ultimateAim = "keyboard-released";
     document.getElementById("ultimate-btn").click();
   }
