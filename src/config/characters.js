@@ -171,10 +171,10 @@ export const CHARACTERS = {
     attackCooldown: 0.8,
     moveSpeedMultiplier: 1.0,
     stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1Size: 2, stage1SplashRadius: 1.5,
-    stage2Damage: 2000, stage2Range: 4, stage2Speed: 18,
-    stage3Damage: 1000, stage3Range: 3, stage3Speed: 20,
+    stage2Damage: 2000, stage2Range: 8, stage2Speed: 18,
+    stage3Damage: 1000, stage3Range: 6, stage3Speed: 20,
     projectileRadius: 0.2, maxChargePerAttack: 6,
-    ultimate: { name: "Malfunction Zone", damage: 0, radius: 3, duration: 4, delay: 0.35, chargeRequired: 12 },
+    ultimate: { name: "Malfunction Zone", damage: 0, radius: 6, duration: 4, delay: 0.35, chargeRequired: 12 },
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
   ivory: {

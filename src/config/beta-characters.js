@@ -168,15 +168,15 @@ export const BETA_CHARACTERS = {
       descriptionEn: "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles."
     },
     stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1Size: 2, stage1SplashRadius: 1.5,
-    stage2Damage: 2000, stage2Range: 4, stage2Speed: 18,
-    stage3Damage: 1000, stage3Range: 3, stage3Speed: 20,
+    stage2Damage: 2000, stage2Range: 8, stage2Speed: 18,
+    stage3Damage: 1000, stage3Range: 6, stage3Speed: 20,
     projectileRadius: 0.2, ultimateChargeRequired: 12, maxChargePerAttack: 6,
     ultimate: {
       id: "malfunctionZone", name: "고장 지대",
-      description: "자신의 위치에 반경 3타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다.",
+      description: "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다.",
       nameEn: "Malfunction Zone",
-      descriptionEn: "Summons a 3-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower.",
-      castRange: 0, radius: 3, duration: 4, delay: 0.35, followsCaster: true,
+      descriptionEn: "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower.",
+      castRange: 0, radius: 6, duration: 4, delay: 0.35, followsCaster: true,
     },
   },
   ivory: {
