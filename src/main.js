@@ -9346,16 +9346,23 @@ function updateProjectiles(dt) {
       proj.mesh.position.z = proj.z;
     }
 
-    if (proj.isBullet || proj.isElectric || proj.isNeedle) {
+    const trailSpacing = proj.isElectric ? 0.55 : 0.35;
+    if ((proj.isBullet || proj.isElectric || proj.isNeedle)
+      && proj.distTraveled >= (proj.nextTrailDistance ?? 0)) {
+      proj.nextTrailDistance = proj.distTraveled + trailSpacing;
       const color = proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
-      const size = proj.isBullet ? 0.24 : proj.isElectric ? 0.28 : 0.2;
+      const size = proj.isBullet ? 0.2 : proj.isElectric ? 0.14 : 0.16;
+      const trailLife = proj.isElectric ? 0.055 : 0.09;
       const trail = new THREE.Mesh(
         new THREE.SphereGeometry(size, 4, 4),
-        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.5, depthWrite: false }),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: proj.isElectric ? 0.32 : 0.42, depthWrite: false }),
       );
       trail.position.set(proj.x, proj.mesh.position.y, proj.z);
       scene.add(trail);
-      state.effects.push({ mesh: trail, life: 0.15, maxLife: 0.15, type: "trail" });
+      state.effects.push({
+        mesh: trail, life: trailLife, maxLife: trailLife, type: "trail",
+        peakOpacity: proj.isElectric ? 0.32 : 0.42,
+      });
     }
 
     if (proj.networkVisualOnly) {
@@ -10192,7 +10199,7 @@ function updateEffects(dt) {
       effect.mesh.material.opacity = alpha * 0.85;
     } else if (effect.type === "trail") {
       effect.mesh.scale.setScalar(alpha);
-      effect.mesh.material.opacity = alpha * 0.5;
+      effect.mesh.material.opacity = alpha * (effect.peakOpacity ?? 0.42);
     } else if (effect.type === "bulletHit" || effect.type === "spreadHit" || effect.type === "needleHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.8);
       effect.mesh.material.opacity = alpha * alpha;
