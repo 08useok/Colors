@@ -2239,10 +2239,12 @@ function recordGameResult(rank, mode = "showdown") {
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
   account.orderEvent ??= { progress: 0, claimed: [], cosmetics: {} };
 
-  // 도시 봉쇄 작전 (베타 시즌 4 이벤트) — 쇼다운만 점수 대상이다.
-  // 참여 +10, 4위 이내 +20, 1위 +40이며 등수 구간은 중복 합산하지 않는다.
-  if (CURRENT_SEASON === "beta4" && mode === "showdown" && !state.takedownMode && !state.goldRushMode) {
-    const eventScore = rank === 1 ? 40 : rank <= 4 ? 20 : 10;
+  // 도시 봉쇄 작전 (베타 시즌 4 이벤트) — 전용 맵의 테이크다운만 점수 대상이다.
+  // 참여 +10, 4위 이내 +20, 1위 +40이며 중앙 보스 처치에 참여하면 +30을 더한다.
+  if (CURRENT_SEASON === "beta4" && state.takedownMode) {
+    let eventScore = rank === 1 ? 40 : rank <= 4 ? 20 : 10;
+    const eventPlayer = getPlayer();
+    if (state.tdBoss?.health <= 0 && (eventPlayer?.tdBossDmg || 0) > 0) eventScore += 30;
     account.orderEvent.progress = Math.min(100, account.orderEvent.progress + eventScore);
   }
 
@@ -13323,12 +13325,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     renderRotationScreen();
   };
   openRotationBtn.addEventListener("click", openRotationEvent);
-  noticeEventStartBtn?.addEventListener("click", async () => {
-    await initAudio();
-    noticePanel.classList.add("hidden");
-    noticeToggle.textContent = "📢 공지";
-    enterMatchmaking("showdown");
-  });
+  noticeEventStartBtn?.addEventListener("click", openRotationEvent);
 
   rotationCloseBtn.addEventListener("click", () => {
     audio.play("close");
