@@ -3689,6 +3689,25 @@ const _chartreuseGlb = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 let _ivoryPreviewGlb = null;
 
+function refreshLoadedPurpleModels() {
+  if (!_purpleGlb.loop || typeof state === "undefined" || !state?.players) return;
+  for (const fighter of state.players) {
+    if (fighter.characterType !== "purple" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
+    const oldMesh = fighter.mesh;
+    const replacement = createStickman(CHARACTERS.purple.color, fighter.skinId, false, !fighter.isPlayer);
+    if (!replacement.userData.isGlbModel) continue;
+    replacement.position.copy(oldMesh.position);
+    replacement.rotation.copy(oldMesh.rotation);
+    if (fighter.healthBar) replacement.add(fighter.healthBar);
+    if (fighter.nameLabel) replacement.add(fighter.nameLabel);
+    scene.remove(oldMesh);
+    scene.add(replacement);
+    fighter.mesh = replacement;
+    fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
+    fighter.bodyMaterials = replacement.userData.bodyMaterials;
+  }
+}
+
 function refreshLoadedIvoryModels() {
   // GLB callback can fire before the game state is initialized.  Avoid touching
   // the TDZ-bound state variable in that case; the next model refresh will retry.
@@ -3829,13 +3848,9 @@ function ensurePurpleGlbLoading() {
   _glbLoader.load('./assets/3d/purple/walk-m1s.glb', g => { _purpleGlb.start = _stripRootMotion(g); });
   _glbLoader.load('./assets/3d/purple/walk-m2l.glb', g => {
     _purpleGlb.loop = _stripRootMotion(g);
+    refreshLoadedPurpleModels();
     refreshLoadedPreviewCharacter("purple");
     if (frontModelCharType === "purple") setupFrontModel("purple");
-    // 경기 시작이 GLB 로딩보다 먼저 일어나면 절차형 모델이 잠시 표시될 수 있다.
-    // 퍼플 GLB가 도착하면 현재 플레이어 모델을 즉시 교체한다.
-    if (typeof player !== "undefined" && player?.characterType === "purple" && state.running) {
-      setPlayerModel("purple");
-    }
   });
   _glbLoader.load('./assets/3d/purple/walk-m3e.glb', g => { _purpleGlb.end   = _stripRootMotion(g); });
 }
