@@ -8410,6 +8410,7 @@ function beginBombAttack(fighter) {
 
 function spawnBombSplash(x, z, ownerId, directHitTargetId) {
   const charDef = CHARACTERS.orange;
+  const owner = state.players.find((fighter) => fighter.id === ownerId) ?? null;
   const blastR = 3;
   const blastR2 = blastR * blastR;
   for (const target of state.players) {
