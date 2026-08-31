@@ -2372,6 +2372,9 @@ const state = {
   battleBushes: [],
   trainingSolids: [],
   showdownSolids: [],
+  takedownSolids: [],
+  takedownLakeRects: [],
+  takedownBushes: [],
   safeCenter: new THREE.Vector2(0, 0),
   scheduledHits: [],
   effects: [],
@@ -2426,6 +2429,9 @@ trainingMapGroup.visible = false;
 const showdownMapGroup = new THREE.Group();
 scene.add(showdownMapGroup);
 showdownMapGroup.visible = false;
+const takedownMapGroup = new THREE.Group();
+scene.add(takedownMapGroup);
+takedownMapGroup.visible = false;
 
 const tempVec3 = new THREE.Vector3();
 const tempVec32 = new THREE.Vector3();
@@ -4976,8 +4982,10 @@ const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
 });
 
 function createTakeDownMap() {
-  clearBattleMap();
-  createGround(battleMapGroup);
+  clearTakeDownMap();
+  scene.background = new THREE.Color(0x321b24);
+  scene.fog.color.set(0x321b24);
+  createGround(takedownMapGroup, { ground: 0x4b3642, gridMajor: 0xc94f64, gridMinor: 0x6f4b5b });
 
   for (let i = 0; i < 8; i += 1) {
     const angle = i * 45;
@@ -4985,35 +4993,49 @@ function createTakeDownMap() {
 
     for (const sideX of [-TD_RAIL_X, TD_RAIL_X]) {
       const [rx, rz] = rotateXZ(sideX, TD_RAIL_CENTER_Z, angle);
-      createWall(rx, rz, TD_RAIL_WIDTH, TD_RAIL_LENGTH, undefined, battleMapGroup, state.battleSolids, 0xb77658, -angleRad);
+      createWall(rx, rz, TD_RAIL_WIDTH, TD_RAIL_LENGTH, undefined, takedownMapGroup, state.takedownSolids, 0x3a2833, -angleRad);
     }
     TD_SPOKE_BLOCKS.forEach(([x, z, w, d]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
-      createWall(rx, rz, w, d, undefined, battleMapGroup, state.battleSolids);
+      createWall(rx, rz, w, d, undefined, takedownMapGroup, state.takedownSolids, 0x7d3348);
     });
     TD_SPOKE_BUSHES.forEach(([x, z]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
-      createBush(rx, rz, 1.45, battleMapGroup, state.battleBushes);
+      createBush(rx, rz, 1.45, takedownMapGroup, state.takedownBushes);
     });
     TD_SPOKE_TREES.forEach(([x, z]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
-      createSkullCluster(rx, rz, 8, battleMapGroup);
+      createSkullCluster(rx, rz, 8, takedownMapGroup);
     });
     TD_SPOKE_LAKES.forEach(([x, z, w, d]) => {
       const [rx, rz] = rotateXZ(x, z, angle);
-      createLake(rx, rz, w, d, battleMapGroup, state.battleLakeRects);
+      createLake(rx, rz, w, d, takedownMapGroup, state.takedownLakeRects);
     });
   }
 
   const boundary = worldRadius + 1;
-  createWall(0, -worldRadius, boundary * 2, 2, undefined, battleMapGroup, state.battleSolids);
-  createWall(0, worldRadius, boundary * 2, 2, undefined, battleMapGroup, state.battleSolids);
-  createWall(-worldRadius, 0, 2, boundary * 2, undefined, battleMapGroup, state.battleSolids);
-  createWall(worldRadius, 0, 2, boundary * 2, undefined, battleMapGroup, state.battleSolids);
+  createWall(0, -worldRadius, boundary * 2, 2, undefined, takedownMapGroup, state.takedownSolids, 0x241820);
+  createWall(0, worldRadius, boundary * 2, 2, undefined, takedownMapGroup, state.takedownSolids, 0x241820);
+  createWall(-worldRadius, 0, 2, boundary * 2, undefined, takedownMapGroup, state.takedownSolids, 0x241820);
+  createWall(worldRadius, 0, 2, boundary * 2, undefined, takedownMapGroup, state.takedownSolids, 0x241820);
 
-  state.solids = state.battleSolids;
-  state.lakeRects = state.battleLakeRects;
-  state.bushes = state.battleBushes;
+  state.solids = state.takedownSolids;
+  state.lakeRects = state.takedownLakeRects;
+  state.bushes = state.takedownBushes;
+}
+
+function clearTakeDownMap() {
+  takedownMapGroup.traverse((obj) => {
+    if (obj.geometry && obj.geometry !== bushClumpGeo) obj.geometry.dispose();
+    if (obj.material) {
+      const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+      mats.forEach((material) => { if (!bushClumpMats.includes(material)) material.dispose(); });
+    }
+  });
+  takedownMapGroup.clear();
+  state.takedownSolids = [];
+  state.takedownLakeRects = [];
+  state.takedownBushes = [];
 }
 
 function clearBattleMap() {
@@ -5559,12 +5581,19 @@ function initTakeDownPlayers() {
 }
 
 function startTakeDown() {
+  document.body.classList.remove("lobby-active");
+  messageOverlay.style.display = "none";
+  resultOverlay.style.display = "none";
   audio.play("gameStart");
   stopAllBgm();
+  crosshairEl.classList.remove("hidden");
+  crosshairEl.style.visibility = "visible";
   clock.getDelta();
-  battleMapGroup.visible = true;
+  battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
+  showdownMapGroup.visible = false;
   chopWoodMapGroup.visible = false;
+  takedownMapGroup.visible = true;
   state.chopWoodMode = false;
   state.goldRushMode = false;
   state.goldRushItems.forEach((item) => disposeSceneObject(item.mesh));
@@ -5578,10 +5607,6 @@ function startTakeDown() {
   state.trainingMode = false;
   state.takedownMode = true;
   state.mode = "takedown";
-  state.solids = state.battleSolids;
-  state.lakeRects = state.battleLakeRects;
-  state.bushes = state.battleBushes;
-
   createTakeDownMap();
   mapNameEl.textContent = "Take Down";
   mapNameEl.classList.remove("hidden");
@@ -5615,8 +5640,6 @@ function startTakeDown() {
   updateHud();
   tdHud.classList.remove("hidden");
   cwHud.classList.add("hidden");
-  resultOverlay.style.display = "none";
-  messageOverlay.style.display = "none";
 }
 
 function updateTakeDownHud() {
@@ -6460,6 +6483,7 @@ function startChopWood() {
   trainingMapGroup.visible = false;
   showdownMapGroup.visible = false;
   chopWoodMapGroup.visible = true;
+  takedownMapGroup.visible = false;
   scene.background = new THREE.Color(0xc98353);
   scene.fog.color.set(0xc98353);
   state.chopWoodMode = true;
@@ -7535,6 +7559,7 @@ function startTraining() {
   clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = true;
+  takedownMapGroup.visible = false;
   state.solids = state.trainingSolids;
   state.lakeRects = [];
   state.bushes = [];
@@ -7577,6 +7602,7 @@ function exitTraining() {
   state.mouseHeld = false;
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
+  takedownMapGroup.visible = false;
   mapNameEl.classList.add("hidden");
   exitTrainingBtn.classList.add("hidden");
 
@@ -7615,6 +7641,7 @@ function resetGame() {
   battleMapGroup.visible = !useIceCreamShowdown;
   trainingMapGroup.visible = false;
   showdownMapGroup.visible = useIceCreamShowdown;
+  takedownMapGroup.visible = false;
   // 쇼다운 진입 때 맵 그룹의 자식(벽 포함)이 이전 모드 상태로 숨겨지지 않도록 보장한다.
   if (useIceCreamShowdown) showdownMapGroup.traverse((node) => { node.visible = true; });
   if (useIceCreamShowdown) {
@@ -13672,6 +13699,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     battleMapGroup.visible = false;
     trainingMapGroup.visible = false;
     chopWoodMapGroup.visible = false;
+    takedownMapGroup.visible = false;
     clearBattleMap();
     stopAllBgm();
     showLobby();
