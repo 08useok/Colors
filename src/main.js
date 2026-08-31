@@ -8814,12 +8814,26 @@ function tryUseGoldUltimate(fighter = getPlayer()) {
     if (!state.running || fighter.dead) return;
     const mesh = new THREE.Mesh(
       new THREE.CircleGeometry(ultimate.radius, 40),
-      new THREE.MeshBasicMaterial({ color: 0xd9a51f, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }),
+      new THREE.MeshBasicMaterial({
+        color: 0xffd770, transparent: true, opacity: 0.42, side: THREE.DoubleSide,
+        depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4,
+      }),
     );
+    const border = new THREE.Mesh(
+      new THREE.RingGeometry(ultimate.radius * 0.88, ultimate.radius, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0xffed9e, transparent: true, opacity: 0.9, side: THREE.DoubleSide,
+        depthWrite: false, polygonOffset: true, polygonOffsetFactor: -6, polygonOffsetUnits: -6,
+      }),
+    );
+    border.position.z = 0.025;
+    border.renderOrder = 5;
+    mesh.add(border);
     mesh.rotation.x = -Math.PI / 2;
-    mesh.position.set(fighter.mesh.position.x, 0.1, fighter.mesh.position.z);
+    mesh.position.set(fighter.mesh.position.x, 0.18, fighter.mesh.position.z);
+    mesh.renderOrder = 4;
     scene.add(mesh);
-    state.malfunctionZones.push({ mesh, ownerId: fighter.id, radius: ultimate.radius, expiresAt: state.gameTime + ultimate.duration });
+    state.malfunctionZones.push({ mesh, border, ownerId: fighter.id, radius: ultimate.radius, expiresAt: state.gameTime + ultimate.duration });
     createGoldImpactEffect(fighter.mesh.position, ultimate.radius);
   }, ultimate.delay * 1000);
   return true;
@@ -9683,14 +9697,16 @@ function updateMalfunctionZones() {
     const zone = state.malfunctionZones[i];
     const owner = state.players.find((fighter) => fighter.id === zone.ownerId && !fighter.dead);
     if (!owner || state.gameTime >= zone.expiresAt) {
-      scene.remove(zone.mesh);
-      zone.mesh.geometry?.dispose();
-      zone.mesh.material?.dispose();
+      disposeSceneObject(zone.mesh);
       state.malfunctionZones.splice(i, 1);
       continue;
     }
-    zone.mesh.position.set(owner.mesh.position.x, 0.1, owner.mesh.position.z);
-    zone.mesh.material.opacity = 0.24 + Math.sin(state.gameTime * 9) * 0.08;
+    zone.mesh.position.set(owner.mesh.position.x, 0.18, owner.mesh.position.z);
+    zone.mesh.material.opacity = 0.38 + Math.sin(state.gameTime * 9) * 0.08;
+    if (zone.border) {
+      zone.border.material.opacity = 0.72 + Math.sin(state.gameTime * 9) * 0.18;
+      zone.border.rotation.z += 0.004;
+    }
     for (const target of state.players) {
       if (target.dead || target.id === owner.id) continue;
       if (state.chopWoodMode && target.team === owner.team) continue;
