@@ -9254,17 +9254,55 @@ function spawnVialSplash(x, z, ownerId) {
 }
 
 function findProjectileWallHit(startX, startZ, endX, endZ, radius = 0.2) {
-  const distance = Math.hypot(endX - startX, endZ - startZ);
-  const steps = Math.max(1, Math.ceil(distance / Math.max(0.08, radius * 0.5)));
-  for (let step = 1; step <= steps; step += 1) {
-    const progress = step / steps;
-    const x = THREE.MathUtils.lerp(startX, endX, progress);
-    const z = THREE.MathUtils.lerp(startZ, endZ, progress);
-    for (const solid of state.solids) {
-      if (solid.type !== "platform" && intersectsRect(x, z, radius, solid)) return { x, z };
+  let nearestProgress = Infinity;
+  for (const solid of state.solids) {
+    if (solid.type === "platform") continue;
+    const angle = solid.angle || 0;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const centerX = solid.x ?? ((solid.minX + solid.maxX) * 0.5);
+    const centerZ = solid.z ?? ((solid.minZ + solid.maxZ) * 0.5);
+    const halfWidth = solid.halfW ?? (solid.width ?? (solid.maxX - solid.minX)) * 0.5;
+    const halfDepth = solid.halfD ?? (solid.depth ?? (solid.maxZ - solid.minZ)) * 0.5;
+    const startDx = startX - centerX;
+    const startDz = startZ - centerZ;
+    const endDx = endX - centerX;
+    const endDz = endZ - centerZ;
+    const localStartX = startDx * cos - startDz * sin;
+    const localStartZ = startDx * sin + startDz * cos;
+    const localEndX = endDx * cos - endDz * sin;
+    const localEndZ = endDx * sin + endDz * cos;
+    const dx = localEndX - localStartX;
+    const dz = localEndZ - localStartZ;
+    let entry = 0;
+    let exit = 1;
+    const expandedWidth = halfWidth + radius;
+    const expandedDepth = halfDepth + radius;
+    if (Math.abs(dx) < 1e-8) {
+      if (Math.abs(localStartX) > expandedWidth) continue;
+    } else {
+      const tx1 = (-expandedWidth - localStartX) / dx;
+      const tx2 = (expandedWidth - localStartX) / dx;
+      entry = Math.max(entry, Math.min(tx1, tx2));
+      exit = Math.min(exit, Math.max(tx1, tx2));
+      if (entry > exit) continue;
     }
+    if (Math.abs(dz) < 1e-8) {
+      if (Math.abs(localStartZ) > expandedDepth) continue;
+    } else {
+      const tz1 = (-expandedDepth - localStartZ) / dz;
+      const tz2 = (expandedDepth - localStartZ) / dz;
+      entry = Math.max(entry, Math.min(tz1, tz2));
+      exit = Math.min(exit, Math.max(tz1, tz2));
+      if (entry > exit) continue;
+    }
+    if (entry <= exit && entry >= 0 && entry <= 1) nearestProgress = Math.min(nearestProgress, entry);
   }
-  return null;
+  if (!Number.isFinite(nearestProgress)) return null;
+  return {
+    x: THREE.MathUtils.lerp(startX, endX, nearestProgress),
+    z: THREE.MathUtils.lerp(startZ, endZ, nearestProgress),
+  };
 }
 
 function updateProjectiles(dt) {
@@ -9559,16 +9597,6 @@ function updateProjectiles(dt) {
       if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
       if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
       hit = true;
-    } else if (!hit && !(proj.isVial && proj.y > 1.5)) {
-      for (const solid of state.solids) {
-        if (solid.type === "platform") continue;
-        if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
-          if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
-          if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
-          hit = true;
-          break;
-        }
-      }
     }
 
     if (proj.isBoomerang && !proj.isReturning && (hit || proj.distTraveled >= proj.range)) {
