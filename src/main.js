@@ -8365,9 +8365,34 @@ function tryUseIvoryUltimate(fighter = getPlayer()) {
   const centerX = fighter.mesh.position.x + Math.sin(yaw) * ultimate.castRange;
   const centerZ = fighter.mesh.position.z + Math.cos(yaw) * ultimate.castRange;
   const diagonal = ultimate.patternRadius / Math.sqrt(2);
-  for (const [ox, oz] of [[0, 0], [diagonal, diagonal], [-diagonal, diagonal], [diagonal, -diagonal], [-diagonal, -diagonal]]) {
-    spawnIvoryZone(centerX + ox, centerZ + oz, fighter.id);
+  const targets = [[0, 0], [diagonal, diagonal], [-diagonal, diagonal], [diagonal, -diagonal], [-diagonal, -diagonal]];
+  for (let index = 0; index < targets.length; index += 1) {
+    const [ox, oz] = targets[index];
+    const targetX = centerX + ox;
+    const targetZ = centerZ + oz;
+    const dx = targetX - fighter.mesh.position.x;
+    const dz = targetZ - fighter.mesh.position.z;
+    const distance = Math.max(0.01, Math.hypot(dx, dz));
+    const dirX = dx / distance;
+    const dirZ = dz / distance;
+    const mesh = createIvoryScoopMesh();
+    const startX = fighter.mesh.position.x + dirX * 0.9;
+    const startZ = fighter.mesh.position.z + dirZ * 0.9;
+    mesh.position.set(startX, 1.2, startZ);
+    mesh.visible = false;
+    scene.add(mesh);
+    state.projectiles.push({
+      ownerId: fighter.id, x: startX, z: startZ,
+      vx: dirX * CHARACTERS.ivory.iceCreamSpeed,
+      vz: dirZ * CHARACTERS.ivory.iceCreamSpeed,
+      damage: CHARACTERS.ivory.iceCreamDamage,
+      range: Math.max(0.1, Math.hypot(targetX - startX, targetZ - startZ)),
+      farThreshold: Infinity, farMultiplier: 1, distTraveled: 0,
+      launchAt: state.gameTime + 0.2 + index * 0.06,
+      mesh, isIvoryIceCream: true, isIvoryUltimate: true, projRadius: 0.42,
+    });
   }
+  if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
 
@@ -9387,7 +9412,8 @@ function updateProjectiles(dt) {
       }
     }
 
-    const sweptWallHit = (proj.isVial && proj.y > 1.5)
+    // 아이보리 아이스크림은 지면 투사체가 아니라 벽 위로 넘기는 포물선 투척이다.
+    const sweptWallHit = proj.isIvoryIceCream || (proj.isVial && proj.y > 1.5)
       ? null
       : findProjectileWallHit(previousX, previousZ, proj.x, proj.z, proj.projRadius || 0.2);
     if (sweptWallHit) {
@@ -9521,7 +9547,7 @@ function updateProjectiles(dt) {
         if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
         if (proj.isIvoryIceCream) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
-        if (proj.isIvoryIceCream && attacker?.characterType === "ivory" && dealt > 0) {
+        if (proj.isIvoryIceCream && !proj.isIvoryUltimate && attacker?.characterType === "ivory" && dealt > 0) {
           attacker.ivoryUltimateCharge = Math.min(CHARACTERS.ivory.ultimate.chargeRequired, (attacker.ivoryUltimateCharge ?? 0) + 1);
         }
         proj.hitTargetIds?.add(target.id);
