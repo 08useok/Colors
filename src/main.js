@@ -8496,14 +8496,14 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
       vx: Math.sin(angle) * charDef.bombSplashSpeed,
       vz: Math.cos(angle) * charDef.bombSplashSpeed,
       damage: charDef.bombSplashDamage,
-      range: charDef.bombSplashRange * blastMult,
+      range: charDef.bombSplashRange,
       farThreshold: Infinity,
       farMultiplier: 1,
       distTraveled: 0,
       launchAt: state.gameTime,
       mesh: splashMesh,
       isSplash: true,
-      projRadius: charDef.bombSplashHitRadius * blastMult,
+      projRadius: charDef.bombSplashHitRadius,
       // 직격 대상은 위에서 이미 확정 적중으로 처리했으니, 날아가는 파편이
       // 같은 대상을 또 맞혀 중복 데미지를 주지 않도록 전부 차단한다.
       hitTargetIds: directHitTarget ? new Set([directHitTarget.id]) : undefined,
