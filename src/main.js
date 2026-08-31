@@ -13325,7 +13325,6 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     renderRotationScreen();
   };
   openRotationBtn.addEventListener("click", openRotationEvent);
-  noticeEventStartBtn?.addEventListener("click", openRotationEvent);
 
   rotationCloseBtn.addEventListener("click", () => {
     audio.play("close");
@@ -13384,6 +13383,13 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     const cancelAction = tdCharSelectCancelAction;
     tdCharSelectCancelAction = null;
     cancelAction?.();
+  });
+
+  noticeEventStartBtn?.addEventListener("click", () => {
+    openTdCharSelect(() => {
+      state.tdSolo = true;
+      startTakeDown();
+    });
   });
 
   document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
