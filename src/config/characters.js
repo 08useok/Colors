@@ -164,7 +164,7 @@ export const CHARACTERS = {
     walk: { cycleSpeed: 9, armAmp: 0.36, legAmp: 0.42, armRestZ: Math.PI * 0.1 },
   },
   gold: {
-    color: 0xffd770,
+    color: 0xffd700,
     maxHealth: 6200,
     attackType: "goldOre",
     reloadDuration: 1.2,
