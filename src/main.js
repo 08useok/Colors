@@ -222,14 +222,8 @@ const shopContent = document.getElementById("shop-levelup");
 const shopCharsContent = document.getElementById("shop-chars");
 const shopSkinsContent = document.getElementById("shop-skins");
 const openShopBtn = document.getElementById("open-shop-btn");
-const rotationOverlay = document.getElementById("rotation-overlay");
-const rotationCloseBtn = document.getElementById("rotation-close-btn");
-const openRotationBtn = document.getElementById("open-rotation-btn");
+const eventTakeDownBtn = document.getElementById("event-takedown-btn");
 const noticeEventStartBtn = document.getElementById("notice-event-start-btn");
-const rotationChampionBanner = document.getElementById("rotation-champion-banner");
-const rotationRemainingCount = document.getElementById("rotation-remaining-count");
-const rotationNextElim = document.getElementById("rotation-next-elim");
-const rotationList = document.getElementById("rotation-list");
 const tdMapInfoBtn = document.getElementById("td-map-info-btn");
 const tdMapOverlay = document.getElementById("td-map-overlay");
 const tdCharSelectOverlay = document.getElementById("td-char-select-overlay");
@@ -6456,7 +6450,6 @@ async function enterMatchmaking(mode = "takedown") {
     setupMpHandlers();
     await initAudio();
     audio.play("close");
-    rotationOverlay.classList.add("hidden");
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("hidden");
     if (mpConfig.mode === "showdown") {
@@ -13261,76 +13254,6 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     renderShopSkins();
   });
 
-  async function renderRotationScreen() {
-    const account = loadAccount();
-    if (!account || !account.rotation) return;
-    const synced = await syncGlobalRotation(account);
-    if (!synced) {
-      processRotationRounds(account);
-      saveAccount(account);
-    }
-
-    const rot = account.rotation;
-    rotationRemainingCount.textContent = rot.remaining.length;
-
-    if (rot.champion) {
-      const champName = rot.champion.charAt(0).toUpperCase() + rot.champion.slice(1);
-      rotationChampionBanner.textContent = `🏆 Rotation Champion: ${champName}`;
-      rotationChampionBanner.classList.remove("hidden");
-      rotationNextElim.textContent = t("rotationEnd");
-    } else {
-      rotationChampionBanner.classList.add("hidden");
-      const nextDate = getRotationNextEliminationDate(account);
-      if (nextDate) {
-        const now = new Date();
-        const diffMs = nextDate - now;
-        const diffDays = Math.max(0, Math.ceil(diffMs / 86400000));
-        rotationNextElim.textContent = diffDays > 0 ? `${diffDays}${t("rotationDays")}` : t("rotationToday");
-      }
-    }
-
-    const ranked = rankRotationChars(rot.stats, ROTATION_CHAR_ORDER).reverse();
-    let html = "";
-    ranked.forEach((charKey, idx) => {
-      const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
-      const s = rot.stats[charKey];
-      const isEliminated = rot.eliminated.includes(charKey);
-      const isChampion = rot.champion === charKey;
-      const hasNewAbility = isEventActive() && rot.newAbilityChars.includes(charKey);
-      const winRate = s.games > 0 ? Math.round((s.wins / s.games) * 100) : 0;
-
-      let rowClass = "rotation-row";
-      if (isEliminated && !isChampion) rowClass += " eliminated";
-      if (isChampion) rowClass += " champion";
-
-      let badges = "";
-      if (isChampion) badges += `<span class="rotation-champion-badge">🏆 CHAMPION</span> `;
-      if (hasNewAbility) badges += `<span class="rotation-new-ability-badge">NEW ABILITY</span>`;
-
-      const ability = ROTATION_NEW_ABILITIES[charKey];
-      const abilityText = hasNewAbility && ability ? `<div class="rotation-char-stats">${ability.name}: ${ability.desc}</div>` : "";
-
-      html += `<div class="${rowClass}">
-        <div class="rotation-rank">${idx + 1}</div>
-        <div class="rotation-char-name">${name} ${badges}${abilityText}</div>
-        <div class="rotation-char-stats">${t("rotationRecord", s.wins, s.games, winRate)}</div>
-      </div>`;
-    });
-    rotationList.innerHTML = html;
-  }
-
-  const openRotationEvent = () => {
-    audio.play("open");
-    rotationOverlay.classList.remove("hidden");
-    renderRotationScreen();
-  };
-  openRotationBtn.addEventListener("click", openRotationEvent);
-
-  rotationCloseBtn.addEventListener("click", () => {
-    audio.play("close");
-    rotationOverlay.classList.add("hidden");
-  });
-
   const TD_CHAR_COLORS = {
     red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500",
     yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3",
@@ -13385,30 +13308,14 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     cancelAction?.();
   });
 
-  noticeEventStartBtn?.addEventListener("click", () => {
+  const openTakeDownDirectly = () => {
     openTdCharSelect(() => {
       state.tdSolo = true;
       startTakeDown();
     });
-  });
-
-  document.getElementById("rotation-takedown-btn").addEventListener("click", () => {
-    openTdCharSelect(() => {
-      audio.play("close");
-    rotationOverlay.classList.add("hidden");
-      state.tdSolo = false;
-      enterMatchmaking();
-    });
-  });
-
-  document.getElementById("rotation-takedown-solo-btn").addEventListener("click", () => {
-    openTdCharSelect(() => {
-      audio.play("close");
-    rotationOverlay.classList.add("hidden");
-      state.tdSolo = true;
-      startTakeDown();
-    });
-  });
+  };
+  noticeEventStartBtn?.addEventListener("click", openTakeDownDirectly);
+  eventTakeDownBtn?.addEventListener("click", openTakeDownDirectly);
 
 
   matchmakingCancelBtn.addEventListener("click", () => {
