@@ -5264,35 +5264,31 @@ function initTakeDownPlayers() {
   mpBossLastSync = 0;
   mpLastSentPosition = null;
 
-  const spawns = TD_SPAWNS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  const shuffleTakeDown = (items) => {
+    const shuffled = [...items];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+  const spawns = shuffleTakeDown(TD_SPAWNS)
+    .map(([x, y, z]) => new THREE.Vector3(x, y, z));
   const allTypes = [...ROSTER];
 
-  // 멀티 기준: 원격 플레이어 목록
-  const remotePlayers = mpConfig
-    ? mpConfig.players.filter((p) => p.id !== mp.myId)
-    : [];
-
-  // 봇 타입 풀: 미사용 타입 1개씩 → 나머지 슬롯은 랜덤(중복 없이)
+  // 전체 로스터에서 독립적으로 추첨하되 한 캐릭터는 최대 2명까지만 허용한다.
+  // 첫 절반은 서로 다른 캐릭터를 보장하고, 나머지는 중복 가능한 전체 추첨으로
+  // 판마다 조합 폭을 넓히면서도 한 캐릭터 쏠림을 막는다.
   const botCount = mpConfig ? 0 : 7;
-  const usedTypes = new Set([state.selectedCharacter, ...remotePlayers.map((p) => p.charType)]);
-  const unusedTypes = allTypes.filter((c) => !usedTypes.has(c));
-  for (let i = unusedTypes.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [unusedTypes[i], unusedTypes[j]] = [unusedTypes[j], unusedTypes[i]];
-  }
-  // 남은 슬롯: allTypes에서 아직 한 번도 안 나온 타입 우선, 그 다음 랜덤
-  const botTypePool = [...unusedTypes];
-  // 남은 슬롯: usedTypes 포함 전체에서 아직 botTypePool에 없는 타입 우선, 그 다음 무작위
-  const notInPool = allTypes.filter((c) => !botTypePool.includes(c));
-  for (let i = notInPool.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [notInPool[i], notInPool[j]] = [notInPool[j], notInPool[i]];
-  }
+  const botTypePool = shuffleTakeDown(allTypes).slice(0, Math.ceil(botCount / 2));
+  const typeCounts = new Map(botTypePool.map((type) => [type, 1]));
   while (botTypePool.length < botCount) {
-    botTypePool.push(notInPool.length > 0
-      ? notInPool.shift()
-      : allTypes[Math.floor(Math.random() * allTypes.length)]);
+    const candidates = allTypes.filter((type) => (typeCounts.get(type) ?? 0) < 2);
+    const characterType = candidates[Math.floor(Math.random() * candidates.length)];
+    botTypePool.push(characterType);
+    typeCounts.set(characterType, (typeCounts.get(characterType) ?? 0) + 1);
   }
+  const randomizedBotTypes = shuffleTakeDown(botTypePool);
   let botTypeIdx = 0;
   let spawnIdx = 0;
 
@@ -5331,7 +5327,7 @@ function initTakeDownPlayers() {
 
   // 봇 (8명 - 실제 플레이어 수)
   for (let i = 0; i < botCount; i++) {
-    const characterType = botTypePool[botTypeIdx++];
+    const characterType = randomizedBotTypes[botTypeIdx++];
     const f = addFighter({
       id: spawnIdx,
       name: randomBotName(),
