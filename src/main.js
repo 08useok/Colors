@@ -11567,6 +11567,7 @@ function updateHud() {
     reloadState.textContent = t("nextAmmo", remain.toFixed(1));
   }
   const attackLabel =
+  player.characterType === "red" ? t("redAttack") :
   player.characterType === "green" ? t("boomerang") :
   player.characterType === "blue" ? t("sniper") :
   player.characterType === "orange" ? t("bombAttack") :
@@ -11574,8 +11575,11 @@ function updateHud() {
   player.characterType === "cyan" ? t("spreadLineAttack") :
   player.characterType === "purple" ? t("poisonAttack") :
   player.characterType === "pink" ? t("healCircleAttack") :
-  player.characterType === "chartreuse" ? "샤단라" :
-  t("doublePunch");
+  player.characterType === "crimson" ? t("crimsonAttack") :
+  player.characterType === "gold" ? t("goldAttack") :
+  player.characterType === "ivory" ? t("ivoryAttack") :
+  player.characterType === "chartreuse" ? t("chartreuseAttack") :
+  t("attack");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   if (state.goldRushMode) {
