@@ -5,47 +5,7 @@ const ROOM_MAX = 8;
 const COUNTDOWN_SEC = 5;
 // 매칭에서 허용하는 캐릭터 — 베타 시즌 1에서 크림슨 추가
 const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]);
-// 로테이션 통계는 8종 기준으로 저장돼 있어 크림슨을 넣으면 기존 state.stats와 어긋난다
-const CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"]);
-const CHARACTER_ORDER = [...CHARACTERS];
-const ROTATION_START_DATE = "2026-07-12";
-const ROTATION_INITIAL_ROUND = 5;
-const ROTATION_ELIMINATION_HISTORY = ["orange", "purple", "yellow", "blue", "red"];
-const ROTATION_SURVIVORS = ["green", "cyan", "pink"];
-const ROTATION_RESTORED_BASELINE = {
-  orange: { wins: 6, games: 28 },
-  purple: { wins: 14, games: 50 },
-  yellow: { wins: 20, games: 70 },
-  blue: { wins: 40, games: 100 },
-  red: { wins: 44, games: 100 },
-  green: { wins: 68, games: 150 },
-  cyan: { wins: 90, games: 150 },
-  pink: { wins: 75, games: 150 },
-};
-
-function emptyRotationStats() {
-  return Object.fromEntries(CHARACTER_ORDER.map((char) => [char, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }]));
-}
-
-function rankCharacters(stats, characters) {
-  return [...characters].sort((a, b) => {
-    const sa = stats[a];
-    const sb = stats[b];
-    if (sa.wins !== sb.wins) return sa.wins - sb.wins;
-    const rateA = sa.games ? sa.wins / sa.games : 0;
-    const rateB = sb.games ? sb.wins / sb.games : 0;
-    if (rateA !== rateB) return rateA - rateB;
-    if (sa.mvp !== sb.mvp) return sa.mvp - sb.mvp;
-    return sa.bossDmg - sb.bossDmg;
-  });
-}
-
-function publicRotationState(state) {
-  const { submissions: _submissions, legacyImports: _legacyImports, ...publicState } = state;
-  return publicState;
-}
-
-export class RotationStats extends DurableObject {
+export class LeaderboardStore extends DurableObject {
   async getLeaderboard() {
     return await this.ctx.storage.get("global-leaderboard") ?? [];
   }
@@ -66,101 +26,6 @@ export class RotationStats extends DurableObject {
     return leaderboard;
   }
 
-  async restoreHistory() {
-    const state = await this.getState();
-    state.campaignVersion = 3;
-    state.remaining = [...ROTATION_SURVIVORS];
-    state.eliminated = [...ROTATION_ELIMINATION_HISTORY];
-    state.champion = null;
-    state.lastRoundProcessedAt = ROTATION_INITIAL_ROUND;
-    await this.ctx.storage.put("rotation-state", state);
-    return state;
-  }
-
-  async getState() {
-    let state = await this.ctx.storage.get("rotation-state");
-    if (!state) {
-      state = {
-        campaignVersion: 3,
-        startDate: ROTATION_START_DATE,
-        lastRoundProcessedAt: ROTATION_INITIAL_ROUND,
-        remaining: [...ROTATION_SURVIVORS],
-        eliminated: [...ROTATION_ELIMINATION_HISTORY],
-        champion: null,
-        stats: emptyRotationStats(),
-        submissions: [],
-        legacyImports: [],
-      };
-    }
-    if ((state.campaignVersion ?? 0) < 3) {
-      state.campaignVersion = 3;
-      state.remaining = [...ROTATION_SURVIVORS];
-      state.eliminated = [...ROTATION_ELIMINATION_HISTORY];
-      state.champion = null;
-      state.lastRoundProcessedAt = ROTATION_INITIAL_ROUND;
-    }
-    if ((state.baselineVersion ?? 0) < 1) {
-      for (const [char, restored] of Object.entries(ROTATION_RESTORED_BASELINE)) {
-        state.stats[char].wins += restored.wins;
-        state.stats[char].games += restored.games;
-      }
-      state.baselineVersion = 1;
-    }
-
-    const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
-    const targetRound = Math.floor((new Date(`${today}T00:00:00+09:00`) - new Date(`${state.startDate}T00:00:00+09:00`)) / 86400000);
-    while (state.lastRoundProcessedAt < targetRound && state.remaining.length > 1) {
-      const eliminated = rankCharacters(state.stats, state.remaining)[0];
-      state.remaining = state.remaining.filter((char) => char !== eliminated);
-      if (!state.eliminated.includes(eliminated)) state.eliminated.push(eliminated);
-      state.lastRoundProcessedAt += 1;
-    }
-    if (state.remaining.length === 1) state.champion = state.remaining[0];
-    await this.ctx.storage.put("rotation-state", state);
-    return state;
-  }
-
-  async recordResult(result) {
-    const state = await this.getState();
-    if (result?.mode === "legacy-import") return this.importLegacyStats(state, result);
-    const resultId = typeof result?.resultId === "string" ? result.resultId.slice(0, 80) : "";
-    const charType = result?.charType;
-    if (!resultId || !CHARACTERS.has(charType) || state.submissions.includes(resultId)) return state;
-
-    const stats = state.stats[charType];
-    stats.games += 1;
-    if (result.won === true) stats.wins += 1;
-    if (result.mvp === true) stats.mvp += 1;
-    stats.bossDmg += Math.max(0, Math.min(120000, Number(result.bossDmg) || 0));
-    state.submissions.push(resultId);
-    if (state.submissions.length > 5000) state.submissions.splice(0, state.submissions.length - 5000);
-    await this.ctx.storage.put("rotation-state", state);
-    return state;
-  }
-
-  async importLegacyStats(state, result) {
-    state.legacyImports ??= [];
-    const importId = typeof result?.importId === "string" ? result.importId.slice(0, 80) : "";
-    if (!importId || state.legacyImports.includes(importId) || !result?.stats) return state;
-
-    for (const char of CHARACTER_ORDER) {
-      const incoming = result.stats[char];
-      if (!incoming) continue;
-      const games = Math.max(0, Math.min(100000, Math.floor(Number(incoming.games) || 0)));
-      const wins = Math.max(0, Math.min(games, Math.floor(Number(incoming.wins) || 0)));
-      state.stats[char].games += games;
-      state.stats[char].wins += wins;
-      state.stats[char].mvp += Math.max(0, Math.min(games, Math.floor(Number(incoming.mvp) || 0)));
-      state.stats[char].bossDmg += Math.max(0, Math.min(1000000000, Number(incoming.bossDmg) || 0));
-    }
-    state.legacyImports.push(importId);
-    await this.ctx.storage.put("rotation-state", state);
-    return state;
-  }
-}
-
-function cleanAbilityChars(value) {
-  return Array.isArray(value) ? [...new Set(value.filter((charType) => CHARACTERS.has(charType)))] : [];
 }
 
 export class ColorsServer extends Server {
@@ -190,7 +55,6 @@ export class ColorsServer extends Server {
     if (!player) return;
     player.nickname = this.cleanNickname(data.nickname);
     player.charType = PLAYABLE_CHARACTERS.has(data.charType) ? data.charType : "red";
-    player.newAbilityChars = cleanAbilityChars(data.newAbilityChars);
     player.mode = data.mode === "showdown" ? "showdown" : "takedown";
 
     const previousMatchId = this.playerMatch.get(player.id);
@@ -283,7 +147,7 @@ export class ColorsServer extends Server {
   }
 
   publicPlayer(player) {
-    return { id: player.id, nickname: player.nickname, charType: player.charType, newAbilityChars: player.newAbilityChars ?? [] };
+    return { id: player.id, nickname: player.nickname, charType: player.charType };
   }
 
   broadcastMatch(match, data, excludeId = null) {
@@ -312,22 +176,8 @@ export default {
     if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
-    if (pathname === "/api/rotation") {
-      const statsServer = env.RotationStats.getByName("global-event");
-      try {
-        let state = request.method === "POST"
-          ? await statsServer.recordResult(await request.json())
-          : await statsServer.getState();
-        if ((state.campaignVersion ?? 0) < 3) state = await statsServer.restoreHistory();
-        return Response.json(publicRotationState(state), {
-          headers: { ...corsHeaders, "x-colors-version": "1.5.116" },
-        });
-      } catch {
-        return Response.json({ error: "Invalid event request" }, { status: 400, headers: corsHeaders });
-      }
-    }
     if (pathname === "/api/leaderboard") {
-      const statsServer = env.RotationStats.getByName("global-event");
+      const statsServer = env.LeaderboardStore.getByName("global-event");
       try {
         const leaderboard = request.method === "POST"
           ? await statsServer.recordLeaderboard(await request.json())

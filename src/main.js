@@ -882,18 +882,10 @@ const COIN_REWARDS = {
   streak10: 100,
 };
 
-// ── Rotation Mode ──────────────────────────────────────────────────────
-const ROTATION_CHAR_ORDER = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-const ROTATION_ROUND_DAYS = 1;
-const ROTATION_CAMPAIGN_VERSION = 3;
-const ROTATION_CAMPAIGN_START_DATE = "2026-07-12";
-const ROTATION_ELIMINATION_HISTORY = ["orange", "purple", "yellow", "blue", "red"];
-const ROTATION_SURVIVORS = ["green", "cyan", "pink"];
-const ROTATION_API_URL =
+const LEADERBOARD_API_URL =
   location.hostname === "localhost" || location.hostname === "127.0.0.1"
-    ? "http://localhost:8787/api/rotation"
-    : "https://colors-multiplayer.useok-jeju.workers.dev/api/rotation";
-const LEADERBOARD_API_URL = ROTATION_API_URL.replace("/api/rotation", "/api/leaderboard");
+    ? "http://localhost:8787/api/leaderboard"
+    : "https://colors-multiplayer.useok-jeju.workers.dev/api/leaderboard";
 let lastLeaderboardSyncKey = "";
 
 async function syncGlobalLeaderboard(account) {
@@ -901,7 +893,7 @@ async function syncGlobalLeaderboard(account) {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      playerId: getRotationImportId(account),
+      playerId: getLeaderboardPlayerId(account),
       nickname: account.nickname,
       trophies: account.trophies,
     }),
@@ -915,42 +907,6 @@ function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
   })[char]);
-}
-
-async function syncGlobalRotation(account) {
-  try {
-    const legacyGames = Object.values(account.rotation.stats ?? {})
-      .reduce((sum, stats) => sum + (Number(stats.games) || 0), 0);
-    if (!account.rotation.globalImported && legacyGames > 0) {
-      const importResponse = await fetch(ROTATION_API_URL, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          mode: "legacy-import",
-          importId: getRotationImportId(account),
-          stats: account.rotation.stats,
-        }),
-      });
-      if (!importResponse.ok) return false;
-      account.rotation.globalImported = true;
-      saveAccount(account);
-    }
-    const response = await fetch(ROTATION_API_URL, { cache: "no-store" });
-    if (!response.ok) return false;
-    const global = await response.json();
-    if (!global?.stats || !Array.isArray(global.remaining)) return false;
-    account.rotation.stats = global.stats;
-    account.rotation.remaining = global.remaining;
-    account.rotation.eliminated = global.eliminated ?? [];
-    account.rotation.newAbilityChars = isEventActive() ? [...new Set(global.eliminated ?? [])] : [];
-    account.rotation.champion = global.champion ?? null;
-    account.rotation.startDate = global.startDate ?? ROTATION_CAMPAIGN_START_DATE;
-    account.rotation.lastRoundProcessedAt = global.lastRoundProcessedAt ?? 5;
-    saveAccount(account);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 function hasAlphaParticipation(account) {
@@ -971,7 +927,7 @@ function grantAlphaParticipationReward(account) {
   return true;
 }
 
-function getRotationImportId(account) {
+function getLeaderboardPlayerId(account) {
   const value = `${account.id}\u0000${account.nickname}`;
   let hash = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -979,115 +935,6 @@ function getRotationImportId(account) {
     hash = Math.imul(hash, 16777619);
   }
   return `legacy-${(hash >>> 0).toString(16)}`;
-}
-
-function submitGlobalRotationResult(result) {
-  fetch(ROTATION_API_URL, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(result),
-  }).catch(() => {});
-}
-
-const ROTATION_NEW_ABILITIES = {
-  red: { name: "분노의 질주", desc: "체력 30% 이하 시 이동속도 증가" },
-  green: { name: "더블 바운스", desc: "부메랑 추가 튕김" },
-  blue: { name: "관통탄", desc: "탄환이 적을 관통" },
-  orange: { name: "광역 폭발", desc: "폭발 범위 증가" },
-  yellow: { name: "과부하 감전", desc: "감전 지속 2배 + 이동 감속 65%" },
-  cyan: { name: "정밀 사격", desc: "집탄률 증가" },
-  purple: { name: "쌍독침", desc: "독침 2발 부채꼴(11도) 발사" },
-  pink: { name: "광역 치유", desc: "회복 범위 증가" },
-};
-
-const ROTATION_PARTICIPATION_REWARD = { coins: 100, trophies: 20 };
-const ROTATION_CHAMPION_REWARD = { coins: 1000, trophies: 200 };
-const PINK_AREA_HEAL_ABILITY_MULTIPLIER = 1.2;
-const ORANGE_BLAST_ABILITY_MULTIPLIER = 1.25;
-
-function initRotationState(account) {
-  if (!account.rotation) {
-    account.rotation = {
-      campaignVersion: 0,
-      startDate: ROTATION_CAMPAIGN_START_DATE,
-      remaining: [...ROTATION_CHAR_ORDER],
-      eliminated: [],
-      newAbilityChars: [],
-      champion: null,
-      stats: Object.fromEntries(ROTATION_CHAR_ORDER.map((c) => [c, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }])),
-      lastRoundProcessedAt: 5,
-    };
-  }
-  const rotation = account.rotation;
-  if (rotation.campaignVersion === ROTATION_CAMPAIGN_VERSION) return false;
-
-  rotation.stats ??= Object.fromEntries(ROTATION_CHAR_ORDER.map((c) => [c, { wins: 0, games: 0, mvp: 0, bossDmg: 0 }]));
-  for (const char of ROTATION_CHAR_ORDER) {
-    rotation.stats[char] ??= { wins: 0, games: 0, mvp: 0, bossDmg: 0 };
-  }
-  rotation.remaining = [...ROTATION_SURVIVORS];
-  rotation.eliminated = [...ROTATION_ELIMINATION_HISTORY];
-  rotation.newAbilityChars = [...new Set([...(rotation.newAbilityChars ?? []), ...rotation.eliminated])];
-  rotation.champion = null;
-  rotation.startDate = ROTATION_CAMPAIGN_START_DATE;
-  rotation.lastRoundProcessedAt = 5;
-  rotation.campaignVersion = ROTATION_CAMPAIGN_VERSION;
-  return true;
-}
-
-function daysSince(dateStr) {
-  const start = new Date(dateStr + "T00:00:00");
-  const now = new Date(getTodayString() + "T00:00:00");
-  return Math.floor((now - start) / 86400000);
-}
-
-function getRotationRoundIndex(account) {
-  if (!account.rotation) return 0;
-  return Math.floor(daysSince(account.rotation.startDate) / ROTATION_ROUND_DAYS);
-}
-
-function rankRotationChars(stats, chars) {
-  return [...chars].sort((a, b) => {
-    const sa = stats[a];
-    const sb = stats[b];
-    if (sa.wins !== sb.wins) return sa.wins - sb.wins;
-    const wra = sa.games > 0 ? sa.wins / sa.games : 0;
-    const wrb = sb.games > 0 ? sb.wins / sb.games : 0;
-    if (wra !== wrb) return wra - wrb;
-    if (sa.mvp !== sb.mvp) return sa.mvp - sb.mvp;
-    return sa.bossDmg - sb.bossDmg;
-  });
-}
-
-function processRotationRounds(account) {
-  if (!account.rotation) return;
-  const targetRound = getRotationRoundIndex(account);
-  while (account.rotation.lastRoundProcessedAt < targetRound && account.rotation.remaining.length > 1) {
-    const ranked = rankRotationChars(account.rotation.stats, account.rotation.remaining);
-    const lastPlace = ranked[0];
-    account.rotation.remaining = account.rotation.remaining.filter((c) => c !== lastPlace);
-    account.rotation.eliminated.push(lastPlace);
-    if (!account.rotation.newAbilityChars.includes(lastPlace)) {
-      account.rotation.newAbilityChars.push(lastPlace);
-    }
-    account.rotation.lastRoundProcessedAt += 1;
-    if (account.rotation.remaining.length === 1) {
-      account.rotation.champion = account.rotation.remaining[0];
-      if (!account.rotation.newAbilityChars.includes(account.rotation.champion)) {
-        account.rotation.newAbilityChars.push(account.rotation.champion);
-      }
-      account.coins = (account.coins || 0) + ROTATION_CHAMPION_REWARD.coins;
-      account.trophies = (account.trophies || 0) + ROTATION_CHAMPION_REWARD.trophies;
-    }
-  }
-}
-
-function getRotationNextEliminationDate(account) {
-  if (!account.rotation) return null;
-  const round = account.rotation.lastRoundProcessedAt + 1;
-  const start = new Date(account.rotation.startDate + "T00:00:00");
-  start.setDate(start.getDate() + round * ROTATION_ROUND_DAYS);
-  return start;
 }
 
 const BOT_NAMES_KO = ["하늘", "별빛", "소금", "달콤", "번개", "구름", "바람", "눈꽃", "폭풍", "태양",
@@ -1305,16 +1152,6 @@ function loadAccount() {
       migrated = true;
     }
     if (grantAlphaParticipationReward(account)) migrated = true;
-    if (initRotationState(account)) migrated = true;
-    if (account.rotation) {
-      const beforeRound = account.rotation.lastRoundProcessedAt;
-      processRotationRounds(account);
-      if (account.rotation.lastRoundProcessedAt !== beforeRound) migrated = true;
-      if (!isEventActive() && (account.rotation.newAbilityChars?.length ?? 0) > 0) {
-        account.rotation.newAbilityChars = [];
-        migrated = true;
-      }
-    }
     if (migrated) saveAccount(account);
     return account;
   } catch {
@@ -1393,7 +1230,6 @@ function createAccount(id, nickname) {
       [CURRENT_SEASON]: createCharacterStats(),
     },
   };
-  initRotationState(account);
   saveAccount(account);
   return account;
 }
@@ -4570,17 +4406,6 @@ function makeFighter(options) {
   let levelMult = 1;
   let skinId = null;
   const acc = loadAccount();
-  const newAbilityChars = new Set(
-    isEventActive() ? (options.newAbilityChars ?? acc?.rotation?.newAbilityChars ?? []) : [],
-  );
-  const hasOrangeBlastAbility = options.characterType === "orange" && newAbilityChars.has("orange");
-  const hasPurpleFanAbility = options.characterType === "purple" && newAbilityChars.has("purple");
-  const hasYellowOverloadAbility = options.characterType === "yellow" && newAbilityChars.has("yellow");
-  const hasCyanPrecisionAbility = options.characterType === "cyan" && newAbilityChars.has("cyan");
-  const hasPinkAreaHealAbility = options.characterType === "pink" && newAbilityChars.has("pink");
-  const hasRedRageAbility = options.characterType === "red" && newAbilityChars.has("red");
-  const hasGreenBounceAbility = options.characterType === "green" && newAbilityChars.has("green");
-  const hasBlueArmorPierceAbility = options.characterType === "blue" && newAbilityChars.has("blue");
   if (options.isPlayer) {
     if (acc) {
       levelMult = getLevelMultiplier(getCharLevel(acc, options.characterType ?? "red"));
@@ -4595,14 +4420,6 @@ function makeFighter(options) {
     isPlayer: options.isPlayer,
     skinId,
     levelMult,
-    hasOrangeBlastAbility,
-    hasPurpleFanAbility,
-    hasYellowOverloadAbility,
-    hasCyanPrecisionAbility,
-    hasPinkAreaHealAbility,
-    hasRedRageAbility,
-    hasGreenBounceAbility,
-    hasBlueArmorPierceAbility,
     health: effectiveMaxHealth,
     maxHealth: effectiveMaxHealth,
     maxAmmo: charDef.maxAmmo ?? maxAmmo,
@@ -5448,11 +5265,7 @@ function initTakeDownPlayers() {
   mpLastSentPosition = null;
 
   const spawns = TD_SPAWNS.map(([x, y, z]) => new THREE.Vector3(x, y, z));
-  // 탈락 캐릭터 제외
-  const _tdAccount = loadAccount();
-  const _tdEliminated = new Set(_tdAccount?.rotation?.eliminated ?? []);
-  const allTypes = [...ROSTER]
-    .filter((c) => !_tdEliminated.has(c));
+  const allTypes = [...ROSTER];
 
   // 멀티 기준: 원격 플레이어 목록
   const remotePlayers = mpConfig
@@ -5499,7 +5312,6 @@ function initTakeDownPlayers() {
         id: spawnIdx,
         name: participant.nickname,
         characterType: participant.charType,
-        newAbilityChars: participant.newAbilityChars,
         isPlayer: isLocal,
         yaw: 0,
       });
@@ -5535,7 +5347,6 @@ function initTakeDownPlayers() {
     id: 99,
     name: "BOSS",
     characterType: "red",
-    newAbilityChars: [],
     isPlayer: false,
     position: new THREE.Vector3(0, 0, 0),
     yaw: 0,
@@ -5629,7 +5440,6 @@ function startTakeDown() {
   state.mobileMove.pointerId = null;
   mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
   state.tdTimeLeft = TD_TIME_LIMIT;
-  state.rotationResultId = crypto.randomUUID();
 
   initTakeDownPlayers();
   rebuildAmmoPips();
@@ -5930,42 +5740,11 @@ function checkTakeDownEnd() {
     const coinRewards = [150, 100, 80, 60, 40, 30, 20, 10];
     const coinsEarned = coinRewards[playerRank - 1] || 10;
     const account = loadAccount();
-    let rotationMsg = "";
     if (account) {
       if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
       account.coins = (account.coins || 0) + coinsEarned;
 
-      if (account.rotation) {
-        fighters.forEach((f, idx) => {
-          const rank = idx + 1;
-          const charKey = f.characterType;
-          const cs = account.rotation.stats[charKey];
-          if (!cs) return;
-          cs.games += 1;
-          if (rank <= 4) cs.wins += 1;
-          if (rank === 1) cs.mvp += 1;
-          cs.bossDmg += f.tdBossDmg || 0;
-        });
-        account.coins += ROTATION_PARTICIPATION_REWARD.coins;
-        account.trophies = (account.trophies || 0) + ROTATION_PARTICIPATION_REWARD.trophies;
-        const beforeChampion = account.rotation.champion;
-        processRotationRounds(account);
-        if (!beforeChampion && account.rotation.champion) {
-          rotationMsg = t("rotationWinMsg", account.rotation.champion);
-        }
-      }
       saveAccount(account);
-    }
-
-    if (player && state.rotationResultId) {
-      submitGlobalRotationResult({
-        resultId: state.rotationResultId,
-        charType: player.characterType,
-        won: playerRank <= 4,
-        mvp: playerRank === 1,
-        bossDmg: player.tdBossDmg || 0,
-      });
-      state.rotationResultId = null;
     }
 
     const betaCreditsEarned = playerRank <= 4 ? grantBetaDailyWinReward(account) : 0;
@@ -5973,7 +5752,7 @@ function checkTakeDownEnd() {
     const resultTag = playerRank <= 4 ? t("tdWin") : t("tdLose");
     audio.play(playerRank <= 4 ? "win" : "lose");
     resultTitle.textContent = bossKilled ? "💀 BOSS DOWN!" : t("tdTimeUp");
-    resultBody.textContent = t("tdResultBody", resultTag, playerRank, player ? player.tdScore : 0, coinsEarned, rotationMsg);
+    resultBody.textContent = t("tdResultBody", resultTag, playerRank, player ? player.tdScore : 0, coinsEarned, "");
     const statsLines = [];
     if (player) {
       statsLines.push(t("tdBossDmg", player.tdBossDmg));
@@ -6362,9 +6141,7 @@ function playNetworkAttack(fighter, msg) {
 
   if (fighter.characterType === "pink") {
     const charDef = CHARACTERS.pink;
-    const range = (fighter.hasPinkAreaHealAbility
-      ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
-      : charDef.healCircleRange);
+    const range = charDef.healCircleRange;
     createHealCircleEffect(fighter.mesh.position.x, fighter.mesh.position.z, range);
     audio.play("attack");
     return;
@@ -6417,7 +6194,6 @@ async function enterMatchmaking(mode = "takedown") {
     await mp.connect(
       account.nickname,
       state.selectedCharacter,
-      isEventActive() ? (account.rotation?.newAbilityChars ?? []) : [],
       mode,
     );
   } catch (e) {
@@ -7422,7 +7198,6 @@ function initPlayers() {
         name: participant.nickname,
         // 로컬 플레이어는 서버의 이전/기본값보다 현재 선택 상태를 우선한다.
         characterType: isLocal ? state.selectedCharacter : participant.charType,
-        newAbilityChars: participant.newAbilityChars,
         isPlayer: isLocal,
         position: spawns[index % spawns.length],
         yaw: Math.random() * Math.PI * 2,
@@ -8401,9 +8176,6 @@ function getAttackRange(fighter) {
 function getMoveSpeed(fighter) {
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
   let speed = baseMoveSpeed * multiplier;
-  if (fighter.hasRedRageAbility && fighter.health < fighter.maxHealth * 0.3) {
-    speed *= 1.5;
-  }
   if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
     const slowPercent = fighter.shockSlowOverride ?? CHARACTERS.yellow.shockSlowPercent;
     speed *= (1 - slowPercent);
@@ -8456,7 +8228,7 @@ function beginBulletAttack(fighter) {
     launchAt: state.gameTime,
     mesh,
     isBullet: true,
-    isPenetrating: !!fighter.hasBlueArmorPierceAbility,
+    isPenetrating: false,
   });
 
   if (fighter.isPlayer) {
@@ -8642,9 +8414,7 @@ function beginBombAttack(fighter) {
 
 function spawnBombSplash(x, z, ownerId, directHitTargetId) {
   const charDef = CHARACTERS.orange;
-  const owner = state.players.find((p) => p.id === ownerId);
-  const blastMult = owner?.hasOrangeBlastAbility ? ORANGE_BLAST_ABILITY_MULTIPLIER : 1;
-  const blastR = 3 * blastMult;
+  const blastR = 3;
   const blastR2 = blastR * blastR;
   for (const target of state.players) {
     if (target.dead || target.id === ownerId) continue;
@@ -8826,7 +8596,7 @@ function beginSpreadLineAttack(fighter) {
 
   const yaw = fighter.yaw;
   const count = charDef.spreadLineCount;
-  const spacing = fighter.hasCyanPrecisionAbility ? charDef.spreadLineSpacing * 0.4 : charDef.spreadLineSpacing;
+  const spacing = charDef.spreadLineSpacing;
   const halfWidth = (count - 1) * spacing * 0.5;
 
   for (let j = 0; j < count; j++) {
@@ -9247,9 +9017,7 @@ function beginHealCircleAttack(fighter) {
 
   const fx = fighter.mesh.position.x;
   const fz = fighter.mesh.position.z;
-  let effectiveRange = (fighter.hasPinkAreaHealAbility
-    ? charDef.healCircleRange * PINK_AREA_HEAL_ABILITY_MULTIPLIER
-    : charDef.healCircleRange);
+  let effectiveRange = charDef.healCircleRange;
   const r2 = effectiveRange * effectiveRange;
 
   for (const target of state.players) {
@@ -9707,50 +9475,13 @@ function updateProjectiles(dt) {
           audio.play("explosion");
         }
         if (proj.isElectric) {
-          const shooter = state.players.find((p) => p.id === proj.ownerId);
-          const shockDur = shooter?.hasYellowOverloadAbility
-            ? CHARACTERS.yellow.shockDuration * 2
-            : CHARACTERS.yellow.shockDuration;
-          const shockSlow = shooter?.hasYellowOverloadAbility ? 0.65 : CHARACTERS.yellow.shockSlowPercent;
-          target.shockUntil = state.gameTime + shockDur;
-          target.shockSlowOverride = shooter?.hasYellowOverloadAbility ? shockSlow : null;
+          target.shockUntil = state.gameTime + CHARACTERS.yellow.shockDuration;
+          target.shockSlowOverride = null;
           createElectricHitEffect(proj.x, proj.z);
         }
         if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
         if (proj.isBoomerang) {
           createBoomerangHitEffect(proj.x, proj.z);
-          if (attacker?.hasGreenBounceAbility && proj.bounceCount < 1) {
-            const nextTarget = state.players
-              .filter((p) => !p.dead && p.id !== proj.ownerId && p.id !== target.id)
-              .sort((a, b) => {
-                const da = (a.mesh.position.x - proj.x) ** 2 + (a.mesh.position.z - proj.z) ** 2;
-                const db = (b.mesh.position.x - proj.x) ** 2 + (b.mesh.position.z - proj.z) ** 2;
-                return da - db;
-              })[0];
-            if (nextTarget) {
-              const bx = nextTarget.mesh.position.x - proj.x;
-              const bz = nextTarget.mesh.position.z - proj.z;
-              const bLen = Math.sqrt(bx * bx + bz * bz) || 1;
-              const charDef = CHARACTERS.green;
-              const bounceMesh = createBoomerangMesh({ x: proj.x, y: 1.3, z: proj.z }, Math.atan2(bx, bz));
-              state.projectiles.push({
-                ownerId: proj.ownerId,
-                x: proj.x, z: proj.z,
-                vx: (bx / bLen) * charDef.boomerangSpeed,
-                vz: (bz / bLen) * charDef.boomerangSpeed,
-                damage: dmg,
-                range: charDef.boomerangRange,
-                farThreshold: Infinity,
-                farMultiplier: 1,
-                distTraveled: 0,
-                launchAt: state.gameTime,
-                mesh: bounceMesh,
-                projRadius: 0.34,
-                isBoomerang: true,
-                bounceCount: 1,
-              });
-            }
-          }
         }
         if (proj.isSpreadLine) createSpreadLineHitEffect(proj.x, proj.z);
         if (proj.isNeedle) {
@@ -11574,7 +11305,7 @@ function updateAttackAimIndicator() {
   } else if (charType === "pink") {
     pinkAimIndicator.visible = true;
     pinkAimIndicator.position.set(pos.x, aimGroundY, pos.z);
-    pinkAimIndicator.scale.setScalar(player.hasPinkAreaHealAbility ? PINK_AREA_HEAL_ABILITY_MULTIPLIER : 1);
+    pinkAimIndicator.scale.setScalar(1);
     pinkAimIndicator.userData.ring.material.opacity = unavailable ? 0.1 : 0.35;
     pinkAimIndicator.userData.fill.material.opacity = unavailable ? 0.02 : 0.06;
   } else if (charType === "crimson") {
@@ -12428,9 +12159,9 @@ function setupInput() {
         try {
           entries = await syncGlobalLeaderboard(account);
         } catch {
-          entries = [{ playerId: getRotationImportId(account), nickname: account.nickname, trophies: account.trophies }];
+          entries = [{ playerId: getLeaderboardPlayerId(account), nickname: account.nickname, trophies: account.trophies }];
         }
-        const myPlayerId = getRotationImportId(account);
+        const myPlayerId = getLeaderboardPlayerId(account);
         let html = `<div class="stats-row" style="font-weight:700;margin-bottom:6px">🏆 ${t("leaderboardBtn")}</div>`;
         entries.forEach((e, i) => {
           const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`;
@@ -13257,34 +12988,31 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   const TD_CHAR_COLORS = {
     red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500",
     yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3",
+    crimson: "#a00000", gold: "#ffd770", ivory: "#fffaf0", chartreuse: "#c1f80a",
   };
   const TD_CHAR_EMOJIS = {
     red: "🔴", green: "🟢", blue: "🔵", orange: "🟠",
     yellow: "🟡", cyan: "🩵", purple: "🟣", pink: "🩷",
+    crimson: "🔻", gold: "🟨", ivory: "🍦", chartreuse: "🟩",
   };
 
   let tdCharSelectCancelAction = null;
 
   function openTdCharSelect(onSelect, onCancel = null) {
     tdCharSelectCancelAction = onCancel;
-    const account = loadAccount();
-    const eliminated = account?.rotation?.eliminated ?? [];
     const chars = [...ROSTER];
 
     tdCharSelectGrid.innerHTML = chars.map((c) => {
-      const isElim = eliminated.includes(c);
       const name = c.charAt(0).toUpperCase() + c.slice(1);
-      const color = TD_CHAR_COLORS[c];
-      const emoji = TD_CHAR_EMOJIS[c];
-      return `<button class="td-char-btn${isElim ? " eliminated" : ""}"
-        data-char="${c}" style="color:${color}; border-color:${isElim ? "transparent" : color}22"
-        ${isElim ? "disabled" : ""}>
+      const color = TD_CHAR_COLORS[c] ?? "#ffffff";
+      const emoji = TD_CHAR_EMOJIS[c] ?? "⚪";
+      return `<button class="td-char-btn"
+        data-char="${c}" style="color:${color}; border-color:${color}22">
         ${emoji}<br>${name}
-        ${isElim ? `<span class="td-elim-badge">OUT</span>` : ""}
       </button>`;
     }).join("");
 
-    tdCharSelectGrid.querySelectorAll(".td-char-btn:not(.eliminated)").forEach((btn) => {
+    tdCharSelectGrid.querySelectorAll(".td-char-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         state.selectedCharacter = btn.dataset.char;
         const acc = loadAccount();

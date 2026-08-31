@@ -11,8 +11,8 @@
         "class_name": "ColorsServer"
       },
       {
-        "name": "RotationStats",
-        "class_name": "RotationStats"
+        "name": "LeaderboardStore",
+        "class_name": "LeaderboardStore"
       }
     ]
   },
@@ -24,6 +24,10 @@
     {
       "tag": "v2",
       "new_sqlite_classes": ["RotationStats"]
+    },
+    {
+      "tag": "v3",
+      "renamed_classes": [{ "from": "RotationStats", "to": "LeaderboardStore" }]
     }
   ]
 }
