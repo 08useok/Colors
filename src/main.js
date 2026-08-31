@@ -225,6 +225,7 @@ const openShopBtn = document.getElementById("open-shop-btn");
 const rotationOverlay = document.getElementById("rotation-overlay");
 const rotationCloseBtn = document.getElementById("rotation-close-btn");
 const openRotationBtn = document.getElementById("open-rotation-btn");
+const noticeEventStartBtn = document.getElementById("notice-event-start-btn");
 const rotationChampionBanner = document.getElementById("rotation-champion-banner");
 const rotationRemainingCount = document.getElementById("rotation-remaining-count");
 const rotationNextElim = document.getElementById("rotation-next-elim");
@@ -2238,16 +2239,10 @@ function recordGameResult(rank, mode = "showdown") {
   if (!account) return { streakBefore: 0, streakAfter: 0, bonus: 0, milestone: false, coinsEarned: 0 };
   account.orderEvent ??= { progress: 0, claimed: [], cosmetics: {} };
 
-  // 도시 봉쇄 작전 (베타 시즌 4 이벤트) — 쇼다운·테이크다운 참여마다 점수를 준다.
-  // 찹 우드·골드 러쉬는 이벤트 대상이 아니다. 참여 +10, 4위 이내 +20, 1위 +40
-  // (등수 구간은 배타적, 중복 합산하지 않음), 테이크다운 중앙 공격 로봇을
-  // 처치했고 그 처치에 데미지로 참여했다면 +30 추가.
-  if (CURRENT_SEASON === "beta4" && mode !== "chopwood" && !state.goldRushMode) {
-    let eventScore = rank === 1 ? 40 : rank <= 4 ? 20 : 10;
-    const eventPlayer = getPlayer();
-    if (state.takedownMode && state.tdBoss && state.tdBoss.health <= 0 && (eventPlayer?.tdBossDmg || 0) > 0) {
-      eventScore += 30;
-    }
+  // 도시 봉쇄 작전 (베타 시즌 4 이벤트) — 쇼다운만 점수 대상이다.
+  // 참여 +10, 4위 이내 +20, 1위 +40이며 등수 구간은 중복 합산하지 않는다.
+  if (CURRENT_SEASON === "beta4" && mode === "showdown" && !state.takedownMode && !state.goldRushMode) {
+    const eventScore = rank === 1 ? 40 : rank <= 4 ? 20 : 10;
     account.orderEvent.progress = Math.min(100, account.orderEvent.progress + eventScore);
   }
 
@@ -6453,13 +6448,31 @@ async function enterMatchmaking(mode = "takedown") {
 }
 
 function startChopWood() {
+  document.body.classList.remove("lobby-active");
+  messageOverlay.style.display = "none";
+  resultOverlay.style.display = "none";
   audio.play("gameStart");
   stopAllBgm();
+  crosshairEl.classList.remove("hidden");
+  crosshairEl.style.visibility = "visible";
   clock.getDelta();
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
+  showdownMapGroup.visible = false;
   chopWoodMapGroup.visible = true;
+  scene.background = new THREE.Color(0xc98353);
+  scene.fog.color.set(0xc98353);
   state.chopWoodMode = true;
+  state.goldRushMode = false;
+  state.goldRushItems.forEach((item) => disposeSceneObject(item.mesh));
+  state.goldRushItems = [];
+  state.malfunctionZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.malfunctionZones = [];
+  state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.ivoryZones = [];
+  state.takedownMode = false;
+  state.tdBoss = null;
+  tdHud.classList.add("hidden");
   state.trainingMode = false;
   state.mode = "chopwood";
   mapNameEl.textContent = t("chopWood");
@@ -6501,8 +6514,6 @@ function startChopWood() {
   initChopWoodPlayers();
   rebuildAmmoPips();
   updateHud();
-  resultOverlay.style.display = "none";
-  messageOverlay.style.display = "none";
 }
 
 const zoneRing = (() => {
@@ -13279,10 +13290,17 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
     rotationList.innerHTML = html;
   }
 
-  openRotationBtn.addEventListener("click", () => {
+  const openRotationEvent = () => {
     audio.play("open");
     rotationOverlay.classList.remove("hidden");
     renderRotationScreen();
+  };
+  openRotationBtn.addEventListener("click", openRotationEvent);
+  noticeEventStartBtn?.addEventListener("click", async () => {
+    await initAudio();
+    noticePanel.classList.add("hidden");
+    noticeToggle.textContent = "📢 공지";
+    enterMatchmaking("showdown");
   });
 
   rotationCloseBtn.addEventListener("click", () => {
