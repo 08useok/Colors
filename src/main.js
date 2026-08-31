@@ -9253,6 +9253,20 @@ function spawnVialSplash(x, z, ownerId) {
   createVialSplashEffect(x, z);
 }
 
+function findProjectileWallHit(startX, startZ, endX, endZ, radius = 0.2) {
+  const distance = Math.hypot(endX - startX, endZ - startZ);
+  const steps = Math.max(1, Math.ceil(distance / Math.max(0.08, radius * 0.5)));
+  for (let step = 1; step <= steps; step += 1) {
+    const progress = step / steps;
+    const x = THREE.MathUtils.lerp(startX, endX, progress);
+    const z = THREE.MathUtils.lerp(startZ, endZ, progress);
+    for (const solid of state.solids) {
+      if (solid.type !== "platform" && intersectsRect(x, z, radius, solid)) return { x, z };
+    }
+  }
+  return null;
+}
+
 function updateProjectiles(dt) {
   for (let i = state.projectiles.length - 1; i >= 0; i -= 1) {
     const proj = state.projectiles[i];
@@ -9291,6 +9305,8 @@ function updateProjectiles(dt) {
       proj.vz = (returnZ / returnDistance) * returnSpeed;
     }
 
+    const previousX = proj.x;
+    const previousZ = proj.z;
     const step = Math.hypot(proj.vx, proj.vz) * dt;
     proj.x += proj.vx * dt;
     proj.z += proj.vz * dt;
@@ -9320,6 +9336,16 @@ function updateProjectiles(dt) {
       }
     }
 
+    const sweptWallHit = (proj.isVial && proj.y > 1.5)
+      ? null
+      : findProjectileWallHit(previousX, previousZ, proj.x, proj.z, proj.projRadius || 0.2);
+    if (sweptWallHit) {
+      proj.x = sweptWallHit.x;
+      proj.z = sweptWallHit.z;
+      proj.mesh.position.x = proj.x;
+      proj.mesh.position.z = proj.z;
+    }
+
     if (proj.isBullet || proj.isElectric || proj.isNeedle) {
       const color = proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
       const size = proj.isBullet ? 0.24 : proj.isElectric ? 0.28 : 0.2;
@@ -9333,6 +9359,17 @@ function updateProjectiles(dt) {
     }
 
     if (proj.networkVisualOnly) {
+      if (sweptWallHit) {
+        if (proj.isBomb) {
+          createBombExplosionEffect(proj.x, proj.z);
+          audio.play("explosion");
+        } else if (proj.isVial) {
+          createVialSplashEffect(proj.x, proj.z);
+        }
+        disposeSceneObject(proj.mesh);
+        state.projectiles.splice(i, 1);
+        continue;
+      }
       if (proj.distTraveled >= proj.range) {
         if (proj.isBomb) {
           createBombExplosionEffect(proj.x, proj.z);
@@ -9511,7 +9548,11 @@ function updateProjectiles(dt) {
     }
 
     // 벽 충돌 시 소멸 (폭탄은 벽에 맞아도 폭발, 독병은 공중이면 무시)
-    if (!hit && !(proj.isVial && proj.y > 1.5)) {
+    if (!hit && sweptWallHit) {
+      if (proj.isBomb) { spawnBombSplash(proj.x, proj.z, proj.ownerId); createBombExplosionEffect(proj.x, proj.z, proj.isGold); audio.play("explosion"); }
+      if (proj.isVial) spawnVialSplash(proj.x, proj.z, proj.ownerId);
+      hit = true;
+    } else if (!hit && !(proj.isVial && proj.y > 1.5)) {
       for (const solid of state.solids) {
         if (solid.type === "platform") continue;
         if (intersectsRect(proj.x, proj.z, 0.2, solid)) {
