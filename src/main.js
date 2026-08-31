@@ -8534,7 +8534,7 @@ function beginElectricAttack(fighter) {
   if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   setTimeout(() => {
-    if (fighter.dead || !fighter.mesh?.parent) return;
+    if (fighter.dead || !fighter.mesh?.parent || (fighter.malfunctionUntil ?? 0) > state.gameTime) return;
     const yaw = fighter.yaw;
     const mesh = createElectricMesh(fighter.mesh.position, yaw);
     state.projectiles.push({
@@ -9692,7 +9692,6 @@ function updatePoisonTicks() {
 }
 
 function updateMalfunctionZones() {
-  for (const fighter of state.players) fighter.malfunctionUntil = 0;
   for (let i = state.malfunctionZones.length - 1; i >= 0; i -= 1) {
     const zone = state.malfunctionZones[i];
     const owner = state.players.find((fighter) => fighter.id === zone.ownerId && !fighter.dead);
@@ -10012,7 +10011,7 @@ function updateScheduledHits() {
     }
     state.scheduledHits.splice(i, 1);
     const attacker = state.players.find((player) => player.id === hit.attackerId);
-    if (!attacker || attacker.dead || attacker.health <= 0) {
+    if (!attacker || attacker.dead || attacker.health <= 0 || (attacker.malfunctionUntil ?? 0) > state.gameTime) {
       continue;
     }
     resolveAttack(attacker, hit.hitIndex, hit.damage);
@@ -10417,6 +10416,12 @@ function tryBotAttackWithWindup(bot, target) {
   const firstAimDelay = melee ? 0.42 : 0.3;
   const followUpAimDelay = melee ? 0.2 : 0.18;
 
+  if ((bot.malfunctionUntil ?? 0) > now) {
+    bot.botAimTargetId = null;
+    bot.botAimReadyAt = now + firstAimDelay;
+    return false;
+  }
+
   if (bot.botAimTargetId !== target.id) {
     bot.botAimTargetId = target.id;
     bot.botAimReadyAt = now + firstAimDelay;
@@ -10602,10 +10607,11 @@ function updateBot(bot, dt, zone) {
         if ((bot.attackIndex || 0) % 2 === 0) bot.attackIndex = (bot.attackIndex || 0) + 1;
       }
       // 크림슨 봇: 근접 교전 중 게이지가 차면 바로 궁극기
-      if (ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
+      const canUseAttack = (bot.malfunctionUntil ?? 0) <= state.gameTime;
+      if (canUseAttack && ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
         tryUseCrimsonUltimate(bot);
       }
-      if (ct === "gold" && (bot.goldUltimateCharge ?? 0) >= CHARACTERS.gold.ultimate.chargeRequired && distance < 5) {
+      if (canUseAttack && ct === "gold" && (bot.goldUltimateCharge ?? 0) >= CHARACTERS.gold.ultimate.chargeRequired && distance < 5) {
         tryUseGoldUltimate(bot);
       }
       tryBotAttackWithWindup(bot, target);
@@ -12036,6 +12042,9 @@ function animate() {
 
     if (!frozen) {
       updateGaleKnockback(dt);
+      // 고장 지대 판정을 입력과 AI 공격보다 먼저 갱신해야 장판 진입 프레임에도
+      // 플레이어와 봇의 공격이 즉시 차단된다.
+      updateMalfunctionZones();
       updatePlayerControls(dt);
       for (const fighter of state.players) {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
@@ -12057,7 +12066,6 @@ function animate() {
       updateProjectiles(dt);
       updateIvoryZones();
       updatePoisonTicks();
-      updateMalfunctionZones();
       updateGoldRush(dt);
       if (usesZone) {
         if (!mpConfig || mpConfig.isHost) updateZoneDamage(dt, zone);
