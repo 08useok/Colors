@@ -11124,6 +11124,10 @@ function updateFighterAnimation(fighter, dt) {
   }
 
   if (body.isGlbModel) {
+    // 시안 계열 리그가 비동기로 준비되는 동안에는 빈 임시 그룹만 존재한다.
+    // 이 그룹에는 mixer/action이 없으므로 GLB 애니메이션 분기로 진입하지 않는다.
+    if (body.awaitingRigModel) return;
+
     if (body.isBlueGlb) {
       if (body.blueWalkAction) {
         const moving = speed > 0.5;
@@ -11205,6 +11209,9 @@ function updateFighterAnimation(fighter, dt) {
     } else {
     const moving = speed >= (fighter.characterType === "ivory" ? 0.1 : 0.5);
     const { pinkMixers: mx, pinkActions: ac, pinkShowScene: show } = body;
+    // 핑크식 3단계 걷기 세트가 아닌 GLB가 이 분기에 들어와도 게임 루프를
+    // 중단하지 않는다. 해당 모델의 전용 갱신기가 준비될 때까지 정지 포즈를 유지한다.
+    if (!mx || !ac || typeof show !== "function") return;
     let state = body.pinkWalkState;
 
     if (state === 'idle' && moving) {
