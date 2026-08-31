@@ -2606,12 +2606,11 @@ function recolorSkinTintTexture(texture, targetHex) {
 
 function applyCyanTemplateLook(model, charKey) {
   if (!CYAN_RIG_TEMPLATE_CHARACTERS.includes(charKey)) return;
-  // 옐로우와 골드는 3단 카툰 명암에서 기존 색의 명도 차이가 거의 사라진다.
-  // 옐로우는 레몬빛 발광, 골드는 짙은 호박빛 그림자로 분리해 전투 중에도
-  // 실루엣만 같을 뿐 서로 다른 캐릭터로 즉시 읽히게 한다.
+  // 옐로우와 골드는 같은 리그를 쓰지만 원색은 유지한다. 옐로우는 레몬빛
+  // 발광으로, 골드는 금속성 하이라이트와 따뜻한 그림자로 구분한다.
   const toonIdentity = {
     yellow: { tint: 0xfff21a, emissive: 0x5f5700, intensity: 0.34, roughness: 0.78, metalness: 0.01 },
-    gold: { tint: 0xb66a08, emissive: 0x241000, intensity: 0.08, roughness: 0.42, metalness: 0.28 },
+    gold: { tint: 0xffd770, emissive: 0x6b4600, intensity: 0.18, roughness: 0.28, metalness: 0.62 },
   }[charKey];
   const targetHex = toonIdentity?.tint ?? CHARACTERS[charKey].color;
   model.traverse((part) => {
