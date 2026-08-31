@@ -305,6 +305,12 @@ const legacyPatches = [
 ];
 
 const patches = [
+  { version:"v1.5.4.2", date:"2026.08.31", title:["골드 긴급 패치 2", "Gold Emergency Patch 2"], items:[
+    ["골드 제1탄 사거리는 8타일로 유지", "Kept Gold's stage-one range at 8 tiles"],
+    ["제2탄 사거리 4→8타일, 제3탄 사거리 3→6타일", "Increased stage-two range from 4 to 8 tiles and stage-three range from 3 to 6 tiles"],
+    ["고장 지대 궁극기 장판 반경 3→6타일", "Increased Malfunction Zone radius from 3 to 6 tiles"],
+    ["골드 대표 색상을 #FFD700으로 통일하고 장판 가시성 강화", "Standardized Gold's color to #FFD700 and improved zone visibility"],
+  ], summary:["골드의 후속 분열탄과 궁극기 장판 범위를 두 배로 늘린 긴급 밸런스 패치입니다.", "An emergency balance patch that doubles the reach of Gold's follow-up splits and ultimate field."], impact:["제1탄의 진입 사거리는 그대로지만 분열 이후의 위협 범위와 지역 통제력이 크게 증가합니다.", "The opening projectile keeps its original reach, while follow-up threat range and area control increase substantially."] },
   { version:"v1.5.4", date:"2026.08.24", title:["베타 시즌 4 업데이트", "Beta Season 4 Update"], items:[
     ["신규 영웅 캐릭터 샤르트뢰즈와 무작위 탄환 4종 추가", "Added the new Hero fighter Chartreuse and four randomized ammo types"],
     ["샤르트뢰즈 궁극기 ‘49% 정신 차림’ 추가", "Added Chartreuse's 49% Focus ultimate"],
