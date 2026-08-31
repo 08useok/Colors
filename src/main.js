@@ -2277,7 +2277,7 @@ const FLASH_EMISSIVE = new THREE.Color(0x7f0f0f);
 const SHOCK_EMISSIVE = new THREE.Color(0x2299cc);
 const POISON_EMISSIVE = new THREE.Color(0x44aa22);
 const NO_EMISSIVE = new THREE.Color(0x000000);
-const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit", "chartreuseUltimate", "chartreuseBurst"]);
+const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit", "ivoryZoneRing", "ivoryZoneFlash", "chartreuseUltimate", "chartreuseBurst"]);
 
 function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false } = {}) {
   if (!root) return;
@@ -8325,6 +8325,62 @@ function beginIvoryAttack(fighter) {
   return true;
 }
 
+function createIvoryZoneSpawnEffect(x, z, radius) {
+  const flash = new THREE.Mesh(
+    new THREE.CircleGeometry(radius * 0.82, 40),
+    new THREE.MeshBasicMaterial({
+      color: 0xfffff4, transparent: true, opacity: 0.62, side: THREE.DoubleSide,
+      depthWrite: false, blending: THREE.AdditiveBlending,
+    }),
+  );
+  flash.rotation.x = -Math.PI / 2;
+  flash.position.set(x, 0.2, z);
+  flash.scale.setScalar(0.12);
+  flash.renderOrder = 5;
+  scene.add(flash);
+  state.effects.push({ mesh: flash, life: 0.38, maxLife: 0.38, type: "ivoryZoneFlash" });
+
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(radius * 0.68, radius, 48),
+    new THREE.MeshBasicMaterial({
+      color: 0xbff3ff, transparent: true, opacity: 0.95, side: THREE.DoubleSide,
+      depthWrite: false, blending: THREE.AdditiveBlending,
+    }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(x, 0.23, z);
+  ring.scale.setScalar(0.16);
+  ring.renderOrder = 6;
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.58, maxLife: 0.58, type: "ivoryZoneRing" });
+
+  const burst = new THREE.Group();
+  burst.position.set(x, 0.28, z);
+  for (let index = 0; index < 16; index += 1) {
+    const sprinkle = index % 3 !== 0;
+    const particle = new THREE.Mesh(
+      sprinkle ? new THREE.BoxGeometry(0.06, 0.18, 0.06) : new THREE.SphereGeometry(0.13, 6, 5),
+      new THREE.MeshBasicMaterial({
+        color: sprinkle ? [0xff7197, 0x6bdcff, 0xffd75c, 0x9bec70][index % 4] : 0xfffff0,
+        transparent: true, opacity: 0.95, depthWrite: false,
+      }),
+    );
+    const angle = (index / 16) * Math.PI * 2 + Math.random() * 0.22;
+    const speed = 2.4 + Math.random() * 2.2;
+    particle.position.set(Math.cos(angle) * 0.2, 0.05, Math.sin(angle) * 0.2);
+    particle.rotation.z = angle;
+    particle.userData.velocity = new THREE.Vector3(
+      Math.cos(angle) * speed,
+      2.8 + Math.random() * 2.4,
+      Math.sin(angle) * speed,
+    );
+    particle.userData.spin = (Math.random() - 0.5) * 12;
+    burst.add(particle);
+  }
+  scene.add(burst);
+  state.effects.push({ mesh: burst, life: 0.72, maxLife: 0.72, type: "ivoryZoneBurst" });
+}
+
 function spawnIvoryZone(x, z, ownerId) {
   const def = CHARACTERS.ivory;
   const mesh = new THREE.Group();
@@ -8352,8 +8408,14 @@ function spawnIvoryZone(x, z, ownerId) {
   mesh.add(puddle, overturnedScoop, cone);
   // 쇼다운 타일 윗면(Y=0.12)보다 높게 배치해 장판이 바닥에 묻히지 않게 한다.
   mesh.position.set(x, 0.16, z);
+  mesh.scale.setScalar(0.12);
+  mesh.rotation.y = -0.34;
   scene.add(mesh);
-  state.ivoryZones.push({ mesh, x, z, ownerId, nextTickAt: state.gameTime, expiresAt: state.gameTime + def.iceCreamZoneDuration });
+  createIvoryZoneSpawnEffect(x, z, def.iceCreamZoneRadius);
+  state.ivoryZones.push({
+    mesh, x, z, ownerId, spawnedAt: state.gameTime,
+    nextTickAt: state.gameTime, expiresAt: state.gameTime + def.iceCreamZoneDuration,
+  });
 }
 
 function tryUseIvoryUltimate(fighter = getPlayer()) {
@@ -9667,6 +9729,18 @@ function updateIvoryZones() {
       state.ivoryZones.splice(i, 1);
       continue;
     }
+    const spawnAge = state.gameTime - (zone.spawnedAt ?? state.gameTime);
+    if (spawnAge < 0.42) {
+      const t = THREE.MathUtils.clamp(spawnAge / 0.42, 0, 1);
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      const pop = 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2;
+      zone.mesh.scale.setScalar(Math.max(0.12, pop));
+      zone.mesh.rotation.y = -0.34 * (1 - t);
+    } else {
+      zone.mesh.scale.setScalar(1);
+      zone.mesh.rotation.y = 0;
+    }
     if (state.gameTime < zone.nextTickAt) continue;
     zone.nextTickAt += CHARACTERS.ivory.iceCreamZoneTickInterval;
     const owner = state.players.find((fighter) => fighter.id === zone.ownerId);
@@ -10173,6 +10247,18 @@ function updateEffects(dt) {
       effect.mesh.scale.setScalar(1 + Math.sin(state.gameTime * 10) * 0.08);
       continue;
     }
+    if (effect.type === "ivoryZoneBurst") {
+      const burstAlpha = effect.life / effect.maxLife;
+      for (const particle of effect.mesh.children) {
+        particle.position.addScaledVector(particle.userData.velocity, dt);
+        particle.userData.velocity.y -= 9.5 * dt;
+        particle.rotation.x += particle.userData.spin * dt;
+        particle.rotation.z += particle.userData.spin * 0.7 * dt;
+        particle.scale.setScalar(Math.max(0.05, burstAlpha));
+        particle.material.opacity = burstAlpha * 0.95;
+      }
+      continue;
+    }
     if (effect.type === "chartreuseBurst") {
       const owner = effect.owner;
       if (!owner?.dead) {
@@ -10218,6 +10304,17 @@ function updateEffects(dt) {
     } else if (effect.type === "bombFlash") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.5);
       effect.mesh.material.opacity = alpha * alpha * 0.5;
+    } else if (effect.type === "ivoryZoneFlash") {
+      const progress = 1 - alpha;
+      const eased = 1 - (1 - progress) ** 3;
+      effect.mesh.scale.setScalar(0.12 + eased * 1.05);
+      effect.mesh.material.opacity = alpha * alpha * 0.62;
+    } else if (effect.type === "ivoryZoneRing") {
+      const progress = 1 - alpha;
+      const eased = 1 - (1 - progress) ** 3;
+      effect.mesh.scale.setScalar(0.16 + eased * 1.08);
+      effect.mesh.rotation.z += dt * 1.8;
+      effect.mesh.material.opacity = alpha * 0.95;
     } else if (effect.type === "electricFlash") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
       effect.mesh.material.opacity = alpha * 0.9;
