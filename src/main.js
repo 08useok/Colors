@@ -6564,6 +6564,41 @@ function createIvoryAimIndicator() {
 
 const ivoryAimIndicator = createIvoryAimIndicator();
 
+function createChartreuseAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.chartreuse.chartreuseRange;
+  const materialOptions = {
+    color: 0xffffff,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  };
+
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.7, range),
+    new THREE.MeshBasicMaterial({ ...materialOptions, opacity: 0.22 }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.42, 16),
+    new THREE.MeshBasicMaterial({ ...materialOptions, opacity: 0.5 }),
+  );
+  dot.rotation.x = -Math.PI / 2;
+  dot.position.set(0, 0.085, range);
+  group.add(dot);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, dot };
+  scene.add(group);
+  return group;
+}
+
+const chartreuseAimIndicator = createChartreuseAimIndicator();
+
 function createYellowAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.yellow.electricRange;
@@ -11514,6 +11549,7 @@ function updateAttackAimIndicator() {
     pinkAimIndicator.visible = false;
     crimsonAimIndicator.visible = false;
     ivoryAimIndicator.visible = false;
+    chartreuseAimIndicator.visible = false;
     return;
   }
 
@@ -11533,6 +11569,7 @@ function updateAttackAimIndicator() {
   pinkAimIndicator.visible = false;
   crimsonAimIndicator.visible = false;
   ivoryAimIndicator.visible = false;
+  chartreuseAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -11611,6 +11648,12 @@ function updateAttackAimIndicator() {
     ivoryAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
     ivoryAimIndicator.userData.landingFill.material.opacity = unavailable ? 0.02 : 0.08;
     ivoryAimIndicator.userData.landingRing.material.opacity = unavailable ? 0.12 : 0.5;
+  } else if (charType === "chartreuse") {
+    chartreuseAimIndicator.visible = true;
+    chartreuseAimIndicator.position.set(pos.x, aimGroundY, pos.z);
+    chartreuseAimIndicator.rotation.y = yaw;
+    chartreuseAimIndicator.userData.beam.material.opacity = unavailable ? 0.07 : 0.22;
+    chartreuseAimIndicator.userData.dot.material.opacity = unavailable ? 0.15 : 0.5;
   }
 }
 
