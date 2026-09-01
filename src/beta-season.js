@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=0.5.17";
+import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.18";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.139";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -86,6 +86,15 @@ const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-
 const requestedBetaSeason = new URLSearchParams(location.search).get("test");
 const BETA_SEASON_ID = requestedBetaSeason === "beta5" ? "beta5" : "beta4";
 const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
+if (IS_BETA5_TEST) {
+  for (const [characterId, override] of Object.entries(BETA5_BALANCE_OVERRIDES)) {
+    const definition = BETA_CHARACTERS[characterId];
+    if (!definition) continue;
+    const { ultimate, ...baseOverride } = override;
+    Object.assign(definition, baseOverride);
+    if (ultimate) Object.assign(definition.ultimate, ultimate);
+  }
+}
 const beta5LoadingScreen = document.getElementById("beta5-loading-screen");
 
 function finishBeta5LoadingScreen() {

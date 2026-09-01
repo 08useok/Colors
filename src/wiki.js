@@ -77,7 +77,7 @@ const characterMeta = {
     role: ["범위 딜러", "Area Damage"], attack: ["폭발탄", "Explosive Round"],
     desc: ["직격 피해 뒤 다섯 갈래 폭발을 일으켜 좁은 지역을 장악합니다.", "Explosive shots deal direct damage and split into a five-way blast."],
     tip: ["적의 발밑보다 도망갈 방향을 겨냥하세요. 벽과 좁은 길에서 파편을 맞히기 쉽습니다.", "Aim where enemies will retreat. Corridors make the five-way blast much harder to avoid."],
-    range: 9, damage: 2700,
+    range: 9, damage: 4250,
   },
   yellow: {
     role: ["컨트롤러", "Controller"], attack: ["전기 구슬", "Volt Shot"],
@@ -89,7 +89,7 @@ const characterMeta = {
     role: ["광역 제압", "Area Control"], attack: ["래피드 버스트", "Rapid Burst"],
     desc: ["여섯 발의 일렬 탄막으로 넓은 지역을 제압하며, 공격을 충전해 궁극기를 사용합니다.", "Suppresses a wide lane with six shots and charges a powerful ultimate."],
     tip: ["탄막의 중앙을 적에게 맞추기보다 이동 경로를 덮으세요. 궁극기는 좁은 길에서 효과적입니다.", "Cover escape routes with the spread. Save the ultimate for lanes where knockback matters."],
-    range: 9, damage: 4500,
+    range: 8.33, damage: 3600,
   },
   crimson: {
     role: ["근접 브루저", "Melee Bruiser"], attack: ["3연속 펀치", "Triple Punch"],
@@ -107,7 +107,7 @@ const characterMeta = {
     role: ["탱커·서포터", "Tank / Support"], attack: ["리듬 스트라이크", "Rhythm Strike"],
     desc: ["높은 체력과 빠른 이동 속도를 갖추고, 원형 공격으로 적을 해치고 아군을 회복합니다.", "A fast, high-health support whose circular attack damages enemies and heals allies."],
     tip: ["혼자 추격하기보다 아군과 함께 움직이세요. 공격과 회복이 동시에 적용되는 위치가 가장 좋습니다.", "Stay with allies. Position the circle to hit enemies and heal teammates at the same time."],
-    range: 4.5, damage: 2000,
+    range: 4.5, damage: 2400,
   },
   gold: {
     role: ["고장 지대 컨트롤러", "Malfunction Controller"], attack: ["연쇄 금광석", "Chain Gold Ore"],
@@ -305,11 +305,11 @@ const legacyPatches = [
 ];
 
 const patches = [
-  { version:"v1.5.4.3", date:"2026.09.01", title:["초강세 밸런스 패치", "Top-Tier Balance Patch"], items:[
+  { version:"v1.5.4.3", date:"2026.09.01", title:["베타 시즌 5 밸런스 패치", "Beta Season 5 Balance Patch"], items:[
     ["오렌지: 공격 쿨다운 0.35→0.40초, 과즙 피해 700→600, 직격 추가 과즙 4→3개", "Orange: attack cooldown 0.35→0.40s, juice damage 700→600, direct-hit juice count 4→3"],
     ["핑크: 체력 10,500→10,000, 공격 피해 2,100→2,000, 아군 회복 1,400→1,300", "Pink: health 10,500→10,000, attack damage 2,100→2,000, ally healing 1,400→1,300"],
     ["시안: 일반 공격 사거리 8.33→9, 탄속 18→20, 궁극기 피해 1,300→1,400", "Cyan: basic range 8.33→9, projectile speed 18→20, ultimate damage 1,300→1,400"],
-  ], summary:["전승 오렌지와 고승률 핑크를 하향하고 시안의 명중 안정성과 궁극기 화력을 보강했습니다.", "This patch tones down undefeated Orange and high-performing Pink while improving Cyan's reliability and ultimate damage."], impact:["오렌지의 직격 폭발력과 핑크의 유지력이 감소하며, 시안은 중거리 교전에서 공격을 맞히기 쉬워집니다.", "Orange loses direct-hit burst and Pink loses sustain, while Cyan becomes more reliable at mid range."] },
+  ], summary:["베타 시즌 5 테스트에서만 전승 오렌지와 고승률 핑크를 하향하고 시안을 보강했습니다.", "Beta Season 5 testing exclusively tones down undefeated Orange and high-performing Pink while improving Cyan."], impact:["메인과 베타 시즌 4 수치는 유지되며, 시즌 5에서만 오렌지의 폭발력과 핑크의 유지력이 감소하고 시안의 중거리 명중 안정성이 높아집니다.", "Main and Beta Season 4 remain unchanged; only Season 5 reduces Orange's burst and Pink's sustain while improving Cyan's mid-range reliability."] },
   { version:"v1.5.4.2", date:"2026.08.31", title:["골드 긴급 패치 2", "Gold Emergency Patch 2"], items:[
     ["골드 제1탄 사거리는 8타일로 유지", "Kept Gold's stage-one range at 8 tiles"],
     ["제2탄 사거리 4→8타일, 제3탄 사거리 3→6타일", "Increased stage-two range from 4 to 8 tiles and stage-three range from 3 to 6 tiles"],

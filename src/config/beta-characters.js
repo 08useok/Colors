@@ -226,3 +226,23 @@ export const BETA_CHARACTERS = {
     },
   },
 };
+
+// Beta Season 5 test-only balance. beta-season.js applies these values only
+// when the page is opened with ?test=beta5, preserving Beta Season 4.
+export const BETA5_BALANCE_OVERRIDES = {
+  orange: {
+    attackCooldown: 0.4,
+    bombSplashDamage: 600,
+    bombDirectHitJuiceCount: 3,
+  },
+  pink: {
+    maxHealth: 10000,
+    healCircleDamage: 2000,
+    healCircleHeal: 1300,
+  },
+  cyan: {
+    spreadLineRange: 9,
+    spreadLineSpeed: 20,
+    ultimate: { damage: 1400 },
+  },
+};
