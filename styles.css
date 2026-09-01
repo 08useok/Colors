@@ -344,6 +344,33 @@ body {
   transform: scale(0.96);
 }
 
+.aim-mode-button {
+  position: absolute;
+  right: 24px;
+  bottom: 350px;
+  z-index: 26;
+  width: 210px;
+  padding: 10px 13px;
+  border: 1px solid rgba(255, 225, 164, 0.42);
+  border-radius: 12px;
+  background: rgba(30, 23, 14, 0.9);
+  color: #ffe7b5;
+  font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.aim-mode-button.active {
+  border-color: #fff;
+  background: rgba(104, 77, 38, 0.96);
+  color: #fff;
+  box-shadow: 0 0 16px rgba(255, 222, 155, 0.3);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .aim-mode-button { display: none; }
+}
+
 .ultimate-button {
   --charge: 0deg;
   --ult-color: #0ff0fe;
@@ -511,6 +538,7 @@ body.lobby-active #hud > .panel,
 body.lobby-active #crosshair,
 body.lobby-active #mobile-joystick,
 body.lobby-active #mobile-attack-button,
+body.lobby-active #aim-mode-button,
 body.lobby-active #showdown-announce,
 body.lobby-active #game-title-announce,
 body.lobby-active #kill-feed,

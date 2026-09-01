@@ -196,6 +196,7 @@ const crosshairEl = document.getElementById("crosshair");
 const mobileJoystick = document.getElementById("mobile-joystick");
 const mobileJoystickThumb = document.getElementById("mobile-joystick-thumb");
 const mobileAttackButton = document.getElementById("mobile-attack-button");
+const aimModeButton = document.getElementById("aim-mode-button");
 const ultimateButton = document.getElementById("ultimate-button");
 const ultimateStateEl = document.getElementById("ultimate-state");
 const mapNameEl = document.getElementById("map-name");
@@ -968,7 +969,8 @@ if (!leaderboardBots) {
 const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
-const AUTO_AIM_HOLD_MS = 500;
+// 베타와 동일하게 0.2초부터 길게 누른 수동 조준으로 판정한다.
+const AUTO_AIM_HOLD_MS = 200;
 const attackEvents = [
   { delay: 0.12, damage: 2200 },
   { delay: 0.36, damage: 2200 },
@@ -2219,6 +2221,7 @@ const state = {
   },
   mouseHeld: false,
   attackHoldStartedAt: 0,
+  manualAimActive: false,
   trainingMode: false,
   mobileMove: {
     x: 0,
@@ -10451,8 +10454,10 @@ function updatePlayerControls(dt) {
         player.yaw = moveAngleToward(player.yaw, desiredYaw, dt * turnSpeed * 2.4);
       }
     } else {
-      const ndcX = (state.mouse.screenX / window.innerWidth) * 2 - 1;
-      const ndcY = -(state.mouse.screenY / window.innerHeight) * 2 + 1;
+      // 베타와 동일하게 실제 캔버스 영역을 기준으로 포인터를 월드 좌표로 변환한다.
+      const rect = canvas.getBoundingClientRect();
+      const ndcX = ((state.mouse.screenX - rect.left) / Math.max(rect.width, 1)) * 2 - 1;
+      const ndcY = -((state.mouse.screenY - rect.top) / Math.max(rect.height, 1)) * 2 + 1;
       aimRaycaster.setFromCamera({ x: ndcX, y: ndcY }, camera);
       if (aimRaycaster.ray.intersectPlane(groundPlane, mouseAimWorld)) {
         const dx = mouseAimWorld.x - player.mesh.position.x;
@@ -11453,7 +11458,7 @@ function updateAttackAimIndicator() {
   const player = getPlayer();
   const charType = player?.characterType;
 
-  if (!player || player.dead || !state.running || !state.mouseHeld) {
+  if (!player || player.dead || !state.running || (!state.mouseHeld && !state.manualAimActive)) {
     attackAimIndicator.visible = false;
     greenAimIndicator.visible = false;
     blueAimIndicator.visible = false;
@@ -12528,6 +12533,7 @@ function setupInput() {
 
   function startAiming(event) {
     if (event.button !== 0 && event.button !== 2) return;
+    if (event.target === aimModeButton) return;
     event.preventDefault();
     if (state.running) {
       state.mouseHeld = true;
@@ -12536,7 +12542,7 @@ function setupInput() {
   }
 
   function applyTapAutoAim(player) {
-    if (!player || player.dead || performance.now() - state.attackHoldStartedAt >= AUTO_AIM_HOLD_MS) return;
+    if (state.manualAimActive || !player || player.dead || performance.now() - state.attackHoldStartedAt >= AUTO_AIM_HOLD_MS) return;
     const target = findAutoAimTarget(player);
     if (!target) return;
     const dx = target.mesh.position.x - player.mesh.position.x;
@@ -12557,6 +12563,17 @@ function setupInput() {
   }
 
   const releaseHold = () => { state.mouseHeld = false; };
+
+  aimModeButton?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    state.manualAimActive = !state.manualAimActive;
+    aimModeButton.classList.toggle("active", state.manualAimActive);
+    aimModeButton.setAttribute("aria-pressed", String(state.manualAimActive));
+    aimModeButton.textContent = state.manualAimActive
+      ? "수동 에임 고정"
+      : "좌클릭 공격 · 길게 눌러 조준";
+  });
   window.addEventListener("mousedown", startAiming);
   window.addEventListener("mouseup", attackOnRelease);
   window.addEventListener("pointerup", attackOnRelease);
