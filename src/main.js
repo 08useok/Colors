@@ -8616,7 +8616,7 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
       }
     }
   }
-  // 직격당한 대상은 과즙 bombDirectHitJuiceCount(4)개를 그 자리에서 확정 적중시킨다.
+  // 직격당한 대상은 설정된 bombDirectHitJuiceCount만큼 과즙을 그 자리에서 확정 적중시킨다.
   // 예전엔 5개 중 1개만 재적중 차단하고 나머지는 날아가는 투사체가 실제로 닿아야
   // 데미지가 들어가서, 명중 개수가 판정 타이밍에 따라 3~4개로 들쭉날쭉했다.
   const directHitTarget = directHitTargetId != null
@@ -8638,8 +8638,8 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
     }
   }
   const isGold = owner?.skinId === "beta2_gold_orange";
-  // 직격 시엔 과즙 4개를 위에서 이미 확정 적중시켰으니, 남은 1개(5 - 4)만
-  // 날려서 근처 다른 대상을 노린다. 직격이 아니면 5개 다 그대로 날아간다.
+  // 직격 시엔 확정 적중분을 제외한 나머지 과즙만 날려 근처 다른 대상을 노린다.
+  // 직격이 아니면 설정된 과즙을 모두 그대로 날린다.
   const fragmentCount = directHitTarget
     ? Math.max(0, charDef.bombSplashCount - charDef.bombDirectHitJuiceCount)
     : charDef.bombSplashCount;
