@@ -6520,6 +6520,50 @@ function createOrangeAimIndicator() {
 const blueAimIndicator = createBlueAimIndicator();
 const orangeAimIndicator = createOrangeAimIndicator();
 
+function createIvoryAimIndicator() {
+  const group = new THREE.Group();
+  const range = CHARACTERS.ivory.iceCreamRange;
+  const radius = CHARACTERS.ivory.iceCreamZoneRadius;
+  const materialOptions = {
+    color: 0xffffff,
+    transparent: true,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  };
+
+  const beam = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.55, range),
+    new THREE.MeshBasicMaterial({ ...materialOptions, opacity: 0.2 }),
+  );
+  beam.rotation.x = -Math.PI / 2;
+  beam.position.set(0, 0.08, range * 0.5);
+  group.add(beam);
+
+  const landingFill = new THREE.Mesh(
+    new THREE.CircleGeometry(radius, 40),
+    new THREE.MeshBasicMaterial({ ...materialOptions, opacity: 0.08 }),
+  );
+  landingFill.rotation.x = -Math.PI / 2;
+  landingFill.position.set(0, 0.085, range);
+  group.add(landingFill);
+
+  const landingRing = new THREE.Mesh(
+    new THREE.RingGeometry(Math.max(0.1, radius - 0.14), radius, 40),
+    new THREE.MeshBasicMaterial({ ...materialOptions, opacity: 0.5 }),
+  );
+  landingRing.rotation.x = -Math.PI / 2;
+  landingRing.position.set(0, 0.09, range);
+  group.add(landingRing);
+
+  group.renderOrder = 4;
+  group.visible = false;
+  group.userData = { beam, landingFill, landingRing };
+  scene.add(group);
+  return group;
+}
+
+const ivoryAimIndicator = createIvoryAimIndicator();
+
 function createYellowAimIndicator() {
   const group = new THREE.Group();
   const range = CHARACTERS.yellow.electricRange;
@@ -8182,6 +8226,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "pink") baseRange = CHARACTERS.pink.healCircleRange;
   else if (fighter.characterType === "crimson") baseRange = CHARACTERS.crimson.attackRange;
   else if (fighter.characterType === "gold") baseRange = CHARACTERS.gold.stage1Range;
+  else if (fighter.characterType === "ivory") baseRange = CHARACTERS.ivory.iceCreamRange;
   else if (fighter.characterType === "chartreuse") baseRange = CHARACTERS.chartreuse.chartreuseRange;
   return baseRange;
 }
@@ -11468,6 +11513,7 @@ function updateAttackAimIndicator() {
     purpleAimIndicator.visible = false;
     pinkAimIndicator.visible = false;
     crimsonAimIndicator.visible = false;
+    ivoryAimIndicator.visible = false;
     return;
   }
 
@@ -11486,6 +11532,7 @@ function updateAttackAimIndicator() {
   purpleAimIndicator.visible = false;
   pinkAimIndicator.visible = false;
   crimsonAimIndicator.visible = false;
+  ivoryAimIndicator.visible = false;
 
   const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
@@ -11557,6 +11604,13 @@ function updateAttackAimIndicator() {
     crimsonAimIndicator.position.set(pos.x, aimGroundY, pos.z);
     crimsonAimIndicator.rotation.y = yaw;
     crimsonAimIndicator.userData.fanMesh.material.opacity = unavailable ? 0.06 : 0.2;
+  } else if (charType === "ivory") {
+    ivoryAimIndicator.visible = true;
+    ivoryAimIndicator.position.set(pos.x, aimGroundY, pos.z);
+    ivoryAimIndicator.rotation.y = yaw;
+    ivoryAimIndicator.userData.beam.material.opacity = unavailable ? 0.06 : 0.2;
+    ivoryAimIndicator.userData.landingFill.material.opacity = unavailable ? 0.02 : 0.08;
+    ivoryAimIndicator.userData.landingRing.material.opacity = unavailable ? 0.12 : 0.5;
   }
 }
 
