@@ -1703,7 +1703,18 @@ body.lobby-active #takedown-hud {
   cursor: pointer;
 }
 .settings-volume-row { margin-top: 26px; font-weight: 800; }
-.settings-volume { width: 100%; margin: 15px 0 8px; accent-color: #ffad54; }
+.settings-volume { width: 100%; margin: 15px 0 8px; accent-color: #ffad54; cursor: pointer; touch-action: none; }
+.settings-volume-presets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.settings-volume-presets button {
+  padding: 8px 4px;
+  border: 1px solid rgba(255, 202, 139, 0.24);
+  border-radius: 9px;
+  color: #f8dfc4;
+  background: rgba(255, 255, 255, 0.07);
+  font-weight: 800;
+  cursor: pointer;
+}
+.settings-volume-presets button:hover { background: rgba(255, 160, 78, 0.18); }
 .settings-divider { height: 1px; margin: 18px 0; background: rgba(255, 210, 158, 0.18); }
 .settings-action-btn {
   width: 100%;

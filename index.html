@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.157">
+  <link rel="stylesheet" href="./styles.css?v=1.5.158">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -795,7 +795,13 @@
               <label for="settings-volume">🔊 볼륨</label>
               <output id="settings-volume-value" for="settings-volume">100%</output>
             </div>
-            <input id="settings-volume" class="settings-volume" type="range" min="0" max="100" step="1" value="100">
+            <input id="settings-volume" class="settings-volume" type="range" min="0" max="100" step="1" value="100" draggable="false">
+            <div class="settings-volume-presets" aria-label="빠른 볼륨 설정">
+              <button type="button" data-volume="0">🔇 음소거</button>
+              <button type="button" data-volume="25">25%</button>
+              <button type="button" data-volume="50">50%</button>
+              <button type="button" data-volume="100">100%</button>
+            </div>
             <div class="settings-divider"></div>
             <button id="stats-toggle" class="settings-action-btn" type="button" data-i18n="statsBtn">👤 계정</button>
             <div id="stats-panel" class="stats-panel settings-stats-panel hidden"></div>
@@ -1112,6 +1118,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.4.26"></script>
+  <script type="module" src="./src/main.js?v=1.5.4.27"></script>
 </body>
 </html>

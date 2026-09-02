@@ -12422,6 +12422,15 @@ function setupInput() {
   };
   settingsVolume.addEventListener("input", updateVolumeSetting);
   settingsVolume.addEventListener("change", updateVolumeSetting);
+  settingsVolume.addEventListener("pointerdown", (event) => event.stopPropagation());
+  settingsVolume.addEventListener("mousedown", (event) => event.stopPropagation());
+  settingsVolume.addEventListener("dragstart", (event) => event.preventDefault());
+  document.querySelectorAll("[data-volume]").forEach((button) => {
+    button.addEventListener("click", () => {
+      settingsVolume.value = button.dataset.volume;
+      updateVolumeSetting();
+    });
+  });
 
   document.getElementById("stats-toggle").addEventListener("click", () => {
     const panel = document.getElementById("stats-panel");
