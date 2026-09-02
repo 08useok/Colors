@@ -12670,9 +12670,9 @@ function setupInput() {
 
   function startAiming(event) {
     if (event.button !== 0 && event.button !== 2) return;
-    if (event.target === aimModeButton) return;
-    event.preventDefault();
+    if (event.target.closest?.("button, input, select, textarea, label, a, [role='dialog']")) return;
     if (state.running) {
+      event.preventDefault();
       state.mouseHeld = true;
       state.attackHoldStartedAt = performance.now();
     }
