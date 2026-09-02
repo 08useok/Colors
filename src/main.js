@@ -160,6 +160,20 @@ const beta2LobbyBgm = new Audio("./assets/beta2-lobby-bgm.mp3?v=1.5.2");
 beta2LobbyBgm.loop = true;
 const beta4LobbyBgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1.5.4");
 beta4LobbyBgm.loop = true;
+const storedMasterVolume = Number.parseFloat(localStorage.getItem("colorsMasterVolume"));
+let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(storedMasterVolume, 0, 1) : 1;
+
+function applyMasterVolume() {
+  lobbyBgm.volume = 0.45 * masterVolume;
+  betaLobbyBgm.volume = 0.45 * masterVolume;
+  beta2LobbyBgm.volume = 0.45 * masterVolume;
+  beta4LobbyBgm.volume = 0.45 * masterVolume;
+  showdownBgm.volume = 0.5 * masterVolume;
+  showdownMusic.volume = 0.9 * masterVolume;
+  if (state?.masterGain && state.audioContext) {
+    state.masterGain.gain.setValueAtTime(masterVolume, state.audioContext.currentTime);
+  }
+}
 
 function pauseLobbyBgm() {
   lobbyBgm.pause();
@@ -180,7 +194,7 @@ function playLobbyBgm() {
   showdownMusic.pause();
   const activeLobbyBgm = CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
   [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
-  activeLobbyBgm.volume = 0.45;
+  applyMasterVolume();
   activeLobbyBgm.play().catch(() => {});
 }
 const zonePanel = document.getElementById("zone-panel");
@@ -2236,6 +2250,7 @@ const state = {
   playerOutsideZone: false,
   audioEnabled: false,
   audioContext: null,
+  masterGain: null,
   selectedCharacter: "red",
   currentMapId: 0,
   freezeUntil: 0,
@@ -2372,7 +2387,7 @@ const audio = {
       gain.gain.exponentialRampToValueAtTime(peak, startAt + attack);
       gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(state.masterGain || ctx.destination);
       osc.start(startAt);
       osc.stop(startAt + duration + 0.02);
     };
@@ -2457,6 +2472,9 @@ const audio = {
 async function initAudio() {
   if (!state.audioContext) {
     state.audioContext = new window.AudioContext();
+    state.masterGain = state.audioContext.createGain();
+    state.masterGain.gain.value = masterVolume;
+    state.masterGain.connect(state.audioContext.destination);
     state.audioEnabled = true;
   }
   if (state.audioContext.state === "suspended") {
@@ -7561,7 +7579,7 @@ function resetGame() {
   pauseLobbyBgm();
   if (state.audioEnabled) {
     showdownBgm.currentTime = 0;
-    showdownBgm.volume = 0.5;
+    showdownBgm.volume = 0.5 * masterVolume;
     showdownBgm.play().catch(() => {});
   }
   state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
@@ -11772,7 +11790,7 @@ function triggerShowdownAnnounce() {
     showdownBgm.pause();
     pauseLobbyBgm();
     showdownMusic.currentTime = 0;
-    showdownMusic.volume = 0.9;
+    showdownMusic.volume = 0.9 * masterVolume;
     showdownMusic.play().catch(() => {});
   }
 }
@@ -12378,7 +12396,30 @@ function animate() {
 }
 
 function setupInput() {
+  const settingsPanel = document.getElementById("settings-panel");
+  const settingsVolume = document.getElementById("settings-volume");
+  const settingsVolumeValue = document.getElementById("settings-volume-value");
+  const closeSettings = () => settingsPanel.classList.add("hidden");
+  settingsVolume.value = String(Math.round(masterVolume * 100));
+  settingsVolumeValue.value = `${settingsVolume.value}%`;
+  applyMasterVolume();
+  document.getElementById("settings-toggle").addEventListener("click", () => {
+    settingsPanel.classList.remove("hidden");
+    audio.play("open");
+  });
+  document.getElementById("settings-close").addEventListener("click", closeSettings);
+  settingsPanel.addEventListener("click", (event) => {
+    if (event.target === settingsPanel) closeSettings();
+  });
+  settingsVolume.addEventListener("input", () => {
+    masterVolume = Number(settingsVolume.value) / 100;
+    settingsVolumeValue.value = `${settingsVolume.value}%`;
+    localStorage.setItem("colorsMasterVolume", String(masterVolume));
+    applyMasterVolume();
+  });
+
   document.getElementById("stats-toggle").addEventListener("click", () => {
+    closeSettings();
     const panel = document.getElementById("stats-panel");
     const btn = document.getElementById("stats-toggle");
     panel.classList.toggle("hidden");
@@ -12819,6 +12860,7 @@ function setupInput() {
   }
 
   document.getElementById("open-account-switch-btn").addEventListener("click", () => {
+    closeSettings();
     lobbyMain.classList.add("hidden");
     document.getElementById("lobby-side-panel").classList.add("hidden");
     startBattleBtn.classList.add("hidden");

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.155">
+  <link rel="stylesheet" href="./styles.css?v=1.5.156">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -156,9 +156,8 @@
           <button id="mobile-event-toggle" class="side-nav-btn mobile-event-toggle" type="button">🎯 이벤트</button>
           <button id="open-shop-btn" class="side-nav-btn" type="button">🪙 상점</button>
           <a id="open-wiki-btn" class="side-nav-btn side-nav-link" href="./wiki/">📖 위키</a>
-          <button id="open-account-switch-btn" class="side-nav-btn" type="button">👤 계정 전환</button>
+          <button id="settings-toggle" class="side-nav-btn" type="button">⚙️ 설정</button>
           <div class="side-nav-divider"></div>
-          <button id="stats-toggle" class="side-nav-btn" type="button" data-i18n="statsBtn">👤 계정</button>
           <div id="stats-panel" class="stats-panel hidden"></div>
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
           <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
@@ -787,6 +786,23 @@
           <button id="event-takedown-btn" class="event-map-play-btn" type="button">플레이하기</button>
         </div>
 
+        <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+          <div class="settings-card">
+            <div class="settings-header">
+              <h2 id="settings-title">⚙️ 설정</h2>
+              <button id="settings-close" class="settings-close" type="button" aria-label="설정 닫기">×</button>
+            </div>
+            <div class="settings-volume-row">
+              <label for="settings-volume">🔊 볼륨</label>
+              <output id="settings-volume-value" for="settings-volume">100%</output>
+            </div>
+            <input id="settings-volume" class="settings-volume" type="range" min="0" max="100" step="1" value="100">
+            <div class="settings-divider"></div>
+            <button id="stats-toggle" class="settings-action-btn" type="button" data-i18n="statsBtn">👤 계정</button>
+            <button id="open-account-switch-btn" class="settings-action-btn" type="button">🔄 계정 전환</button>
+          </div>
+        </div>
+
         <div id="account-creation" class="message-card hidden">
           <h1 data-i18n="gameTitle">COLORS</h1>
           <p class="lobby-intro" data-i18n="welcomeMsg">배틀로얄 전장에 오신 것을 환영합니다.</p>
@@ -1096,6 +1112,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.4.21"></script>
+  <script type="module" src="./src/main.js?v=1.5.4.22"></script>
 </body>
 </html>
