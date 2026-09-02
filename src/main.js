@@ -164,9 +164,8 @@ const storedMasterVolume = Number.parseFloat(localStorage.getItem("colorsMasterV
 let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(storedMasterVolume, 0, 1) : 1;
 
 function applyMasterVolume() {
-  // 사람의 청각은 선형 값의 변화를 작게 느끼므로 제곱 곡선을 사용한다.
-  // 예: 슬라이더 50%는 실제 출력 25%, 0%는 완전 음소거.
-  const outputVolume = masterVolume * masterVolume;
+  // 설정에 표시되는 비율과 실제 출력 비율을 동일하게 유지한다.
+  const outputVolume = masterVolume;
   const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, showdownBgm, showdownMusic];
   const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
   mediaTracks.forEach((track, index) => {
@@ -2473,7 +2472,7 @@ async function initAudio() {
   if (!state.audioContext) {
     state.audioContext = new window.AudioContext();
     state.masterGain = state.audioContext.createGain();
-    state.masterGain.gain.value = masterVolume * masterVolume;
+    state.masterGain.gain.value = masterVolume;
     state.masterGain.connect(state.audioContext.destination);
     state.audioEnabled = true;
   }
