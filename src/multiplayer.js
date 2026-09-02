@@ -33,7 +33,7 @@ export const mp = {
   connect(nickname, charType, mode = "takedown") {
     return new Promise((resolve, reject) => {
       if (this.ws) {
-        try { this.ws.close(); } catch (_) {}
+        try { this.ws.close(); } catch {}
         this.ws = null;
       }
       this.myId = null;
@@ -70,7 +70,7 @@ export const mp = {
   },
 
   disconnect() {
-    if (this.ws) { try { this.ws.close(); } catch (_) {} this.ws = null; }
+    if (this.ws) { try { this.ws.close(); } catch {} this.ws = null; }
     this.myId = null;
     this.isHost = false;
     this.roomPlayers = [];

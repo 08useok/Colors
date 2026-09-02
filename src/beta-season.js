@@ -669,8 +669,6 @@ let activeCharacterMotion = null;
 let modelAttackMotionTime = -1;
 let modelAttackCharacter = null;
 let modelAttackPoseRestore = [];
-let chartreuseStaticWalkPhase = 0;
-let chartreuseStaticWalkBlend = 0;
 let characterLoadToken = 0;
 let betaToonGradient = null;
 
@@ -942,8 +940,6 @@ function clearCharacterModel() {
   modelAttackMotionTime = -1;
   modelAttackCharacter = null;
   modelAttackPoseRestore = [];
-  chartreuseStaticWalkPhase = 0;
-  chartreuseStaticWalkBlend = 0;
   canvas.dataset.characterModel = "primitive";
 }
 
@@ -1089,42 +1085,6 @@ function loadCharacterMotionSet(characterId, token) {
       const name = CHARACTERS.find((character) => character.id === characterId)?.name || characterId;
       showToast(`${name} 모델을 불러오지 못했습니다.`);
     });
-}
-
-// The supplied Chartreuse mesh is a generated, single-piece model. Keeping
-// its original static form avoids arm/torso collapse from automatic weights.
-function loadChartreuseStaticModel(token) {
-  staticCharacterLoader.load(
-    `./assets/3d/chartreuse/chartreuse.fbx?v=${CHARACTER_MODEL_VERSION}`,
-    (model) => {
-      if (token !== characterLoadToken || betaState.selectedCharacter !== "chartreuse") return;
-      const prepared = prepareCharacterScene(model, "chartreuse");
-      prepared.userData.staticChartreuse = true;
-      prepared.userData.staticWalkBaseY = prepared.position.y;
-      player.add(prepared);
-      activeCharacterModel = prepared;
-      canvas.dataset.characterModel = "chartreuse";
-      canvas.dataset.characterMotion = "static-bob";
-    },
-    undefined,
-    () => {
-      if (token !== characterLoadToken) return;
-      body.visible = true;
-      visor.visible = true;
-      showToast("샤트 모델을 불러오지 못했습니다.");
-    },
-  );
-}
-
-function updateStaticChartreuseMotion(isMoving, dt) {
-  const model = activeCharacterModel;
-  if (!model?.userData.staticChartreuse) return;
-  const blendRate = 1 - Math.exp(-10 * dt);
-  chartreuseStaticWalkBlend += ((isMoving ? 1 : 0) - chartreuseStaticWalkBlend) * blendRate;
-  if (isMoving) chartreuseStaticWalkPhase += dt * 9;
-  const sway = Math.sin(chartreuseStaticWalkPhase);
-  model.position.y = model.userData.staticWalkBaseY + sway * 0.035 * chartreuseStaticWalkBlend;
-  model.rotation.z = sway * 0.018 * chartreuseStaticWalkBlend;
 }
 
 function updateCharacterMotion(isMoving, dt) {
@@ -3085,7 +3045,6 @@ function applyMintIce(target, amount) {
 
 let mintUltimateCharge = 0;
 let blueSpecialCharge = 0;
-let betaElapsedTime = 0;
 let blueDashState = null;
 
 function performBlueDash() {
@@ -3409,29 +3368,6 @@ function updatePinkDeadAllyMarkers() {
   }
 }
 
-// 레드처럼 정면으로 뻗는 공격용 이펙트. 원형 펄스와 달리 바라보는 방향으로
-// 길게 깔린다.
-function createGroundSlash(length, width, color, angle = 0) {
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(width, length),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }),
-  );
-  // 오일러 순서를 YXZ로 두면 눕힌 뒤 바라보는 방향으로 그대로 돌아간다.
-  // 회전 중심이 막대 한가운데라 angle을 주면 중앙에서 교차하는 X자가 된다.
-  mesh.rotation.order = "YXZ";
-  mesh.rotation.y = player.rotation.y + angle;
-  mesh.rotation.x = Math.PI / 2;
-  const forwardX = Math.sin(player.rotation.y);
-  const forwardZ = Math.cos(player.rotation.y);
-  mesh.position.set(
-    player.position.x + forwardX * length * 0.5,
-    player.position.y + 0.12,
-    player.position.z + forwardZ * length * 0.5,
-  );
-  scene.add(mesh);
-  crimsonSlashes.push({ group: mesh, mesh, life: 0.38, maxLife: 0.38 });
-}
-
 function createRedGloveEffect(angle = 0) {
   const glove = new THREE.Group();
   const red = new THREE.MeshBasicMaterial({ color: 0xf01824, transparent: true, opacity: 0.96, depthWrite: false });
@@ -3575,7 +3511,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
     attackComboState.textContent = "아이스크림 배달 중";
   } else if (id === "chartreuse") {
     const focused = clock.elapsedTime < chartreuseFocusUntil;
-    const roundType = chartreuseAmmoTypes.shift() || randomChartreuseRound();
+    const roundType = chartreuseAmmoTypes.shift() || randomChartreuseRound(focused);
     const damage = roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage;
     const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
     fireBetaProjectile({ speed: def.chartreuseSpeed, range: def.chartreuseRange, damage, color, radius: 0.24, type: `chartreuse_${roundType}` });
@@ -4299,7 +4235,6 @@ function updateGoldRushHealthBar(bar, health, maxHealth) {
 const playerGoldRushHealthBar = createGoldRushHealthBar(3.2);
 playerGoldRushHealthBar.visible = true;
 player.add(playerGoldRushHealthBar);
-const healthBarParentQuaternion = new THREE.Quaternion();
 
 function faceGoldRushHealthBarToCamera(bar) {
   if (!bar.userData.worldBillboardHost) {
@@ -5235,7 +5170,6 @@ slowmoButton.addEventListener("click", () => {
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
-  betaElapsedTime = clock.elapsedTime;
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   if (redGuardMesh) {
     if (clock.elapsedTime >= redGuardUntil) {
@@ -5303,8 +5237,6 @@ function animate() {
       }
     }
     const step = Math.hypot(projectile.vx, projectile.vz) * dt;
-    const previousX = projectile.mesh.position.x;
-    const previousZ = projectile.mesh.position.z;
     if (!remove && !projectile.ivoryLandedAt) {
       projectile.mesh.position.x += projectile.vx * dt;
       projectile.mesh.position.z += projectile.vz * dt;
@@ -5836,7 +5768,6 @@ function animate() {
     activeCharacterWasMoving = isMoving;
     updateModelAttackMotion(dt);
   }
-  updateStaticChartreuseMotion(isMoving, dt);
   updateHeadAttachedSkinAccessory();
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (ground < -5) resetPlayer();

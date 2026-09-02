@@ -358,7 +358,6 @@ const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
-const WIN_REWARD_CREDITS = 100;
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
 const ROSTER = ["beta2", "beta3", "beta4"].includes(CURRENT_SEASON)
   ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(CURRENT_SEASON === "beta4" ? ["chartreuse"] : [])]
@@ -1477,7 +1476,6 @@ function updateColorInfo(charKey, account) {
   const charDef = CHARACTERS[charKey];
   if (!charDef) { el.innerHTML = ""; return; }
   const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
-  const hp = charDef.maxHealth.toLocaleString();
   const desc = t(charKey + "Desc");
   const s = account?.charStats?.[charKey];
   let winrateText = t("firstGame");
@@ -1496,7 +1494,6 @@ function updateColorInfo(charKey, account) {
 
   let skinHtml = "";
   if (account) {
-    const ownedForChar = Object.entries(SKINS).filter(([, sk]) => sk.character === charKey && account.ownedSkins.includes(Object.keys(SKINS).find(id => SKINS[id] === sk)));
     for (const [skinId, skin] of Object.entries(SKINS)) {
       if (skin.character !== charKey) continue;
       if (!account.ownedSkins.includes(skinId)) continue;
@@ -4057,7 +4054,7 @@ const _pfl2 = new THREE.DirectionalLight(0xc0d8ff, 0.3);
 _pfl2.position.set(-2, 1, -2);
 pinkFrontScene.add(_pfl2);
 
-let pinkFrontModel = null, pinkFrontSk = null, pinkFrontTime = 0, pinkFrontActive = false;
+let pinkFrontModel = null, pinkFrontTime = 0, pinkFrontActive = false;
 let frontModelCharType = null;
 
 function setupFrontModel(charType) {
@@ -4089,9 +4086,6 @@ function setupFrontModel(charType) {
       s.position.set(-ctr.x * sc, -ctr.y * sc - 1.8, -ctr.z * sc);
       _applyPinkToon(s);
       s.traverse(c => { if (c.isMesh) c.frustumCulled = false; });
-      let sm = null;
-      s.traverse(c => { if (c.isSkinnedMesh && !sm) sm = c; });
-      pinkFrontSk = sm?.skeleton ?? null;
       if (gltf.animations?.length) {
         const mx = new THREE.AnimationMixer(s);
         const a = mx.clipAction(gltf.animations[0]);
@@ -4106,7 +4100,6 @@ function setupFrontModel(charType) {
     else _glbLoader.load('./assets/3d/pink/walk-m2l.glb', setup);
   } else if (charType === 'blue' && _bluePreviewGlb) {
     pinkFrontModel = fitModelForPreview(createBluePreviewModel());
-    pinkFrontSk = null;
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
   } else if (charType === 'cyan' && _cyanPreviewGlb) {
@@ -4115,7 +4108,6 @@ function setupFrontModel(charType) {
       || (acc?.ownedSkins?.includes("alpha_champion_cyan") ? "alpha_champion_cyan" : null)
       || (acc?.ownedSkins?.includes("crown_cyan") ? "crown_cyan" : null);
     pinkFrontModel = fitModelForPreview(createCyanPreviewModel(skinId));
-    pinkFrontSk = null;
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
   } else {
@@ -4127,7 +4119,6 @@ function setupFrontModel(charType) {
     m.position.y = 0;
     fitModelForPreview(m);
     pinkFrontModel = m;
-    pinkFrontSk = null;
     _applyCamera();
     pinkFrontScene.add(pinkFrontModel);
   }
@@ -5210,7 +5201,6 @@ function initChopWoodPlayers() {
   for (let i = 0; i < 3; i += 1) {
     const isPlayer = i === 0;
     const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
-    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = isPlayer ? label : randomBotName();
     const fighter = makeFighter({
       id: i,
@@ -5231,7 +5221,6 @@ function initChopWoodPlayers() {
 
   for (let i = 0; i < 3; i += 1) {
     const characterType = botTypes[Math.floor(Math.random() * botTypes.length)];
-    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
     const name = randomBotName();
     const fighter = makeFighter({
       id: i + 3,
@@ -7935,10 +7924,6 @@ function moveFighter(fighter, desiredMove, dt) {
   pos.x = next.x;
   pos.z = next.z;
   fighter.shadow.position.set(pos.x, 0.04, pos.z);
-}
-
-function getForward(yaw) {
-  return new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
 }
 
 function getCurrentZone() {
@@ -10723,7 +10708,6 @@ function updateBot(bot, dt, zone) {
     const distance = Math.hypot(target.mesh.position.x - botPos.x, target.mesh.position.z - botPos.z);
     bot.yaw = Math.atan2(toTargetX, toTargetZ);
     const atkRange = getAttackRange(bot);
-    const isRanged = ["green", "blue", "orange", "yellow", "cyan", "purple", "gold"].includes(bot.characterType);
     const ct = bot.characterType;
     let idealDist;
     if (ct === "green") idealDist = 1.5;
@@ -11589,7 +11573,6 @@ function updateAttackAimIndicator() {
   ivoryAimIndicator.visible = false;
   chartreuseAimIndicator.visible = false;
 
-  const range = getAttackRange(player);
   const alpha = unavailable ? 0.06 : 0.2;
 
   if (charType === "red") {
@@ -11986,7 +11969,7 @@ function updateHud() {
   }
 }
 
-function updateNaturalRegen(dt) {
+function updateNaturalRegen() {
   for (const fighter of state.players) {
     if (fighter.dead || fighter.isDummy || fighter.isBoss || fighter.health >= fighter.maxHealth) continue;
     const regenDelay = fighter.isPlayer ? 3 : 5;
@@ -12278,6 +12261,23 @@ function updatePinkRevives() {
   }
 }
 
+function tryUsePinkUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "pink" || !state.running) return false;
+  const ultimate = CHARACTERS.pink.ultimate;
+  if ((fighter.pinkUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
+  fighter.pinkUltimateCharge = 0;
+  for (const target of state.players) {
+    if (target.id === fighter.id || target.team !== fighter.team) continue;
+    const dx = target.mesh.position.x - fighter.mesh.position.x;
+    const dz = target.mesh.position.z - fighter.mesh.position.z;
+    if (dx * dx + dz * dz > ultimate.radius * ultimate.radius) continue;
+    target.revivePendingUntil = state.gameTime + ultimate.duration;
+    target.reviveHealthRatio = ultimate.reviveHealthRatio;
+    if (!target.dead) createHealEffect(target.mesh.position.x, target.mesh.position.z);
+  }
+  return true;
+}
+
 function animate() {
   if (!inBackground) requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
@@ -12301,7 +12301,7 @@ function animate() {
       }
       updateAmmoRegen(dt);
       updatePinkRevives();
-      if (!mpConfig || mpConfig.isHost) updateNaturalRegen(dt);
+      if (!mpConfig || mpConfig.isHost) updateNaturalRegen();
       updateTrainingRespawn();
       updateChopWoodRespawn();
       updateTakeDownRespawn();
@@ -13115,46 +13115,6 @@ if (window.location.hash === "#chop-wood") {
   queueMicrotask(() => document.getElementById("mode-chopwood")?.click());
 }
 
-function updatePinkRevives() {
-  for (const fighter of state.players) {
-    if (!fighter.dead || !fighter.reviveAt) continue;
-    if (state.gameTime > fighter.revivePendingUntil) {
-      fighter.reviveAt = 0;
-      continue;
-    }
-    if (state.gameTime < fighter.reviveAt) continue;
-    fighter.dead = false;
-    fighter.health = fighter.maxHealth * fighter.reviveHealthRatio;
-    fighter.invulnerableUntil = state.gameTime + CHARACTERS.pink.ultimate.invulnerabilityDuration;
-    fighter.mesh.visible = true;
-    fighter.shadow.visible = true;
-    fighter.healthBar.visible = true;
-    fighter.reviveAt = 0;
-    fighter.revivePendingUntil = 0;
-    createHealEffect(fighter.mesh.position.x, fighter.mesh.position.z);
-  }
-}
-
-function tryUsePinkUltimate(fighter = getPlayer()) {
-  if (!fighter || fighter.dead || fighter.characterType !== "pink" || !state.running) return false;
-  const ultimate = CHARACTERS.pink.ultimate;
-  if ((fighter.pinkUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
-  fighter.pinkUltimateCharge = 0;
-  if (!state.chopWoodMode) return true;
-  for (const target of state.players) {
-    if (target.id === fighter.id || target.team !== fighter.team) continue;
-    const dx = target.mesh.position.x - fighter.mesh.position.x;
-    const dz = target.mesh.position.z - fighter.mesh.position.z;
-    if (dx * dx + dz * dz > ultimate.radius * ultimate.radius) continue;
-    target.revivePendingUntil = state.gameTime + ultimate.duration;
-    target.reviveHealthRatio = ultimate.reviveHealthRatio;
-    if (!target.dead) {
-      createHealEffect(target.mesh.position.x, target.mesh.position.z);
-    }
-  }
-  return true;
-}
-
   document.getElementById("mode-goldrush")?.addEventListener("click", async () => {
     await initAudio();
     modeSelector.classList.add("hidden");
@@ -13185,7 +13145,6 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
       const charDef = CHARACTERS[c];
       const curMult = getLevelMultiplier(lv);
       const curHp = Math.round(charDef.maxHealth * curMult);
-      const lvPct = ((lv - 1) / (MAX_CHAR_LEVEL - 1)) * 100;
       const lvDots = Array.from({length: MAX_CHAR_LEVEL}, (_, i) =>
         `<span class="shop-lv-dot${i < lv ? " filled" : ""}" style="background:${i < lv ? colorMap[c] || "#fff" : "rgba(255,255,255,0.15)"}"></span>`
       ).join("");
