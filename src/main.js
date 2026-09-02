@@ -164,14 +164,17 @@ const storedMasterVolume = Number.parseFloat(localStorage.getItem("colorsMasterV
 let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(storedMasterVolume, 0, 1) : 1;
 
 function applyMasterVolume() {
-  lobbyBgm.volume = 0.45 * masterVolume;
-  betaLobbyBgm.volume = 0.45 * masterVolume;
-  beta2LobbyBgm.volume = 0.45 * masterVolume;
-  beta4LobbyBgm.volume = 0.45 * masterVolume;
-  showdownBgm.volume = 0.5 * masterVolume;
-  showdownMusic.volume = 0.9 * masterVolume;
+  // 사람의 청각은 선형 값의 변화를 작게 느끼므로 제곱 곡선을 사용한다.
+  // 예: 슬라이더 50%는 실제 출력 25%, 0%는 완전 음소거.
+  const outputVolume = masterVolume * masterVolume;
+  const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, showdownBgm, showdownMusic];
+  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
+  mediaTracks.forEach((track, index) => {
+    track.volume = baseVolumes[index] * outputVolume;
+    track.muted = outputVolume === 0;
+  });
   if (state?.masterGain && state.audioContext) {
-    state.masterGain.gain.setValueAtTime(masterVolume, state.audioContext.currentTime);
+    state.masterGain.gain.setValueAtTime(outputVolume, state.audioContext.currentTime);
   }
 }
 
@@ -2470,7 +2473,7 @@ async function initAudio() {
   if (!state.audioContext) {
     state.audioContext = new window.AudioContext();
     state.masterGain = state.audioContext.createGain();
-    state.masterGain.gain.value = masterVolume;
+    state.masterGain.gain.value = masterVolume * masterVolume;
     state.masterGain.connect(state.audioContext.destination);
     state.audioEnabled = true;
   }
@@ -7568,7 +7571,7 @@ function resetGame() {
   pauseLobbyBgm();
   if (state.audioEnabled) {
     showdownBgm.currentTime = 0;
-    showdownBgm.volume = 0.5 * masterVolume;
+    applyMasterVolume();
     showdownBgm.play().catch(() => {});
   }
   state.effects.forEach((effect) => disposeSceneObject(effect.mesh, {
@@ -11773,7 +11776,7 @@ function triggerShowdownAnnounce() {
     showdownBgm.pause();
     pauseLobbyBgm();
     showdownMusic.currentTime = 0;
-    showdownMusic.volume = 0.9 * masterVolume;
+    applyMasterVolume();
     showdownMusic.play().catch(() => {});
   }
 }
@@ -12411,12 +12414,14 @@ function setupInput() {
   settingsPanel.addEventListener("click", (event) => {
     if (event.target === settingsPanel) closeSettings();
   });
-  settingsVolume.addEventListener("input", () => {
+  const updateVolumeSetting = () => {
     masterVolume = Number(settingsVolume.value) / 100;
     settingsVolumeValue.value = `${settingsVolume.value}%`;
     localStorage.setItem("colorsMasterVolume", String(masterVolume));
     applyMasterVolume();
-  });
+  };
+  settingsVolume.addEventListener("input", updateVolumeSetting);
+  settingsVolume.addEventListener("change", updateVolumeSetting);
 
   document.getElementById("stats-toggle").addEventListener("click", () => {
     const panel = document.getElementById("stats-panel");
