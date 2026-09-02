@@ -1719,6 +1719,11 @@ body.lobby-active #takedown-hud {
   cursor: pointer;
 }
 .settings-action-btn:hover { background: rgba(255, 160, 78, 0.18); }
+.settings-stats-panel {
+  max-height: min(48vh, 430px);
+  margin-top: 8px;
+  overflow-y: auto;
+}
 
 .sidebar-profile-card {
   padding: 12px 13px;

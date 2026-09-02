@@ -12419,7 +12419,6 @@ function setupInput() {
   });
 
   document.getElementById("stats-toggle").addEventListener("click", () => {
-    closeSettings();
     const panel = document.getElementById("stats-panel");
     const btn = document.getElementById("stats-toggle");
     panel.classList.toggle("hidden");
