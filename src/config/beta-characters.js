@@ -225,6 +225,24 @@ export const BETA_CHARACTERS = {
       castRange: 10, radius: 9, duration: 10, icePerSecond: 5, damagePerSecond: 300, chargeRequired: 8, slideStrength: 3.2, slideAcceleration: 0.6,
     },
   },
+  azure: {
+    maxHealth: 8000, moveSpeedMultiplier: 1.12, attackCooldown: 0.8, reloadDuration: 1.15, maxAmmo: 3,
+    surfDashDistance: 2, surfDamage: 3000, surfLength: 4, surfWidth: 2,
+    description: "파도를 타고 전장을 가로지르는 베타 시즌 6 신규 돌격 캐릭터입니다.",
+    descriptionEn: "A Beta Season 6 diver who rides waves straight through the fight.",
+    basicAttack: {
+      name: "서프 대시",
+      description: "파도를 타고 전방 2타일 이동하며, 앞쪽 4×2타일 범위의 적에게 3000 피해를 줍니다.",
+      nameEn: "Surf Dash",
+      descriptionEn: "Rides a wave two tiles forward and deals 3,000 damage in a 4-by-2-tile area ahead.",
+    },
+    ultimate: {
+      id: "bigWave", name: "빅 웨이브",
+      description: "큰 파도를 전방으로 보내 3200 피해와 강한 넉백을 주며, 애저도 파도를 타고 6타일 이동합니다.",
+      nameEn: "Big Wave", descriptionEn: "Launches a huge wave that deals 3,200 damage and heavy knockback while carrying Azure six tiles forward.",
+      damage: 3200, range: 6, width: 4, knockback: 9, chargeRequired: 7,
+    },
+  },
 };
 
 // Beta Season 5 test-only balance. beta-season.js applies these values only

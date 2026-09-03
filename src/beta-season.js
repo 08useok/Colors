@@ -132,6 +132,7 @@ const CHARACTERS = [
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
   { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0xc1f80a },
   ...(IS_BETA5_TEST ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
+  ...(IS_BETA6_TEST ? [{ id: "azure", name: "Azure", rarity: "hero", price: 0, color: 0x007fff }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
@@ -1020,7 +1021,7 @@ function loadCharacterMotionSet(characterId, token) {
       : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
   // Mint's supplied walk set is FBX rather than GLB, but it follows the
   // same start → loop → stop structure used by the other character rigs.
-  const usesFbxMotion = characterId === "mint" || cottonCandyPink;
+  const usesFbxMotion = characterId === "mint" || characterId === "azure" || cottonCandyPink;
   const extension = usesFbxMotion ? "fbx" : "glb";
   const paths = {
     start: `./assets/3d/${modelCharacterId}/walk-m1s.${extension}?v=${CHARACTER_MODEL_VERSION}`,
@@ -1505,7 +1506,10 @@ function updateCrimsonControls() {
   attackHint.textContent = "마우스 좌클릭 · 일반 공격";
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
-  const specialCharacters = IS_BETA5_TEST ? ["blue", "mint"] : [];
+  const specialCharacters = [
+    ...(IS_BETA5_TEST ? ["blue", "mint"] : []),
+    ...(IS_BETA6_TEST ? ["azure"] : []),
+  ];
   const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...specialCharacters].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
@@ -1720,7 +1724,6 @@ function renderAssetShowroom() {
   const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"]);
   const previewCharacters = [
     ...CHARACTERS,
-    ...(IS_BETA6_TEST ? [{ id: "azure", name: "Azure", rarity: "preview", color: 0x007fff, previewOnly: true }] : []),
   ];
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
@@ -2168,6 +2171,7 @@ let redUltimateCharge = 0;
 let redGuardUntil = 0;
 let redGuardMesh = null;
 let pinkUltimateCharge = 0;
+let azureUltimateCharge = 0;
 let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
 const goldStageHits = new Map();
@@ -2886,6 +2890,7 @@ function getBetaAttackRange(id, def) {
   if (id === "crimson") return def.attackRange;
   if (id === "chartreuse") return def.chartreuseRange;
   if (id === "mint") return def.iceBulletRange;
+  if (id === "azure") return def.surfLength;
   return 0;
 }
 
@@ -3437,6 +3442,59 @@ function breakVial(projectile) {
   }
 }
 
+function moveAzureForward(distance) {
+  const directionX = Math.sin(player.rotation.y);
+  const directionZ = Math.cos(player.rotation.y);
+  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  const steps = Math.max(1, Math.ceil(distance / 0.18));
+  const step = distance / steps;
+  for (let i = 0; i < steps; i += 1) {
+    const nextX = player.position.x + directionX * step;
+    const nextZ = player.position.z + directionZ * step;
+    const blocked = arenaSolids.some((solid) => solid.top > player.position.y + 0.4
+      && Math.abs(nextX - solid.x) < solid.halfW + 0.55
+      && Math.abs(nextZ - solid.z) < solid.halfD + 0.55);
+    if (blocked) break;
+    player.position.x = nextX;
+    player.position.z = nextZ;
+  }
+}
+
+function createAzureWaveEffect(length, width, color = 0x35cfff) {
+  const wave = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, length),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.62, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  wave.rotation.x = -Math.PI / 2;
+  wave.rotation.z = -player.rotation.y;
+  wave.position.set(
+    player.position.x + Math.sin(player.rotation.y) * length * 0.5,
+    player.position.y + 0.08,
+    player.position.z + Math.cos(player.rotation.y) * length * 0.5,
+  );
+  scene.add(wave);
+  crimsonSlashes.push({ group: wave, mesh: wave, life: 0.42, maxLife: 0.42, grow: 1.18, type: "azureWave" });
+}
+
+function hitAzureWave(length, width, damage, knockback = 0) {
+  const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
+  const right = new THREE.Vector2(forward.y, -forward.x);
+  let hits = 0;
+  for (const target of testTargets) {
+    if (!target.visible || target.userData.isAlly) continue;
+    const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
+    const forwardDistance = forward.dot(delta);
+    if (forwardDistance < 0 || forwardDistance > length || Math.abs(right.dot(delta)) > width * 0.5) continue;
+    damageTarget(target, damage);
+    if (knockback > 0) {
+      target.userData.knockbackX = forward.x * knockback;
+      target.userData.knockbackZ = forward.y * knockback;
+    }
+    hits += 1;
+  }
+  return hits;
+}
+
 function performCharacterAttack({ manualAim = false } = {}) {
   if (goldRushState.dead) return;
   const id = betaState.selectedCharacter;
@@ -3556,6 +3614,13 @@ function performCharacterAttack({ manualAim = false } = {}) {
         attackComboState.textContent = `아이스크림 탄 ${i + 1}/${def.burstCount}`;
       }, i * def.burstIntervalMs);
     }
+  } else if (id === "azure") {
+    createAzureWaveEffect(def.surfLength, def.surfWidth, 0x3fdcff);
+    const hits = hitAzureWave(def.surfLength, def.surfWidth, def.surfDamage);
+    azureUltimateCharge = Math.min(def.ultimate.chargeRequired, azureUltimateCharge + hits);
+    moveAzureForward(def.surfDashDistance);
+    updateCrimsonUltimateGauge();
+    attackComboState.textContent = "서프 대시";
   } else if (id === "crimson") {
     CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
   }
@@ -3728,6 +3793,7 @@ function updateCrimsonUltimateGauge() {
       name: BETA_CHARACTERS.blue.special.name,
       color: "#56bfff",
     },
+    azure: { charge: azureUltimateCharge, required: BETA_CHARACTERS.azure.ultimate.chargeRequired, name: BETA_CHARACTERS.azure.ultimate.name, color: "#007fff" },
   };
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
@@ -3931,6 +3997,17 @@ function performCyanUltimate() {
 
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
+  if (betaState.selectedCharacter === "azure" && IS_BETA6_TEST) {
+    const def = BETA_CHARACTERS.azure.ultimate;
+    if (azureUltimateCharge < def.chargeRequired) return;
+    azureUltimateCharge = 0;
+    createAzureWaveEffect(def.range, def.width, 0x18bfff);
+    const hits = hitAzureWave(def.range, def.width, def.damage, def.knockback);
+    moveAzureForward(def.range);
+    canvas.dataset.lastUltimate = `azure:targets:${hits},damage:${def.damage},knockback:${def.knockback}`;
+    updateCrimsonUltimateGauge();
+    return;
+  }
   if (betaState.selectedCharacter === "blue" && IS_BETA5_TEST) {
     performBlueDash();
     return;
@@ -4072,7 +4149,7 @@ ultimateButton.addEventListener("click", () => {
 let ivoryUltimateAiming = false;
 // 아이보리를 제외한 방향성 궁극기 — 거리는 각 캐릭터의 기존 사거리를 그대로
 // 쓰고, 누르고 있는 동안 바라보는 방향만 마우스/키보드로 조준한다.
-const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson"]);
+const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "azure"]);
 let directionalUltimateAiming = false;
 ultimateButton.addEventListener("pointerdown", (event) => {
   if (betaState.selectedCharacter === "ivory") {
