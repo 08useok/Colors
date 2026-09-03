@@ -5368,8 +5368,9 @@ function animate() {
         }
         if (projectile.characterId === "chartreuse") {
           if (projectile.type === "chartreuse_cc") {
-            const cc = ["slow", "malfunction", "reveal", "poison", "knockback"][Math.floor(Math.random() * 5)];
-            const ccNames = { slow: "둔화", malfunction: "고장", reveal: "발각", poison: "독", knockback: "넉백" };
+            const ccTypes = ["slow", "malfunction", "reveal", "poison", "knockback", "ice"];
+            const cc = ccTypes[Math.floor(Math.random() * ccTypes.length)];
+            const ccNames = { slow: "둔화", malfunction: "고장", reveal: "발각", poison: "독", knockback: "넉백", ice: "얼음" };
             showToast(`CC 적중 · ${ccNames[cc]}`);
             createChartreuseStatusEffect(cc, target);
             if (cc === "slow") target.userData.slowUntil = clock.elapsedTime + 1.5;
@@ -5388,6 +5389,7 @@ function animate() {
               target.userData.knockbackZ = (pushZ / pushLength) * 7;
               target.userData.hitRecoil = 1;
             }
+            if (cc === "ice") applyMintIce(target, BETA_CHARACTERS.mint.freezeThreshold);
           } else if (projectile.type === "chartreuse_plague") {
             target.userData.health = 0;
             target.visible = false;

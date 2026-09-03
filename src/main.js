@@ -9719,7 +9719,8 @@ function updateProjectiles(dt) {
             (attacker.chartreuseUltimateCharge ?? 0) + 1,
           );
           if (proj.chartreuseAmmoType === "cc" && !target.dead) {
-            const ccType = ["slow", "malfunction", "reveal", "poison", "knockback"][Math.floor(Math.random() * 5)];
+            const ccTypes = ["slow", "malfunction", "reveal", "poison", "knockback", "ice"];
+            const ccType = ccTypes[Math.floor(Math.random() * ccTypes.length)];
             if (ccType === "slow") {
               target.shockUntil = state.gameTime + 2;
               target.shockSlowOverride = 0.35;
@@ -9731,12 +9732,17 @@ function updateProjectiles(dt) {
               target.poisonUntil = state.gameTime + 4;
               target.poisonSourceId = attacker.id;
               target.poisonNextTick = state.gameTime + 1;
-            } else {
+            } else if (ccType === "knockback") {
               const speed = Math.hypot(proj.vx, proj.vz) || 1;
               target.galeKnockbackX = proj.vx / speed;
               target.galeKnockbackZ = proj.vz / speed;
               target.galeKnockbackRemaining = 3.5;
               target.galeKnockbackSpeed = 12;
+            } else {
+              // 얼음: 2초 동안 이동과 공격을 모두 봉쇄한다.
+              target.shockUntil = state.gameTime + 2;
+              target.shockSlowOverride = 1;
+              target.malfunctionUntil = state.gameTime + 2;
             }
           }
         }

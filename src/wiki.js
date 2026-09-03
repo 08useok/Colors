@@ -235,7 +235,7 @@ characterDetails.ivory = {
 
 characterDetails.chartreuse = {
   setting: ["어딘가 나사 빠지고 멍청해 보이지만, 그가 만든 ‘샤단라’는 늘 이런 식이라 본인에게는 평범한 영웅 파이터입니다.", "He may look absent-minded, but the strange Shadanra he built is perfectly ordinary by his standards."],
-  attack: ["샤단라는 공격할 때마다 네 탄환 중 하나를 무작위로 선택합니다. 강화탄은 2,400 피해, CC탄은 무작위 CC·디버프, 흑사병탄은 즉사 판정, 무탄은 피해 없이 발사됩니다. 기본 사거리는 9.5타일입니다.", "Shadanra randomly selects one of four rounds per attack. Enhanced rounds deal 2,400 damage, CC rounds apply a random crowd-control effect or debuff, plague rounds execute, and blank rounds deal no damage. Base range is 9.5 tiles."],
+  attack: ["샤단라는 공격할 때마다 네 탄환 중 하나를 무작위로 선택합니다. 강화탄은 2,400 피해, CC탄은 둔화·고장·발각·독·넉백·얼음 중 하나를 부여하고, 흑사병탄은 즉사 판정, 무탄은 피해 없이 발사됩니다. 기본 사거리는 9.5타일입니다.", "Shadanra randomly selects one of four rounds per attack. Enhanced rounds deal 2,400 damage; CC rounds apply slow, malfunction, reveal, poison, knockback, or freeze; plague rounds execute; and blank rounds deal no damage. Base range is 9.5 tiles."],
   strong: ["상태 이상에 취약하거나 예측하기 쉬운 이동을 하는 상대", "Targets vulnerable to status effects or moving predictably"],
   weak: ["무탄이 나온 순간 빠르게 진입하는 근접 파이터", "Melee fighters who engage during a blank-round window"],
   matchup: ["탄환별 UI 색상으로 현재 탄환을 확인하세요. ‘49% 정신 차림’ 사용 중에는 무탄이 제외되고 나머지 세 탄환이 같은 확률로 등장합니다.", "Check the ammo UI color before firing. During 49% Focus, blank rounds are removed and the other three rounds appear at equal rates."],
