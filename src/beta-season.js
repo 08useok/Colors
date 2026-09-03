@@ -84,8 +84,9 @@ const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
 const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
 const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
 const requestedBetaSeason = new URLSearchParams(location.search).get("test");
-const BETA_SEASON_ID = requestedBetaSeason === "beta5" ? "beta5" : "beta4";
+const BETA_SEASON_ID = ["beta5", "beta6"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta4";
 const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
+const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 if (IS_BETA5_TEST) {
   for (const [characterId, override] of Object.entries(BETA5_BALANCE_OVERRIDES)) {
     const definition = BETA_CHARACTERS[characterId];
@@ -111,7 +112,11 @@ if (IS_BETA5_TEST) {
   if (document.readyState === "complete") finishAfterMinimumDisplay();
   else window.addEventListener("load", finishAfterMinimumDisplay, { once: true });
 }
-const BETA_STORAGE_KEY = IS_BETA5_TEST ? "colorsBetaSeason5Test" : "colorsBetaSeasonTest";
+const BETA_STORAGE_KEY = IS_BETA6_TEST
+  ? "colorsBetaSeason6Test"
+  : IS_BETA5_TEST
+    ? "colorsBetaSeason5Test"
+    : "colorsBetaSeasonTest";
 const CHARACTER_MODEL_VERSION = "76";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
@@ -140,6 +145,14 @@ if (IS_BETA5_TEST) {
   if (heading) heading.textContent = "베타 시즌 5 테스트";
   if (rankChip) rankChip.textContent = "베타 시즌 5 테스트";
   if (locationName) locationName.textContent = "컬러 놀이공원";
+}
+if (IS_BETA6_TEST) {
+  document.body.classList.add("beta-season-6-theme");
+  document.title = "Colors - Beta Season 6 Test";
+  const heading = document.querySelector(".beta-header h1");
+  const rankChip = document.querySelector(".rank-chip");
+  if (heading) heading.textContent = "베타 시즌 6 테스트";
+  if (rankChip) rankChip.textContent = "베타 시즌 6 테스트";
 }
 
 function loadBetaState() {
@@ -1707,7 +1720,7 @@ function renderAssetShowroom() {
   const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"]);
   const previewCharacters = [
     ...CHARACTERS,
-    ...(IS_BETA5_TEST ? [{ id: "azure", name: "Azure", rarity: "preview", color: 0x007fff, previewOnly: true }] : []),
+    ...(IS_BETA6_TEST ? [{ id: "azure", name: "Azure", rarity: "preview", color: 0x007fff, previewOnly: true }] : []),
   ];
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
@@ -1728,8 +1741,8 @@ function renderAssetShowroom() {
     return `<article class="beta-card">
       <span class="rarity ${character.rarity}">${usesFbx ? "NEW · FBX PREVIEW" : usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
-      <p>${usesFbx ? "신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>${usesFbx ? "프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
+      <p>${usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
+      <p>${usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
       <code>${modelPath}</code>
       ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
     </article>`;
