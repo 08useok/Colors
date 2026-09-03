@@ -268,6 +268,7 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .rarity.epic { color: #efc8ff; background: #6c347f; }
 .rarity.hero,
 .rarity.legendary { color: #ffe89a; background: #80671f; }
+.rarity.preview { color: #dff8ff; background: linear-gradient(135deg, #006bd6, #00a8d8); }
 .drop-box { text-align: center; padding: 28px; border: 1px dashed #397084; border-radius: 18px; background: rgba(36,112,134,.1); }
 .drop-result { min-height: 28px; margin: 15px 0; color: #ffe095; font-weight: 800; }
 .beta-toast { position: fixed; left: 50%; bottom: 28px; z-index: 20; transform: translate(-50%,20px); padding: 10px 15px; border-radius: 11px; background: #d8f8ff; color: #0b1c24; opacity: 0; pointer-events: none; transition: .2s; }

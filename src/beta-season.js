@@ -1587,7 +1587,8 @@ function openAssetShowroomViewer(modelPath, modelName) {
 
   viewer.classList.remove("hidden");
   title.textContent = modelName;
-  status.textContent = "GLB 불러오는 중…";
+  const isFbx = /\.fbx(?:\?|$)/i.test(modelPath);
+  status.textContent = `${isFbx ? "FBX" : "GLB"} 불러오는 중…`;
   host.replaceChildren();
 
   const previewScene = new THREE.Scene();
@@ -1667,9 +1668,12 @@ function openAssetShowroomViewer(modelPath, modelName) {
   };
   animate();
 
-  new GLTFLoader().load(modelPath, (gltf) => {
+  const previewLoader = isFbx ? new FBXLoader() : new GLTFLoader();
+  previewLoader.load(modelPath, (asset) => {
     if (assetShowroomViewer !== state) return;
-    const model = gltf.scene;
+    const model = isFbx ? asset : asset.scene;
+    const animations = asset.animations || [];
+    if (isFbx) model.rotateX(-Math.PI / 2);
     model.traverse((child) => {
       if (!child.isMesh) return;
       child.castShadow = true;
@@ -1686,38 +1690,48 @@ function openAssetShowroomViewer(modelPath, modelName) {
     modelPivot.add(model);
     cameraDistance = 5.2;
     updateCamera();
-    if (gltf.animations.length) {
+    if (animations.length) {
       mixer = new THREE.AnimationMixer(model);
-      mixer.clipAction(gltf.animations[0]).play();
+      const clip = animations[0];
+      clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name));
+      mixer.clipAction(clip).play();
     }
-    status.textContent = gltf.animations.length ? "드래그 회전 · 휠 확대 · 애니메이션 재생 중" : "드래그 회전 · 휠 확대";
+    status.textContent = animations.length ? "드래그 회전 · 휠 확대 · 애니메이션 재생 중" : "드래그 회전 · 휠 확대";
   }, undefined, () => {
-    if (assetShowroomViewer === state) status.textContent = "GLB를 불러오지 못했습니다.";
+    if (assetShowroomViewer === state) status.textContent = `${isFbx ? "FBX" : "GLB"}를 불러오지 못했습니다.`;
   });
 }
 
 function renderAssetShowroom() {
   closeAssetShowroomViewer();
   const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"]);
+  const previewCharacters = [
+    ...CHARACTERS,
+    ...(IS_BETA5_TEST ? [{ id: "azure", name: "Azure", rarity: "preview", color: 0x007fff, previewOnly: true }] : []),
+  ];
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
   modalContent.innerHTML = `<section class="asset-showroom-viewer hidden" aria-live="polite">
     <div class="asset-showroom-viewer-head"><div><span>GLB PREVIEW</span><h3 data-asset-viewer-title>모델 미리보기</h3></div><button type="button" data-close-asset-viewer aria-label="미리보기 닫기">×</button></div>
     <div class="asset-showroom-canvas" data-asset-viewer-host></div>
     <p data-asset-viewer-status>GLB를 선택하세요.</p>
-  </section><div class="beta-grid asset-showroom-grid">${CHARACTERS.map((character) => {
+  </section><div class="beta-grid asset-showroom-grid">${previewCharacters.map((character) => {
+    const usesFbx = character.id === "azure";
     const usesGlb = glbCharacters.has(character.id);
-    const modelPath = usesGlb
+    const usesModel = usesGlb || usesFbx;
+    const modelPath = usesFbx
+      ? "assets/3d/azure/walk-m2l.fbx"
+      : usesGlb
       ? character.id === "ivory" ? "assets/3d/ivory/ivory_preview.glb" : ["crimson", "gold"].includes(character.id) ? "assets/3d/cyan/walk-m1s.glb" : `assets/3d/${character.id}/walk-m1s.glb`
       : "Three.js 절차형 모델";
     const skinCount = seasonAssets.filter((skin) => skin.character === character.id).length;
     return `<article class="beta-card">
-      <span class="rarity ${character.rarity}">${usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
+      <span class="rarity ${character.rarity}">${usesFbx ? "NEW · FBX PREVIEW" : usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
-      <p>${usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>시즌 4 이식 대상 스킨 에셋 ${skinCount}개</p>
+      <p>${usesFbx ? "신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
+      <p>${usesFbx ? "프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
       <code>${modelPath}</code>
-      ${usesGlb ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">GLB 보기</button>` : ""}
+      ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
     </article>`;
   }).join("")}</div>`;
 }
