@@ -8,6 +8,7 @@ import { LANGS } from "./LANGS/langs.js?v=1.5.139";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
+let azureWaveState = null;
 const requestedMusicSeason = new URLSearchParams(location.search).get("test");
 const betaSeasonBgm = new Audio(requestedMusicSeason === "beta5"
   ? "./assets/beta5-clockwork-midway.mp3?v=1"
@@ -945,6 +946,7 @@ function addBlueScarf(model) {
 }
 
 function clearCharacterModel() {
+  clearAzureWave();
   if (activeCharacterModel) player.remove(activeCharacterModel);
   activeCharacterModel = null;
   activeCharacterMixer = null;
@@ -958,7 +960,7 @@ function clearCharacterModel() {
 }
 
 function prepareCharacterScene(model, characterId) {
-  const usesFbxRig = characterId === "mint"
+  const usesFbxRig = characterId === "mint" || characterId === "azure"
     || (characterId === "pink" && betaState.selectedSkins.pink === "beta5_pink_cotton_candy");
   // Meshy FBX는 Z-up으로 제작됐다. 게임은 Y-up 좌표계를 쓰므로
   // 바닥에 눕지 않게 변환을 먼저 적용한 뒤 크기와 발 위치를 계산한다.
@@ -1256,7 +1258,7 @@ function setPlayerModel(characterId) {
     loadCharacterMotionSet(characterId, token);
     return;
   }
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -3442,64 +3444,108 @@ function breakVial(projectile) {
   }
 }
 
-function moveAzureForward(distance) {
-  const directionX = Math.sin(player.rotation.y);
-  const directionZ = Math.cos(player.rotation.y);
+function clearAzureWave() {
+  if (!azureWaveState) return;
+  scene.remove(azureWaveState.mesh);
+  azureWaveState.mesh.traverse((part) => {
+    part.geometry?.dispose();
+    part.material?.dispose();
+  });
+  azureWaveState = null;
+}
+
+function startAzureWave(ultimate = false) {
+  if (azureWaveState || goldRushState.dead) return;
+  const def = BETA_CHARACTERS.azure;
+  const range = ultimate ? def.ultimate.range : def.surfLength;
+  const width = ultimate ? def.ultimate.width : def.surfWidth;
+  const mesh = new THREE.Group();
+  const water = new THREE.Mesh(
+    new THREE.CylinderGeometry(ultimate ? 0.8 : 0.4, ultimate ? 0.8 : 0.4, width, 16, 1, true, 0, Math.PI),
+    new THREE.MeshBasicMaterial({ color: 0x18bfff, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  water.rotation.z = Math.PI / 2;
+  mesh.add(water);
+  const foam = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, width, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffffff }),
+  );
+  foam.rotation.z = Math.PI / 2;
+  foam.position.y = ultimate ? 0.8 : 0.4;
+  mesh.add(foam);
+  mesh.rotation.y = player.rotation.y;
+  mesh.position.copy(player.position);
+  scene.add(mesh);
+  azureWaveState = {
+    mesh, origin: player.position.clone(), yaw: player.rotation.y,
+    dx: Math.sin(player.rotation.y), dz: Math.cos(player.rotation.y),
+    distance: 0, range, width, speed: ultimate ? 8 : 10,
+    rideRange: ultimate ? range : def.surfDashDistance,
+    damage: ultimate ? def.ultimate.damage : def.surfDamage,
+    knockback: ultimate ? def.ultimate.knockback : 0,
+    ultimate, hits: new Set(), rideBlocked: false,
+  };
+}
+
+function updateAzureWave(dt) {
+  const wave = azureWaveState;
+  if (!wave) return false;
+  if (goldRushState.dead || betaState.selectedCharacter !== "azure") {
+    clearAzureWave();
+    return false;
+  }
   const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
-  const steps = Math.max(1, Math.ceil(distance / 0.18));
-  const step = distance / steps;
+  const blocked = (x, z, radius) => arenaSolids.some((solid) =>
+    solid.top > player.position.y + 0.4
+    && Math.abs(x - solid.x) < solid.halfW + radius
+    && Math.abs(z - solid.z) < solid.halfD + radius);
+  const distance = Math.min(Math.max(0, dt) * wave.speed, wave.range - wave.distance);
+  const steps = Math.max(1, Math.ceil(distance / 0.1));
   for (let i = 0; i < steps; i += 1) {
-    const nextX = player.position.x + directionX * step;
-    const nextZ = player.position.z + directionZ * step;
-    const blocked = arenaSolids.some((solid) => solid.top > player.position.y + 0.4
-      && Math.abs(nextX - solid.x) < solid.halfW + 0.55
-      && Math.abs(nextZ - solid.z) < solid.halfD + 0.55);
-    if (blocked) break;
-    player.position.x = nextX;
-    player.position.z = nextZ;
-  }
-}
-
-function createAzureWaveEffect(length, width, color = 0x35cfff) {
-  const wave = new THREE.Mesh(
-    new THREE.PlaneGeometry(width, length),
-    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.62, side: THREE.DoubleSide, depthWrite: false }),
-  );
-  wave.rotation.x = -Math.PI / 2;
-  wave.rotation.z = -player.rotation.y;
-  wave.position.set(
-    player.position.x + Math.sin(player.rotation.y) * length * 0.5,
-    player.position.y + 0.08,
-    player.position.z + Math.cos(player.rotation.y) * length * 0.5,
-  );
-  scene.add(wave);
-  crimsonSlashes.push({ group: wave, mesh: wave, life: 0.42, maxLife: 0.42, grow: 1.18, type: "azureWave" });
-}
-
-function hitAzureWave(length, width, damage, knockback = 0) {
-  const forward = new THREE.Vector2(Math.sin(player.rotation.y), Math.cos(player.rotation.y));
-  const right = new THREE.Vector2(forward.y, -forward.x);
-  let hits = 0;
-  for (const target of testTargets) {
-    if (!target.visible || target.userData.isAlly) continue;
-    const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
-    const forwardDistance = forward.dot(delta);
-    if (forwardDistance < 0 || forwardDistance > length || Math.abs(right.dot(delta)) > width * 0.5) continue;
-    damageTarget(target, damage);
-    if (knockback > 0) {
-      target.userData.knockbackX = forward.x * knockback;
-      target.userData.knockbackZ = forward.y * knockback;
+    wave.distance += distance / steps;
+    const x = wave.origin.x + wave.dx * wave.distance;
+    const z = wave.origin.z + wave.dz * wave.distance;
+    // Check the complete crest, not just its center, before any hit.
+    let wall = false;
+    for (let side = -wave.width / 2; side <= wave.width / 2 + 0.001; side += 0.1) {
+      if (blocked(x + wave.dz * side, z - wave.dx * side, 0.1)) { wall = true; break; }
     }
-    hits += 1;
+    if (wall) { clearAzureWave(); return true; }
+    wave.mesh.position.set(x, player.position.y + 0.25, z);
+    const ride = Math.min(wave.distance, wave.rideRange);
+    const rideX = wave.origin.x + wave.dx * ride;
+    const rideZ = wave.origin.z + wave.dz * ride;
+    if (!wave.rideBlocked && blocked(rideX, rideZ, 0.55)) wave.rideBlocked = true;
+    if (!wave.rideBlocked) {
+      player.position.x = rideX;
+      player.position.z = rideZ;
+    }
+    player.rotation.y = wave.yaw;
+    for (const target of testTargets) {
+      if (!target.visible || target.userData.isAlly || wave.hits.has(target)) continue;
+      const tx = target.position.x - x;
+      const tz = target.position.z - z;
+      if (Math.abs(tx * wave.dx + tz * wave.dz) > 0.15
+        || Math.abs(tx * wave.dz - tz * wave.dx) > wave.width / 2) continue;
+      wave.hits.add(target);
+      damageTarget(target, wave.damage);
+      if (wave.knockback) {
+        target.userData.knockbackX = wave.dx * wave.knockback;
+        target.userData.knockbackZ = wave.dz * wave.knockback;
+      } else {
+        azureUltimateCharge = Math.min(BETA_CHARACTERS.azure.ultimate.chargeRequired, azureUltimateCharge + 1);
+        updateCrimsonUltimateGauge();
+      }
+    }
   }
-  return hits;
+  if (wave.distance >= wave.range - 0.0001) clearAzureWave();
+  return true;
 }
-
 function performCharacterAttack({ manualAim = false } = {}) {
   if (goldRushState.dead) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
-  if (!generalAttackReady) return;
+  if (!generalAttackReady || azureWaveState) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
   if (goldRushState.ammo <= 0) {
@@ -3615,11 +3661,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
       }, i * def.burstIntervalMs);
     }
   } else if (id === "azure") {
-    createAzureWaveEffect(def.surfLength, def.surfWidth, 0x3fdcff);
-    const hits = hitAzureWave(def.surfLength, def.surfWidth, def.surfDamage);
-    azureUltimateCharge = Math.min(def.ultimate.chargeRequired, azureUltimateCharge + hits);
-    moveAzureForward(def.surfDashDistance);
-    updateCrimsonUltimateGauge();
+    startAzureWave();
     attackComboState.textContent = "서프 대시";
   } else if (id === "crimson") {
     CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
@@ -3999,12 +4041,10 @@ ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
   if (betaState.selectedCharacter === "azure" && IS_BETA6_TEST) {
     const def = BETA_CHARACTERS.azure.ultimate;
-    if (azureUltimateCharge < def.chargeRequired) return;
+    if (azureUltimateCharge < def.chargeRequired || azureWaveState) return;
     azureUltimateCharge = 0;
-    createAzureWaveEffect(def.range, def.width, 0x18bfff);
-    const hits = hitAzureWave(def.range, def.width, def.damage, def.knockback);
-    moveAzureForward(def.range);
-    canvas.dataset.lastUltimate = `azure:targets:${hits},damage:${def.damage},knockback:${def.knockback}`;
+    startAzureWave(true);
+    canvas.dataset.lastUltimate = "azure:bigWave";
     updateCrimsonUltimateGauge();
     return;
   }
@@ -4773,6 +4813,7 @@ function calcShowdownStreakBonus(streak) {
 }
 
 function endGoldRush(message, playerWon = false, showdownRank = null) {
+  clearAzureWave();
   if (goldRushState.ended) return;
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
@@ -4829,6 +4870,8 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
 }
 
 function startGoldRush(mode = "goldRush") {
+  clearAzureWave();
+  azureUltimateCharge = 0;
   goldRushState.mode = mode;
   currentArenaMode = mode === "showdown" ? "showdown" : "lobby";
   iceCreamShowdownMap.visible = mode === "showdown";
@@ -4884,6 +4927,7 @@ function startGoldRush(mode = "goldRush") {
 }
 
 function killGoldRushPlayer() {
+  clearAzureWave();
   if (!goldRushState.active || goldRushState.dead || goldRushState.ended) return;
   if (goldRushState.mode === "showdown") {
     goldRushState.health = 0;
@@ -5196,7 +5240,7 @@ canvas.addEventListener("wheel", (event) => {
   distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 3.5, 24);
 }, { passive: true });
 
-function resetPlayer() { player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
+function resetPlayer() { clearAzureWave(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
 goldRushToggle.addEventListener("click", () => startGoldRush("goldRush"));
@@ -5838,7 +5882,8 @@ function animate() {
   const input = new THREE.Vector2(strafe, forward);
   let isMoving = false;
   const blueDashing = updateBlueDash(dt);
-  if (blueDashing) {
+  const azureDashing = updateAzureWave(dt);
+  if (blueDashing || azureDashing) {
     isMoving = true;
   } else if (!goldRushState.dead && input.lengthSq() > 0) {
     isMoving = true;
