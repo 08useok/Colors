@@ -805,10 +805,13 @@
             <div class="settings-divider"></div>
             <button id="stats-toggle" class="settings-action-btn" type="button" data-i18n="statsBtn">👤 계정</button>
             <div id="stats-panel" class="stats-panel settings-stats-panel hidden"></div>
+            <button id="export-account-btn" class="settings-action-btn" type="button">계정 파일 내보내기</button>
+            <button data-import-account class="settings-action-btn" type="button">계정 파일 가져오기</button>
             <button id="open-account-switch-btn" class="settings-action-btn" type="button">🔄 계정 전환</button>
           </div>
         </div>
 
+        <input id="account-import-file" type="file" accept=".json,application/json" hidden>
         <div id="account-creation" class="message-card hidden">
           <h1 data-i18n="gameTitle">COLORS</h1>
           <p class="lobby-intro" data-i18n="welcomeMsg">배틀로얄 전장에 오신 것을 환영합니다.</p>
@@ -817,6 +820,8 @@
           <p class="char-select-label" data-i18n="nicknameLabel">닉네임</p>
           <input id="nickname-input" class="lobby-input" type="text" maxlength="12" data-i18n-placeholder="nickPlaceholder" placeholder="최대 12자" autocomplete="off">
           <button id="create-account-btn" class="lobby-start-btn" type="button" disabled data-i18n="enterBattle">전장 입장</button>
+          <button data-import-account class="lobby-start-btn lobby-recovery-btn" type="button">계정 파일 가져오기</button>
+          <button id="existing-account-login-btn" class="lobby-start-btn lobby-recovery-btn" type="button">기존 계정 로그인</button>
         </div>
 
         <div id="account-switch" class="message-card hidden">
@@ -843,6 +848,7 @@
           <input id="daily-id-input" class="lobby-input" type="text" maxlength="16" data-i18n-placeholder="dailyIdPlaceholder" placeholder="아이디 입력" autocomplete="off">
           <div id="daily-login-error" class="daily-error hidden"></div>
           <button id="daily-login-btn" class="lobby-start-btn" type="button" data-i18n="confirm">확인</button>
+          <button data-import-account class="lobby-start-btn lobby-recovery-btn" type="button">계정 파일 가져오기</button>
           <button id="account-recovery-btn" class="lobby-start-btn lobby-recovery-btn" type="button">내 ID 확인</button>
           <div id="account-recovery-info" class="daily-recovery-info hidden"></div>
         </div>

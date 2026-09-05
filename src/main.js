@@ -1,3 +1,4 @@
+import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
@@ -12846,6 +12847,43 @@ function setupInput() {
     if (btn) audio.play("hover");
   });
 
+  const accountImportFile = document.getElementById("account-import-file");
+  document.querySelectorAll("[data-import-account]").forEach(button => button.addEventListener("click", () => {
+    accountImportFile.value = "";
+    accountImportFile.click();
+  }));
+  document.getElementById("export-account-btn").addEventListener("click", () => {
+    try {
+      const account = loadAccount();
+      if (!account) throw new Error("내보낼 계정이 없습니다.");
+      const data = JSON.stringify({ format: "colors-account", version: 1, account }, null, 2);
+      parseAccountBackup(data);
+      const url = URL.createObjectURL(new Blob([data], { type: "application/json" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "colors-account-backup.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      showToast("계정 파일을 내보냈습니다. 새 브라우저에서 가져오기를 선택하세요.");
+    } catch (error) { showToast(error.message); }
+  });
+  accountImportFile.addEventListener("change", async () => {
+    const file = accountImportFile.files?.[0];
+    if (!file) return;
+    try {
+      if (file.size > 2000000) throw new Error("계정 파일이 너무 큽니다.");
+      const account = parseAccountBackup(await file.text());
+      account.lastLoginDate = getTodayString();
+      account.loginAttempts = 0;
+      storeImportedAccount(account, localStorage, sessionStorage);
+      mp.disconnect();
+      location.reload();
+    } catch (error) { showToast(error.message); }
+    finally { accountImportFile.value = ""; }
+  });
+
   // 계정 생성 — 버튼 활성화 검사
   function validateCreateBtn() {
     createAccountBtn.disabled = !idInput.value.trim() || !nicknameInput.value.trim();
@@ -12876,7 +12914,16 @@ function setupInput() {
   });
 
   // 일일 아이디 인증
-  function closeAccountSwitch() {
+  let accountSwitchFromSignup = false;
+  function closeAccountSwitch(loggedIn = false) {
+    if (accountSwitchFromSignup && !loggedIn) {
+      accountSwitch.classList.add("hidden");
+      accountCreation.classList.remove("hidden");
+      accountSwitchFromSignup = false;
+      idInput.focus();
+      return;
+    }
+    accountSwitchFromSignup = false;
     accountSwitch.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
@@ -12886,7 +12933,15 @@ function setupInput() {
     accountSwitchError.textContent = "";
   }
 
+  document.getElementById("existing-account-login-btn").addEventListener("click", () => {
+    document.getElementById("open-account-switch-btn").click();
+    accountSwitchFromSignup = true;
+    accountCreation.classList.add("hidden");
+    switchIdInput.value = idInput.value.trim();
+  });
+
   document.getElementById("open-account-switch-btn").addEventListener("click", () => {
+    accountSwitchFromSignup = false;
     closeSettings();
     lobbyMain.classList.add("hidden");
     document.getElementById("lobby-side-panel").classList.add("hidden");
@@ -12899,7 +12954,7 @@ function setupInput() {
     switchIdInput.focus();
   });
 
-  document.getElementById("cancel-account-switch-btn").addEventListener("click", closeAccountSwitch);
+  document.getElementById("cancel-account-switch-btn").addEventListener("click", () => closeAccountSwitch());
 
   function readSwitchCredentials() {
     return { id: switchIdInput.value.trim(), nickname: switchNicknameInput.value.trim() };
@@ -12909,13 +12964,13 @@ function setupInput() {
     const { id, nickname } = readSwitchCredentials();
     const account = findAccount(id, nickname);
     if (!account) {
-      accountSwitchError.textContent = "아이디 또는 닉네임이 일치하지 않습니다.";
+      accountSwitchError.textContent = "이 브라우저에 저장된 계정과 아이디·닉네임이 일치하지 않습니다. 다른 브라우저나 기기에서 만든 계정은 자동으로 불러올 수 없습니다.";
       accountSwitchError.classList.remove("hidden");
       return;
     }
     mp.disconnect();
     activateAccount(account);
-    closeAccountSwitch();
+    closeAccountSwitch(true);
     updateLobbyUI(loadAccount());
   });
 
@@ -12933,7 +12988,7 @@ function setupInput() {
     }
     mp.disconnect();
     const account = createAccount(id, nickname);
-    closeAccountSwitch();
+    closeAccountSwitch(true);
     updateLobbyUI(account);
   });
 
