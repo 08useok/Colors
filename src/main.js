@@ -2289,7 +2289,6 @@ const tempVec2 = new THREE.Vector2();
 const cameraTarget = new THREE.Vector3();
 const cameraLookTarget = new THREE.Vector3();
 let cameraLookInitialized = false;
-const cameraDesired = new THREE.Vector3();
 const CAMERA_TILT_DEGREES = 2.5;
 const CAMERA_HEIGHT = 18.5;
 const CAMERA_DEPTH_OFFSET = Math.tan(THREE.MathUtils.degToRad(CAMERA_TILT_DEGREES)) * CAMERA_HEIGHT;
@@ -5202,11 +5201,12 @@ function initChopWoodPlayers() {
   const botTypes = [...ROSTER];
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
+  const playerLabel = state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1);
 
   for (let i = 0; i < 3; i += 1) {
     const isPlayer = i === 0;
     const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
-    const name = isPlayer ? label : randomBotName();
+    const name = isPlayer ? playerLabel : randomBotName();
     const fighter = makeFighter({
       id: i,
       name,
@@ -8364,7 +8364,8 @@ function beginBoomerangAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.12);
   fighter.lastCombatTime = state.gameTime;
-  if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
+  const greenUltimateConcealed = fighter.greenUltimateBush?.expiresAt > state.gameTime;
+  if (isInBush(fighter) && !greenUltimateConcealed) fighter.revealedUntil = state.gameTime + 3;
 
   charDef.boomerangAngles.forEach((angleOffset, index) => {
     const yaw = fighter.yaw + angleOffset;
@@ -9566,7 +9567,10 @@ function updateProjectiles(dt) {
     }
 
     // 아이보리 아이스크림은 지면 투사체가 아니라 벽 위로 넘기는 포물선 투척이다.
+    // 부메랑은 벽을 만나면 귀환하고, 귀환 경로에서는 벽을 통과해야
+    // 충돌 지점(entry=0)에 매 프레임 다시 걸려 벽에 박힌 채 멈추지 않는다.
     const sweptWallHit = proj.isIvoryIceCream || (proj.isVial && proj.y > 1.5)
+      || (proj.isBoomerang && proj.isReturning)
       ? null
       : findProjectileWallHit(previousX, previousZ, proj.x, proj.z, proj.projRadius || 0.2);
     if (sweptWallHit) {
@@ -11524,32 +11528,26 @@ function updateCamera(dt) {
     cameraTarget.set(0, 0.8, 0);
   }
 
-  cameraDesired.copy(cameraTarget);
-  if (state.victoryCelebrating) {
-    cameraTarget.y = 1.5;
-    cameraDesired.y += 7.5;
-    cameraDesired.z += 1.3;
-  } else {
-    // 쇼다운은 전장이 넓고 AI가 여러 방향으로 이동하므로, 기본 전투 줌으로는
-    // 살아 있는 AI가 화면 밖으로 빠져 사라진 것처럼 보인다.
-    cameraDesired.y += CAMERA_HEIGHT;
-    cameraDesired.z += CAMERA_DEPTH_OFFSET;
-  }
   camera.up.set(0, 0, -1);
-  const cameraIsFinite = Number.isFinite(camera.position.x)
-    && Number.isFinite(camera.position.y)
-    && Number.isFinite(camera.position.z);
-  if (cameraIsFinite) {
-    camera.position.lerp(cameraDesired, 1 - Math.exp(-dt * 10));
-  } else {
-    camera.position.copy(cameraDesired);
-  }
-  // Smooth the view target at the same rate as the camera to avoid movement wobble.
-  if (!cameraLookInitialized) {
+  const followRate = 1 - Math.exp(-dt * 10);
+  if (!cameraLookInitialized || state.gameTime <= dt * 1.5) {
     cameraLookTarget.copy(cameraTarget);
     cameraLookInitialized = true;
   } else {
-    cameraLookTarget.lerp(cameraTarget, 1 - Math.exp(-dt * 10));
+    cameraLookTarget.lerp(cameraTarget, followRate);
+  }
+
+  // 하나의 보간된 시선 중심점을 기준으로 카메라 위치도 함께 계산한다.
+  // 위치와 시선을 따로 보간하지 않으므로 캐릭터는 중앙에 남고 각도도 흔들리지 않는다.
+  if (state.victoryCelebrating) {
+    cameraLookTarget.y = 1.5;
+    camera.position.set(cameraLookTarget.x, cameraLookTarget.y + 6.8, cameraLookTarget.z + 1.3);
+  } else {
+    camera.position.set(
+      cameraLookTarget.x,
+      cameraLookTarget.y + CAMERA_HEIGHT,
+      cameraLookTarget.z + CAMERA_DEPTH_OFFSET,
+    );
   }
   camera.lookAt(cameraLookTarget);
 }
@@ -13194,7 +13192,13 @@ document.getElementById("mode-chopwood").addEventListener("click", async () => {
 });
 
 if (window.location.hash === "#chop-wood") {
-  queueMicrotask(() => document.getElementById("mode-chopwood")?.click());
+  // 베타 iframe의 자동 진입은 사용자 제스처가 아니므로 AudioContext.resume()을
+  // 기다리면 브라우저 정책에 의해 맵만 보인 채 시작이 멈출 수 있다.
+  queueMicrotask(() => {
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("active");
+    startChopWood();
+  });
 }
 
   document.getElementById("mode-goldrush")?.addEventListener("click", async () => {
