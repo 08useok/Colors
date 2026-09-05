@@ -26,9 +26,14 @@ function roomBroadcast(room, data, excludeId = null) {
   }
 }
 
-function startCountdown(room) {
-  if (room.countdownTimer || room.started) return;
-  let secs = COUNTDOWN_SEC;
+function startCountdown(room, duration = COUNTDOWN_SEC, restart = false) {
+  if (room.started) return;
+  if (room.countdownTimer) {
+    if (!restart) return;
+    clearInterval(room.countdownTimer);
+    room.countdownTimer = null;
+  }
+  let secs = duration;
   roomBroadcast(room, { type: "COUNTDOWN", seconds: secs });
 
   room.countdownTimer = setInterval(() => {
@@ -112,7 +117,8 @@ wss.on("connection", (ws) => {
         countdownActive: room.countdownTimer !== null,
       }));
 
-      if (room.playerIds.length >= 2) startCountdown(room);
+      if (room.mode === "showdown" || room.mode === "chopwood") startCountdown(room, 3, true);
+      else if (room.playerIds.length >= 2) startCountdown(room);
 
     } else if (msg.type === "RELAY") {
       const rid = playerRoom[pid];
@@ -131,8 +137,11 @@ wss.on("connection", (ws) => {
         room.playerIds = room.playerIds.filter((p) => p !== pid);
         roomBroadcast(room, { type: "PLAYER_LEFT", playerId: pid });
 
-        if (room.playerIds.length < 2 && !room.started) {
+        if (room.playerIds.length < 2 && !room.started && !["showdown", "chopwood"].includes(room.mode)) {
           cancelCountdown(room);
+        }
+        if (!room.started && ["showdown", "chopwood"].includes(room.mode) && room.playerIds.length > 0) {
+          startCountdown(room, 3, true);
         }
         if (room.playerIds.length === 0) {
           if (room.countdownTimer) clearInterval(room.countdownTimer);

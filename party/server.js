@@ -77,7 +77,7 @@ export class ColorsServer extends Server {
       mode: match.mode,
       countdownActive: match.countdownTimer !== null,
     });
-    if (match.mode === "showdown") this.startCountdown(match, 3, true);
+    if (match.mode === "showdown" || match.mode === "chopwood") this.startCountdown(match, 3, true);
     else if (match.playerIds.length >= 2) this.startCountdown(match);
   }
 
@@ -134,8 +134,8 @@ export class ColorsServer extends Server {
         players: this.matchPlayers(match),
       });
     }
-    if (!match.started && match.mode !== "showdown" && match.playerIds.length < 2) this.cancelCountdown(match);
-    if (!match.started && match.mode === "showdown" && match.playerIds.length > 0) this.startCountdown(match, 3, true);
+    if (!match.started && !["showdown", "chopwood"].includes(match.mode) && match.playerIds.length < 2) this.cancelCountdown(match);
+    if (!match.started && ["showdown", "chopwood"].includes(match.mode) && match.playerIds.length > 0) this.startCountdown(match, 3, true);
     if (match.playerIds.length === 0) {
       if (match.countdownTimer) clearInterval(match.countdownTimer);
       this.matches.delete(match.id);
