@@ -5197,52 +5197,56 @@ function createAxeIndicator() {
 function initChopWoodPlayers() {
   state.players.forEach(disposeFighter);
   state.players = [];
+  Object.keys(mpNetFighters).forEach((key) => delete mpNetFighters[key]);
+  mpLastSync = 0;
+  mpBossLastSync = 0;
+  mpLastSentPosition = null;
 
-  const botTypes = [...ROSTER];
+  const botTypes = [...ROSTER].sort(() => Math.random() - 0.5);
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
   const playerLabel = state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1);
+  const participants = mpConfig?.mode === "chopwood"
+    ? mpConfig.players.slice(0, 6)
+    : [{ id: null, nickname: playerLabel, charType: state.selectedCharacter }];
+  let botTypeIndex = 0;
 
-  for (let i = 0; i < 3; i += 1) {
-    const isPlayer = i === 0;
-    const characterType = isPlayer ? state.selectedCharacter : botTypes[Math.floor(Math.random() * botTypes.length)];
-    const name = isPlayer ? playerLabel : randomBotName();
+  for (let i = 0; i < 6; i += 1) {
+    const participant = participants[i] || null;
+    const isLocal = participant ? (!mpConfig || participant.id === mp.myId) : false;
+    const team = i % 2 === 0 ? "a" : "b";
+    const slot = Math.floor(i / 2);
+    const characterType = participant
+      ? (isLocal ? state.selectedCharacter : participant.charType)
+      : botTypes[botTypeIndex++ % botTypes.length];
+    const name = participant ? participant.nickname : randomBotName();
     const fighter = makeFighter({
       id: i,
       name,
       characterType,
-      isPlayer,
-      position: teamASpawns[i],
-      yaw: 0,
+      isPlayer: isLocal,
+      position: (team === "a" ? teamASpawns : teamBSpawns)[slot],
+      yaw: team === "a" ? 0 : Math.PI,
     });
-    fighter.team = "a";
-    addTeamMarker(fighter, "a");
+    fighter.team = team;
+    fighter.chopRole = slot === 2 ? "defender" : "attacker";
+    if (participant?.id) {
+      fighter.networkId = participant.id;
+      fighter.isNetworkPlayer = !isLocal;
+      if (!isLocal) mpNetFighters[participant.id] = fighter;
+    } else if (mpConfig) {
+      fighter.syncId = `cw-bot-${i}`;
+      fighter.isNetworkPlayer = !mpConfig.isHost;
+      if (!mpConfig.isHost) mpNetFighters[fighter.syncId] = fighter;
+    }
+    addTeamMarker(fighter, team);
     const axeInd = createAxeIndicator();
     axeInd.position.set(0, 3.9, 0);
     fighter.mesh.add(axeInd);
     fighter.axeIndicator = axeInd;
     state.players.push(fighter);
   }
-
-  for (let i = 0; i < 3; i += 1) {
-    const characterType = botTypes[Math.floor(Math.random() * botTypes.length)];
-    const name = randomBotName();
-    const fighter = makeFighter({
-      id: i + 3,
-      name,
-      characterType,
-      isPlayer: false,
-      position: teamBSpawns[i],
-      yaw: Math.PI,
-    });
-    fighter.team = "b";
-    addTeamMarker(fighter, "b");
-    const axeInd = createAxeIndicator();
-    axeInd.position.set(0, 3.9, 0);
-    fighter.mesh.add(axeInd);
-    fighter.axeIndicator = axeInd;
-    state.players.push(fighter);
-  }
+  state.playerTeam = getPlayer()?.team || "a";
 }
 
 // ── Take Down ─────────────────────────────────────────────────────────
@@ -5869,6 +5873,20 @@ function syncMp(dt) {
         })
         .filter(Boolean),
     });
+  } else if (sendBossState && mpConfig.isHost && mpConfig.mode === "chopwood" && state.teams) {
+    mp.relay("CWSTATE", {
+      treeA: state.teams.a.tree.health,
+      treeB: state.teams.b.tree.health,
+      players: state.players.map((f) => ({
+        id: f.networkId ?? f.syncId,
+        x: f.mesh.position.x,
+        z: f.mesh.position.z,
+        yaw: f.mesh.rotation.y,
+        health: f.health,
+        dead: !!f.dead,
+        axeLevel: f.axeLevel,
+      })).filter((f) => f.id),
+    });
   }
 }
 
@@ -6002,6 +6020,31 @@ function setupMpHandlers() {
       if (!attacker || attacker.dead || !target || target.dead || (target.networkId ?? target.syncId) === msg.fromId) return;
       const maxDamage = Math.max(3500, CHARACTERS[attacker.characterType]?.healCircleDamage || 0);
       applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
+    } else if (msg.relayType === "CWSTATE" && !mpConfig?.isHost && mpConfig?.mode === "chopwood") {
+      if (state.teams) {
+        state.teams.a.tree.health = Math.max(0, Number(msg.treeA) || 0);
+        state.teams.b.tree.health = Math.max(0, Number(msg.treeB) || 0);
+      }
+      for (const playerState of msg.players || []) {
+        const fighter = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        if (!fighter) continue;
+        fighter.health = Math.max(0, Math.min(fighter.maxHealth, Number(playerState.health) || 0));
+        fighter.dead = !!playerState.dead;
+        fighter.axeLevel = Math.max(0, Math.min(9, Number(playerState.axeLevel) || 0));
+        fighter.mesh.visible = !fighter.dead;
+        fighter.shadow.visible = !fighter.dead;
+        if (fighter.healthBar) fighter.healthBar.visible = !fighter.dead;
+        if (fighter.axeIndicator) fighter.axeIndicator.material.color.setHex(AXE_GRADES[fighter.axeLevel].color);
+        if (!fighter.isPlayer && Number.isFinite(playerState.x) && Number.isFinite(playerState.z)) {
+          fighter.netTargetX = playerState.x;
+          fighter.netTargetZ = playerState.z;
+          fighter.netTargetYaw = Number(playerState.yaw) || 0;
+          fighter.netVelocityX = 0;
+          fighter.netVelocityZ = 0;
+          fighter.netReceivedAt = performance.now() / 1000;
+          fighter.netStateReady = true;
+        }
+      }
     } else if (msg.relayType === "SSTATE" && !mpConfig?.isHost && mpConfig?.mode === "showdown") {
       for (const playerState of msg.players || []) {
         let fighter = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
@@ -6209,7 +6252,9 @@ async function enterMatchmaking(mode = "takedown") {
 
   audio.play("open");
   matchmakingOverlay.classList.remove("hidden");
-  document.querySelector("#matchmaking-overlay h2").textContent = mode === "showdown" ? t("mmShowdownTitle") : t("mmTitle");
+  document.querySelector("#matchmaking-overlay h2").textContent = mode === "showdown"
+    ? t("mmShowdownTitle")
+    : mode === "chopwood" ? `${t("chopWood")} 매칭` : t("mmTitle");
   matchmakingStatus.textContent = t("mmConnecting");
   matchmakingCountdown.classList.add("hidden");
   matchmakingCountdown.textContent = "";
@@ -6256,6 +6301,8 @@ async function enterMatchmaking(mode = "takedown") {
     if (mpConfig.mode === "showdown") {
       state.currentMapId = Number.isInteger(data.mapId) ? data.mapId % MAP_POOL.length : 0;
       resetGame();
+    } else if (mpConfig.mode === "chopwood") {
+      startChopWood();
     } else {
       startTakeDown();
     }
@@ -10599,7 +10646,7 @@ function chooseBotTarget(bot) {
   let best = null;
   let bestScore = Infinity;
   const playerDead = getPlayer()?.dead ?? false;
-  const visionRange = playerDead ? 200 : 50;
+  const visionRange = playerDead ? 200 : (state.chopWoodMode ? 12 : 50);
   const bushVisionRange = playerDead ? 200 : 9;
   for (const fighter of state.players) {
     if (fighter.id === bot.id || fighter.dead) continue;
@@ -10842,11 +10889,13 @@ function updateBot(bot, dt, zone) {
       tryBotAttackWithWindup(bot, target);
     }
   } else if (state.chopWoodMode) {
-    const enemyTree = getChopWoodEnemyTree(bot);
-    if (enemyTree) {
-      const treeDist = Math.hypot(enemyTree.x - botPos.x, enemyTree.z - botPos.z);
+    const objective = bot.chopRole === "defender"
+      ? state.teams?.[bot.team]?.tree
+      : getChopWoodEnemyTree(bot);
+    if (objective) {
+      const treeDist = Math.hypot(objective.x - botPos.x, objective.z - botPos.z);
       if (treeDist > 2.5) {
-        const treeNav = findNavTarget(bot, enemyTree.x, enemyTree.z);
+        const treeNav = findNavTarget(bot, objective.x, objective.z);
         bot.yaw = Math.atan2(treeNav.x - botPos.x, treeNav.z - botPos.z);
         tempVec3.set(Math.sin(bot.yaw), 0, Math.cos(bot.yaw)).multiplyScalar(botSpeed * 0.75);
       } else {
@@ -12058,6 +12107,7 @@ function onChopWoodKill(attacker, target) {
 
 function updateChopWoodRespawn() {
   if (!state.chopWoodMode && !state.goldRushMode) return;
+  if (state.chopWoodMode && mpConfig && !mpConfig.isHost) return;
   for (const fighter of state.players) {
     if (!fighter.dead || !fighter.respawnAt) continue;
     if (state.gameTime >= fighter.respawnAt) {
@@ -12327,7 +12377,7 @@ function animate() {
         updateTakeDownHud();
         checkTakeDownEnd();
       }
-      updateChopping(dt);
+      if (!mpConfig || mpConfig.isHost) updateChopping(dt);
       updateScheduledHits();
       updateProjectiles(dt);
       updateIvoryZones();
@@ -13188,7 +13238,7 @@ document.getElementById("mode-chopwood").addEventListener("click", async () => {
     await initAudio();
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("active");
-    startChopWood();
+    enterMatchmaking("chopwood");
 });
 
 if (window.location.hash === "#chop-wood") {
@@ -13710,7 +13760,14 @@ if (window.location.hash === "#chop-wood") {
         openTdCharSelect(() => enterMatchmaking(), () => { resultOverlay.style.display = "flex"; });
       }
     } else if (state.chopWoodMode) {
-      startChopWood();
+      resultOverlay.style.display = "none";
+      if (mpConfig?.mode === "chopwood") {
+        mp.disconnect();
+        mpConfig = null;
+        enterMatchmaking("chopwood");
+      } else {
+        startChopWood();
+      }
     } else if (state.trainingMode) {
       startTraining();
     } else {
@@ -13742,6 +13799,10 @@ if (window.location.hash === "#chop-wood") {
       state.effects = [];
   state.splashAccum = {};
     } else if (state.chopWoodMode) {
+      if (mpConfig?.mode === "chopwood") {
+        mp.disconnect();
+        mpConfig = null;
+      }
       state.chopWoodMode = false;
       state.teams = null;
       state.playerTeam = null;

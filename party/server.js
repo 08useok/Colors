@@ -55,7 +55,7 @@ export class ColorsServer extends Server {
     if (!player) return;
     player.nickname = this.cleanNickname(data.nickname);
     player.charType = PLAYABLE_CHARACTERS.has(data.charType) ? data.charType : "red";
-    player.mode = data.mode === "showdown" ? "showdown" : "takedown";
+    player.mode = ["showdown", "takedown", "chopwood"].includes(data.mode) ? data.mode : "takedown";
 
     const previousMatchId = this.playerMatch.get(player.id);
     if (previousMatchId) this.leaveMatch(player.id, previousMatchId);
