@@ -2286,6 +2286,8 @@ const tempVec3 = new THREE.Vector3();
 const tempVec32 = new THREE.Vector3();
 const tempVec2 = new THREE.Vector2();
 const cameraTarget = new THREE.Vector3();
+const cameraLookTarget = new THREE.Vector3();
+let cameraLookInitialized = false;
 const cameraDesired = new THREE.Vector3();
 const CAMERA_TILT_DEGREES = 2.5;
 const CAMERA_HEIGHT = 18.5;
@@ -11541,7 +11543,14 @@ function updateCamera(dt) {
   } else {
     camera.position.copy(cameraDesired);
   }
-  camera.lookAt(cameraTarget);
+  // Smooth the view target at the same rate as the camera to avoid movement wobble.
+  if (!cameraLookInitialized) {
+    cameraLookTarget.copy(cameraTarget);
+    cameraLookInitialized = true;
+  } else {
+    cameraLookTarget.lerp(cameraTarget, 1 - Math.exp(-dt * 10));
+  }
+  camera.lookAt(cameraLookTarget);
 }
 
 function updateAttackAimIndicator() {

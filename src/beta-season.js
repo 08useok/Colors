@@ -5303,6 +5303,8 @@ function updateLocation() {
 
 const clock = new THREE.Clock();
 const cameraTarget = new THREE.Vector3();
+const cameraLookTarget = new THREE.Vector3();
+let cameraLookInitialized = false;
 
 // 블루처럼 빠른 투사체를 천천히 관찰할 수 있도록 전체 시뮬레이션 속도를 늦춘다
 const SLOW_MOTION_SCALE = 0.3;
@@ -5984,6 +5986,8 @@ function animate() {
   if (overview) {
     camera.position.lerp(new THREE.Vector3(0, 82, 0.01), 1 - Math.exp(-4 * dt));
     camera.lookAt(0, 0, 0);
+    cameraLookTarget.set(0, 0, 0);
+    cameraLookInitialized = true;
   } else {
     // 수동 에임 중이면 카메라가 조준 방향 뒤로 부드럽게 돌아간다
     cameraTarget.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
@@ -5994,7 +5998,14 @@ function animate() {
       cameraTarget.z - Math.cos(yaw) * horizontal,
     );
     camera.position.lerp(desired, 1 - Math.exp(-8 * dt));
-    camera.lookAt(cameraTarget);
+    // Smooth the view target at the same rate as the camera to avoid movement wobble.
+    if (!cameraLookInitialized) {
+      cameraLookTarget.copy(cameraTarget);
+      cameraLookInitialized = true;
+    } else {
+      cameraLookTarget.lerp(cameraTarget, 1 - Math.exp(-dt * 8));
+    }
+    camera.lookAt(cameraLookTarget);
   }
   updateLocation();
   renderer.render(scene, camera);
