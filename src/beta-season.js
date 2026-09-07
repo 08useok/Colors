@@ -85,7 +85,7 @@ const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
 const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
 const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
 const requestedBetaSeason = new URLSearchParams(location.search).get("test");
-const BETA_SEASON_ID = ["beta5", "beta6"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta4";
+const BETA_SEASON_ID = ["beta5", "beta6"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta6";
 const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 if (IS_BETA5_TEST) {
@@ -155,6 +155,7 @@ if (IS_BETA6_TEST) {
   const rankChip = document.querySelector(".rank-chip");
   if (heading) heading.textContent = "베타 시즌 6 테스트";
   if (rankChip) rankChip.textContent = "베타 시즌 6 테스트";
+  if (locationName) locationName.textContent = "애저 해변";
 }
 
 function loadBetaState() {
@@ -244,7 +245,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-const seasonSkyColor = IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
+const seasonSkyColor = IS_BETA6_TEST ? 0x54bfe8 : IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
 scene.background = new THREE.Color(seasonSkyColor);
 scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA5_TEST ? 0.009 : 0.012);
 
@@ -266,9 +267,9 @@ scene.add(map);
 const solids = [];
 const showdownSolids = [];
 let currentArenaMode = "lobby";
-const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
-const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
-const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
+const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
+const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
+const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
 
 function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
@@ -367,9 +368,9 @@ createBeta5AmusementParkDecor();
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
 scene.add(iceCreamShowdownMap);
-const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
-const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
-const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
+const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0xe9d79e : IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
+const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0x55cfd0 : IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
+const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0x176b8f : IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
 function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial, solid = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
@@ -1558,7 +1559,7 @@ function renderCharacters() {
       ${officialAbility ? `<p><strong>공식 능력 · ${officialAbility.name}</strong><br>${officialAbility.description}</p>` : ""}
       ${ultimate ? `<p><strong>궁극기 · ${ultimate.name}</strong><br>${ultimate.description}</p>` : ""}
       ${IS_BETA5_TEST && BETA_CHARACTERS[character.id]?.special ? `<p><strong>특수 공격 · ${BETA_CHARACTERS[character.id].special.name}</strong><br>${BETA_CHARACTERS[character.id].special.description}</p>` : ""}
-      <p>${character.id === "mint" ? "베타 시즌 5 전용 · 빙결 컨트롤러" : character.id === "gold" ? "시즌 4 회귀 테스트 · 설치형 컨트롤러" : character.id === "crimson" ? "신규 근접 브루저 · 3연속 펀치" : `베타 시즌 ${IS_BETA5_TEST ? "5" : "4"} 캐릭터 테스트`}</p>
+      <p>${character.id === "azure" ? "베타 시즌 6 전용 · 파도 돌격 캐릭터" : character.id === "mint" ? "베타 시즌 5 전용 · 빙결 컨트롤러" : character.id === "gold" ? "설치형 컨트롤러" : character.id === "crimson" ? "근접 브루저 · 3연속 펀치" : `베타 시즌 ${IS_BETA6_TEST ? "6" : IS_BETA5_TEST ? "5" : "4"} 캐릭터 테스트`}</p>
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
       ${skinList}
     </article>`;
@@ -1607,6 +1608,7 @@ function openAssetShowroomViewer(modelPath, modelName) {
   viewer.classList.remove("hidden");
   title.textContent = modelName;
   const isFbx = /\.fbx(?:\?|$)/i.test(modelPath);
+  const isCrystalPreview = /assets\/3d\/crystal\//i.test(modelPath);
   status.textContent = `${isFbx ? "FBX" : "GLB"} 불러오는 중…`;
   host.replaceChildren();
 
@@ -1692,7 +1694,9 @@ function openAssetShowroomViewer(modelPath, modelName) {
     if (assetShowroomViewer !== state) return;
     const model = isFbx ? asset : asset.scene;
     const animations = asset.animations || [];
-    if (isFbx) model.rotateX(-Math.PI / 2);
+    // FBXLoader already converts Crystal's Meshy rig to Y-up. Applying the
+    // legacy Azure correction here turns forward root motion into upward motion.
+    if (isFbx && !isCrystalPreview) model.rotateX(-Math.PI / 2);
     model.traverse((child) => {
       if (!child.isMesh) return;
       child.castShadow = true;
@@ -1712,7 +1716,13 @@ function openAssetShowroomViewer(modelPath, modelName) {
     if (animations.length) {
       mixer = new THREE.AnimationMixer(model);
       const clip = animations[0];
-      clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name));
+      clip.tracks = clip.tracks.filter((track) => {
+        if (/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name)) return false;
+        if (!isCrystalPreview || !/\.position$/i.test(track.name)) return true;
+        const nodeName = track.name.slice(0, -".position".length);
+        const node = model.getObjectByName(nodeName);
+        return node?.parent?.isBone === true;
+      });
       mixer.clipAction(clip).play();
     }
     status.textContent = animations.length ? "드래그 회전 · 휠 확대 · 애니메이션 재생 중" : "드래그 회전 · 휠 확대";
@@ -1726,6 +1736,10 @@ function renderAssetShowroom() {
   const glbCharacters = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse"]);
   const previewCharacters = [
     ...CHARACTERS,
+    ...(!CHARACTERS.some((character) => character.id === "azure")
+      ? [{ id: "azure", name: "Azure", rarity: "preview", previewOnly: true }]
+      : []),
+    { id: "crystal", name: "Crystal", rarity: "preview", previewOnly: true },
   ];
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
@@ -1734,11 +1748,11 @@ function renderAssetShowroom() {
     <div class="asset-showroom-canvas" data-asset-viewer-host></div>
     <p data-asset-viewer-status>GLB를 선택하세요.</p>
   </section><div class="beta-grid asset-showroom-grid">${previewCharacters.map((character) => {
-    const usesFbx = character.id === "azure";
+    const usesFbx = ["azure", "crystal"].includes(character.id);
     const usesGlb = glbCharacters.has(character.id);
     const usesModel = usesGlb || usesFbx;
     const modelPath = usesFbx
-      ? "assets/3d/azure/walk-m2l.fbx"
+      ? character.id === "crystal" ? "assets/3d/crystal/crystal-walk.fbx" : "assets/3d/azure/walk-m2l.fbx"
       : usesGlb
       ? character.id === "ivory" ? "assets/3d/ivory/ivory_preview.glb" : ["crimson", "gold"].includes(character.id) ? "assets/3d/cyan/walk-m1s.glb" : `assets/3d/${character.id}/walk-m1s.glb`
       : "Three.js 절차형 모델";
@@ -1746,10 +1760,10 @@ function renderAssetShowroom() {
     return `<article class="beta-card">
       <span class="rarity ${character.rarity}">${usesFbx ? "NEW · FBX PREVIEW" : usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
-      <p>${usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>${usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
+      <p>${character.id === "crystal" ? "크리스탈 · 시즌 미정 개발 중 걷기 프리뷰" : usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
+      <p>${character.id === "crystal" ? "단일 걷기 애니메이션 · 프리뷰 전용" : usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
       <code>${modelPath}</code>
-      ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
+      ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${character.id === "crystal" ? "크리스탈 프리뷰" : usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
     </article>`;
   }).join("")}</div>`;
 }
@@ -1781,6 +1795,65 @@ function renderDaily(result = "") {
     <p>승리할 때마다 별 보상 1회가 적립됩니다.</p>
     ${claimed ? "" : '<button type="button" data-daily-reveal>보상 연출 테스트</button>'}
   </div>`;
+}
+
+async function renderStorybook() {
+  modalTitle.textContent = "컬러스 스토리북";
+  modalContent.innerHTML = '<p class="storybook-loading">컬러스 세계의 이야기를 불러오는 중…</p>';
+  try {
+    const response = await fetch("./beta-storybook-content.html", { cache: "no-store" });
+    if (!response.ok) throw new Error("storybook content unavailable");
+    modalContent.innerHTML = await response.text();
+    const panel = modalContent.querySelector(".storybook-panel");
+    const intro = panel?.querySelector(".storybook-intro");
+    const chapters = [...(panel?.querySelectorAll(".storybook-chapter") || [])];
+    if (panel && intro && chapters.length) {
+      const toc = document.createElement("details");
+      toc.className = "storybook-toc";
+      toc.open = true;
+      toc.innerHTML = '<summary>목차 · 원하는 장으로 바로 이동</summary><div class="storybook-toc-groups"></div>';
+      const groupsHost = toc.querySelector(".storybook-toc-groups");
+      let currentGroup = null;
+      let chapterNumber = 0;
+      [...panel.children].forEach((element) => {
+        if (element.classList.contains("storybook-era")) {
+          currentGroup = document.createElement("section");
+          currentGroup.className = "storybook-toc-group";
+          const heading = document.createElement("h3");
+          heading.textContent = element.textContent.trim();
+          const list = document.createElement("ol");
+          currentGroup.append(heading, list);
+          groupsHost.append(currentGroup);
+          return;
+        }
+        if (!element.classList.contains("storybook-chapter")) return;
+        chapterNumber += 1;
+        const chapterHeading = element.querySelector("h3");
+        if (!chapterHeading) return;
+        const chapterId = `storybook-chapter-${chapterNumber}`;
+        element.id = chapterId;
+        if (!currentGroup) {
+          currentGroup = document.createElement("section");
+          currentGroup.className = "storybook-toc-group";
+          currentGroup.innerHTML = "<h3>이야기</h3><ol></ol>";
+          groupsHost.append(currentGroup);
+        }
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = `#${chapterId}`;
+        link.textContent = chapterHeading.textContent.trim();
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+        item.append(link);
+        currentGroup.querySelector("ol").append(item);
+      });
+      intro.insertAdjacentElement("afterend", toc);
+    }
+  } catch (error) {
+    modalContent.innerHTML = '<p class="storybook-loading">스토리북을 불러오지 못했습니다.</p>';
+  }
 }
 
 const ORDER_EVENT_REWARDS = [[1,"코인 100개"],[3,"크레딧 50개"],[5,"아이스크림 핀"],[10,"코인 200개"],[25,"크레딧 150개"],[40,"아이스크림 가게 프로필 배경"],[50,"코인 500개"],[75,"크레딧 300개"],[90,"아이스크림 가게 프로필 배지"],[100,"완벽한 점장 칭호 + 특별 승리 연출"]];
@@ -2101,6 +2174,7 @@ function openPanel(panel) {
   if (panel === "shop") renderShop();
   if (panel === "assets") renderAssetShowroom();
   if (panel === "daily") renderDaily();
+  if (panel === "storybook") renderStorybook();
   if (panel === "orders") renderOrderEvent();
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));

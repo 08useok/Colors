@@ -34,7 +34,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = CURRENT_SEASON === "beta4"
+  const seasonLabel = CURRENT_SEASON === "beta5"
+    ? (currentLang === "ko" ? "베타 시즌 5" : "Beta Season 5")
+    : CURRENT_SEASON === "beta4"
     ? (currentLang === "ko" ? "베타 시즌 4" : "Beta Season 4")
     : CURRENT_SEASON === "beta3"
     ? (currentLang === "ko" ? "베타 시즌 3" : "Beta Season 3")
@@ -323,8 +325,11 @@ const BETA_SEASON_2_START_AT = new Date("2026-08-03T00:00:00+09:00").getTime();
 const BETA_SEASON_2_END_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
 const BETA_SEASON_3_START_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
 const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_4_START_AT
+const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_5_START_AT
+  ? "beta5"
+  : Date.now() >= BETA_SEASON_4_START_AT
   ? "beta4"
   : Date.now() >= BETA_SEASON_3_START_AT
   ? "beta3"
@@ -344,6 +349,7 @@ const SEASONS = {
   beta2: "베타 시즌 2",
   beta3: "베타 시즌 3",
   beta4: "베타 시즌 4",
+  beta5: "베타 시즌 5",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
@@ -362,8 +368,8 @@ const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = ["beta2", "beta3", "beta4"].includes(CURRENT_SEASON)
-  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(CURRENT_SEASON === "beta4" ? ["chartreuse"] : [])]
+const ROSTER = ["beta2", "beta3", "beta4", "beta5"].includes(CURRENT_SEASON)
+  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5"].includes(CURRENT_SEASON) ? ["chartreuse"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function createCharacterStats(characterIds = ROSTER) {
@@ -1060,6 +1066,7 @@ function loadAccount() {
     if (account.bestStreak === undefined) account.bestStreak = 0;
     if (account.showdownWins === undefined) { account.showdownWins = account.wins || 0; migrated = true; }
     if (account.chopWoodWins === undefined) { account.chopWoodWins = 0; migrated = true; }
+    if (account.chopWoodLosses === undefined) { account.chopWoodLosses = 0; migrated = true; }
     if (!account.chopWoodCharStats) {
       account.chopWoodCharStats = {};
       migrated = true;
@@ -1237,6 +1244,7 @@ function createAccount(id, nickname) {
     bestStreak: 0,
     showdownWins: 0,
     chopWoodWins: 0,
+    chopWoodLosses: 0,
     chopWoodCharStats: createCharacterStats(),
     lang: currentLang,
     seasonStats: { [CURRENT_SEASON]: { wins: 0, losses: 0 } },
@@ -2102,63 +2110,73 @@ function recordGameResult(rank, mode = "showdown") {
   let milestone = false;
   let coinsEarned = 0;
   let betaCreditsEarned = 0;
+  const isChopWood = mode === "chopwood";
 
-  account.charStats[char].games += 1;
-  const chopWoodCharStat = mode === "chopwood" ? account.chopWoodCharStats[char] : null;
+  if (!isChopWood) account.charStats[char].games += 1;
+  const chopWoodCharStat = isChopWood ? account.chopWoodCharStats[char] : null;
   if (chopWoodCharStat) chopWoodCharStat.games += 1;
   const ss = account.seasonStats[CURRENT_SEASON];
   const scs = account.seasonCharStats[CURRENT_SEASON][char];
-  const seasonChopWood = mode === "chopwood" ? account.seasonChopWoodStats[CURRENT_SEASON] : null;
-  const seasonChopWoodChar = mode === "chopwood" ? account.seasonChopWoodCharStats[CURRENT_SEASON][char] : null;
-  scs.games += 1;
+  const seasonChopWood = isChopWood ? account.seasonChopWoodStats[CURRENT_SEASON] : null;
+  const seasonChopWoodChar = isChopWood ? account.seasonChopWoodCharStats[CURRENT_SEASON][char] : null;
+  if (!isChopWood) scs.games += 1;
   if (seasonChopWoodChar) seasonChopWoodChar.games += 1;
   if (rank <= 4) {
-    account.wins += 1;
-    if (mode === "chopwood") {
+    if (isChopWood) {
       account.chopWoodWins = (account.chopWoodWins || 0) + 1;
       chopWoodCharStat.wins += 1;
       seasonChopWood.wins += 1;
       seasonChopWoodChar.wins += 1;
-    }
-    else account.showdownWins = (account.showdownWins || 0) + 1;
-    account.charStats[char].wins += 1;
-    ss.wins += 1;
-    scs.wins += 1;
-    account.winStreak += 1;
-    if (account.winStreak > account.bestStreak) account.bestStreak = account.winStreak;
-    bonus = streakBonus(account.winStreak);
-    if (account.charStats[char].wins > 0 && account.charStats[char].wins % 100 === 0) {
-      account.trophies += 50;
-      milestone = true;
+    } else {
+      account.wins += 1;
+      account.showdownWins = (account.showdownWins || 0) + 1;
+      account.charStats[char].wins += 1;
+      ss.wins += 1;
+      scs.wins += 1;
+      account.winStreak += 1;
+      if (account.winStreak > account.bestStreak) account.bestStreak = account.winStreak;
+      bonus = streakBonus(account.winStreak);
+      if (account.charStats[char].wins > 0 && account.charStats[char].wins % 100 === 0) {
+        account.trophies += 50;
+        milestone = true;
+      }
     }
     coinsEarned += COIN_REWARDS.win;
     betaCreditsEarned = grantBetaDailyWinReward(account);
     if (rank === 1) coinsEarned += COIN_REWARDS.first;
-    if (account.winStreak >= 10) coinsEarned += COIN_REWARDS.streak10;
-    else if (account.winStreak >= 5) coinsEarned += COIN_REWARDS.streak5;
-    else if (account.winStreak >= 3) coinsEarned += COIN_REWARDS.streak3;
+    if (!isChopWood) {
+      if (account.winStreak >= 10) coinsEarned += COIN_REWARDS.streak10;
+      else if (account.winStreak >= 5) coinsEarned += COIN_REWARDS.streak5;
+      else if (account.winStreak >= 3) coinsEarned += COIN_REWARDS.streak3;
+    }
   } else {
-    account.losses += 1;
-    ss.losses += 1;
-    if (seasonChopWood) seasonChopWood.losses += 1;
-    account.winStreak = 0;
+    if (isChopWood) {
+      account.chopWoodLosses = (account.chopWoodLosses || 0) + 1;
+      seasonChopWood.losses += 1;
+    } else {
+      account.losses += 1;
+      ss.losses += 1;
+      account.winStreak = 0;
+    }
     coinsEarned += COIN_REWARDS.lose;
   }
 
   account.coins = (account.coins || 0) + coinsEarned;
-  const delta = calcTrophyChange(rank);
+  const delta = isChopWood ? 0 : calcTrophyChange(rank);
   account.trophies = Math.max(0, account.trophies + delta + bonus);
-  account.charTrophies[char] = Math.max(0, (account.charTrophies[char] ?? 0) + delta + bonus);
+  if (!isChopWood) account.charTrophies[char] = Math.max(0, (account.charTrophies[char] ?? 0) + delta + bonus);
   saveAccount(account);
 
-  for (const bot of leaderboardBots) {
-    const botRank = Math.floor(Math.random() * 10) + 1;
-    const botDelta = 12 - botRank * 2;
-    bot.trophies = Math.max(0, bot.trophies + botDelta);
+  if (!isChopWood) {
+    for (const bot of leaderboardBots) {
+      const botRank = Math.floor(Math.random() * 10) + 1;
+      const botDelta = 12 - botRank * 2;
+      bot.trophies = Math.max(0, bot.trophies + botDelta);
+    }
+    localStorage.setItem("skullCreekLeaderboardBots", JSON.stringify(leaderboardBots));
   }
-  localStorage.setItem("skullCreekLeaderboardBots", JSON.stringify(leaderboardBots));
 
-  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone, coinsEarned, betaCreditsEarned };
+  return { streakBefore: prevStreak, streakAfter: account.winStreak, bonus, milestone, coinsEarned, betaCreditsEarned, trophyDelta: delta + bonus };
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -12165,9 +12183,8 @@ function checkEndState() {
       state.running = false;
       const playerWon = winningTeam === allyTeam;
       const resultRank = playerWon ? 1 : 10;
-      const { bonus, coinsEarned, betaCreditsEarned } = recordGameResult(resultRank, "chopwood");
+      const { coinsEarned, betaCreditsEarned } = recordGameResult(resultRank, "chopwood");
       const account = loadAccount();
-      const trophyDelta = calcTrophyChange(resultRank) + bonus;
       if (playerWon) {
         audio.play("win");
         resultTitle.textContent = t("cwWin");
@@ -12175,10 +12192,9 @@ function checkEndState() {
         audio.play("lose");
         resultTitle.textContent = t("cwLose");
       }
-      const deltaText = trophyDelta > 0 ? `+${trophyDelta}` : `${trophyDelta}`;
-      const totalText = account ? t("totalTrophy", account.trophies) : "";
       const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
-      resultBody.textContent = `${deltaText} 🏆  ${totalText}${coinText}`;
+      const chopRecord = account ? `${account.chopWoodWins || 0}승 ${account.chopWoodLosses || 0}패` : "";
+      resultBody.textContent = `찹 우드 전적 ${chopRecord}${coinText}`;
       const statsLines = [];
       if (player) {
         statsLines.push(t("cwKills", player.cwKills));
@@ -13538,7 +13554,10 @@ if (window.location.hash === "#chop-wood") {
       startTakeDown();
     });
   };
-  noticeEventStartBtn?.addEventListener("click", openTakeDownDirectly);
+  noticeEventStartBtn?.addEventListener("click", () => {
+    if (CURRENT_SEASON === "beta5") enterMatchmaking("showdown");
+    else openTakeDownDirectly();
+  });
   eventTakeDownBtn?.addEventListener("click", openTakeDownDirectly);
 
 

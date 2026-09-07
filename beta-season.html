@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Colors - Beta Season 4 Test</title>
+  <title>Colors - Beta Season 6 Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.5.14">
+  <link rel="stylesheet" href="./beta-season.css?v=0.5.15">
   <script>
     if (new URLSearchParams(location.search).get("test") === "beta5") {
       document.documentElement.classList.add("beta5-loading");
@@ -19,6 +19,30 @@
     }
   }
   </script>
+  <style>
+    .storybook-panel { color: #eaf6ff; line-height: 1.85; }
+    .storybook-intro { margin: 0 0 28px; padding: 22px; border: 1px solid rgba(126, 206, 255, .42); border-radius: 16px; background: linear-gradient(135deg, rgba(15, 57, 90, .93), rgba(33, 109, 157, .72)); }
+    .storybook-intro span { color: #8ed9ff; font-size: .72rem; font-weight: 800; letter-spacing: .13em; }
+    .storybook-intro h2 { margin: 6px 0; color: #fff; font-size: 1.7rem; }
+    .storybook-intro p { margin: 0; color: #cceaff; font-size: .86rem; }
+    .storybook-era { margin: 34px 0 18px; padding: 0 0 10px; border-bottom: 1px solid rgba(159, 217, 250, .42); }
+    .storybook-era h2 { margin: 0; color: #fff4a7; font-size: 1.35rem; }
+    .storybook-chapter { margin: 0 0 34px; padding: 0 0 28px; border-bottom: 1px solid rgba(159, 217, 250, .25); }
+    .storybook-chapter h3 { margin: 0 0 18px; color: #9ee4ff; font-size: 1.2rem; }
+    .storybook-chapter h4 { margin: 24px 0 8px; color: #d4efff; font-size: 1rem; }
+    .storybook-text { margin: 0 0 14px; color: #e9f6ff; word-break: keep-all; }
+    .storybook-text strong { color: #fff4a7; }
+    .storybook-quote { padding: 11px 15px; border-left: 3px solid #84d5f4; border-radius: 0 10px 10px 0; background: rgba(122, 205, 246, .12); }
+    .storybook-loading { color: #d6edff; text-align: center; padding: 40px 0; }
+    .storybook-toc { margin: 0 0 30px; padding: 16px 18px; border: 1px solid rgba(142, 217, 255, .38); border-radius: 14px; background: rgba(9, 34, 54, .72); }
+    .storybook-toc summary { color: #fff4a7; font-weight: 800; cursor: pointer; user-select: none; }
+    .storybook-toc-groups { display: grid; gap: 18px; margin-top: 16px; }
+    .storybook-toc-group h3 { margin: 0 0 8px; color: #8ed9ff; font-size: .9rem; }
+    .storybook-toc-group ol { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px 18px; margin: 0; padding-left: 22px; }
+    .storybook-toc-group a { color: #dcefff; font-size: .82rem; text-decoration: none; }
+    .storybook-toc-group a:hover, .storybook-toc-group a:focus-visible { color: #fff4a7; text-decoration: underline; }
+    .storybook-chapter { scroll-margin-top: 24px; }
+  </style>
 </head>
 <body>
   <div id="beta5-loading-screen" class="beta5-loading-screen" role="status" aria-live="polite" aria-label="베타 시즌 5 불러오는 중">
@@ -47,7 +71,7 @@
   <header class="beta-header">
     <div>
       <span class="test-chip">TEST ONLY</span>
-      <h1>베타 시즌 4 테스트</h1>
+      <h1>베타 시즌 6 테스트</h1>
       <p>신규 콘텐츠·밸런스·스킨 테스트 전용</p>
     </div>
     <nav class="beta-nav">
@@ -55,6 +79,7 @@
       <button type="button" data-panel="shop">시즌 상점</button>
       <button type="button" data-panel="assets">에셋 쇼룸</button>
       <button type="button" data-panel="daily">일일 보상</button>
+      <button type="button" data-panel="storybook">컬러스 스토리북</button>
       <button id="chop-wood-open" type="button">찹 우드</button>
       <button id="gold-rush-toggle" type="button">골드 러쉬 시작</button>
       <button id="showdown-toggle" type="button">쇼다운 시작</button>
@@ -65,7 +90,7 @@
   <div class="beta-wallet">
     <span>β 크레딧</span>
     <strong id="credit-value">1,500</strong>
-    <span class="rank-chip">베타 시즌 4 테스트</span>
+    <span class="rank-chip">베타 시즌 6 테스트</span>
   </div>
 
   <aside class="test-panel">
@@ -182,6 +207,6 @@
     <button id="chop-wood-close" class="chop-wood-close" type="button">베타로 돌아가기</button>
     <iframe title="메인 게임 찹 우드" src="./index.html#chop-wood"></iframe>
   </div>
-  <script type="module" src="./src/beta-season.js?v=0.7.44"></script>
+  <script type="module" src="./src/beta-season.js?v=0.7.49"></script>
 </body>
 </html>

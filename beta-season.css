@@ -18,6 +18,12 @@
 .beta5-loading-bar { height: 10px; overflow: hidden; border: 2px solid rgba(255, 255, 255, .9); border-radius: 999px; background: rgba(5, 32, 76, .42); box-shadow: 0 5px 18px rgba(0, 18, 55, .35); }
 .beta5-loading-bar i { display: block; width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ff4e68, #ffd32e 28%, #18d9ff 55%, #75e219 78%, #9a68ff); transform: scaleX(.04); transform-origin: left; animation: beta5-loading-progress 1.35s cubic-bezier(.2, .72, .25, 1) forwards; }
 @keyframes beta5-loading-progress { 0% { transform: scaleX(.04); } 72% { transform: scaleX(.82); } 100% { transform: scaleX(1); } }
+.beta-season-6-theme { background: linear-gradient(180deg, #36aee8 0%, #76dcdf 42%, #efd89c 100%); }
+.beta-season-6-theme .beta-header { background: linear-gradient(135deg, rgba(5, 72, 119, .94), rgba(11, 155, 176, .88)); }
+.beta-season-6-theme .rank-chip,
+.beta-season-6-theme .test-chip { color: #dffcff; border-color: rgba(145, 244, 255, .7); background: rgba(0, 89, 135, .72); }
+.beta-season-6-theme .location-card,
+.beta-season-6-theme .test-panel { border-color: rgba(69, 210, 224, .62); background: rgba(5, 63, 91, .84); }
 @media (max-width: 700px) {
   .beta5-loading-screen > img { object-position: 52% center; }
   .beta5-loading-status { bottom: max(20px, env(safe-area-inset-bottom)); }
