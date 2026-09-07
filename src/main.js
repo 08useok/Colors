@@ -1,6 +1,7 @@
 import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.148";
 import { mp } from "./multiplayer.js?v=1.5.50";
@@ -2967,6 +2968,10 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     // 확정되어 있어(커밋 1962daf) forceLoopOnly로 그 동작을 그대로 유지한다.
     if (_chartreuseGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_chartreuseGlb, isAiBot, true), skinId);
   }
+  if (color === CHARACTERS.mint.color) {
+    ensureMintFbxLoading();
+    if (_mintFbx.loop) return buildPinkRigModel(resolveWalkGlbSet(_mintFbx, isAiBot), skinId);
+  }
 
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
@@ -3637,6 +3642,7 @@ let previewTime = 0;
 let previewIsGlb = false;
 
 const _glbLoader = new GLTFLoader();
+const _fbxLoader = new FBXLoader();
 // Pink: start/loop/end 3개 GLB (root motion 트랙 제거 후 사용)
 function _stripRootMotion(gltf) {
   for (const clip of (gltf.animations ?? [])) {
@@ -3727,6 +3733,7 @@ const _pinkGlb = { start: null, loop: null, end: null };
 const _purpleGlb = { start: null, loop: null, end: null };
 const _ivoryGlb = { start: null, loop: null, end: null };
 const _chartreuseGlb = { start: null, loop: null, end: null };
+const _mintFbx = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 let _ivoryPreviewGlb = null;
 
@@ -3776,6 +3783,25 @@ function refreshLoadedChartreuseModels() {
     if (fighter.characterType !== "chartreuse" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
     const oldMesh = fighter.mesh;
     const replacement = createStickman(CHARACTERS.chartreuse.color, fighter.skinId, false, !fighter.isPlayer);
+    if (!replacement.userData.isGlbModel) continue;
+    replacement.position.copy(oldMesh.position);
+    replacement.rotation.copy(oldMesh.rotation);
+    if (fighter.healthBar) replacement.add(fighter.healthBar);
+    if (fighter.nameLabel) replacement.add(fighter.nameLabel);
+    scene.remove(oldMesh);
+    scene.add(replacement);
+    fighter.mesh = replacement;
+    fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
+    fighter.bodyMaterials = replacement.userData.bodyMaterials;
+  }
+}
+
+function refreshLoadedMintModels() {
+  if (!_mintFbx.loop || typeof state === "undefined" || !state?.players) return;
+  for (const fighter of state.players) {
+    if (fighter.characterType !== "mint" || !fighter.mesh || fighter.mesh.userData.isGlbModel) continue;
+    const oldMesh = fighter.mesh;
+    const replacement = createStickman(CHARACTERS.mint.color, fighter.skinId, false, !fighter.isPlayer);
     if (!replacement.userData.isGlbModel) continue;
     replacement.position.copy(oldMesh.position);
     replacement.rotation.copy(oldMesh.rotation);
@@ -3918,6 +3944,28 @@ function ensureChartreuseGlbLoading() {
   });
   _glbLoader.load('./assets/3d/chartreuse/walk-m3e.glb', g => { _chartreuseGlb.end = _stripRootMotion(g); });
 }
+function prepareMintFbx(asset) {
+  asset.rotateX(-Math.PI / 2);
+  for (const clip of (asset.animations ?? [])) {
+    clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name));
+  }
+  return { scene: asset, animations: asset.animations ?? [] };
+}
+
+let _mintFbxRequested = false;
+function ensureMintFbxLoading() {
+  if (_mintFbxRequested) return;
+  _mintFbxRequested = true;
+  _fbxLoader.load('./assets/3d/mint/walk-m1s.fbx', asset => { _mintFbx.start = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/mint/walk-m2l.fbx', asset => {
+    _mintFbx.loop = prepareMintFbx(asset);
+    refreshLoadedMintModels();
+    refreshLoadedPreviewCharacter("mint");
+    if (frontModelCharType === "mint") setupFrontModel("mint");
+  });
+  _fbxLoader.load('./assets/3d/mint/walk-m3e.fbx', asset => { _mintFbx.end = prepareMintFbx(asset); });
+}
+
 let _ivoryPreviewGlbRequested = false;
 function ensureIvoryPreviewGlbLoading() {
   if (_ivoryPreviewGlbRequested) return;
