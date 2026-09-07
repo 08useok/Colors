@@ -3086,7 +3086,13 @@ function updateAttackAimIndicator() {
     attackAimRing.position.z = 0;
     attackAimRing.material.color.setHex(0xffffff);
     const redReady = isRed && redUltimateCharge >= BETA_CHARACTERS.red.ultimate.chargeRequired;
-    const beamWidth = isRed ? (redReady ? 0.38 : 0.24) : 0.42;
+    // 애저의 일반 공격은 단순 탄환이 아니라 폭 2타일의 파도 판정이다.
+    // 조준선도 설정값을 그대로 사용해 실제 피격 범위보다 좁게 보이지 않게 한다.
+    const beamWidth = isRed
+      ? (redReady ? 0.38 : 0.24)
+      : betaState.selectedCharacter === "azure"
+        ? definition.surfWidth
+        : 0.42;
     attackAimBeam.scale.set(beamWidth, range, 1);
     attackAimBeam.position.z = range / 2;
     attackAimBeam.material.color.setHex(0xffffff);
@@ -3106,7 +3112,7 @@ function updateAttackAimIndicator() {
   // 궁극기 조준 중에는 일반 공격 조준선이 위에 겹치지 않게 한다.
   attackAimIndicator.visible = !ivoryUltimateAiming && !directionalUltimateAiming;
   canvas.dataset.aimRange = String(range);
-  canvas.dataset.aimStyle = isRed ? "red-x-shaped-attack-width-wall-clipped" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
+  canvas.dataset.aimStyle = isRed ? "red-x-shaped-attack-width-wall-clipped" : betaState.selectedCharacter === "azure" ? "azure-surf-full-hit-width" : isFan ? "white-fan-wedge" : isPurpleVial ? "purple-vial-line-and-splash" : isArea ? "white-range-circle" : "white-half-transparent-behind-character";
 }
 
 function createGroundPulse(radius, color, position = player.position) {
