@@ -226,7 +226,7 @@ export const BETA_CHARACTERS = {
     },
   },
   azure: {
-    maxHealth: 8000, moveSpeedMultiplier: 1.12, attackCooldown: 0.8, reloadDuration: 1.15, maxAmmo: 3,
+    maxHealth: 8000, moveSpeedMultiplier: 1.12, attackCooldown: 0.2, reloadDuration: 1.15, maxAmmo: 3,
     surfDashDistance: 2, surfDamage: 3000, surfLength: 4, surfWidth: 2,
     description: "파도를 타고 전장을 가로지르는 베타 시즌 6 신규 돌격 캐릭터입니다.",
     descriptionEn: "A Beta Season 6 diver who rides waves straight through the fight.",
