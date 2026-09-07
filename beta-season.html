@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season 6 Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.5.15">
+  <link rel="stylesheet" href="./beta-season.css?v=0.5.16">
   <script>
     if (new URLSearchParams(location.search).get("test") === "beta5") {
       document.documentElement.classList.add("beta5-loading");
+    } else {
+      document.documentElement.classList.add("beta6-loading");
     }
   </script>
   <script type="importmap">
@@ -45,6 +47,7 @@
   </style>
 </head>
 <body>
+  <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="베타 시즌 6 불러오는 중"><div class="beta6-sun"></div><div class="beta6-wave"></div><div class="beta6-loading-status"><strong>BETA SEASON 6</strong><b>HIGH NOON TIDE</b><span>애저 해변으로 이동 중…</span></div></div>
   <div id="beta5-loading-screen" class="beta5-loading-screen" role="status" aria-live="polite" aria-label="베타 시즌 5 불러오는 중">
     <img src="./assets/beta5-loading.png?v=1" alt="Colors 놀이공원에서 캐릭터들이 즐기는 베타 시즌 5">
     <div class="beta5-loading-shade"></div>
@@ -207,6 +210,6 @@
     <button id="chop-wood-close" class="chop-wood-close" type="button">베타로 돌아가기</button>
     <iframe title="메인 게임 찹 우드" src="./index.html#chop-wood"></iframe>
   </div>
-  <script type="module" src="./src/beta-season.js?v=0.7.52"></script>
+  <script type="module" src="./src/beta-season.js?v=0.7.53"></script>
 </body>
 </html>

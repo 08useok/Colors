@@ -100,6 +100,7 @@ if (IS_BETA5_TEST) {
   }
 }
 const beta5LoadingScreen = document.getElementById("beta5-loading-screen");
+const beta6LoadingScreen = document.getElementById("beta6-loading-screen");
 
 function finishBeta5LoadingScreen() {
   if (!IS_BETA5_TEST || !beta5LoadingScreen || beta5LoadingScreen.classList.contains("is-complete")) return;
@@ -114,6 +115,14 @@ if (IS_BETA5_TEST) {
   const finishAfterMinimumDisplay = () => setTimeout(finishBeta5LoadingScreen, 850);
   if (document.readyState === "complete") finishAfterMinimumDisplay();
   else window.addEventListener("load", finishAfterMinimumDisplay, { once: true });
+}
+if (IS_BETA6_TEST && beta6LoadingScreen) {
+  const finishBeta6Loading = () => setTimeout(() => {
+    beta6LoadingScreen.classList.add("is-complete");
+    setTimeout(() => { beta6LoadingScreen.remove(); document.documentElement.classList.remove("beta6-loading"); }, 700);
+  }, 850);
+  if (document.readyState === "complete") finishBeta6Loading();
+  else window.addEventListener("load", finishBeta6Loading, { once: true });
 }
 const BETA_STORAGE_KEY = IS_BETA6_TEST
   ? "colorsBetaSeason6Test"
