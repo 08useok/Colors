@@ -12,7 +12,9 @@ let azureWaveState = null;
 const requestedMusicSeason = new URLSearchParams(location.search).get("test");
 const betaSeasonBgm = new Audio(requestedMusicSeason === "beta5"
   ? "./assets/beta5-clockwork-midway.mp3?v=1"
-  : "./assets/beta4-rooftop-motion.mp3?v=1");
+  : requestedMusicSeason === "beta4"
+    ? "./assets/beta4-rooftop-motion.mp3?v=1"
+    : "./assets/beta6-high-noon-tide.mp3?v=1");
 betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
