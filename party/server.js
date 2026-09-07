@@ -4,7 +4,7 @@ import { DurableObject } from "cloudflare:workers";
 const ROOM_MAX = 8;
 const COUNTDOWN_SEC = 5;
 // 매칭에서 허용하는 캐릭터 — 베타 시즌 1에서 크림슨 추가
-const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]);
+const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse", "mint"]);
 export class LeaderboardStore extends DurableObject {
   async getLeaderboard() {
     return await this.ctx.storage.get("global-leaderboard") ?? [];

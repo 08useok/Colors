@@ -361,7 +361,7 @@ const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
@@ -369,7 +369,7 @@ const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
 const ROSTER = ["beta2", "beta3", "beta4", "beta5"].includes(CURRENT_SEASON)
-  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5"].includes(CURRENT_SEASON) ? ["chartreuse"] : [])]
+  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5"].includes(CURRENT_SEASON) ? ["chartreuse"] : []), ...(CURRENT_SEASON === "beta5" ? ["mint"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function createCharacterStats(characterIds = ROSTER) {
@@ -1120,6 +1120,8 @@ function loadAccount() {
     if (!account.charLevels.crimson) { account.charLevels.crimson = 1; migrated = true; }
     if (!account.charLevels.gold) { account.charLevels.gold = 1; migrated = true; }
     if (!account.charLevels.ivory) { account.charLevels.ivory = 1; migrated = true; }
+    if (!account.charLevels.chartreuse) { account.charLevels.chartreuse = 1; migrated = true; }
+    if (!account.charLevels.mint) { account.charLevels.mint = 1; migrated = true; }
     // 베타 시즌 1 등급 시스템 — 기존 계정은 쓰던 8종을 그대로 보유, 크림슨만 신규 구매 대상
     if (!Array.isArray(account.ownedCharacters)) {
       account.ownedCharacters = [...PRE_BETA_CHARACTERS];
@@ -1228,7 +1230,7 @@ function createAccount(id, nickname) {
     charTrophies: createCharacterTrophies(),
     charTrophiesBackfillDone: true,
     charLevels: {
-      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1,
+      red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1, crimson: 1, gold: 1, ivory: 1, chartreuse: 1, mint: 1,
     },
     ownedCharacters: [...DEFAULT_OWNED_CHARACTERS],
     credits: 0,
@@ -8270,6 +8272,9 @@ function beginAttackCore(fighter) {
   if (fighter.characterType === "chartreuse") {
     return beginChartreuseAttack(fighter);
   }
+  if (fighter.characterType === "mint") {
+    return beginMintAttack(fighter);
+  }
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -8336,6 +8341,7 @@ function getAttackRange(fighter) {
   else if (fighter.characterType === "gold") baseRange = CHARACTERS.gold.stage1Range;
   else if (fighter.characterType === "ivory") baseRange = CHARACTERS.ivory.iceCreamRange;
   else if (fighter.characterType === "chartreuse") baseRange = CHARACTERS.chartreuse.chartreuseRange;
+  else if (fighter.characterType === "mint") baseRange = CHARACTERS.mint.iceBulletRange;
   return baseRange;
 }
 
@@ -8478,6 +8484,56 @@ function beginIvoryAttack(fighter) {
   mesh.visible = false;
   scene.add(mesh);
   state.projectiles.push({ ownerId: fighter.id, x: mesh.position.x, z: mesh.position.z, vx: Math.sin(yaw) * def.iceCreamSpeed, vz: Math.cos(yaw) * def.iceCreamSpeed, damage: def.iceCreamDamage, range: def.iceCreamRange, farThreshold: Infinity, farMultiplier: 1, distTraveled: 0, launchAt: state.gameTime + 0.2, mesh, isIvoryIceCream: true, projRadius: 0.42 });
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
+function spawnMintIceBullet(fighter, yaw) {
+  if (fighter.dead || !fighter.mesh?.parent) return;
+  const charDef = CHARACTERS.mint;
+  const mesh = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.13, 0.28, 4, 8),
+    new THREE.MeshBasicMaterial({ color: charDef.color }),
+  );
+  mesh.rotation.x = Math.PI / 2;
+  mesh.position.set(
+    fighter.mesh.position.x + Math.sin(yaw) * 0.9,
+    1.3,
+    fighter.mesh.position.z + Math.cos(yaw) * 0.9,
+  );
+  scene.add(mesh);
+  state.projectiles.push({
+    ownerId: fighter.id,
+    x: mesh.position.x,
+    z: mesh.position.z,
+    vx: Math.sin(yaw) * charDef.iceBulletSpeed,
+    vz: Math.cos(yaw) * charDef.iceBulletSpeed,
+    damage: charDef.iceBulletDamage,
+    range: charDef.iceBulletRange,
+    farThreshold: Infinity,
+    farMultiplier: 1,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    mesh,
+    isBullet: true,
+    isMintIce: true,
+    isPenetrating: false,
+  });
+}
+
+function beginMintAttack(fighter) {
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  const charDef = CHARACTERS.mint;
+  fighter.ammo -= 1;
+  fighter.nextAttackAt = state.gameTime + charDef.attackCooldown;
+  fighter.attackSequenceEndsAt = fighter.nextAttackAt;
+  fighter.attackSwing = 1;
+  fighter.attackAnimTime = 0;
+  fighter.lastCombatTime = state.gameTime;
+  const yaw = fighter.yaw;
+  for (let shot = 0; shot < charDef.burstCount; shot += 1) {
+    window.setTimeout(() => spawnMintIceBullet(fighter, yaw), shot * charDef.burstIntervalMs);
+  }
   if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
@@ -13285,7 +13341,7 @@ if (window.location.hash === "#chop-wood") {
     const account = loadAccount();
     if (!account) return;
     const chars = [...ROSTER];
-    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd700", ivory: "#fffaf0" };
+    const colorMap = { red: "#ff4444", green: "#44ff44", blue: "#4488ff", orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd700", ivory: "#fffaf0", chartreuse: "#c1f80a", mint: "#98ffdc" };
     let html = '<div class="shop-grid">';
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
@@ -13358,7 +13414,7 @@ if (window.location.hash === "#chop-wood") {
   function renderShopCharacters() {
     const account = loadAccount();
     if (!account || !shopCharsContent) return;
-    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd700", ivory: "#fffaf0" };
+    const colorMap = { orange: "#ffa500", yellow: "#ffff00", cyan: "#0ff0fe", purple: "#aa44ff", pink: "#f4cdd3", crimson: "#a00000", gold: "#ffd700", ivory: "#fffaf0", chartreuse: "#c1f80a", mint: "#98ffdc" };
     const buyable = Object.keys(CHARACTER_RARITY).filter((c) => getCharacterPrice(c) > 0);
     let html = '<div class="shop-grid">';
     for (const charKey of buyable) {
