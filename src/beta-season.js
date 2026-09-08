@@ -1528,7 +1528,8 @@ function updateCrimsonControls() {
   attackTitle.textContent = characterDefinition?.basicAttack?.name || "일반 공격";
   attackComboState.textContent = "준비";
   const specialCharacters = [
-    ...(IS_BETA5_TEST ? ["blue", "mint"] : []),
+    ...((IS_BETA5_TEST || IS_BETA6_TEST) ? ["blue"] : []),
+    ...(IS_BETA5_TEST ? ["mint"] : []),
     ...(IS_BETA6_TEST ? ["azure"] : []),
   ];
   const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...specialCharacters].includes(betaState.selectedCharacter);
@@ -3181,7 +3182,7 @@ let blueDashState = null;
 
 function performBlueDash() {
   const def = BETA_CHARACTERS.blue.special;
-  if (!IS_BETA5_TEST || blueDashState || blueSpecialCharge < def.chargeRequired) return;
+  if ((!IS_BETA5_TEST && !IS_BETA6_TEST) || blueDashState || blueSpecialCharge < def.chargeRequired) return;
   blueSpecialCharge = 0;
   blueDashState = {
     directionX: Math.sin(player.rotation.y), directionZ: Math.cos(player.rotation.y),
@@ -3934,7 +3935,7 @@ function updateCrimsonUltimateGauge() {
       color: "#98ffed",
     },
     blue: {
-      charge: IS_BETA5_TEST ? blueSpecialCharge : 0,
+      charge: (IS_BETA5_TEST || IS_BETA6_TEST) ? blueSpecialCharge : 0,
       required: BETA_CHARACTERS.blue.special.chargeRequired,
       name: BETA_CHARACTERS.blue.special.name,
       color: "#56bfff",
@@ -3950,7 +3951,7 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.classList.toggle("ready", ready);
   ultimateButton.setAttribute("aria-valuenow", String(charge));
   ultimateButton.setAttribute("aria-valuemax", String(required));
-  const isSpecial = IS_BETA5_TEST && ["blue", "mint"].includes(id);
+  const isSpecial = (id === "blue" && (IS_BETA5_TEST || IS_BETA6_TEST)) || (id === "mint" && IS_BETA5_TEST);
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
   const remainingUnit = "회";
   ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
@@ -4152,7 +4153,7 @@ ultimateButton.addEventListener("click", () => {
     updateCrimsonUltimateGauge();
     return;
   }
-  if (betaState.selectedCharacter === "blue" && IS_BETA5_TEST) {
+  if (betaState.selectedCharacter === "blue" && (IS_BETA5_TEST || IS_BETA6_TEST)) {
     performBlueDash();
     return;
   }
@@ -6137,7 +6138,8 @@ function animate() {
   updateGoldRush(dt);
   updatePracticeRespawn();
   updateTestCombatHud(dt);
-  if (IS_BETA5_TEST && ["blue", "mint"].includes(betaState.selectedCharacter)) updateCrimsonUltimateGauge();
+  if ((betaState.selectedCharacter === "blue" && (IS_BETA5_TEST || IS_BETA6_TEST))
+    || (betaState.selectedCharacter === "mint" && IS_BETA5_TEST)) updateCrimsonUltimateGauge();
   updatePinkDeadAllyMarkers();
   // 골드 러쉬 밖에서도 체력바가 캐릭터 머리 위에 항상 고정되어 보이도록 매 프레임 갱신한다
   playerGoldRushHealthBar.visible = player.visible;
