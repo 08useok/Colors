@@ -992,6 +992,8 @@ if (!leaderboardBots) {
 const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
+// 이보다 짧은 탭은 현재 방향으로 즉시 발사해 플레이어의 방향 입력을 보존한다.
+const AUTO_AIM_DELAY_MS = 70;
 // 베타와 동일하게 0.2초부터 길게 누른 수동 조준으로 판정한다.
 const AUTO_AIM_HOLD_MS = 200;
 const attackEvents = [
@@ -12909,7 +12911,9 @@ function setupInput() {
   }
 
   function applyTapAutoAim(player) {
-    if (state.manualAimActive || !player || player.dead || performance.now() - state.attackHoldStartedAt >= AUTO_AIM_HOLD_MS) return;
+    const heldMs = performance.now() - state.attackHoldStartedAt;
+    if (state.manualAimActive || !player || player.dead
+      || heldMs < AUTO_AIM_DELAY_MS || heldMs >= AUTO_AIM_HOLD_MS) return;
     const target = findAutoAimTarget(player);
     if (!target) return;
     const dx = target.mesh.position.x - player.mesh.position.x;

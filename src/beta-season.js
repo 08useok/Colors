@@ -2955,6 +2955,7 @@ let betaAutoAimTarget = null;
 let betaAutoAimTargetUntil = 0;
 
 function betaAutoAimPathBlocked(ax, az, bx, bz) {
+  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
   const distance = Math.hypot(bx - ax, bz - az);
   const steps = Math.max(1, Math.ceil(distance / 0.3));
   for (let i = 1; i < steps; i += 1) {
@@ -4395,7 +4396,9 @@ let pointerTravel = 0;
 let manualAimActive = false;
 // 좌클릭은 공격, 누른 채 0.2초를 넘기면 수동 에임으로 넘어간다
 const AIM_HOLD_SECONDS = 0.2;
+const AUTO_AIM_DELAY_MS = 70;
 let pointerHoldTimer = null;
+let pointerPressedAt = 0;
 let holdAiming = false;
 const manualAimRaycaster = new THREE.Raycaster();
 const manualAimPointer = new THREE.Vector2();
@@ -5454,6 +5457,7 @@ canvas.addEventListener("pointerdown", (event) => {
   lastPointerY = event.clientY;
   canvas.setPointerCapture(event.pointerId);
   if (event.button !== 0 || !modal.classList.contains("hidden")) return;
+  pointerPressedAt = performance.now();
   pointerHoldTimer = setTimeout(() => {
     pointerHoldTimer = null;
     holdAiming = true;
@@ -5475,7 +5479,10 @@ canvas.addEventListener("pointerup", (event) => {
   }
   if (!held || pointerTravel >= 6) return;
   canvas.dataset.lastAttackInput = "mouse";
-  performCharacterAttack({ manualAim: manualAimActive && aimPlayerAtPointer(event) });
+  const fastTap = performance.now() - pointerPressedAt < AUTO_AIM_DELAY_MS;
+  performCharacterAttack({
+    manualAim: manualAimActive ? aimPlayerAtPointer(event) : fastTap,
+  });
 });
 canvas.addEventListener("pointercancel", stopHoldAim);
 canvas.addEventListener("pointermove", (event) => {
