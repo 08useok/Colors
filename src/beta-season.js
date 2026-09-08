@@ -56,6 +56,7 @@ const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
 const showdownToggle = document.getElementById("showdown-toggle");
+const soccerToggle = document.getElementById("soccer-toggle");
 const chopWoodOpen = document.getElementById("chop-wood-open");
 const chopWoodEmbed = document.getElementById("chop-wood-embed");
 const chopWoodClose = document.getElementById("chop-wood-close");
@@ -213,6 +214,12 @@ function loadBetaState() {
     oneVsOne: {
       wins: Math.max(0, Number(saved.oneVsOne?.wins) || 0),
       losses: Math.max(0, Number(saved.oneVsOne?.losses) || 0),
+    },
+    soccerKick: {
+      wins: Math.max(0, Number(saved.soccerKick?.wins) || 0),
+      losses: Math.max(0, Number(saved.soccerKick?.losses) || 0),
+      goals: Math.max(0, Number(saved.soccerKick?.goals) || 0),
+      games: Math.max(0, Number(saved.soccerKick?.games) || 0),
     },
     orderEvent: {
       progress: Math.max(0, Number(saved.orderEvent?.progress) || 0),
@@ -3636,6 +3643,12 @@ function performCharacterAttack({ manualAim = false } = {}) {
   if (goldRushState.dead) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
+  if (goldRushState.active && goldRushState.mode === "soccer") {
+    if (!manualAim) autoAimAtNearestTarget(12);
+    kickSoccerBall(player.position, player.rotation.y, "a");
+    startModelAttackMotion(id);
+    return;
+  }
   if (!generalAttackReady || azureWaveState) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
@@ -4349,6 +4362,72 @@ const goldRushState = {
   ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5, kills: 0,
 };
 
+const soccerArena = new THREE.Group();
+soccerArena.visible = false;
+scene.add(soccerArena);
+const soccerField = new THREE.Mesh(new THREE.PlaneGeometry(38, 38), new THREE.MeshStandardMaterial({ color: 0x39a96b, roughness: 0.9 }));
+soccerField.rotation.x = -Math.PI / 2;
+soccerField.position.y = 1.57;
+soccerArena.add(soccerField);
+const soccerBall = new THREE.Mesh(new THREE.SphereGeometry(0.55, 18, 14), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 }));
+soccerBall.position.set(0, 2.12, 0);
+soccerArena.add(soccerBall);
+for (const z of [-18.5, 18.5]) {
+  const goal = new THREE.Mesh(new THREE.BoxGeometry(7, 2.6, 0.35), new THREE.MeshBasicMaterial({ color: z > 0 ? 0xff5b5b : 0x4f8dff, wireframe: true }));
+  goal.position.set(0, 2.85, z);
+  soccerArena.add(goal);
+}
+const soccerState = { scoreA: 0, scoreB: 0, vx: 0, vz: 0, overtime: false, lastKick: "a", kickoffUntil: 0 };
+
+function resetSoccerBall() {
+  soccerBall.position.set(0, 2.12, 0);
+  soccerState.vx = 0; soccerState.vz = 0;
+  soccerState.kickoffUntil = clock.elapsedTime + 1;
+}
+
+function kickSoccerBall(from, yaw, team = "a") {
+  if (goldRushState.mode !== "soccer" || clock.elapsedTime < soccerState.kickoffUntil) return false;
+  if (Math.hypot(soccerBall.position.x - from.x, soccerBall.position.z - from.z) > 3.2) return false;
+  soccerState.vx = Math.sin(yaw) * 17;
+  soccerState.vz = Math.cos(yaw) * 17;
+  soccerState.lastKick = team;
+  return true;
+}
+
+function updateSoccer(dt) {
+  soccerBall.position.x += soccerState.vx * dt;
+  soccerBall.position.z += soccerState.vz * dt;
+  const damping = Math.exp(-1.05 * dt);
+  soccerState.vx *= damping; soccerState.vz *= damping;
+  if (Math.abs(soccerBall.position.x) > 18.4) {
+    soccerBall.position.x = Math.sign(soccerBall.position.x) * 18.4;
+    soccerState.vx *= -0.86;
+  }
+  if (Math.abs(soccerBall.position.z) > 18.4 && Math.abs(soccerBall.position.x) >= 3.5) {
+    soccerBall.position.z = Math.sign(soccerBall.position.z) * 18.4;
+    soccerState.vz *= -0.86;
+  }
+  if (soccerBall.position.z > 18.7 && Math.abs(soccerBall.position.x) < 3.5) soccerGoal("a");
+  else if (soccerBall.position.z < -18.7 && Math.abs(soccerBall.position.x) < 3.5) soccerGoal("b");
+  const elapsed = clock.elapsedTime - goldRushState.startedAt;
+  const remaining = Math.max(0, 180 - elapsed);
+  goldRushTimerEl.textContent = soccerState.overtime ? "연장전 · 다음 골 승리" : `${String(Math.floor(remaining / 60)).padStart(2,"0")}:${String(Math.ceil(remaining % 60)).padStart(2,"0")}`;
+  goldRushRivalsEl.textContent = `BLUE ${soccerState.scoreA} : ${soccerState.scoreB} RED`;
+  if (!soccerState.overtime && remaining <= 0) {
+    if (soccerState.scoreA === soccerState.scoreB) soccerState.overtime = true;
+    else endGoldRush(`SOCCER KICK 시간 종료 · ${soccerState.scoreA}:${soccerState.scoreB}`, soccerState.scoreA > soccerState.scoreB);
+  }
+}
+
+function soccerGoal(team) {
+  if (team === "a") soccerState.scoreA += 1; else soccerState.scoreB += 1;
+  if (team === "a" && soccerState.lastKick === "a") betaState.soccerKick.goals += 1;
+  const won = soccerState.scoreA >= 2 || (soccerState.overtime && team === "a");
+  const lost = soccerState.scoreB >= 2 || (soccerState.overtime && team === "b");
+  if (won || lost) { endGoldRush(`SOCCER KICK ${won ? "승리" : "패배"} · ${soccerState.scoreA}:${soccerState.scoreB}`, won); return; }
+  resetSoccerBall();
+}
+
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
 function createHealthNumberLabel() {
   const canvas = document.createElement("canvas");
@@ -4575,7 +4654,8 @@ function createGoldRushBotAvatar(index) {
 function createGoldRushBots() {
   clearGoldRushBots();
   let playerModelCount = 0;
-  for (let i = 0; i < 9; i += 1) {
+  const botCount = goldRushState.mode === "soccer" ? 5 : 9;
+  for (let i = 0; i < botCount; i += 1) {
     const avatar = createGoldRushBotAvatar(i);
     const mesh = avatar.group;
     if (avatar.usesPlayerModel) playerModelCount += 1;
@@ -4611,6 +4691,7 @@ function createGoldRushBots() {
       reloadDuration: BETA_CHARACTERS[betaState.selectedCharacter]?.reloadDuration || 0.5,
       speed: 3.8 + (i % 4) * 0.3,
       winCountdownStartedAt: null,
+      team: goldRushState.mode === "soccer" ? (i < 2 ? "a" : "b") : null,
     };
     mesh.userData.goldRushBot = bot;
     mesh.userData.health = bot.health;
@@ -4736,6 +4817,19 @@ function updateGoldRushBots(dt) {
       bot.ammo = bot.maxAmmo;
       bot.reloadTimer = 0;
       updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+    }
+    if (goldRushState.mode === "soccer") {
+      faceGoldRushHealthBarToCamera(bot.healthBar);
+      const dx = soccerBall.position.x - bot.mesh.position.x;
+      const dz = soccerBall.position.z - bot.mesh.position.z;
+      const distance = Math.max(0.001, Math.hypot(dx, dz));
+      const step = Math.min(distance, bot.speed * dt);
+      bot.mesh.position.x += dx / distance * step;
+      bot.mesh.position.z += dz / distance * step;
+      bot.mesh.rotation.y = Math.atan2(dx, dz);
+      if (distance < 2.2) kickSoccerBall(bot.mesh.position, bot.team === "a" ? 0 : Math.PI, bot.team);
+      bot.mixer?.update(dt);
+      continue;
     }
     if (bot.ammo >= bot.maxAmmo) {
       bot.reloadTimer = 0;
@@ -4909,7 +5003,14 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
   let trophyDelta = playerWon ? 8 : -2;
-  if (goldRushState.mode === "showdown") {
+  if (goldRushState.mode === "soccer") {
+    betaState.soccerKick.games += 1;
+    if (playerWon) {
+      betaState.soccerKick.wins += 1;
+      betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
+      playOrderVictoryEffect();
+    } else betaState.soccerKick.losses += 1;
+  } else if (goldRushState.mode === "showdown") {
     const rank = THREE.MathUtils.clamp(Math.floor(Number(showdownRank) || (playerWon ? 1 : 10)), 1, 10);
     const placedInTopFour = rank <= 4;
     if (placedInTopFour) {
@@ -4951,6 +5052,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   goldRushHud.classList.add("hidden");
   currentArenaMode = "lobby";
   iceCreamShowdownMap.visible = false;
+  soccerArena.visible = false;
   map.visible = true;
   alphaBoss.visible = true;
   for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = true;
@@ -4964,11 +5066,13 @@ function startGoldRush(mode = "goldRush") {
   clearAzureWave();
   azureUltimateCharge = 0;
   goldRushState.mode = mode;
-  currentArenaMode = mode === "showdown" ? "showdown" : "lobby";
+  const arenaMode = mode === "showdown" || mode === "soccer";
+  currentArenaMode = arenaMode ? "showdown" : "lobby";
   iceCreamShowdownMap.visible = mode === "showdown";
-  map.visible = mode !== "showdown";
-  alphaBoss.visible = mode !== "showdown";
-  for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = mode !== "showdown";
+  soccerArena.visible = mode === "soccer";
+  map.visible = !arenaMode;
+  alphaBoss.visible = !arenaMode;
+  for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = !arenaMode;
   goldRushState.active = true;
   goldRushState.ended = false;
   goldRushState.gold = 0;
@@ -5002,7 +5106,19 @@ function startGoldRush(mode = "goldRush") {
   goldRushToggle.textContent = "골드 러쉬 재시작";
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
   createGoldRushBots();
-  if (mode === "showdown") {
+  if (mode === "soccer") {
+    soccerState.scoreA = 0; soccerState.scoreB = 0; soccerState.overtime = false;
+    resetSoccerBall();
+    initialSpawnPoint.set(0, 1.7, -14);
+    resetPlayer();
+    const spawns = [[-6,-12],[6,-12],[-7,12],[0,12],[7,12]];
+    goldRushBots.forEach((bot, index) => { bot.spawn.set(spawns[index][0], 1.62, spawns[index][1]); bot.mesh.position.copy(bot.spawn); });
+    goldRushHud.querySelector("strong").textContent = "SOCCER KICK";
+    goldCountEl.parentElement.style.display = "none";
+    goldRushStatusEl.textContent = "일반 공격으로 공을 차세요 · 탄창 미소모";
+    soccerToggle.textContent = "SOCCER KICK 재시작";
+    canvas.dataset.betaMode = "soccer-kick";
+  } else if (mode === "showdown") {
     goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "SHOWDOWN+" : "ICE CREAM SHOWDOWN";
     goldCountEl.parentElement.style.display = "none";
     goldRushTimerEl.textContent = IS_BETA5_TEST ? "처치 0" : "생존";
@@ -5104,6 +5220,7 @@ function updateGoldRush(dt) {
     goldRushState.reloadTimer = 0;
   }
   updateGoldRushBots(dt);
+  if (goldRushState.mode === "soccer") { updateSoccer(dt); return; }
   if (goldRushState.mode === "showdown") {
     const survivors = goldRushBots.filter((bot) => !bot.dead).length + (goldRushState.dead ? 0 : 1);
     goldRushRivalsEl.textContent = `${survivors}명 생존`;
@@ -5336,6 +5453,7 @@ resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
 goldRushToggle.addEventListener("click", () => startGoldRush("goldRush"));
 showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
+soccerToggle?.addEventListener("click", () => { if (IS_BETA6_TEST) startGoldRush("soccer"); else showToast("베타 시즌 6 전용 모드입니다."); });
 chopWoodOpen.addEventListener("click", () => chopWoodEmbed.classList.remove("hidden"));
 chopWoodClose.addEventListener("click", () => chopWoodEmbed.classList.add("hidden"));
 document.getElementById("test-death-btn").addEventListener("click", () => {
