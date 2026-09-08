@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.19";
+import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.139";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -88,9 +88,11 @@ const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
 const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
 const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
 const requestedBetaSeason = new URLSearchParams(location.search).get("test");
-const BETA_SEASON_ID = ["beta5", "beta6"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta6";
+const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta6";
 const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
+const IS_BETA7_TEST = BETA_SEASON_ID === "beta7";
+const IS_BETA8_TEST = BETA_SEASON_ID === "beta8";
 if (IS_BETA5_TEST) {
   for (const [characterId, override] of Object.entries(BETA5_BALANCE_OVERRIDES)) {
     const definition = BETA_CHARACTERS[characterId];
@@ -125,8 +127,12 @@ if (IS_BETA6_TEST && beta6LoadingScreen) {
   if (document.readyState === "complete") finishBeta6Loading();
   else window.addEventListener("load", finishBeta6Loading, { once: true });
 }
-const BETA_STORAGE_KEY = IS_BETA6_TEST
-  ? "colorsBetaSeason6Test"
+const BETA_STORAGE_KEY = IS_BETA8_TEST
+  ? "colorsBetaSeason8Test"
+  : IS_BETA7_TEST
+    ? "colorsBetaSeason7Test"
+    : IS_BETA6_TEST
+      ? "colorsBetaSeason6Test"
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
@@ -1530,7 +1536,9 @@ function updateCrimsonControls() {
   const specialCharacters = [
     ...((IS_BETA5_TEST || IS_BETA6_TEST) ? ["blue"] : []),
     ...(IS_BETA5_TEST ? ["mint"] : []),
-    ...(IS_BETA6_TEST ? ["azure"] : []),
+    ...(IS_BETA6_TEST ? ["azure", "yellow"] : []),
+    ...(IS_BETA7_TEST ? ["purple"] : []),
+    ...(IS_BETA8_TEST ? ["orange"] : []),
   ];
   const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...specialCharacters].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
@@ -2267,6 +2275,10 @@ let redGuardUntil = 0;
 let redGuardMesh = null;
 let pinkUltimateCharge = 0;
 let azureUltimateCharge = 0;
+let yellowUltimateCharge = 0;
+let orangeUltimateCharge = 0;
+let purpleUltimateCharge = 0;
+let purpleJumpState = null;
 let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
 const goldStageHits = new Map();
@@ -2274,6 +2286,8 @@ const malfunctionZones = [];
 const ivoryIceCreamZones = [];
 const mintIceZones = [];
 const greenBushes = [];
+const yellowCircuitDevices = [];
+const yellowCircuitEffects = [];
 const GREEN_BUSH_REVEAL_RANGE = 3;
 let greenStealthIndicator = null;
 let greenConcealedPrev = false;
@@ -3537,10 +3551,18 @@ function breakVial(projectile) {
   const landing = projectile.mesh.position.clone();
   landing.y = 0;
   createGroundPulse(projectile.splash, 0xb13cff, landing);
+  let hitEnemy = false;
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly) continue;
     const distance = Math.hypot(target.position.x - landing.x, target.position.z - landing.z);
-    if (distance <= projectile.splash) damageTarget(target, projectile.damage);
+    if (distance <= projectile.splash) {
+      damageTarget(target, projectile.damage);
+      hitEnemy = true;
+    }
+  }
+  if (IS_BETA7_TEST && hitEnemy && projectile.characterId === "purple") {
+    purpleUltimateCharge = Math.min(BETA_CHARACTERS.purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
+    if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
   }
 }
 
@@ -3649,8 +3671,10 @@ function performCharacterAttack({ manualAim = false } = {}) {
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
   if (goldRushState.active && goldRushState.mode === "soccer") {
-    if (!manualAim) autoAimAtNearestTarget(12);
-    kickSoccerBall(player.position, player.rotation.y, "a");
+    // 테스트 모드에서는 일반 공격 입력 자체가 공 발사다. 플레이어와 공의
+    // 거리를 검사하지 않으며, 자동 조준은 상대 골대(+Z)를 향한다.
+    if (!manualAim) player.rotation.y = 0;
+    kickSoccerBall(player.position, player.rotation.y, "a", false);
     startModelAttackMotion(id);
     return;
   }
@@ -3855,6 +3879,26 @@ let cyanUltimateCharge = 0;
 let ivoryUltimateCharge = 0;
 let greenUltimateCharge = 0;
 let chartreuseUltimateCharge = 0;
+
+function resetAllUltimateCharges() {
+  redUltimateCharge = 0;
+  greenUltimateCharge = 0;
+  blueSpecialCharge = 0;
+  orangeUltimateCharge = 0;
+  yellowUltimateCharge = 0;
+  cyanUltimateCharge = 0;
+  pinkUltimateCharge = 0;
+  purpleUltimateCharge = 0;
+  crimsonUltimateCharge = 0;
+  goldUltimateCharge = 0;
+  ivoryUltimateCharge = 0;
+  chartreuseUltimateCharge = 0;
+  mintUltimateCharge = 0;
+  azureUltimateCharge = 0;
+  purpleJumpState = null;
+  purpleUltimateAimPointValid = false;
+  updateCrimsonUltimateGauge();
+}
 let chartreuseFocusUntil = 0;
 let chartreuseAmmoTypes = [];
 
@@ -3921,6 +3965,82 @@ function createChartreuseUltimateEffect() {
 
 let greenRevealedUntil = 0;
 
+function disposeYellowCircuitDevice(device) {
+  scene.remove(device.mesh);
+  device.mesh.traverse((part) => {
+    part.geometry?.dispose();
+    if (Array.isArray(part.material)) part.material.forEach((material) => material.dispose());
+    else part.material?.dispose();
+  });
+}
+
+function clearYellowCircuit() {
+  for (const device of yellowCircuitDevices.splice(0)) disposeYellowCircuitDevice(device);
+  for (const effect of yellowCircuitEffects.splice(0)) {
+    scene.remove(effect.line);
+    effect.line.geometry.dispose();
+    effect.line.material.dispose();
+  }
+  canvas.dataset.yellowCircuitDevices = "0";
+  canvas.dataset.yellowCircuitActive = "false";
+}
+
+function createYellowCircuitDevice(position) {
+  const group = new THREE.Group();
+  const base = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.45, 0.55, 0.35, 12),
+    new THREE.MeshStandardMaterial({ color: 0x5d5418, metalness: 0.65, roughness: 0.35 }),
+  );
+  const coil = new THREE.Mesh(
+    new THREE.TorusGeometry(0.3, 0.09, 8, 20),
+    new THREE.MeshStandardMaterial({ color: 0xffff45, emissive: 0xffc400, emissiveIntensity: 1.8 }),
+  );
+  coil.rotation.x = Math.PI / 2;
+  coil.position.y = 0.42;
+  group.add(base, coil);
+  group.position.set(position.x, Math.max(0, groundHeightAt(position.x, position.z)) + 0.2, position.z);
+  scene.add(group);
+  const device = { mesh: group, x: group.position.x, z: group.position.z };
+  yellowCircuitDevices.push(device);
+  const maxDevices = BETA_CHARACTERS.yellow.ultimate.maxDevices;
+  while (yellowCircuitDevices.length > maxDevices) disposeYellowCircuitDevice(yellowCircuitDevices.shift());
+  canvas.dataset.yellowCircuitDevices = String(yellowCircuitDevices.length);
+}
+
+function distanceToSegment(px, pz, ax, az, bx, bz) {
+  const dx = bx - ax;
+  const dz = bz - az;
+  const lengthSq = dx * dx + dz * dz;
+  const t = lengthSq > 0
+    ? THREE.MathUtils.clamp(((px - ax) * dx + (pz - az) * dz) / lengthSq, 0, 1)
+    : 0;
+  return Math.hypot(px - (ax + dx * t), pz - (az + dz * t));
+}
+
+function activateYellowCircuit() {
+  if (yellowCircuitDevices.length < 2) {
+    attackComboState.textContent = "장치가 2개 이상 필요";
+    return;
+  }
+  const def = BETA_CHARACTERS.yellow.ultimate;
+  const startedAt = clock.elapsedTime;
+  for (let index = 0; index < yellowCircuitDevices.length - 1; index += 1) {
+    const a = yellowCircuitDevices[index];
+    const b = yellowCircuitDevices[index + 1];
+    const geometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(a.x, 0.48, a.z),
+      new THREE.Vector3(b.x, 0.48, b.z),
+    ]);
+    const material = new THREE.LineDashedMaterial({ color: 0xffff45, dashSize: 0.4, gapSize: 0.16, transparent: true, opacity: 0 });
+    const line = new THREE.Line(geometry, material);
+    line.computeLineDistances();
+    scene.add(line);
+    yellowCircuitEffects.push({ line, a, b, startsAt: startedAt + index * 0.18, expiresAt: startedAt + def.circuitDuration, activated: false });
+  }
+  attackComboState.textContent = "전기 회로 가동";
+  canvas.dataset.yellowCircuitActive = "true";
+}
+
 function updateCrimsonUltimateGauge() {
   const id = betaState.selectedCharacter;
   const configs = {
@@ -3930,7 +4050,10 @@ function updateCrimsonUltimateGauge() {
     crimson: { charge: crimsonUltimateCharge, required: CRIMSON.ultimateChargeRequired, name: BETA_CHARACTERS.crimson.ultimate.name, color: "#a00000" },
     pink: { charge: pinkUltimateCharge, required: BETA_CHARACTERS.pink.ultimate.chargeRequired, name: "앙코르!", color: "#ff79b8" },
     gold: { charge: goldUltimateCharge, required: BETA_CHARACTERS.gold.ultimateChargeRequired, name: "고장 지대", color: "#ffd700" },
+    orange: { charge: orangeUltimateCharge, required: BETA_CHARACTERS.orange.ultimate.chargeRequired, name: BETA_CHARACTERS.orange.ultimate.name, color: "#ff9b32" },
+    purple: { charge: purpleUltimateCharge, required: BETA_CHARACTERS.purple.ultimate.chargeRequired, name: BETA_CHARACTERS.purple.ultimate.name, color: "#b13cff" },
     green: { charge: greenUltimateCharge, required: BETA_CHARACTERS.green.ultimate.chargeRequired, name: BETA_CHARACTERS.green.ultimate.name, color: "#42d66b" },
+    yellow: { charge: yellowUltimateCharge, required: BETA_CHARACTERS.yellow.ultimate.chargeRequired, name: BETA_CHARACTERS.yellow.ultimate.name, color: "#ffff45" },
     chartreuse: { charge: chartreuseUltimateCharge, required: BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, name: BETA_CHARACTERS.chartreuse.ultimate.name, color: "#c1f80a" },
     mint: {
       charge: mintUltimateCharge,
@@ -4146,8 +4269,97 @@ function performCyanUltimate() {
   });
 }
 
+function damagePurpleLeapArea(position) {
+  const def = BETA_CHARACTERS.purple.ultimate;
+  createGroundPulse(def.radius, 0xb13cff, position);
+  createPinkNoteBurst(def.radius * 0.8, position);
+  for (const target of testTargets) {
+    if (!target.visible || target.userData.isAlly) continue;
+    if (Math.hypot(target.position.x - position.x, target.position.z - position.z) <= def.radius) {
+      damageTarget(target, def.damage);
+    }
+  }
+}
+
+function startPurpleLeap() {
+  const def = BETA_CHARACTERS.purple.ultimate;
+  const start = player.position.clone();
+  const target = purpleUltimateAimPointValid
+    ? purpleUltimateAimPoint.clone()
+    : new THREE.Vector3(start.x + Math.sin(player.rotation.y) * def.range, 0, start.z + Math.cos(player.rotation.y) * def.range);
+  const dx = target.x - start.x;
+  const dz = target.z - start.z;
+  const distance = Math.hypot(dx, dz);
+  if (distance > def.range) {
+    target.x = start.x + dx / distance * def.range;
+    target.z = start.z + dz / distance * def.range;
+  }
+  target.y = Math.max(0, groundHeightAt(target.x, target.z)) + 0.05;
+  damagePurpleLeapArea(start);
+  purpleJumpState = { start, target, elapsed: 0, duration: def.duration, jumpHeight: def.jumpHeight };
+  attackComboState.textContent = "독성 대도약";
+}
+
+function updatePurpleLeap(dt) {
+  const jump = purpleJumpState;
+  if (!jump) return false;
+  jump.elapsed += dt;
+  const t = THREE.MathUtils.clamp(jump.elapsed / jump.duration, 0, 1);
+  player.position.x = THREE.MathUtils.lerp(jump.start.x, jump.target.x, t);
+  player.position.z = THREE.MathUtils.lerp(jump.start.z, jump.target.z, t);
+  player.position.y = THREE.MathUtils.lerp(jump.start.y, jump.target.y, t) + Math.sin(t * Math.PI) * jump.jumpHeight;
+  if (t >= 1) {
+    player.position.copy(jump.target);
+    damagePurpleLeapArea(jump.target);
+    purpleJumpState = null;
+  }
+  return true;
+}
+
+function performOrangeUltimate() {
+  const def = BETA_CHARACTERS.orange.ultimate;
+  for (let index = 0; index < def.count; index += 1) {
+    const angle = def.count > 1
+      ? -def.spreadAngle / 2 + index * (def.spreadAngle / (def.count - 1)) : 0;
+    fireBetaProjectile({
+      angle, speed: def.speed, range: def.range, damage: def.damage,
+      color: 0xff9b32, radius: def.hitRadius, type: "orangePeel", pierces: true,
+    });
+  }
+  attackComboState.textContent = "오렌지 껍질 회수";
+}
+
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead) return;
+  if (betaState.selectedCharacter === "purple" && IS_BETA7_TEST) {
+    const def = BETA_CHARACTERS.purple.ultimate;
+    if (purpleUltimateCharge < def.chargeRequired || purpleJumpState) return;
+    purpleUltimateCharge = 0;
+    startPurpleLeap();
+    updateCrimsonUltimateGauge();
+    return;
+  }
+  if (betaState.selectedCharacter === "orange" && IS_BETA8_TEST) {
+    const def = BETA_CHARACTERS.orange.ultimate;
+    if (orangeUltimateCharge < def.chargeRequired) return;
+    orangeUltimateCharge = 0;
+    performOrangeUltimate();
+    updateCrimsonUltimateGauge();
+    return;
+  }
+  if (betaState.selectedCharacter === "yellow" && IS_BETA6_TEST) {
+    const def = BETA_CHARACTERS.yellow.ultimate;
+    if (yellowUltimateCharge < def.chargeRequired) return;
+    yellowUltimateCharge = 0;
+    const fallback = new THREE.Vector3(
+      player.position.x + Math.sin(player.rotation.y) * 8,
+      0,
+      player.position.z + Math.cos(player.rotation.y) * 8,
+    );
+    createYellowCircuitDevice(yellowUltimateAimPointValid ? yellowUltimateAimPoint : fallback);
+    updateCrimsonUltimateGauge();
+    return;
+  }
   if (betaState.selectedCharacter === "azure" && IS_BETA6_TEST) {
     const def = BETA_CHARACTERS.azure.ultimate;
     if (azureUltimateCharge < def.chargeRequired || azureWaveState) return;
@@ -4296,9 +4508,13 @@ ultimateButton.addEventListener("click", () => {
 });
 
 let ivoryUltimateAiming = false;
+const yellowUltimateAimPoint = new THREE.Vector3();
+let yellowUltimateAimPointValid = false;
+const purpleUltimateAimPoint = new THREE.Vector3();
+let purpleUltimateAimPointValid = false;
 // 아이보리를 제외한 방향성 궁극기 — 거리는 각 캐릭터의 기존 사거리를 그대로
 // 쓰고, 누르고 있는 동안 바라보는 방향만 마우스/키보드로 조준한다.
-const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "azure"]);
+const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure"]);
 let directionalUltimateAiming = false;
 ultimateButton.addEventListener("pointerdown", (event) => {
   if (betaState.selectedCharacter === "ivory") {
@@ -4312,11 +4528,30 @@ ultimateButton.addEventListener("pointerdown", (event) => {
     mintUltimateAimIndicator.visible = betaState.selectedCharacter === "mint";
     ultimateButton.setPointerCapture(event.pointerId);
     canvas.dataset.ultimateAim = "manual";
+    if (betaState.selectedCharacter === "yellow" && groundPointAtPointer(event)) {
+      yellowUltimateAimPoint.copy(manualAimPoint);
+      yellowUltimateAimPointValid = true;
+    } else if (betaState.selectedCharacter === "purple" && groundPointAtPointer(event)) {
+      purpleUltimateAimPoint.copy(manualAimPoint);
+      purpleUltimateAimPointValid = true;
+    }
   }
 });
 addEventListener("pointermove", (event) => {
   if (ivoryUltimateAiming) aimPlayerAtPointer(event, "ultimate");
-  else if (directionalUltimateAiming) aimPlayerAtPointer(event);
+  else if (directionalUltimateAiming && betaState.selectedCharacter === "yellow") {
+    if (groundPointAtPointer(event)) {
+      yellowUltimateAimPoint.copy(manualAimPoint);
+      yellowUltimateAimPointValid = true;
+      player.rotation.y = Math.atan2(manualAimPoint.x - player.position.x, manualAimPoint.z - player.position.z);
+    }
+  } else if (directionalUltimateAiming && betaState.selectedCharacter === "purple") {
+    if (groundPointAtPointer(event)) {
+      purpleUltimateAimPoint.copy(manualAimPoint);
+      purpleUltimateAimPointValid = true;
+      player.rotation.y = Math.atan2(manualAimPoint.x - player.position.x, manualAimPoint.z - player.position.z);
+    }
+  } else if (directionalUltimateAiming) aimPlayerAtPointer(event);
 });
 addEventListener("pointerup", () => {
   if (ivoryUltimateAiming) {
@@ -4390,12 +4625,13 @@ function resetSoccerBall() {
   soccerState.kickoffUntil = clock.elapsedTime + 1;
 }
 
-function kickSoccerBall(from, yaw, team = "a") {
-  if (goldRushState.mode !== "soccer" || clock.elapsedTime < soccerState.kickoffUntil) return false;
-  if (Math.hypot(soccerBall.position.x - from.x, soccerBall.position.z - from.z) > 3.2) return false;
+function kickSoccerBall(from, yaw, team = "a", requireNearby = true) {
+  if (goldRushState.mode !== "soccer" || (requireNearby && clock.elapsedTime < soccerState.kickoffUntil)) return false;
+  if (requireNearby && Math.hypot(soccerBall.position.x - from.x, soccerBall.position.z - from.z) > 3.2) return false;
   soccerState.vx = Math.sin(yaw) * 17;
   soccerState.vz = Math.cos(yaw) * 17;
   soccerState.lastKick = team;
+  canvas.dataset.lastSoccerKick = `${team}:${yaw.toFixed(3)}`;
   return true;
 }
 
@@ -5004,6 +5240,7 @@ function calcShowdownStreakBonus(streak) {
 
 function endGoldRush(message, playerWon = false, showdownRank = null) {
   clearAzureWave();
+  clearYellowCircuit();
   if (goldRushState.ended) return;
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
@@ -5069,7 +5306,8 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
 
 function startGoldRush(mode = "goldRush") {
   clearAzureWave();
-  azureUltimateCharge = 0;
+  clearYellowCircuit();
+  resetAllUltimateCharges();
   goldRushState.mode = mode;
   const arenaMode = mode === "showdown" || mode === "soccer";
   currentArenaMode = arenaMode ? "showdown" : "lobby";
@@ -5585,6 +5823,22 @@ function animate() {
     let shouldSplitOrange = false;
     let orangeDirectHitTarget = null;
     let shouldBreakVial = false;
+    if (projectile.type === "orangePeel" && projectile.phase === "paused") {
+      if (clock.elapsedTime < projectile.pauseUntil) continue;
+      projectile.phase = "returning";
+      projectile.returned = true;
+      projectile.hit.clear();
+    }
+    if (projectile.type === "orangePeel" && projectile.returned) {
+      const returnX = player.position.x - projectile.mesh.position.x;
+      const returnZ = player.position.z - projectile.mesh.position.z;
+      const returnDistance = Math.hypot(returnX, returnZ);
+      if (returnDistance <= 0.65) remove = true;
+      else {
+        projectile.vx = returnX / returnDistance * projectile.speed;
+        projectile.vz = returnZ / returnDistance * projectile.speed;
+      }
+    }
     if (projectile.type === "boomerang" && projectile.returned) {
       const returnX = player.position.x - projectile.mesh.position.x;
       const returnZ = player.position.z - projectile.mesh.position.z;
@@ -5638,6 +5892,15 @@ function animate() {
     }
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
+    }
+    if (!remove && projectile.type === "electric") {
+      const hitDevice = yellowCircuitDevices.find((device) =>
+        Math.hypot(device.x - projectile.mesh.position.x, device.z - projectile.mesh.position.z) <= 0.8 + projectile.hitRadius);
+      if (hitDevice) {
+        remove = true;
+        createGroundPulse(0.9, 0xffff45, hitDevice.mesh.position);
+        activateYellowCircuit();
+      }
     }
     // 독병/아이스크림 투척류는 공중 경로에서 직접 충돌하지 않고 착지 시점에만 효과를 낸다.
     if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial" && projectile.type !== "mintSpecial") {
@@ -5694,17 +5957,27 @@ function animate() {
           }
         }
         if (projectile.type === "orangeFruit") {
+          if (IS_BETA8_TEST) {
+            orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + 1);
+            if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
+          }
           shouldSplitOrange = true;
           orangeDirectHitTarget = target;
         }
         if (projectile.type === "electric") {
           const yellow = BETA_CHARACTERS.yellow;
+          yellowUltimateCharge = Math.min(yellow.ultimate.chargeRequired, yellowUltimateCharge + 1);
+          if (betaState.selectedCharacter === "yellow") updateCrimsonUltimateGauge();
           target.userData.slowUntil = clock.elapsedTime + yellow.shockDuration;
           target.userData.slowMultiplier = 1 - yellow.shockSlowPercent;
           createChartreuseStatusEffect("slow", target, yellow.shockDuration);
         }
         if (projectile.characterId === "purple" && projectile.type === "needle") {
           const purple = BETA_CHARACTERS.purple;
+          if (IS_BETA7_TEST) {
+            purpleUltimateCharge = Math.min(purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
+            if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
+          }
           const poisonWasInactive = !target.userData.poisonUntil || target.userData.poisonUntil <= clock.elapsedTime;
           target.userData.poisonUntil = clock.elapsedTime + purple.poisonDuration;
           target.userData.poisonDamage = purple.poisonDPS;
@@ -5772,9 +6045,13 @@ function animate() {
       projectile.returned = true;
       projectile.hit.clear();
     }
-    if (projectile.type === "boomerang") {
+    if (projectile.type === "orangePeel" && !projectile.returned && projectile.traveled >= projectile.range) {
+      projectile.phase = "paused";
+      projectile.pauseUntil = clock.elapsedTime + BETA_CHARACTERS.orange.ultimate.pauseDuration;
+      projectile.traveled = projectile.range;
+    } else if (projectile.type === "boomerang") {
       if (projectile.returnTraveled >= projectile.range * 2) remove = true;
-    } else if (projectile.traveled >= projectile.range) {
+    } else if (projectile.type !== "orangePeel" && projectile.traveled >= projectile.range) {
       const isArcLandingType = projectile.type === "ivoryIceCream" || projectile.type === "mintSpecial";
       if (isArcLandingType && !projectile.ivoryLandedAt) {
         projectile.mesh.position.set(projectile.landingX, 0.35, projectile.landingZ);
@@ -5974,6 +6251,32 @@ function animate() {
   }
   canvas.dataset.mintIceZones = String(mintIceZones.length);
 
+  for (let i = yellowCircuitEffects.length - 1; i >= 0; i -= 1) {
+    const effect = yellowCircuitEffects[i];
+    if (clock.elapsedTime < effect.startsAt) continue;
+    if (!effect.activated) {
+      effect.activated = true;
+      const def = BETA_CHARACTERS.yellow.ultimate;
+      for (const target of testTargets) {
+        if (!target.visible || target.userData.isAlly) continue;
+        if (distanceToSegment(target.position.x, target.position.z,
+          effect.a.x, effect.a.z, effect.b.x, effect.b.z) > def.connectionRadius + 0.85) continue;
+        damageTarget(target, def.connectionDamage);
+        target.userData.slowUntil = clock.elapsedTime + BETA_CHARACTERS.yellow.shockDuration;
+        target.userData.slowMultiplier = 1 - BETA_CHARACTERS.yellow.shockSlowPercent;
+        createChartreuseStatusEffect("slow", target, BETA_CHARACTERS.yellow.shockDuration);
+      }
+    }
+    const life = Math.max(0, effect.expiresAt - clock.elapsedTime);
+    effect.line.material.opacity = 0.55 + Math.sin(clock.elapsedTime * 24) * 0.35;
+    if (life > 0) continue;
+    scene.remove(effect.line);
+    effect.line.geometry.dispose();
+    effect.line.material.dispose();
+    yellowCircuitEffects.splice(i, 1);
+  }
+  if (yellowCircuitEffects.length === 0) canvas.dataset.yellowCircuitActive = "false";
+
   for (let i = malfunctionZones.length - 1; i >= 0; i -= 1) {
     if (i === malfunctionZones.length - 1) {
       for (const target of testTargets) target.userData.inMalfunctionZone = false;
@@ -6096,7 +6399,8 @@ function animate() {
   let isMoving = false;
   const blueDashing = updateBlueDash(dt);
   const azureDashing = updateAzureWave(dt);
-  if (blueDashing || azureDashing) {
+  const purpleJumping = updatePurpleLeap(dt);
+  if (blueDashing || azureDashing || purpleJumping) {
     isMoving = true;
   } else if (!goldRushState.dead && input.lengthSq() > 0) {
     isMoving = true;
@@ -6134,8 +6438,10 @@ function animate() {
   }
   updateHeadAttachedSkinAccessory();
   const ground = groundHeightAt(player.position.x, player.position.z);
-  if (ground < -5) resetPlayer();
-  else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
+  if (!purpleJumping) {
+    if (ground < -5) resetPlayer();
+    else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
+  }
   updateGoldRush(dt);
   updatePracticeRespawn();
   updateTestCombatHud(dt);

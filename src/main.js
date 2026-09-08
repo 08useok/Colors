@@ -2974,7 +2974,11 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
   }
   if (color === CHARACTERS.mint.color) {
     ensureMintFbxLoading();
-    if (_mintFbx.loop) return buildPinkRigModel(resolveWalkGlbSet(_mintFbx, isAiBot), skinId);
+    if (_mintFbx.loop) {
+      const group = buildPinkRigModel(resolveWalkGlbSet(_mintFbx, isAiBot), skinId);
+      group.userData.isMintFbx = true;
+      return group;
+    }
   }
 
   const group = new THREE.Group();
@@ -3949,9 +3953,15 @@ function ensureChartreuseGlbLoading() {
   _glbLoader.load('./assets/3d/chartreuse/walk-m3e.glb', g => { _chartreuseGlb.end = _stripRootMotion(g); });
 }
 function prepareMintFbx(asset) {
-  asset.rotateX(-Math.PI / 2);
+  // FBXLoader가 좌표축을 Three.js의 Y-up 좌표계로 변환한다. 여기에 X축
+  // -90도 보정을 다시 적용하면 전투 모델 전체가 바닥과 평행하게 눕는다.
+  asset.rotation.x = 0;
+  asset.rotation.z = 0;
+  asset.updateMatrixWorld(true);
   for (const clip of (asset.animations ?? [])) {
-    clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name));
+    // 모델 전체를 움직이는 최상위 노드의 위치·회전 트랙은 게임의 이동 및
+    // 방향 회전과 중복된다. 팔다리/몸통 본 애니메이션만 유지한다.
+    clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|RootNodeL|output_unwrapped|walk[_-]m(?:1s|2l|3e))\./i.test(track.name));
   }
   return { scene: asset, animations: asset.animations ?? [] };
 }
@@ -8545,17 +8555,33 @@ function beginIvoryAttack(fighter) {
 function spawnMintIceBullet(fighter, yaw) {
   if (fighter.dead || !fighter.mesh?.parent) return;
   const charDef = CHARACTERS.mint;
-  const mesh = new THREE.Mesh(
-    new THREE.CapsuleGeometry(0.13, 0.28, 4, 8),
-    new THREE.MeshBasicMaterial({ color: charDef.color }),
+  const mesh = new THREE.Group();
+  const core = new THREE.Mesh(
+    new THREE.CapsuleGeometry(0.2, 0.34, 6, 12),
+    new THREE.MeshStandardMaterial({
+      color: 0xb9ffe8, emissive: 0x42dcb2, emissiveIntensity: 0.7,
+      roughness: 0.28, metalness: 0.02,
+    }),
   );
-  mesh.rotation.x = Math.PI / 2;
+  core.rotation.x = Math.PI / 2;
+  const frost = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.24, 0),
+    new THREE.MeshBasicMaterial({
+      color: 0xeaffff, transparent: true, opacity: 0.72,
+      depthWrite: false, blending: THREE.AdditiveBlending,
+    }),
+  );
+  frost.scale.set(0.62, 0.62, 1.35);
+  frost.rotation.z = Math.PI / 4;
+  mesh.add(core, frost);
   mesh.position.set(
     fighter.mesh.position.x + Math.sin(yaw) * 0.9,
     1.3,
     fighter.mesh.position.z + Math.cos(yaw) * 0.9,
   );
+  mesh.rotation.y = yaw;
   scene.add(mesh);
+  createMintIceHitEffect(mesh.position.x, mesh.position.z, 0.45);
   state.projectiles.push({
     ownerId: fighter.id,
     x: mesh.position.x,
@@ -8572,7 +8598,35 @@ function spawnMintIceBullet(fighter, yaw) {
     isBullet: true,
     isMintIce: true,
     isPenetrating: false,
+    projRadius: 0.24,
   });
+}
+
+function createMintIceHitEffect(x, z, scale = 1) {
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.16 * scale, 0.42 * scale, 24),
+    new THREE.MeshBasicMaterial({
+      color: 0xb9ffe8, transparent: true, opacity: 0.78,
+      side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
+    }),
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.set(x, 0.16, z);
+  scene.add(ring);
+  state.effects.push({ mesh: ring, life: 0.28, maxLife: 0.28, type: "mintIceBurst" });
+  for (let index = 0; index < 6; index += 1) {
+    const angle = index / 6 * Math.PI * 2;
+    const shard = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.11 * scale, 0),
+      new THREE.MeshBasicMaterial({ color: index % 2 ? 0xffffff : 0x86f8d5, transparent: true, opacity: 0.9 }),
+    );
+    shard.position.set(x, 0.45, z);
+    scene.add(shard);
+    state.effects.push({
+      mesh: shard, life: 0.3, maxLife: 0.3, type: "mintIceShard",
+      vx: Math.cos(angle) * 2.2 * scale, vy: 2.4 * scale, vz: Math.sin(angle) * 2.2 * scale,
+    });
+  }
 }
 
 function beginMintAttack(fighter) {
@@ -9759,18 +9813,21 @@ function updateProjectiles(dt) {
     if ((proj.isBullet || proj.isElectric || proj.isNeedle)
       && proj.distTraveled >= (proj.nextTrailDistance ?? 0)) {
       proj.nextTrailDistance = proj.distTraveled + trailSpacing;
-      const color = proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
-      const size = proj.isBullet ? 0.2 : proj.isElectric ? 0.14 : 0.16;
-      const trailLife = proj.isElectric ? 0.055 : 0.09;
+      const color = proj.isMintIce ? 0xb9ffe8 : proj.isBullet ? 0x0000ff : proj.isElectric ? 0xffff00 : 0x800080;
+      const size = proj.isMintIce ? 0.15 : proj.isBullet ? 0.2 : proj.isElectric ? 0.14 : 0.16;
+      const trailLife = proj.isMintIce ? 0.16 : proj.isElectric ? 0.055 : 0.09;
       const trail = new THREE.Mesh(
         new THREE.SphereGeometry(size, 4, 4),
-        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: proj.isElectric ? 0.32 : 0.42, depthWrite: false }),
+        new THREE.MeshBasicMaterial({
+          color, transparent: true, opacity: proj.isMintIce ? 0.62 : proj.isElectric ? 0.32 : 0.42,
+          depthWrite: false, blending: proj.isMintIce ? THREE.AdditiveBlending : THREE.NormalBlending,
+        }),
       );
       trail.position.set(proj.x, proj.mesh.position.y, proj.z);
       scene.add(trail);
       state.effects.push({
         mesh: trail, life: trailLife, maxLife: trailLife, type: "trail",
-        peakOpacity: proj.isElectric ? 0.32 : 0.42,
+        peakOpacity: proj.isMintIce ? 0.62 : proj.isElectric ? 0.32 : 0.42,
       });
     }
 
@@ -9950,7 +10007,8 @@ function updateProjectiles(dt) {
           target.shockSlowOverride = null;
           createElectricHitEffect(proj.x, proj.z);
         }
-        if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
+        if (proj.isMintIce) createMintIceHitEffect(proj.x, proj.z);
+        else if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
         if (proj.isBoomerang) {
           createBoomerangHitEffect(proj.x, proj.z);
         }
@@ -10641,6 +10699,17 @@ function updateEffects(dt) {
     } else if (effect.type === "trail") {
       effect.mesh.scale.setScalar(alpha);
       effect.mesh.material.opacity = alpha * (effect.peakOpacity ?? 0.42);
+    } else if (effect.type === "mintIceBurst") {
+      effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.4);
+      effect.mesh.material.opacity = alpha * 0.78;
+    } else if (effect.type === "mintIceShard") {
+      effect.mesh.position.x += effect.vx * dt;
+      effect.mesh.position.y += effect.vy * dt;
+      effect.mesh.position.z += effect.vz * dt;
+      effect.vy -= 8 * dt;
+      effect.mesh.rotation.x += dt * 9;
+      effect.mesh.rotation.z += dt * 7;
+      effect.mesh.material.opacity = alpha * 0.9;
     } else if (effect.type === "bulletHit" || effect.type === "spreadHit" || effect.type === "needleHit") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 1.8);
       effect.mesh.material.opacity = alpha * alpha;
@@ -11543,9 +11612,15 @@ function updateFighterAnimation(fighter, dt) {
       let diff = ((targetOffset - curOffset + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
       body.pinkFacingOffset = curOffset + diff * Math.min(1, dt * 12);
     }
-    const faceOff = body.pinkFacingOffset ?? 0;
+    // 민트 FBX는 바깥 fighter.mesh가 이미 회전한다. 내부 장면까지 Y축으로
+    // 회전시키면 방향이 두 번 적용되므로 민트만 로컬 회전을 고정한다.
+    const faceOff = body.isMintFbx ? 0 : (body.pinkFacingOffset ?? 0);
     for (const sc of Object.values(body.pinkScenes ?? {})) {
-      if (sc) sc.rotation.y = faceOff;
+      if (sc) {
+        if (body.isMintFbx) sc.rotation.x = 0;
+        sc.rotation.y = faceOff;
+        if (body.isMintFbx) sc.rotation.z = 0;
+      }
     }
     }
     updateHeadAttachedSkin(fighter.mesh);

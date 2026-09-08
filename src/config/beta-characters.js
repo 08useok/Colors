@@ -72,6 +72,13 @@ export const BETA_CHARACTERS = {
     officialAbility: { id: "wideBlast", name: "광역 폭발", description: "폭발 범위 25% 증가",
       nameEn: "Wide Blast", descriptionEn: "Increases blast radius by 25%." },
     blastRadiusMultiplier: 1.25,
+    ultimate: {
+      id: "returningPeels", name: "오렌지 껍질 회수",
+      description: "오렌지 껍질 5개를 부채꼴로 던집니다. 최대 사거리에서 2초간 멈춘 뒤 같은 피해량으로 되돌아옵니다.",
+      nameEn: "Returning Peels", descriptionEn: "Throws five peels in a fan. They wait for two seconds at maximum range, then return at full damage.",
+      chargeRequired: 8, count: 5, damage: 1400, range: 10, speed: 16,
+      spreadAngle: degrees(60), pauseDuration: 2, hitRadius: 0.32,
+    },
   },
   yellow: {
     maxHealth: 5800, moveSpeedMultiplier: 1, attackCooldown: 0.45, reloadDuration: 0.9, maxAmmo: 3,
@@ -83,6 +90,13 @@ export const BETA_CHARACTERS = {
       description: "전기구슬을 날립니다. 맞은 캐릭터는 이동속도가 대폭 감소됩니다. 그래서 적군이 자꾸 피하는 거군요!",
       nameEn: "Zappy Orb",
       descriptionEn: "Fires an electric orb. Anyone hit is slowed sharply, which is why enemies keep dodging it."
+    },
+    ultimate: {
+      id: "electricCircuit", name: "전기 회로",
+      description: "원하는 위치에 장치를 설치합니다. 장치가 2개 이상일 때 일반 공격으로 맞히면 3초 동안 설치 순서대로 전기가 흐르며 연결 구간의 적에게 1000 피해를 줍니다.",
+      nameEn: "Electric Circuit", descriptionEn: "Places a device anywhere. With two or more devices, hit one with a basic attack to power a three-second circuit that damages enemies along each connection.",
+      chargeRequired: 2, maxDevices: 4, duration: Infinity, circuitDuration: 3,
+      connectionDamage: 1000, connectionRadius: 0.7,
     },
   },
   cyan: {
@@ -99,7 +113,7 @@ export const BETA_CHARACTERS = {
     ultimate: {
       id: "galeStrike", name: "질풍 강타", description: "전방으로 거대한 강풍을 발사해 피해를 주고 강하게 밀쳐냅니다.",
       nameEn: "Gale Strike", descriptionEn: "Unleashes a massive gust forward that damages and strongly knocks back everything it hits.",
-      damage: 1300, range: 10, projectileRadius: 4, speedMultiplier: 5 / 3, knockback: 8, chargeRequired: 12,
+      damage: 2600, range: 10, projectileRadius: 4, speedMultiplier: 5 / 3, knockback: 8, chargeRequired: 10,
     },
   },
   purple: {
@@ -118,6 +132,12 @@ export const BETA_CHARACTERS = {
     officialAbility: { id: "wideNeedle", name: "광각 독침", description: "독침 3발을 -12도, 0도, +12도로 발사",
       nameEn: "Wide Needle", descriptionEn: "Fires three needles at -12, 0, and +12 degrees." },
     needleCount: 3, needleRadial: false, needleSpreadAngle: degrees(24),
+    ultimate: {
+      id: "toxicLeap", name: "독성 대도약",
+      description: "장거리 도약을 시작할 때와 착지할 때 각각 5000의 범위 피해를 줍니다.",
+      nameEn: "Toxic Leap", descriptionEn: "Deals 5,000 area damage both on takeoff and on landing after a long leap.",
+      chargeRequired: 8, damage: 5000, range: 12, radius: 3.5, duration: 0.8, jumpHeight: 5,
+    },
   },
   pink: {
     maxHealth: 10500, moveSpeedMultiplier: 1.3, attackCooldown: 0.3, reloadDuration: 0.8, maxAmmo: 3,
@@ -133,7 +153,7 @@ export const BETA_CHARACTERS = {
     ultimate: {
       id: "encore", name: "앙코르!", description: "반경 8타일 안의 모든 아군에게 12초 동안 부활 효과를 부여합니다. 효과를 받은 아군이 사망하면 그 자리에서 체력 40%와 2초 무적으로 부활하며, 이미 쓰러진 아군은 즉시 부활합니다.",
       nameEn: "Encore!", descriptionEn: "Grants every ally within 8 tiles a 12-second revival effect. If an affected ally falls, they revive in place at 40% health with 2 seconds of invulnerability; already-fallen allies revive immediately.",
-      chargeRequired: 15, radius: 8, reviveHealthRatio: 0.4, invulnerabilityDuration: 2,
+      chargeRequired: 12, radius: 8, reviveHealthRatio: 0.4, invulnerabilityDuration: 2,
     },
   },
   crimson: {
@@ -155,7 +175,7 @@ export const BETA_CHARACTERS = {
       nameEn: "KO Straight",
       descriptionEn: "Throws a monstrous punch. It lands so hard that walls break and enemies are shoved away.",
     },
-    ultimateDamage: 3000, ultimateLength: 6, ultimateWidth: 6, ultimateKnockback: 1, ultimateChargeRequired: 9,
+    ultimateDamage: 4500, ultimateLength: 6, ultimateWidth: 6, ultimateKnockback: 1, ultimateChargeRequired: 8,
   },
   gold: {
     maxHealth: 6200, moveSpeedMultiplier: 1, attackCooldown: 0.8, reloadDuration: 1.2, maxAmmo: 3,
@@ -170,7 +190,7 @@ export const BETA_CHARACTERS = {
     stage1Damage: 4000, stage1Range: 8, stage1Speed: 16, stage1Size: 2, stage1SplashRadius: 1.5,
     stage2Damage: 2000, stage2Range: 8, stage2Speed: 18,
     stage3Damage: 1000, stage3Range: 6, stage3Speed: 20,
-    projectileRadius: 0.2, ultimateChargeRequired: 12, maxChargePerAttack: 6,
+    projectileRadius: 0.2, ultimateChargeRequired: 10, maxChargePerAttack: 6,
     ultimate: {
       id: "malfunctionZone", name: "고장 지대",
       description: "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다.",
@@ -195,7 +215,7 @@ export const BETA_CHARACTERS = {
       id: "groupOrder", name: "단체 주문",
       description: "최대 20타일 거리의 중앙과 대각선 네 방향에 아이스크림 5개를 던집니다.",
       nameEn: "Group Order", descriptionEn: "Throws five ice creams at a target area up to 20 tiles away: one in the center and one in each diagonal direction.",
-      castRange: 20, patternRadius: 3.5, chargeRequired: 12,
+      castRange: 20, patternRadius: 3.5, chargeRequired: 10,
     },
   },
   chartreuse: {
@@ -204,7 +224,7 @@ export const BETA_CHARACTERS = {
     description: "어딘가 나사빠지고 멍청해 보이는 캐릭터, 하지만 그가 만든 '샤단라'는 항상 이래서 평범합니다.",
     descriptionEn: "A controller-leaning random damage dealer.",
     basicAttack: { name: "무슨 공격이지?", description: "강화탄, CC탄, 흑사병탄, 무탄 중 하나를 무작위로 발사합니다.", nameEn: "What Attack?", descriptionEn: "Fires one random round: enhanced, CC, plague, or blank." },
-    ultimate: { id: "clearMind", name: "49% 정신 차림", description: "6초 동안 무탄이 사라지고 세 탄환이 동일 확률로 등장합니다.", nameEn: "49% Clear Mind", descriptionEn: "For 6 seconds, blank rounds are removed and the other three appear equally.", chargeRequired: 8, duration: 6 },
+    ultimate: { id: "clearMind", name: "49% 정신 차림", description: "6초 동안 무탄이 사라지고 세 탄환이 동일 확률로 등장합니다.", nameEn: "49% Clear Mind", descriptionEn: "For 6 seconds, blank rounds are removed and the other three appear equally.", chargeRequired: 7, duration: 6 },
   },
   mint: {
     maxHealth: 6600, moveSpeedMultiplier: 1.05, attackCooldown: 0.75, reloadDuration: 1.15, maxAmmo: 3,
@@ -222,7 +242,7 @@ export const BETA_CHARACTERS = {
       id: "iceCreamField", name: "아이스크림 장판",
       description: "지정한 위치에 10초 동안 반경 9타일의 얼음 장판을 생성합니다. 적은 점점 빠르게 미끄러지며 매초 300 피해와 얼음 수치 5를 받습니다.",
       nameEn: "Ice Cream Field", descriptionEn: "Creates a 9-tile ice field for 10 seconds. Enemies slide faster over time and take 300 damage plus 5 ice each second.",
-      castRange: 10, radius: 9, duration: 10, icePerSecond: 5, damagePerSecond: 300, chargeRequired: 8, slideStrength: 3.2, slideAcceleration: 0.6,
+      castRange: 10, radius: 9, duration: 10, icePerSecond: 5, damagePerSecond: 300, chargeRequired: 7, slideStrength: 3.2, slideAcceleration: 0.6,
     },
   },
   azure: {
@@ -238,9 +258,9 @@ export const BETA_CHARACTERS = {
     },
     ultimate: {
       id: "bigWave", name: "빅 웨이브",
-      description: "큰 파도를 전방으로 보내 3200 피해와 강한 넉백을 줍니다. 애저 본인은 이동하지 않습니다.",
-      nameEn: "Big Wave", descriptionEn: "Launches a huge wave that deals 3,200 damage and heavy knockback while Azure remains in place.",
-      damage: 3200, range: 6, width: 4, knockback: 9, chargeRequired: 7,
+      description: "큰 파도를 전방으로 보내 4800 피해와 강한 넉백을 줍니다. 애저 본인은 이동하지 않습니다.",
+      nameEn: "Big Wave", descriptionEn: "Launches a huge wave that deals 4,800 damage and heavy knockback while Azure remains in place.",
+      damage: 4800, range: 6, width: 4, knockback: 9, chargeRequired: 7,
     },
   },
 };
