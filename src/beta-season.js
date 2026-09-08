@@ -2949,69 +2949,20 @@ function hitSlashes(length, halfWidth, angles, damage) {
   if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
 }
 
-const BETA_AUTO_AIM_CONE_COS = Math.cos(70 * Math.PI / 180);
-const BETA_AUTO_AIM_LOCK_SECONDS = 0.3;
-let betaAutoAimTarget = null;
-let betaAutoAimTargetUntil = 0;
-
-function betaAutoAimPathBlocked(ax, az, bx, bz) {
-  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
-  const distance = Math.hypot(bx - ax, bz - az);
-  const steps = Math.max(1, Math.ceil(distance / 0.3));
-  for (let i = 1; i < steps; i += 1) {
-    const t = i / steps;
-    const x = ax + (bx - ax) * t;
-    const z = az + (bz - az) * t;
-    if (arenaSolids.some((solid) => Math.abs(x - solid.x) < solid.halfW + 0.12
-      && Math.abs(z - solid.z) < solid.halfD + 0.12)) return true;
-  }
-  return false;
-}
-
-function autoAimAtNearestTarget(maxRange) {
-  const canAimThroughWalls = ["orange", "purple", "ivory"].includes(betaState.selectedCharacter);
-  if (betaAutoAimTarget?.visible && clock.elapsedTime < betaAutoAimTargetUntil) {
-    const lockDistance = Math.hypot(
-      betaAutoAimTarget.position.x - player.position.x,
-      betaAutoAimTarget.position.z - player.position.z,
-    );
-    if (lockDistance <= maxRange && (canAimThroughWalls || !betaAutoAimPathBlocked(
-      player.position.x, player.position.z,
-      betaAutoAimTarget.position.x, betaAutoAimTarget.position.z,
-    ))) {
-      player.rotation.y = Math.atan2(betaAutoAimTarget.position.x - player.position.x,
-        betaAutoAimTarget.position.z - player.position.z);
-      return true;
-    }
-  }
-
-  const forwardX = Math.sin(player.rotation.y);
-  const forwardZ = Math.cos(player.rotation.y);
+function autoAimAtNearestTarget() {
   let best = null;
-  let bestScore = -Infinity;
+  let bestDistance = Infinity;
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly) continue;
     const dx = target.position.x - player.position.x;
     const dz = target.position.z - player.position.z;
     const targetDistance = Math.hypot(dx, dz);
-    if (targetDistance <= 0.001 || targetDistance > maxRange) continue;
-    if (!canAimThroughWalls && betaAutoAimPathBlocked(player.position.x, player.position.z,
-      target.position.x, target.position.z)) continue;
-    const facing = (dx * forwardX + dz * forwardZ) / targetDistance;
-    const directionScore = facing >= BETA_AUTO_AIM_CONE_COS
-      ? (facing - BETA_AUTO_AIM_CONE_COS) / (1 - BETA_AUTO_AIM_CONE_COS)
-      : 0;
-    const distanceScore = 1 - targetDistance / maxRange;
-    const hp = Number(target.userData.health);
-    const maxHp = Number(target.userData.maxHealth);
-    const healthScore = Number.isFinite(hp) && Number.isFinite(maxHp) && maxHp > 0
-      ? 1 - Math.max(0, hp) / maxHp : 0;
-    const score = directionScore * 0.65 + distanceScore * 0.3 + healthScore * 0.05;
-    if (score > bestScore) { bestScore = score; best = target; }
+    if (targetDistance < bestDistance) {
+      bestDistance = targetDistance;
+      best = target;
+    }
   }
   if (!best) return false;
-  betaAutoAimTarget = best;
-  betaAutoAimTargetUntil = clock.elapsedTime + BETA_AUTO_AIM_LOCK_SECONDS;
   player.rotation.y = Math.atan2(best.position.x - player.position.x, best.position.z - player.position.z);
   return true;
 }
@@ -4394,11 +4345,9 @@ let lastPointerX = 0;
 let lastPointerY = 0;
 let pointerTravel = 0;
 let manualAimActive = false;
-// 좌클릭은 공격, 누른 채 0.2초를 넘기면 수동 에임으로 넘어간다
-const AIM_HOLD_SECONDS = 0.2;
-const AUTO_AIM_DELAY_MS = 70;
-let pointerHoldTimer = null;
-let pointerPressedAt = 0;
+const MOUSE_AIM_DRAG_THRESHOLD = 6;
+const TOUCH_AIM_DRAG_THRESHOLD = 10;
+let attackPointerType = "mouse";
 let holdAiming = false;
 const manualAimRaycaster = new THREE.Raycaster();
 const manualAimPointer = new THREE.Vector2();
@@ -5393,10 +5342,10 @@ aimModeButton.addEventListener("click", () => {
   manualAimActive = !manualAimActive;
   aimModeButton.classList.toggle("active", manualAimActive);
   aimModeButton.setAttribute("aria-pressed", String(manualAimActive));
-  aimModeButton.textContent = manualAimActive ? "수동 에임 고정" : "좌클릭 공격 · 길게 눌러 조준";
+  aimModeButton.textContent = manualAimActive ? "수동 에임 고정" : "좌클릭 공격 · 드래그해 조준";
   canvas.dataset.aimMode = manualAimActive ? "manual" : "auto";
 });
-aimModeButton.textContent = "좌클릭 공격 · 길게 눌러 조준";
+aimModeButton.textContent = "좌클릭 공격 · 드래그해 조준";
 
 let ivoryUltimateKeyboardAiming = false;
 let directionalUltimateKeyboardAiming = false;
@@ -5442,10 +5391,6 @@ addEventListener("keyup", (event) => {
   }
 });
 function stopHoldAim() {
-  if (pointerHoldTimer !== null) {
-    clearTimeout(pointerHoldTimer);
-    pointerHoldTimer = null;
-  }
   holdAiming = false;
   canvas.dataset.aimMode = manualAimActive ? "manual" : "auto";
 }
@@ -5457,18 +5402,11 @@ canvas.addEventListener("pointerdown", (event) => {
   lastPointerY = event.clientY;
   canvas.setPointerCapture(event.pointerId);
   if (event.button !== 0 || !modal.classList.contains("hidden")) return;
-  pointerPressedAt = performance.now();
-  pointerHoldTimer = setTimeout(() => {
-    pointerHoldTimer = null;
-    holdAiming = true;
-    canvas.dataset.aimMode = "hold";
-    aimPlayerAtPointer(event);
-  }, AIM_HOLD_SECONDS * 1000);
+  attackPointerType = event.pointerType || "mouse";
 });
 canvas.addEventListener("pointerup", (event) => {
   dragging = false;
   const wasAiming = holdAiming;
-  const held = pointerHoldTimer !== null || wasAiming;
   stopHoldAim();
   if (event.button !== 0 || !modal.classList.contains("hidden")) return;
   if (wasAiming) {
@@ -5477,20 +5415,24 @@ canvas.addEventListener("pointerup", (event) => {
     performCharacterAttack({ manualAim: aimPlayerAtPointer(event) });
     return;
   }
-  if (!held || pointerTravel >= 6) return;
   canvas.dataset.lastAttackInput = "mouse";
-  const fastTap = performance.now() - pointerPressedAt < AUTO_AIM_DELAY_MS;
   performCharacterAttack({
-    manualAim: manualAimActive ? aimPlayerAtPointer(event) : fastTap,
+    manualAim: manualAimActive ? aimPlayerAtPointer(event) : false,
   });
 });
 canvas.addEventListener("pointercancel", stopHoldAim);
 canvas.addEventListener("pointermove", (event) => {
-  if ((manualAimActive || holdAiming) && modal.classList.contains("hidden")) aimPlayerAtPointer(event);
   if (!dragging || overview) return;
   const dx = event.clientX - lastPointerX;
   const dy = event.clientY - lastPointerY;
   pointerTravel += Math.hypot(dx, dy);
+  const dragThreshold = attackPointerType === "touch"
+    ? TOUCH_AIM_DRAG_THRESHOLD : MOUSE_AIM_DRAG_THRESHOLD;
+  if (dragging && !holdAiming && pointerTravel >= dragThreshold) {
+    holdAiming = true;
+    canvas.dataset.aimMode = "hold";
+  }
+  if ((manualAimActive || holdAiming) && modal.classList.contains("hidden")) aimPlayerAtPointer(event);
   // 수동 에임 중에는 드래그가 시점을 돌리지 않는다 — 카메라는 조준 방향을 따라간다
   if (holdAiming) {
     lastPointerX = event.clientX;

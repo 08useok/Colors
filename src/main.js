@@ -992,10 +992,8 @@ if (!leaderboardBots) {
 const maxAmmo = 3;
 const reloadDuration = 0.5;
 const attackCooldown = 0.62;
-// 이보다 짧은 탭은 현재 방향으로 즉시 발사해 플레이어의 방향 입력을 보존한다.
-const AUTO_AIM_DELAY_MS = 70;
-// 베타와 동일하게 0.2초부터 길게 누른 수동 조준으로 판정한다.
-const AUTO_AIM_HOLD_MS = 200;
+const MOUSE_AIM_DRAG_THRESHOLD = 6;
+const TOUCH_AIM_DRAG_THRESHOLD = 10;
 const attackEvents = [
   { delay: 0.12, damage: 2200 },
   { delay: 0.36, damage: 2200 },
@@ -2258,6 +2256,10 @@ const state = {
   },
   mouseHeld: false,
   attackHoldStartedAt: 0,
+  attackPointerStartX: 0,
+  attackPointerStartY: 0,
+  attackPointerTravel: 0,
+  attackPointerType: "mouse",
   manualAimActive: false,
   trainingMode: false,
   mobileMove: {
@@ -8362,29 +8364,9 @@ function beginAttack(fighter) {
   return started;
 }
 
-const AUTO_AIM_CONE_COS = Math.cos(70 * Math.PI / 180);
-const AUTO_AIM_LOCK_SECONDS = 0.3;
-
 function findAutoAimTarget(player) {
-  const range = Math.max(15, getAttackRange(player));
-  const canAimThroughWalls = ["orange", "purple", "ivory"].includes(player.characterType);
-  const locked = state.players.find((fighter) => fighter.id === player.autoAimTargetId);
-  if (locked && !locked.dead && state.gameTime < (player.autoAimTargetUntil || 0)
-    && isFighterVisible(player, locked)) {
-    const lockDistance = Math.hypot(
-      locked.mesh.position.x - player.mesh.position.x,
-      locked.mesh.position.z - player.mesh.position.z,
-    );
-    if (lockDistance <= range && (canAimThroughWalls || !isPathBlocked(
-      player.mesh.position.x, player.mesh.position.z,
-      locked.mesh.position.x, locked.mesh.position.z, 0.12,
-    ))) return locked;
-  }
-
-  const forwardX = Math.sin(player.yaw);
-  const forwardZ = Math.cos(player.yaw);
   let best = null;
-  let bestScore = -Infinity;
+  let bestDistance = Infinity;
   for (const fighter of state.players) {
     if (fighter.id === player.id || fighter.dead) continue;
     if (state.chopWoodMode && fighter.team === player.team) continue;
@@ -8392,21 +8374,10 @@ function findAutoAimTarget(player) {
     const dx = fighter.mesh.position.x - player.mesh.position.x;
     const dz = fighter.mesh.position.z - player.mesh.position.z;
     const dist = Math.hypot(dx, dz);
-    if (dist <= 0.001 || dist > range) continue;
-    if (!canAimThroughWalls && isPathBlocked(player.mesh.position.x, player.mesh.position.z,
-      fighter.mesh.position.x, fighter.mesh.position.z, 0.12)) continue;
-    const facing = (dx * forwardX + dz * forwardZ) / dist;
-    const directionScore = facing >= AUTO_AIM_CONE_COS
-      ? (facing - AUTO_AIM_CONE_COS) / (1 - AUTO_AIM_CONE_COS)
-      : 0;
-    const distanceScore = 1 - dist / range;
-    const healthScore = 1 - Math.max(0, fighter.health) / Math.max(1, fighter.maxHealth);
-    const score = directionScore * 0.65 + distanceScore * 0.3 + healthScore * 0.05;
-    if (score > bestScore) { bestScore = score; best = fighter; }
-  }
-  if (best) {
-    player.autoAimTargetId = best.id;
-    player.autoAimTargetUntil = state.gameTime + AUTO_AIM_LOCK_SECONDS;
+    if (dist < bestDistance) {
+      bestDistance = dist;
+      best = fighter;
+    }
   }
   return best;
 }
@@ -12907,13 +12878,18 @@ function setupInput() {
       event.preventDefault();
       state.mouseHeld = true;
       state.attackHoldStartedAt = performance.now();
+      state.attackPointerStartX = event.clientX;
+      state.attackPointerStartY = event.clientY;
+      state.attackPointerTravel = 0;
+      state.attackPointerType = event.pointerType || "mouse";
     }
   }
 
   function applyTapAutoAim(player) {
-    const heldMs = performance.now() - state.attackHoldStartedAt;
-    if (state.manualAimActive || !player || player.dead
-      || heldMs < AUTO_AIM_DELAY_MS || heldMs >= AUTO_AIM_HOLD_MS) return;
+    const dragThreshold = state.attackPointerType === "touch"
+      ? TOUCH_AIM_DRAG_THRESHOLD : MOUSE_AIM_DRAG_THRESHOLD;
+    if (state.manualAimActive || state.attackPointerTravel >= dragThreshold
+      || !player || player.dead) return;
     const target = findAutoAimTarget(player);
     if (!target) return;
     const dx = target.mesh.position.x - player.mesh.position.x;
@@ -12943,7 +12919,7 @@ function setupInput() {
     aimModeButton.setAttribute("aria-pressed", String(state.manualAimActive));
     aimModeButton.textContent = state.manualAimActive
       ? "수동 에임 고정"
-      : "좌클릭 공격 · 길게 눌러 조준";
+      : "좌클릭 공격 · 드래그해 조준";
   });
   window.addEventListener("mousedown", startAiming);
   window.addEventListener("mouseup", attackOnRelease);
@@ -13013,9 +12989,15 @@ function setupInput() {
     resetJoystick();
   });
 
-  window.addEventListener("mousemove", (event) => {
+  window.addEventListener("pointermove", (event) => {
     state.mouse.screenX = event.clientX;
     state.mouse.screenY = event.clientY;
+    if (state.mouseHeld) {
+      state.attackPointerTravel = Math.hypot(
+        event.clientX - state.attackPointerStartX,
+        event.clientY - state.attackPointerStartY,
+      );
+    }
   });
 
   window.addEventListener("resize", () => {
