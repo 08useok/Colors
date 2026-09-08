@@ -238,8 +238,8 @@ export const BETA_CHARACTERS = {
     },
     ultimate: {
       id: "bigWave", name: "빅 웨이브",
-      description: "큰 파도를 전방으로 보내 3200 피해와 강한 넉백을 주며, 애저도 파도를 타고 6타일 이동합니다.",
-      nameEn: "Big Wave", descriptionEn: "Launches a huge wave that deals 3,200 damage and heavy knockback while carrying Azure six tiles forward.",
+      description: "큰 파도를 전방으로 보내 3200 피해와 강한 넉백을 줍니다. 애저 본인은 이동하지 않습니다.",
+      nameEn: "Big Wave", descriptionEn: "Launches a huge wave that deals 3,200 damage and heavy knockback while Azure remains in place.",
       damage: 3200, range: 6, width: 4, knockback: 9, chargeRequired: 7,
     },
   },

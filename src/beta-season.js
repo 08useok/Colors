@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.18";
+import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.19";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.139";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -3579,7 +3579,8 @@ function startAzureWave(ultimate = false) {
     mesh, origin: player.position.clone(), yaw: player.rotation.y,
     dx: Math.sin(player.rotation.y), dz: Math.cos(player.rotation.y),
     distance: 0, range, width, speed: ultimate ? 8 : 10,
-    rideRange: ultimate ? range : def.surfDashDistance,
+    // 일반 공격은 파도를 타고 이동하지만, 특수 공격 빅 웨이브는 파도만 전진한다.
+    rideRange: ultimate ? 0 : def.surfDashDistance,
     damage: ultimate ? def.ultimate.damage : def.surfDamage,
     knockback: ultimate ? def.ultimate.knockback : 0,
     ultimate, hits: new Set(), rideBlocked: false,
