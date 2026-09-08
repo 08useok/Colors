@@ -2949,20 +2949,69 @@ function hitSlashes(length, halfWidth, angles, damage) {
   if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
 }
 
+const BETA_AUTO_AIM_CONE_COS = Math.cos(70 * Math.PI / 180);
+const BETA_AUTO_AIM_LOCK_SECONDS = 0.3;
+let betaAutoAimTarget = null;
+let betaAutoAimTargetUntil = 0;
+
+function betaAutoAimPathBlocked(ax, az, bx, bz) {
+  const distance = Math.hypot(bx - ax, bz - az);
+  const steps = Math.max(1, Math.ceil(distance / 0.3));
+  for (let i = 1; i < steps; i += 1) {
+    const t = i / steps;
+    const x = ax + (bx - ax) * t;
+    const z = az + (bz - az) * t;
+    if (arenaSolids.some((solid) => Math.abs(x - solid.x) < solid.halfW + 0.12
+      && Math.abs(z - solid.z) < solid.halfD + 0.12)) return true;
+  }
+  return false;
+}
+
 function autoAimAtNearestTarget(maxRange) {
-  let nearest = null;
-  let nearestDistance = maxRange;
+  const canAimThroughWalls = ["orange", "purple", "ivory"].includes(betaState.selectedCharacter);
+  if (betaAutoAimTarget?.visible && clock.elapsedTime < betaAutoAimTargetUntil) {
+    const lockDistance = Math.hypot(
+      betaAutoAimTarget.position.x - player.position.x,
+      betaAutoAimTarget.position.z - player.position.z,
+    );
+    if (lockDistance <= maxRange && (canAimThroughWalls || !betaAutoAimPathBlocked(
+      player.position.x, player.position.z,
+      betaAutoAimTarget.position.x, betaAutoAimTarget.position.z,
+    ))) {
+      player.rotation.y = Math.atan2(betaAutoAimTarget.position.x - player.position.x,
+        betaAutoAimTarget.position.z - player.position.z);
+      return true;
+    }
+  }
+
+  const forwardX = Math.sin(player.rotation.y);
+  const forwardZ = Math.cos(player.rotation.y);
+  let best = null;
+  let bestScore = -Infinity;
   for (const target of testTargets) {
-    if (!target.visible) continue;
+    if (!target.visible || target.userData.isAlly) continue;
     const dx = target.position.x - player.position.x;
     const dz = target.position.z - player.position.z;
     const targetDistance = Math.hypot(dx, dz);
-    if (targetDistance >= nearestDistance) continue;
-    nearest = target;
-    nearestDistance = targetDistance;
+    if (targetDistance <= 0.001 || targetDistance > maxRange) continue;
+    if (!canAimThroughWalls && betaAutoAimPathBlocked(player.position.x, player.position.z,
+      target.position.x, target.position.z)) continue;
+    const facing = (dx * forwardX + dz * forwardZ) / targetDistance;
+    const directionScore = facing >= BETA_AUTO_AIM_CONE_COS
+      ? (facing - BETA_AUTO_AIM_CONE_COS) / (1 - BETA_AUTO_AIM_CONE_COS)
+      : 0;
+    const distanceScore = 1 - targetDistance / maxRange;
+    const hp = Number(target.userData.health);
+    const maxHp = Number(target.userData.maxHealth);
+    const healthScore = Number.isFinite(hp) && Number.isFinite(maxHp) && maxHp > 0
+      ? 1 - Math.max(0, hp) / maxHp : 0;
+    const score = directionScore * 0.65 + distanceScore * 0.3 + healthScore * 0.05;
+    if (score > bestScore) { bestScore = score; best = target; }
   }
-  if (!nearest) return false;
-  player.rotation.y = Math.atan2(nearest.position.x - player.position.x, nearest.position.z - player.position.z);
+  if (!best) return false;
+  betaAutoAimTarget = best;
+  betaAutoAimTargetUntil = clock.elapsedTime + BETA_AUTO_AIM_LOCK_SECONDS;
+  player.rotation.y = Math.atan2(best.position.x - player.position.x, best.position.z - player.position.z);
   return true;
 }
 

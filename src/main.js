@@ -8360,10 +8360,29 @@ function beginAttack(fighter) {
   return started;
 }
 
+const AUTO_AIM_CONE_COS = Math.cos(70 * Math.PI / 180);
+const AUTO_AIM_LOCK_SECONDS = 0.3;
+
 function findAutoAimTarget(player) {
   const range = Math.max(15, getAttackRange(player));
+  const canAimThroughWalls = ["orange", "purple", "ivory"].includes(player.characterType);
+  const locked = state.players.find((fighter) => fighter.id === player.autoAimTargetId);
+  if (locked && !locked.dead && state.gameTime < (player.autoAimTargetUntil || 0)
+    && isFighterVisible(player, locked)) {
+    const lockDistance = Math.hypot(
+      locked.mesh.position.x - player.mesh.position.x,
+      locked.mesh.position.z - player.mesh.position.z,
+    );
+    if (lockDistance <= range && (canAimThroughWalls || !isPathBlocked(
+      player.mesh.position.x, player.mesh.position.z,
+      locked.mesh.position.x, locked.mesh.position.z, 0.12,
+    ))) return locked;
+  }
+
+  const forwardX = Math.sin(player.yaw);
+  const forwardZ = Math.cos(player.yaw);
   let best = null;
-  let bestDist = range;
+  let bestScore = -Infinity;
   for (const fighter of state.players) {
     if (fighter.id === player.id || fighter.dead) continue;
     if (state.chopWoodMode && fighter.team === player.team) continue;
@@ -8371,7 +8390,21 @@ function findAutoAimTarget(player) {
     const dx = fighter.mesh.position.x - player.mesh.position.x;
     const dz = fighter.mesh.position.z - player.mesh.position.z;
     const dist = Math.hypot(dx, dz);
-    if (dist < bestDist) { bestDist = dist; best = fighter; }
+    if (dist <= 0.001 || dist > range) continue;
+    if (!canAimThroughWalls && isPathBlocked(player.mesh.position.x, player.mesh.position.z,
+      fighter.mesh.position.x, fighter.mesh.position.z, 0.12)) continue;
+    const facing = (dx * forwardX + dz * forwardZ) / dist;
+    const directionScore = facing >= AUTO_AIM_CONE_COS
+      ? (facing - AUTO_AIM_CONE_COS) / (1 - AUTO_AIM_CONE_COS)
+      : 0;
+    const distanceScore = 1 - dist / range;
+    const healthScore = 1 - Math.max(0, fighter.health) / Math.max(1, fighter.maxHealth);
+    const score = directionScore * 0.65 + distanceScore * 0.3 + healthScore * 0.05;
+    if (score > bestScore) { bestScore = score; best = fighter; }
+  }
+  if (best) {
+    player.autoAimTargetId = best.id;
+    player.autoAimTargetUntil = state.gameTime + AUTO_AIM_LOCK_SECONDS;
   }
   return best;
 }
