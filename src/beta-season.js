@@ -3606,12 +3606,14 @@ function updateAzureWave(dt) {
     wave.distance += distance / steps;
     const x = wave.origin.x + wave.dx * wave.distance;
     const z = wave.origin.z + wave.dz * wave.distance;
-    // Check the complete crest, not just its center, before any hit.
-    let wall = false;
-    for (let side = -wave.width / 2; side <= wave.width / 2 + 0.001; side += 0.1) {
-      if (blocked(x + wave.dz * side, z - wave.dx * side, 0.1)) { wall = true; break; }
+    // 일반 공격은 벽에서 멈추지만 궁극기 빅 웨이브는 벽을 관통한다.
+    if (!wave.ultimate) {
+      let wall = false;
+      for (let side = -wave.width / 2; side <= wave.width / 2 + 0.001; side += 0.1) {
+        if (blocked(x + wave.dz * side, z - wave.dx * side, 0.1)) { wall = true; break; }
+      }
+      if (wall) { clearAzureWave(); return true; }
     }
-    if (wall) { clearAzureWave(); return true; }
     wave.mesh.position.set(x, player.position.y + 0.25, z);
     const ride = Math.min(wave.distance, wave.rideRange);
     const rideX = wave.origin.x + wave.dx * ride;
