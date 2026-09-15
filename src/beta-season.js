@@ -5307,6 +5307,15 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
 function startGoldRush(mode = "goldRush") {
   clearAzureWave();
   clearYellowCircuit();
+  // 이전 경기의 공격이 새 경기에서 피해를 주거나 궁극기를 충전하지 않도록 정리한다.
+  for (const projectile of betaProjectiles.splice(0)) {
+    scene.remove(projectile.mesh);
+    projectile.mesh.traverse((part) => {
+      part.geometry?.dispose();
+      if (Array.isArray(part.material)) part.material.forEach((material) => material.dispose());
+      else part.material?.dispose();
+    });
+  }
   resetAllUltimateCharges();
   goldRushState.mode = mode;
   const arenaMode = mode === "showdown" || mode === "soccer";
