@@ -134,7 +134,7 @@ const BETA_STORAGE_KEY = IS_BETA8_TEST
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "77";
+const CHARACTER_MODEL_VERSION = "81";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -986,13 +986,16 @@ function clearCharacterModel() {
 }
 
 function prepareCharacterScene(model, characterId) {
+  const wearsSeason6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === (betaState.selectedSkins[characterId] || "");
   const usesFbxRig = characterId === "mint" || characterId === "azure"
-    || (characterId === "pink" && betaState.selectedSkins.pink === "beta5_pink_cotton_candy");
+    || (characterId === "pink" && betaState.selectedSkins.pink === "beta5_pink_cotton_candy")
+    || wearsSeason6ModelSkin;
   // Meshy FBX는 Z-up으로 제작됐다. 게임은 Y-up 좌표계를 쓰므로
   // 바닥에 눕지 않게 변환을 먼저 적용한 뒤 크기와 발 위치를 계산한다.
-  if (usesFbxRig) model.rotateX(-Math.PI / 2);
+  // 시즌 6 모델 교체 스킨은 FBXLoader가 이미 Y-up으로 변환해 주므로
+  // (원본 FBX의 up-axis 메타데이터가 다름) 추가 회전을 적용하지 않는다.
+  if (usesFbxRig && !wearsSeason6ModelSkin) model.rotateX(-Math.PI / 2);
   if (characterId === "blue") addBlueScarf(model);
-  const wearsSeason6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === (betaState.selectedSkins[characterId] || "");
   if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint"].includes(characterId) || wearsSeason6ModelSkin) {
     applyBetaToonRendering(model, characterId);
   }
@@ -1062,7 +1065,8 @@ function loadCharacterMotionSet(characterId, token) {
         : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
   // Mint's supplied walk set is FBX rather than GLB, but it follows the
   // same start → loop → stop structure used by the other character rigs.
-  const usesFbxMotion = characterId === "mint" || characterId === "azure" || cottonCandyPink;
+  // 시즌 6 모델 교체 스킨도 다운로드한 Meshy FBX를 가공 없이 그대로 쓴다.
+  const usesFbxMotion = characterId === "mint" || characterId === "azure" || cottonCandyPink || Boolean(season6ModelSkin);
   const extension = usesFbxMotion ? "fbx" : "glb";
   const paths = {
     start: `./assets/3d/${modelCharacterId}/walk-m1s.${extension}?v=${CHARACTER_MODEL_VERSION}`,
@@ -1080,6 +1084,13 @@ function loadCharacterMotionSet(characterId, token) {
       for (const [key, asset] of entries) {
         const scene = usesFbxMotion ? asset : asset.scene;
         const { animations } = asset;
+        if (season6ModelSkin) {
+          // Meshy 원본 FBX에 스켈레톤과 무관한 미리보기용 구체("Icosphere")가
+          // 섞여 있어, 바운딩 박스 계산과 렌더링을 오염시키기 전에 제거한다.
+          for (const stray of [...scene.children]) {
+            if (/^icosphere/i.test(stray.name)) scene.remove(stray);
+          }
+        }
         const sceneModel = prepareCharacterScene(scene, characterId);
         sceneModel.visible = key === "stop";
         scenes[key] = sceneModel;
