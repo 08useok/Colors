@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "simulate:matchups": "node tools/simulate-matchups.mjs",
+    "check:matchups": "node tools/test-matchup-ultimates.mjs",
     "check:mint": "node tools/test-mint.mjs",
     "check:blue": "node tools/test-blue.mjs",
     "check:characters": "node tools/test-character-audit.mjs",

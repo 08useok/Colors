@@ -15,7 +15,8 @@
 
 - [메인 캐릭터 기능 대조](character-implementation-audit.md) — 누락 수정 및 시즌별 차이
 
-- [일반 공격 상성 시뮬레이션](matchup-simulation.md) — 조건, 재실행 방법, 13종 결과 원본
+- [궁극기 포함 상성 시뮬레이션](matchup-simulation.md) — 조건, 재실행 방법, 13종 결과 원본
+- [궁극기 전후 비교](matchup-comparison.md) — 캐릭터별 점수 차이·상성 단계 변화
 
 | 번호 | 종류 | 대표 파일 |
 |---|---|---|
