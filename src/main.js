@@ -8651,22 +8651,84 @@ function tryUseMintUltimate(fighter = getPlayer()) {
   fighter.lastCombatTime = state.gameTime;
   const x = fighter.mesh.position.x + Math.sin(fighter.yaw) * def.castRange;
   const z = fighter.mesh.position.z + Math.cos(fighter.yaw) * def.castRange;
+  const launchY = (fighter.mesh.position.y ?? 0) + 1.35;
   const mesh = new THREE.Mesh(
-    new THREE.CircleGeometry(def.radius, 64),
-    new THREE.MeshBasicMaterial({ color: 0x98ffdc, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }),
+    new THREE.SphereGeometry(0.34, 14, 10),
+    new THREE.MeshStandardMaterial({ color: 0x8fffe9, emissive: 0x38cfc4, emissiveIntensity: 0.5, roughness: 0.35 }),
+  );
+  mesh.position.set(fighter.mesh.position.x, launchY, fighter.mesh.position.z);
+  scene.add(mesh);
+  state.projectiles.push({ mesh, ownerId: fighter.id, isMintSpecial: true,
+    startX: fighter.mesh.position.x, startZ: fighter.mesh.position.z,
+    landingX: x, landingZ: z, launchY, range: def.castRange,
+    speed: 14, distTraveled: 0, launchAt: state.gameTime, landedAt: null });
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
+function updateMintSpecialProjectile(proj, dt) {
+  if (proj.landedAt == null) {
+    proj.distTraveled = Math.min(proj.range, proj.distTraveled + proj.speed * dt);
+    const progress = proj.distTraveled / proj.range;
+    proj.mesh.position.set(
+      proj.startX + (proj.landingX - proj.startX) * progress,
+      proj.launchY + Math.sin(progress * Math.PI) * 4.2 - progress * (proj.launchY - 0.35),
+      proj.startZ + (proj.landingZ - proj.startZ) * progress,
+    );
+    proj.mesh.rotation.x += dt * 6;
+    if (progress >= 1) proj.landedAt = state.gameTime;
+    return false;
+  }
+  if (state.gameTime - proj.landedAt < 0.08) return false;
+  createMintIceZone(proj.landingX, proj.landingZ, proj.ownerId);
+  return true;
+}
+
+function createMintIceZone(x, z, ownerId) {
+  const def = CHARACTERS.mint.ultimate;
+  const mesh = new THREE.Mesh(
+    new THREE.CircleGeometry(def.radius, 56),
+    new THREE.MeshStandardMaterial({ color: 0x8fffe9, emissive: 0x38cfc4, emissiveIntensity: 0.55, side: THREE.DoubleSide }),
   );
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(x, 0.17, z);
   scene.add(mesh);
-  state.mintZones.push({ mesh, x, z, ownerId: fighter.id, startedAt: state.gameTime, expiresAt: state.gameTime + def.duration, nextTickAt: state.gameTime });
-  if (fighter.isPlayer) audio.play("projectileFire");
-  return true;
+  state.mintZones.push({ mesh, x, z, ownerId, startedAt: state.gameTime, expiresAt: state.gameTime + def.duration, nextTickAt: state.gameTime });
+  createMintIceHitEffect(x, z);
+}
+
+function updateMintUltimateAim(player) {
+  const visible = player?.characterType === "mint" && !player.dead && state.running
+    && (state.mouseHeld || state.manualAimActive)
+    && (player.mintUltimateCharge ?? 0) >= CHARACTERS.mint.ultimate.chargeRequired;
+  if (visible && !state.mintUltimateAim) {
+    const def = CHARACTERS.mint.ultimate;
+    const group = new THREE.Group();
+    const beam = new THREE.Mesh(new THREE.PlaneGeometry(0.3, def.castRange),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.58, toneMapped: false, side: THREE.DoubleSide, depthWrite: false }));
+    beam.rotation.x = -Math.PI / 2;
+    beam.position.z = def.castRange / 2;
+    const ring = new THREE.Mesh(new THREE.RingGeometry(def.radius - 0.16, def.radius, 56),
+      new THREE.MeshBasicMaterial({ color: 0xa9fff0, transparent: true, opacity: 0.72, toneMapped: false, side: THREE.DoubleSide, depthWrite: false }));
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.z = def.castRange;
+    group.add(beam, ring);
+    scene.add(group);
+    state.mintUltimateAim = group;
+  }
+  if (!state.mintUltimateAim) return;
+  state.mintUltimateAim.visible = Boolean(visible);
+  if (visible) {
+    state.mintUltimateAim.position.set(player.mesh.position.x, 0.18, player.mesh.position.z);
+    state.mintUltimateAim.rotation.y = player.yaw;
+  }
 }
 
 function updateMintZones(dt) {
   const def = CHARACTERS.mint.ultimate;
   for (let i = state.mintZones.length - 1; i >= 0; i--) {
     const zone = state.mintZones[i];
+    zone.mesh.rotation.z += dt * 0.08;
     if (state.gameTime >= zone.expiresAt) {
       disposeSceneObject(zone.mesh);
       state.mintZones.splice(i, 1);
@@ -8694,40 +8756,71 @@ function updateMintZones(dt) {
   }
 }
 
+function createMintIceIndicator() {
+  const indicatorCanvas = document.createElement("canvas");
+  indicatorCanvas.width = 128;
+  indicatorCanvas.height = 64;
+  const ctx = indicatorCanvas.getContext("2d");
+  const texture = new THREE.CanvasTexture(indicatorCanvas);
+  texture.minFilter = THREE.LinearFilter;
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, depthTest: false });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.68, 0.34), material);
+  mesh.position.set(1.04, 0, 0.004);
+  mesh.renderOrder = 33;
+  mesh.visible = false;
+  mesh.userData.canvas = indicatorCanvas;
+  mesh.userData.ctx = ctx;
+  mesh.userData.texture = texture;
+  mesh.userData.lastState = "";
+  return mesh;
+}
+
+function updateMintIceIndicator(indicator, ice = 0, threshold = 100, frozen = false) {
+  if (!indicator) return;
+  const value = Math.max(0, Math.round(ice));
+  indicator.visible = frozen || value > 0;
+  const state = frozen ? "frozen" : `${value}/${threshold}`;
+  if (!indicator.visible || indicator.userData.lastState === state) return;
+  indicator.userData.lastState = state;
+  const { ctx, canvas: indicatorCanvas, texture } = indicator.userData;
+  ctx.clearRect(0, 0, indicatorCanvas.width, indicatorCanvas.height);
+  ctx.fillStyle = frozen ? "rgba(47, 184, 255, .96)" : "rgba(30, 122, 171, .92)";
+  ctx.beginPath();
+  ctx.roundRect(3, 5, 122, 54, 22);
+  ctx.fill();
+  ctx.strokeStyle = "rgba(225, 253, 255, .96)";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.font = "bold 25px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(frozen ? "❄ 빙결" : `❄ ${value}`, 64, 33);
+  texture.needsUpdate = true;
+}
+
 function updateMintIndicators() {
   for (const fighter of state.players) {
     if (fighter.dead) { fighter.mintIce = 0; fighter.mintFrozenUntil = 0; }
     const frozen = (fighter.mintFrozenUntil ?? 0) > state.gameTime;
     const ice = fighter.mintIce ?? 0;
-    if ((ice > 0 || frozen) && !fighter.mintIceIndicator) {
-      const canvas = document.createElement("canvas");
-      canvas.width = 256; canvas.height = 64;
-      const texture = new THREE.CanvasTexture(canvas);
-      const indicator = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }));
-      indicator.position.y = 3.3;
-      indicator.scale.set(2.4, 0.6, 1);
-      indicator.userData.canvas = canvas;
-      fighter.mesh.add(indicator);
+    if ((ice > 0 || frozen) && !fighter.mintIceIndicator && fighter.healthBar) {
+      const indicator = createMintIceIndicator();
+      // Attach to the camera-facing health bar, matching the beta badge placement.
+      fighter.healthBar.add(indicator);
       fighter.mintIceIndicator = indicator;
-      const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 1), new THREE.MeshBasicMaterial({ color: 0xaaffee, transparent: true, opacity: 0.32, wireframe: true }));
-      shell.position.y = 1.2;
+    }
+    if (frozen && !fighter.mintFreezeShell) {
+      const shell = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(fighter.isBoss ? 2.2 : 0.95, 1),
+        new THREE.MeshStandardMaterial({ color: 0x9fffee, emissive: 0x4bdacb, emissiveIntensity: 0.75, transparent: true, opacity: 0.48, roughness: 0.2 }),
+      );
+      shell.position.y = fighter.isBoss ? 3.8 : 1.05;
       fighter.mesh.add(shell);
       fighter.mintFreezeShell = shell;
     }
-    const indicator = fighter.mintIceIndicator;
-    if (!indicator) continue;
-    indicator.visible = !fighter.dead && (frozen || ice > 0);
-    fighter.mintFreezeShell.visible = !fighter.dead && frozen;
-    const label = frozen ? (currentLang === "ko" ? "❄ 빙결" : "❄ FROZEN") : `❄ ${ice}/${CHARACTERS.mint.freezeThreshold}`;
-    if (indicator.userData.label !== label) {
-      indicator.userData.label = label;
-      const ctx = indicator.userData.canvas.getContext("2d");
-      ctx.clearRect(0, 0, 256, 64);
-      ctx.fillStyle = "#173a40"; ctx.fillRect(0, 0, 256, 64);
-      ctx.fillStyle = "#baffeb"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(label, 128, 43);
-      indicator.material.map.needsUpdate = true;
-    }
+    updateMintIceIndicator(fighter.mintIceIndicator, ice, CHARACTERS.mint.freezeThreshold, frozen);
+    if (fighter.mintFreezeShell) fighter.mintFreezeShell.visible = !fighter.dead && frozen;
   }
 }
 
@@ -9874,6 +9967,15 @@ function updateProjectiles(dt) {
       continue;
     }
     proj.mesh.visible = true;
+
+    // Like the beta throw, ignore targets/walls in flight and create the field only after landing.
+    if (proj.isMintSpecial) {
+      if (updateMintSpecialProjectile(proj, dt)) {
+        disposeSceneObject(proj.mesh);
+        state.projectiles.splice(i, 1);
+      }
+      continue;
+    }
 
     if (proj.isBoomerang && proj.isReturning) {
       const owner = state.players.find((fighter) => fighter.id === proj.ownerId && !fighter.dead);
@@ -11941,6 +12043,7 @@ function updateCamera(dt) {
 
 function updateAttackAimIndicator() {
   const player = getPlayer();
+  updateMintUltimateAim(player);
   const charType = player?.characterType;
 
   if (!player || player.dead || !state.running || (!state.mouseHeld && !state.manualAimActive)) {
