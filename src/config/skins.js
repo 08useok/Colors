@@ -11,6 +11,10 @@ export const SKINS = {
   beta2_gold_gold: { id: "beta2_gold_gold", name: "Gold Rush Gold", nameKey: "skinBeta2GoldGoldName", character: "gold", season: "beta2", rarity: "epic", cost: 2500, desc: "skinBeta2GoldGoldDesc" },
   beta2_ivory_shopkeeper: { id: "beta2_ivory_shopkeeper", name: "점원 아이보리", nameKey: "skinBeta2IvoryShopkeeperName", character: "ivory", season: "beta2", rarity: "epic", cost: 2500, desc: "skinBeta2IvoryShopkeeperDesc" },
   beta5_pink_cotton_candy: { id: "beta5_pink_cotton_candy", name: "솜사탕 핑크", nameKey: "skinBeta5PinkCottonCandyName", character: "pink", season: "beta5", rarity: "epic", cost: 2500, desc: "skinBeta5PinkCottonCandyDesc" },
+  beta6_cyan_aqua_scout: { id: "beta6_cyan_aqua_scout", name: "아쿠아 스카우트 시안", nameKey: "skinBeta6CyanAquaScoutName", character: "cyan", season: "beta6", rarity: "epic", cost: 2500, desc: "skinBeta6CyanAquaScoutDesc" },
+  beta6_chartreuse_pufferfish_boy: { id: "beta6_chartreuse_pufferfish_boy", name: "복어 소년 샤르트뢰즈", nameKey: "skinBeta6ChartreusePufferfishBoyName", character: "chartreuse", season: "beta6", rarity: "epic", cost: 2500, desc: "skinBeta6ChartreusePufferfishBoyDesc" },
+  beta6_orange_citrus_luau_buddy: { id: "beta6_orange_citrus_luau_buddy", name: "시트러스 루아우 오렌지", nameKey: "skinBeta6OrangeCitrusLuauBuddyName", character: "orange", season: "beta6", rarity: "epic", cost: 2500, desc: "skinBeta6OrangeCitrusLuauBuddyDesc" },
+  beta6_azure_blue_wave_buddy: { id: "beta6_azure_blue_wave_buddy", name: "블루 웨이브 버디 애저", nameKey: "skinBeta6AzureBlueWaveBuddyName", character: "azure", season: "beta6", rarity: "epic", cost: 2500, desc: "skinBeta6AzureBlueWaveBuddyDesc" },
 };
 
 export const SKIN_ID_MIGRATION = {

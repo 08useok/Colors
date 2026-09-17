@@ -3,8 +3,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.4";
-import { LANGS } from "./LANGS/langs.js?v=1.5.139";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.5";
+import { LANGS } from "./LANGS/langs.js?v=1.5.140";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
@@ -134,7 +134,7 @@ const BETA_STORAGE_KEY = IS_BETA8_TEST
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "76";
+const CHARACTER_MODEL_VERSION = "77";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -817,6 +817,9 @@ function recolorSkinTintTexture(texture, targetHex) {
 
 function applySkinPaletteToModel(model, characterId) {
   const skinId = betaState.selectedSkins[characterId] || "";
+  // 시즌 6 모델 교체형 스킨은 자체 텍스처를 쓰는 완전히 다른 모델이므로
+  // 시안 공유 리그 재색칠(baseCharacterTint) 로직을 건너뛴다.
+  if (SEASON6_MODEL_SKINS[characterId]?.skinId === skinId) return;
   const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd700 : characterId === "chartreuse" ? 0xc1f80a : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
@@ -989,7 +992,8 @@ function prepareCharacterScene(model, characterId) {
   // 바닥에 눕지 않게 변환을 먼저 적용한 뒤 크기와 발 위치를 계산한다.
   if (usesFbxRig) model.rotateX(-Math.PI / 2);
   if (characterId === "blue") addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint"].includes(characterId)) {
+  const wearsSeason6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === (betaState.selectedSkins[characterId] || "");
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint"].includes(characterId) || wearsSeason6ModelSkin) {
     applyBetaToonRendering(model, characterId);
   }
   applySkinPaletteToModel(model, characterId);
@@ -1036,14 +1040,26 @@ function prepareCharacterScene(model, characterId) {
   return sceneRoot;
 }
 
+const SEASON6_MODEL_SKINS = {
+  cyan: { skinId: "beta6_cyan_aqua_scout", folder: "cyan/skin-aqua-scout" },
+  chartreuse: { skinId: "beta6_chartreuse_pufferfish_boy", folder: "chartreuse/skin-pufferfish-boy" },
+  orange: { skinId: "beta6_orange_citrus_luau_buddy", folder: "orange/skin-citrus-luau-buddy" },
+  azure: { skinId: "beta6_azure_blue_wave_buddy", folder: "azure/skin-blue-wave-buddy" },
+};
+
 function loadCharacterMotionSet(characterId, token) {
   const selectedSkinId = betaState.selectedSkins[characterId] || "";
   const cottonCandyPink = characterId === "pink" && selectedSkinId === "beta5_pink_cotton_candy";
+  const season6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === selectedSkinId
+    ? SEASON6_MODEL_SKINS[characterId]
+    : null;
   const modelCharacterId = characterId === "ivory" && selectedSkinId === "beta2_ivory_shopkeeper"
     ? "ivory/skin-shopkeeper"
     : cottonCandyPink
       ? "pink/skin-cotton-candy"
-      : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
+      : season6ModelSkin
+        ? season6ModelSkin.folder
+        : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
   // Mint's supplied walk set is FBX rather than GLB, but it follows the
   // same start → loop → stop structure used by the other character rigs.
   const usesFbxMotion = characterId === "mint" || characterId === "azure" || cottonCandyPink;
@@ -1502,12 +1518,14 @@ function rebuildRedThemeAccessory(skinId) {
   });
 }
 
+const MODEL_RELOAD_ON_SKIN_CHANGE = ["ivory", "pink", ...Object.keys(SEASON6_MODEL_SKINS)];
+
 function equipSkin(characterId, skinId) {
   const skin = SKINS[skinId];
   if (!skin || skin.character !== characterId || !betaState.ownedSkins.includes(skinId)) return;
   betaState.selectedSkins[characterId] = skinId;
   saveBetaState();
-  if (betaState.selectedCharacter === characterId && ["ivory", "pink"].includes(characterId)) setPlayerModel(characterId);
+  if (betaState.selectedCharacter === characterId && MODEL_RELOAD_ON_SKIN_CHANGE.includes(characterId)) setPlayerModel(characterId);
   else applySelectedSkinVisual();
   renderCharacters();
   showToast(`${getSkinName(skin)} 장착`);
@@ -1518,7 +1536,7 @@ function unequipSkin(characterId) {
   delete betaState.selectedSkins[characterId];
   saveBetaState();
   if (betaState.selectedCharacter === characterId) {
-    if (["ivory", "pink"].includes(characterId)) setPlayerModel(characterId);
+    if (MODEL_RELOAD_ON_SKIN_CHANGE.includes(characterId)) setPlayerModel(characterId);
     else applySelectedSkinVisual();
   }
   renderCharacters();
