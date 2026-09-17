@@ -8528,7 +8528,8 @@ function beginBoomerangAttack(fighter) {
   fighter.spread = Math.min(1, fighter.spread + 0.12);
   fighter.lastCombatTime = state.gameTime;
   if (isInBush(fighter) || fighter.greenUltimateBush?.expiresAt > state.gameTime) {
-    fighter.revealedUntil = state.gameTime + CHARACTERS.green.ultimate.revealDuration;
+    fighter.revealedUntil = Math.max(fighter.revealedUntil ?? 0, state.gameTime + CHARACTERS.green.ultimate.revealDuration);
+    setGreenConcealedVisual(fighter, false);
   }
 
   charDef.boomerangAngles.forEach((angleOffset, index) => {
@@ -11181,7 +11182,8 @@ function chooseBotTarget(bot) {
       && state.gameTime >= fighter.revealedUntil;
     if (greenUltimateConcealed) continue;
     if (!isFighterVisible(bot, fighter) && distanceSq > bushVisionRange * bushVisionRange) continue;
-    if (isInBush(fighter) && distanceSq > bushStealthRevealRangeSq) continue;
+    const revealed = state.gameTime < (fighter.revealedUntil ?? 0);
+    if (!revealed && isInBush(fighter) && distanceSq > bushStealthRevealRangeSq) continue;
 
     const healthRatio = fighter.health / fighter.maxHealth;
     const lowHpBonus = healthRatio * 200;
