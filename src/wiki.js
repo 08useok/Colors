@@ -305,6 +305,11 @@ const legacyPatches = [
 ];
 
 const patches = [
+  { version:"v1.5.5", date:"2026.09.17", title:["상성표 수정·민트 누락 보완", "Matchup Corrections & Missing Mint Features"], items:[
+    ["상성표 수정: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종을 다시 시뮬레이션해 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다.", "Matchup corrections: the previous character matchups were inaccurate. We reran simulations for all 13 characters, including Mint. Blue versus Chartreuse changed from Impossible to Dominant, and Red versus Orange from Severe Disadvantage to Disadvantage."],
+    ["민트 누락: 민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다.", "Missing Mint features: Mint launched with several features absent from the main game, especially 25 ice per hit, a two-second freeze at 100 ice, ice and freeze indicators, and ultimate charging and activation."],
+    ["7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.", "Added Ice Cream Field, charged by seven hits, along with its damage, ice buildup and sliding effects."],
+  ], summary:["상성표를 다시 작성하고 메인 민트의 얼음·궁극기 누락을 보완했습니다.", "Rewrote the matchup table and restored Mint's missing ice and ultimate mechanics in the main game."], impact:["상성표는 궁극기·지형을 제외한 일반 공격 1대1 시뮬레이션 기준이며 실전 승률이 아닙니다. 민트는 얼음을 누적해 적의 이동·공격·궁극기를 2초간 막고, Space/Q 또는 궁극기 버튼으로 장판을 설치할 수 있습니다.", "The table models basic-attack duels without ultimates or terrain; it does not represent live win rates. Mint can accumulate ice to block movement, attacks and ultimates for two seconds, and deploy the field with Space/Q or the ultimate button."] },
   { version:"v1.5.4.3", date:"2026.09.01", title:["베타 시즌 5 밸런스 패치", "Beta Season 5 Balance Patch"], items:[
     ["오렌지: 공격 쿨다운 0.35→0.40초, 과즙 피해 700→600, 직격 추가 과즙 4→3개", "Orange: attack cooldown 0.35→0.40s, juice damage 700→600, direct-hit juice count 4→3"],
     ["핑크: 체력 10,500→10,000, 공격 피해 2,100→2,000, 아군 회복 1,400→1,300", "Pink: health 10,500→10,000, attack damage 2,100→2,000, ally healing 1,400→1,300"],

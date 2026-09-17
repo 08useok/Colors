@@ -3,9 +3,9 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { LANGS } from "./LANGS/langs.js?v=1.5.148";
+import { LANGS } from "./LANGS/langs.js?v=1.5.149";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.183";
+import { CHARACTERS } from "./config/characters.js?v=1.5.184";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -360,7 +360,7 @@ const SEASONS = {
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -1483,7 +1483,7 @@ function characterLoreHtml(charKey, levelMult = 1) {
   const html = block(t("loreIntro"), pick(beta, "description"))
     + skill("loreBasicAttack", beta.basicAttack, damageHtml)
     + skill("loreAbility", beta.officialAbility)
-    + skill("loreUltimate", ULTIMATE_CHARACTERS.has(charKey) ? beta.ultimate : null);
+    + skill("loreUltimate", ULTIMATE_CHARACTERS.has(charKey) ? (beta.ultimate ?? beta.special) : null);
   return html ? `<div class="ci-lore">${html}</div>` : "";
 }
 
@@ -2231,6 +2231,7 @@ const state = {
   players: [],
   projectiles: [],
   ivoryZones: [],
+  mintZones: [],
   deathOrder: [],
   resultRevealAt: 0,
   forceSpectatorExit: false,
@@ -4577,6 +4578,9 @@ function makeFighter(options) {
     cwKills: 0,
     attackIndex: 0,
     poisonUntil: 0,
+    mintIce: 0,
+    mintFrozenUntil: 0,
+    mintUltimateCharge: 0,
     poisonSourceId: -1,
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
@@ -5527,6 +5531,8 @@ function startTakeDown() {
   state.malfunctionZones = [];
   state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
   state.ivoryZones = [];
+  state.mintZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.mintZones = [];
   state.teams = null;
   state.playerTeam = null;
   state.trainingMode = false;
@@ -5820,6 +5826,8 @@ function updateTakeDownRespawn() {
     if (!fighter.dead || fighter.isBoss) continue;
     if (fighter.tdRespawnAt && state.gameTime >= fighter.tdRespawnAt) {
       fighter.dead = false;
+      fighter.mintIce = 0;
+      fighter.mintFrozenUntil = 0;
       fighter.health = fighter.maxHealth;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
@@ -6040,6 +6048,8 @@ function setupMpHandlers() {
       const f = msg.playerId === mp.myId ? getPlayer() : mpNetFighters[msg.playerId];
       if (!f || !Number.isFinite(msg.x) || !Number.isFinite(msg.z)) return;
       f.dead = false;
+      f.mintIce = 0;
+      f.mintFrozenUntil = 0;
       f.health = f.maxHealth;
       f.tdRespawnAt = 0;
       f.mesh.visible = true;
@@ -6426,6 +6436,8 @@ function startChopWood() {
   state.malfunctionZones = [];
   state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
   state.ivoryZones = [];
+  state.mintZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.mintZones = [];
   state.takedownMode = false;
   state.tdBoss = null;
   tdHud.classList.add("hidden");
@@ -7667,6 +7679,8 @@ function resetGame() {
   state.malfunctionZones = [];
   state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
   state.ivoryZones = [];
+  state.mintZones.forEach((zone) => disposeSceneObject(zone.mesh));
+  state.mintZones = [];
   state.takedownMode = false;
   state.tdBoss = null;
   tdHud.classList.add("hidden");
@@ -8048,7 +8062,7 @@ function findWallEscapeDir(fighter, dirX, dirZ, lookahead) {
 }
 
 function moveFighter(fighter, desiredMove, dt) {
-  if (fighter.dead) {
+  if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime) {
     return;
   }
 
@@ -8306,7 +8320,7 @@ function beginGoldAttack(fighter) {
 }
 
 function beginAttackCore(fighter) {
-  if (state.gameTime < state.freezeUntil) return false;
+  if (state.gameTime < state.freezeUntil || (fighter.mintFrozenUntil ?? 0) > state.gameTime) return false;
   if (fighter.malfunctionUntil > state.gameTime) return false;
   if (fighter.characterType === "green") {
     return beginBoomerangAttack(fighter);
@@ -8417,6 +8431,7 @@ function getAttackRange(fighter) {
 }
 
 function getMoveSpeed(fighter) {
+  if ((fighter.mintFrozenUntil ?? 0) > state.gameTime) return 0;
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
   let speed = baseMoveSpeed * multiplier;
   if (fighter.shockUntil && state.gameTime < fighter.shockUntil) {
@@ -8560,7 +8575,7 @@ function beginIvoryAttack(fighter) {
 }
 
 function spawnMintIceBullet(fighter, yaw) {
-  if (fighter.dead || !fighter.mesh?.parent) return;
+  if (fighter.dead || !fighter.mesh?.parent || (fighter.mintFrozenUntil ?? 0) > state.gameTime) return;
   const charDef = CHARACTERS.mint;
   const mesh = new THREE.Group();
   const core = new THREE.Mesh(
@@ -8607,6 +8622,113 @@ function spawnMintIceBullet(fighter, yaw) {
     isPenetrating: false,
     projRadius: 0.24,
   });
+}
+
+function applyMintIce(target, amount) {
+  if (!target || target.dead || target.health <= 0) return;
+  const def = CHARACTERS.mint;
+  target.mintIce = Math.min(def.freezeThreshold, (target.mintIce ?? 0) + amount);
+  if (target.mintIce >= def.freezeThreshold) {
+    target.mintIce = 0;
+    target.mintFrozenUntil = state.gameTime + def.freezeDuration;
+  }
+}
+
+function applyMintBulletHit(attacker, target, dealt) {
+  if (dealt <= 0) return;
+  applyMintIce(target, CHARACTERS.mint.icePerHit);
+  if (attacker?.characterType === "mint") {
+    attacker.mintUltimateCharge = Math.min(CHARACTERS.mint.ultimate.chargeRequired, (attacker.mintUltimateCharge ?? 0) + 1);
+  }
+}
+
+function tryUseMintUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "mint" || !state.running) return false;
+  if ((fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return false;
+  const def = CHARACTERS.mint.ultimate;
+  if ((fighter.mintUltimateCharge ?? 0) < def.chargeRequired) return false;
+  fighter.mintUltimateCharge = 0;
+  fighter.lastCombatTime = state.gameTime;
+  const x = fighter.mesh.position.x + Math.sin(fighter.yaw) * def.castRange;
+  const z = fighter.mesh.position.z + Math.cos(fighter.yaw) * def.castRange;
+  const mesh = new THREE.Mesh(
+    new THREE.CircleGeometry(def.radius, 64),
+    new THREE.MeshBasicMaterial({ color: 0x98ffdc, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }),
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(x, 0.17, z);
+  scene.add(mesh);
+  state.mintZones.push({ mesh, x, z, ownerId: fighter.id, startedAt: state.gameTime, expiresAt: state.gameTime + def.duration, nextTickAt: state.gameTime });
+  if (fighter.isPlayer) audio.play("projectileFire");
+  return true;
+}
+
+function updateMintZones(dt) {
+  const def = CHARACTERS.mint.ultimate;
+  for (let i = state.mintZones.length - 1; i >= 0; i--) {
+    const zone = state.mintZones[i];
+    if (state.gameTime >= zone.expiresAt) {
+      disposeSceneObject(zone.mesh);
+      state.mintZones.splice(i, 1);
+      continue;
+    }
+    const owner = state.players.find(f => f.id === zone.ownerId);
+    if (!owner) continue;
+    const tick = state.gameTime >= zone.nextTickAt;
+    if (tick) zone.nextTickAt += 1;
+    const speed = def.slideStrength + def.slideAcceleration * (state.gameTime - zone.startedAt);
+    for (const target of state.players) {
+      if (target.dead || target.id === owner.id || (state.chopWoodMode && target.team === owner.team)) continue;
+      const dx = target.mesh.position.x - zone.x, dz = target.mesh.position.z - zone.z;
+      const distance = Math.hypot(dx, dz);
+      if (distance > def.radius) continue;
+      if (tick) {
+        applyDamage(target, def.damagePerSecond, owner);
+        applyMintIce(target, def.icePerSecond);
+      }
+      if (distance > 0 && (target.mintFrozenUntil ?? 0) <= state.gameTime) {
+        tempVec3.set(dx / distance * speed, 0, dz / distance * speed);
+        moveFighter(target, tempVec3, dt);
+      }
+    }
+  }
+}
+
+function updateMintIndicators() {
+  for (const fighter of state.players) {
+    if (fighter.dead) { fighter.mintIce = 0; fighter.mintFrozenUntil = 0; }
+    const frozen = (fighter.mintFrozenUntil ?? 0) > state.gameTime;
+    const ice = fighter.mintIce ?? 0;
+    if ((ice > 0 || frozen) && !fighter.mintIceIndicator) {
+      const canvas = document.createElement("canvas");
+      canvas.width = 256; canvas.height = 64;
+      const texture = new THREE.CanvasTexture(canvas);
+      const indicator = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }));
+      indicator.position.y = 3.3;
+      indicator.scale.set(2.4, 0.6, 1);
+      indicator.userData.canvas = canvas;
+      fighter.mesh.add(indicator);
+      fighter.mintIceIndicator = indicator;
+      const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 1), new THREE.MeshBasicMaterial({ color: 0xaaffee, transparent: true, opacity: 0.32, wireframe: true }));
+      shell.position.y = 1.2;
+      fighter.mesh.add(shell);
+      fighter.mintFreezeShell = shell;
+    }
+    const indicator = fighter.mintIceIndicator;
+    if (!indicator) continue;
+    indicator.visible = !fighter.dead && (frozen || ice > 0);
+    fighter.mintFreezeShell.visible = !fighter.dead && frozen;
+    const label = frozen ? (currentLang === "ko" ? "❄ 빙결" : "❄ FROZEN") : `❄ ${ice}/${CHARACTERS.mint.freezeThreshold}`;
+    if (indicator.userData.label !== label) {
+      indicator.userData.label = label;
+      const ctx = indicator.userData.canvas.getContext("2d");
+      ctx.clearRect(0, 0, 256, 64);
+      ctx.fillStyle = "#173a40"; ctx.fillRect(0, 0, 256, 64);
+      ctx.fillStyle = "#baffeb"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(label, 128, 43);
+      indicator.material.map.needsUpdate = true;
+    }
+  }
 }
 
 function createMintIceHitEffect(x, z, scale = 1) {
@@ -8949,7 +9071,7 @@ function beginElectricAttack(fighter) {
   if (isInBush(fighter)) fighter.revealedUntil = state.gameTime + 3;
 
   setTimeout(() => {
-    if (fighter.dead || !fighter.mesh?.parent || (fighter.malfunctionUntil ?? 0) > state.gameTime) return;
+    if (fighter.dead || !fighter.mesh?.parent || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return;
     const yaw = fighter.yaw;
     const mesh = createElectricMesh(fighter.mesh.position, yaw);
     state.projectiles.push({
@@ -9399,7 +9521,9 @@ function tryUseChartreuseUltimate(fighter = getPlayer()) {
 
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
+  if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
+  if (fighter.characterType === "mint") return tryUseMintUltimate(fighter);
   if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
   if (fighter.characterType === "red") return tryUseRedUltimate(fighter);
   if (fighter.characterType === "ivory") return tryUseIvoryUltimate(fighter);
@@ -10014,7 +10138,10 @@ function updateProjectiles(dt) {
           target.shockSlowOverride = null;
           createElectricHitEffect(proj.x, proj.z);
         }
-        if (proj.isMintIce) createMintIceHitEffect(proj.x, proj.z);
+        if (proj.isMintIce) {
+          createMintIceHitEffect(proj.x, proj.z);
+          applyMintBulletHit(attacker, target, dealt);
+        }
         else if (proj.isBullet) createBulletHitEffect(proj.x, proj.z);
         if (proj.isBoomerang) {
           createBoomerangHitEffect(proj.x, proj.z);
@@ -10452,7 +10579,7 @@ function updateScheduledHits() {
     }
     state.scheduledHits.splice(i, 1);
     const attacker = state.players.find((player) => player.id === hit.attackerId);
-    if (!attacker || attacker.dead || attacker.health <= 0 || (attacker.malfunctionUntil ?? 0) > state.gameTime) {
+    if (!attacker || attacker.dead || attacker.health <= 0 || (attacker.mintFrozenUntil ?? 0) > state.gameTime || (attacker.malfunctionUntil ?? 0) > state.gameTime) {
       continue;
     }
     resolveAttack(attacker, hit.hitIndex, hit.damage);
@@ -11083,7 +11210,8 @@ function updateBot(bot, dt, zone) {
         if ((bot.attackIndex || 0) % 2 === 0) bot.attackIndex = (bot.attackIndex || 0) + 1;
       }
       // 크림슨 봇: 근접 교전 중 게이지가 차면 바로 궁극기
-      const canUseAttack = (bot.malfunctionUntil ?? 0) <= state.gameTime;
+      const canUseAttack = (bot.malfunctionUntil ?? 0) <= state.gameTime && (bot.mintFrozenUntil ?? 0) <= state.gameTime;
+      if (canUseAttack && ct === "mint") tryUseMintUltimate(bot);
       if (canUseAttack && ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
         tryUseCrimsonUltimate(bot);
       }
@@ -12111,6 +12239,7 @@ function updateHud() {
     const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0)
       : player.characterType === "red" ? (player.redUltimateCharge ?? 0)
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
+      : player.characterType === "mint" ? (player.mintUltimateCharge ?? 0)
       : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
       : player.characterType === "pink" ? (player.pinkUltimateCharge ?? 0)
@@ -12261,6 +12390,8 @@ function updateTrainingRespawn() {
     if (!fighter.isDummy || !fighter.dead || !fighter.respawnAt) continue;
     if (state.gameTime >= fighter.respawnAt) {
       fighter.dead = false;
+      fighter.mintIce = 0;
+      fighter.mintFrozenUntil = 0;
       fighter.health = fighter.maxHealth;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
@@ -12322,6 +12453,8 @@ function updateChopWoodRespawn() {
     if (!fighter.dead || !fighter.respawnAt) continue;
     if (state.gameTime >= fighter.respawnAt) {
       fighter.dead = false;
+      fighter.mintIce = 0;
+      fighter.mintFrozenUntil = 0;
       fighter.health = fighter.maxHealth;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
@@ -12524,6 +12657,8 @@ function updatePinkRevives() {
     }
     if (state.gameTime < fighter.reviveAt) continue;
     fighter.dead = false;
+    fighter.mintIce = 0;
+    fighter.mintFrozenUntil = 0;
     fighter.health = fighter.maxHealth * fighter.reviveHealthRatio;
     fighter.invulnerableUntil = state.gameTime + CHARACTERS.pink.ultimate.invulnerabilityDuration;
     fighter.mesh.visible = true;
@@ -12589,6 +12724,8 @@ function animate() {
       updateScheduledHits();
       updateProjectiles(dt);
       updateIvoryZones();
+      updateMintZones(dt);
+      updateMintIndicators();
       updatePoisonTicks();
       updateGoldRush(dt);
       if (usesZone) {
@@ -14062,6 +14199,8 @@ if (window.location.hash === "#chop-wood") {
     state.malfunctionZones = [];
     state.ivoryZones.forEach((zone) => disposeSceneObject(zone.mesh));
     state.ivoryZones = [];
+    state.mintZones.forEach((zone) => disposeSceneObject(zone.mesh));
+    state.mintZones = [];
     state.splashAccum = {};
     state.scheduledHits = [];
     state.deathOrder = [];

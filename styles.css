@@ -2162,17 +2162,21 @@ body.lobby-active #takedown-hud {
 
 .matchup-table th {
   padding: 5px 4px;
-  color: var(--accent);
   font-weight: 800;
   border-bottom: 1px solid rgba(255, 210, 158, 0.25);
   text-align: center;
   white-space: nowrap;
 }
 
+.matchup-table thead th {
+  color: var(--accent);
+}
+
 .matchup-table td {
   padding: 5px 8px;
   text-align: center;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .mu-red { color: #ff6666; }
@@ -2184,6 +2188,10 @@ body.lobby-active #takedown-hud {
 .mu-purple { color: #800080; }
 .mu-pink { color: #ff88cc; }
 .mu-crimson { color: #d43b3b; }
+.mu-gold { color: #ffd700; }
+.mu-ivory { color: #fffff0; }
+.mu-chartreuse { color: #c1f80a; }
+.mu-mint { color: #98ffdc; }
 
 .matchup-desc {
   font-size: 11px;

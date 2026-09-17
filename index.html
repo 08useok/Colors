@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.159">
+  <link rel="stylesheet" href="./styles.css?v=1.5.160">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -161,30 +161,38 @@
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
           <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
           <div id="matchup-table" class="matchup-table hidden">
-            <p class="matchup-desc" data-i18n="matchupDesc">완벽한 카운터부터 불가능까지, 9단계로 세분화한 상성표입니다.</p>
+            <p class="matchup-desc" data-i18n="matchupDesc">메인 시즌 13종 · 1대1 일반 공격 시뮬레이션. 조합당 600회, 시작 거리 4·10·16타일. 수치는 (승리 + 무승부 × 0.5) 비율이며 실전 승률이 아닙니다. 궁극기·지형·자기장·팀 효과 제외. 경합은 45% 초과~55% 미만, 유불리 경계는 55·70·85·95%와 반대쪽 45·30·15·5%입니다.</p>
             <table>
               <thead>
-                <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muPerfectCounter">완벽한 카운터</th><th data-i18n="muDominant">완전 유리</th><th data-i18n="muAdv">유리</th><th data-i18n="muSlightAdv">약간 유리</th><th data-i18n="muEven">경합</th><th data-i18n="muSlightDis">약간 불리</th><th data-i18n="muDis">불리</th><th data-i18n="muSevereDis">완전 불리</th><th data-i18n="muImpossible">불가능</th></tr>
+                <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muPerfectCounter">압도적 유리</th><th data-i18n="muDominant">완전 유리</th><th data-i18n="muAdv">유리</th><th data-i18n="muSlightAdv">약간 유리</th><th data-i18n="muEven">경합</th><th data-i18n="muSlightDis">약간 불리</th><th data-i18n="muDis">불리</th><th data-i18n="muSevereDis">완전 불리</th><th data-i18n="muImpossible">압도적 불리</th></tr>
               </thead>
               <tbody>
-                <tr><td class="mu-red">🔴 Red</td><td>🟢</td><td>🟣</td><td>—</td><td>🟥</td><td>🔵 🩷 🟨</td><td>🟡 🟩</td><td>—</td><td>🟠</td><td>🩵 🤍</td></tr>
-                <tr><td class="mu-green">🟢 Green</td><td>—</td><td>—</td><td>—</td><td>🟣</td><td>🔵 🩷 🟩</td><td>🩵 🟠 🟨</td><td>—</td><td>🟡 🟥 🤍</td><td>🔴</td></tr>
-                <tr><td class="mu-blue">🔵 Blue</td><td>🟠</td><td>🟡 🟨</td><td>🩵</td><td>🤍 🩷</td><td>🔴 🟢 🟥</td><td>🟣</td><td>—</td><td>—</td><td>🟩</td></tr>
-                <tr><td class="mu-orange">🟠 Orange</td><td>—</td><td>🔴</td><td>—</td><td>🩷 🟢</td><td>🟡 🟥 🤍</td><td>🟨 🟩</td><td>—</td><td>🩵 🟣</td><td>🔵</td></tr>
-                <tr><td class="mu-yellow">🟡 Yellow</td><td>🟥</td><td>🟢 🩷 🤍</td><td>🟨 🟩</td><td>🔴</td><td>🟠 🩵 🟣</td><td>—</td><td>—</td><td>🔵</td><td>—</td></tr>
-                <tr><td class="mu-cyan">🩵 Cyan</td><td>🔴</td><td>🟠 🩷</td><td>🟥 🤍</td><td>🟩 🟢</td><td>🟡 🟣</td><td>🟨</td><td>🔵</td><td>—</td><td>—</td></tr>
-                <tr><td class="mu-purple">🟣 Purple</td><td>—</td><td>🟠</td><td>—</td><td>🔵 🟩</td><td>🟡 🩵 🤍</td><td>🟢</td><td>🟥</td><td>🔴 🩷</td><td>🟨</td></tr>
-                <tr><td class="mu-pink">🩷 Pink</td><td>—</td><td>🟣</td><td>—</td><td>—</td><td>🔴 🟢 🤍</td><td>🟠 🟩 🔵</td><td>—</td><td>🟡 🩵 🟥 🟨</td><td>—</td></tr>
-                <tr><td class="mu-crimson">🟥 Crimson</td><td>—</td><td>🟢 🩷</td><td>🟣 🟩</td><td>—</td><td>🔵 🟠</td><td>🔴</td><td>🩵</td><td>🟨 🤍</td><td>🟡</td></tr>
-                <tr><td class="mu-gold">🟨 Gold</td><td>🟣</td><td>🟥 🩷 🤍</td><td>—</td><td>🩵 🟢 🟠</td><td>🔴 🟩</td><td>—</td><td>🟡</td><td>🔵</td><td>—</td></tr>
-                <tr><td class="mu-ivory">🤍 Ivory</td><td>🔴</td><td>🟢 🟥</td><td>—</td><td>—</td><td>🟠 🟣 🩷</td><td>🔵</td><td>🩵</td><td>🟡 🟨 🟩</td><td>—</td></tr>
-                <tr><td class="mu-chartreuse">🟩 Chartreuse</td><td>🔵</td><td>🤍</td><td>—</td><td>🩷 🔴 🟠</td><td>🟢 🟨</td><td>🩵 🟣</td><td>🟡 🟥</td><td>—</td><td>—</td></tr>
+                <tr><th scope="row" class="mu-red">🔴 Red</th><td>🟢 Green 100.0%<br>🔵 Blue 100.0%<br>🟡 Yellow 100.0%<br>🩵 Cyan 100.0%<br>🟣 Purple 100.0%<br>🩷 Pink 100.0%<br>🟥 Crimson 100.0%<br>🟨 Gold 95.5%<br>🤍 Ivory 100.0%</td><td>🟩 Chartreuse 85.3%</td><td>—</td><td>🍃 Mint 63.8%</td><td>—</td><td>—</td><td>🟠 Orange 27.3%</td><td>—</td><td>—</td></tr>
+                <tr><th scope="row" class="mu-green">🟢 Green</th><td>—</td><td>🟥 Crimson 92.2%</td><td>—</td><td>—</td><td>🔵 Blue 54.2%</td><td>—</td><td>🤍 Ivory 15.8%</td><td>🩵 Cyan 10.4%<br>🟣 Purple 9.3%<br>🟩 Chartreuse 14.3%</td><td>🔴 Red 0.0%<br>🟠 Orange 0.0%<br>🟡 Yellow 4.1%<br>🩷 Pink 0.0%<br>🟨 Gold 1.8%<br>🍃 Mint 0.5%</td></tr>
+                <tr><th scope="row" class="mu-blue">🔵 Blue</th><td>🟡 Yellow 100.0%<br>🩵 Cyan 99.5%<br>🟣 Purple 99.7%<br>🟨 Gold 99.3%<br>🤍 Ivory 100.0%<br>🍃 Mint 99.7%</td><td>🟩 Chartreuse 91.0%</td><td>—</td><td>🟠 Orange 66.3%</td><td>🟢 Green 45.8%</td><td>—</td><td>—</td><td>—</td><td>🔴 Red 0.0%<br>🩷 Pink 0.0%<br>🟥 Crimson 0.0%</td></tr>
+                <tr><th scope="row" class="mu-orange">🟠 Orange</th><td>🟢 Green 100.0%<br>🟡 Yellow 99.8%<br>🩵 Cyan 100.0%<br>🟥 Crimson 99.3%<br>🟨 Gold 99.6%<br>🤍 Ivory 100.0%<br>🍃 Mint 100.0%</td><td>🟩 Chartreuse 90.1%</td><td>🔴 Red 72.8%</td><td>🩷 Pink 67.3%</td><td>—</td><td>🔵 Blue 33.8%<br>🟣 Purple 40.7%</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><th scope="row" class="mu-yellow">🟡 Yellow</th><td>🟢 Green 95.9%<br>🟨 Gold 98.1%<br>🤍 Ivory 99.5%<br>🍃 Mint 99.7%</td><td>🩵 Cyan 94.7%<br>🟩 Chartreuse 91.3%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🩷 Pink 7.4%<br>🟥 Crimson 14.7%</td><td>🔴 Red 0.0%<br>🔵 Blue 0.0%<br>🟠 Orange 0.2%<br>🟣 Purple 0.0%</td></tr>
+                <tr><th scope="row" class="mu-cyan">🩵 Cyan</th><td>—</td><td>🟢 Green 89.6%<br>🤍 Ivory 91.7%</td><td>🟩 Chartreuse 76.2%</td><td>🟨 Gold 58.4%<br>🍃 Mint 62.7%</td><td>—</td><td>—</td><td>—</td><td>🟡 Yellow 5.3%</td><td>🔴 Red 0.0%<br>🔵 Blue 0.5%<br>🟠 Orange 0.0%<br>🟣 Purple 3.3%<br>🩷 Pink 0.0%<br>🟥 Crimson 0.0%</td></tr>
+                <tr><th scope="row" class="mu-purple">🟣 Purple</th><td>🟡 Yellow 100.0%<br>🩵 Cyan 96.7%<br>🟨 Gold 99.5%<br>🤍 Ivory 99.8%<br>🍃 Mint 100.0%</td><td>🟢 Green 90.7%<br>🟩 Chartreuse 93.7%</td><td>—</td><td>🟠 Orange 59.3%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🔴 Red 0.0%<br>🔵 Blue 0.3%<br>🩷 Pink 0.0%<br>🟥 Crimson 2.2%</td></tr>
+                <tr><th scope="row" class="mu-pink">🩷 Pink</th><td>🟢 Green 100.0%<br>🔵 Blue 100.0%<br>🩵 Cyan 100.0%<br>🟣 Purple 100.0%<br>🤍 Ivory 100.0%</td><td>🟡 Yellow 92.6%</td><td>🟩 Chartreuse 81.7%</td><td>🟨 Gold 61.0%</td><td>—</td><td>🟠 Orange 32.7%</td><td>—</td><td>🍃 Mint 14.3%</td><td>🔴 Red 0.0%<br>🟥 Crimson 0.0%</td></tr>
+                <tr><th scope="row" class="mu-crimson">🟥 Crimson</th><td>🔵 Blue 100.0%<br>🩵 Cyan 100.0%<br>🟣 Purple 97.8%<br>🩷 Pink 100.0%<br>🤍 Ivory 100.0%</td><td>🟡 Yellow 85.3%</td><td>🟩 Chartreuse 78.8%</td><td>—</td><td>—</td><td>—</td><td>🟨 Gold 28.9%</td><td>🟢 Green 7.8%<br>🍃 Mint 14.3%</td><td>🔴 Red 0.0%<br>🟠 Orange 0.7%</td></tr>
+                <tr><th scope="row" class="mu-gold">🟨 Gold</th><td>🟢 Green 98.2%</td><td>—</td><td>🟥 Crimson 71.1%<br>🟩 Chartreuse 78.3%</td><td>—</td><td>—</td><td>🩵 Cyan 41.6%<br>🩷 Pink 39.0%</td><td>—</td><td>🍃 Mint 11.0%</td><td>🔴 Red 4.5%<br>🔵 Blue 0.7%<br>🟠 Orange 0.4%<br>🟡 Yellow 1.9%<br>🟣 Purple 0.5%<br>🤍 Ivory 0.2%</td></tr>
+                <tr><th scope="row" class="mu-ivory">🤍 Ivory</th><td>🟨 Gold 99.8%</td><td>—</td><td>🟢 Green 84.2%</td><td>—</td><td>—</td><td>🟩 Chartreuse 34.4%<br>🍃 Mint 37.7%</td><td>—</td><td>🩵 Cyan 8.3%</td><td>🔴 Red 0.0%<br>🔵 Blue 0.0%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.5%<br>🟣 Purple 0.2%<br>🩷 Pink 0.0%<br>🟥 Crimson 0.0%</td></tr>
+                <tr><th scope="row" class="mu-chartreuse">🟩 Chartreuse</th><td>—</td><td>🟢 Green 85.7%</td><td>—</td><td>🤍 Ivory 65.6%</td><td>—</td><td>🍃 Mint 38.2%</td><td>🩵 Cyan 23.8%<br>🩷 Pink 18.3%<br>🟥 Crimson 21.2%<br>🟨 Gold 21.7%</td><td>🔴 Red 14.7%<br>🔵 Blue 9.0%<br>🟠 Orange 9.9%<br>🟡 Yellow 8.7%<br>🟣 Purple 6.3%</td><td>—</td></tr>
+                <tr><th scope="row" class="mu-mint">🍃 Mint</th><td>🟢 Green 99.5%</td><td>🩷 Pink 85.7%<br>🟥 Crimson 85.7%<br>🟨 Gold 89.0%</td><td>—</td><td>🤍 Ivory 62.3%<br>🟩 Chartreuse 61.8%</td><td>—</td><td>🔴 Red 36.2%<br>🩵 Cyan 37.3%</td><td>—</td><td>—</td><td>🔵 Blue 0.3%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.3%<br>🟣 Purple 0.0%</td></tr>
               </tbody>
             </table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
             <div class="patch-section-label">베타 시즌 패치노트</div>
+            <div class="patch-entry">
+              <div class="patch-version">v1.5.5 — 2026.09.17 · 상성표 수정·민트 누락 보완</div>
+              <ul>
+                <li><strong>상성표 수정</strong>: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종을 다시 시뮬레이션해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.</li>
+                <li><strong>민트 누락</strong>: 민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다. 7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.</li>
+              </ul>
+            </div>
             <div class="patch-entry">
               <div class="patch-version">v1.5.4.3 — 2026.09.01 · 베타 시즌 5 밸런스 패치</div>
               <ul>
@@ -1128,6 +1136,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.5.5.9"></script>
+  <script type="module" src="./src/main.js?v=1.5.5.11"></script>
 </body>
 </html>

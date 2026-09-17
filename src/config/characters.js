@@ -220,6 +220,10 @@ export const CHARACTERS = {
     iceBulletSpeed: 20,
     burstCount: 3,
     burstIntervalMs: 120,
+    icePerHit: 25,
+    freezeThreshold: 100,
+    freezeDuration: 2,
+    ultimate: { name: "아이스크림 장판", castRange: 10, radius: 9, duration: 10, icePerSecond: 5, damagePerSecond: 300, chargeRequired: 7, slideStrength: 3.2, slideAcceleration: 0.6 },
     walk: { cycleSpeed: 8, armAmp: 0.25, legAmp: 0.36, armRestZ: Math.PI * 0.05 },
   },
 };
