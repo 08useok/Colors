@@ -1,5 +1,7 @@
 # Implementation Plan — Skull Creek (해골천)
 
+> 과거 구현 진행 기록이다. 아래 버전·예약 일정·완료 표시는 작성 당시 기준이며 현재 작업 지시나 배포 일정이 아니다. 현재 구조는 [프로젝트 README](README.md), 기능별 기준은 [스펙 목차](specs/README.md)를 확인한다.
+
 > Last updated: 2026-07-25
 > Status: Beta Season 1 (v1.5.0) 구현 완료 — 2026-07-27 00:00 KST 푸시 배포 예약
 > Source of truth: `specs/*` vs `src/main.js` (monolithic, ~7538 lines)
@@ -14,7 +16,7 @@ The following specs are fully implemented in `src/main.js` and `index.html`:
 - [x] Lobby screen (registration, daily login gate, game launch) — `specs/lobby.md`
 - [x] Character select (Red, Green, Blue, Orange, Yellow, Cyan, Purple, Pink — 8 selectable) — `specs/character-select.md`
 - [x] Combat: natural regen (3s player / 5s bot, 25%/tick) + auto-reload on `ammo < maxAmmo` — `specs/combat-regen-autoreload.md`
-- [x] Green boomerang (60° spread, 4-shot sequential 0.08s, fan indicator) — `specs/green-boomerang.md`
+- [x] Green boomerang (60° spread, 4-shot sequential 0.08s, fan indicator) — `specs/characters/green.md`
 - [x] Per-character stats + win streak system (charStats, streakBonus, 100-win milestone) — `specs/character-stats.md`
 - [x] Daily ID verification (5-attempt lockout, date-based reset, account recovery) — `specs/daily-login.md`
 - [x] Trophy ranking (12 - rank*2, floor 0, deathOrder tracking) — `specs/trophy-ranking.md`
@@ -22,8 +24,8 @@ The following specs are fully implemented in `src/main.js` and `index.html`:
 - [x] Mouse aim (raycaster to y=0 plane, independent from WASD) — `specs/mouse-aim.md`
 - [x] Initial render bug fix (CDN swap, overlay display fix) — `specs/fix-initial-render.md`
 - [x] Orange character (bomb + 5-way splash, aim indicator, bot AI) — `specs/alpha-season-2-v13.md`
-- [x] Yellow character (electric projectile, 40% slow debuff 1.5s) — `specs/yellow-character.md`
-- [x] Cyan character (6-pill spreadLine projectiles) — `specs/cyan-character.md`
+- [x] Yellow character (electric projectile, 40% slow debuff 1.5s) — `specs/characters/yellow.md`
+- [x] Cyan character (6-pill spreadLine projectiles) — `specs/characters/cyan.md`
 - [x] Purple character (poison needle + vial, 760 DPS × 4s DoT) — confirmed in CHARACTERS
 - [x] Pink character (heal circle + melee, 11500 HP, 1.4x speed) — confirmed in CHARACTERS
 - [x] Chop Wood 3v3 mode (team trees, axe grades, bot team AI) — `specs/chop-wood.md`
@@ -78,7 +80,7 @@ Umbrella spec: `specs/beta-season-transition.md` — 배포 시점 2026-07-27 00
 - [ ] Verify: existing alpha accounts auto-create `beta1` keys on load (migration logic already exists)
 - [ ] Verify: profile "시즌별 전적" shows beta1 with current-season marker (⬅)
 
-### 1.2 Orange Rebalance — `specs/orange-rebalance.md`
+### 1.2 Orange Rebalance — `specs/characters/orange.md`
 - [ ] `CHARACTERS.orange.bombDamage`: 750 → 900
 - [ ] `CHARACTERS.orange.bombSplashDamage`: 300 → 380
 - [ ] `CHARACTERS.orange.bombSpeed`: 22 → 26
@@ -106,7 +108,7 @@ Umbrella spec: `specs/beta-season-transition.md` — 배포 시점 2026-07-27 00
 - [ ] Add all gacha i18n keys to langs.js
 - [ ] Credits obtainable ONLY through gacha — no other source
 
-### 1.5 Crimson Character (Hero tier) — `specs/crimson-character.md`
+### 1.5 Crimson Character (Hero tier) — `specs/characters/crimson.md`
 - [ ] Add `crimson` to `CHARACTERS`: HP 9800, color `#a00000`, range 4, melee fan attack
 - [ ] Implement fan-shaped 4-hit combo: 0.12s intervals, ±15°/±45° directions, damage 600/700/800/1100 (total 3200), cooldown 0.6s, reload 0.5s
 - [ ] Implement ultimate "파괴의 일격": 8 gauge charges → 3000 damage in 5×5 area, destroy walls, knockback 1-2 tiles

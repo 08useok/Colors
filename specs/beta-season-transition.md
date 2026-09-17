@@ -7,8 +7,8 @@
 
 이 문서는 베타 시즌 1 후보 콘텐츠의 상위 개요다.
 
-- `specs/crimson-character.md` — 신규 캐릭터 크림슨
-- `specs/orange-rebalance.md` — Orange 밸런스 버프
+- `specs/characters/crimson.md` — 신규 캐릭터 크림슨
+- `specs/characters/orange.md` — Orange 밸런스 버프
 - `specs/character-rarity-shop.md` — 캐릭터 등급 · 크레딧 구매
 - `specs/skin-red-theme.md` — 레드 컬러 테마 신규 스킨
 - `specs/daily-gacha.md` — 승리할 때마다 지급되는 β 크레딧 보상

@@ -223,12 +223,12 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .attack-btn strong { display: block; margin: 3px 0; }
 .attack-btn.cooldown { opacity: .55; cursor: default; }
 @keyframes ultimate-ready-pulse { 50% { box-shadow: 0 0 16px var(--ultimate-color),0 0 38px var(--ultimate-color),0 12px 40px rgba(0,0,0,.3); } }
-.beta-modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 20px; background: rgba(2,10,15,.68); backdrop-filter: blur(10px); }
+.beta-modal { position: fixed; inset: 0; z-index: 10; display: grid; place-items: stretch; padding: 0; background: rgba(2,10,15,.68); backdrop-filter: blur(10px); }
 .beta-modal.hidden { display: none; }
-.beta-modal-card { width: min(880px, 94vw); max-height: 82vh; overflow: auto; border: 1px solid rgba(146,227,244,.25); border-radius: 24px; padding: 22px; background: #0c1b24; box-shadow: 0 30px 90px rgba(0,0,0,.45); }
-.modal-title-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.beta-modal-card { width: 100%; height: 100%; min-height: 0; max-height: none; box-sizing: border-box; overflow: auto; border: 1px solid rgba(146,227,244,.25); border-radius: 0; padding: clamp(16px, 3vw, 40px); background: #0c1b24; box-shadow: 0 30px 90px rgba(0,0,0,.45); }
+.modal-title-row { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 18px; padding-block: 8px; background: #0c1b24; }
 .modal-title-row h2 { margin: 12px 0 0; }
-.modal-close { width: 38px; height: 38px; border: 0; border-radius: 50%; color: #fff; background: #20343e; font-size: 24px; cursor: pointer; }
+.modal-close { flex-shrink: 0; width: 38px; height: 38px; border: 0; border-radius: 50%; color: #fff; background: #20343e; font-size: 24px; cursor: pointer; }
 .beta-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
 .beta-card { position: relative; min-height: 150px; padding: 15px; border: 1px solid #29414b; border-radius: 16px; background: #122630; overflow: hidden; }
 .asset-showroom-grid { margin-top: 16px; }

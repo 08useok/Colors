@@ -164,14 +164,16 @@ const beta2LobbyBgm = new Audio("./assets/beta2-lobby-bgm.mp3?v=1.5.2");
 beta2LobbyBgm.loop = true;
 const beta4LobbyBgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1.5.4");
 beta4LobbyBgm.loop = true;
+const beta5LobbyBgm = new Audio("./assets/beta5-clockwork-midway.mp3?v=1");
+beta5LobbyBgm.loop = true;
 const storedMasterVolume = Number.parseFloat(localStorage.getItem("colorsMasterVolume"));
 let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(storedMasterVolume, 0, 1) : 1;
 
 function applyMasterVolume() {
   // 설정에 표시되는 비율과 실제 출력 비율을 동일하게 유지한다.
   const outputVolume = masterVolume;
-  const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, showdownBgm, showdownMusic];
-  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
+  const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, showdownBgm, showdownMusic];
+  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
   mediaTracks.forEach((track, index) => {
     track.volume = baseVolumes[index] * outputVolume;
     track.muted = outputVolume === 0;
@@ -186,6 +188,7 @@ function pauseLobbyBgm() {
   betaLobbyBgm.pause();
   beta2LobbyBgm.pause();
   beta4LobbyBgm.pause();
+  beta5LobbyBgm.pause();
 }
 
 function stopAllBgm() {
@@ -198,8 +201,8 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  const activeLobbyBgm = CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
-  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
+  const activeLobbyBgm = CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
   applyMasterVolume();
   activeLobbyBgm.play().catch(() => {});
 }
@@ -3953,17 +3956,21 @@ function ensureChartreuseGlbLoading() {
   _glbLoader.load('./assets/3d/chartreuse/walk-m3e.glb', g => { _chartreuseGlb.end = _stripRootMotion(g); });
 }
 function prepareMintFbx(asset) {
-  // FBXLoader가 좌표축을 Three.js의 Y-up 좌표계로 변환한다. 여기에 X축
-  // -90도 보정을 다시 적용하면 전투 모델 전체가 바닥과 평행하게 눕는다.
-  asset.rotation.x = 0;
+  // 실제 민트 FBX는 Z-up이다. r165 FBXLoader의 결과도 Z-up이므로
+  // 크기를 측정하기 전에 Y-up으로 변환한다. 외부 씬의 방향/애니메이션
+  // 초기화가 이 보정을 덮어쓰지 않도록 원본을 별도 그룹 안에 둔다.
+  asset.rotation.x = -Math.PI / 2;
   asset.rotation.z = 0;
-  asset.updateMatrixWorld(true);
   for (const clip of (asset.animations ?? [])) {
     // 모델 전체를 움직이는 최상위 노드의 위치·회전 트랙은 게임의 이동 및
     // 방향 회전과 중복된다. 팔다리/몸통 본 애니메이션만 유지한다.
     clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|RootNodeL|output_unwrapped|walk[_-]m(?:1s|2l|3e))\./i.test(track.name));
   }
-  return { scene: asset, animations: asset.animations ?? [] };
+  const scene = new THREE.Group();
+  scene.name = "MintYUp";
+  scene.add(asset);
+  scene.updateMatrixWorld(true);
+  return { scene, animations: asset.animations ?? [] };
 }
 
 let _mintFbxRequested = false;

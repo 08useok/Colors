@@ -9,12 +9,12 @@ import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/
 
 const canvas = document.getElementById("beta-canvas");
 let azureWaveState = null;
-const requestedMusicSeason = new URLSearchParams(location.search).get("test");
-const betaSeasonBgm = new Audio(requestedMusicSeason === "beta5"
+const requestedBetaSeason = new URLSearchParams(location.search).get("test");
+const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta6";
+// 시즌 7·8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
+const betaSeasonBgm = new Audio(BETA_SEASON_ID === "beta5"
   ? "./assets/beta5-clockwork-midway.mp3?v=1"
-  : requestedMusicSeason === "beta4"
-    ? "./assets/beta4-rooftop-motion.mp3?v=1"
-    : "./assets/beta6-high-noon-tide.mp3?v=1");
+  : "./assets/beta6-high-noon-tide.mp3?v=1");
 betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
@@ -87,8 +87,6 @@ const dailyRewardOdds = document.getElementById("daily-reward-odds");
 const dailyRewardOddsClose = document.getElementById("daily-reward-odds-close");
 const dailyRewardUpgradeOddsBody = document.getElementById("daily-reward-upgrade-odds-body");
 const dailyRewardJumpOddsBody = document.getElementById("daily-reward-jump-odds-body");
-const requestedBetaSeason = new URLSearchParams(location.search).get("test");
-const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta6";
 const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 const IS_BETA7_TEST = BETA_SEASON_ID === "beta7";

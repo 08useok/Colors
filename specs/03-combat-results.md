@@ -40,6 +40,7 @@
 - [`mouse-aim.md`](mouse-aim.md)
 - [`combat-regen-autoreload.md`](combat-regen-autoreload.md)
 - [`chop-wood.md`](chop-wood.md)
+- [`training-arena.md`](training-arena.md) — 훈련장 개편 기획과 검증 기준
 - [`character-stats.md`](character-stats.md)
 - [`trophy-ranking.md`](trophy-ranking.md)
 - [`beta-result-poses.md`](beta-result-poses.md)

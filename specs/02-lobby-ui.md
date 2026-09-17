@@ -33,4 +33,5 @@
 - [`cosmetics-profile.md`](cosmetics-profile.md)
 - [`cosmetics-emote.md`](cosmetics-emote.md)
 - [`skin-red-theme.md`](skin-red-theme.md)
-
+- [`skin-gold-rush.md`](skin-gold-rush.md)
+- [`training-arena.md`](training-arena.md) — 캐릭터 선택 화면의 훈련장 진입

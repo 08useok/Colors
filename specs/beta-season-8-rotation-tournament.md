@@ -3,13 +3,11 @@
 ## 상태
 
 **구현 대상 아님.** 로스터가 16명이 채워질 때까지는 이 문서로만 남겨둔다.
-현재(2026-08) 캐릭터 수는 10명(Red/Green/Blue/Orange/Yellow/Cyan/Purple/Pink/Crimson/Gold) +
-논의 중인 아이보리(시즌 3) 까지 최대 11명 — 16명 채우려면 시즌이 여러 번 더 지나야 한다.
+2026-09-15 코드 기준 메인 시즌 5 로스터는 Mint까지 13명이다. 테스트 전용 캐릭터와 쇼룸 프리뷰는 정규 로스터로 자동 집계하지 않는다. 16명 충족 여부는 구현 착수 시 메인 `ROSTER`로 다시 확인한다.
 
 ## 개요
 
-기존 로테이션 모드(`ROTATION_CHAR_ORDER` 8명, 매일 승률 최하위 1명 탈락, `RotationStats` Durable
-Object로 전역 집계)를 베타 시즌 8에서 3단계 토너먼트 구조로 확장한다.
+과거 로테이션 구상을 3단계 토너먼트로 확장하는 제안이다. 시즌 8의 [오렌지 궁극기](beta-season-8.md)와는 별도 범위이며, 아래 단계가 현재 구현되어 있다는 뜻은 아니다.
 
 ## 3단계 구조
 
@@ -38,12 +36,8 @@ Object로 전역 집계)를 베타 시즌 8에서 3단계 토너먼트 구조로
 - [ ] 최종 우승자가 획득하는 "새 능력"의 구체적 내용
 - [ ] 기존 `RotationStats`/`ROTATION_CHAR_ORDER` 구조를 그대로 확장할지, 별도 시스템으로 새로 만들지
 
-## 참고 — 기존 로테이션 모드 구조 (재사용 후보)
+## 구현 착수 전 확인
 
-- `src/main.js:678` `ROTATION_CHAR_ORDER` — 현재 8명 고정 배열
-- `src/main.js:800` `initRotationState` — 계정별 로테이션 상태 초기화
-- `src/main.js:841` `rankRotationChars` — 통계 기반 순위 매기기
-- `src/main.js:854` `processRotationRounds` — 라운드 진행/탈락 처리
-- `party/server.js` `RotationStats` Durable Object — 전역 집계(승/판수/MVP/보스딜) + 일일 탈락 스케줄러(KST 기준)
-- 기존에도 로테이션에서 "신규 능력" 부여 전례 있음(예: v1.4.10 "Rotation Orange 신규 능력 '광역 폭발'") —
-  3단계 우승 보상은 이 패턴의 연장선으로 볼 수 있음
+- 과거 문서가 참조한 `ROTATION_CHAR_ORDER`, `initRotationState`, `rankRotationChars`, `processRotationRounds`, `RotationStats`는 현재 `src/main.js`와 `party/server.js`에서 확인되지 않는다. 기존 구현 재사용을 전제로 개발을 시작하지 않는다.
+- Git 이력에서 과거 로테이션 구현을 확인하고 현재 계정·서버 구조와의 호환성을 검토한다.
+- 로스터, 통계 집계, 탈락 일정과 우승 보상 저장 방식을 확정한 뒤 구현 명세를 작성한다.

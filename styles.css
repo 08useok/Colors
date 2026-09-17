@@ -1668,16 +1668,20 @@ body.lobby-active #takedown-hud {
   z-index: 120;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: 0;
   background: rgba(7, 4, 2, 0.66);
   backdrop-filter: blur(7px);
 }
 
 .settings-card {
-  width: min(420px, calc(100vw - 32px));
-  padding: 24px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: clamp(16px, 3vw, 40px);
   border: 1px solid rgba(255, 205, 142, 0.42);
-  border-radius: 20px;
+  border-radius: 0;
   color: #f8dfc4;
   background: linear-gradient(180deg, rgba(48, 30, 17, 0.98), rgba(22, 13, 8, 0.99));
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.58);
@@ -3027,11 +3031,13 @@ body.lobby-active #takedown-hud {
   backdrop-filter: blur(8px);
 }
 .shop-screen {
-  width: min(94vw, 600px);
-  max-height: 90vh;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  box-sizing: border-box;
   overflow-y: auto;
-  padding: 28px 24px;
-  border-radius: 24px;
+  padding: clamp(16px, 3vw, 40px);
+  border-radius: 0;
   background: linear-gradient(180deg, rgba(75, 45, 25, 0.97), rgba(24, 14, 8, 0.98));
   border: 1px solid rgba(255, 210, 158, 0.28);
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
@@ -3752,4 +3758,43 @@ body.lobby-active #takedown-hud {
 }
 @media (max-width: 640px) {
   .daily-reward-star { width: 130px; height: 130px; font-size: 112px; }
+}
+
+/* 로비에서 여는 메뉴는 창 전체를 사용하고 내용만 스크롤한다. */
+#mode-selector {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  box-sizing: border-box;
+  border-radius: 0;
+  align-content: start;
+  overflow: auto;
+  padding: clamp(16px, 3vw, 40px);
+}
+#character-panel:not(.hidden) { height: 100dvh; }
+.shop-header, .shop-category-tabs { flex-wrap: wrap; gap: 12px; }
+.shop-close-btn, .settings-close, .modal-close { flex-shrink: 0; }
+.shop-header, .settings-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding-block: 8px;
+  background: #301e11;
+}
+.patchnotes-dock:has(.lobby-notice:not(.hidden), .matchup-table:not(.hidden), .patchnotes:not(.hidden)) {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: clamp(12px, 2vw, 24px);
+  background: #180f0a;
+  pointer-events: auto;
+}
+.patchnotes-dock:has(.lobby-notice:not(.hidden), .matchup-table:not(.hidden), .patchnotes:not(.hidden)) > :is(.lobby-notice, .matchup-table, .patchnotes) {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-height: none;
+  margin: 0;
 }

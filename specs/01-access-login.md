@@ -23,7 +23,12 @@
 | `skullCreekAccounts` | `localStorage` | 전체 계정 목록 |
 | `skullCreekAccount` | `localStorage` | 현재 계정 호환용 복사본 |
 | `skullCreekActiveAccountId` | `sessionStorage` | 현재 탭의 활성 계정 |
-| `colorsBetaSeasonTest` | `localStorage` | 베타 테스트 상태와 재화 |
+| `colorsBetaSeason5Test` | `localStorage` | `?test=beta5` 상태와 재화 |
+| `colorsBetaSeason6Test` | `localStorage` | 기본 테스트 및 `?test=beta6` 상태와 재화 |
+| `colorsBetaSeason7Test` | `localStorage` | `?test=beta7` 상태와 재화 |
+| `colorsBetaSeason8Test` | `localStorage` | `?test=beta8` 상태와 재화 |
+
+`colorsBetaSeasonTest`는 과거 테스트 키다. 현재 지원되는 시즌 선택에서는 사용하지 않는다. 베타 저장은 `saveBetaState()`가 선택한 `BETA_STORAGE_KEY`에 기록한다.
 
 ## 기준 코드
 
@@ -35,4 +40,3 @@
 
 - [`daily-login.md`](daily-login.md)
 - [`fix-initial-render.md`](fix-initial-render.md)
-

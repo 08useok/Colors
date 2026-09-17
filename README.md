@@ -2,11 +2,23 @@
 
 브라우저에서 실행하는 Three.js 기반 3D TPS 배틀로얄 프로토타입입니다.
 
-- 현재 메인 버전: `v1.5.4.1`
-- 현재 시즌: 베타 시즌 4
-- 현재 메인 시즌: 베타 시즌 5
-- 다음 시즌 테스트: 베타 시즌 6 (`?test=beta6`)
+- 2026-09-15 코드 기준 메인 시즌: 베타 시즌 5 (`CURRENT_VERSION`: `v1.5.5`)
+- 메인 스크립트 캐시 버전은 `index.html`의 `src/main.js?v=...`에서 확인합니다.
+- 베타 테스트: 시즌 5~8 지원, 기본값은 시즌 6
 - 빌드 도구 없이 ES 모듈과 Three.js CDN을 사용합니다.
+
+## 문서 안내
+
+- [스펙 전체 목차](specs/README.md): 기능별 명세, 캐릭터와 시즌 문서
+- [캐릭터 문서](specs/04-characters.md): 캐릭터별 통합 스펙
+- [전투·결과](specs/03-combat-results.md): 전투 규칙, 찹 우드와 훈련장
+- [재화](specs/05-currency.md), [시스템](specs/06-systems.md): 저장, 상점, 맵과 운영 구조
+- [개발 작업 규칙](AGENTS.md): 실행 및 검증 절차
+- [구현 계획 기록](IMPLEMENTATION_PLAN.md): 작성 당시의 진행 내역
+- [계획 작성 프롬프트](PROMPT_plan.md), [구현 프롬프트](PROMPT_build.md)
+- [초기 GDD](해골천_TPS_프로토타입_GDD.md), [통합 개발 프롬프트](해골천_통합_개발_프롬프트.md)
+
+시즌별 기획과 과거 구현 기록에는 작성 당시의 수치·상태가 남아 있습니다. 현재 동작은 해당 실행 코드와 설정 파일을 함께 확인합니다.
 
 ## 실행 파일로 바로 접속하기
 
@@ -30,8 +42,11 @@ CMD 창을 닫지 않은 상태에서 브라우저 주소창에 원하는 주소
 
 ```text
 기본 게임: http://localhost:4173/
-베타 시즌 4: http://localhost:4173/beta-season.html
+베타 기본 테스트(시즌 6): http://localhost:4173/beta-season.html
+베타 시즌 5: http://localhost:4173/beta-season.html?test=beta5
 베타 시즌 6: http://localhost:4173/beta-season.html?test=beta6
+베타 시즌 7: http://localhost:4173/beta-season.html?test=beta7
+베타 시즌 8: http://localhost:4173/beta-season.html?test=beta8
 ```
 
 서버를 종료하려면 CMD 창에서 `Ctrl + C`를 누릅니다.
@@ -70,7 +85,7 @@ Worker 개발 서버 주소는 `http://localhost:8787`입니다.
 
 ## 베타 시즌 5 테스트
 
-베타 시즌 5는 놀이공원 테마의 독립 테스트입니다. 메인 게임과 베타 시즌 4의 저장 데이터에는 영향을 주지 않습니다.
+베타 시즌 5는 놀이공원 테마의 독립 테스트입니다. 메인 계정과 다른 테스트 시즌의 저장 데이터에는 영향을 주지 않습니다.
 
 ```text
 http://localhost:4173/beta-season.html?test=beta5
@@ -89,7 +104,7 @@ http://localhost:4173/beta-season.html?test=beta5
 
 ### 모델과 조준
 
-- 메인 12개 캐릭터와 베타 전용 Mint까지 총 13개 캐릭터 문서는 `specs/characters/`에서 관리합니다.
+- 메인 시즌 5의 Mint를 포함한 캐릭터 13종 문서는 [캐릭터 목차](specs/04-characters.md)에서 관리합니다.
 - 캐릭터 모션의 `walk-m1s`, `walk-m2l`, `walk-m3e`는 각각 걷기 시작, 반복, 정지를 뜻합니다.
 - Mint와 솜사탕 핑크는 FBX 모션 세트를 사용하고, 나머지 지원 캐릭터는 GLB 모션 세트를 사용합니다.
 - 캐릭터별 일반 공격 형태에 맞춰 직선, 부채꼴, X자, 원형 조준선을 사용합니다. 기본 조준선 색은 흰색입니다.
