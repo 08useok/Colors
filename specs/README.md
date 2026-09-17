@@ -13,6 +13,8 @@
 
 ## 기능별 목차
 
+- [메인 캐릭터 기능 대조](character-implementation-audit.md) — 누락 수정 및 시즌별 차이
+
 - [일반 공격 상성 시뮬레이션](matchup-simulation.md) — 조건, 재실행 방법, 13종 결과 원본
 
 | 번호 | 종류 | 대표 파일 |

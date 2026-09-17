@@ -46,6 +46,7 @@ export const CHARACTERS = {
     bulletDamage: 1500,
     bulletRange: 16,
     bulletSpeed: 32,
+    ultimate: { name: "돌진", damage: 1600, speed: 24, duration: 1.15, hitRadius: 1.2, chargeRequired: 4 },
     moveSpeedMultiplier: 1.0,
     walk: { cycleSpeed: 7, armAmp: 0.20, legAmp: 0.34, armRestZ: Math.PI * 0.03 },
   },

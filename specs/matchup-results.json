@@ -30,8 +30,8 @@
     }
   ],
   "repetitions": 50,
-  "configHash": "590ce67e550acbfdc08e4202b5f69bc3f17db33df836c2bb48e5124208804ac8",
-  "combatSourceHash": "3cab4c883f9b922ff8d9a812aca9f51c299c492185eea13b8d7e1321bed3e2db",
+  "configHash": "61f40aa0518501aa8ea203c2b53ad95dbde537307dfd0adbd9c7330729b84e74",
+  "combatSourceHash": "5a8c0bf1fa7f9e9133c272a8d65a4c790c1720aaf7b757986b6fb896afd82476",
   "simulatorHash": "92f02d3602caaa59ba04060f4183c0efa54baa58836767642fdcece35c89340b",
   "matrix": {
     "red": {

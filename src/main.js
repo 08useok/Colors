@@ -5,7 +5,7 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.149";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.184";
+import { CHARACTERS } from "./config/characters.js?v=1.5.185";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -360,7 +360,7 @@ const SEASONS = {
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set(["red", "green", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "blue", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -4581,6 +4581,8 @@ function makeFighter(options) {
     mintIce: 0,
     mintFrozenUntil: 0,
     mintUltimateCharge: 0,
+    blueUltimateCharge: 0,
+    blueDash: null,
     poisonSourceId: -1,
     poisonNextTick: 0,
     cyanUltimateCharge: 0,
@@ -5828,6 +5830,8 @@ function updateTakeDownRespawn() {
       fighter.dead = false;
       fighter.mintIce = 0;
       fighter.mintFrozenUntil = 0;
+      fighter.blueDash = null;
+      fighter.blueKnockback = null;
       fighter.health = fighter.maxHealth;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
@@ -6050,6 +6054,8 @@ function setupMpHandlers() {
       f.dead = false;
       f.mintIce = 0;
       f.mintFrozenUntil = 0;
+      f.blueDash = null;
+      f.blueKnockback = null;
       f.health = f.maxHealth;
       f.tdRespawnAt = 0;
       f.mesh.visible = true;
@@ -8521,8 +8527,9 @@ function beginBoomerangAttack(fighter) {
   fighter.attackAnimTime = 0;
   fighter.spread = Math.min(1, fighter.spread + 0.12);
   fighter.lastCombatTime = state.gameTime;
-  const greenUltimateConcealed = fighter.greenUltimateBush?.expiresAt > state.gameTime;
-  if (isInBush(fighter) && !greenUltimateConcealed) fighter.revealedUntil = state.gameTime + 3;
+  if (isInBush(fighter) || fighter.greenUltimateBush?.expiresAt > state.gameTime) {
+    fighter.revealedUntil = state.gameTime + CHARACTERS.green.ultimate.revealDuration;
+  }
 
   charDef.boomerangAngles.forEach((angleOffset, index) => {
     const yaw = fighter.yaw + angleOffset;
@@ -9612,10 +9619,87 @@ function tryUseChartreuseUltimate(fighter = getPlayer()) {
   return true;
 }
 
+function tryUseBlueUltimate(fighter = getPlayer()) {
+  if (!fighter || fighter.dead || fighter.characterType !== "blue" || !state.running || fighter.blueDash) return false;
+  if ((fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return false;
+  const def = CHARACTERS.blue.ultimate;
+  if ((fighter.blueUltimateCharge ?? 0) < def.chargeRequired) return false;
+  fighter.blueUltimateCharge = 0;
+  fighter.lastCombatTime = state.gameTime;
+  fighter.blueDash = { x: Math.sin(fighter.yaw), z: Math.cos(fighter.yaw), remaining: def.duration, hits: new Set(), bounces: 0 };
+  if (fighter.isPlayer) audio.play("attack");
+  return true;
+}
+
+function updateBlueDashes(dt) {
+  const def = CHARACTERS.blue.ultimate;
+  for (const fighter of state.players) {
+    if (fighter.blueKnockback) {
+      if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime) fighter.blueKnockback = null;
+      else {
+        const push = fighter.blueKnockback;
+        tempVec3.set(push.x, 0, push.z);
+        moveFighter(fighter, tempVec3, dt);
+        push.x *= Math.exp(-9 * dt); push.z *= Math.exp(-9 * dt);
+        if (Math.hypot(push.x, push.z) < 0.01) fighter.blueKnockback = null;
+      }
+    }
+    const dash = fighter.blueDash;
+    if (!dash) continue;
+    if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) {
+      fighter.blueDash = null;
+      continue;
+    }
+    const duration = Math.min(dt, dash.remaining);
+    const steps = Math.max(1, Math.ceil(def.speed * duration / 0.3));
+    const step = def.speed * duration / steps;
+    const pos = fighter.mesh.position;
+    for (let i = 0; i < steps; i++) {
+      const nextX = pos.x + dash.x * step, nextZ = pos.z + dash.z * step;
+      const wall = state.solids.find(s => s.type !== "platform" && intersectsRect(nextX, nextZ, fighter.radius, s));
+      if (wall) {
+        // Reflect in the wall's local axes so rotated walls bounce correctly too.
+        const angle = wall.angle ?? 0, c = Math.cos(angle), s = Math.sin(angle);
+        const centerX = wall.x ?? (wall.minX + wall.maxX) / 2;
+        const centerZ = wall.z ?? (wall.minZ + wall.maxZ) / 2;
+        const localX = (pos.x - centerX) * c - (pos.z - centerZ) * s;
+        const localZ = (pos.x - centerX) * s + (pos.z - centerZ) * c;
+        let vx = dash.x * c - dash.z * s, vz = dash.x * s + dash.z * c;
+        const hitX = Math.abs(localX) > (wall.halfW ?? (wall.width ?? wall.maxX - wall.minX) / 2);
+        const hitZ = Math.abs(localZ) > (wall.halfD ?? (wall.depth ?? wall.maxZ - wall.minZ) / 2);
+        if (hitX) vx *= -1;
+        if (hitZ) vz *= -1;
+        if (!hitX && !hitZ) { if (Math.abs(vx) >= Math.abs(vz)) vx *= -1; else vz *= -1; }
+        dash.x = vx * c + vz * s; dash.z = -vx * s + vz * c;
+        dash.bounces++;
+        createBulletHitEffect(pos.x, pos.z);
+      } else {
+        pos.x = nextX; pos.z = nextZ;
+      }
+      for (const target of state.players) {
+        if (target.dead || target.id === fighter.id || dash.hits.has(target.id) || (state.chopWoodMode && target.team === fighter.team)) continue;
+        if (Math.hypot(target.mesh.position.x - pos.x, target.mesh.position.z - pos.z) > def.hitRadius) continue;
+        dash.hits.add(target.id);
+        applyDamage(target, def.damage, fighter);
+        const dx = target.mesh.position.x - pos.x, dz = target.mesh.position.z - pos.z;
+        const length = Math.hypot(dx, dz) || 1;
+        const strength = target.isBoss ? 2.2 : 5.5;
+        target.blueKnockback = { x: dx / length * strength, z: dz / length * strength };
+      }
+    }
+    fighter.yaw = Math.atan2(dash.x, dash.z);
+    fighter.mesh.rotation.y = fighter.yaw;
+    fighter.shadow?.position.set(pos.x, 0.04, pos.z);
+    dash.remaining -= duration;
+    if (dash.remaining <= 0) fighter.blueDash = null;
+  }
+}
+
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
   if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
+  if (fighter.characterType === "blue") return tryUseBlueUltimate(fighter);
   if (fighter.characterType === "mint") return tryUseMintUltimate(fighter);
   if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
   if (fighter.characterType === "red") return tryUseRedUltimate(fighter);
@@ -10168,6 +10252,9 @@ function updateProjectiles(dt) {
         if (proj.isChartreuse && proj.chartreuseAmmoType === "plague") dmg = target.health;
         if (proj.isBoomerang && proj.isReturning) dmg *= CHARACTERS.green.boomerangReturnDamageMultiplier;
         const dealt = applyDamage(target, dmg, attacker ?? null, true, !!proj.isSplash);
+        if (proj.isBullet && !proj.isMintIce && attacker?.characterType === "blue" && dealt > 0) {
+          attacker.blueUltimateCharge = Math.min(CHARACTERS.blue.ultimate.chargeRequired, (attacker.blueUltimateCharge ?? 0) + 1);
+        }
         if (proj.isIvoryIceCream) spawnIvoryZone(proj.x, proj.z, proj.ownerId);
         if (proj.isIvoryIceCream && !proj.isIvoryUltimate && attacker?.characterType === "ivory" && dealt > 0) {
           attacker.ivoryUltimateCharge = Math.min(CHARACTERS.ivory.ultimate.chargeRequired, (attacker.ivoryUltimateCharge ?? 0) + 1);
@@ -10541,6 +10628,7 @@ function resolveAttack(attacker, hitIndex, damage) {
 }
 
 function applyDamage(target, amount, attacker = null, updateCombatTime = true, noPopup = false) {
+  if ((target?.invulnerableUntil ?? 0) > state.gameTime) return 0;
   if (!target || target.dead || target.health <= 0) return 0;
   if (target.dead) {
     return 0;
@@ -10986,7 +11074,7 @@ function updateEffects(dt) {
 
 function updatePlayerControls(dt) {
   const player = getPlayer();
-  if (!player || player.dead) {
+  if (!player || player.dead || player.blueDash) {
     return;
   }
 
@@ -11141,7 +11229,7 @@ function tryBotAttackWithWindup(bot, target) {
 }
 
 function updateBot(bot, dt, zone) {
-  if (bot.dead || bot.isDummy || bot.isBoss || bot.isNetworkPlayer) {
+  if (bot.dead || bot.blueDash || bot.isDummy || bot.isBoss || bot.isNetworkPlayer) {
     return;
   }
 
@@ -11314,6 +11402,7 @@ function updateBot(bot, dt, zone) {
       // 크림슨 봇: 근접 교전 중 게이지가 차면 바로 궁극기
       const canUseAttack = (bot.malfunctionUntil ?? 0) <= state.gameTime && (bot.mintFrozenUntil ?? 0) <= state.gameTime;
       if (canUseAttack && ct === "mint") tryUseMintUltimate(bot);
+      if (canUseAttack && ct === "blue") tryUseBlueUltimate(bot);
       if (canUseAttack && ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
         tryUseCrimsonUltimate(bot);
       }
@@ -12343,6 +12432,7 @@ function updateHud() {
       : player.characterType === "red" ? (player.redUltimateCharge ?? 0)
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "mint" ? (player.mintUltimateCharge ?? 0)
+      : player.characterType === "blue" ? (player.blueUltimateCharge ?? 0)
       : player.characterType === "ivory" ? (player.ivoryUltimateCharge ?? 0)
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
       : player.characterType === "pink" ? (player.pinkUltimateCharge ?? 0)
@@ -12495,6 +12585,8 @@ function updateTrainingRespawn() {
       fighter.dead = false;
       fighter.mintIce = 0;
       fighter.mintFrozenUntil = 0;
+      fighter.blueDash = null;
+      fighter.blueKnockback = null;
       fighter.health = fighter.maxHealth;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
@@ -12558,6 +12650,8 @@ function updateChopWoodRespawn() {
       fighter.dead = false;
       fighter.mintIce = 0;
       fighter.mintFrozenUntil = 0;
+      fighter.blueDash = null;
+      fighter.blueKnockback = null;
       fighter.health = fighter.maxHealth;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
@@ -12754,20 +12848,21 @@ function updatePinkRevives() {
   if (!state?.players) return;
   for (const fighter of state.players) {
     if (!fighter.dead || !fighter.reviveAt) continue;
-    if (state.gameTime > fighter.revivePendingUntil) {
-      fighter.reviveAt = 0;
-      continue;
-    }
+    // The buff is checked when death schedules the revive. Its expiry must not
+    // cancel a revive already earned just before the buff ended.
     if (state.gameTime < fighter.reviveAt) continue;
     fighter.dead = false;
     fighter.mintIce = 0;
     fighter.mintFrozenUntil = 0;
+      fighter.blueDash = null;
+      fighter.blueKnockback = null;
     fighter.health = fighter.maxHealth * fighter.reviveHealthRatio;
     fighter.invulnerableUntil = state.gameTime + CHARACTERS.pink.ultimate.invulnerabilityDuration;
     fighter.mesh.visible = true;
     fighter.shadow.visible = true;
     fighter.healthBar.visible = true;
     fighter.reviveAt = 0;
+    fighter.respawnAt = 0;
     fighter.revivePendingUntil = 0;
     createHealEffect(fighter.mesh.position.x, fighter.mesh.position.z);
   }
@@ -12779,14 +12874,18 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   if ((fighter.pinkUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
   fighter.pinkUltimateCharge = 0;
   for (const target of state.players) {
-    if (target.id === fighter.id || target.team !== fighter.team) continue;
+    const ally = state.chopWoodMode ? fighter.team != null && target.team === fighter.team
+      : state.takedownMode && !fighter.isBoss && !target.isBoss;
+    if (target.id === fighter.id || !ally) continue;
     const dx = target.mesh.position.x - fighter.mesh.position.x;
     const dz = target.mesh.position.z - fighter.mesh.position.z;
     if (dx * dx + dz * dz > ultimate.radius * ultimate.radius) continue;
     target.revivePendingUntil = state.gameTime + ultimate.duration;
     target.reviveHealthRatio = ultimate.reviveHealthRatio;
+    if (target.dead) target.reviveAt = state.gameTime || -Number.EPSILON;
     if (!target.dead) createHealEffect(target.mesh.position.x, target.mesh.position.z);
   }
+  updatePinkRevives();
   return true;
 }
 
@@ -12807,6 +12906,7 @@ function animate() {
       // 고장 지대 판정을 입력과 AI 공격보다 먼저 갱신해야 장판 진입 프레임에도
       // 플레이어와 봇의 공격이 즉시 차단된다.
       updateMalfunctionZones();
+      updateBlueDashes(dt);
       updatePlayerControls(dt);
       for (const fighter of state.players) {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
