@@ -3,8 +3,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.5";
-import { LANGS } from "./LANGS/langs.js?v=1.5.140";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
+import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
