@@ -52,6 +52,11 @@ const attackTitle = crimsonAttackButton.querySelector("strong");
 const attackHint = crimsonAttackButton.querySelector("small");
 const ultimateButton = document.getElementById("ultimate-btn");
 const betaThumbdownEmoteButton = document.getElementById("beta-emote-thumbdown-btn");
+const betaPinButton = document.getElementById("beta-pin-btn");
+const betaSprayButton = document.getElementById("beta-spray-btn");
+const seaPropIconEl = document.getElementById("sea-prop-icon");
+const seaPropBannerEl = document.getElementById("sea-prop-banner");
+const seaPropBackgroundEl = document.querySelector(".beta-modal-card");
 const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
@@ -174,6 +179,24 @@ if (IS_BETA6_TEST) {
   if (locationName) locationName.textContent = "애저 해변";
 }
 
+// 시즌 한정 꾸미기 소품: 캐릭터 성능과 무관, 이번 시즌 참여를 보여주는 장식물.
+// 프로필 아이콘/배너/배경은 로비 화면에 고정 표시되고, 스프레이/핀은 인게임에서 직접 사용한다.
+const SEA_SEASON_PROPS = {
+  beta6_icon_wave: { id: "beta6_icon_wave", category: "icon", name: "파도 조가비 아이콘", season: "beta6", image: "./assets/beta6-loading-badge-wave.png" },
+  beta6_spray_splash: { id: "beta6_spray_splash", category: "spray", name: "파도 스프레이", season: "beta6", image: "./assets/beta6-loading-splash.png" },
+  beta6_pin_shark: { id: "beta6_pin_shark", category: "pin", name: "상어 핀", season: "beta6", image: "./assets/beta6-loading-badge-shark.png" },
+  beta6_pin_pufferfish: { id: "beta6_pin_pufferfish", category: "pin", name: "복어 핀", season: "beta6", image: "./assets/beta6-loading-badge-pufferfish.png" },
+  beta6_banner_surfboard: { id: "beta6_banner_surfboard", category: "banner", name: "서프보드 배너", season: "beta6", image: "./assets/beta6-loading-banner.png" },
+  beta6_background_beach: { id: "beta6_background_beach", category: "background", name: "애저 해변 배경", season: "beta6", image: "./assets/beta6-loading-bg.jpg" },
+};
+const SEA_SEASON_PROP_CATEGORIES = [
+  { id: "icon", name: "프로필 아이콘" },
+  { id: "banner", name: "배너" },
+  { id: "background", name: "배경" },
+  { id: "pin", name: "핀" },
+  { id: "spray", name: "스프레이" },
+];
+
 function loadBetaState() {
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(BETA_STORAGE_KEY) || "{}"); } catch { saved = {}; }
@@ -230,6 +253,10 @@ function loadBetaState() {
       claimed: saved.orderEvent?.claimed || [],
       cosmetics: { ...(saved.orderEvent?.cosmetics || {}) },
     },
+    seasonProps: {
+      owned: [...new Set(saved.seasonProps?.owned || [])].filter((id) => Boolean(SEA_SEASON_PROPS[id])),
+      equipped: { ...(saved.seasonProps?.equipped || {}) },
+    },
     daily: {
       winRewards: Math.max(0, Number(saved.daily?.winRewards) || 0),
       pendingRewards: Math.max(0, Number(saved.daily?.pendingRewards) || 0),
@@ -243,6 +270,12 @@ function loadBetaState() {
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
   for (const testCharacterId of ["ivory", "chartreuse", ...(IS_BETA5_TEST ? ["mint"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
+  }
+  // 시즌 6 바다 소품은 아직 정식 획득 조건이 없어 베타 테스트에서는 바로 보유시킨다.
+  if (IS_BETA6_TEST) {
+    for (const propId of Object.keys(SEA_SEASON_PROPS)) {
+      if (!state.seasonProps.owned.includes(propId)) state.seasonProps.owned.push(propId);
+    }
   }
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
   return state;
@@ -1554,6 +1587,96 @@ function unequipSkin(characterId) {
   showToast("스킨 착용 해제");
 }
 
+function renderSeasonProps() {
+  modalTitle.textContent = "시즌 6 바다 소품";
+  const groups = SEA_SEASON_PROP_CATEGORIES.map(({ id: categoryId, name: categoryName }) => {
+    const items = Object.values(SEA_SEASON_PROPS).filter((prop) => prop.category === categoryId);
+    const equippedId = betaState.seasonProps.equipped[categoryId];
+    return `<section class="sea-prop-group"><h3>${categoryName}</h3><div class="sea-prop-row">${items.map((prop) => {
+      const owned = betaState.seasonProps.owned.includes(prop.id);
+      const equipped = equippedId === prop.id;
+      return `<article class="sea-prop-card ${equipped ? "equipped" : ""}">
+        <img src="${prop.image}?v=1" alt="${prop.name}">
+        <span>${prop.name}</span>
+        <button ${!owned ? "disabled" : ""} ${equipped ? `data-unequip-prop="${categoryId}"` : `data-equip-prop="${prop.id}" data-prop-category="${categoryId}"`}>${!owned ? "미보유" : equipped ? "장착 해제" : "장착"}</button>
+      </article>`;
+    }).join("")}</div></section>`;
+  }).join("");
+  modalContent.innerHTML = `<p>성능에는 영향이 없는 시즌 6 한정 꾸미기 소품입니다. 아이콘·배너·배경은 로비에 표시되고, 핀·스프레이는 인게임에서 사용합니다.</p>${groups}`;
+}
+function equipSeasonProp(category, propId) {
+  const prop = SEA_SEASON_PROPS[propId];
+  if (!prop || prop.category !== category || !betaState.seasonProps.owned.includes(propId)) return;
+  betaState.seasonProps.equipped[category] = propId;
+  saveBetaState();
+  applySeasonPropVisuals();
+  renderSeasonProps();
+  showToast(`${prop.name} 장착`);
+}
+function unequipSeasonProp(category) {
+  if (!betaState.seasonProps.equipped[category]) return;
+  delete betaState.seasonProps.equipped[category];
+  saveBetaState();
+  applySeasonPropVisuals();
+  renderSeasonProps();
+  showToast("소품 장착 해제");
+}
+function applySeasonPropVisuals() {
+  const equipped = betaState.seasonProps.equipped;
+  const iconProp = SEA_SEASON_PROPS[equipped.icon];
+  const bannerProp = SEA_SEASON_PROPS[equipped.banner];
+  const bgProp = SEA_SEASON_PROPS[equipped.background];
+  if (seaPropIconEl) {
+    if (iconProp) { seaPropIconEl.src = `${iconProp.image}?v=1`; seaPropIconEl.classList.remove("hidden"); }
+    else seaPropIconEl.classList.add("hidden");
+  }
+  if (seaPropBannerEl) {
+    if (bannerProp) { seaPropBannerEl.src = `${bannerProp.image}?v=1`; seaPropBannerEl.classList.remove("hidden"); }
+    else seaPropBannerEl.classList.add("hidden");
+  }
+  if (seaPropBackgroundEl) {
+    if (bgProp) {
+      seaPropBackgroundEl.style.backgroundImage = `linear-gradient(rgba(6,20,28,.55), rgba(6,20,28,.8)), url("${bgProp.image}?v=1")`;
+      seaPropBackgroundEl.classList.add("has-sea-background");
+    } else {
+      seaPropBackgroundEl.style.backgroundImage = "";
+      seaPropBackgroundEl.classList.remove("has-sea-background");
+    }
+  }
+}
+function triggerSeaPin() {
+  const pinProp = SEA_SEASON_PROPS[betaState.seasonProps.equipped.pin];
+  if (!pinProp) { showToast("장착한 핀이 없습니다"); return; }
+  showToast(`${pinProp.name}`);
+  const bubble = document.createElement("img");
+  bubble.className = "sea-pin-bubble";
+  bubble.src = `${pinProp.image}?v=1`;
+  document.body.append(bubble);
+  setTimeout(() => bubble.remove(), 1600);
+}
+function triggerSeaSpray() {
+  const sprayProp = SEA_SEASON_PROPS[betaState.seasonProps.equipped.spray];
+  if (!sprayProp) { showToast("장착한 스프레이가 없습니다"); return; }
+  const loader = sprayProp._texture || (sprayProp._texture = new THREE.TextureLoader().load(sprayProp.image));
+  const decal = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.2, 2.2),
+    new THREE.MeshBasicMaterial({ map: loader, transparent: true, depthWrite: false, opacity: 0.92 }),
+  );
+  decal.rotation.x = -Math.PI / 2;
+  decal.position.copy(player.position);
+  decal.position.y += 0.05;
+  scene.add(decal);
+  const startTime = clock.getElapsedTime();
+  const fade = () => {
+    const t = clock.getElapsedTime() - startTime;
+    if (t > 4) { scene.remove(decal); decal.geometry.dispose(); decal.material.dispose(); return; }
+    decal.material.opacity = 0.92 * Math.max(0, 1 - t / 4);
+    requestAnimationFrame(fade);
+  };
+  fade();
+  showToast(`${sprayProp.name} 뿌림`);
+}
+
 function updateCrimsonControls() {
   crimsonControls.classList.remove("hidden");
   const characterDefinition = BETA_CHARACTERS[betaState.selectedCharacter];
@@ -2230,6 +2353,7 @@ function openPanel(panel) {
   if (panel === "daily") renderDaily();
   if (panel === "storybook") renderStorybook();
   if (panel === "orders") renderOrderEvent();
+  if (panel === "seaprops") renderSeasonProps();
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
 function closeBetaModal() {
@@ -2259,7 +2383,14 @@ modalContent.addEventListener("click", (event) => {
   }
   const orderClaim = event.target.closest("[data-order-claim]");
   if (orderClaim) claimOrderReward(Number(orderClaim.dataset.orderClaim));
+  const equipPropButton = event.target.closest("[data-equip-prop]");
+  if (equipPropButton) equipSeasonProp(equipPropButton.dataset.propCategory, equipPropButton.dataset.equipProp);
+  const unequipPropButton = event.target.closest("[data-unequip-prop]");
+  if (unequipPropButton) unequipSeasonProp(unequipPropButton.dataset.unequipProp);
 });
+betaPinButton?.addEventListener("click", triggerSeaPin);
+betaSprayButton?.addEventListener("click", triggerSeaSpray);
+applySeasonPropVisuals();
 
 const CRIMSON = BETA_CHARACTERS.crimson;
 const crimsonSlashes = [];

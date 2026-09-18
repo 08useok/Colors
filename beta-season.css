@@ -202,6 +202,21 @@ kbd { padding: 2px 5px; border: 1px solid #47606b; border-radius: 5px; backgroun
 .beta-wallet span { color: #8ba9b6; font-size: 11px; }
 .beta-wallet strong { color: #78e1f4; }
 .beta-wallet .rank-chip { color: #ffe098; padding-left: 9px; border-left: 1px solid #41545d; }
+.sea-prop-icon { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(177,235,255,.4); }
+.sea-prop-icon.hidden, .sea-prop-banner.hidden { display: none; }
+.sea-prop-banner { display: block; margin-top: 8px; max-width: 260px; height: auto; opacity: .92; }
+.beta-modal-card.has-sea-background { background-size: cover; background-position: center; background-blend-mode: normal; }
+.sea-prop-group { margin-bottom: 18px; }
+.sea-prop-group h3 { margin: 0 0 9px; color: #75e4f6; font-size: 13px; }
+.sea-prop-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.sea-prop-card { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 120px; padding: 10px; border: 1px solid #29414b; border-radius: 14px; background: #122630; text-align: center; }
+.sea-prop-card.equipped { border-color: rgba(126, 255, 176, .6); background: #16342a; }
+.sea-prop-card img { width: 72px; height: 72px; object-fit: contain; }
+.sea-prop-card span { font-size: 11px; color: #c6d6dc; }
+.sea-prop-card button { width: 100%; padding: 6px 0; font-size: 11px; border: 0; border-radius: 8px; background: rgba(74, 196, 225, 0.22); color: #e9fbff; cursor: pointer; }
+.sea-prop-card button:disabled { opacity: .45; cursor: default; }
+.sea-pin-bubble { position: fixed; left: 50%; top: 38%; width: 96px; height: 96px; transform: translate(-50%, 0); z-index: 5000; animation: sea-pin-pop 1.6s ease forwards; pointer-events: none; }
+@keyframes sea-pin-pop { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.6); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -18px) scale(.9); } }
 .crimson-controls { position: fixed; z-index: 2; right: 18px; bottom: 86px; display: grid; justify-items: center; gap: 0; width: 210px; }
 .aim-mode-btn { width: 100%; margin-bottom: 8px; padding: 9px 12px; border: 1px solid rgba(147,222,238,.4); border-radius: 12px; background: rgba(12,34,44,.92); color: #b9eaf4; font-weight: 800; cursor: pointer; }
 .aim-mode-btn.active { border-color: #fff; background: rgba(70,92,103,.96); color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.25); }
