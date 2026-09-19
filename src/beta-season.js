@@ -322,6 +322,11 @@ scene.add(map);
 const solids = [];
 const showdownSolids = [];
 let currentArenaMode = "lobby";
+// 경기장 모드에 맞는 충돌·지면 판정 목록. 사커는 쇼다운 맵의 벽을 쓰면 안 된다.
+function getArenaSolids() {
+  if (currentArenaMode === "soccer") return soccerSolids;
+  return currentArenaMode === "showdown" ? showdownSolids : solids;
+}
 const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
 const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
 const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
@@ -3174,7 +3179,7 @@ function getAimDistanceToWall(maxRange, yawOffset = 0) {
   const aimYaw = player.rotation.y + yawOffset;
   const directionX = Math.sin(aimYaw);
   const directionZ = Math.cos(aimYaw);
-  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  const arenaSolids = getArenaSolids();
   let nearest = maxRange;
   for (const solid of arenaSolids) {
     if (solid.top <= player.position.y + 0.5) continue;
@@ -3217,7 +3222,7 @@ function getRedAimEndpoint(maxRange, sideSign, attackWidth) {
   const worldStartZ = player.position.z - startX * Math.sin(yaw) + startZ * Math.cos(yaw);
   const worldDirectionX = (localDeltaX * Math.cos(yaw) + localDeltaZ * Math.sin(yaw)) / fullLength;
   const worldDirectionZ = (-localDeltaX * Math.sin(yaw) + localDeltaZ * Math.cos(yaw)) / fullLength;
-  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  const arenaSolids = getArenaSolids();
   let visibleLength = fullLength;
   for (const solid of arenaSolids) {
     if (solid.top <= player.position.y + 0.5) continue;
@@ -3375,7 +3380,7 @@ function updateBlueDash(dt) {
   const dash = blueDashState;
   const steps = Math.max(1, Math.ceil((def.speed * dt) / 0.3));
   const stepDistance = (def.speed * dt) / steps;
-  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  const arenaSolids = getArenaSolids();
 
   for (let step = 0; step < steps; step += 1) {
     const previousX = player.position.x;
@@ -3775,7 +3780,7 @@ function updateAzureWave(dt) {
     clearAzureWave();
     return false;
   }
-  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  const arenaSolids = getArenaSolids();
   const blocked = (x, z, radius) => arenaSolids.some((solid) =>
     solid.top > player.position.y + 0.4
     && Math.abs(x - solid.x) < solid.halfW + radius
@@ -3829,11 +3834,9 @@ function performCharacterAttack({ manualAim = false } = {}) {
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
   if (goldRushState.active && goldRushState.mode === "soccer") {
-    // 테스트 모드에서는 일반 공격 입력 자체가 공 발사다. 플레이어와 공의
-    // 거리를 검사하지 않으며, 자동 조준은 상대 골대(+Z)를 향한다.
-    if (!manualAim) player.rotation.y = 0;
-    kickSoccerBall(player.position, player.rotation.y, "a", false);
-    startModelAttackMotion(id);
+    // 공 가까이에 있을 때만 찬다. 수동 조준이 아니면 공 위치에서 상대 골대
+    // 정중앙을 겨냥한다. 킥오프 대기와 연타 제한을 지킨다.
+    if (tryPlayerSoccerKick(manualAim)) startModelAttackMotion(id);
     return;
   }
   if (!generalAttackReady || azureWaveState) return;
@@ -4760,57 +4763,319 @@ const goldRushState = {
   ammo: 3, maxAmmo: 3, reloadTimer: 0, reloadDuration: 0.5, kills: 0,
 };
 
+// ── 사커 킥 경기장 ─────────────────────────────────────────────────────
+// 필드는 x·z 모두 ±19. 양 끝 벽 가운데에 폭 7의 골문이 뚫려 있고, 골문 뒤로
+// 깊이 2.5의 골대(그물)가 튀어나와 있다. 공이 골라인을 완전히 넘어 골대 안으로
+// 들어가야 득점이다. 파랑(a)은 +z 쪽 빨강 골대를, 빨강(b)은 -z 쪽 파랑 골대를 노린다.
+const SOCCER_FIELD_HALF = 19;
+const SOCCER_GOAL_HALF_WIDTH = 3.5;
+const SOCCER_GOAL_DEPTH = 2.5;
+const SOCCER_GOAL_HEIGHT = 2.4;
+const SOCCER_POST_RADIUS = 0.22;
+const SOCCER_BALL_RADIUS = 0.55;
+const SOCCER_FIELD_Y = 1.57;
+const SOCCER_KICK_SPEED = 17;
+const SOCCER_KICK_RANGE = 2.6;
+const SOCCER_PLAYER_KICK_COOLDOWN = 0.35;
+const SOCCER_BOT_KICK_COOLDOWN = 0.6;
+// 선수가 서 있을 수 있는 한계. 골대 안으로는 들어가지 못한다.
+const SOCCER_ACTOR_LIMIT = SOCCER_FIELD_HALF - 0.6;
+
 const soccerArena = new THREE.Group();
 soccerArena.visible = false;
 scene.add(soccerArena);
-const soccerField = new THREE.Mesh(new THREE.PlaneGeometry(38, 38), new THREE.MeshStandardMaterial({ color: 0x39a96b, roughness: 0.9 }));
+const soccerField = new THREE.Mesh(
+  new THREE.PlaneGeometry(SOCCER_FIELD_HALF * 2, SOCCER_FIELD_HALF * 2),
+  new THREE.MeshStandardMaterial({ color: 0x39a96b, roughness: 0.9 }),
+);
 soccerField.rotation.x = -Math.PI / 2;
-soccerField.position.y = 1.57;
+soccerField.position.y = SOCCER_FIELD_Y;
+soccerField.receiveShadow = true;
 soccerArena.add(soccerField);
-const soccerBall = new THREE.Mesh(new THREE.SphereGeometry(0.55, 18, 14), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 }));
-soccerBall.position.set(0, 2.12, 0);
-soccerArena.add(soccerBall);
-for (const z of [-18.5, 18.5]) {
-  const goal = new THREE.Mesh(new THREE.BoxGeometry(7, 2.6, 0.35), new THREE.MeshBasicMaterial({ color: z > 0 ? 0xff5b5b : 0x4f8dff, wireframe: true }));
-  goal.position.set(0, 2.85, z);
-  soccerArena.add(goal);
+
+// 잔디 줄무늬와 라인. 판정과는 무관한 표시다.
+const soccerStripeMaterial = new THREE.MeshStandardMaterial({ color: 0x43b574, roughness: 0.9 });
+for (let i = -3; i <= 3; i += 2) {
+  const stripe = new THREE.Mesh(new THREE.PlaneGeometry(SOCCER_FIELD_HALF * 2, 5.4), soccerStripeMaterial);
+  stripe.rotation.x = -Math.PI / 2;
+  stripe.position.set(0, SOCCER_FIELD_Y + 0.004, i * 5.4);
+  soccerArena.add(stripe);
 }
-const soccerState = { scoreA: 0, scoreB: 0, vx: 0, vz: 0, overtime: false, lastKick: "a", kickoffUntil: 0 };
+const soccerLineMaterial = new THREE.MeshBasicMaterial({ color: 0xf4fff6, transparent: true, opacity: 0.85 });
+function addSoccerLine(width, depth, x, z) {
+  const line = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), soccerLineMaterial);
+  line.rotation.x = -Math.PI / 2;
+  line.position.set(x, SOCCER_FIELD_Y + 0.012, z);
+  soccerArena.add(line);
+}
+addSoccerLine(SOCCER_FIELD_HALF * 2, 0.16, 0, 0);
+for (const sign of [-1, 1]) {
+  addSoccerLine(SOCCER_FIELD_HALF * 2, 0.16, 0, sign * (SOCCER_FIELD_HALF - 0.08));
+  addSoccerLine(0.16, SOCCER_FIELD_HALF * 2, sign * (SOCCER_FIELD_HALF - 0.08), 0);
+  // 골 에어리어
+  addSoccerLine(13, 0.16, 0, sign * (SOCCER_FIELD_HALF - 5));
+  addSoccerLine(0.16, 5, -6.5, sign * (SOCCER_FIELD_HALF - 2.5));
+  addSoccerLine(0.16, 5, 6.5, sign * (SOCCER_FIELD_HALF - 2.5));
+}
+const soccerCenterCircle = new THREE.Mesh(new THREE.RingGeometry(3.4, 3.56, 48), soccerLineMaterial);
+soccerCenterCircle.rotation.x = -Math.PI / 2;
+soccerCenterCircle.position.y = SOCCER_FIELD_Y + 0.012;
+soccerArena.add(soccerCenterCircle);
+
+// 경기장 둘레의 낮은 벽. 골문 자리만 비워 둔다.
+const soccerBoardMaterial = new THREE.MeshStandardMaterial({ color: 0xf2f6f8, roughness: 0.6 });
+function addSoccerBoard(width, depth, x, z) {
+  const board = new THREE.Mesh(new THREE.BoxGeometry(width, 0.9, depth), soccerBoardMaterial);
+  board.position.set(x, SOCCER_FIELD_Y + 0.45, z);
+  board.castShadow = true;
+  board.receiveShadow = true;
+  soccerArena.add(board);
+}
+const soccerBoardSegment = SOCCER_FIELD_HALF - SOCCER_GOAL_HALF_WIDTH;
+for (const sign of [-1, 1]) {
+  addSoccerBoard(0.5, SOCCER_FIELD_HALF * 2 + 1, sign * (SOCCER_FIELD_HALF + 0.25), 0);
+  for (const side of [-1, 1]) {
+    addSoccerBoard(soccerBoardSegment, 0.5, side * (SOCCER_GOAL_HALF_WIDTH + soccerBoardSegment / 2), sign * (SOCCER_FIELD_HALF + 0.25));
+  }
+}
+
+// 골대: 흰 골포스트와 크로스바, 반투명 그물(뒤·옆·지붕), 팀 색 바닥
+function buildSoccerGoal(sign, teamColor) {
+  const goal = new THREE.Group();
+  const postMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0.1 });
+  const netMaterial = new THREE.MeshBasicMaterial({ color: teamColor, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false });
+  const netLineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45, wireframe: true });
+  const lineZ = sign * SOCCER_FIELD_HALF;
+  const backZ = sign * (SOCCER_FIELD_HALF + SOCCER_GOAL_DEPTH);
+  const midZ = (lineZ + backZ) / 2;
+  const top = SOCCER_FIELD_Y + SOCCER_GOAL_HEIGHT;
+
+  for (const side of [-1, 1]) {
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(SOCCER_POST_RADIUS, SOCCER_POST_RADIUS, SOCCER_GOAL_HEIGHT, 14), postMaterial);
+    post.position.set(side * SOCCER_GOAL_HALF_WIDTH, SOCCER_FIELD_Y + SOCCER_GOAL_HEIGHT / 2, lineZ);
+    post.castShadow = true;
+    goal.add(post);
+  }
+  const crossbar = new THREE.Mesh(new THREE.CylinderGeometry(SOCCER_POST_RADIUS, SOCCER_POST_RADIUS, SOCCER_GOAL_HALF_WIDTH * 2, 14), postMaterial);
+  crossbar.rotation.z = Math.PI / 2;
+  crossbar.position.set(0, top, lineZ);
+  crossbar.castShadow = true;
+  goal.add(crossbar);
+
+  const addNet = (geometry, position, rotation) => {
+    for (const material of [netMaterial, netLineMaterial]) {
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.copy(position);
+      mesh.rotation.copy(rotation);
+      goal.add(mesh);
+    }
+  };
+  // 그물 뒷면
+  addNet(new THREE.PlaneGeometry(SOCCER_GOAL_HALF_WIDTH * 2, SOCCER_GOAL_HEIGHT, 10, 4),
+    new THREE.Vector3(0, SOCCER_FIELD_Y + SOCCER_GOAL_HEIGHT / 2, backZ), new THREE.Euler(0, 0, 0));
+  // 그물 옆면
+  for (const side of [-1, 1]) {
+    addNet(new THREE.PlaneGeometry(SOCCER_GOAL_DEPTH, SOCCER_GOAL_HEIGHT, 4, 4),
+      new THREE.Vector3(side * SOCCER_GOAL_HALF_WIDTH, SOCCER_FIELD_Y + SOCCER_GOAL_HEIGHT / 2, midZ), new THREE.Euler(0, Math.PI / 2, 0));
+  }
+  // 그물 지붕
+  addNet(new THREE.PlaneGeometry(SOCCER_GOAL_HALF_WIDTH * 2, SOCCER_GOAL_DEPTH, 10, 4),
+    new THREE.Vector3(0, top, midZ), new THREE.Euler(-Math.PI / 2, 0, 0));
+  // 골대 안 바닥
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(SOCCER_GOAL_HALF_WIDTH * 2, SOCCER_GOAL_DEPTH),
+    new THREE.MeshStandardMaterial({ color: teamColor, roughness: 0.8, transparent: true, opacity: 0.55 }),
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.set(0, SOCCER_FIELD_Y + 0.006, midZ);
+  goal.add(floor);
+  soccerArena.add(goal);
+  return goal;
+}
+// +z는 빨강 팀 골대(파랑이 넣는 곳), -z는 파랑 팀 골대
+buildSoccerGoal(1, 0xff5b5b);
+buildSoccerGoal(-1, 0x4f8dff);
+
+const soccerBall = new THREE.Mesh(
+  new THREE.SphereGeometry(SOCCER_BALL_RADIUS, 18, 14),
+  new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.55 }),
+);
+soccerBall.castShadow = true;
+soccerBall.position.set(0, SOCCER_FIELD_Y + SOCCER_BALL_RADIUS, 0);
+soccerArena.add(soccerBall);
+
+// 사커 전용 바닥 판정. 쇼다운 맵의 벽이 섞이지 않도록 따로 둔다.
+// 경계 밖으로 한 걸음 나가도 떨어짐 판정이 나지 않게 필드보다 조금 넓게 깐다.
+const soccerSolids = [{ x: 0, z: 0, halfW: SOCCER_FIELD_HALF + 2, halfD: SOCCER_FIELD_HALF + 2, top: SOCCER_FIELD_Y - 0.01, mesh: soccerField }];
+
+const soccerState = {
+  scoreA: 0, scoreB: 0, vx: 0, vz: 0, overtime: false,
+  lastKick: "a", lastKicker: "bot", kickoffUntil: 0, playerKickReadyAt: 0,
+  prevPlayerX: 0, prevPlayerZ: 0,
+};
 
 function resetSoccerBall() {
-  soccerBall.position.set(0, 2.12, 0);
+  soccerBall.position.set(0, SOCCER_FIELD_Y + SOCCER_BALL_RADIUS, 0);
   soccerState.vx = 0; soccerState.vz = 0;
   soccerState.kickoffUntil = clock.elapsedTime + 1;
 }
 
-function kickSoccerBall(from, yaw, team = "a", requireNearby = true) {
-  if (goldRushState.mode !== "soccer" || (requireNearby && clock.elapsedTime < soccerState.kickoffUntil)) return false;
-  if (requireNearby && Math.hypot(soccerBall.position.x - from.x, soccerBall.position.z - from.z) > 3.2) return false;
-  soccerState.vx = Math.sin(yaw) * 17;
-  soccerState.vz = Math.cos(yaw) * 17;
+// 득점 후 양 팀을 시작 위치로 돌려 공정하게 다시 시작한다
+function resetSoccerPositions() {
+  resetPlayer();
+  player.rotation.y = 0;
+  soccerState.prevPlayerX = player.position.x;
+  soccerState.prevPlayerZ = player.position.z;
+  for (const bot of goldRushBots) {
+    bot.mesh.position.copy(bot.spawn);
+    bot.soccerKickReadyAt = clock.elapsedTime + 1;
+  }
+}
+
+function clampSoccerActor(position) {
+  position.x = THREE.MathUtils.clamp(position.x, -SOCCER_ACTOR_LIMIT, SOCCER_ACTOR_LIMIT);
+  position.z = THREE.MathUtils.clamp(position.z, -SOCCER_ACTOR_LIMIT, SOCCER_ACTOR_LIMIT);
+}
+
+// 상대 골대 정중앙을 향하는 각도 — 공 위치 기준
+function soccerYawToEnemyGoal(team) {
+  const goalZ = team === "a" ? SOCCER_FIELD_HALF + 1 : -(SOCCER_FIELD_HALF + 1);
+  return Math.atan2(0 - soccerBall.position.x, goalZ - soccerBall.position.z);
+}
+
+// kicker: "player" 또는 "bot". 득점 기록을 누구에게 줄지 가리는 데 쓴다.
+function kickSoccerBall(from, yaw, team = "a", kicker = "bot") {
+  if (goldRushState.mode !== "soccer" || clock.elapsedTime < soccerState.kickoffUntil) return false;
+  if (Math.hypot(soccerBall.position.x - from.x, soccerBall.position.z - from.z) > SOCCER_KICK_RANGE) return false;
+  soccerState.vx = Math.sin(yaw) * SOCCER_KICK_SPEED;
+  soccerState.vz = Math.cos(yaw) * SOCCER_KICK_SPEED;
   soccerState.lastKick = team;
-  canvas.dataset.lastSoccerKick = `${team}:${yaw.toFixed(3)}`;
+  soccerState.lastKicker = kicker;
+  canvas.dataset.lastSoccerKick = `${team}:${kicker}:${yaw.toFixed(3)}`;
   return true;
 }
 
-function updateSoccer(dt) {
+function tryPlayerSoccerKick(manualAim) {
+  if (clock.elapsedTime < soccerState.playerKickReadyAt) return false;
+  const yaw = manualAim ? player.rotation.y : soccerYawToEnemyGoal("a");
+  if (!kickSoccerBall(player.position, yaw, "a", "player")) {
+    goldRushStatusEl.textContent = clock.elapsedTime < soccerState.kickoffUntil
+      ? "킥오프 준비 중…"
+      : "공 가까이 가서 차세요";
+    return false;
+  }
+  player.rotation.y = yaw;
+  soccerState.playerKickReadyAt = clock.elapsedTime + SOCCER_PLAYER_KICK_COOLDOWN;
+  goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
+  return true;
+}
+
+// 몸으로 공을 밀어낸다. 공이 몸을 통과하지 않고, 뛰어가며 몰고 갈 수 있다.
+function pushSoccerBallWithBody(position, bodySpeed, team, kicker) {
+  const reach = SOCCER_BALL_RADIUS + 0.6;
+  const dx = soccerBall.position.x - position.x;
+  const dz = soccerBall.position.z - position.z;
+  const distance = Math.hypot(dx, dz);
+  if (distance >= reach || distance < 1e-4) return;
+  const nx = dx / distance;
+  const nz = dz / distance;
+  soccerBall.position.x = position.x + nx * reach;
+  soccerBall.position.z = position.z + nz * reach;
+  const pushSpeed = Math.max(3, bodySpeed * 1.05);
+  const along = soccerState.vx * nx + soccerState.vz * nz;
+  if (along < pushSpeed) {
+    soccerState.vx += (pushSpeed - along) * nx;
+    soccerState.vz += (pushSpeed - along) * nz;
+    soccerState.lastKick = team;
+    soccerState.lastKicker = kicker;
+  }
+}
+
+// 골포스트(원기둥)에 맞으면 표면 법선 방향으로 튕긴다
+function bounceSoccerBallOffPosts() {
+  const minDistance = SOCCER_BALL_RADIUS + SOCCER_POST_RADIUS;
+  for (const sz of [-1, 1]) {
+    for (const sx of [-1, 1]) {
+      const px = sx * SOCCER_GOAL_HALF_WIDTH;
+      const pz = sz * SOCCER_FIELD_HALF;
+      const dx = soccerBall.position.x - px;
+      const dz = soccerBall.position.z - pz;
+      const distance = Math.hypot(dx, dz);
+      if (distance >= minDistance || distance < 1e-4) continue;
+      const nx = dx / distance;
+      const nz = dz / distance;
+      soccerBall.position.x = px + nx * minDistance;
+      soccerBall.position.z = pz + nz * minDistance;
+      const along = soccerState.vx * nx + soccerState.vz * nz;
+      if (along < 0) {
+        soccerState.vx -= 1.86 * along * nx;
+        soccerState.vz -= 1.86 * along * nz;
+      }
+    }
+  }
+}
+
+function updateSoccerBallPhysics(dt) {
+  const r = SOCCER_BALL_RADIUS;
+  const edge = SOCCER_FIELD_HALF - r;
   soccerBall.position.x += soccerState.vx * dt;
   soccerBall.position.z += soccerState.vz * dt;
   const damping = Math.exp(-1.05 * dt);
-  soccerState.vx *= damping; soccerState.vz *= damping;
-  if (Math.abs(soccerBall.position.x) > 18.4) {
-    soccerBall.position.x = Math.sign(soccerBall.position.x) * 18.4;
-    soccerState.vx *= -0.86;
+  soccerState.vx *= damping;
+  soccerState.vz *= damping;
+  // 굴러가는 느낌을 주는 회전
+  soccerBall.rotation.x += soccerState.vz * dt / r;
+  soccerBall.rotation.z -= soccerState.vx * dt / r;
+
+  bounceSoccerBallOffPosts();
+  const insideGoalMouth = Math.abs(soccerBall.position.x) < SOCCER_GOAL_HALF_WIDTH;
+  const beyondGoalLine = Math.abs(soccerBall.position.z) > SOCCER_FIELD_HALF;
+  if (beyondGoalLine) {
+    // 골대 안: 옆 그물과 뒷 그물에 막힌다
+    const sideLimit = SOCCER_GOAL_HALF_WIDTH - r;
+    if (Math.abs(soccerBall.position.x) > sideLimit) {
+      soccerBall.position.x = Math.sign(soccerBall.position.x) * sideLimit;
+      soccerState.vx *= -0.5;
+    }
+    const backLimit = SOCCER_FIELD_HALF + SOCCER_GOAL_DEPTH - r;
+    if (Math.abs(soccerBall.position.z) > backLimit) {
+      soccerBall.position.z = Math.sign(soccerBall.position.z) * backLimit;
+      soccerState.vz *= -0.3;
+    }
+  } else {
+    if (Math.abs(soccerBall.position.x) > edge) {
+      soccerBall.position.x = Math.sign(soccerBall.position.x) * edge;
+      soccerState.vx *= -0.86;
+    }
+    // 골문 밖의 끝벽에만 튕긴다. 골문 안쪽이면 골대로 들어간다.
+    if (Math.abs(soccerBall.position.z) > edge && !insideGoalMouth) {
+      soccerBall.position.z = Math.sign(soccerBall.position.z) * edge;
+      soccerState.vz *= -0.86;
+    }
   }
-  if (Math.abs(soccerBall.position.z) > 18.4 && Math.abs(soccerBall.position.x) >= 3.5) {
-    soccerBall.position.z = Math.sign(soccerBall.position.z) * 18.4;
-    soccerState.vz *= -0.86;
+  // 공 전체가 골라인을 넘어가야 득점
+  if (Math.abs(soccerBall.position.z) > SOCCER_FIELD_HALF + r && Math.abs(soccerBall.position.x) < SOCCER_GOAL_HALF_WIDTH) {
+    soccerGoal(soccerBall.position.z > 0 ? "a" : "b");
   }
-  if (soccerBall.position.z > 18.7 && Math.abs(soccerBall.position.x) < 3.5) soccerGoal("a");
-  else if (soccerBall.position.z < -18.7 && Math.abs(soccerBall.position.x) < 3.5) soccerGoal("b");
+}
+
+function formatSoccerClock(remaining) {
+  // 초만 따로 올림하면 "01:60"이 나오므로 전체 초를 먼저 올린 뒤 나눈다
+  const total = Math.ceil(remaining);
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+}
+
+function updateSoccer(dt) {
+  clampSoccerActor(player.position);
+  const playerSpeed = dt > 0 ? Math.hypot(player.position.x - soccerState.prevPlayerX, player.position.z - soccerState.prevPlayerZ) / dt : 0;
+  soccerState.prevPlayerX = player.position.x;
+  soccerState.prevPlayerZ = player.position.z;
+  if (!goldRushState.dead) pushSoccerBallWithBody(player.position, playerSpeed, "a", "player");
+  updateSoccerBallPhysics(dt);
+  if (!goldRushState.active || goldRushState.ended) return;
   const elapsed = clock.elapsedTime - goldRushState.startedAt;
   const remaining = Math.max(0, 180 - elapsed);
-  goldRushTimerEl.textContent = soccerState.overtime ? "연장전 · 다음 골 승리" : `${String(Math.floor(remaining / 60)).padStart(2,"0")}:${String(Math.ceil(remaining % 60)).padStart(2,"0")}`;
+  goldRushTimerEl.textContent = soccerState.overtime ? "연장전 · 다음 골 승리" : formatSoccerClock(remaining);
   goldRushRivalsEl.textContent = `BLUE ${soccerState.scoreA} : ${soccerState.scoreB} RED`;
   if (!soccerState.overtime && remaining <= 0) {
     if (soccerState.scoreA === soccerState.scoreB) soccerState.overtime = true;
@@ -4820,11 +5085,72 @@ function updateSoccer(dt) {
 
 function soccerGoal(team) {
   if (team === "a") soccerState.scoreA += 1; else soccerState.scoreB += 1;
-  if (team === "a" && soccerState.lastKick === "a") betaState.soccerKick.goals += 1;
+  // 내가 마지막으로 공을 건드려 넣은 골만 내 득점으로 센다
+  if (team === "a" && soccerState.lastKick === "a" && soccerState.lastKicker === "player") betaState.soccerKick.goals += 1;
   const won = soccerState.scoreA >= 2 || (soccerState.overtime && team === "a");
   const lost = soccerState.scoreB >= 2 || (soccerState.overtime && team === "b");
   if (won || lost) { endGoldRush(`SOCCER KICK ${won ? "승리" : "패배"} · ${soccerState.scoreA}:${soccerState.scoreB}`, won); return; }
+  goldRushStatusEl.textContent = `${team === "a" ? "파랑" : "빨강"} 팀 득점! 킥오프 준비`;
   resetSoccerBall();
+  resetSoccerPositions();
+}
+
+// 봇 사커 행동. 팀마다 공에 가장 가까운 한 명만 공을 쫓고 나머지는 수비 자리를 지킨다.
+// 킥은 한 프레임에 한 번만, 공에 가장 가까운 봇이 찬다 — 목록 순서 때문에 한 팀이
+// 공 다툼에서 늘 이기던 문제를 막는다.
+function updateSoccerBots(dt) {
+  const ball = soccerBall.position;
+  const candidates = [];
+  for (const team of ["a", "b"]) {
+    const mates = goldRushBots.filter((bot) => bot.team === team);
+    let chaser = null;
+    let chaserDistance = Infinity;
+    for (const bot of mates) {
+      const distance = Math.hypot(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
+      if (distance < chaserDistance) { chaserDistance = distance; chaser = bot; }
+    }
+    const attackSign = team === "a" ? 1 : -1;
+    const ownGoalZ = -attackSign * SOCCER_FIELD_HALF;
+    let defenderIndex = 0;
+    for (const bot of mates) {
+      let targetX;
+      let targetZ;
+      if (bot === chaser) {
+        // 공 뒤(상대 골대 반대편)로 돌아 들어가 골대 쪽으로 민다
+        targetX = ball.x;
+        targetZ = ball.z - attackSign * 0.9;
+      } else {
+        const lane = defenderIndex % 2 === 0 ? -5 : 5;
+        defenderIndex += 1;
+        targetX = THREE.MathUtils.clamp(ball.x * 0.5 + lane, -15, 15);
+        targetZ = ownGoalZ * 0.55 + ball.z * 0.35;
+      }
+      const dx = targetX - bot.mesh.position.x;
+      const dz = targetZ - bot.mesh.position.z;
+      const distance = Math.hypot(dx, dz);
+      const step = Math.min(distance, bot.speed * dt);
+      if (distance > 1e-4) {
+        bot.mesh.position.x += dx / distance * step;
+        bot.mesh.position.z += dz / distance * step;
+      }
+      clampSoccerActor(bot.mesh.position);
+      bot.mesh.rotation.y = Math.atan2(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
+      pushSoccerBallWithBody(bot.mesh.position, dt > 0 ? step / dt : 0, team, "bot");
+      const ballDistance = Math.hypot(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
+      if (bot === chaser && ballDistance < SOCCER_KICK_RANGE && clock.elapsedTime >= (bot.soccerKickReadyAt ?? 0)) {
+        candidates.push({ bot, distance: ballDistance, tieBreak: Math.random() });
+      }
+      faceGoldRushHealthBarToCamera(bot.healthBar);
+      bot.mixer?.update(dt);
+    }
+  }
+  if (candidates.length === 0) return;
+  candidates.sort((p, q) => p.distance - q.distance || p.tieBreak - q.tieBreak);
+  const { bot } = candidates[0];
+  const yaw = soccerYawToEnemyGoal(bot.team) + (Math.random() - 0.5) * 0.35;
+  if (kickSoccerBall(bot.mesh.position, yaw, bot.team, "bot")) {
+    bot.soccerKickReadyAt = clock.elapsedTime + SOCCER_BOT_KICK_COOLDOWN;
+  }
 }
 
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
@@ -5201,6 +5527,7 @@ function removeGoldPickup(index) {
 
 function updateGoldRushBots(dt) {
   updateGoldRushAttackEffects(dt);
+  if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }
   for (const bot of goldRushBots) {
     if (bot.dead) {
       if (goldRushState.mode === "showdown") continue;
@@ -5216,19 +5543,6 @@ function updateGoldRushBots(dt) {
       bot.ammo = bot.maxAmmo;
       bot.reloadTimer = 0;
       updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
-    }
-    if (goldRushState.mode === "soccer") {
-      faceGoldRushHealthBarToCamera(bot.healthBar);
-      const dx = soccerBall.position.x - bot.mesh.position.x;
-      const dz = soccerBall.position.z - bot.mesh.position.z;
-      const distance = Math.max(0.001, Math.hypot(dx, dz));
-      const step = Math.min(distance, bot.speed * dt);
-      bot.mesh.position.x += dx / distance * step;
-      bot.mesh.position.z += dz / distance * step;
-      bot.mesh.rotation.y = Math.atan2(dx, dz);
-      if (distance < 2.2) kickSoccerBall(bot.mesh.position, bot.team === "a" ? 0 : Math.PI, bot.team);
-      bot.mixer?.update(dt);
-      continue;
     }
     if (bot.ammo >= bot.maxAmmo) {
       bot.reloadTimer = 0;
@@ -5477,7 +5791,7 @@ function startGoldRush(mode = "goldRush") {
   resetAllUltimateCharges();
   goldRushState.mode = mode;
   const arenaMode = mode === "showdown" || mode === "soccer";
-  currentArenaMode = arenaMode ? "showdown" : "lobby";
+  currentArenaMode = mode === "soccer" ? "soccer" : arenaMode ? "showdown" : "lobby";
   iceCreamShowdownMap.visible = mode === "showdown";
   soccerArena.visible = mode === "soccer";
   map.visible = !arenaMode;
@@ -5518,14 +5832,17 @@ function startGoldRush(mode = "goldRush") {
   createGoldRushBots();
   if (mode === "soccer") {
     soccerState.scoreA = 0; soccerState.scoreB = 0; soccerState.overtime = false;
+    soccerState.lastKick = "a"; soccerState.lastKicker = "bot"; soccerState.playerKickReadyAt = 0;
     resetSoccerBall();
     initialSpawnPoint.set(0, 1.7, -14);
-    resetPlayer();
     const spawns = [[-6,-12],[6,-12],[-7,12],[0,12],[7,12]];
-    goldRushBots.forEach((bot, index) => { bot.spawn.set(spawns[index][0], 1.62, spawns[index][1]); bot.mesh.position.copy(bot.spawn); });
+    goldRushBots.forEach((bot, index) => { bot.spawn.set(spawns[index][0], 1.62, spawns[index][1]); });
+    resetSoccerPositions();
     goldRushHud.querySelector("strong").textContent = "SOCCER KICK";
     goldCountEl.parentElement.style.display = "none";
-    goldRushStatusEl.textContent = "일반 공격으로 공을 차세요 · 탄창 미소모";
+    goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
+    goldRushTimerEl.textContent = formatSoccerClock(180);
+    goldRushRivalsEl.textContent = "BLUE 0 : 0 RED";
     soccerToggle.textContent = "SOCCER KICK 재시작";
     canvas.dataset.betaMode = "soccer-kick";
   } else if (mode === "showdown") {
@@ -5897,7 +6214,7 @@ document.getElementById("overview-btn").addEventListener("click", (event) => {
 
 function groundHeightAt(x, z) {
   let best = -20;
-  const arenaSolids = currentArenaMode === "showdown" ? showdownSolids : solids;
+  const arenaSolids = getArenaSolids();
   for (const solid of arenaSolids) {
     if (Math.abs(x - solid.x) <= solid.halfW && Math.abs(z - solid.z) <= solid.halfD) best = Math.max(best, solid.top);
   }
@@ -5905,6 +6222,10 @@ function groundHeightAt(x, z) {
 }
 
 function updateLocation() {
+  if (currentArenaMode === "soccer") {
+    locationName.textContent = "사커 경기장";
+    return;
+  }
   if (currentArenaMode === "showdown") {
     locationName.textContent = IS_BETA5_TEST ? "놀이공원 쇼다운" : "아이스크림 쇼다운";
     return;
