@@ -3830,10 +3830,14 @@ function performCharacterAttack({ manualAim = false } = {}) {
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
   if (goldRushState.active && goldRushState.mode === "soccer") {
-    // 공 가까이에 있을 때만 찬다. 수동 조준이 아니면 공 위치에서 상대 골대
-    // 정중앙을 겨냥한다. 킥오프 대기와 연타 제한을 지킨다.
-    if (tryPlayerSoccerKick(manualAim)) startModelAttackMotion(id);
-    return;
+    if (isSoccerFrozen()) return;
+    // 브롤볼처럼 공 가까이에서는 공을 차고, 멀리서는 평소 일반 공격을 한다.
+    // 수동 조준이 아니면 킥은 공 위치에서 상대 골대 정중앙을 겨냥한다.
+    const ballDistance = Math.hypot(soccerBall.position.x - player.position.x, soccerBall.position.z - player.position.z);
+    if (ballDistance <= SOCCER_KICK_RANGE) {
+      if (tryPlayerSoccerKick(manualAim)) startModelAttackMotion(id);
+      return;
+    }
   }
   if (!generalAttackReady || azureWaveState) return;
   const def = BETA_CHARACTERS[id];
@@ -4777,6 +4781,9 @@ const SOCCER_BOT_KICK_COOLDOWN = 0.6;
 // 경기 시작·득점 뒤 모두가 멈추는 시간. 득점 때는 그중 앞부분 동안 카메라가 골대를 비춘다.
 const SOCCER_FREEZE_DURATION = 3;
 const SOCCER_GOAL_CAM_DURATION = 2;
+// 상대 봇이 플레이어를 노리는 거리와 쓰러진 봇이 부활하기까지의 시간
+const SOCCER_BOT_ATTACK_RANGE = 7;
+const SOCCER_BOT_RESPAWN_DELAY = 5;
 // 선수가 서 있을 수 있는 한계. 골대 안으로는 들어가지 못한다.
 const SOCCER_ACTOR_LIMIT = SOCCER_FIELD_HALF - 0.6;
 
@@ -4944,13 +4951,37 @@ function resetSoccerBall() {
 }
 
 // 득점 후 양 팀을 시작 위치로 돌려 공정하게 다시 시작한다
+function reviveSoccerBot(bot) {
+  bot.dead = false;
+  bot.health = bot.maxHealth;
+  bot.mesh.userData.health = bot.health;
+  bot.mesh.position.copy(bot.spawn);
+  bot.mesh.visible = true;
+  bot.invulnerableUntil = clock.elapsedTime + 2;
+  bot.ammo = bot.maxAmmo;
+  bot.reloadTimer = 0;
+  updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+}
+
 function resetSoccerPositions() {
+  if (goldRushState.dead) {
+    goldRushState.dead = false;
+    player.visible = true;
+    playerGoldRushHealthBar.visible = true;
+    respawnOverlay.classList.add("hidden");
+  }
+  goldRushState.health = goldRushState.maxHealth;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  updateGoldRushCombatHud();
   resetPlayer();
   player.rotation.y = 0;
   soccerState.prevPlayerX = player.position.x;
   soccerState.prevPlayerZ = player.position.z;
   for (const bot of goldRushBots) {
-    bot.mesh.position.copy(bot.spawn);
+    reviveSoccerBot(bot);
+    bot.nextAttackAt = clock.elapsedTime + 1;
     bot.soccerKickReadyAt = clock.elapsedTime + 1;
   }
 }
@@ -4989,7 +5020,7 @@ function tryPlayerSoccerKick(manualAim) {
   }
   player.rotation.y = yaw;
   soccerState.playerKickReadyAt = clock.elapsedTime + SOCCER_PLAYER_KICK_COOLDOWN;
-  goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
+  goldRushStatusEl.textContent = "공 근처에선 차고, 멀리선 공격하세요";
   return true;
 }
 
@@ -5108,7 +5139,7 @@ function updateSoccer(dt) {
     return;
   }
   if (soccerState.freezeUntil && clock.elapsedTime - soccerState.freezeUntil < 0.1) {
-    goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
+    goldRushStatusEl.textContent = "공 근처에선 차고, 멀리선 공격하세요";
   }
   const playerSpeed = dt > 0 ? Math.hypot(player.position.x - soccerState.prevPlayerX, player.position.z - soccerState.prevPlayerZ) / dt : 0;
   soccerState.prevPlayerX = player.position.x;
@@ -5148,8 +5179,11 @@ function updateSoccerBots(dt) {
   }
   const ball = soccerBall.position;
   const candidates = [];
+  for (const bot of goldRushBots) {
+    if (bot.dead && clock.elapsedTime >= bot.respawnAt) reviveSoccerBot(bot);
+  }
   for (const team of ["a", "b"]) {
-    const mates = goldRushBots.filter((bot) => bot.team === team);
+    const mates = goldRushBots.filter((bot) => bot.team === team && !bot.dead);
     let chaser = null;
     let chaserDistance = Infinity;
     for (const bot of mates) {
@@ -5187,6 +5221,7 @@ function updateSoccerBots(dt) {
       if (bot === chaser && ballDistance < SOCCER_KICK_RANGE && clock.elapsedTime >= (bot.soccerKickReadyAt ?? 0)) {
         candidates.push({ bot, distance: ballDistance, tieBreak: Math.random() });
       }
+      if (team === "b") updateSoccerBotAttack(bot, dt);
       faceGoldRushHealthBarToCamera(bot.healthBar);
       bot.mixer?.update(dt);
     }
@@ -5198,6 +5233,27 @@ function updateSoccerBots(dt) {
   if (kickSoccerBall(bot.mesh.position, yaw, bot.team, "bot")) {
     bot.soccerKickReadyAt = clock.elapsedTime + SOCCER_BOT_KICK_COOLDOWN;
   }
+}
+
+// 상대(빨강) 봇은 가까이 온 플레이어를 일반 공격으로 노린다
+function updateSoccerBotAttack(bot, dt) {
+  if (bot.ammo < bot.maxAmmo) {
+    bot.reloadTimer += dt;
+    while (bot.reloadTimer >= bot.reloadDuration && bot.ammo < bot.maxAmmo) {
+      bot.reloadTimer -= bot.reloadDuration;
+      bot.ammo += 1;
+    }
+  } else {
+    bot.reloadTimer = 0;
+  }
+  if (goldRushState.dead || bot.ammo <= 0 || clock.elapsedTime < bot.nextAttackAt) return;
+  const distance = Math.hypot(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
+  if (distance > SOCCER_BOT_ATTACK_RANGE) return;
+  bot.mesh.rotation.y = Math.atan2(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
+  createGoldRushAttackEffect(bot.mesh.position, player.position, CHARACTERS.find((c) => c.id === bot.characterId)?.color ?? 0xff5a5a);
+  damageGoldRushPlayer(bot.attackDamage);
+  bot.ammo -= 1;
+  bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
 }
 
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
@@ -5468,6 +5524,7 @@ function createGoldRushBots() {
     mesh.userData.goldRushBot = bot;
     mesh.userData.health = bot.health;
     mesh.userData.maxHealth = bot.maxHealth;
+    if (bot.team === "a") mesh.userData.isAlly = true;
     testTargets.push(mesh);
     updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
     goldRushBots.push(bot);
@@ -5492,6 +5549,7 @@ function dropGoldRushGold(owner, position) {
 
 function damageGoldRushBot(bot, damage, fromPlayer = false) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
+  if (goldRushState.mode === "soccer" && bot.team === "a") return;
   bot.health = Math.max(0, bot.health - damage);
   bot.mesh.userData.health = bot.health;
   createDamagePopup(bot.mesh.position, damage);
@@ -5888,7 +5946,7 @@ function startGoldRush(mode = "goldRush") {
     startSoccerFreeze();
     goldRushHud.querySelector("strong").textContent = "SOCCER KICK";
     goldCountEl.parentElement.style.display = "none";
-    goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
+    goldRushStatusEl.textContent = "공 근처에선 차고, 멀리선 공격하세요";
     goldRushTimerEl.textContent = formatSoccerClock(180);
     goldRushRivalsEl.textContent = "BLUE 0 : 0 RED";
     soccerToggle.textContent = "SOCCER KICK 재시작";
