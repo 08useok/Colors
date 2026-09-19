@@ -3792,13 +3792,9 @@ function updateAzureWave(dt) {
     const x = wave.origin.x + wave.dx * wave.distance;
     const z = wave.origin.z + wave.dz * wave.distance;
     // 일반 공격은 벽에서 멈추지만 궁극기 빅 웨이브는 벽을 관통한다.
-    if (!wave.ultimate) {
-      let wall = false;
-      for (let side = -wave.width / 2; side <= wave.width / 2 + 0.001; side += 0.1) {
-        if (blocked(x + wave.dz * side, z - wave.dx * side, 0.1)) { wall = true; break; }
-      }
-      if (wall) { clearAzureWave(); return true; }
-    }
+    // 파도 가운데가 벽에 닿을 때만 멈춘다. 폭 전체로 검사하면 벽 옆에 서거나
+    // 벽과 나란히 쏠 때 파도 끝자락이 벽을 스치자마자 공격이 통째로 사라진다.
+    if (!wave.ultimate && blocked(x, z, 0.2)) { clearAzureWave(); return true; }
     wave.mesh.position.set(x, player.position.y + 0.25, z);
     const ride = Math.min(wave.distance, wave.rideRange);
     const rideX = wave.origin.x + wave.dx * ride;
