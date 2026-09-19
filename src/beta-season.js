@@ -4778,6 +4778,9 @@ const SOCCER_KICK_SPEED = 17;
 const SOCCER_KICK_RANGE = 2.6;
 const SOCCER_PLAYER_KICK_COOLDOWN = 0.35;
 const SOCCER_BOT_KICK_COOLDOWN = 0.6;
+// 경기 시작·득점 뒤 모두가 멈추는 시간. 득점 때는 그중 앞부분 동안 카메라가 골대를 비춘다.
+const SOCCER_FREEZE_DURATION = 3;
+const SOCCER_GOAL_CAM_DURATION = 2;
 // 선수가 서 있을 수 있는 한계. 골대 안으로는 들어가지 못한다.
 const SOCCER_ACTOR_LIMIT = SOCCER_FIELD_HALF - 0.6;
 
@@ -4912,7 +4915,31 @@ const soccerState = {
   scoreA: 0, scoreB: 0, vx: 0, vz: 0, overtime: false,
   lastKick: "a", lastKicker: "bot", kickoffUntil: 0, playerKickReadyAt: 0,
   prevPlayerX: 0, prevPlayerZ: 0,
+  freezeUntil: 0, goalCamUntil: 0, goalCamZ: 0, goalTeam: null, pendingReset: false,
 };
+
+function isSoccerFrozen() {
+  return goldRushState.active && !goldRushState.ended && goldRushState.mode === "soccer"
+    && clock.elapsedTime < soccerState.freezeUntil;
+}
+
+// 득점 직후 카메라가 비출 골대의 z 좌표. 비추는 중이 아니면 null.
+function getSoccerGoalCamZ() {
+  if (!isSoccerFrozen() || clock.elapsedTime >= soccerState.goalCamUntil) return null;
+  return soccerState.goalCamZ;
+}
+
+// scoredTeam이 있으면 득점 연출(골대 카메라 → 제자리 복귀)을 함께 건다
+function startSoccerFreeze(scoredTeam = null) {
+  const now = clock.elapsedTime;
+  soccerState.freezeUntil = now + SOCCER_FREEZE_DURATION;
+  soccerState.kickoffUntil = soccerState.freezeUntil;
+  soccerState.goalTeam = scoredTeam;
+  soccerState.pendingReset = Boolean(scoredTeam);
+  soccerState.goalCamUntil = scoredTeam ? now + SOCCER_GOAL_CAM_DURATION : 0;
+  // 파랑(a)은 +Z 골대, 빨강(b)은 -Z 골대에 넣는다
+  soccerState.goalCamZ = scoredTeam === "b" ? -SOCCER_FIELD_HALF : SOCCER_FIELD_HALF;
+}
 
 function resetSoccerBall() {
   soccerBall.position.set(0, SOCCER_FIELD_Y + SOCCER_BALL_RADIUS, 0);
@@ -5067,6 +5094,26 @@ function formatSoccerClock(remaining) {
 
 function updateSoccer(dt) {
   clampSoccerActor(player.position);
+  if (isSoccerFrozen()) {
+    // 정지 시간은 경기 시계에서 빼고, 공도 그대로 둔다
+    goldRushState.startedAt += dt;
+    const now = clock.elapsedTime;
+    if (soccerState.pendingReset && now >= soccerState.goalCamUntil) {
+      soccerState.pendingReset = false;
+      resetSoccerBall();
+      resetSoccerPositions();
+      soccerState.kickoffUntil = soccerState.freezeUntil;
+    }
+    soccerState.prevPlayerX = player.position.x;
+    soccerState.prevPlayerZ = player.position.z;
+    goldRushStatusEl.textContent = now < soccerState.goalCamUntil
+      ? `${soccerState.goalTeam === "a" ? "파랑" : "빨강"} 팀 득점!`
+      : `킥오프 ${Math.ceil(soccerState.freezeUntil - now)}`;
+    return;
+  }
+  if (soccerState.freezeUntil && clock.elapsedTime - soccerState.freezeUntil < 0.1) {
+    goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
+  }
   const playerSpeed = dt > 0 ? Math.hypot(player.position.x - soccerState.prevPlayerX, player.position.z - soccerState.prevPlayerZ) / dt : 0;
   soccerState.prevPlayerX = player.position.x;
   soccerState.prevPlayerZ = player.position.z;
@@ -5090,15 +5137,19 @@ function soccerGoal(team) {
   const won = soccerState.scoreA >= 2 || (soccerState.overtime && team === "a");
   const lost = soccerState.scoreB >= 2 || (soccerState.overtime && team === "b");
   if (won || lost) { endGoldRush(`SOCCER KICK ${won ? "승리" : "패배"} · ${soccerState.scoreA}:${soccerState.scoreB}`, won); return; }
-  goldRushStatusEl.textContent = `${team === "a" ? "파랑" : "빨강"} 팀 득점! 킥오프 준비`;
-  resetSoccerBall();
-  resetSoccerPositions();
+  goldRushStatusEl.textContent = `${team === "a" ? "파랑" : "빨강"} 팀 득점!`;
+  soccerState.vx = 0; soccerState.vz = 0;
+  startSoccerFreeze(team);
 }
 
 // 봇 사커 행동. 팀마다 공에 가장 가까운 한 명만 공을 쫓고 나머지는 수비 자리를 지킨다.
 // 킥은 한 프레임에 한 번만, 공에 가장 가까운 봇이 찬다 — 목록 순서 때문에 한 팀이
 // 공 다툼에서 늘 이기던 문제를 막는다.
 function updateSoccerBots(dt) {
+  if (isSoccerFrozen()) {
+    for (const bot of goldRushBots) faceGoldRushHealthBarToCamera(bot.healthBar);
+    return;
+  }
   const ball = soccerBall.position;
   const candidates = [];
   for (const team of ["a", "b"]) {
@@ -5838,6 +5889,7 @@ function startGoldRush(mode = "goldRush") {
     const spawns = [[-6,-12],[6,-12],[-7,12],[0,12],[7,12]];
     goldRushBots.forEach((bot, index) => { bot.spawn.set(spawns[index][0], 1.62, spawns[index][1]); });
     resetSoccerPositions();
+    startSoccerFreeze();
     goldRushHud.querySelector("strong").textContent = "SOCCER KICK";
     goldCountEl.parentElement.style.display = "none";
     goldRushStatusEl.textContent = "공 가까이에서 일반 공격으로 차세요";
@@ -6890,7 +6942,7 @@ function animate() {
   const purpleJumping = updatePurpleLeap(dt);
   if (blueDashing || azureDashing || purpleJumping) {
     isMoving = true;
-  } else if (!goldRushState.dead && input.lengthSq() > 0) {
+  } else if (!goldRushState.dead && !isSoccerFrozen() && input.lengthSq() > 0) {
     isMoving = true;
     input.normalize().multiplyScalar(8 * dt);
     const sin = Math.sin(yaw);
@@ -6994,6 +7046,13 @@ function animate() {
     camera.lookAt(0, 0, 0);
     cameraLookTarget.set(0, 0, 0);
     cameraLookInitialized = true;
+  } else if (getSoccerGoalCamZ() !== null) {
+    // 득점한 골대를 필드 쪽 위에서 비춘다
+    const goalZ = getSoccerGoalCamZ();
+    const side = Math.sign(goalZ);
+    camera.position.lerp(new THREE.Vector3(0, SOCCER_FIELD_Y + 6, goalZ - side * 9), 1 - Math.exp(-4 * dt));
+    cameraLookTarget.lerp(new THREE.Vector3(0, SOCCER_FIELD_Y + 1, goalZ), 1 - Math.exp(-4 * dt));
+    camera.lookAt(cameraLookTarget);
   } else {
     // 수동 에임 중이면 카메라가 조준 방향 뒤로 부드럽게 돌아간다
     cameraTarget.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
