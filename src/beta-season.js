@@ -2,15 +2,20 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
+import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
+import { applyBeta6Balance } from "./config/beta6-balance.js?v=1";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=1";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
 const canvas = document.getElementById("beta-canvas");
 let azureWaveState = null;
-const requestedBetaSeason = new URLSearchParams(location.search).get("test");
+const betaSearchParams = new URLSearchParams(location.search);
+const requestedBetaSeason = betaSearchParams.get("test");
+const IS_MAIN_RELEASE = betaSearchParams.get("release") === "main";
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta6";
+const BETA_CHARACTERS = BETA_SEASON_ID === "beta6" ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
 // 시즌 7·8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
 const betaSeasonBgm = new Audio(BETA_SEASON_ID === "beta5"
   ? "./assets/beta5-clockwork-midway.mp3?v=1"
@@ -135,7 +140,7 @@ const BETA_STORAGE_KEY = IS_BETA8_TEST
   : IS_BETA7_TEST
     ? "colorsBetaSeason7Test"
     : IS_BETA6_TEST
-      ? "colorsBetaSeason6Test"
+      ? IS_MAIN_RELEASE ? "colorsBetaSeason6" : "colorsBetaSeason6Test"
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
@@ -153,7 +158,7 @@ const CHARACTERS = [
   { id: "gold", name: "Gold", rarity: "legendary", price: 900, color: 0xffd700 },
   { id: "ivory", name: "Ivory", rarity: "legendary", price: 900, color: 0xfffff0 },
   { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0xc1f80a },
-  ...(IS_BETA5_TEST ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
+  ...((IS_BETA5_TEST || IS_BETA6_TEST) ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
   ...(IS_BETA6_TEST ? [{ id: "azure", name: "Azure", rarity: "hero", price: 0, color: 0x007fff }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
@@ -171,12 +176,20 @@ if (IS_BETA5_TEST) {
 }
 if (IS_BETA6_TEST) {
   document.body.classList.add("beta-season-6-theme");
-  document.title = "Colors - Beta Season 6 Test";
+  document.title = IS_MAIN_RELEASE ? "Colors - Beta Season 6" : "Colors - Beta Season 6 Test";
   const heading = document.querySelector(".beta-header h1");
   const rankChip = document.querySelector(".rank-chip");
-  if (heading) heading.textContent = "베타 시즌 6 테스트";
-  if (rankChip) rankChip.textContent = "베타 시즌 6 테스트";
+  if (heading) heading.textContent = IS_MAIN_RELEASE ? "베타 시즌 6" : "베타 시즌 6 테스트";
+  if (rankChip) rankChip.textContent = IS_MAIN_RELEASE ? "베타 시즌 6" : "베타 시즌 6 테스트";
   if (locationName) locationName.textContent = "애저 해변";
+  if (IS_MAIN_RELEASE) {
+    document.querySelector(".beta-header .test-chip")?.classList.add("hidden");
+    const subtitle = document.querySelector(".beta-header h1 + p");
+    if (subtitle) subtitle.textContent = "HIGH NOON TIDE · 애저 해변";
+    document.querySelector(".test-panel")?.classList.add("hidden");
+    const watermark = document.querySelector(".beta-watermark");
+    if (watermark) watermark.textContent = "BETA SEASON 6";
+  }
 }
 
 // 시즌 한정 꾸미기 소품: 캐릭터 성능과 무관, 이번 시즌 참여를 보여주는 장식물.
@@ -199,7 +212,13 @@ const SEA_SEASON_PROP_CATEGORIES = [
 
 function loadBetaState() {
   let saved = {};
-  try { saved = JSON.parse(localStorage.getItem(BETA_STORAGE_KEY) || "{}"); } catch { saved = {}; }
+  try {
+    const stored = localStorage.getItem(BETA_STORAGE_KEY);
+    const beta6TestFallback = IS_MAIN_RELEASE && IS_BETA6_TEST
+      ? localStorage.getItem("colorsBetaSeason6Test")
+      : null;
+    saved = JSON.parse(stored || beta6TestFallback || "{}");
+  } catch { saved = {}; }
   const selectedSkins = {};
   for (const [characterId, skinId] of Object.entries(saved.selectedSkins || {})) {
     const migratedId = migrateSkinId(skinId);
@@ -268,7 +287,7 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  for (const testCharacterId of ["ivory", "chartreuse", ...(IS_BETA5_TEST ? ["mint"] : [])]) {
+  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || IS_BETA6_TEST) ? ["mint"] : []), ...(IS_BETA6_TEST ? ["azure"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
   }
   // 시즌 6 바다 소품은 아직 정식 획득 조건이 없어 베타 테스트에서는 바로 보유시킨다.
@@ -1384,6 +1403,7 @@ function setPlayerModel(characterId) {
 function selectCharacter(id) {
   const character = CHARACTERS.find((item) => item.id === id);
   if (!character || !betaState.ownedCharacters.includes(id)) return;
+  if (IS_BETA6_TEST && goldRushState.active && !goldRushState.ended) { showToast("경기를 마친 뒤 캐릭터를 변경할 수 있습니다."); return; }
   betaState.selectedCharacter = id;
   bodyMat.color.setHex(character.color);
   setPlayerModel(id);
@@ -1690,7 +1710,7 @@ function updateCrimsonControls() {
   attackComboState.textContent = "준비";
   const specialCharacters = [
     ...((IS_BETA5_TEST || IS_BETA6_TEST) ? ["blue"] : []),
-    ...(IS_BETA5_TEST ? ["mint"] : []),
+    ...((IS_BETA5_TEST || IS_BETA6_TEST) ? ["mint"] : []),
     ...(IS_BETA6_TEST ? ["azure", "yellow"] : []),
     ...(IS_BETA7_TEST ? ["purple"] : []),
     ...(IS_BETA8_TEST ? ["orange"] : []),
@@ -1740,8 +1760,8 @@ function renderCharacters() {
       ${basicAttack ? `<p><strong>일반 공격 · ${basicAttack.name}</strong><br>${basicAttack.description}</p>` : ""}
       ${officialAbility ? `<p><strong>공식 능력 · ${officialAbility.name}</strong><br>${officialAbility.description}</p>` : ""}
       ${ultimate ? `<p><strong>궁극기 · ${ultimate.name}</strong><br>${ultimate.description}</p>` : ""}
-      ${IS_BETA5_TEST && BETA_CHARACTERS[character.id]?.special ? `<p><strong>특수 공격 · ${BETA_CHARACTERS[character.id].special.name}</strong><br>${BETA_CHARACTERS[character.id].special.description}</p>` : ""}
-      <p>${character.id === "azure" ? "베타 시즌 6 전용 · 파도 돌격 캐릭터" : character.id === "mint" ? "베타 시즌 5 전용 · 빙결 컨트롤러" : character.id === "gold" ? "설치형 컨트롤러" : character.id === "crimson" ? "근접 브루저 · 3연속 펀치" : `베타 시즌 ${IS_BETA6_TEST ? "6" : IS_BETA5_TEST ? "5" : "4"} 캐릭터 테스트`}</p>
+      ${(IS_BETA5_TEST || IS_BETA6_TEST) && BETA_CHARACTERS[character.id]?.special ? `<p><strong>특수 공격 · ${BETA_CHARACTERS[character.id].special.name}</strong><br>${BETA_CHARACTERS[character.id].special.description}</p>` : ""}
+      <p>${character.id === "azure" ? "베타 시즌 6 전용 · 파도 돌격 캐릭터" : character.id === "mint" ? "빙결 컨트롤러" : character.id === "gold" ? "설치형 컨트롤러" : character.id === "crimson" ? "근접 브루저 · 3연속 펀치" : `베타 시즌 ${IS_BETA6_TEST ? "6" : IS_BETA5_TEST ? "5" : "4"} 캐릭터 테스트`}</p>
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
       ${skinList}
     </article>`;
@@ -3131,6 +3151,7 @@ function autoAimAtNearestTarget() {
   let bestDistance = Infinity;
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly) continue;
+    if (IS_BETA6_TEST && target.userData.goldRushBot?.combatActor && beta6Combat?.hidden(target.userData.goldRushBot.combatActor)) continue;
     const dx = target.position.x - player.position.x;
     const dz = target.position.z - player.position.z;
     const targetDistance = Math.hypot(dx, dz);
@@ -3372,7 +3393,7 @@ function performBlueDash() {
 }
 
 function updateBlueDash(dt) {
-  if (!blueDashState || goldRushState.dead || betaState.selectedCharacter !== "blue") {
+  if (!blueDashState || goldRushState.dead || betaState.selectedCharacter !== "blue" || beta6PlayerAttackBlocked()) {
     blueDashState = null;
     return false;
   }
@@ -3839,7 +3860,8 @@ function performCharacterAttack({ manualAim = false } = {}) {
       return;
     }
   }
-  if (!generalAttackReady || azureWaveState) return;
+  if (IS_BETA6_TEST && beta6Combat) { useBeta6PlayerSkill(false, manualAim); return; }
+  if (!generalAttackReady || azureWaveState || beta6PlayerAttackBlocked()) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
   if (goldRushState.ammo <= 0) {
@@ -4239,7 +4261,7 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.classList.toggle("ready", ready);
   ultimateButton.setAttribute("aria-valuenow", String(charge));
   ultimateButton.setAttribute("aria-valuemax", String(required));
-  const isSpecial = (id === "blue" && (IS_BETA5_TEST || IS_BETA6_TEST)) || (id === "mint" && IS_BETA5_TEST);
+  const isSpecial = (id === "blue" && (IS_BETA5_TEST || IS_BETA6_TEST)) || (id === "mint" && (IS_BETA5_TEST || IS_BETA6_TEST));
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
   const remainingUnit = "회";
   ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
@@ -4491,7 +4513,8 @@ function performOrangeUltimate() {
 }
 
 ultimateButton.addEventListener("click", () => {
-  if (goldRushState.dead) return;
+  if (goldRushState.dead || beta6PlayerAttackBlocked()) return;
+  if (IS_BETA6_TEST && beta6Combat) { useBeta6PlayerSkill(true, true); return; }
   if (betaState.selectedCharacter === "purple" && IS_BETA7_TEST) {
     const def = BETA_CHARACTERS.purple.ultimate;
     if (purpleUltimateCharge < def.chargeRequired || purpleJumpState) return;
@@ -4649,7 +4672,8 @@ ultimateButton.addEventListener("click", () => {
     const forwardDistance = forward.dot(delta);
     const sideDistance = Math.abs(right.dot(delta));
     if (forwardDistance < 0 || forwardDistance > CRIMSON.ultimateLength || sideDistance > ultimateHalfWidth) continue;
-    target.userData.health -= CRIMSON.ultimateDamage;
+    if (IS_BETA6_TEST) damageTarget(target, CRIMSON.ultimateDamage);
+    else target.userData.health -= CRIMSON.ultimateDamage;
     target.position.x += forward.x * CRIMSON.ultimateKnockback;
     target.position.z += forward.y * CRIMSON.ultimateKnockback;
     flashTarget(target);
@@ -4754,6 +4778,11 @@ const manualAimPoint = new THREE.Vector3();
 const initialSpawnPoint = new THREE.Vector3(0, 1.7, 0);
 const goldPickups = [];
 const goldRushBots = [];
+let beta6Combat = null;
+let beta6PlayerActor = null;
+const beta6CombatVisuals = new Map();
+const beta6PendingEvents = [];
+let beta6BotRotation = 0;
 const goldRushAttackEffects = [];
 const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
 const goldRushState = {
@@ -5414,6 +5443,17 @@ goldMine.visible = false;
 scene.add(goldMine);
 
 function clearGoldRushBots() {
+  if (beta6PlayerActor?.id === "green") setPlayerConcealedVisual(false);
+  beta6PendingEvents.length = 0;
+  beta6Combat?.clear();
+  beta6Combat = null;
+  beta6PlayerActor = null;
+  for (const mesh of beta6CombatVisuals.values()) {
+    scene.remove(mesh);
+    mesh.geometry.dispose();
+    mesh.material.dispose();
+  }
+  beta6CombatVisuals.clear();
   for (const bot of goldRushBots) {
     scene.remove(bot.mesh);
     scene.remove(bot.healthBar);
@@ -5435,7 +5475,7 @@ function clearGoldRushBots() {
   }
 }
 
-function createGoldRushBotAvatar(index) {
+function createGoldRushBotAvatar(index, character = null) {
   const group = new THREE.Group();
   const disposableMeshes = [];
   let mixer = null;
@@ -5443,7 +5483,7 @@ function createGoldRushBotAvatar(index) {
   const playerLoopScene = activeCharacterMotion?.scenes.loop;
   const playerLoopClip = activeCharacterMotion?.actions.loop?.getClip();
 
-  if (playerLoopScene && playerLoopClip) {
+  if (playerLoopScene && playerLoopClip && !IS_BETA6_TEST) {
     const avatar = skeletonClone(playerLoopScene);
     avatar.visible = true;
     avatar.traverse((part) => {
@@ -5458,7 +5498,7 @@ function createGoldRushBotAvatar(index) {
     action.play();
     usesPlayerModel = true;
   } else {
-    const material = new THREE.MeshStandardMaterial({ color: GOLD_RUSH_BOT_COLORS[index], roughness: 0.58 });
+    const material = new THREE.MeshStandardMaterial({ color: character?.color ?? GOLD_RUSH_BOT_COLORS[index], roughness: 0.58 });
     const fallbackBody = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.8, 4, 8), material);
     fallbackBody.position.y = 0.86;
     fallbackBody.castShadow = true;
@@ -5468,7 +5508,7 @@ function createGoldRushBotAvatar(index) {
 
   const marker = new THREE.Mesh(
     new THREE.TorusGeometry(0.58, 0.06, 5, 20),
-    new THREE.MeshBasicMaterial({ color: GOLD_RUSH_BOT_COLORS[index], transparent: true, opacity: 0.9 }),
+    new THREE.MeshBasicMaterial({ color: character?.color ?? GOLD_RUSH_BOT_COLORS[index], transparent: true, opacity: 0.9 }),
   );
   marker.rotation.x = Math.PI / 2;
   marker.position.y = usesPlayerModel ? 3.05 : 1.8;
@@ -5476,7 +5516,190 @@ function createGoldRushBotAvatar(index) {
   disposableMeshes.push(marker);
   const healthBar = createGoldRushHealthBar(usesPlayerModel ? 3.25 : 2.05);
   group.add(healthBar);
+  if (IS_BETA6_TEST && character) {
+    const labelCanvas = document.createElement("canvas");
+    labelCanvas.width = 256; labelCanvas.height = 48;
+    const ctx = labelCanvas.getContext("2d");
+    ctx.font = "bold 30px sans-serif"; ctx.textAlign = "center";
+    ctx.strokeStyle = "#000"; ctx.lineWidth = 5; ctx.strokeText(character.name, 128, 34);
+    ctx.fillStyle = "#fff"; ctx.fillText(character.name, 128, 34);
+    const texture = new THREE.CanvasTexture(labelCanvas);
+    const label = new THREE.Mesh(new THREE.PlaneGeometry(1.8, .34), new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthTest: false }));
+    label.position.y = .5; label.renderOrder = 34; healthBar.add(label);
+    label.material.addEventListener("dispose", () => texture.dispose());
+    disposableMeshes.push(label);
+  }
   return { group, marker, healthBar, mixer, disposableMeshes, usesPlayerModel };
+}
+
+function beta6PlayerAttackBlocked() {
+  return Boolean(IS_BETA6_TEST && beta6Combat && beta6PlayerActor &&
+    (beta6Combat.time < beta6PlayerActor.frozenUntil || beta6Combat.time < beta6PlayerActor.lockUntil));
+}
+
+function syncBeta6PlayerHud() {
+  const actor = beta6PlayerActor;
+  if (!actor) return;
+  goldRushState.ammo = actor.ammo; goldRushState.reloadTimer = actor.reload;
+  const charge = actor.charge;
+  switch (actor.id) {
+    case "red": redUltimateCharge = charge; break;
+    case "green": greenUltimateCharge = charge; break;
+    case "blue": blueSpecialCharge = charge; break;
+    case "cyan": cyanUltimateCharge = charge; break;
+    case "pink": pinkUltimateCharge = charge; break;
+    case "crimson": crimsonUltimateCharge = charge; break;
+    case "gold": goldUltimateCharge = charge; break;
+    case "ivory": ivoryUltimateCharge = charge; break;
+    case "chartreuse": chartreuseUltimateCharge = charge; break;
+    case "mint": mintUltimateCharge = charge; break;
+    case "azure": azureUltimateCharge = charge; break;
+    case "yellow": yellowUltimateCharge = charge; break;
+  }
+  updateGoldRushCombatHud(); updateCrimsonUltimateGauge();
+  updateMintIceIndicator(playerGoldRushHealthBar.userData.mintIceIndicator, actor.ice, BETA_CHARACTERS.mint.freezeThreshold, beta6Combat.time < actor.frozenUntil);
+}
+
+function useBeta6PlayerSkill(ultimate, manualAim = false) {
+  const world = beta6Combat, actor = beta6PlayerActor;
+  if (!world || !actor || goldRushState.dead) return;
+  actor.x = player.position.x; actor.z = player.position.z; actor.hp = goldRushState.health;
+  const facing = Math.PI / 2 - player.rotation.y;
+  let target = world.actors.filter(a => a !== actor && a.hp > 0 && !world.hidden(a))
+    .sort((a, b) => Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0]
+    ?? { x: actor.x + Math.cos(facing) * world.range(actor), z: actor.z + Math.sin(facing) * world.range(actor), vx: 0, vz: 0, hp: 1 };
+  const throwRange = actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
+  const point = actor.id === "yellow" && yellowUltimateAimPointValid ? { x: yellowUltimateAimPoint.x, z: yellowUltimateAimPoint.z }
+    : { x: actor.x + Math.cos(facing) * throwRange, z: actor.z + Math.sin(facing) * throwRange };
+  if (manualAim && !ultimate && actor.id === "ivory") target = { ...point, vx: 0, vz: 0, hp: 1 };
+  const aim = manualAim ? { angle: facing, point } : {};
+  const fired = ultimate ? world.cast(actor, target, aim) : world.fire(actor, target, manualAim ? facing : undefined);
+  for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
+  if (beta6Combat !== world) return;
+  if (fired) {
+    startModelAttackMotion(actor.id);
+    player.rotation.y = Math.PI / 2 - actor.angle;
+    attackComboState.textContent = ultimate ? actor.u.name : actor.d.basicAttack.name;
+  }
+  syncBeta6PlayerHud();
+}
+
+function processBeta6CombatEvent(event) {
+      if (event.type === "damage") {
+        if (event.target === beta6PlayerActor) damageGoldRushPlayer(event.amount);
+        else if (event.target.bot) damageGoldRushBot(event.target.bot, event.amount, event.owner === beta6PlayerActor, true);
+      }
+      if (event.type === "heal" || event.type === "revive") {
+        const bot = event.target.bot;
+        if (bot) { bot.health = event.target.hp; bot.mesh.userData.health = bot.health; bot.dead = false; bot.mesh.visible = true; if (event.type === "revive") bot.invulnerableUntil = clock.elapsedTime + 2; }
+      }
+      if (event.type === "attack" || event.type === "ultimate") {
+        const from = event.owner.bot?.mesh.position ?? (event.owner === beta6PlayerActor ? player.position : null);
+        const to = event.target?.bot?.mesh.position ?? player.position;
+        if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
+        if (event.type === "ultimate") canvas.dataset[event.owner === beta6PlayerActor ? "lastBeta6PlayerUltimate" : "lastBeta6BotUltimate"] = event.owner.id;
+      }
+      if (event.type === "circuit") createGoldRushAttackEffect(new THREE.Vector3(event.from.x, 1, event.from.z), new THREE.Vector3(event.to.x, 1, event.to.z), 0xffff44);
+}
+
+function startBeta6BotCombat() {
+  if (!IS_BETA6_TEST || goldRushState.mode === "soccer") return;
+  beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
+    seed: Math.floor(Math.random() * 0x7fffffff), bounds: goldRushState.mode === "showdown" ? 19 : 48,
+    destination(actor, target) {
+      if (goldRushState.mode !== "goldRush" || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return target;
+      const pickup = goldPickups.slice().sort((a, b) => Math.hypot(a.mesh.position.x - actor.x, a.mesh.position.z - actor.z) - Math.hypot(b.mesh.position.x - actor.x, b.mesh.position.z - actor.z))[0];
+      return { x: pickup?.mesh.position.x ?? goldMine.position.x, z: pickup?.mesh.position.z ?? goldMine.position.z };
+    },
+    blocked(x, z, radius) {
+      const geometry = getArenaSolids();
+      const floor = groundHeightAt(x, z);
+      return floor < -5 || geometry.some(s => s.top > floor + .5 && Math.abs(x - s.x) < s.halfW + radius && Math.abs(z - s.z) < s.halfD + radius);
+    },
+    onEvent(event) { beta6PendingEvents.push(event); }
+  });
+  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, x: player.position.x, z: player.position.z });
+  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, bot });
+}
+
+function updateBeta6BotCombat(dt) {
+  if (!beta6Combat || !beta6PlayerActor) return;
+  const world = beta6Combat;
+  if (beta6PlayerActor.hp <= 0 && !goldRushState.dead && goldRushState.health > 0) {
+    world.remove(beta6PlayerActor);
+    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, x: player.position.x, z: player.position.z });
+  }
+  const hero = beta6PlayerActor;
+  const deadline = nativeTime => world.time + Math.max(0, (nativeTime || 0) - clock.elapsedTime);
+  hero.hp = goldRushState.dead ? 0 : goldRushState.health;
+  hero.vx = (player.position.x - hero.x) / Math.max(dt, 1 / 120);
+  hero.vz = (player.position.z - hero.z) / Math.max(dt, 1 / 120);
+  hero.x = player.position.x; hero.z = player.position.z;
+  hero.invulnerableUntil = deadline(goldRushState.invulnerableUntil);
+  for (const bot of goldRushBots) {
+    let actor = bot.combatActor;
+    if (bot.dead && goldRushState.mode !== "showdown" && clock.elapsedTime >= bot.respawnAt) {
+      world.remove(actor);
+      actor = bot.combatActor = world.add(bot.characterId, { bot, x: bot.spawn.x, z: bot.spawn.z });
+      bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
+      bot.mesh.userData.health = bot.health; bot.invulnerableUntil = clock.elapsedTime + 2;
+      Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
+    }
+    actor.hp = bot.dead ? 0 : bot.health;
+    actor.x = bot.mesh.position.x; actor.z = bot.mesh.position.z;
+    actor.invulnerableUntil = deadline(bot.invulnerableUntil);
+    actor.frozenUntil = Math.max(actor.frozenUntil, deadline(bot.mesh.userData.mintFrozenUntil));
+    if (bot.mesh.userData.slowUntil > clock.elapsedTime) { actor.slowUntil = Math.max(actor.slowUntil, deadline(bot.mesh.userData.slowUntil)); actor.slow = 1 - (bot.mesh.userData.slowMultiplier ?? 1); }
+    if (bot.mesh.userData.inMalfunctionZone) actor.lockUntil = Math.max(actor.lockUntil, world.time + dt + .02);
+  }
+  world.update(dt);
+  for (const event of beta6PendingEvents.splice(0)) {
+    if (beta6Combat !== world) break;
+    processBeta6CombatEvent(event);
+  }
+  if (beta6Combat !== world) return;
+  player.position.x = hero.x; player.position.z = hero.z;
+  for (const bot of goldRushBots) {
+    const a = bot.combatActor;
+    bot.mesh.position.x = a.x; bot.mesh.position.z = a.z;
+    bot.mesh.position.y = groundHeightAt(a.x, a.z) + .05;
+    bot.mesh.rotation.y = Math.PI / 2 - a.angle;
+    bot.ammo = a.ammo; bot.reloadTimer = a.reload;
+    bot.mesh.userData.mintIce = a.ice;
+    bot.mesh.userData.mintFrozenUntil = clock.elapsedTime + Math.max(0, a.frozenUntil - world.time);
+    bot.mesh.traverse(part => { if (part.isMesh && part.geometry.type === "CapsuleGeometry") { part.material.transparent = true; part.material.opacity = world.hidden(a) ? .25 : 1; } });
+    updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+    updateTargetMintIceIndicator(bot.mesh);
+    faceGoldRushHealthBarToCamera(bot.healthBar);
+  }
+  const visible = new Set();
+  const draw = (key, object, radius, kind) => {
+    visible.add(key);
+    let mesh = beta6CombatVisuals.get(key);
+    if (!mesh) {
+      const color = CHARACTERS.find(c => c.id === object.owner.id)?.color ?? 0xffffff;
+      const geometry = kind === "zone" ? new THREE.CircleGeometry(radius, 32) : kind === "wave" ? new THREE.BoxGeometry(object.width, .5, .25) : new THREE.SphereGeometry(Math.max(.12, radius), 8, 6);
+      mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: kind === "zone" ? .25 : .9, depthWrite: false, side: THREE.DoubleSide }));
+      if (kind === "zone") mesh.rotation.x = -Math.PI / 2;
+      scene.add(mesh); beta6CombatVisuals.set(key, mesh);
+    }
+    const location = object.kind === "lock" ? object.owner : object;
+    mesh.position.set(location.x, groundHeightAt(location.x, location.z) + (kind === "zone" ? .08 : .8), location.z);
+    if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
+  };
+  for (const p of world.projectiles) if (world.time >= p.start) draw(`p${p.key}`, p, p.radius, p.kind === "wave" ? "wave" : "projectile");
+  for (const z of world.zones) draw(`z${z.key}`, z, z.radius, "zone");
+  for (const a of world.actors) {
+    if (a.hp <= 0) continue;
+    for (let i = 0; i < a.devices.length; i++) draw(`d${a.key}-${i}`, { ...a.devices[i], owner: a }, .4, "projectile");
+    if (world.time < a.guardUntil) draw(`g${a.key}`, { x: a.x, z: a.z, owner: a }, 1.1, "zone");
+    if (world.time < a.hiddenUntil && a.bush) draw(`b${a.key}`, { ...a.bush, owner: a }, a.u.radius, "zone");
+  }
+  if (hero.id === "green") setPlayerConcealedVisual(world.hidden(hero));
+  for (const [key, mesh] of beta6CombatVisuals) if (!visible.has(key)) { scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); beta6CombatVisuals.delete(key); }
+  canvas.dataset.beta6BotCharacters = goldRushBots.map(b => b.characterId).join(",");
+  canvas.dataset.beta6BotUltimates = String(goldRushBots.reduce((sum, b) => sum + b.combatActor.castCount, 0));
+  syncBeta6PlayerHud();
 }
 
 function createGoldRushBots() {
@@ -5484,7 +5707,10 @@ function createGoldRushBots() {
   let playerModelCount = 0;
   const botCount = goldRushState.mode === "soccer" ? 5 : 9;
   for (let i = 0; i < botCount; i += 1) {
-    const avatar = createGoldRushBotAvatar(i);
+    const opponents = CHARACTERS.filter(c => c.id !== betaState.selectedCharacter);
+    const character = IS_BETA6_TEST ? opponents[(i + beta6BotRotation) % opponents.length] : null;
+    const definition = BETA_CHARACTERS[character?.id ?? betaState.selectedCharacter];
+    const avatar = createGoldRushBotAvatar(i, character);
     const mesh = avatar.group;
     if (avatar.usesPlayerModel) playerModelCount += 1;
     const angle = (i / 9) * Math.PI * 2;
@@ -5493,11 +5719,12 @@ function createGoldRushBots() {
     spawn.y = ground > -5 ? ground + 0.05 : 1.55;
     mesh.position.copy(spawn);
     scene.add(mesh);
-    const maxHealth = BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000;
-    const maxAmmo = BETA_CHARACTERS[betaState.selectedCharacter]?.maxAmmo || 3;
+    const maxHealth = definition?.maxHealth || 6000;
+    const maxAmmo = definition?.maxAmmo || 3;
     const bot = {
       id: i + 1,
-      name: `AI ${i + 1}`,
+      name: character ? `${character.name} AI` : `AI ${i + 1}`,
+      characterId: character?.id,
       mesh,
       marker: avatar.marker,
       healthBar: avatar.healthBar,
@@ -5516,8 +5743,8 @@ function createGoldRushBots() {
       ammo: maxAmmo,
       maxAmmo,
       reloadTimer: 0,
-      reloadDuration: BETA_CHARACTERS[betaState.selectedCharacter]?.reloadDuration || 0.5,
-      speed: 3.8 + (i % 4) * 0.3,
+      reloadDuration: definition?.reloadDuration || 0.5,
+      speed: IS_BETA6_TEST ? 8 * definition.moveSpeedMultiplier : 3.8 + (i % 4) * 0.3,
       winCountdownStartedAt: null,
       team: goldRushState.mode === "soccer" ? (i < 2 ? "a" : "b") : null,
     };
@@ -5531,6 +5758,7 @@ function createGoldRushBots() {
   }
   canvas.dataset.goldRushBotCount = String(goldRushBots.length);
   canvas.dataset.goldRushPlayerModelBots = String(playerModelCount);
+  if (IS_BETA6_TEST) { beta6BotRotation++; startBeta6BotCombat(); }
 }
 
 function dropGoldRushGold(owner, position) {
@@ -5547,17 +5775,23 @@ function dropGoldRushGold(owner, position) {
   );
 }
 
-function damageGoldRushBot(bot, damage, fromPlayer = false) {
+function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = false) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
   if (goldRushState.mode === "soccer" && bot.team === "a") return;
+  if (IS_BETA6_TEST && bot.combatActor && !fromBeta6Engine) {
+    const a = bot.combatActor;
+    if (beta6Combat.time < a.guardUntil) damage *= 1 - a.d.ultimate.damageReduction;
+    a.revealedUntil = beta6Combat.time + 3;
+  }
   bot.health = Math.max(0, bot.health - damage);
+  if (bot.combatActor) bot.combatActor.hp = bot.health;
   bot.mesh.userData.health = bot.health;
   createDamagePopup(bot.mesh.position, damage);
   createHitImpact(bot.mesh.position);
   updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
   bot.marker.material.color.setHex(0xffffff);
   setTimeout(() => {
-    if (!bot.dead) bot.marker.material.color.setHex(GOLD_RUSH_BOT_COLORS[bot.id - 1]);
+    if (!bot.dead) bot.marker.material.color.setHex(CHARACTERS.find(c => c.id === bot.characterId)?.color ?? GOLD_RUSH_BOT_COLORS[bot.id - 1]);
   }, 90);
   if (bot.health > 0) return;
   if (goldRushState.mode === "goldRush") dropGoldRushGold(bot, bot.mesh.position);
@@ -5633,6 +5867,7 @@ function removeGoldPickup(index) {
 function updateGoldRushBots(dt) {
   updateGoldRushAttackEffects(dt);
   if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }
+  if (IS_BETA6_TEST && beta6Combat) { updateBeta6BotCombat(dt); return; }
   for (const bot of goldRushBots) {
     if (bot.dead) {
       if (goldRushState.mode === "showdown") continue;
@@ -6040,7 +6275,7 @@ function updateGoldRush(dt) {
     }
   }
   // 한 발만 써도 곧바로 채워진다. 공격 쿨다운과 무관하게 진행한다.
-  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo) {
+  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(IS_BETA6_TEST && beta6Combat)) {
     goldRushState.reloadTimer += dt;
     let reloaded = false;
     while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
@@ -6053,6 +6288,7 @@ function updateGoldRush(dt) {
     goldRushState.reloadTimer = 0;
   }
   updateGoldRushBots(dt);
+  if (!goldRushState.active || goldRushState.ended) return;
   if (goldRushState.mode === "soccer") { updateSoccer(dt); return; }
   if (goldRushState.mode === "showdown") {
     const survivors = goldRushBots.filter((bot) => !bot.dead).length + (goldRushState.dead ? 0 : 1);
@@ -6994,11 +7230,13 @@ function animate() {
   const blueDashing = updateBlueDash(dt);
   const azureDashing = updateAzureWave(dt);
   const purpleJumping = updatePurpleLeap(dt);
-  if (blueDashing || azureDashing || purpleJumping) {
+  if (blueDashing || azureDashing || purpleJumping || (beta6Combat && (beta6PlayerActor?.wave || beta6PlayerActor?.dash))) {
     isMoving = true;
   } else if (!goldRushState.dead && !isSoccerFrozen() && input.lengthSq() > 0) {
     isMoving = true;
-    input.normalize().multiplyScalar(8 * dt);
+    const beta6Speed = IS_BETA6_TEST ? (BETA_CHARACTERS[betaState.selectedCharacter]?.moveSpeedMultiplier ?? 1) : 1;
+    const beta6Slow = beta6Combat && beta6PlayerActor ? (beta6Combat.time < beta6PlayerActor.frozenUntil ? 0 : beta6Combat.time < beta6PlayerActor.slowUntil ? 1 - beta6PlayerActor.slow : 1) : 1;
+    input.normalize().multiplyScalar(8 * beta6Speed * beta6Slow * dt);
     const sin = Math.sin(yaw);
     const cos = Math.cos(yaw);
     const moveX = input.y * sin - input.x * cos;
@@ -7040,7 +7278,7 @@ function animate() {
   updatePracticeRespawn();
   updateTestCombatHud(dt);
   if ((betaState.selectedCharacter === "blue" && (IS_BETA5_TEST || IS_BETA6_TEST))
-    || (betaState.selectedCharacter === "mint" && IS_BETA5_TEST)) updateCrimsonUltimateGauge();
+    || (betaState.selectedCharacter === "mint" && (IS_BETA5_TEST || IS_BETA6_TEST))) updateCrimsonUltimateGauge();
   updatePinkDeadAllyMarkers();
   // 골드 러쉬 밖에서도 체력바가 캐릭터 머리 위에 항상 고정되어 보이도록 매 프레임 갱신한다
   playerGoldRushHealthBar.visible = player.visible;

@@ -7,6 +7,14 @@
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="stylesheet" href="./styles.css?v=1.5.160">
   <style>.hidden{display:none!important}</style>
+  <script>
+    // Beta Season 6 release: keep ?legacy=1 as a direct route to the previous
+    // main client for regression checks and the embedded Chop Wood mode.
+    const beta6ReleaseAt = new Date("2026-09-21T18:00:00+09:00").getTime();
+    if (Date.now() >= beta6ReleaseAt && new URLSearchParams(location.search).get("legacy") !== "1") {
+      location.replace("./beta-season.html?test=beta6&release=main");
+    }
+  </script>
   <script type="importmap">
   {
     "imports": {

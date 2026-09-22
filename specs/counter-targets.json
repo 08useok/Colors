@@ -1,0 +1,470 @@
+{
+  "kind": "design-targets-not-simulation-results",
+  "comparisonOnly": true,
+  "source": "ultimate-damage-comparison.json",
+  "variant": "focused20",
+  "sourceHash": "a31a0d29bc1f953b8fc9cbbb410fa21401fbc41330b9d14880939f502542b6c2",
+  "method": "single-cycle; maximize minimum existing score, then sum of scores",
+  "weakestExistingScore": 0.5933333333333334,
+  "roster": [
+    "red",
+    "green",
+    "blue",
+    "orange",
+    "yellow",
+    "cyan",
+    "purple",
+    "pink",
+    "crimson",
+    "gold",
+    "ivory",
+    "chartreuse",
+    "mint",
+    "azure"
+  ],
+  "cycle": [
+    "red",
+    "blue",
+    "chartreuse",
+    "ivory",
+    "gold",
+    "cyan",
+    "green",
+    "azure",
+    "crimson",
+    "yellow",
+    "mint",
+    "pink",
+    "purple",
+    "orange"
+  ],
+  "selected": [
+    {
+      "id": "red",
+      "targetWin": "blue",
+      "targetLoss": "orange",
+      "currentScoreVsTargetWin": 0.6833333333333333
+    },
+    {
+      "id": "green",
+      "targetWin": "azure",
+      "targetLoss": "cyan",
+      "currentScoreVsTargetWin": 0.8633333333333333
+    },
+    {
+      "id": "blue",
+      "targetWin": "chartreuse",
+      "targetLoss": "red",
+      "currentScoreVsTargetWin": 0.9358333333333333
+    },
+    {
+      "id": "orange",
+      "targetWin": "red",
+      "targetLoss": "purple",
+      "currentScoreVsTargetWin": 0.7275
+    },
+    {
+      "id": "yellow",
+      "targetWin": "mint",
+      "targetLoss": "crimson",
+      "currentScoreVsTargetWin": 0.9966666666666667
+    },
+    {
+      "id": "cyan",
+      "targetWin": "green",
+      "targetLoss": "gold",
+      "currentScoreVsTargetWin": 0.9916666666666667
+    },
+    {
+      "id": "purple",
+      "targetWin": "orange",
+      "targetLoss": "pink",
+      "currentScoreVsTargetWin": 0.5933333333333333
+    },
+    {
+      "id": "pink",
+      "targetWin": "purple",
+      "targetLoss": "mint",
+      "currentScoreVsTargetWin": 1
+    },
+    {
+      "id": "crimson",
+      "targetWin": "yellow",
+      "targetLoss": "azure",
+      "currentScoreVsTargetWin": 0.9666666666666667
+    },
+    {
+      "id": "gold",
+      "targetWin": "cyan",
+      "targetLoss": "ivory",
+      "currentScoreVsTargetWin": 0.9141666666666667
+    },
+    {
+      "id": "ivory",
+      "targetWin": "gold",
+      "targetLoss": "chartreuse",
+      "currentScoreVsTargetWin": 0.9983333333333333
+    },
+    {
+      "id": "chartreuse",
+      "targetWin": "ivory",
+      "targetLoss": "blue",
+      "currentScoreVsTargetWin": 0.6333333333333333
+    },
+    {
+      "id": "mint",
+      "targetWin": "pink",
+      "targetLoss": "yellow",
+      "currentScoreVsTargetWin": 0.8691666666666666
+    },
+    {
+      "id": "azure",
+      "targetWin": "crimson",
+      "targetLoss": "green",
+      "currentScoreVsTargetWin": 0.6233333333333333
+    }
+  ],
+  "targets": {
+    "red": {
+      "red": "self",
+      "green": "interior",
+      "blue": 1,
+      "orange": 0,
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "green": {
+      "red": "interior",
+      "green": "self",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": 0,
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": 1
+    },
+    "blue": {
+      "red": 0,
+      "green": "interior",
+      "blue": "self",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": 1,
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "orange": {
+      "red": 1,
+      "green": "interior",
+      "blue": "interior",
+      "orange": "self",
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": 0,
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "yellow": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "self",
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": 0,
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": 1,
+      "azure": "interior"
+    },
+    "cyan": {
+      "red": "interior",
+      "green": 1,
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": "self",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": 0,
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "purple": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": 1,
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": "self",
+      "pink": 0,
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "pink": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": 1,
+      "pink": "self",
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": 0,
+      "azure": "interior"
+    },
+    "crimson": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": 1,
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "self",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": 0
+    },
+    "gold": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": 1,
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": "self",
+      "ivory": 0,
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "ivory": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": 1,
+      "ivory": "self",
+      "chartreuse": 0,
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "chartreuse": {
+      "red": "interior",
+      "green": "interior",
+      "blue": 0,
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": 1,
+      "chartreuse": "self",
+      "mint": "interior",
+      "azure": "interior"
+    },
+    "mint": {
+      "red": "interior",
+      "green": "interior",
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": 0,
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": 1,
+      "crimson": "interior",
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "self",
+      "azure": "interior"
+    },
+    "azure": {
+      "red": "interior",
+      "green": 0,
+      "blue": "interior",
+      "orange": "interior",
+      "yellow": "interior",
+      "cyan": "interior",
+      "purple": "interior",
+      "pink": "interior",
+      "crimson": 1,
+      "gold": "interior",
+      "ivory": "interior",
+      "chartreuse": "interior",
+      "mint": "interior",
+      "azure": "self"
+    }
+  },
+  "nonTargetExtremes": [
+    {
+      "a": "red",
+      "b": "green",
+      "score": 1
+    },
+    {
+      "a": "red",
+      "b": "yellow",
+      "score": 1
+    },
+    {
+      "a": "red",
+      "b": "purple",
+      "score": 1
+    },
+    {
+      "a": "red",
+      "b": "pink",
+      "score": 1
+    },
+    {
+      "a": "red",
+      "b": "crimson",
+      "score": 1
+    },
+    {
+      "a": "red",
+      "b": "ivory",
+      "score": 1
+    },
+    {
+      "a": "red",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "green",
+      "b": "orange",
+      "score": 0
+    },
+    {
+      "a": "green",
+      "b": "pink",
+      "score": 0
+    },
+    {
+      "a": "blue",
+      "b": "yellow",
+      "score": 1
+    },
+    {
+      "a": "blue",
+      "b": "ivory",
+      "score": 1
+    },
+    {
+      "a": "blue",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "orange",
+      "b": "ivory",
+      "score": 1
+    },
+    {
+      "a": "orange",
+      "b": "mint",
+      "score": 1
+    },
+    {
+      "a": "orange",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "yellow",
+      "b": "purple",
+      "score": 0
+    },
+    {
+      "a": "cyan",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "purple",
+      "b": "mint",
+      "score": 1
+    },
+    {
+      "a": "purple",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "pink",
+      "b": "crimson",
+      "score": 0
+    },
+    {
+      "a": "gold",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "ivory",
+      "b": "azure",
+      "score": 1
+    },
+    {
+      "a": "mint",
+      "b": "azure",
+      "score": 1
+    }
+  ]
+}

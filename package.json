@@ -5,12 +5,14 @@
   "scripts": {
     "simulate:matchups": "node tools/simulate-matchups.mjs",
     "check:matchups": "node tools/test-matchup-ultimates.mjs",
+    "check:beta6": "node tools/test-beta6-combat.mjs",
+    "simulate:beta6": "node tools/simulate-beta6-balance.mjs",
     "check:mint": "node tools/test-mint.mjs",
     "check:blue": "node tools/test-blue.mjs",
     "check:characters": "node tools/test-character-audit.mjs",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "check": "node --check src/main.js && node --check src/beta-season.js && node --check src/multiplayer.js && node --check src/config/characters.js && node --check src/config/beta-characters.js && node --check src/config/skins.js && node --check src/visuals/crown.js"
+    "check": "node --check src/main.js && node --check src/beta-season.js && node --check src/multiplayer.js && node --check src/config/characters.js && node --check src/config/beta-characters.js && node --check src/config/beta6-balance.js && node --check src/combat/beta6-combat.js && node --check src/config/skins.js && node --check src/visuals/crown.js"
   },
   "devDependencies": {
     "wrangler": "^4.100.0",
