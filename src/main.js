@@ -2887,20 +2887,22 @@ function resolveWalkGlbSet(glbSet, isAiBot, forceLoopOnly = false) {
   return { start: null, loop: glbSet.loop, end: null };
 }
 
-function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false) {
-  const season6Skin = {
-    beta6_cyan_aqua_scout: ["cyan", "cyan/skin-aqua-scout"],
-    beta6_chartreuse_pufferfish_boy: ["chartreuse", "chartreuse/skin-pufferfish-boy"],
-    beta6_orange_citrus_luau_buddy: ["orange", "orange/skin-citrus-luau-buddy"],
-    beta6_azure_blue_wave_buddy: ["azure", "azure/skin-blue-wave-buddy"],
-  }[skinId];
-  if (season6Skin) {
+const SEASON6_SKIN_FBX = {
+  beta6_cyan_aqua_scout: ["cyan", "cyan/skins/aqua-scout"],
+  beta6_chartreuse_pufferfish_boy: ["chartreuse", "chartreuse/skins/pufferfish-boy"],
+  beta6_orange_citrus_luau_buddy: ["orange", "orange/skins/citrus-luau-buddy"],
+  beta6_azure_blue_wave_buddy: ["azure", "azure/skins/blue-wave-buddy"],
+};
+
+function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false, skipAssetLoading = false) {
+  const season6Skin = SEASON6_SKIN_FBX[skinId];
+  if (!skipAssetLoading && season6Skin) {
     const [characterId, folder] = season6Skin;
     const source = ensureSeason6SkinFbxLoading(characterId, folder);
     if (source.loop) return buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
   }
-  if (color === 0x0000ff) ensureBlueGlbLoading();
-  if (color === 0x0000ff && _blueWalkGlb) {
+  if (!skipAssetLoading && color === 0x0000ff) ensureBlueGlbLoading();
+  if (!skipAssetLoading && color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
     const model = skeletonClone(_blueWalkGlb.scene);
     const rigHelpers = [];
@@ -2969,50 +2971,50 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
   }
 
   // 시안 리그를 공유하는 캐릭터들(시안 + 시안에서 리컬러한 green/orange/red/yellow)
-  if (color === CHARACTERS.cyan.color) {
+  if (!skipAssetLoading && color === CHARACTERS.cyan.color) {
     ensureCyanWalkGlbLoading();
-  } else if (CYAN_RIG_COLOR_TO_CHAR.has(color)) {
+  } else if (!skipAssetLoading && CYAN_RIG_COLOR_TO_CHAR.has(color)) {
     const pendingCharKey = CYAN_RIG_COLOR_TO_CHAR.get(color);
     if (CYAN_RIG_TEMPLATE_CHARACTERS.includes(pendingCharKey)) ensureCyanWalkGlbLoading();
     else ensureCyanRigCharGlbLoading(pendingCharKey);
   }
-  const rigGltf = getCyanRigGltf(color);
-  if (rigGltf) {
+  const rigGltf = skipAssetLoading ? null : getCyanRigGltf(color);
+  if (!skipAssetLoading && rigGltf) {
     const rigCharKey = color === CHARACTERS.cyan.color ? "cyan" : CYAN_RIG_COLOR_TO_CHAR.get(color);
     const group = buildCyanRigModel(rigGltf, rigCharKey);
     if (skinId) applySkin(group, skinId);
     _applyPinkToon(group);
     return group;
   }
-  if (CYAN_RIG_COLOR_TO_CHAR.has(color)) {
+  if (!skipAssetLoading && CYAN_RIG_COLOR_TO_CHAR.has(color)) {
     const group = new THREE.Group();
     group.userData = { isGlbModel: true, awaitingRigModel: true };
     return group;
   }
 
-  if (color === 0xF4CDD3) {
+  if (!skipAssetLoading && color === 0xF4CDD3) {
     ensurePinkGlbLoading();
     if (_pinkGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_pinkGlb, isAiBot), skinId);
   }
-  if (color === 0x800080) {
+  if (!skipAssetLoading && color === 0x800080) {
     ensurePurpleGlbLoading();
     if (_purpleGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_purpleGlb, isAiBot), skinId);
   }
-  if (color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper") {
+  if (!skipAssetLoading && color === 0xfffff0 && skinId === "beta2_ivory_shopkeeper") {
     ensureIvoryShopkeeperGlbLoading();
     if (_ivoryShopkeeperGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_ivoryShopkeeperGlb, isAiBot), skinId);
   }
-  if (color === 0xfffff0) {
+  if (!skipAssetLoading && color === 0xfffff0) {
     ensureIvoryGlbLoading();
     if (_ivoryGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_ivoryGlb, isAiBot), skinId);
   }
-  if (color === 0xc1f80a) {
+  if (!skipAssetLoading && color === 0xc1f80a) {
     ensureChartreuseGlbLoading();
     // 샤르트뢰즈는 플레이어가 직접 조작할 때도 항상 loop만 사용하도록 이미
     // 확정되어 있어(커밋 1962daf) forceLoopOnly로 그 동작을 그대로 유지한다.
     if (_chartreuseGlb.loop) return buildPinkRigModel(resolveWalkGlbSet(_chartreuseGlb, isAiBot, true), skinId);
   }
-  if (color === CHARACTERS.mint.color) {
+  if (!skipAssetLoading && color === CHARACTERS.mint.color) {
     ensureMintFbxLoading();
     if (_mintFbx.loop) {
       const group = buildPinkRigModel(resolveWalkGlbSet(_mintFbx, isAiBot), skinId);
@@ -3020,7 +3022,7 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
       return group;
     }
   }
-  if (color === CHARACTERS.azure?.color) {
+  if (!skipAssetLoading && color === CHARACTERS.azure?.color) {
     ensureAzureFbxLoading();
     if (_azureFbx.loop) return buildPinkRigModel(resolveWalkGlbSet(_azureFbx, isAiBot), skinId);
   }
@@ -4020,14 +4022,14 @@ let _mintFbxRequested = false;
 function ensureMintFbxLoading() {
   if (_mintFbxRequested) return;
   _mintFbxRequested = true;
-  _fbxLoader.load('./assets/3d/mint/walk-m1s.fbx', asset => { _mintFbx.start = prepareMintFbx(asset); });
-  _fbxLoader.load('./assets/3d/mint/walk-m2l.fbx', asset => {
+  _fbxLoader.load('./assets/3d/mint/normal/walk-m1s.fbx', asset => { _mintFbx.start = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/mint/normal/walk-m2l.fbx', asset => {
     _mintFbx.loop = prepareMintFbx(asset);
     refreshLoadedMintModels();
     refreshLoadedPreviewCharacter("mint");
     if (frontModelCharType === "mint") setupFrontModel("mint");
   });
-  _fbxLoader.load('./assets/3d/mint/walk-m3e.fbx', asset => { _mintFbx.end = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/mint/normal/walk-m3e.fbx', asset => { _mintFbx.end = prepareMintFbx(asset); });
 }
 
 function prepareSeason6SkinFbx(asset) {
@@ -4076,12 +4078,41 @@ let _azureFbxRequested = false;
 function ensureAzureFbxLoading() {
   if (_azureFbxRequested) return;
   _azureFbxRequested = true;
-  _fbxLoader.load('./assets/3d/azure/walk-m1s.fbx', (asset) => { _azureFbx.start = prepareMintFbx(asset); });
-  _fbxLoader.load('./assets/3d/azure/walk-m2l.fbx', (asset) => {
+  _fbxLoader.load('./assets/3d/azure/normal/walk-m1s.fbx', (asset) => { _azureFbx.start = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/azure/normal/walk-m2l.fbx', (asset) => {
     _azureFbx.loop = prepareMintFbx(asset); refreshLoadedPreviewCharacter("azure");
     if (frontModelCharType === "azure") setupFrontModel("azure");
   });
-  _fbxLoader.load('./assets/3d/azure/walk-m3e.fbx', (asset) => { _azureFbx.end = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/azure/normal/walk-m3e.fbx', (asset) => { _azureFbx.end = prepareMintFbx(asset); });
+}
+
+// 로비는 걷기 시작 FBX 한 개만 사용한다. 전투용 3단계 로더와 캐시를
+// 분리해 로비 진입 시 대형 FBX 세 개를 한꺼번에 받지 않도록 한다.
+const _lobbyStartFbx = new Map();
+function ensureLobbyStartFbx(characterId, skinId) {
+  const season6Skin = SEASON6_SKIN_FBX[skinId];
+  const folder = season6Skin?.[1] ?? (characterId === "azure" ? "azure/normal" : null);
+  if (!folder) return null;
+  const key = `${characterId}:${skinId ?? "base"}`;
+  let entry = _lobbyStartFbx.get(key);
+  if (entry) return entry;
+  entry = { model: null };
+  _lobbyStartFbx.set(key, entry);
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx`, (asset) => {
+    entry.model = season6Skin ? prepareSeason6SkinFbx(asset) : prepareMintFbx(asset);
+    refreshLoadedPreviewCharacter(characterId);
+  });
+  return entry;
+}
+
+function createLobbyStartFbxModel(characterId, skinId) {
+  const entry = ensureLobbyStartFbx(characterId, skinId);
+  if (!entry?.model) return null;
+  // buildPinkRigModel이 첫 애니메이션 프레임을 즉시 평가하므로 T포즈가
+  // 없는 걷기 시작 자세를 정지 프리뷰로 안전하게 보여준다.
+  const model = buildPinkRigModel({ start: null, loop: entry.model, end: null }, skinId);
+  model.userData.isLobbyStartFbx = true;
+  return model;
 }
 
 let _ivoryPreviewGlbRequested = false;
@@ -4363,11 +4394,19 @@ function setPreviewCharacter(charType) {
   previewCharType = charType;
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
+  const usesLobbyStartFbx = charType === "azure" || Boolean(SEASON6_SKIN_FBX[skinId]);
+  const lobbyStartFbx = usesLobbyStartFbx ? createLobbyStartFbxModel(charType, skinId) : null;
   if (charType === "blue") ensureBluePreviewGlbLoading();
   else if (charType === "cyan" || CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType)) ensureCyanPreviewGlbLoading();
   else if (charType === "ivory") ensureIvoryPreviewGlbLoading();
 
-  if (charType === "pink" || charType === "purple" || charType === "chartreuse") {
+  if (lobbyStartFbx) {
+    previewIsGlb = true;
+    previewModel = fitModelForPreview(lobbyStartFbx);
+    previewScene.add(previewModel);
+    lobbyPreviewWrap?.classList.remove("preview-pending");
+    characterPreviewWrap?.classList.remove("preview-pending");
+  } else if (charType === "pink" || charType === "purple" || charType === "chartreuse") {
     previewIsGlb = true;
     const previewGlbSet = charType === "pink" ? _pinkGlb : charType === "purple" ? _purpleGlb : _chartreuseGlb;
     const previewGlbPath = `./assets/3d/${charType}/walk-m2l.glb`;
@@ -4439,7 +4478,8 @@ function setPreviewCharacter(charType) {
     lobbyPreviewWrap?.classList.remove("preview-pending");
     characterPreviewWrap?.classList.remove("preview-pending");
   } else {
-    previewModel = createStickman(charDef.color, skinId);
+    // 로비용 시작 FBX를 기다리는 동안에는 추가 FBX 요청을 만들지 않는다.
+    previewModel = createStickman(charDef.color, usesLobbyStartFbx ? null : skinId, false, false, usesLobbyStartFbx);
     previewIsGlb = Boolean(previewModel.userData.isGlbModel);
     previewModel.position.y = 0;
     fitModelForPreview(previewModel);

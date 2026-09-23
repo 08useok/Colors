@@ -1128,10 +1128,10 @@ function prepareCharacterScene(model, characterId) {
 }
 
 const SEASON6_MODEL_SKINS = {
-  cyan: { skinId: "beta6_cyan_aqua_scout", folder: "cyan/skin-aqua-scout" },
-  chartreuse: { skinId: "beta6_chartreuse_pufferfish_boy", folder: "chartreuse/skin-pufferfish-boy" },
-  orange: { skinId: "beta6_orange_citrus_luau_buddy", folder: "orange/skin-citrus-luau-buddy" },
-  azure: { skinId: "beta6_azure_blue_wave_buddy", folder: "azure/skin-blue-wave-buddy" },
+  cyan: { skinId: "beta6_cyan_aqua_scout", folder: "cyan/skins/aqua-scout" },
+  chartreuse: { skinId: "beta6_chartreuse_pufferfish_boy", folder: "chartreuse/skins/pufferfish-boy" },
+  orange: { skinId: "beta6_orange_citrus_luau_buddy", folder: "orange/skins/citrus-luau-buddy" },
+  azure: { skinId: "beta6_azure_blue_wave_buddy", folder: "azure/skins/blue-wave-buddy" },
 };
 
 function loadCharacterMotionSet(characterId, token) {
@@ -1143,7 +1143,7 @@ function loadCharacterMotionSet(characterId, token) {
   const modelCharacterId = characterId === "ivory" && selectedSkinId === "beta2_ivory_shopkeeper"
     ? "ivory/skin-shopkeeper"
     : cottonCandyPink
-      ? "pink/skin-cotton-candy"
+      ? "pink/skins/cotton-candy"
       : season6ModelSkin
         ? season6ModelSkin.folder
         : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
@@ -1153,9 +1153,9 @@ function loadCharacterMotionSet(characterId, token) {
   const usesFbxMotion = characterId === "mint" || characterId === "azure" || characterId === "crystal" || cottonCandyPink || Boolean(season6ModelSkin);
   const extension = usesFbxMotion ? "fbx" : "glb";
   const paths = characterId === "crystal" ? {
-    start: `./assets/3d/crystal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
-    loop: `./assets/3d/crystal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
-    stop: `./assets/3d/crystal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    start: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    loop: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    stop: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
   } : {
     start: `./assets/3d/${modelCharacterId}/walk-m1s.${extension}?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/${modelCharacterId}/walk-m2l.${extension}?v=${CHARACTER_MODEL_VERSION}`,
@@ -2020,7 +2020,7 @@ function renderAssetShowroom() {
     const usesGlb = glbCharacters.has(character.id);
     const usesModel = usesGlb || usesFbx;
     const modelPath = usesFbx
-      ? character.id === "crystal" ? "assets/3d/crystal/crystal-walk.fbx" : "assets/3d/azure/walk-m2l.fbx"
+      ? character.id === "crystal" ? "assets/3d/crystal/normal/crystal-walk.fbx" : "assets/3d/azure/normal/walk-m2l.fbx"
       : usesGlb
       ? character.id === "ivory" ? "assets/3d/ivory/ivory_preview.glb" : ["crimson", "gold"].includes(character.id) ? "assets/3d/cyan/walk-m1s.glb" : `assets/3d/${character.id}/walk-m1s.glb`
       : "Three.js 절차형 모델";

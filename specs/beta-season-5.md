@@ -231,7 +231,7 @@ SHOWDOWN+는 베타 시즌 5의 쇼다운을 **대체**한다. `?test=beta5`에�
 | 테스트 페이지 | `beta-season.html` |
 | 시즌 테마·로딩 화면 | `beta-season.css`, `assets/beta5-loading.png` |
 | 시즌 음악 | `assets/beta5-clockwork-midway.mp3` |
-| 솜사탕 핑크 | `src/config/skins.js`, `assets/3d/pink/skin-cotton-candy/` |
+| 솜사탕 핑크 | `src/config/skins.js`, `assets/3d/pink/skins/cotton-candy/` |
 | 스토리북 | `beta-storybook-content.html` |
 | 시즌 로드맵·공지 | `index.html` |
 | 앱 전환 별도 기획 | `specs/beta-season-5-app.md` |
