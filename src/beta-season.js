@@ -1074,6 +1074,13 @@ function prepareCharacterScene(model, characterId) {
   const usesFbxRig = characterId === "mint" || characterId === "azure" || characterId === "crystal"
     || (characterId === "pink" && betaState.selectedSkins.pink === "beta5_pink_cotton_candy")
     || wearsSeason6ModelSkin;
+  if (wearsSeason6ModelSkin) {
+    const previewSpheres = [];
+    model.traverse((part) => {
+      if (part.isMesh && /^Icosphere(?:\.\d+)?$/i.test(part.name)) previewSpheres.push(part);
+    });
+    for (const sphere of previewSpheres) sphere.removeFromParent();
+  }
   // Meshy FBX는 Z-up으로 제작됐다. 게임은 Y-up 좌표계를 쓰므로
   // 바닥에 눕지 않게 변환을 먼저 적용한 뒤 크기와 발 위치를 계산한다.
   // 시즌 6 모델 교체 스킨은 FBXLoader가 이미 Y-up으로 변환해 주므로

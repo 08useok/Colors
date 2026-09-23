@@ -4036,6 +4036,13 @@ function prepareSeason6SkinFbx(asset) {
   // 시즌 6 스킨 FBX는 FBXLoader가 이미 Y-up으로 변환한다. 민트처럼 다시
   // X축을 -90도 회전하면 모델이 눕기 때문에 루트 모션만 제거한다.
   asset.rotation.set(0, 0, 0);
+  // 원본 파일에는 재질 확인용으로 쓰인 200x200 크기의 Icosphere가 함께
+  // 저장되어 있다. 캐릭터 모델이 아니므로 장면과 크기 계산에서 제외한다.
+  const previewSpheres = [];
+  asset.traverse((part) => {
+    if (part.isMesh && /^Icosphere(?:\.\d+)?$/i.test(part.name)) previewSpheres.push(part);
+  });
+  for (const sphere of previewSpheres) sphere.removeFromParent();
   for (const clip of (asset.animations ?? [])) {
     clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|RootNodeL|output_unwrapped|target_character|walk[_-]m(?:1s|2l|3e))\.(?:position|quaternion|scale)$/i.test(track.name));
   }
