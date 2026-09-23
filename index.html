@@ -7,14 +7,6 @@
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="stylesheet" href="./styles.css?v=1.5.160">
   <style>.hidden{display:none!important}</style>
-  <script>
-    // Beta Season 6 release: keep ?legacy=1 as a direct route to the previous
-    // main client for regression checks and the embedded Chop Wood mode.
-    const beta6ReleaseAt = new Date("2026-09-21T18:00:00+09:00").getTime();
-    if (Date.now() >= beta6ReleaseAt && new URLSearchParams(location.search).get("legacy") !== "1") {
-      location.replace("./beta-season.html?test=beta6&release=main");
-    }
-  </script>
   <script type="importmap">
   {
     "imports": {
@@ -1011,6 +1003,11 @@
               <span class="char-winrate" id="winrate-mint"></span>
               <span class="char-skin-toggle disabled" data-char="mint">스킨 없음</span>
             </button>
+            <button id="select-azure" class="char-btn" type="button" data-char="azure">
+              <span class="selected-badge">선택됨</span><span class="char-icon" style="background:#007fff;color:white">Az</span>
+              <span class="char-name">Azure</span><span class="char-trophy" id="trophy-azure"></span>
+              <span class="char-winrate" id="winrate-azure"></span><span class="char-skin-toggle disabled" data-char="azure">스킨 없음</span>
+            </button>
           </div>
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
@@ -1034,6 +1031,10 @@
               <span class="mode-icon-text">🪙</span>
               <span>Gold Rush</span>
               <small class="mode-current-map">금 10개를 10초간 지키세요 · AI 9명</small>
+            </button>
+            <button id="mode-soccer" class="mode-btn mode-soccer" type="button">
+              <span class="mode-icon-text">⚽</span><span>SOCCER KICK</span>
+              <small class="mode-current-map">3대3 · 3분 · 2골 선승</small>
             </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>

@@ -12,7 +12,7 @@
 ## 시즌
 
 - 2026-09-15 로컬 코드 기준 메인은 베타 시즌 5다. `src/main.js`의 `CURRENT_SEASON`과 `CURRENT_VERSION`이 날짜별 활성 시즌·버전을 결정한다.
-- `beta-season.html`은 `?test=beta5`, `beta6`, `beta7`, `beta8`을 지원하며 생략하거나 지원하지 않는 값을 전달하면 `beta6`으로 열린다.
+- `beta-season.html`은 `?test=beta5`, `beta6`, `beta7`, `beta8`을 지원하며 생략하거나 지원하지 않는 값을 전달하면 `beta7`으로 열린다.
 - 각 테스트 시즌은 별도 저장 키를 사용한다. [접속·로그인](01-access-login.md#저장-키)을 참조한다.
 - 시즌별 변경 요구사항은 [시즌 기획 목차](README.md#시즌-기획)에서 관리한다.
 

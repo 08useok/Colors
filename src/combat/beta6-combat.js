@@ -62,7 +62,7 @@ export function createBeta6Combat(definitions, options = {}) {
     const applied = amount * (1 - clamp(a.d.knockbackResistance ?? 0, 0, 1));
     move(a, a.x + Math.cos(yaw) * applied, a.z + Math.sin(yaw) * applied);
   }
-  function range(a) { const d = a.d; return d.attackRange ?? d.boomerangRange ?? d.bulletRange ?? d.bombRange ?? d.electricRange ?? d.spreadLineRange ?? d.needleRange ?? d.healCircleRange ?? d.stage1Range ?? d.iceCreamRange ?? d.chartreuseRange ?? d.iceBulletRange ?? d.surfLength; }
+  function range(a) { const d = a.d; return d.attackRange ?? d.boomerangRange ?? d.bulletRange ?? d.bombRange ?? d.electricRange ?? d.spreadLineRange ?? d.needleRange ?? d.healCircleRange ?? d.stage1Range ?? d.iceCreamRange ?? d.chartreuseRange ?? d.iceBulletRange ?? d.crystalRange ?? d.surfLength; }
   function perceivedRange(a) { return a.d.attackPerceptionRange ?? range(a); }
   function shot(a, yaw, speed, reach, damage, extra = {}) {
     const spawn = extra.spawn ?? .6;
@@ -123,6 +123,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint' });
     });
     else if (id === 'azure') wave(a, yaw, false);
+    else if (id === 'crystal') launch(d.crystalSpeed, d.crystalRange, d.crystalDamage, { kind: 'crystal', stage: 1, token: { hits: new Set() } });
     return true;
   }
   function wave(a, yaw, ultimate) {
@@ -149,6 +150,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (healthRatio < a.d.ultimateUseHealthMin || healthRatio > a.d.ultimateUseHealthMax) return false;
       }
       if (a.automatic && (a.id === 'gold' && dist > u.radius || ['azure', 'cyan', 'crimson'].includes(a.id) && dist > u.range)) return false;
+      if (a.id === 'crystal' && dist > u.range) return false;
       if (a.automatic && a.id === 'green' && a.ammo > 0 && a.hp > a.d.maxHealth * .4) return false;
       // Spend the stored charge before resolving the skill so successful
       // ultimate hits can immediately begin charging the next ultimate.
@@ -179,6 +181,13 @@ export function createBeta6Combat(definitions, options = {}) {
         const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
         after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }));
       } else if (a.id === 'azure') wave(a, yaw, true);
+      else if (a.id === 'crystal') {
+        move(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1);
+        const until = time + u.analysisDuration;
+        a.lockUntil = target.lockUntil = until;
+        a.analysisTarget = target; target.analysisOwner = a; target.analysisExpires = until;
+        emit('analysis', { owner: a, target, expiresAt: until });
+      }
       else if (a.id === 'yellow') {
         const offset = a.automatic ? (a.devices.length % 2 ? 2.5 : -2.5) : 0;
         const device = { x: point.x - Math.sin(yaw) * offset, z: point.z + Math.cos(yaw) * offset };
@@ -201,12 +210,25 @@ export function createBeta6Combat(definitions, options = {}) {
       const stage = p.stage + 1;
       for (const offset of stage === 2 ? [-Math.PI / 2, Math.PI / 2] : Array.from({ length: 6 }, (_, i) => i * Math.PI / 3)) shot(a, p.yaw + offset, d[`stage${stage}Speed`], d[`stage${stage}Range`], d[`stage${stage}Damage`], { x: p.x, z: p.z, kind: 'gold', stage, token: p.token });
     }
+    if (p.kind === 'crystal' && p.stage < 3) {
+      const stage = p.stage + 1;
+      const count = stage === 2 ? d.fragmentCount : d.shardCount;
+      const damage = stage === 2 ? d.fragmentDamage : d.shardDamage;
+      const speed = stage === 2 ? d.fragmentSpeed : d.shardSpeed;
+      const reach = stage === 2 ? d.fragmentRange : d.shardRange;
+      for (let i = 0; i < count; i++) shot(a, p.yaw + i * Math.PI * 2 / count, speed, reach, damage, { x: p.x, z: p.z, kind: 'crystal', stage, token: p.token, radius: stage === 2 ? .28 : .18 });
+    }
     if (p.kind === 'wave') a.wave = false;
   }
   function tick(dt) {
     time += dt;
     for (const a of actors) {
       if (!alive(a)) continue;
+      if (a.analysisTarget) {
+        const target = a.analysisTarget;
+        if (!alive(target)) { a.analysisTarget = null; a.lockUntil = time; emit('analysisReleased', { owner: a, target }); }
+        else if (time >= target.analysisExpires) { hit(a, target, target.hp); target.analysisOwner = null; a.analysisTarget = null; a.lockUntil = time; emit('analysisExecute', { owner: a, target }); }
+      }
       if (options.suddenDeath && time >= options.suddenDeath.start) {
         const progress = clamp((time - options.suddenDeath.start) / Math.max(.001, options.suddenDeath.end - options.suddenDeath.start), 0, 1);
         const radius = options.suddenDeath.startRadius + (options.suddenDeath.endRadius - options.suddenDeath.startRadius) * progress;
@@ -296,6 +318,7 @@ export function createBeta6Combat(definitions, options = {}) {
         let amount = p.kind === 'plague' ? b.hp : p.damage, award = 1;
         if (p.kind === 'boomerang') amount *= (p.traveled > d.boomerangFarThreshold ? d.boomerangFarMultiplier : 1) * (p.returning ? d.boomerangReturnDamageMultiplier : 1);
         if (p.kind === 'gold') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); award = Math.min([0, 3, 2, 1][p.stage], d.maxChargePerAttack - p.token.charge); p.token.charge += award; }
+        if (p.kind === 'crystal') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); }
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
         const dealt = hit(a, b, amount, true, award);
         if (dealt > 0) {

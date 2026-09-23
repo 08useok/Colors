@@ -263,6 +263,23 @@ export const BETA_CHARACTERS = {
       damage: 4800, range: 6, width: 4, knockback: 9, chargeRequired: 7,
     },
   },
+  crystal: {
+    maxHealth: 6000, moveSpeedMultiplier: 1.05, attackCooldown: 0.65, reloadDuration: 1.1, maxAmmo: 3,
+    crystalDamage: 2000, crystalRange: 11, crystalSpeed: 20,
+    fragmentDamage: 1000, fragmentCount: 6, fragmentRange: 4.5, fragmentSpeed: 16,
+    shardDamage: 500, shardCount: 12, shardRange: 3.5, shardSpeed: 18,
+    description: "수정탄을 연쇄 분열시키고 적을 분석해 제거하는 캐릭터입니다.",
+    descriptionEn: "Splits crystal shots into cascading shards and analyzes one enemy for elimination.",
+    basicAttack: {
+      name: "연쇄 수정탄", description: "2000 피해의 수정탄이 6개 조각, 다시 12개 작은 조각으로 분열합니다. 같은 단계는 한 대상에게 한 번만 적중합니다.",
+      nameEn: "Crystal Cascade", descriptionEn: "A 2,000-damage crystal splits into six fragments, then twelve shards. Each stage can hit the same target only once.",
+    },
+    ultimate: {
+      id: "crystalAnalysis", name: "수정 분석", chargeRequired: 7, range: 18, dashSpeed: 28, analysisDuration: 8,
+      description: "긴 거리를 이동해 적 한 명을 붙잡습니다. 둘 다 행동할 수 없고, 대상은 8초 뒤 즉사합니다. 대상이 먼저 죽으면 즉시 해제됩니다.",
+      nameEn: "Crystal Analysis", descriptionEn: "Dash a long distance and bind one enemy. Both are disabled; the marked enemy dies after 8 seconds, or the bind ends early if they die first.",
+    },
+  },
 };
 
 // Beta Season 5 test-only balance. beta-season.js applies these values only

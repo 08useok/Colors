@@ -7,7 +7,7 @@ import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 import { beta6Duel } from './simulate-beta6-balance.mjs';
 const original = structuredClone(BETA_CHARACTERS), config = applyBeta6Balance();
 assert.deepEqual(BETA_CHARACTERS, original);
-assert.equal(Object.keys(config).length, 14);
+assert.equal(Object.keys(config).length, 15);
 assert.equal(beta6Ultimate(config.azure, 'azure').chargeRequired, 2);
 assert.equal(beta6Ultimate(config.gold, 'gold').chargeRequired, 6);
 assert.equal(config.blue.bulletRange, 17.5);
@@ -42,6 +42,20 @@ for (const id of ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'c
   if (id === 'gold') assert(b.lockUntil >= world.time);
   if (id === 'azure') assert.equal(a.x, 0, 'Azure ultimate must not move its owner');
   if (id === 'yellow') assert.equal(a.devices.length, 1);
+}
+
+{
+  const world = createBeta6Combat(config, { aimError: 0, bounds: 40 });
+  const crystal = world.add('crystal', { x: 0, automatic: false, next: 0, charge: 100 });
+  const target = world.add('red', { x: 6, automatic: false, hp: 20000 });
+  assert(world.fire(crystal, target, 0));
+  run(world, 1.5);
+  assert(target.hp <= 16500, 'Crystal cascade deals no more than one hit per split stage to a target');
+  crystal.charge = 100;
+  assert(world.cast(crystal, target));
+  assert(crystal.lockUntil === target.lockUntil && crystal.lockUntil > world.time, 'Crystal Analysis locks both actors');
+  run(world, 8.1);
+  assert.equal(target.hp, 0, 'Crystal Analysis executes its marked target after 8 seconds');
 }
 
 {
@@ -140,8 +154,9 @@ for (const id of ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'c
 }
 assert.deepEqual(beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1 }, 27), beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1 }, 27));
 const runtime = readFileSync(new URL('../src/beta-season.js', import.meta.url), 'utf8');
-assert(runtime.includes('BETA_SEASON_ID === "beta6" ? applyBeta6Balance(BASE_BETA_CHARACTERS)'));
-assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (IS_BETA6_TEST && beta6Combat) { updateBeta6BotCombat(dt); return; }'));
+assert(runtime.includes('const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);'));
+assert(runtime.includes('HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS)'));
+assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (HAS_BETA6_CONTENT && beta6Combat) { updateBeta6BotCombat(dt); return; }'));
 assert(runtime.includes('if (beta6Combat !== world) return;'));
 // A lethal player hit can end the match and clear all actors during event delivery.
 // Exercise the bridge without a browser and verify it stops before using disposed state.
@@ -170,4 +185,4 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
   for (let i = 0; i < 4; i++) world.update(.25);
   assert.deepEqual(yellow.devices[0], { x: 7, z: -3 }, 'manual circuit placement');
 }
-console.log('PASS: beta6 isolation, 14 basic attacks, 11 ultimates, team revival, freezing, walls, cleanup, deterministic replay.');
+console.log('PASS: shared combat isolation, 15 basic attacks, Crystal cascade/analysis, team revival, freezing, walls, cleanup, deterministic replay.');

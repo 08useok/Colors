@@ -15,6 +15,10 @@ export const SKINS = {
   beta6_chartreuse_pufferfish_boy: { id: "beta6_chartreuse_pufferfish_boy", name: "복어 샤트", nameKey: "skinBeta6ChartreusePufferfishBoyName", character: "chartreuse", season: "beta6", rarity: "rare", cost: 1000, desc: "skinBeta6ChartreusePufferfishBoyDesc" },
   beta6_orange_citrus_luau_buddy: { id: "beta6_orange_citrus_luau_buddy", name: "트로피컬 오렌지", nameKey: "skinBeta6OrangeCitrusLuauBuddyName", character: "orange", season: "beta6", rarity: "epic", cost: 2500, desc: "skinBeta6OrangeCitrusLuauBuddyDesc" },
   beta6_azure_blue_wave_buddy: { id: "beta6_azure_blue_wave_buddy", name: "프로 서퍼 애저", nameKey: "skinBeta6AzureBlueWaveBuddyName", character: "azure", season: "beta6", rarity: "legendary", cost: 5000, desc: "skinBeta6AzureBlueWaveBuddyDesc" },
+  beta7_gold_pharaoh: { id: "beta7_gold_pharaoh", name: "파라오 골드", character: "gold", season: "beta7", rarity: "hero", cost: 3500, desc: "황금 왕관과 고대 저주 문양을 두른 유적의 지배자" },
+  beta7_green_mummy: { id: "beta7_green_mummy", name: "미라 그린", character: "green", season: "beta7", rarity: "epic", cost: 2500, desc: "무덤 안개 속에서 붕대를 흩날리는 고대의 기습자" },
+  beta7_blue_scarab: { id: "beta7_blue_scarab", name: "스카라베 블루", character: "blue", season: "beta7", rarity: "epic", cost: 2500, desc: "금빛 날개로 유적 벽 사이를 튕겨 다니는 수호자" },
+  beta7_pink_ruin_explorer: { id: "beta7_pink_ruin_explorer", name: "유적 탐험가 핑크", character: "pink", season: "beta7", rarity: "rare", cost: 1000, desc: "지도와 카메라를 들고 황금 유적을 생중계하는 탐험가" },
 };
 
 export const SKIN_ID_MIGRATION = {

@@ -7,6 +7,7 @@ import { LANGS } from "./LANGS/langs.js?v=1.5.152";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.5.185";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
+import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 
@@ -35,7 +36,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = CURRENT_SEASON === "beta5"
+  const seasonLabel = CURRENT_SEASON === "beta6"
+    ? (currentLang === "ko" ? "베타 시즌 6" : "Beta Season 6")
+    : CURRENT_SEASON === "beta5"
     ? (currentLang === "ko" ? "베타 시즌 5" : "Beta Season 5")
     : CURRENT_SEASON === "beta4"
     ? (currentLang === "ko" ? "베타 시즌 4" : "Beta Season 4")
@@ -107,6 +110,7 @@ const lobbyEventMap = document.getElementById("lobby-event-map");
 const mobileEventToggle = document.getElementById("mobile-event-toggle");
 const eventCountdown = document.getElementById("event-countdown");
 const modeSelector = document.getElementById("mode-selector");
+const modeSoccerBtn = document.getElementById("mode-soccer");
 const characterPanel = document.getElementById("character-panel");
 const characterPanelClose = document.getElementById("character-panel-close");
 const characterToggle = document.getElementById("character-toggle");
@@ -166,14 +170,16 @@ const beta4LobbyBgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1.5.4");
 beta4LobbyBgm.loop = true;
 const beta5LobbyBgm = new Audio("./assets/beta5-clockwork-midway.mp3?v=1");
 beta5LobbyBgm.loop = true;
+const beta6LobbyBgm = new Audio("./assets/beta6-high-noon-tide.mp3?v=1");
+beta6LobbyBgm.loop = true;
 const storedMasterVolume = Number.parseFloat(localStorage.getItem("colorsMasterVolume"));
 let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(storedMasterVolume, 0, 1) : 1;
 
 function applyMasterVolume() {
   // 설정에 표시되는 비율과 실제 출력 비율을 동일하게 유지한다.
   const outputVolume = masterVolume;
-  const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, showdownBgm, showdownMusic];
-  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
+  const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm, showdownBgm, showdownMusic];
+  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
   mediaTracks.forEach((track, index) => {
     track.volume = baseVolumes[index] * outputVolume;
     track.muted = outputVolume === 0;
@@ -189,6 +195,7 @@ function pauseLobbyBgm() {
   beta2LobbyBgm.pause();
   beta4LobbyBgm.pause();
   beta5LobbyBgm.pause();
+  beta6LobbyBgm.pause();
 }
 
 function stopAllBgm() {
@@ -201,8 +208,8 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  const activeLobbyBgm = CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
-  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
+  const activeLobbyBgm = CURRENT_SEASON === "beta6" ? beta6LobbyBgm : CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
   applyMasterVolume();
   activeLobbyBgm.play().catch(() => {});
 }
@@ -330,8 +337,9 @@ const BETA_SEASON_2_END_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
 const BETA_SEASON_3_START_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
 const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_5_START_AT
+const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
   ? "beta4"
@@ -341,6 +349,13 @@ const CURRENT_SEASON = Date.now() >= BETA_SEASON_5_START_AT
   ? "beta2"
   : Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
 const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
+if (CURRENT_SEASON === "beta6") {
+  const releaseStats = applyBeta6Balance(BETA_CHARACTERS);
+  for (const [id, stats] of Object.entries(releaseStats)) {
+    const current = CHARACTERS[id] || {};
+    CHARACTERS[id] = { ...current, ...stats, color: current.color ?? (id === "azure" ? 0x007fff : 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
+  }
+}
 const ALPHA_SEASONS = ["alpha1", "alpha2", "alpha3", "alpha4"];
 const ALPHA_REWARD_DATE = "2026-07-26";
 const ALPHA_PARTICIPATION_REWARD_SKIN = "alpha_champion_cyan";
@@ -354,26 +369,27 @@ const SEASONS = {
   beta3: "베타 시즌 3",
   beta4: "베타 시즌 4",
   beta5: "베타 시즌 5",
+  beta6: "베타 시즌 6",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set(["red", "green", "blue", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint"]);
+const ULTIMATE_CHARACTERS = new Set(["red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero", azure: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = ["beta2", "beta3", "beta4", "beta5"].includes(CURRENT_SEASON)
-  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5"].includes(CURRENT_SEASON) ? ["chartreuse"] : []), ...(CURRENT_SEASON === "beta5" ? ["mint"] : [])]
+const ROSTER = ["beta2", "beta3", "beta4", "beta5", "beta6"].includes(CURRENT_SEASON)
+  ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5", "beta6"].includes(CURRENT_SEASON) ? ["chartreuse"] : []), ...(["beta5", "beta6"].includes(CURRENT_SEASON) ? ["mint"] : []), ...(CURRENT_SEASON === "beta6" ? ["azure"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
 function createCharacterStats(characterIds = ROSTER) {
@@ -497,6 +513,8 @@ function applySkin(group, skinId) {
       const headwear = accessory.userData.headwearPart ?? accessory;
       if (headwear.userData.autoFitHeadwear) group.userData.headwear = headwear;
     }
+  } else if (skinId.startsWith("beta6_")) {
+    applyRedThemePalette(group, skinId);
   }
 }
 
@@ -512,6 +530,10 @@ function applyRedThemePalette(group, skinId) {
     beta2_gold_yellow: 0xd9a520,
     beta2_gold_orange: 0xb8720a,
     beta2_gold_gold: 0xffc233,
+    beta6_cyan_aqua_scout: 0x18d8e6,
+    beta6_chartreuse_pufferfish_boy: 0xd8ee42,
+    beta6_orange_citrus_luau_buddy: 0xff8730,
+    beta6_azure_blue_wave_buddy: 0x16aee8,
   }[skinId] ?? 0xb3261e);
   const tintStrength = skinId === "beta_red_red" ? 0.72
     : skinId === "beta_red_crimson" ? 0.68
@@ -886,6 +908,8 @@ const SEASON_LOBBY_BACKGROUNDS = {
   beta2: "radial-gradient(circle at 50% 38%, rgba(222, 166, 55, 0.42), rgba(24, 13, 5, 0.9) 78%)",
   beta3: "radial-gradient(circle at 50% 38%, rgba(100, 196, 214, 0.38), rgba(7, 22, 28, 0.9) 78%)",
   beta4: "radial-gradient(circle at 50% 38%, rgba(255, 214, 231, 0.38), rgba(17, 37, 40, 0.9) 78%)",
+  beta5: "radial-gradient(circle at 50% 38%, rgba(255, 180, 215, 0.38), rgba(24, 18, 38, 0.9) 78%)",
+  beta6: "radial-gradient(circle at 50% 30%, rgba(72, 218, 235, 0.5), rgba(7, 62, 101, 0.92) 76%)",
 };
 
 const BADGES = {
@@ -1436,6 +1460,7 @@ const CHAR_STAT_BARS = {
   pink:   { hp: 10, atk: 7, range: 3, speed: 10 },
   crimson: { hp: 10, atk: 8, range: 2, speed: 10 },
   gold: { hp: 6, atk: 10, range: 6, speed: 6 },
+  azure: { hp: 10, atk: 9, range: 6, speed: 8 },
 };
 
 function statBar(label, value) {
@@ -2984,6 +3009,11 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
       return group;
     }
   }
+  if (color === CHARACTERS.azure?.color) {
+    ensureAzureFbxLoading(skinId === "beta6_azure_blue_wave_buddy");
+    const source = skinId === "beta6_azure_blue_wave_buddy" ? _azureSkinFbx : _azureFbx;
+    if (source.loop) return buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
+  }
 
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
@@ -3746,6 +3776,8 @@ const _purpleGlb = { start: null, loop: null, end: null };
 const _ivoryGlb = { start: null, loop: null, end: null };
 const _chartreuseGlb = { start: null, loop: null, end: null };
 const _mintFbx = { start: null, loop: null, end: null };
+const _azureFbx = { start: null, loop: null, end: null };
+const _azureSkinFbx = { start: null, loop: null, end: null };
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 let _ivoryPreviewGlb = null;
 
@@ -3986,6 +4018,21 @@ function ensureMintFbxLoading() {
     if (frontModelCharType === "mint") setupFrontModel("mint");
   });
   _fbxLoader.load('./assets/3d/mint/walk-m3e.fbx', asset => { _mintFbx.end = prepareMintFbx(asset); });
+}
+
+let _azureFbxRequested = false;
+let _azureSkinFbxRequested = false;
+function ensureAzureFbxLoading(useSkin = false) {
+  const target = useSkin ? _azureSkinFbx : _azureFbx;
+  if (useSkin ? _azureSkinFbxRequested : _azureFbxRequested) return;
+  if (useSkin) _azureSkinFbxRequested = true; else _azureFbxRequested = true;
+  const folder = useSkin ? "azure/skin-blue-wave-buddy" : "azure";
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx`, (asset) => { target.start = prepareMintFbx(asset); });
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m2l.fbx`, (asset) => {
+    target.loop = prepareMintFbx(asset); refreshLoadedPreviewCharacter("azure");
+    if (frontModelCharType === "azure") setupFrontModel("azure");
+  });
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m3e.fbx`, (asset) => { target.end = prepareMintFbx(asset); });
 }
 
 let _ivoryPreviewGlbRequested = false;
@@ -4581,6 +4628,8 @@ function makeFighter(options) {
     mintIce: 0,
     mintFrozenUntil: 0,
     mintUltimateCharge: 0,
+    azureUltimateCharge: 0,
+    yellowUltimateCharge: 0,
     blueUltimateCharge: 0,
     blueDash: null,
     poisonSourceId: -1,
@@ -4993,11 +5042,13 @@ function clearBattleMap() {
 function createMap(mapData) {
   clearBattleMap();
 
-  const season3Theme = CURRENT_SEASON === "beta3"
+  const season3Theme = CURRENT_SEASON === "beta6"
+    ? { ground: 0xe8d19b, gridMajor: 0x39d5d0, gridMinor: 0x8fc9c4 }
+    : CURRENT_SEASON === "beta3"
     ? { ground: [0xffe8c7, 0xdff6ef, 0xffd6e7][mapData.id % 3], gridMajor: 0xfff7df, gridMinor: 0xb7e7dd }
     : null;
   if (season3Theme) {
-    const sky = [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
+    const sky = CURRENT_SEASON === "beta6" ? 0x54bfe8 : [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
     scene.background = new THREE.Color(sky);
     scene.fog.color.set(sky);
   } else {
@@ -7678,6 +7729,9 @@ function resetGame() {
   }
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
+  if (state.soccerBall) disposeSceneObject(state.soccerBall);
+  state.soccerBall = null;
+  state.soccerMode = false;
   state.goldRushMode = false;
   state.goldRushItems.forEach((item) => disposeSceneObject(item.mesh));
   state.goldRushItems = [];
@@ -7770,6 +7824,32 @@ function startGoldRush() {
   mapNameEl.textContent = "GOLD RUSH · 금 10개를 10초간 지키세요";
 }
 
+function startSoccerKick() {
+  resetGame(); state.goldRushMode = true; state.soccerMode = true; state.freezeUntil = 3;
+  state.soccerEndsAt = 183; state.soccerScore = [0, 0]; state.soccerBallVelocity = new THREE.Vector2();
+  state.players.slice(6).forEach((f) => { f.dead=true; f.mesh.visible=false; f.shadow.visible=false; f.healthBar.visible=false; });
+  state.players.slice(0,6).forEach((f,i)=>{ f.team=i<3?"blue":"red"; f.mesh.position.set((i%3-1)*8,1.85,i<3?-18:18); });
+  state.soccerBall = new THREE.Mesh(new THREE.SphereGeometry(.65,18,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65}));
+  state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent="SOCCER KICK · 3대3 · 2골 선승";
+}
+function endSoccerKick(won) {
+  if(state.gameOver)return; state.gameOver=true; state.running=false; const rewards=recordGameResult(won?1:2);
+  const account=loadAccount(); if(account){account.beta6SoccerStats??={wins:0,losses:0,games:0,goals:0};account.beta6SoccerStats.games++;account.beta6SoccerStats[won?"wins":"losses"]++;account.beta6SoccerStats.goals+=state.soccerScore[0];saveAccount(account);}
+  resultTitle.textContent=won?"SOCCER KICK 승리!":"SOCCER KICK 패배"; resultBody.textContent=`BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED`;
+  resultStats.textContent=`코인 +${rewards.coinsEarned}`; resultStreak.style.display="none"; resultOverlay.style.display="flex"; document.exitPointerLock?.();
+}
+function resetSoccerBall(){state.soccerBall.position.set(0,.7,0);state.soccerBallVelocity.set(0,0);state.freezeUntil=state.gameTime+1.5;}
+function updateSoccerKick(dt){
+  if(!state.soccerMode||!state.soccerBall||state.gameOver)return;
+  if(state.gameTime>=state.soccerEndsAt){if(state.soccerScore[0]===state.soccerScore[1])state.soccerEndsAt+=60;else endSoccerKick(state.soccerScore[0]>state.soccerScore[1]);return;}
+  const ball=state.soccerBall;
+  for(const f of state.players.slice(0,6)){if(f.dead)continue;if(Math.hypot(ball.position.x-f.mesh.position.x,ball.position.z-f.mesh.position.z)<2&&state.gameTime>=(f.soccerKickReadyAt??0)){const yaw=f.isPlayer?f.yaw:Math.atan2(-ball.position.x,(f.team==="blue"?45:-45)-ball.position.z);state.soccerBallVelocity.set(Math.sin(yaw)*24,Math.cos(yaw)*24);f.soccerKickReadyAt=state.gameTime+.65;}}
+  ball.position.x+=state.soccerBallVelocity.x*dt;ball.position.z+=state.soccerBallVelocity.y*dt;state.soccerBallVelocity.multiplyScalar(Math.pow(.985,dt*60));
+  if(Math.abs(ball.position.x)>30){ball.position.x=Math.sign(ball.position.x)*30;state.soccerBallVelocity.x*=-.8;}
+  if(Math.abs(ball.position.z)>40){if(Math.abs(ball.position.x)<7){const blue=ball.position.z>0;state.soccerScore[blue?0:1]++;if(state.soccerScore[blue?0:1]>=2)endSoccerKick(blue);else resetSoccerBall();}else{ball.position.z=Math.sign(ball.position.z)*40;state.soccerBallVelocity.y*=-.8;}}
+  survivorsLabel.textContent=`SOCCER KICK · BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED · ${formatTime(Math.max(0,state.soccerEndsAt-state.gameTime))}`;
+}
+
 function finishGoldRush(winner) {
   if (state.gameOver) return;
   state.gameOver = true;
@@ -7787,6 +7867,7 @@ function finishGoldRush(winner) {
 
 function updateGoldRush(dt) {
   if (!state.goldRushMode || state.gameOver) return;
+  if (state.soccerMode) return;
   if (state.gameTime >= state.goldRushEndsAt) {
     const winner = [...state.players].filter((fighter) => !fighter.dead).sort((a, b) => (b.goldCount ?? 0) - (a.goldCount ?? 0))[0];
     finishGoldRush(winner);
@@ -8325,6 +8406,67 @@ function beginGoldAttack(fighter) {
   return true;
 }
 
+function hitForwardArea(fighter, range, width, damage, knockback = 0) {
+  let hitCount = 0;
+  const sx = Math.sin(fighter.yaw), sz = Math.cos(fighter.yaw);
+  for (const target of state.players) {
+    if (target === fighter || target.dead || (fighter.team && target.team === fighter.team)) continue;
+    const dx = target.mesh.position.x - fighter.mesh.position.x, dz = target.mesh.position.z - fighter.mesh.position.z;
+    const forward = dx * sx + dz * sz, side = dx * sz - dz * sx;
+    if (forward < 0 || forward > range || Math.abs(side) > width / 2 + target.radius) continue;
+    if (applyDamage(target, damage, fighter) <= 0) continue;
+    hitCount++;
+    if (knockback) target.blueKnockback = { x: sx * knockback, z: sz * knockback };
+  }
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, .25, range), new THREE.MeshBasicMaterial({ color: 0x66eaff, transparent: true, opacity: .55 }));
+  mesh.position.set(fighter.mesh.position.x + sx * range / 2, .3, fighter.mesh.position.z + sz * range / 2); mesh.rotation.y = fighter.yaw;
+  scene.add(mesh); state.effects.push({ mesh, life: .3, maxLife: .3, type: "azureWave" });
+  return hitCount;
+}
+
+function beginAzureAttack(fighter) {
+  const def = CHARACTERS.azure;
+  if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) return false;
+  fighter.ammo--; fighter.nextAttackAt = state.gameTime + def.attackCooldown; fighter.attackAnimTime = 0;
+  moveFighter(fighter, new THREE.Vector3(Math.sin(fighter.yaw) * def.surfDashDistance, 0, Math.cos(fighter.yaw) * def.surfDashDistance), 1);
+  if (hitForwardArea(fighter, def.surfLength, def.surfWidth, def.surfDamage)) fighter.azureUltimateCharge = Math.min(def.ultimate.chargeRequired, fighter.azureUltimateCharge + 1);
+  return true;
+}
+
+function tryUseAzureUltimate(fighter) {
+  const def = CHARACTERS.azure.ultimate;
+  if (fighter.azureUltimateCharge < def.chargeRequired) return false;
+  fighter.azureUltimateCharge = 0;
+  hitForwardArea(fighter, def.range, def.width, def.damage, def.knockback);
+  return true;
+}
+
+const mainYellowDevices = [];
+function tryUseYellowUltimate(fighter) {
+  const def = CHARACTERS.yellow.ultimate;
+  if (fighter.yellowUltimateCharge < def.chargeRequired) return false;
+  fighter.yellowUltimateCharge = 0;
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(.4, .5, .35, 10), new THREE.MeshBasicMaterial({ color: 0xffff55 }));
+  mesh.position.set(fighter.mesh.position.x + Math.sin(fighter.yaw) * 6, .2, fighter.mesh.position.z + Math.cos(fighter.yaw) * 6);
+  scene.add(mesh); mainYellowDevices.push({ mesh, owner: fighter });
+  while (mainYellowDevices.length > def.maxDevices) disposeSceneObject(mainYellowDevices.shift().mesh);
+  if (mainYellowDevices.length > 1) {
+    for (let i = 1; i < mainYellowDevices.length; i++) {
+      const a = mainYellowDevices[i-1].mesh.position, b = mainYellowDevices[i].mesh.position;
+      const dx=b.x-a.x, dz=b.z-a.z, len=Math.hypot(dx,dz);
+      const line = new THREE.Mesh(new THREE.BoxGeometry(.18,.18,len),new THREE.MeshBasicMaterial({color:0xffff77,transparent:true,opacity:.8}));
+      line.position.copy(a).lerp(b,.5); line.position.y=.35; line.rotation.y=Math.atan2(dx,dz); scene.add(line);
+      state.effects.push({mesh:line,life:def.circuitDuration,maxLife:def.circuitDuration,type:"yellowCircuit"});
+      for (const target of state.players) {
+        if (target===fighter||target.dead||(fighter.team&&target.team===fighter.team)) continue;
+        const t=THREE.MathUtils.clamp(((target.mesh.position.x-a.x)*dx+(target.mesh.position.z-a.z)*dz)/Math.max(.001,len*len),0,1);
+        if(Math.hypot(target.mesh.position.x-(a.x+dx*t),target.mesh.position.z-(a.z+dz*t))<=def.connectionRadius+target.radius) applyDamage(target,def.connectionDamage,fighter);
+      }
+    }
+  }
+  return true;
+}
+
 function beginAttackCore(fighter) {
   if (state.gameTime < state.freezeUntil || (fighter.mintFrozenUntil ?? 0) > state.gameTime) return false;
   if (fighter.malfunctionUntil > state.gameTime) return false;
@@ -8364,6 +8506,7 @@ function beginAttackCore(fighter) {
   if (fighter.characterType === "mint") {
     return beginMintAttack(fighter);
   }
+  if (fighter.characterType === "azure") return beginAzureAttack(fighter);
   if (fighter.dead || fighter.ammo <= 0 || state.gameTime < fighter.nextAttackAt) {
     return false;
   }
@@ -9702,6 +9845,8 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "blue") return tryUseBlueUltimate(fighter);
   if (fighter.characterType === "mint") return tryUseMintUltimate(fighter);
+  if (fighter.characterType === "azure") return tryUseAzureUltimate(fighter);
+  if (fighter.characterType === "yellow") return tryUseYellowUltimate(fighter);
   if (fighter.characterType === "green") return tryUseGreenUltimate(fighter);
   if (fighter.characterType === "red") return tryUseRedUltimate(fighter);
   if (fighter.characterType === "ivory") return tryUseIvoryUltimate(fighter);
@@ -10266,6 +10411,9 @@ function updateProjectiles(dt) {
             CHARACTERS.cyan.ultimate.chargeRequired,
             attacker.cyanUltimateCharge + 1,
           );
+        }
+        if (proj.isElectric && attacker?.characterType === "yellow" && dealt > 0) {
+          attacker.yellowUltimateCharge = Math.min(CHARACTERS.yellow.ultimate.chargeRequired, attacker.yellowUltimateCharge + 1);
         }
         if (proj.isBoomerang && attacker?.characterType === "green" && dealt > 0) {
           attacker.greenUltimateCharge = Math.min(
@@ -12439,6 +12587,8 @@ function updateHud() {
       : player.characterType === "gold" ? (player.goldUltimateCharge ?? 0)
       : player.characterType === "pink" ? (player.pinkUltimateCharge ?? 0)
       : player.characterType === "chartreuse" ? (player.chartreuseUltimateCharge ?? 0)
+      : player.characterType === "yellow" ? (player.yellowUltimateCharge ?? 0)
+      : player.characterType === "azure" ? (player.azureUltimateCharge ?? 0)
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
@@ -12933,6 +13083,7 @@ function animate() {
       updateMintIndicators();
       updatePoisonTicks();
       updateGoldRush(dt);
+      updateSoccerKick(dt);
       if (usesZone) {
         if (!mpConfig || mpConfig.isHost) updateZoneDamage(dt, zone);
       }
@@ -13819,6 +13970,9 @@ if (window.location.hash === "#chop-wood") {
     modeSelector.classList.add("hidden");
     startBattleBtn.classList.remove("active");
     startGoldRush();
+  });
+  modeSoccerBtn?.addEventListener("click", async () => {
+    await initAudio(); modeSelector.classList.add("hidden"); startBattleBtn.classList.remove("active"); startSoccerKick();
   });
 
   // 훈련장 시작
