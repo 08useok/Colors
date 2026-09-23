@@ -2317,6 +2317,7 @@ const state = {
   goldRushItems: [],
   goldRushNextSpawnAt: 0,
   goldRushHoldStartedAt: 0,
+  soccerSolids: [],
   malfunctionZones: [],
   teams: null,
   playerTeam: null,
@@ -2336,6 +2337,9 @@ showdownMapGroup.visible = false;
 const takedownMapGroup = new THREE.Group();
 scene.add(takedownMapGroup);
 takedownMapGroup.visible = false;
+const soccerMapGroup = new THREE.Group();
+scene.add(soccerMapGroup);
+soccerMapGroup.visible = false;
 
 const tempVec3 = new THREE.Vector3();
 const tempVec32 = new THREE.Vector3();
@@ -5136,6 +5140,117 @@ function clearBattleMap() {
   state.battleBushes = [];
 }
 
+const SOCCER_FIELD_HALF_WIDTH = 30;
+const SOCCER_FIELD_HALF_LENGTH = 40;
+const SOCCER_GOAL_HALF_WIDTH = 7;
+const SOCCER_BLUE_SPAWNS = [[-9, -22], [0, -16], [9, -22]];
+const SOCCER_RED_SPAWNS = [[-9, 22], [0, 16], [9, 22]];
+
+function clearSoccerKickMap() {
+  soccerMapGroup.traverse((object) => {
+    object.geometry?.dispose?.();
+    if (!object.material) return;
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    materials.forEach((material) => material.dispose?.());
+  });
+  soccerMapGroup.clear();
+  state.soccerSolids = [];
+}
+
+function createSoccerKickMap() {
+  clearSoccerKickMap();
+  scene.background = new THREE.Color(0x58c9e8);
+  scene.fog.color.set(0x58c9e8);
+  createGround(soccerMapGroup, { ground: 0xe8cf91, gridMajor: 0xf7e5b5, gridMinor: 0xd5b978 });
+
+  const field = new THREE.Mesh(
+    new THREE.PlaneGeometry(SOCCER_FIELD_HALF_WIDTH * 2, SOCCER_FIELD_HALF_LENGTH * 2),
+    new THREE.MeshStandardMaterial({ color: 0x35b99a, roughness: 0.88, metalness: 0.02 }),
+  );
+  field.rotation.x = -Math.PI / 2;
+  field.position.y = 0.025;
+  field.receiveShadow = true;
+  soccerMapGroup.add(field);
+
+  const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xf4fff8 });
+  const addLine = (x, z, width, depth) => {
+    const line = new THREE.Mesh(new THREE.BoxGeometry(width, 0.035, depth), lineMaterial);
+    line.position.set(x, 0.065, z);
+    soccerMapGroup.add(line);
+  };
+  addLine(0, 0, SOCCER_FIELD_HALF_WIDTH * 2, 0.22);
+  addLine(-SOCCER_FIELD_HALF_WIDTH, 0, 0.22, SOCCER_FIELD_HALF_LENGTH * 2);
+  addLine(SOCCER_FIELD_HALF_WIDTH, 0, 0.22, SOCCER_FIELD_HALF_LENGTH * 2);
+  addLine(0, -SOCCER_FIELD_HALF_LENGTH, SOCCER_FIELD_HALF_WIDTH * 2, 0.22);
+  addLine(0, SOCCER_FIELD_HALF_LENGTH, SOCCER_FIELD_HALF_WIDTH * 2, 0.22);
+  for (const side of [-1, 1]) {
+    addLine(-11, side * 31, 0.2, 18);
+    addLine(11, side * 31, 0.2, 18);
+    addLine(0, side * 22, 22, 0.2);
+  }
+  const centerCircle = new THREE.Mesh(
+    new THREE.RingGeometry(6.8, 7.05, 64),
+    new THREE.MeshBasicMaterial({ color: 0xf4fff8, side: THREE.DoubleSide }),
+  );
+  centerCircle.rotation.x = -Math.PI / 2;
+  centerCircle.position.y = 0.07;
+  soccerMapGroup.add(centerCircle);
+  const kickoffSpot = new THREE.Mesh(new THREE.CircleGeometry(0.35, 20), lineMaterial);
+  kickoffSpot.rotation.x = -Math.PI / 2;
+  kickoffSpot.position.y = 0.071;
+  soccerMapGroup.add(kickoffSpot);
+
+  const railColor = 0x168b96;
+  createWall(-31, 0, 2, 84, 1.3, soccerMapGroup, state.soccerSolids, railColor);
+  createWall(31, 0, 2, 84, 1.3, soccerMapGroup, state.soccerSolids, railColor);
+  for (const z of [-41, 41]) {
+    createWall(-19, z, 24, 2, 1.3, soccerMapGroup, state.soccerSolids, railColor);
+    createWall(19, z, 24, 2, 1.3, soccerMapGroup, state.soccerSolids, railColor);
+  }
+
+  const goalMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.42, metalness: 0.18 });
+  const netMaterial = new THREE.MeshBasicMaterial({ color: 0xbcefff, transparent: true, opacity: 0.28, side: THREE.DoubleSide });
+  for (const side of [-1, 1]) {
+    const z = side * 40.7;
+    for (const x of [-SOCCER_GOAL_HALF_WIDTH, SOCCER_GOAL_HALF_WIDTH]) {
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 3.3, 12), goalMaterial);
+      post.position.set(x, 1.65, z);
+      soccerMapGroup.add(post);
+    }
+    const crossbar = new THREE.Mesh(new THREE.BoxGeometry(SOCCER_GOAL_HALF_WIDTH * 2.08, 0.35, 0.35), goalMaterial);
+    crossbar.position.set(0, 3.25, z);
+    soccerMapGroup.add(crossbar);
+    const net = new THREE.Mesh(new THREE.BoxGeometry(SOCCER_GOAL_HALF_WIDTH * 2, 3, 0.08), netMaterial);
+    net.position.set(0, 1.5, side * 44.5);
+    soccerMapGroup.add(net);
+    const goalFloor = new THREE.Mesh(new THREE.PlaneGeometry(SOCCER_GOAL_HALF_WIDTH * 2, 3.8), netMaterial);
+    goalFloor.rotation.x = -Math.PI / 2;
+    goalFloor.position.set(0, 0.08, side * 42.5);
+    soccerMapGroup.add(goalFloor);
+  }
+
+  const standMaterial = new THREE.MeshStandardMaterial({ color: 0x126e79, roughness: 0.72 });
+  for (const x of [-39, 39]) {
+    const stand = new THREE.Mesh(new THREE.BoxGeometry(10, 3.5, 58), standMaterial);
+    stand.position.set(x, 1.6, 0);
+    soccerMapGroup.add(stand);
+  }
+  const lampMaterial = new THREE.MeshStandardMaterial({ color: 0xfff4b0, emissive: 0xffc84a, emissiveIntensity: 1.2 });
+  for (const x of [-34, 34]) for (const z of [-34, 34]) {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.2, 8, 8), goalMaterial);
+    pole.position.set(x, 4, z);
+    soccerMapGroup.add(pole);
+    const lamp = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.55, 0.35), lampMaterial);
+    lamp.position.set(x, 8, z);
+    lamp.rotation.y = x * z > 0 ? -0.35 : 0.35;
+    soccerMapGroup.add(lamp);
+  }
+
+  state.solids = state.soccerSolids;
+  state.lakeRects = [];
+  state.bushes = [];
+}
+
 function createMap(mapData) {
   clearBattleMap();
 
@@ -6580,6 +6695,7 @@ function startChopWood() {
   showdownMapGroup.visible = false;
   chopWoodMapGroup.visible = true;
   takedownMapGroup.visible = false;
+  soccerMapGroup.visible = false;
   scene.background = new THREE.Color(0xc98353);
   scene.fog.color.set(0xc98353);
   state.chopWoodMode = true;
@@ -7779,6 +7895,7 @@ function exitTraining() {
   battleMapGroup.visible = false;
   trainingMapGroup.visible = false;
   takedownMapGroup.visible = false;
+  soccerMapGroup.visible = false;
   mapNameEl.classList.add("hidden");
   exitTrainingBtn.classList.add("hidden");
 
@@ -7818,6 +7935,7 @@ function resetGame() {
   trainingMapGroup.visible = false;
   showdownMapGroup.visible = useIceCreamShowdown;
   takedownMapGroup.visible = false;
+  soccerMapGroup.visible = false;
   // 쇼다운 진입 때 맵 그룹의 자식(벽 포함)이 이전 모드 상태로 숨겨지지 않도록 보장한다.
   if (useIceCreamShowdown) showdownMapGroup.traverse((node) => { node.visible = true; });
   if (useIceCreamShowdown) {
@@ -7922,10 +8040,13 @@ function startGoldRush() {
 }
 
 function startSoccerKick() {
-  resetGame(); state.goldRushMode = true; state.soccerMode = true; state.freezeUntil = 3;
+  resetGame();
+  battleMapGroup.visible = false; trainingMapGroup.visible = false; showdownMapGroup.visible = false; takedownMapGroup.visible = false;
+  createSoccerKickMap(); soccerMapGroup.visible = true;
+  state.goldRushMode = true; state.soccerMode = true; state.freezeUntil = 3;
   state.soccerEndsAt = 183; state.soccerScore = [0, 0]; state.soccerBallVelocity = new THREE.Vector2();
   state.players.slice(6).forEach((f) => { f.dead=true; f.mesh.visible=false; f.shadow.visible=false; f.healthBar.visible=false; });
-  state.players.slice(0,6).forEach((f,i)=>{ f.team=i<3?"blue":"red"; f.mesh.position.set((i%3-1)*8,1.85,i<3?-18:18); });
+  state.players.slice(0,6).forEach((f,i)=>{ const blue=i<3; const spawn=(blue?SOCCER_BLUE_SPAWNS:SOCCER_RED_SPAWNS)[i%3]; f.team=blue?"blue":"red"; f.mesh.position.set(spawn[0],1.85,spawn[1]); f.shadow.position.set(spawn[0],0.04,spawn[1]); });
   state.soccerBall = new THREE.Mesh(new THREE.SphereGeometry(.65,18,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65}));
   state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent="SOCCER KICK · 3대3 · 2골 선승";
 }
@@ -7942,8 +8063,8 @@ function updateSoccerKick(dt){
   const ball=state.soccerBall;
   for(const f of state.players.slice(0,6)){if(f.dead)continue;if(Math.hypot(ball.position.x-f.mesh.position.x,ball.position.z-f.mesh.position.z)<2&&state.gameTime>=(f.soccerKickReadyAt??0)){const yaw=f.isPlayer?f.yaw:Math.atan2(-ball.position.x,(f.team==="blue"?45:-45)-ball.position.z);state.soccerBallVelocity.set(Math.sin(yaw)*24,Math.cos(yaw)*24);f.soccerKickReadyAt=state.gameTime+.65;}}
   ball.position.x+=state.soccerBallVelocity.x*dt;ball.position.z+=state.soccerBallVelocity.y*dt;state.soccerBallVelocity.multiplyScalar(Math.pow(.985,dt*60));
-  if(Math.abs(ball.position.x)>30){ball.position.x=Math.sign(ball.position.x)*30;state.soccerBallVelocity.x*=-.8;}
-  if(Math.abs(ball.position.z)>40){if(Math.abs(ball.position.x)<7){const blue=ball.position.z>0;state.soccerScore[blue?0:1]++;if(state.soccerScore[blue?0:1]>=2)endSoccerKick(blue);else resetSoccerBall();}else{ball.position.z=Math.sign(ball.position.z)*40;state.soccerBallVelocity.y*=-.8;}}
+  if(Math.abs(ball.position.x)>SOCCER_FIELD_HALF_WIDTH){ball.position.x=Math.sign(ball.position.x)*SOCCER_FIELD_HALF_WIDTH;state.soccerBallVelocity.x*=-.8;}
+  if(Math.abs(ball.position.z)>SOCCER_FIELD_HALF_LENGTH){if(Math.abs(ball.position.x)<SOCCER_GOAL_HALF_WIDTH){const blue=ball.position.z>0;state.soccerScore[blue?0:1]++;if(state.soccerScore[blue?0:1]>=2)endSoccerKick(blue);else resetSoccerBall();}else{ball.position.z=Math.sign(ball.position.z)*SOCCER_FIELD_HALF_LENGTH;state.soccerBallVelocity.y*=-.8;}}
   survivorsLabel.textContent=`SOCCER KICK · BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED · ${formatTime(Math.max(0,state.soccerEndsAt-state.gameTime))}`;
 }
 
@@ -12913,10 +13034,15 @@ function updateChopWoodRespawn() {
       if (fighter.axeIndicator) {
         fighter.axeIndicator.material.color.setHex(AXE_GRADES[0].color);
       }
-      const spawns = state.goldRushMode ? MAP_POOL[state.currentMapId].spawns : (fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B);
+      const spawns = state.soccerMode
+        ? (fighter.team === "blue" ? SOCCER_BLUE_SPAWNS : SOCCER_RED_SPAWNS)
+        : state.goldRushMode ? MAP_POOL[state.currentMapId].spawns
+        : (fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B);
       const spawn = spawns[Math.floor(Math.random() * spawns.length)];
-      fighter.mesh.position.set(spawn.x, 1.85, spawn.z);
-      fighter.shadow.position.set(spawn.x, 0.04, spawn.z);
+      const spawnX = spawn.x ?? spawn[0];
+      const spawnZ = spawn.z ?? spawn[2] ?? spawn[1];
+      fighter.mesh.position.set(spawnX, 1.85, spawnZ);
+      fighter.shadow.position.set(spawnX, 0.04, spawnZ);
     }
   }
 }
