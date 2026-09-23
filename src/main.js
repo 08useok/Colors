@@ -4785,7 +4785,8 @@ function makeFighter(options) {
 }
 
 function addTeamMarker(fighter, team) {
-  const color = team === "a" ? 0x4488ff : 0xff4444;
+  const blueTeam = team === "a" || team === "blue";
+  const color = blueTeam ? 0x4488ff : 0xff4444;
   const marker = new THREE.Mesh(
     new THREE.CircleGeometry(0.28, 12),
     new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
@@ -4795,8 +4796,17 @@ function addTeamMarker(fighter, team) {
   fighter.mesh.add(marker);
   fighter.teamMarker = marker;
 
-  const nameColor = team === "a" ? "#4488ff" : "#ff4444";
+  const nameColor = blueTeam ? "#4488ff" : "#ff4444";
   fighter.teamNameColor = nameColor;
+}
+
+function areSameTeam(first, second) {
+  return Boolean(
+    first && second
+    && (state.chopWoodMode || state.soccerMode)
+    && first.team != null
+    && first.team === second.team
+  );
 }
 
 function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr = state.solids, color = 0xb77658, angle = 0) {
@@ -6237,6 +6247,23 @@ function syncMp(dt) {
         })
         .filter(Boolean),
     });
+  } else if (sendBossState && mpConfig.isHost && mpConfig.mode === "soccer" && state.soccerBall) {
+    mp.relay("SKSTATE", {
+      ballX: state.soccerBall.position.x,
+      ballZ: state.soccerBall.position.z,
+      ballVx: state.soccerBallVelocity.x,
+      ballVz: state.soccerBallVelocity.y,
+      score: state.soccerScore,
+      endsAt: state.soccerEndsAt,
+      players: state.players.slice(0, 6).map((f) => ({
+        id: f.networkId ?? f.syncId,
+        x: f.mesh.position.x,
+        z: f.mesh.position.z,
+        yaw: f.mesh.rotation.y,
+        health: f.health,
+        dead: !!f.dead,
+      })).filter((f) => f.id),
+    });
   } else if (sendBossState && mpConfig.isHost && mpConfig.mode === "chopwood" && state.teams) {
     mp.relay("CWSTATE", {
       treeA: state.teams.a.tree.health,
@@ -6382,12 +6409,41 @@ function setupMpHandlers() {
       if (!target || target.dead || target.networkId === msg.fromId) return;
       const maxDamage = Math.max(3500, CHARACTERS[attacker.characterType]?.healCircleDamage || 0);
       applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
-    } else if (msg.relayType === "SD_DAMAGE" && mpConfig?.isHost && mpConfig.mode === "showdown") {
+    } else if (msg.relayType === "SD_DAMAGE" && mpConfig?.isHost && ["showdown", "soccer"].includes(mpConfig.mode)) {
       const attacker = mpNetFighters[msg.fromId];
       const target = state.players.find((f) => (f.networkId ?? f.syncId) === msg.target);
       if (!attacker || attacker.dead || !target || target.dead || (target.networkId ?? target.syncId) === msg.fromId) return;
       const maxDamage = Math.max(3500, CHARACTERS[attacker.characterType]?.healCircleDamage || 0);
       applyDamage(target, Math.min(Math.max(0, Number(msg.amount) || 0), maxDamage), attacker);
+    } else if (msg.relayType === "SK_END" && !mpConfig?.isHost && mpConfig?.mode === "soccer") {
+      if (msg.winningTeam === "blue" || msg.winningTeam === "red") endSoccerKick(msg.winningTeam, false);
+    } else if (msg.relayType === "SKSTATE" && !mpConfig?.isHost && mpConfig?.mode === "soccer") {
+      if (state.soccerBall && Number.isFinite(msg.ballX) && Number.isFinite(msg.ballZ)) {
+        state.soccerBall.position.set(msg.ballX, 0.7, msg.ballZ);
+        state.soccerBallVelocity.set(Number(msg.ballVx) || 0, Number(msg.ballVz) || 0);
+      }
+      if (Array.isArray(msg.score) && msg.score.length >= 2) {
+        state.soccerScore = [Math.max(0, Number(msg.score[0]) || 0), Math.max(0, Number(msg.score[1]) || 0)];
+      }
+      if (Number.isFinite(msg.endsAt)) state.soccerEndsAt = msg.endsAt;
+      for (const playerState of msg.players || []) {
+        const fighter = playerState.id === mp.myId ? getPlayer() : mpNetFighters[playerState.id];
+        if (!fighter) continue;
+        fighter.health = Math.max(0, Math.min(fighter.maxHealth, Number(playerState.health) || 0));
+        fighter.dead = !!playerState.dead;
+        fighter.mesh.visible = !fighter.dead;
+        fighter.shadow.visible = !fighter.dead;
+        if (fighter.healthBar) fighter.healthBar.visible = !fighter.dead;
+        if (!fighter.isPlayer && Number.isFinite(playerState.x) && Number.isFinite(playerState.z)) {
+          fighter.netTargetX = playerState.x;
+          fighter.netTargetZ = playerState.z;
+          fighter.netTargetYaw = Number(playerState.yaw) || 0;
+          fighter.netVelocityX = 0;
+          fighter.netVelocityZ = 0;
+          fighter.netReceivedAt = performance.now() / 1000;
+          fighter.netStateReady = true;
+        }
+      }
     } else if (msg.relayType === "CWSTATE" && !mpConfig?.isHost && mpConfig?.mode === "chopwood") {
       if (state.teams) {
         state.teams.a.tree.health = Math.max(0, Number(msg.treeA) || 0);
@@ -6622,7 +6678,8 @@ async function enterMatchmaking(mode = "takedown") {
   matchmakingOverlay.classList.remove("hidden");
   document.querySelector("#matchmaking-overlay h2").textContent = mode === "showdown"
     ? t("mmShowdownTitle")
-    : mode === "chopwood" ? `${t("chopWood")} 매칭` : t("mmTitle");
+    : mode === "chopwood" ? `${t("chopWood")} 매칭`
+    : mode === "soccer" ? "SOCCER KICK 매칭" : t("mmTitle");
   matchmakingStatus.textContent = t("mmConnecting");
   matchmakingCountdown.classList.add("hidden");
   matchmakingCountdown.textContent = "";
@@ -6671,6 +6728,8 @@ async function enterMatchmaking(mode = "takedown") {
       resetGame();
     } else if (mpConfig.mode === "chopwood") {
       startChopWood();
+    } else if (mpConfig.mode === "soccer") {
+      startSoccerKick();
     } else {
       startTakeDown();
     }
@@ -7671,9 +7730,13 @@ function initPlayers() {
 
   const mapData = MAP_POOL[state.currentMapId];
   let spawns = mapData.spawns.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  const isSoccerMatch = mpConfig?.mode === "soccer";
   const isShowdown = showdownMapGroup.visible || mpConfig?.mode === "showdown";
 
-  if (isShowdown) {
+  if (isSoccerMatch) {
+    spawns = [...SOCCER_BLUE_SPAWNS, ...SOCCER_RED_SPAWNS]
+      .map(([x, z]) => new THREE.Vector3(x, 0, z));
+  } else if (isShowdown) {
     // 외곽 8개를 먼저 배치해 로컬 플레이어(index 0)가 중앙에서 AI와 붙어
     // 시작하지 않게 한다. 마지막 2개 슬롯만 중앙 양쪽에 배치한다.
     // 모서리 장식물(±35, ±35)과 겹치지 않도록 외곽 좌표는 벽을 따라 분산한다.
@@ -7686,7 +7749,7 @@ function initPlayers() {
 
   // 단독 쇼다운은 위 고정 스폰을 사용하되 로컬 AI 생성 경로로 내려간다.
   // 실제 네트워크 참가 정보가 남아 있을 때만 동기화 스폰을 계산한다.
-  if (mpConfig?.mode === "showdown") {
+  if (mpConfig?.mode === "showdown" || isSoccerMatch) {
     let seed = 2166136261;
     const seedText = mpConfig.spawnSeed || `${mpConfig.hostId}:${state.currentMapId}:${mpConfig.players.map((p) => p.id).join(",")}`;
     for (let i = 0; i < seedText.length; i += 1) {
@@ -7708,7 +7771,7 @@ function initPlayers() {
       }
       return result;
     };
-    spawns = shuffle(spawns);
+    if (!isSoccerMatch) spawns = shuffle(spawns);
     Object.keys(mpNetFighters).forEach((key) => delete mpNetFighters[key]);
     mpLastSync = 0;
     mpBossLastSync = 0;
@@ -8043,15 +8106,24 @@ function startSoccerKick() {
   resetGame();
   battleMapGroup.visible = false; trainingMapGroup.visible = false; showdownMapGroup.visible = false; takedownMapGroup.visible = false;
   createSoccerKickMap(); soccerMapGroup.visible = true;
-  state.goldRushMode = true; state.soccerMode = true; state.freezeUntil = 3;
+  state.goldRushMode = true; state.soccerMode = true; state.mode = "soccer"; state.freezeUntil = 3;
   state.soccerEndsAt = 183; state.soccerScore = [0, 0]; state.soccerBallVelocity = new THREE.Vector2();
   state.players.slice(6).forEach((f) => { f.dead=true; f.mesh.visible=false; f.shadow.visible=false; f.healthBar.visible=false; });
-  state.players.slice(0,6).forEach((f,i)=>{ const blue=i<3; const spawn=(blue?SOCCER_BLUE_SPAWNS:SOCCER_RED_SPAWNS)[i%3]; f.team=blue?"blue":"red"; f.mesh.position.set(spawn[0],1.85,spawn[1]); f.shadow.position.set(spawn[0],0.04,spawn[1]); });
+  state.players.slice(0,6).forEach((f,i)=>{
+    const blue=i<3; const spawn=(blue?SOCCER_BLUE_SPAWNS:SOCCER_RED_SPAWNS)[i%3];
+    f.team=blue?"blue":"red";
+    f.mesh.position.set(spawn[0],1.85,spawn[1]); f.shadow.position.set(spawn[0],0.04,spawn[1]);
+    addTeamMarker(f, f.team);
+  });
+  state.playerTeam = getPlayer()?.team ?? "blue";
   state.soccerBall = new THREE.Mesh(new THREE.SphereGeometry(.65,18,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65}));
   state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent="SOCCER KICK · 3대3 · 2골 선승";
 }
-function endSoccerKick(won) {
-  if(state.gameOver)return; state.gameOver=true; state.running=false; const rewards=recordGameResult(won?1:2);
+function endSoccerKick(winningTeam, relayResult = true) {
+  if(state.gameOver)return;
+  const won = winningTeam === state.playerTeam;
+  if (relayResult && mpConfig?.mode === "soccer" && mpConfig.isHost) mp.relay("SK_END", { winningTeam });
+  state.gameOver=true; state.running=false; const rewards=recordGameResult(won?1:2);
   const account=loadAccount(); if(account){account.beta6SoccerStats??={wins:0,losses:0,games:0,goals:0};account.beta6SoccerStats.games++;account.beta6SoccerStats[won?"wins":"losses"]++;account.beta6SoccerStats.goals+=state.soccerScore[0];saveAccount(account);}
   resultTitle.textContent=won?"SOCCER KICK 승리!":"SOCCER KICK 패배"; resultBody.textContent=`BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED`;
   resultStats.textContent=`코인 +${rewards.coinsEarned}`; resultStreak.style.display="none"; resultOverlay.style.display="flex"; document.exitPointerLock?.();
@@ -8059,12 +8131,13 @@ function endSoccerKick(won) {
 function resetSoccerBall(){state.soccerBall.position.set(0,.7,0);state.soccerBallVelocity.set(0,0);state.freezeUntil=state.gameTime+1.5;}
 function updateSoccerKick(dt){
   if(!state.soccerMode||!state.soccerBall||state.gameOver)return;
-  if(state.gameTime>=state.soccerEndsAt){if(state.soccerScore[0]===state.soccerScore[1])state.soccerEndsAt+=60;else endSoccerKick(state.soccerScore[0]>state.soccerScore[1]);return;}
+  if(mpConfig?.mode==="soccer"&&!mpConfig.isHost){survivorsLabel.textContent=`SOCCER KICK · BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED · ${formatTime(Math.max(0,state.soccerEndsAt-state.gameTime))}`;return;}
+  if(state.gameTime>=state.soccerEndsAt){if(state.soccerScore[0]===state.soccerScore[1])state.soccerEndsAt+=60;else endSoccerKick(state.soccerScore[0]>state.soccerScore[1]?"blue":"red");return;}
   const ball=state.soccerBall;
   for(const f of state.players.slice(0,6)){if(f.dead)continue;if(Math.hypot(ball.position.x-f.mesh.position.x,ball.position.z-f.mesh.position.z)<2&&state.gameTime>=(f.soccerKickReadyAt??0)){const yaw=f.isPlayer?f.yaw:Math.atan2(-ball.position.x,(f.team==="blue"?45:-45)-ball.position.z);state.soccerBallVelocity.set(Math.sin(yaw)*24,Math.cos(yaw)*24);f.soccerKickReadyAt=state.gameTime+.65;}}
   ball.position.x+=state.soccerBallVelocity.x*dt;ball.position.z+=state.soccerBallVelocity.y*dt;state.soccerBallVelocity.multiplyScalar(Math.pow(.985,dt*60));
   if(Math.abs(ball.position.x)>SOCCER_FIELD_HALF_WIDTH){ball.position.x=Math.sign(ball.position.x)*SOCCER_FIELD_HALF_WIDTH;state.soccerBallVelocity.x*=-.8;}
-  if(Math.abs(ball.position.z)>SOCCER_FIELD_HALF_LENGTH){if(Math.abs(ball.position.x)<SOCCER_GOAL_HALF_WIDTH){const blue=ball.position.z>0;state.soccerScore[blue?0:1]++;if(state.soccerScore[blue?0:1]>=2)endSoccerKick(blue);else resetSoccerBall();}else{ball.position.z=Math.sign(ball.position.z)*SOCCER_FIELD_HALF_LENGTH;state.soccerBallVelocity.y*=-.8;}}
+  if(Math.abs(ball.position.z)>SOCCER_FIELD_HALF_LENGTH){if(Math.abs(ball.position.x)<SOCCER_GOAL_HALF_WIDTH){const blue=ball.position.z>0;const scoringTeam=blue?"blue":"red";state.soccerScore[blue?0:1]++;if(state.soccerScore[blue?0:1]>=2)endSoccerKick(scoringTeam);else resetSoccerBall();}else{ball.position.z=Math.sign(ball.position.z)*SOCCER_FIELD_HALF_LENGTH;state.soccerBallVelocity.y*=-.8;}}
   survivorsLabel.textContent=`SOCCER KICK · BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED · ${formatTime(Math.max(0,state.soccerEndsAt-state.gameTime))}`;
 }
 
@@ -8470,7 +8543,7 @@ function resolveCrimsonPunch(attacker, hitIndex, damage) {
 
   for (const target of state.players) {
     if (target.id === attacker.id || target.dead) continue;
-    if (state.chopWoodMode && target.team === attacker.team) continue;
+    if (areSameTeam(target, attacker)) continue;
 
     const deltaX = target.mesh.position.x - attacker.mesh.position.x;
     const deltaZ = target.mesh.position.z - attacker.mesh.position.z;
@@ -8602,7 +8675,7 @@ function applyGoldProjectileHit(proj, target, fighter) {
   if (proj.goldStage === 1) {
     for (const other of state.players) {
       if (other.dead || other.id === fighter.id) continue;
-      if (state.chopWoodMode && other.team === fighter.team) continue;
+      if (areSameTeam(other, fighter)) continue;
       if (Math.hypot(other.mesh.position.x - target.mesh.position.x, other.mesh.position.z - target.mesh.position.z) <= CHARACTERS.gold.stage1SplashRadius) dealStage(other);
     }
   }
@@ -8767,7 +8840,7 @@ function findAutoAimTarget(player) {
   let bestDistance = Infinity;
   for (const fighter of state.players) {
     if (fighter.id === player.id || fighter.dead) continue;
-    if (state.chopWoodMode && fighter.team === player.team) continue;
+    if (areSameTeam(fighter, player)) continue;
     if (!isFighterVisible(player, fighter)) continue;
     const dx = fighter.mesh.position.x - player.mesh.position.x;
     const dz = fighter.mesh.position.z - player.mesh.position.z;
@@ -9109,7 +9182,7 @@ function updateMintZones(dt) {
     if (tick) zone.nextTickAt += 1;
     const speed = def.slideStrength + def.slideAcceleration * (state.gameTime - zone.startedAt);
     for (const target of state.players) {
-      if (target.dead || target.id === owner.id || (state.chopWoodMode && target.team === owner.team)) continue;
+      if (target.dead || target.id === owner.id || areSameTeam(target, owner)) continue;
       const dx = target.mesh.position.x - zone.x, dz = target.mesh.position.z - zone.z;
       const distance = Math.hypot(dx, dz);
       if (distance > def.radius) continue;
@@ -9428,7 +9501,7 @@ function spawnBombSplash(x, z, ownerId, directHitTargetId) {
   const blastR2 = blastR * blastR;
   for (const target of state.players) {
     if (target.dead || target.id === ownerId) continue;
-    if (state.chopWoodMode && owner && target.team === owner.team) continue;
+    if (areSameTeam(target, owner)) continue;
     const dx = target.mesh.position.x - x;
     const dz = target.mesh.position.z - z;
     if (dx * dx + dz * dz <= blastR2) {
@@ -9639,7 +9712,7 @@ function autoAimCyanUltimate(fighter, range) {
   let nearestDistance = range;
   for (const target of state.players) {
     if (target.id === fighter.id || target.dead) continue;
-    if (state.chopWoodMode && target.team === fighter.team) continue;
+    if (areSameTeam(target, fighter)) continue;
     const dx = target.mesh.position.x - fighter.mesh.position.x;
     const dz = target.mesh.position.z - fighter.mesh.position.z;
     const distance = Math.hypot(dx, dz);
@@ -9777,7 +9850,7 @@ function tryUseCrimsonUltimate(fighter = getPlayer()) {
 
   for (const target of state.players) {
     if (target.id === fighter.id || target.dead) continue;
-    if (state.chopWoodMode && target.team === fighter.team) continue;
+    if (areSameTeam(target, fighter)) continue;
     const dx = target.mesh.position.x - centerX;
     const dz = target.mesh.position.z - centerZ;
     const forwardDistance = Math.abs(dx * forwardX + dz * forwardZ);
@@ -10039,7 +10112,7 @@ function updateBlueDashes(dt) {
         pos.x = nextX; pos.z = nextZ;
       }
       for (const target of state.players) {
-        if (target.dead || target.id === fighter.id || dash.hits.has(target.id) || (state.chopWoodMode && target.team === fighter.team)) continue;
+        if (target.dead || target.id === fighter.id || dash.hits.has(target.id) || areSameTeam(target, fighter)) continue;
         if (Math.hypot(target.mesh.position.x - pos.x, target.mesh.position.z - pos.z) > def.hitRadius) continue;
         dash.hits.add(target.id);
         applyDamage(target, def.damage, fighter);
@@ -10131,7 +10204,7 @@ function beginHealCircleAttack(fighter) {
     const dz = target.mesh.position.z - fz;
     if (dx * dx + dz * dz > r2) continue;
 
-    const isAlly = state.chopWoodMode && target.team === fighter.team;
+    const isAlly = areSameTeam(target, fighter);
     if (isAlly) {
       const healDebuff = (target.poisonUntil && target.poisonUntil > state.gameTime) ? 0.5 : 1;
       const healAmount = charDef.healCircleHeal * healDebuff;
@@ -10144,7 +10217,7 @@ function beginHealCircleAttack(fighter) {
       }
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
       if (fighter.isPlayer || target.isPlayer) audio.play("heal");
-    } else if (!state.chopWoodMode || target.team !== fighter.team) {
+    } else if (!areSameTeam(target, fighter)) {
       applyDamage(target, charDef.healCircleDamage, fighter);
       fighter.pinkUltimateCharge = Math.min(CHARACTERS.pink.ultimate.chargeRequired, (fighter.pinkUltimateCharge ?? 0) + 1);
       if (fighter.isPlayer) {
@@ -10332,7 +10405,7 @@ function spawnVialSplash(x, z, ownerId) {
   const attacker = state.players.find((p) => p.id === ownerId);
   for (const target of state.players) {
     if (target.id === ownerId || target.dead) continue;
-    if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
+    if (areSameTeam(target, attacker)) continue;
     const dx = target.mesh.position.x - x;
     const dz = target.mesh.position.z - z;
     if (dx * dx + dz * dz < charDef.vialSplashRadius * charDef.vialSplashRadius) {
@@ -10544,7 +10617,7 @@ function updateProjectiles(dt) {
       const forwardZ = proj.vz / directionLength;
       for (const target of state.players) {
         if (target.id === proj.ownerId || target.dead || proj.hitTargetIds.has(target.id)) continue;
-        if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
+        if (areSameTeam(target, attacker)) continue;
         const dx = target.mesh.position.x - proj.x;
         const dz = target.mesh.position.z - proj.z;
         const forwardDistance = Math.abs(dx * forwardX + dz * forwardZ);
@@ -10574,7 +10647,7 @@ function updateProjectiles(dt) {
       let resolved = false;
       for (const target of state.players) {
         if (!attacker || target.id === proj.ownerId || target.dead) continue;
-        if (state.chopWoodMode && target.team === attacker.team) continue;
+        if (areSameTeam(target, attacker)) continue;
         const dx = target.mesh.position.x - proj.x;
         const dz = target.mesh.position.z - proj.z;
         const hitRadius = target.radius + proj.projRadius;
@@ -10599,7 +10672,7 @@ function updateProjectiles(dt) {
         continue;
       }
       if (proj.hitTargetIds?.has(target.id)) continue;
-      if (state.chopWoodMode && attacker && target.team === attacker.team) continue;
+      if (areSameTeam(target, attacker)) continue;
       const dx = target.mesh.position.x - proj.x;
       const dz = target.mesh.position.z - proj.z;
       const hitDist = target.radius + (proj.projRadius || 0);
@@ -10770,7 +10843,7 @@ function updateIvoryZones() {
     const owner = state.players.find((fighter) => fighter.id === zone.ownerId);
     for (const target of state.players) {
       if (target.dead || target.id === zone.ownerId) continue;
-      if (state.chopWoodMode && owner && target.team === owner.team) continue;
+      if (areSameTeam(target, owner)) continue;
       const dx = target.mesh.position.x - zone.x;
       const dz = target.mesh.position.z - zone.z;
       if (dx * dx + dz * dz <= CHARACTERS.ivory.iceCreamZoneRadius ** 2) applyDamage(target, CHARACTERS.ivory.iceCreamDamage, owner ?? null, true, true);
@@ -10832,7 +10905,7 @@ function updateMalfunctionZones() {
     }
     for (const target of state.players) {
       if (target.dead || target.id === owner.id) continue;
-      if (state.chopWoodMode && target.team === owner.team) continue;
+      if (areSameTeam(target, owner)) continue;
       const dx = target.mesh.position.x - owner.mesh.position.x;
       const dz = target.mesh.position.z - owner.mesh.position.z;
       if (dx * dx + dz * dz > zone.radius * zone.radius) continue;
@@ -10948,7 +11021,7 @@ function resolveAttack(attacker, hitIndex, damage) {
     if (target.id === attacker.id || target.dead || target.health <= 0) {
       continue;
     }
-    if (state.chopWoodMode && target.team === attacker.team) continue;
+    if (areSameTeam(target, attacker)) continue;
 
     const deltaX = target.mesh.position.x - attacker.mesh.position.x;
     const deltaZ = target.mesh.position.z - attacker.mesh.position.z;
@@ -11010,7 +11083,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
     return 0;
   }
   const showdownTargetId = target.networkId ?? target.syncId;
-  if (!state.takedownMode && mpConfig?.mode === "showdown" && !mpConfig.isHost && attacker?.isPlayer && showdownTargetId) {
+  if (!state.takedownMode && ["showdown", "soccer"].includes(mpConfig?.mode) && !mpConfig.isHost && attacker?.isPlayer && showdownTargetId) {
     mp.relay("SD_DAMAGE", { target: showdownTargetId, amount });
     if (!noPopup) flashHitMarker();
     return 0;
@@ -11463,7 +11536,7 @@ function updatePlayerControls(dt) {
     let autoTargetDist = autoAimRange;
     for (const fighter of state.players) {
       if (fighter.id === player.id || fighter.dead) continue;
-      if (state.chopWoodMode && fighter.team === player.team) continue;
+      if (areSameTeam(fighter, player)) continue;
       if (!isFighterVisible(player, fighter)) continue;
       const dx = fighter.mesh.position.x - player.mesh.position.x;
       const dz = fighter.mesh.position.z - player.mesh.position.z;
@@ -11538,7 +11611,7 @@ function chooseBotTarget(bot) {
   const bushVisionRange = playerDead ? 200 : 9;
   for (const fighter of state.players) {
     if (fighter.id === bot.id || fighter.dead) continue;
-    if (state.chopWoodMode && fighter.team === bot.team) continue;
+    if (areSameTeam(fighter, bot)) continue;
     const dx = fighter.mesh.position.x - bot.mesh.position.x;
     const dz = fighter.mesh.position.z - bot.mesh.position.z;
     const distanceSq = dx * dx + dz * dz;
@@ -13249,7 +13322,7 @@ function tryUsePinkUltimate(fighter = getPlayer()) {
   if ((fighter.pinkUltimateCharge ?? 0) < ultimate.chargeRequired) return false;
   fighter.pinkUltimateCharge = 0;
   for (const target of state.players) {
-    const ally = state.chopWoodMode ? fighter.team != null && target.team === fighter.team
+    const ally = (state.chopWoodMode || state.soccerMode) ? fighter.team != null && target.team === fighter.team
       : state.takedownMode && !fighter.isBoss && !target.isBoss;
     if (target.id === fighter.id || !ally) continue;
     const dx = target.mesh.position.x - fighter.mesh.position.x;
@@ -14195,7 +14268,7 @@ if (window.location.hash === "#chop-wood") {
     startGoldRush();
   });
   modeSoccerBtn?.addEventListener("click", async () => {
-    await initAudio(); modeSelector.classList.add("hidden"); startBattleBtn.classList.remove("active"); startSoccerKick();
+    await initAudio(); modeSelector.classList.add("hidden"); startBattleBtn.classList.remove("active"); enterMatchmaking("soccer");
   });
 
   // 훈련장 시작
@@ -14690,7 +14763,12 @@ if (window.location.hash === "#chop-wood") {
   });
 
   playAgainButton.addEventListener("click", () => {
-  if (showdownMapGroup.visible || mpConfig?.mode === "showdown") {
+    if (state.soccerMode || mpConfig?.mode === "soccer") {
+      mp.disconnect();
+      mpConfig = null;
+      resultOverlay.style.display = "none";
+      enterMatchmaking("soccer");
+    } else if (showdownMapGroup.visible || mpConfig?.mode === "showdown") {
       mp.disconnect();
       mpConfig = null;
       resultOverlay.style.display = "none";
@@ -14720,7 +14798,13 @@ if (window.location.hash === "#chop-wood") {
 
   // 재시작 → 로비
   restartButton.addEventListener("click", () => {
-    if (mpConfig?.mode === "showdown") {
+    if (state.soccerMode || mpConfig?.mode === "soccer") {
+      mp.disconnect();
+      mpConfig = null;
+      state.soccerMode = false;
+      state.playerTeam = null;
+      soccerMapGroup.visible = false;
+    } else if (mpConfig?.mode === "showdown") {
       mp.disconnect();
       mpConfig = null;
     } else if (state.takedownMode) {

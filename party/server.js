@@ -2,9 +2,10 @@ import { routePartykitRequest, Server } from "partyserver";
 import { DurableObject } from "cloudflare:workers";
 
 const ROOM_MAX = 8;
+const SOCCER_ROOM_MAX = 6;
 const COUNTDOWN_SEC = 5;
 // 매칭에서 허용하는 캐릭터 — 베타 시즌 1에서 크림슨 추가
-const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse", "mint"]);
+const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse", "mint", "azure"]);
 export class LeaderboardStore extends DurableObject {
   async getLeaderboard() {
     return await this.ctx.storage.get("global-leaderboard") ?? [];
@@ -55,12 +56,13 @@ export class ColorsServer extends Server {
     if (!player) return;
     player.nickname = this.cleanNickname(data.nickname);
     player.charType = PLAYABLE_CHARACTERS.has(data.charType) ? data.charType : "red";
-    player.mode = ["showdown", "takedown", "chopwood"].includes(data.mode) ? data.mode : "takedown";
+    player.mode = ["showdown", "takedown", "chopwood", "soccer"].includes(data.mode) ? data.mode : "takedown";
 
     const previousMatchId = this.playerMatch.get(player.id);
     if (previousMatchId) this.leaveMatch(player.id, previousMatchId);
 
-    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.playerIds.length < ROOM_MAX);
+    const roomMax = player.mode === "soccer" ? SOCCER_ROOM_MAX : ROOM_MAX;
+    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.playerIds.length < roomMax);
     if (!match) {
       const currentMapId = Math.floor(Date.now() / 86400000) % 3;
       match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: currentMapId, playerIds: [], started: false, countdownTimer: null };
@@ -77,7 +79,7 @@ export class ColorsServer extends Server {
       mode: match.mode,
       countdownActive: match.countdownTimer !== null,
     });
-    if (match.mode === "showdown" || match.mode === "chopwood") this.startCountdown(match, 3, true);
+    if (["showdown", "chopwood", "soccer"].includes(match.mode)) this.startCountdown(match, 3, true);
     else if (match.playerIds.length >= 2) this.startCountdown(match);
   }
 
@@ -134,8 +136,8 @@ export class ColorsServer extends Server {
         players: this.matchPlayers(match),
       });
     }
-    if (!match.started && !["showdown", "chopwood"].includes(match.mode) && match.playerIds.length < 2) this.cancelCountdown(match);
-    if (!match.started && ["showdown", "chopwood"].includes(match.mode) && match.playerIds.length > 0) this.startCountdown(match, 3, true);
+    if (!match.started && !["showdown", "chopwood", "soccer"].includes(match.mode) && match.playerIds.length < 2) this.cancelCountdown(match);
+    if (!match.started && ["showdown", "chopwood", "soccer"].includes(match.mode) && match.playerIds.length > 0) this.startCountdown(match, 3, true);
     if (match.playerIds.length === 0) {
       if (match.countdownTimer) clearInterval(match.countdownTimer);
       this.matches.delete(match.id);
