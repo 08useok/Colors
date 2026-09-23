@@ -2893,6 +2893,7 @@ const SEASON6_SKIN_FBX = {
   beta6_orange_citrus_luau_buddy: ["orange", "orange/skins/citrus-luau-buddy"],
   beta6_azure_blue_wave_buddy: ["azure", "azure/skins/blue-wave-buddy"],
 };
+const SEASON6_SKIN_MODEL_VERSION = "2";
 
 function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false, skipAssetLoading = false) {
   const season6Skin = SEASON6_SKIN_FBX[skinId];
@@ -4073,11 +4074,11 @@ function ensureSeason6SkinFbxLoading(characterId, folder) {
   if (entry) return entry;
   entry = { start: null, loop: null, end: null, requested: true };
   _season6SkinFbx.set(characterId, entry);
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx`, (asset) => { entry.start = prepareSeason6SkinFbx(asset); });
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m2l.fbx`, (asset) => {
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => { entry.start = prepareSeason6SkinFbx(asset); });
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m2l.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
     entry.loop = prepareSeason6SkinFbx(asset); refreshLoadedSeason6SkinModels(characterId);
   });
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m3e.fbx`, (asset) => { entry.end = prepareSeason6SkinFbx(asset); });
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m3e.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => { entry.end = prepareSeason6SkinFbx(asset); });
   return entry;
 }
 
@@ -4105,7 +4106,7 @@ function ensureLobbyStartFbx(characterId, skinId) {
   if (entry) return entry;
   entry = { model: null };
   _lobbyStartFbx.set(key, entry);
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx`, (asset) => {
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
     entry.model = season6Skin ? prepareSeason6SkinFbx(asset) : prepareMintFbx(asset);
     refreshLoadedPreviewCharacter(characterId);
   });

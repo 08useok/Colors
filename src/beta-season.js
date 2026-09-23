@@ -144,7 +144,7 @@ const BETA_STORAGE_KEY = IS_BETA8_TEST
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "81";
+const CHARACTER_MODEL_VERSION = "82";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
