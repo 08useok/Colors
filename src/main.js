@@ -4108,11 +4108,37 @@ function ensureLobbyStartFbx(characterId, skinId) {
 function createLobbyStartFbxModel(characterId, skinId) {
   const entry = ensureLobbyStartFbx(characterId, skinId);
   if (!entry?.model) return null;
-  // buildPinkRigModel이 첫 애니메이션 프레임을 즉시 평가하므로 T포즈가
-  // 없는 걷기 시작 자세를 정지 프리뷰로 안전하게 보여준다.
-  const model = buildPinkRigModel({ start: null, loop: entry.model, end: null }, skinId);
-  model.userData.isLobbyStartFbx = true;
-  return model;
+  // 애저를 제외한 시즌 6 스킨 세 개는 로비에서 walk-m1s의 첫 자세를
+  // 적용해 FBX 바인드(T) 포즈 대신 걷기 시작 자세로 보여준다.
+  if (characterId !== "azure" && SEASON6_SKIN_FBX[skinId]) {
+    const animatedModel = buildPinkRigModel({ start: null, loop: entry.model, end: null }, skinId);
+    animatedModel.userData.isLobbyStartFbx = true;
+    return animatedModel;
+  }
+  // 시즌 6 FBX는 start/loop/end가 실제로 동일한 파일이며, 0초의 골격
+  // 스케일 키를 강제로 평가하면 애저가 공처럼 찌그러진다. 애저 로비에서는
+  // 파일에 저장된 정지 자세만 복제하고 AnimationMixer는 만들지 않는다.
+  const group = new THREE.Group();
+  const sceneModel = skeletonClone(entry.model.scene);
+  _applyPinkToon(sceneModel);
+  const bodyMaterials = [];
+  sceneModel.traverse((part) => {
+    if (!part.isMesh) return;
+    part.frustumCulled = false;
+    const materials = Array.isArray(part.material) ? part.material : [part.material];
+    for (const material of materials) {
+      if (material && !bodyMaterials.includes(material)) bodyMaterials.push(material);
+    }
+  });
+  group.add(sceneModel);
+  group.userData = {
+    isGlbModel: true,
+    isLobbyStartFbx: true,
+    bodyMaterials,
+    guitar: null,
+  };
+  if (skinId) applySkin(group, skinId);
+  return group;
 }
 
 let _ivoryPreviewGlbRequested = false;
