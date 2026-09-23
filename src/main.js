@@ -2888,6 +2888,17 @@ function resolveWalkGlbSet(glbSet, isAiBot, forceLoopOnly = false) {
 }
 
 function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false) {
+  const season6Skin = {
+    beta6_cyan_aqua_scout: ["cyan", "cyan/skin-aqua-scout"],
+    beta6_chartreuse_pufferfish_boy: ["chartreuse", "chartreuse/skin-pufferfish-boy"],
+    beta6_orange_citrus_luau_buddy: ["orange", "orange/skin-citrus-luau-buddy"],
+    beta6_azure_blue_wave_buddy: ["azure", "azure/skin-blue-wave-buddy"],
+  }[skinId];
+  if (season6Skin) {
+    const [characterId, folder] = season6Skin;
+    const source = ensureSeason6SkinFbxLoading(characterId, folder);
+    if (source.loop) return buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
+  }
   if (color === 0x0000ff) ensureBlueGlbLoading();
   if (color === 0x0000ff && _blueWalkGlb) {
     const group = new THREE.Group();
@@ -3010,9 +3021,8 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     }
   }
   if (color === CHARACTERS.azure?.color) {
-    ensureAzureFbxLoading(skinId === "beta6_azure_blue_wave_buddy");
-    const source = skinId === "beta6_azure_blue_wave_buddy" ? _azureSkinFbx : _azureFbx;
-    if (source.loop) return buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
+    ensureAzureFbxLoading();
+    if (_azureFbx.loop) return buildPinkRigModel(resolveWalkGlbSet(_azureFbx, isAiBot), skinId);
   }
 
   const group = new THREE.Group();
@@ -3777,7 +3787,7 @@ const _ivoryGlb = { start: null, loop: null, end: null };
 const _chartreuseGlb = { start: null, loop: null, end: null };
 const _mintFbx = { start: null, loop: null, end: null };
 const _azureFbx = { start: null, loop: null, end: null };
-const _azureSkinFbx = { start: null, loop: null, end: null };
+const _season6SkinFbx = new Map();
 const _ivoryShopkeeperGlb = { start: null, loop: null, end: null };
 let _ivoryPreviewGlb = null;
 
@@ -4020,19 +4030,58 @@ function ensureMintFbxLoading() {
   _fbxLoader.load('./assets/3d/mint/walk-m3e.fbx', asset => { _mintFbx.end = prepareMintFbx(asset); });
 }
 
-let _azureFbxRequested = false;
-let _azureSkinFbxRequested = false;
-function ensureAzureFbxLoading(useSkin = false) {
-  const target = useSkin ? _azureSkinFbx : _azureFbx;
-  if (useSkin ? _azureSkinFbxRequested : _azureFbxRequested) return;
-  if (useSkin) _azureSkinFbxRequested = true; else _azureFbxRequested = true;
-  const folder = useSkin ? "azure/skin-blue-wave-buddy" : "azure";
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx`, (asset) => { target.start = prepareMintFbx(asset); });
+function prepareSeason6SkinFbx(asset) {
+  // 시즌 6 스킨 FBX는 FBXLoader가 이미 Y-up으로 변환한다. 민트처럼 다시
+  // X축을 -90도 회전하면 모델이 눕기 때문에 루트 모션만 제거한다.
+  asset.rotation.set(0, 0, 0);
+  for (const clip of (asset.animations ?? [])) {
+    clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|RootNodeL|output_unwrapped|walk[_-]m(?:1s|2l|3e))\.(?:position|quaternion|scale)$/i.test(track.name));
+  }
+  asset.updateMatrixWorld(true);
+  return { scene: asset, animations: asset.animations ?? [] };
+}
+
+function refreshLoadedSeason6SkinModels(characterId) {
+  refreshLoadedPreviewCharacter(characterId);
+  if (frontModelCharType === characterId) setupFrontModel(characterId);
+  if (typeof state === "undefined" || !state?.players) return;
+  for (const fighter of state.players) {
+    if (fighter.characterType !== characterId || !fighter.skinId?.startsWith("beta6_") || !fighter.mesh) continue;
+    const oldMesh = fighter.mesh;
+    const replacement = createStickman(CHARACTERS[characterId].color, fighter.skinId, false, !fighter.isPlayer);
+    if (!replacement.userData.isGlbModel) continue;
+    replacement.position.copy(oldMesh.position); replacement.rotation.copy(oldMesh.rotation);
+    if (fighter.healthBar) replacement.add(fighter.healthBar);
+    if (fighter.nameLabel) replacement.add(fighter.nameLabel);
+    scene.remove(oldMesh); scene.add(replacement); fighter.mesh = replacement;
+    fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
+    fighter.bodyMaterials = replacement.userData.bodyMaterials;
+  }
+}
+
+function ensureSeason6SkinFbxLoading(characterId, folder) {
+  let entry = _season6SkinFbx.get(characterId);
+  if (entry) return entry;
+  entry = { start: null, loop: null, end: null, requested: true };
+  _season6SkinFbx.set(characterId, entry);
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx`, (asset) => { entry.start = prepareSeason6SkinFbx(asset); });
   _fbxLoader.load(`./assets/3d/${folder}/walk-m2l.fbx`, (asset) => {
-    target.loop = prepareMintFbx(asset); refreshLoadedPreviewCharacter("azure");
+    entry.loop = prepareSeason6SkinFbx(asset); refreshLoadedSeason6SkinModels(characterId);
+  });
+  _fbxLoader.load(`./assets/3d/${folder}/walk-m3e.fbx`, (asset) => { entry.end = prepareSeason6SkinFbx(asset); });
+  return entry;
+}
+
+let _azureFbxRequested = false;
+function ensureAzureFbxLoading() {
+  if (_azureFbxRequested) return;
+  _azureFbxRequested = true;
+  _fbxLoader.load('./assets/3d/azure/walk-m1s.fbx', (asset) => { _azureFbx.start = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/azure/walk-m2l.fbx', (asset) => {
+    _azureFbx.loop = prepareMintFbx(asset); refreshLoadedPreviewCharacter("azure");
     if (frontModelCharType === "azure") setupFrontModel("azure");
   });
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m3e.fbx`, (asset) => { target.end = prepareMintFbx(asset); });
+  _fbxLoader.load('./assets/3d/azure/walk-m3e.fbx', (asset) => { _azureFbx.end = prepareMintFbx(asset); });
 }
 
 let _ivoryPreviewGlbRequested = false;
