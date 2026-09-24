@@ -2904,7 +2904,25 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
   if (!skipAssetLoading && season6Skin) {
     const [characterId, folder] = season6Skin;
     const source = ensureSeason6SkinFbxLoading(characterId, folder);
-    if (source.loop) return buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
+    if (source.loop) {
+      const model = buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
+      model.userData.season6SkinId = skinId;
+      return model;
+    }
+
+    // 로비용 walk-m1s와 전투용 walk-m2l은 별도 캐시다. 쇼다운에 들어간 직후
+    // 전투 FBX가 아직 내려오는 동안 아래 기본 캐릭터 분기로 진행하면 선택한
+    // 스킨 대신 기본/절차 모델이 전장에 나타난다. 빈 루트를 유지했다가 loop가
+    // 준비되는 즉시 refreshLoadedSeason6SkinModels에서 실제 스킨으로 교체한다.
+    const pendingModel = new THREE.Group();
+    pendingModel.userData = {
+      isGlbModel: true,
+      awaitingSeason6SkinModel: true,
+      season6SkinId: skinId,
+      bodyMaterials: [],
+      guitar: null,
+    };
+    return pendingModel;
   }
   if (!skipAssetLoading && color === 0x0000ff) ensureBlueGlbLoading();
   if (!skipAssetLoading && color === 0x0000ff && _blueWalkGlb) {
@@ -4060,13 +4078,18 @@ function refreshLoadedSeason6SkinModels(characterId) {
   if (frontModelCharType === characterId) setupFrontModel(characterId);
   if (typeof state === "undefined" || !state?.players) return;
   for (const fighter of state.players) {
-    if (fighter.characterType !== characterId || !fighter.skinId?.startsWith("beta6_") || !fighter.mesh) continue;
+    const skinSource = SEASON6_SKIN_FBX[fighter.skinId];
+    if (fighter.characterType !== characterId || skinSource?.[0] !== characterId || !fighter.mesh) continue;
+    if (fighter.mesh.userData.season6SkinId === fighter.skinId
+      && !fighter.mesh.userData.awaitingSeason6SkinModel) continue;
     const oldMesh = fighter.mesh;
     const replacement = createStickman(CHARACTERS[characterId].color, fighter.skinId, false, !fighter.isPlayer);
-    if (!replacement.userData.isGlbModel) continue;
+    if (!replacement.userData.isGlbModel || replacement.userData.awaitingSeason6SkinModel) continue;
     replacement.position.copy(oldMesh.position); replacement.rotation.copy(oldMesh.rotation);
+    replacement.visible = oldMesh.visible;
     if (fighter.healthBar) replacement.add(fighter.healthBar);
     if (fighter.nameLabel) replacement.add(fighter.nameLabel);
+    if (fighter.teamMarker) replacement.add(fighter.teamMarker);
     scene.remove(oldMesh); scene.add(replacement); fighter.mesh = replacement;
     fighter.flashMaterial = replacement.userData.bodyMaterials?.[0] ?? null;
     fighter.bodyMaterials = replacement.userData.bodyMaterials;
