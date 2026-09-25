@@ -2660,6 +2660,9 @@ let purpleJumpState = null;
 let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
 const goldStageHits = new Map();
+// 크리스탈 연쇄 수정탄 — 한 번의 공격에서 같은 단계는 한 대상에게 한 번만 맞는다.
+const crystalStageHits = new Map();
+let crystalAttackSequence = 0;
 const malfunctionZones = [];
 const ivoryIceCreamZones = [];
 const mintIceZones = [];
@@ -3259,6 +3262,62 @@ function splitGoldProjectile(projectile) {
       spawnGoldProjectile(origin, projectile.goldYaw + (i / 6) * Math.PI * 2, 3, projectile.goldAttackId);
     }
   }
+}
+
+// stage 1 수정탄 → 2 조각 → 3 작은 조각
+function spawnCrystalProjectile(position, yaw, stage, attackId) {
+  const def = BETA_CHARACTERS.crystal;
+  const damage = [0, def.crystalDamage, def.fragmentDamage, def.shardDamage][stage];
+  const speed = [0, def.crystalSpeed, def.fragmentSpeed, def.shardSpeed][stage];
+  const range = [0, def.crystalRange, def.fragmentRange, def.shardRange][stage];
+  const size = [0, 0.34, 0.24, 0.16][stage];
+  const mesh = new THREE.Mesh(
+    new THREE.OctahedronGeometry(size, 0),
+    new THREE.MeshStandardMaterial({ color: 0x9ef2ff, emissive: 0x2aa6c8, emissiveIntensity: 0.9, metalness: 0.4, roughness: 0.2 }),
+  );
+  mesh.position.copy(position);
+  mesh.position.y = player.position.y + 1.1;
+  scene.add(mesh);
+  betaProjectiles.push({
+    mesh, characterId: "crystal", vx: Math.sin(yaw) * speed, vz: Math.cos(yaw) * speed,
+    speed, traveled: 0, returnTraveled: 0, range, damage, splash: 0,
+    type: `crystalStage${stage}`, hitRadius: size + 0.1, hit: new Set(),
+    causesKnockback: false, crystalStage: stage, crystalAttackId: attackId, crystalYaw: yaw,
+  });
+}
+
+function splitCrystalProjectile(projectile) {
+  const def = BETA_CHARACTERS.crystal;
+  const origin = projectile.mesh.position.clone();
+  canvas.dataset.lastCrystalSplit = String(projectile.crystalStage);
+  if (projectile.crystalStage === 1) {
+    for (let i = 0; i < def.fragmentCount; i += 1) {
+      spawnCrystalProjectile(origin, projectile.crystalYaw + (i / def.fragmentCount) * Math.PI * 2, 2, projectile.crystalAttackId);
+    }
+  } else if (projectile.crystalStage === 2) {
+    // 조각 6개가 각각 2개로 갈라져 작은 조각 12개가 된다
+    const perFragment = Math.max(1, Math.round(def.shardCount / def.fragmentCount));
+    for (let i = 0; i < perFragment; i += 1) {
+      spawnCrystalProjectile(origin, projectile.crystalYaw + (i - (perFragment - 1) / 2) * 0.6, 3, projectile.crystalAttackId);
+    }
+  }
+}
+
+// 이미 같은 단계로 맞은 대상이면 false를 돌려 피해를 건너뛴다
+function registerCrystalStageHit(projectile, target) {
+  let targetStages = crystalStageHits.get(projectile.crystalAttackId);
+  if (!targetStages) {
+    targetStages = new Map();
+    crystalStageHits.set(projectile.crystalAttackId, targetStages);
+  }
+  let stages = targetStages.get(target);
+  if (!stages) {
+    stages = new Set();
+    targetStages.set(target, stages);
+  }
+  if (stages.has(projectile.crystalStage)) return false;
+  stages.add(projectile.crystalStage);
+  return true;
 }
 
 function applyGoldProjectileHit(projectile, target) {
@@ -4140,6 +4199,13 @@ function performCharacterAttack({ manualAim = false } = {}) {
         }
       }
     }
+  } else if (id === "crystal") {
+    const attackId = ++crystalAttackSequence;
+    crystalStageHits.set(attackId, new Map());
+    // 오래된 기록은 버린다
+    for (const key of crystalStageHits.keys()) if (key <= attackId - 8) crystalStageHits.delete(key);
+    spawnCrystalProjectile(player.position, player.rotation.y, 1, attackId);
+    attackComboState.textContent = "연쇄 수정탄";
   } else if (id === "gold") {
     const attackId = ++goldAttackSequence;
     goldAttackCharge.set(attackId, 0);
@@ -7135,6 +7201,7 @@ function animate() {
     const projectile = betaProjectiles[i];
     let remove = false;
     let shouldSplitGold = false;
+    let shouldSplitCrystal = false;
     let shouldSplitOrange = false;
     let orangeDirectHitTarget = null;
     let shouldBreakVial = false;
@@ -7189,6 +7256,13 @@ function animate() {
       remove = true;
       shouldSplitGold = projectile.goldStage < 3;
     }
+    if (projectile.crystalStage && solids.some((solid) =>
+      solid.top >= projectile.mesh.position.y - projectile.hitRadius
+      && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
+      && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
+      remove = true;
+      shouldSplitCrystal = projectile.crystalStage < 3;
+    }
     if ((projectile.type === "orangeFruit" || projectile.type === "orangeJuice") && solids.some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
       && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
@@ -7237,6 +7311,12 @@ function animate() {
           applyGoldProjectileHit(projectile, target);
           remove = true;
           shouldSplitGold = projectile.goldStage < 3;
+        } else if (projectile.crystalStage) {
+          if (Math.hypot(targetDx, targetDz) > 0.85 + projectile.hitRadius) continue;
+          remove = true;
+          shouldSplitCrystal = projectile.crystalStage < 3;
+          // 같은 단계로 이미 맞은 대상은 피해 없이 통과시킨다
+          if (!registerCrystalStageHit(projectile, target)) continue;
         } else if (projectile.type === "cyanUltimate") {
           const directionLength = Math.hypot(projectile.vx, projectile.vz) || 1;
           const forwardX = projectile.vx / directionLength;
@@ -7307,6 +7387,10 @@ function animate() {
           mintUltimateCharge = Math.min(BETA_CHARACTERS.mint.special.chargeRequired, mintUltimateCharge + 1);
           if (betaState.selectedCharacter === "mint") updateCrimsonUltimateGauge();
         }
+        if (projectile.characterId === "crystal") {
+          crystalUltimateCharge = Math.min(BETA_CHARACTERS.crystal.ultimate.chargeRequired, crystalUltimateCharge + 1);
+          if (betaState.selectedCharacter === "crystal") updateCrimsonUltimateGauge();
+        }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
           cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
@@ -7376,6 +7460,7 @@ function animate() {
         remove = true;
       }
       if (projectile.goldStage && projectile.goldStage < 3) shouldSplitGold = true;
+      if (projectile.crystalStage && projectile.crystalStage < 3) shouldSplitCrystal = true;
       if (projectile.type === "orangeFruit") shouldSplitOrange = true;
       if (remove && projectile.type === "ivoryIceCream") {
         const directionX = projectile.vx / projectile.speed;
@@ -7394,6 +7479,7 @@ function animate() {
     }
     if (remove) {
       if (shouldSplitGold) splitGoldProjectile(projectile);
+      if (shouldSplitCrystal) splitCrystalProjectile(projectile);
       if (shouldSplitOrange) spawnOrangeJuice(projectile.mesh.position.clone(), orangeDirectHitTarget);
       if (shouldBreakVial) breakVial(projectile);
       scene.remove(projectile.mesh);
