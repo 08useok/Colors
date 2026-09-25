@@ -6129,6 +6129,49 @@ function startBeta6BotCombat() {
   for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot });
 }
 
+// 전투 투사체도 로비와 같은 모양으로 그린다. 모르는 종류는 기본 구슬을 쓴다.
+function createBeta6ProjectileMesh(projectile, color) {
+  const kind = projectile.kind;
+  const ownerId = projectile.owner?.id;
+  const orient = (mesh) => { mesh.userData.beta6Oriented = true; return mesh; };
+  if (kind === "boomerang") {
+    const mesh = createGreenBoomerangMesh();
+    mesh.userData.beta6Spin = true;
+    return mesh;
+  }
+  if (kind === "electric") return orient(createYellowBoltMesh());
+  if (kind === "needle") return orient(createPurpleNeedleMesh());
+  if (kind === "vial") return createPurpleVialMesh();
+  if (kind === "mint") return orient(createMintIceCreamMesh());
+  if (["enhanced", "cc", "plague", "blank"].includes(kind)) return createChartreuseRoundMesh(kind);
+  if (kind === "bullet") return orient(ownerId === "cyan" ? createCyanPillMesh() : createBlueMarbleMesh());
+  if (kind === "crystal" || kind === "gold") {
+    const sizes = kind === "crystal" ? [0, 0.34, 0.24, 0.16] : [0, 0.5, 0.34, 0.22];
+    const size = sizes[projectile.stage] ?? 0.24;
+    const tint = kind === "crystal" ? 0x9ef2ff : 0xffd347;
+    return new THREE.Mesh(
+      new THREE.OctahedronGeometry(size, 0),
+      new THREE.MeshStandardMaterial({ color: tint, emissive: tint, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.2 }),
+    );
+  }
+  if (kind === "bomb" || kind === "juice") {
+    return new THREE.Mesh(
+      new THREE.SphereGeometry(kind === "bomb" ? 0.28 : 0.16, 10, 8),
+      new THREE.MeshStandardMaterial({ color: kind === "bomb" ? 0xf28b21 : 0xffb457, roughness: 0.78 }),
+    );
+  }
+  if (kind === "ivory") {
+    return new THREE.Mesh(
+      new THREE.SphereGeometry(0.26, 10, 8),
+      new THREE.MeshStandardMaterial({ color: 0xfff3dd, emissive: 0xd9c39a, emissiveIntensity: 0.5, roughness: 0.4 }),
+    );
+  }
+  return new THREE.Mesh(
+    new THREE.SphereGeometry(Math.max(0.12, projectile.radius ?? 0.2), 8, 6),
+    new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
+  );
+}
+
 function updateBeta6BotCombat(dt) {
   if (!beta6Combat || !beta6PlayerActor) return;
   const world = beta6Combat;
@@ -6185,14 +6228,21 @@ function updateBeta6BotCombat(dt) {
     let mesh = beta6CombatVisuals.get(key);
     if (!mesh) {
       const color = CHARACTERS.find(c => c.id === object.owner.id)?.color ?? 0xffffff;
-      const geometry = kind === "zone" ? new THREE.CircleGeometry(radius, 32) : kind === "wave" ? new THREE.BoxGeometry(object.width, .5, .25) : new THREE.SphereGeometry(Math.max(.12, radius), 8, 6);
-      mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: kind === "zone" ? .25 : .9, depthWrite: false, side: THREE.DoubleSide }));
-      if (kind === "zone") mesh.rotation.x = -Math.PI / 2;
+      if (kind === "projectile") {
+        mesh = createBeta6ProjectileMesh(object, color);
+      } else {
+        const geometry = kind === "zone" ? new THREE.CircleGeometry(radius, 32) : new THREE.BoxGeometry(object.width, .5, .25);
+        mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: kind === "zone" ? .25 : .9, depthWrite: false, side: THREE.DoubleSide }));
+        if (kind === "zone") mesh.rotation.x = -Math.PI / 2;
+      }
       scene.add(mesh); beta6CombatVisuals.set(key, mesh);
     }
     const location = object.kind === "lock" ? object.owner : object;
     mesh.position.set(location.x, groundHeightAt(location.x, location.z) + (kind === "zone" ? .08 : .8), location.z);
     if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
+    // 전투의 각도는 (cos, sin) 기준이라 로비 모양이 쓰는 회전값으로 바꿔 준다
+    if (mesh.userData.beta6Oriented) { mesh.rotation.order = "YXZ"; mesh.rotation.y = Math.PI / 2 - (object.yaw ?? 0); }
+    if (mesh.userData.beta6Spin) mesh.rotation.y = world.time * 12;
   };
   for (const p of world.projectiles) if (world.time >= p.start) draw(`p${p.key}`, p, p.radius, p.kind === "wave" ? "wave" : "projectile");
   for (const z of world.zones) draw(`z${z.key}`, z, z.radius, "zone");
@@ -6203,7 +6253,16 @@ function updateBeta6BotCombat(dt) {
     if (world.time < a.hiddenUntil && a.bush) draw(`b${a.key}`, { ...a.bush, owner: a }, a.u.radius, "zone");
   }
   if (hero.id === "green") setPlayerConcealedVisual(world.hidden(hero));
-  for (const [key, mesh] of beta6CombatVisuals) if (!visible.has(key)) { scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); beta6CombatVisuals.delete(key); }
+  for (const [key, mesh] of beta6CombatVisuals) if (!visible.has(key)) {
+    scene.remove(mesh);
+    // 종류별 모양은 여러 조각을 묶은 그룹일 수 있어 통째로 훑어서 정리한다
+    mesh.traverse((part) => {
+      part.geometry?.dispose();
+      if (Array.isArray(part.material)) part.material.forEach((material) => material.dispose());
+      else part.material?.dispose();
+    });
+    beta6CombatVisuals.delete(key);
+  }
   canvas.dataset.beta6BotCharacters = goldRushBots.map(b => b.characterId).join(",");
   canvas.dataset.beta6BotUltimates = String(goldRushBots.reduce((sum, b) => sum + b.combatActor.castCount, 0));
   syncBeta6PlayerHud();
