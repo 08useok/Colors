@@ -347,6 +347,7 @@ let currentArenaMode = "lobby";
 // 경기장 모드에 맞는 충돌·지면 판정 목록. 사커는 쇼다운 맵의 벽을 쓰면 안 된다.
 function getArenaSolids() {
   if (currentArenaMode === "soccer") return soccerSolids;
+  if (currentArenaMode === "gemGrab") return gemGrabSolids;
   return currentArenaMode === "showdown" ? showdownSolids : solids;
 }
 const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0xc59a5c : IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
@@ -5374,6 +5375,199 @@ function updateSoccerBotAttack(bot, dt) {
   bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
 }
 
+// ===== 젬 그랩(3대3) 전용 경기장과 규칙 =====
+// 맵은 좌우 대칭이다. 양옆에 ㄷ자 엄폐물이 있고 그 안쪽 팔이 가운데 통로를 좁힌다.
+// 우리 팀(a)은 +Z, 상대 팀(b)은 -Z에서 시작하고 한가운데 제단에서 젬이 솟는다.
+const GEM_FIELD_HALF = 20;
+const GEM_FIELD_Y = 1.57;
+const GEM_WALL_HEIGHT = 2.6;
+const GEM_ACTOR_LIMIT = 19.2;
+const GEM_VENT_RADIUS = 2.2;
+const GEM_PICKUP_RANGE = 1.5;
+const GEM_TARGET_COUNT = 10;
+const GEM_ESCAPE_DURATION = 15;
+const GEM_MATCH_DURATION = 180;
+const GEM_SPAWN_INTERVAL = 2.4;
+const GEM_MAX_IN_PLAY = 12;
+const GEM_BOT_RESPAWN_DELAY = 5;
+
+const gemArena = new THREE.Group();
+gemArena.visible = false;
+scene.add(gemArena);
+const gemGrabSolids = [];
+
+const gemFloorMaterial = new THREE.MeshStandardMaterial({ color: 0xd8b578, roughness: 0.92 });
+const gemWallMaterial = new THREE.MeshStandardMaterial({ color: 0x8a6034, roughness: 0.78 });
+const gemAltarMaterial = new THREE.MeshStandardMaterial({ color: 0x2f6f7d, roughness: 0.5, metalness: 0.3 });
+
+function addGemWall(x, z, width, depth) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, GEM_WALL_HEIGHT, depth), gemWallMaterial);
+  mesh.position.set(x, GEM_FIELD_Y + GEM_WALL_HEIGHT / 2, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  gemArena.add(mesh);
+  gemGrabSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: GEM_FIELD_Y + GEM_WALL_HEIGHT, mesh });
+}
+
+{
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(GEM_FIELD_HALF * 2 + 3, 3, GEM_FIELD_HALF * 2 + 3), gemFloorMaterial);
+  floor.position.set(0, GEM_FIELD_Y - 1.5, 0);
+  floor.receiveShadow = true;
+  gemArena.add(floor);
+  gemGrabSolids.push({ x: 0, z: 0, halfW: GEM_FIELD_HALF + 1.5, halfD: GEM_FIELD_HALF + 1.5, top: GEM_FIELD_Y, mesh: floor });
+  // 가운데 제단 — 젬이 솟는 자리
+  const altar = new THREE.Mesh(new THREE.CylinderGeometry(GEM_VENT_RADIUS, GEM_VENT_RADIUS + 0.4, 0.28, 24), gemAltarMaterial);
+  altar.position.set(0, GEM_FIELD_Y + 0.14, 0);
+  altar.receiveShadow = true;
+  gemArena.add(altar);
+  // 좌우 ㄷ자 엄폐물과 안쪽 팔
+  for (const side of [-1, 1]) {
+    for (const end of [-1, 1]) {
+      addGemWall(side * 16, end * 8, 0.8, 8);       // 바깥 세로벽
+      addGemWall(side * 12, end * 8, 0.8, 8);       // 안쪽 세로벽
+      addGemWall(side * 14, end * 12, 4.8, 0.8);    // ㄷ자 끝 마구리
+      addGemWall(side * 8.5, end * 4, 7.8, 0.8);    // 가운데로 뻗은 팔
+    }
+  }
+}
+
+const gemGrabState = {
+  nextGemAt: 0, escapeA: null, escapeB: null, spawnedGems: 0,
+};
+
+// 가장 가까운 젬. 없으면 제단 한가운데로 모인다.
+function nearestGemPoint(actor) {
+  let best = null;
+  let bestDistance = Infinity;
+  for (const pickup of goldPickups) {
+    const distance = Math.hypot(pickup.mesh.position.x - actor.x, pickup.mesh.position.z - actor.z);
+    if (distance >= bestDistance) continue;
+    bestDistance = distance;
+    best = pickup;
+  }
+  // 젬이 없으면 제단 둘레에 조금씩 흩어져 기다린다 — 한 점에 겹쳐 서지 않게 한다.
+  if (best) return { x: best.mesh.position.x, z: best.mesh.position.z };
+  return { x: Math.cos(actor.phase) * 2.6, z: Math.sin(actor.phase) * 2.6 };
+}
+
+// 자기 진영 수비 자리
+function gemHomePoint(actor) {
+  return { x: Math.cos(actor.phase) * 7, z: (actor.team === "b" ? -1 : 1) * 13 };
+}
+
+function gemTeamGems(team) {
+  const botTotal = goldRushBots.reduce((sum, bot) => sum + (bot.team === team ? bot.gold : 0), 0);
+  return botTotal + (team === "a" ? goldRushState.gold : 0);
+}
+
+function gemsInPlay() {
+  return goldPickups.length + gemTeamGems("a") + gemTeamGems("b");
+}
+
+function clampGemActor(position) {
+  position.x = THREE.MathUtils.clamp(position.x, -GEM_ACTOR_LIMIT, GEM_ACTOR_LIMIT);
+  position.z = THREE.MathUtils.clamp(position.z, -GEM_ACTOR_LIMIT, GEM_ACTOR_LIMIT);
+}
+
+// 벽에 파묻히면 한 축씩 되돌려서 벽을 타고 미끄러지게 한다
+function applyArenaWallBlock(position, previousX, previousZ, radius = 0.5) {
+  if (currentArenaMode !== "gemGrab") return;
+  const blocked = (x, z) => gemGrabSolids.some((solid) => solid.top > GEM_FIELD_Y + 0.4
+    && Math.abs(x - solid.x) < solid.halfW + radius
+    && Math.abs(z - solid.z) < solid.halfD + radius);
+  if (!blocked(position.x, position.z)) return;
+  if (!blocked(position.x, previousZ)) position.z = previousZ;
+  else if (!blocked(previousX, position.z)) position.x = previousX;
+  else { position.x = previousX; position.z = previousZ; }
+}
+
+function resetGemGrabPositions() {
+  const spawns = [[-5, 15], [5, 15], [-6, -15], [0, -15], [6, -15]];
+  goldRushBots.forEach((bot, index) => {
+    const [x, z] = spawns[index] ?? [0, -15];
+    bot.spawn.set(x, GEM_FIELD_Y + 0.05, z);
+    bot.mesh.position.copy(bot.spawn);
+    bot.gold = 0;
+    bot.winCountdownStartedAt = null;
+  });
+}
+
+function spawnGemAtAltar() {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = Math.random() * (GEM_VENT_RADIUS - 0.5);
+  spawnGoldPickup(new THREE.Vector3(Math.sin(angle) * radius, 0, Math.cos(angle) * radius));
+  gemGrabState.spawnedGems += 1;
+  canvas.dataset.gemGrabSpawned = String(gemGrabState.spawnedGems);
+}
+
+// 10개를 모은 팀의 탈출 카운트다운. 10개 밑으로 떨어지면 취소된다.
+function updateGemEscape(team, countdownKey) {
+  const total = gemTeamGems(team);
+  if (total < GEM_TARGET_COUNT) { gemGrabState[countdownKey] = null; return false; }
+  gemGrabState[countdownKey] ??= clock.elapsedTime;
+  return clock.elapsedTime - gemGrabState[countdownKey] >= GEM_ESCAPE_DURATION;
+}
+
+function updateGemGrabHud() {
+  const ours = gemTeamGems("a");
+  const theirs = gemTeamGems("b");
+  goldCountEl.textContent = String(ours);
+  goldRushRivalsEl.textContent = `우리 ${ours} : ${theirs} 상대`;
+  const remaining = Math.max(0, GEM_MATCH_DURATION - (clock.elapsedTime - goldRushState.startedAt));
+  goldRushTimerEl.textContent = formatSoccerClock(remaining);
+  const escapeStart = gemGrabState.escapeA ?? gemGrabState.escapeB;
+  if (escapeStart !== null && escapeStart !== undefined) {
+    const left = Math.max(0, GEM_ESCAPE_DURATION - (clock.elapsedTime - escapeStart));
+    const mine = gemGrabState.escapeA !== null && gemGrabState.escapeA !== undefined;
+    goldRushStatusEl.textContent = `${mine ? "우리 팀" : "상대 팀"} 유적 탈출까지 ${left.toFixed(1)}초!`;
+    document.body.classList.toggle("temple-countdown-final", left <= 3);
+  } else {
+    goldRushStatusEl.textContent = "가운데 제단에서 고대 젬을 모으세요";
+    document.body.classList.remove("temple-countdown-final");
+  }
+  updateGoldRushCombatHud();
+}
+
+function updateGemGrab(dt) {
+  if (!goldRushState.dead) {
+    clampGemActor(player.position);
+  }
+  for (const bot of goldRushBots) {
+    if (bot.dead) continue;
+    clampGemActor(bot.mesh.position);
+  }
+  if (clock.elapsedTime >= gemGrabState.nextGemAt && gemsInPlay() < GEM_MAX_IN_PLAY) {
+    spawnGemAtAltar();
+    gemGrabState.nextGemAt = clock.elapsedTime + GEM_SPAWN_INTERVAL;
+  }
+  for (let i = goldPickups.length - 1; i >= 0; i -= 1) {
+    const pickup = goldPickups[i];
+    pickup.mesh.rotation.y += dt * 3;
+    let collector = !goldRushState.dead
+      && Math.hypot(pickup.mesh.position.x - player.position.x, pickup.mesh.position.z - player.position.z) <= GEM_PICKUP_RANGE
+      ? goldRushState : null;
+    if (!collector) {
+      collector = goldRushBots.find((bot) => !bot.dead
+        && Math.hypot(pickup.mesh.position.x - bot.mesh.position.x, pickup.mesh.position.z - bot.mesh.position.z) <= GEM_PICKUP_RANGE) || null;
+    }
+    if (!collector) continue;
+    removeGoldPickup(i);
+    collector.gold += 1;
+    canvas.dataset.lastGemCollector = collector === goldRushState ? "player" : `ai-${collector.id}`;
+  }
+  const weEscaped = updateGemEscape("a", "escapeA");
+  const theyEscaped = updateGemEscape("b", "escapeB");
+  updateGemGrabHud();
+  if (weEscaped) { endGoldRush(`고대 젬 탈출 성공! · ${gemTeamGems("a")}:${gemTeamGems("b")}`, true); return; }
+  if (theyEscaped) { endGoldRush(`상대 팀 탈출 · ${gemTeamGems("a")}:${gemTeamGems("b")}`, false); return; }
+  if (clock.elapsedTime - goldRushState.startedAt >= GEM_MATCH_DURATION) {
+    const ours = gemTeamGems("a");
+    const theirs = gemTeamGems("b");
+    if (ours === theirs) endGoldRush(`시간 종료 · 무승부 ${ours}:${theirs}`, false);
+    else endGoldRush(`시간 종료 · ${ours > theirs ? "승리" : "패배"} ${ours}:${theirs}`, ours > theirs);
+  }
+}
+
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
 function createHealthNumberLabel() {
   const canvas = document.createElement("canvas");
@@ -5706,11 +5900,24 @@ function processBeta6CombatEvent(event) {
       if (event.type === "circuit") createGoldRushAttackEffect(new THREE.Vector3(event.from.x, 1, event.from.z), new THREE.Vector3(event.to.x, 1, event.to.z), 0xffff44);
 }
 
+// 팀전(젬 그랩)에서만 편을 가른다. 나머지 모드는 예전처럼 전원 적이다.
+function beta6PlayerTeam() {
+  return goldRushState.mode === "gemGrab" ? "a" : null;
+}
+
 function startBeta6BotCombat() {
   if (!HAS_BETA6_CONTENT || goldRushState.mode === "soccer") return;
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
-    seed: Math.floor(Math.random() * 0x7fffffff), bounds: goldRushState.mode === "showdown" ? 19 : 48,
+    seed: Math.floor(Math.random() * 0x7fffffff),
+    bounds: goldRushState.mode === "showdown" ? 19 : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 48,
     destination(actor, target) {
+      // 젬 그랩에서는 적이 바싹 붙었을 때만 싸우고, 그 밖에는 젬을 주우러 간다.
+      if (goldRushState.mode === "gemGrab") {
+        // 팀이 10개를 채웠으면 자기 진영으로 물러나 버티고, 아니면 젬을 주우러 간다.
+        if (gemTeamGems(actor.team) >= GEM_TARGET_COUNT) return gemHomePoint(actor);
+        if (Math.hypot(actor.x - target.x, actor.z - target.z) < 6) return target;
+        return nearestGemPoint(actor);
+      }
       if (goldRushState.mode !== "goldRush" || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return target;
       const pickup = goldPickups.slice().sort((a, b) => Math.hypot(a.mesh.position.x - actor.x, a.mesh.position.z - actor.z) - Math.hypot(b.mesh.position.x - actor.x, b.mesh.position.z - actor.z))[0];
       return { x: pickup?.mesh.position.x ?? goldMine.position.x, z: pickup?.mesh.position.z ?? goldMine.position.z };
@@ -5722,8 +5929,8 @@ function startBeta6BotCombat() {
     },
     onEvent(event) { beta6PendingEvents.push(event); }
   });
-  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, x: player.position.x, z: player.position.z });
-  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, bot });
+  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z });
+  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot });
 }
 
 function updateBeta6BotCombat(dt) {
@@ -5731,7 +5938,7 @@ function updateBeta6BotCombat(dt) {
   const world = beta6Combat;
   if (beta6PlayerActor.hp <= 0 && !goldRushState.dead && goldRushState.health > 0) {
     world.remove(beta6PlayerActor);
-    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, x: player.position.x, z: player.position.z });
+    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z });
   }
   const hero = beta6PlayerActor;
   const deadline = nativeTime => world.time + Math.max(0, (nativeTime || 0) - clock.elapsedTime);
@@ -5744,7 +5951,7 @@ function updateBeta6BotCombat(dt) {
     let actor = bot.combatActor;
     if (bot.dead && goldRushState.mode !== "showdown" && clock.elapsedTime >= bot.respawnAt) {
       world.remove(actor);
-      actor = bot.combatActor = world.add(bot.characterId, { bot, x: bot.spawn.x, z: bot.spawn.z });
+      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
       bot.mesh.userData.health = bot.health; bot.invulnerableUntil = clock.elapsedTime + 2;
       Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
@@ -5809,7 +6016,8 @@ function updateBeta6BotCombat(dt) {
 function createGoldRushBots() {
   clearGoldRushBots();
   let playerModelCount = 0;
-  const botCount = goldRushState.mode === "soccer" ? 5 : 9;
+  const teamMode = goldRushState.mode === "soccer" || goldRushState.mode === "gemGrab";
+  const botCount = teamMode ? 5 : 9;
   for (let i = 0; i < botCount; i += 1) {
     const opponents = CHARACTERS.filter(c => c.id !== betaState.selectedCharacter);
     const character = IS_BETA6_TEST ? opponents[(i + beta6BotRotation) % opponents.length] : null;
@@ -5850,7 +6058,7 @@ function createGoldRushBots() {
       reloadDuration: definition?.reloadDuration || 0.5,
       speed: IS_BETA6_TEST ? 8 * definition.moveSpeedMultiplier : 3.8 + (i % 4) * 0.3,
       winCountdownStartedAt: null,
-      team: goldRushState.mode === "soccer" ? (i < 2 ? "a" : "b") : null,
+      team: teamMode ? (i < 2 ? "a" : "b") : null,
     };
     mesh.userData.goldRushBot = bot;
     mesh.userData.health = bot.health;
@@ -5881,7 +6089,7 @@ function dropGoldRushGold(owner, position) {
 
 function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = false) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
-  if (goldRushState.mode === "soccer" && bot.team === "a") return;
+  if (bot.team === "a") return;
   if (IS_BETA6_TEST && bot.combatActor && !fromBeta6Engine) {
     const a = bot.combatActor;
     if (beta6Combat.time < a.guardUntil) damage *= 1 - a.d.ultimate.damageReduction;
@@ -6018,8 +6226,11 @@ function updateGoldRushBots(dt) {
         ? (bot.mesh.userData.slowMultiplier ?? 1)
         : 1;
       const step = Math.min(distance, bot.speed * slowMultiplier * dt);
+      const botPreviousX = bot.mesh.position.x;
+      const botPreviousZ = bot.mesh.position.z;
       bot.mesh.position.x += (dx / distance) * step;
       bot.mesh.position.z += (dz / distance) * step;
+      applyArenaWallBlock(bot.mesh.position, botPreviousX, botPreviousZ);
       bot.mesh.rotation.y = Math.atan2(dx, dz);
       const ground = groundHeightAt(bot.mesh.position.x, bot.mesh.position.z);
       if (ground > -5) bot.mesh.position.y = THREE.MathUtils.damp(bot.mesh.position.y, ground + 0.05, 12, dt);
@@ -6030,10 +6241,11 @@ function updateGoldRushBots(dt) {
     const combatCandidates = [];
     if (!goldRushState.dead) {
       const playerDistance = Math.hypot(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
-      if (playerDistance < 18 && !isPlayerHiddenFrom(bot.mesh.position.x, bot.mesh.position.z)) combatCandidates.push(goldRushState);
+      if (bot.team !== "a" && playerDistance < 18 && !isPlayerHiddenFrom(bot.mesh.position.x, bot.mesh.position.z)) combatCandidates.push(goldRushState);
     }
     for (const other of goldRushBots) {
       if (other === bot || other.dead) continue;
+      if (bot.team && other.team === bot.team) continue;
       const otherDistance = Math.hypot(other.mesh.position.x - bot.mesh.position.x, other.mesh.position.z - bot.mesh.position.z);
       if (otherDistance < 18) combatCandidates.push(other);
     }
@@ -6124,6 +6336,7 @@ function updateTestCombatHud(dt) {
 }
 
 function updateGoldRushHud() {
+  if (goldRushState.mode === "gemGrab") { updateGemGrabHud(); return; }
   goldCountEl.textContent = String(goldRushState.gold);
   updateGoldRushCombatHud();
   const elapsed = Math.max(0, clock.elapsedTime - goldRushState.startedAt);
@@ -6215,6 +6428,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   showToast(`${message} · 🏆 ${trophyDeltaLabel}`);
   clearGoldRushBots();
   goldMine.visible = false;
+  gemArena.visible = false;
   goldRushHud.classList.add("hidden");
   currentArenaMode = "lobby";
   iceCreamShowdownMap.visible = false;
@@ -6242,10 +6456,11 @@ function startGoldRush(mode = "goldRush") {
   }
   resetAllUltimateCharges();
   goldRushState.mode = mode;
-  const arenaMode = mode === "showdown" || mode === "soccer";
-  currentArenaMode = mode === "soccer" ? "soccer" : arenaMode ? "showdown" : "lobby";
+  const arenaMode = mode === "showdown" || mode === "soccer" || mode === "gemGrab";
+  currentArenaMode = mode === "soccer" || mode === "gemGrab" ? mode : arenaMode ? "showdown" : "lobby";
   iceCreamShowdownMap.visible = mode === "showdown";
   soccerArena.visible = mode === "soccer";
+  gemArena.visible = mode === "gemGrab";
   map.visible = !arenaMode;
   alphaBoss.visible = !arenaMode;
   for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = !arenaMode;
@@ -6273,7 +6488,7 @@ function startGoldRush(mode = "goldRush") {
   playerGoldRushHealthBar.visible = true;
   updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
   canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
-  const collectionMode = mode === "goldRush" || mode === "gemGrab";
+  const collectionMode = mode === "goldRush";
   goldMine.visible = collectionMode;
   goldMineCrystal.visible = collectionMode;
   goldRushHud.classList.remove("hidden");
@@ -6307,12 +6522,26 @@ function startGoldRush(mode = "goldRush") {
     goldRushStatusEl.textContent = IS_BETA5_TEST ? `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존` : "마지막 1명까지 살아남으세요";
     showdownToggle.textContent = "쇼다운 재시작";
     canvas.dataset.betaMode = "ice-cream-showdown";
-  } else {
-    goldRushHud.querySelector("strong").textContent = mode === "gemGrab" ? "GEM GRAB · ANCIENT SEAL" : "GOLD RUSH";
+  } else if (mode === "gemGrab") {
+    gemGrabState.nextGemAt = clock.elapsedTime + 1.5;
+    gemGrabState.escapeA = null;
+    gemGrabState.escapeB = null;
+    gemGrabState.spawnedGems = 0;
+    resetGemGrabPositions();
+    initialSpawnPoint.set(0, GEM_FIELD_Y + 0.13, 15);
+    resetPlayer();
+    goldRushHud.querySelector("strong").textContent = "GEM GRAB · ANCIENT SEAL";
     const resourceLabel = document.getElementById("season-resource-label");
-    if (resourceLabel) resourceLabel.textContent = mode === "gemGrab" ? "고대 젬" : "보유 금";
+    if (resourceLabel) resourceLabel.textContent = "우리 팀 젬";
     goldCountEl.parentElement.style.display = "";
-    canvas.dataset.betaMode = mode === "gemGrab" ? "ancient-gem-grab" : "gold-rush";
+    canvas.dataset.betaMode = "ancient-gem-grab";
+    updateGemGrabHud();
+  } else {
+    goldRushHud.querySelector("strong").textContent = "GOLD RUSH";
+    const resourceLabel = document.getElementById("season-resource-label");
+    if (resourceLabel) resourceLabel.textContent = "보유 금";
+    goldCountEl.parentElement.style.display = "";
+    canvas.dataset.betaMode = "gold-rush";
     updateGoldRushHud();
   }
 }
@@ -6406,6 +6635,7 @@ function updateGoldRush(dt) {
   updateGoldRushBots(dt);
   if (!goldRushState.active || goldRushState.ended) return;
   if (goldRushState.mode === "soccer") { updateSoccer(dt); return; }
+  if (goldRushState.mode === "gemGrab") { updateGemGrab(dt); return; }
   if (goldRushState.mode === "showdown") {
     const survivors = goldRushBots.filter((bot) => !bot.dead).length + (goldRushState.dead ? 0 : 1);
     goldRushRivalsEl.textContent = `${survivors}명 생존`;
@@ -6682,6 +6912,10 @@ function groundHeightAt(x, z) {
 function updateLocation() {
   if (currentArenaMode === "soccer") {
     locationName.textContent = "사커 경기장";
+    return;
+  }
+  if (currentArenaMode === "gemGrab") {
+    locationName.textContent = "고대 유적 제단";
     return;
   }
   if (currentArenaMode === "showdown") {
@@ -7357,8 +7591,11 @@ function animate() {
     const cos = Math.cos(yaw);
     const moveX = input.y * sin - input.x * cos;
     const moveZ = input.y * cos + input.x * sin;
+    const previousX = player.position.x;
+    const previousZ = player.position.z;
     player.position.x += moveX;
     player.position.z += moveZ;
+    applyArenaWallBlock(player.position, previousX, previousZ);
     // 수동 에임 중에는 진행 방향으로 몸을 돌리지 않는다 — 조준 방향을 유지.
     // 궁극기 조준 중에도 마찬가지로, 안 그러면 이동하면서 조준한 방향이
     // 매 프레임 이동 방향으로 되돌아가 버린다.
