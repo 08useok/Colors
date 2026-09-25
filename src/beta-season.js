@@ -1335,9 +1335,12 @@ function loadCharacterMotionSet(characterId, token) {
           sceneModel.position.z -= center.z;
         }
       }
+      // 크리스탈처럼 걷기 클립이 하나뿐이면 시작·반복·정지가 같은 동작이라,
+      // 멈출 때 걷기를 한 바퀴 더 돌면 제자리걸음처럼 보인다. 선 자세는 첫 프레임으로 둔다.
+      const singleClip = paths.start === paths.loop && paths.loop === paths.stop;
       if (actions.stop) {
         actions.stop.play();
-        actions.stop.time = Math.max(0, actions.stop.getClip().duration - 0.001);
+        actions.stop.time = singleClip ? 0 : Math.max(0, actions.stop.getClip().duration - 0.001);
         // update(0) does not reliably evaluate the pose on a freshly loaded
         // mixer. Set the time explicitly so the bind/T-pose never flashes.
         mixers.stop.setTime(actions.stop.time);
@@ -1345,7 +1348,7 @@ function loadCharacterMotionSet(characterId, token) {
       }
       player.add(group);
       activeCharacterModel = group;
-      activeCharacterMotion = { characterId, scenes, mixers, actions, show, state: "idle", current: "stop" };
+      activeCharacterMotion = { characterId, scenes, mixers, actions, show, state: "idle", current: "stop", singleClip };
       canvas.dataset.characterModel = characterId;
     })
     .catch(() => {
@@ -1360,6 +1363,29 @@ function loadCharacterMotionSet(characterId, token) {
 function updateCharacterMotion(isMoving, dt) {
   const motion = activeCharacterMotion;
   if (!motion) return;
+  if (motion.singleClip) {
+    // 걷는 동안만 돌리고, 멈추면 곧바로 선 자세(첫 프레임)로 돌아간다.
+    const walk = motion.actions.stop;
+    const walkMixer = motion.mixers.stop;
+    if (!walk || !walkMixer) return;
+    motion.show("stop");
+    motion.current = "stop";
+    if (isMoving) {
+      if (motion.state !== "looping") {
+        walk.setLoop(THREE.LoopRepeat, Infinity);
+        walk.paused = false;
+        walk.play();
+        motion.state = "looping";
+      }
+      walkMixer.update(dt);
+    } else if (motion.state !== "idle") {
+      walk.paused = true;
+      walkMixer.setTime(0);
+      motion.state = "idle";
+    }
+    canvas.dataset.motionState = motion.state;
+    return;
+  }
   const play = (key) => {
     const action = motion.actions[key];
     if (!action) return false;
@@ -4005,6 +4031,103 @@ function breakVial(projectile) {
   }
 }
 
+// 크리스탈 궁극기 — 돌진해서 적 한 명을 붙잡고, 8초 뒤 그 적을 제거한다.
+let crystalDashState = null;
+let crystalAnalysisState = null;
+let crystalAnalysisBeam = null;
+
+function clearCrystalUltimate() {
+  crystalDashState = null;
+  crystalAnalysisState = null;
+  if (crystalAnalysisBeam) {
+    scene.remove(crystalAnalysisBeam);
+    crystalAnalysisBeam.geometry.dispose();
+    crystalAnalysisBeam.material.dispose();
+    crystalAnalysisBeam = null;
+  }
+}
+
+// 궁극기 중에는 움직이지도 공격하지도 못한다
+function crystalUltimateBusy() {
+  return Boolean(crystalDashState || crystalAnalysisState);
+}
+
+function startCrystalAnalysis() {
+  if (crystalUltimateBusy() || goldRushState.dead) return;
+  crystalDashState = { yaw: player.rotation.y, traveled: 0 };
+  canvas.dataset.lastUltimate = "crystal:analysis";
+  attackComboState.textContent = BETA_CHARACTERS.crystal.ultimate.name;
+}
+
+function bindCrystalTarget(target) {
+  const def = BETA_CHARACTERS.crystal.ultimate;
+  crystalDashState = null;
+  crystalAnalysisState = { target, until: clock.elapsedTime + def.analysisDuration };
+  crystalAnalysisBeam = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, 1, 8),
+    new THREE.MeshBasicMaterial({ color: 0x6ee7ff, transparent: true, opacity: 0.85 }),
+  );
+  scene.add(crystalAnalysisBeam);
+  canvas.dataset.crystalAnalysis = "bound";
+}
+
+function updateCrystalUltimate(dt) {
+  if (betaState.selectedCharacter !== "crystal" || goldRushState.dead) {
+    if (crystalUltimateBusy()) clearCrystalUltimate();
+    return false;
+  }
+  const def = BETA_CHARACTERS.crystal.ultimate;
+  if (crystalAnalysisState) {
+    const { target } = crystalAnalysisState;
+    const remaining = Math.max(0, crystalAnalysisState.until - clock.elapsedTime);
+    // 대상이 먼저 쓰러지면 속박도 바로 풀린다
+    if (!target.visible || target.userData.health <= 0) { clearCrystalUltimate(); attackComboState.textContent = "준비"; return false; }
+    if (crystalAnalysisBeam) {
+      const from = player.position;
+      const to = target.position;
+      const length = Math.max(0.2, Math.hypot(to.x - from.x, to.z - from.z));
+      crystalAnalysisBeam.scale.set(1, length, 1);
+      crystalAnalysisBeam.position.set((from.x + to.x) / 2, from.y + 1.2, (from.z + to.z) / 2);
+      crystalAnalysisBeam.rotation.set(0, 0, Math.PI / 2);
+      crystalAnalysisBeam.rotateZ(-Math.PI / 2);
+      crystalAnalysisBeam.lookAt(to.x, from.y + 1.2, to.z);
+      crystalAnalysisBeam.rotateX(Math.PI / 2);
+    }
+    player.rotation.y = Math.atan2(target.position.x - player.position.x, target.position.z - player.position.z);
+    attackComboState.textContent = `수정 분석 ${remaining.toFixed(1)}초`;
+    if (remaining <= 0) {
+      damageTarget(target, target.userData.maxHealth * 10);
+      canvas.dataset.crystalAnalysis = "eliminated";
+      clearCrystalUltimate();
+      attackComboState.textContent = "분석 완료";
+    }
+    return false;
+  }
+  if (!crystalDashState) return false;
+  const arenaSolids = getArenaSolids();
+  const blocked = (x, z) => arenaSolids.some((solid) =>
+    solid.top > player.position.y + 0.4
+    && Math.abs(x - solid.x) < solid.halfW + 0.5
+    && Math.abs(z - solid.z) < solid.halfD + 0.5);
+  const step = Math.min(def.dashSpeed * dt, def.range - crystalDashState.traveled);
+  const nextX = player.position.x + Math.sin(crystalDashState.yaw) * step;
+  const nextZ = player.position.z + Math.cos(crystalDashState.yaw) * step;
+  if (blocked(nextX, nextZ) || groundHeightAt(nextX, nextZ) < -5) { clearCrystalUltimate(); attackComboState.textContent = "준비"; return false; }
+  player.position.x = nextX;
+  player.position.z = nextZ;
+  player.rotation.y = crystalDashState.yaw;
+  crystalDashState.traveled += step;
+  // 돌진 경로에 닿은 첫 적을 붙잡는다
+  for (const target of testTargets) {
+    if (!target.visible || target.userData.isAlly || target.userData.health <= 0) continue;
+    if (Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z) > 1.4) continue;
+    bindCrystalTarget(target);
+    return false;
+  }
+  if (crystalDashState.traveled >= def.range - 0.001) { clearCrystalUltimate(); attackComboState.textContent = "준비"; }
+  return true;
+}
+
 function clearAzureWave() {
   if (!azureWaveState) return;
   scene.remove(azureWaveState.mesh);
@@ -4102,7 +4225,7 @@ function updateAzureWave(dt) {
   return true;
 }
 function performCharacterAttack({ manualAim = false } = {}) {
-  if (goldRushState.dead) return;
+  if (goldRushState.dead || crystalUltimateBusy()) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
   if (goldRushState.active && goldRushState.mode === "soccer") {
@@ -4805,6 +4928,14 @@ ultimateButton.addEventListener("click", () => {
       player.position.z + Math.cos(player.rotation.y) * 8,
     );
     createYellowCircuitDevice(yellowUltimateAimPointValid ? yellowUltimateAimPoint : fallback);
+    updateCrimsonUltimateGauge();
+    return;
+  }
+  if (betaState.selectedCharacter === "crystal" && IS_BETA7_TEST) {
+    const def = BETA_CHARACTERS.crystal.ultimate;
+    if (crystalUltimateCharge < def.chargeRequired || crystalUltimateBusy()) return;
+    crystalUltimateCharge = 0;
+    startCrystalAnalysis();
     updateCrimsonUltimateGauge();
     return;
   }
@@ -7120,7 +7251,7 @@ canvas.addEventListener("wheel", (event) => {
   distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 3.5, 24);
 }, { passive: true });
 
-function resetPlayer() { clearAzureWave(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
+function resetPlayer() { clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
 goldRushToggle.addEventListener("click", () => startGoldRush(IS_BETA7_TEST ? "gemGrab" : "goldRush"));
@@ -7860,9 +7991,10 @@ function animate() {
   const blueDashing = updateBlueDash(dt);
   const azureDashing = updateAzureWave(dt);
   const purpleJumping = updatePurpleLeap(dt);
-  if (blueDashing || azureDashing || purpleJumping || (beta6Combat && (beta6PlayerActor?.wave || beta6PlayerActor?.dash))) {
+  const crystalDashing = updateCrystalUltimate(dt);
+  if (blueDashing || azureDashing || purpleJumping || crystalDashing || (beta6Combat && (beta6PlayerActor?.wave || beta6PlayerActor?.dash))) {
     isMoving = true;
-  } else if (!goldRushState.dead && !isSoccerFrozen() && !beta6PlayerAttackBlocked() && input.lengthSq() > 0) {
+  } else if (!goldRushState.dead && !isSoccerFrozen() && !beta6PlayerAttackBlocked() && !crystalUltimateBusy() && input.lengthSq() > 0) {
     isMoving = true;
     const beta6Speed = HAS_BETA6_CONTENT ? (BETA_CHARACTERS[betaState.selectedCharacter]?.moveSpeedMultiplier ?? 1) : 1;
     const beta6Slow = beta6Combat && beta6PlayerActor ? (beta6Combat.time < beta6PlayerActor.frozenUntil ? 0 : beta6Combat.time < beta6PlayerActor.slowUntil ? 1 - beta6PlayerActor.slow : 1) : 1;
