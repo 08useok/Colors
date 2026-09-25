@@ -5508,7 +5508,7 @@ const GEM_TARGET_COUNT = 10;
 const GEM_ESCAPE_DURATION = 15;
 const GEM_MATCH_DURATION = 180;
 const GEM_SPAWN_INTERVAL = 2.4;
-const GEM_MAX_IN_PLAY = 12;
+const GEM_MAX_IN_PLAY = 21;
 const GEM_BOT_RESPAWN_DELAY = 5;
 
 const gemArena = new THREE.Group();
