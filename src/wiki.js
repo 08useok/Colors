@@ -1,6 +1,10 @@
 import { CHARACTERS } from "./config/characters.js";
 import { BETA_CHARACTERS } from "./config/beta-characters.js";
 import { SKINS } from "./config/skins.js";
+import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
+
+// 시즌 6부터 메인 게임이 시즌 6 밸런스를 그대로 쓰므로 위키도 같은 수치를 보여준다
+const LIVE_CHARACTERS = applyBeta6Balance(BETA_CHARACTERS);
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -24,9 +28,9 @@ const copy = {
     searchPlaceholder: "캐릭터, 스킬, 맵을 검색하세요", battleRules: "전투 규칙", categories: "카테고리",
     liveData: "베타 데이터 연동", liveDataDesc: "능력치와 일반 공격은 베타 설정 기준입니다.",
     footer: "이 위키의 수치 정보는 게임 설정을 기준으로 자동 표시됩니다.", backGame: "게임으로 돌아가기 →",
-    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 12명의 파이터를 만나보세요.",
+    allCharacters: "전체 캐릭터", charDesc: "서로 다른 색과 전투 방식을 가진 14명의 파이터를 만나보세요.",
     viewAll: "모두 보기", beginnerGuides: "초보자 가이드", guideDesc: "처음 전장에 들어가기 전에 알아둘 핵심 정보",
-    latestPatch: "최근 업데이트", seasonDesc: "v1.5.4까지의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
+    latestPatch: "최근 업데이트", seasonDesc: "v1.6.0까지의 최신 변경 사항", hp: "체력", damage: "공격", range: "사거리",
     speed: "이동 속도", cooldown: "공격 간격", reload: "장전", role: "역할", basicAttack: "일반 공격",
     strategy: "초보자 운영 팁", related: "관련 문서", open: "문서 보기", allGuides: "게임 가이드",
     guidePageDesc: "전투 규칙부터 계정 성장까지, 플레이에 필요한 시스템을 익혀보세요.",
@@ -42,9 +46,9 @@ const copy = {
     searchPlaceholder: "Search characters, skills, and maps", battleRules: "Combat Rules", categories: "Categories",
     liveData: "Beta game data", liveDataDesc: "Stats and basic attacks use the Beta config.",
     footer: "Numerical information is loaded from the current game configuration.", backGame: "Back to game →",
-    allCharacters: "All Characters", charDesc: "Meet twelve fighters with distinct colors and combat styles.",
+    allCharacters: "All Characters", charDesc: "Meet fourteen fighters with distinct colors and combat styles.",
     viewAll: "View all", beginnerGuides: "Beginner Guides", guideDesc: "Essentials to know before your first battle",
-    latestPatch: "Latest Updates", seasonDesc: "Latest changes through v1.5.4", hp: "HP", damage: "Damage", range: "Range",
+    latestPatch: "Latest Updates", seasonDesc: "Latest changes through v1.6.0", hp: "HP", damage: "Damage", range: "Range",
     speed: "Move Speed", cooldown: "Cooldown", reload: "Reload", role: "Role", basicAttack: "Basic Attack",
     strategy: "Beginner Strategy", related: "Related articles", open: "Open article", allGuides: "Game Guide",
     guidePageDesc: "Learn the systems you need, from combat rules to account progression.",
@@ -127,123 +131,158 @@ const characterMeta = {
     tip: ["탄환 UI의 색을 확인하고 다음 효과에 맞춰 움직이세요. 궁극기는 무탄을 제거해 6초 동안 안정적으로 압박할 때 사용합니다.", "Read the ammo UI color and adapt to the next effect. Use the ultimate to remove blank rounds and pressure reliably for six seconds."],
     range: 9.5, damage: 1200,
   },
+  mint: {
+    role: ["빙결 컨트롤러", "Freeze Controller"], attack: ["아이스크림 탄", "Ice Cream Bullets"],
+    desc: ["아이스크림 탄 3연발로 얼음 수치를 쌓아 적을 빙결시키고, 넓은 얼음 장판으로 이동을 방해하는 영웅 컨트롤러입니다.", "A Hero controller who builds ice with three-round bursts, freezes enemies, and disrupts movement with a wide ice field."],
+    tip: ["세 발을 모두 맞혀야 얼음이 빠르게 쌓입니다. 빙결된 2초 동안 가장 큰 공격을 집중하세요.", "Land all three rounds to build ice quickly, then spend the two-second freeze on your biggest damage."],
+    range: 10, damage: 2100,
+  },
+  azure: {
+    role: ["돌격", "Diver"], attack: ["서프 대시", "Surf Dash"],
+    desc: ["파도를 타고 직접 전진하며 앞쪽 넓은 범위를 휩쓰는 영웅 돌격 캐릭터입니다.", "A Hero diver who rides waves forward and sweeps a wide area ahead."],
+    tip: ["서프 대시는 이동기이자 공격입니다. 벽에 막히면 대시가 끝나므로 열린 방향으로 파고드세요. 빅 웨이브는 벽을 관통합니다.", "Surf Dash is both movement and attack. Walls end the dash, so dive through open lanes. Big Wave passes through walls."],
+    range: 4, damage: 3000,
+  },
 };
 
 const characterDetails = {
   red: {
     setting: ["붉은색을 대표하는 근접 탱커입니다. 높은 체력과 빠른 발을 이용해 선두에서 교전을 여는 전투 콘셉트로 설계되었습니다. 별도의 공식 배경 이야기는 아직 공개되지 않았습니다.", "The red close-range tank. Red is designed to start fights with high health and exceptional speed. No official story background has been published yet."],
-    attack: ["전방의 가까운 범위를 두 차례 연속 타격합니다. 한 번의 공격 입력으로 두 타격이 이어지며, 모두 적중하면 총 4,400의 기본 피해를 줍니다.", "Strikes the close area ahead twice in sequence. Both hits deal 4,400 total base damage."],
+    attack: ["전방의 가까운 범위를 두 차례 연속 타격합니다. 한 번의 공격 입력으로 두 타격이 이어지며, 모두 적중하면 총 4,800의 기본 피해를 줍니다. 레드 가드 궁극기는 피해를 받을 때마다 2씩 추가 충전됩니다.", "Strikes the close area ahead twice in sequence. Both hits deal 4,800 total base damage. Taking damage adds 2 charge to Red Guard."],
     strong: ["Blue, Purple처럼 거리를 유지해야 하는 파이터", "Fighters who depend on distance, such as Blue and Purple"],
     weak: ["Yellow의 감속과 Orange의 접근 차단", "Yellow's slow and Orange's area denial"],
     matchup: ["수풀과 벽을 이용해 사격선을 끊은 뒤 단숨에 접근하면 유리합니다. 넓은 공간에서 감속에 걸리면 접근 수단이 없어 불리합니다.", "Break lines of fire with bushes and walls, then close the gap at once. Slows in open space leave Red with few options."],
-    history: [["초기", "최초 3개 캐릭터 중 하나로 등장", "Launch", "One of the original three characters"], ["v1.3.2", "이동 속도 상향", "v1.3.2", "Movement speed increased"], ["v1.3.9", "체력 9,800, 공격 간격 0.55초로 조정", "v1.3.9", "Adjusted to 9,800 HP and 0.55s cooldown"], ["v1.4.9", "공격 가로 범위 조정", "v1.4.9", "Horizontal attack reach adjusted"]],
+    history: [["초기", "최초 3개 캐릭터 중 하나로 등장", "Launch", "One of the original three characters"], ["v1.3.2", "이동 속도 상향", "v1.3.2", "Movement speed increased"], ["v1.3.9", "체력 9,800, 공격 간격 0.55초로 조정", "v1.3.9", "Adjusted to 9,800 HP and 0.55s cooldown"], ["v1.4.9", "공격 가로 범위 조정", "v1.4.9", "Horizontal attack reach adjusted"], ["v1.6.0", "일반 공격 2,200→2,400, 피격 시 궁극기 충전 2", "v1.6.0", "Basic attack 2,200→2,400; +2 ultimate charge when hit"]],
     other: ["공격 유형은 코드에서 punch로 분류됩니다. 모든 수치는 캐릭터 레벨 보정이 적용되기 전 기본값입니다.", "The attack is classified as punch in the game config. Listed values are base stats before character-level bonuses."],
   },
   green: {
     setting: ["녹색을 대표하는 기동형 암살자입니다. 네 발의 부메랑을 한 번에 던져 가까운 적에게 큰 집중 피해를 주는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The green mobile assassin. Green throws four boomerangs at once for heavy close-to-mid-range burst. No official story background has been published."],
-    attack: ["부채꼴로 부메랑 네 개를 발사합니다. 각 부메랑은 베타 기준 950 피해를 주며, 멀리 있는 적에게는 피해 감소가 적용됩니다. 부메랑은 최대 거리에서 되돌아옵니다.", "Fires four boomerangs in a fan. Each deals 950 damage in Beta, with falloff against distant targets, then returns at maximum range."],
+    attack: ["부채꼴로 부메랑 네 개를 발사합니다. 각 부메랑은 1,900 피해를 주며, 멀리 있는 적에게는 피해 감소가 적용됩니다. 부메랑은 최대 거리에서 되돌아옵니다.", "Fires four boomerangs in a fan. Each deals 1,900 damage, with falloff against distant targets, then returns at maximum range."],
     strong: ["느리고 큰 표적, 좁은 길에 들어온 파이터", "Slow targets and fighters caught in narrow lanes"],
     weak: ["Red의 강제 근접전과 Blue의 장거리 견제", "Red's point-blank pressure and Blue's long-range poke"],
     matchup: ["네 발을 모두 맞힐 수 있는 중근거리가 가장 강합니다. Blue를 추격할 때는 탄을 피한 뒤 접근하고, Red에게는 최대 사거리를 유지하세요.", "Green is strongest where all four shots can connect. Dodge before chasing Blue, and hold maximum range against Red."],
-    history: [["초기", "최초 3개 캐릭터 중 하나로 등장", "Launch", "One of the original three characters"], ["v1.2.5", "부메랑 피해량 조정", "v1.2.5", "Boomerang damage adjusted"], ["v1.4.3", "부메랑 피해 950, 사거리와 판정 개선", "v1.4.3", "Set to 950 damage with range and hitbox improvements"], ["v1.4.13", "사거리 증가, 발사 각도 축소", "v1.4.13", "Range increased and spread narrowed"]],
-    other: ["공격 한 번의 이론상 최대 기본 피해는 3,800입니다. 원거리 피해 감소 때문에 실제 피해는 거리와 적중 수에 따라 달라집니다.", "The theoretical maximum base damage is 3,800. Actual damage varies with range and the number of boomerangs landed."],
+    history: [["초기", "최초 3개 캐릭터 중 하나로 등장", "Launch", "One of the original three characters"], ["v1.2.5", "부메랑 피해량 조정", "v1.2.5", "Boomerang damage adjusted"], ["v1.4.3", "부메랑 피해 950, 사거리와 판정 개선", "v1.4.3", "Set to 950 damage with range and hitbox improvements"], ["v1.4.13", "사거리 증가, 발사 각도 축소", "v1.4.13", "Range increased and spread narrowed"], ["v1.6.0", "부메랑 피해 1,000→1,900, 은신 중 공격 시 즉시 발각", "v1.6.0", "Boomerang 1,000→1,900; attacking from stealth reveals instantly"]],
+    other: ["공격 한 번의 이론상 최대 기본 피해는 7,600입니다. 은신 중 공격하면 즉시 모습이 드러납니다. 원거리 피해 감소 때문에 실제 피해는 거리와 적중 수에 따라 달라집니다.", "The theoretical maximum base damage is 7,600. Attacking while concealed reveals Green immediately. Actual damage varies with range and the number of boomerangs landed."],
   },
   blue: {
     setting: ["파란색을 대표하는 장거리 저격수입니다. 낮은 체력을 긴 사거리와 빠른 탄속으로 보완하는 정밀 사격 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The blue long-range sniper. Blue offsets low health with superior range and fast projectiles. No official story background has been published."],
-    attack: ["직선으로 빠른 탄환 한 발을 발사해 베타 기준 1,000의 피해를 줍니다. 사거리 16으로 기본 캐릭터 중 가장 먼 거리에서 공격할 수 있습니다.", "Fires one fast, straight projectile for 1,000 damage in Beta. Its range of 16 is the longest among the base roster."],
+    attack: ["매우 빠른 구슬 한 발을 직선으로 던져 1,200 피해와 1.5타일 넉백을 줍니다. 사거리 17.5로 가장 먼 거리에서 공격할 수 있습니다.", "Throws one very fast marble for 1,200 damage and 1.5 tiles of knockback. Its 17.5 range is the longest in the roster."],
     strong: ["Orange, Yellow처럼 중거리에서 준비 시간이 필요한 파이터", "Mid-range fighters who need setup time, such as Orange and Yellow"],
     weak: ["Red와 Green의 빠른 접근", "Fast approaches from Red and Green"],
     matchup: ["항상 퇴로를 남기고 최대 사거리 부근에서 싸우세요. 벽 가까이 몰리면 낮은 체력 때문에 빠르게 쓰러질 수 있습니다.", "Keep an escape route and fight near maximum range. Getting pinned against a wall is especially dangerous with Blue's low health."],
-    history: [["초기", "최초 3개 캐릭터 중 하나로 등장", "Launch", "One of the original three characters"], ["v1.3.2", "공격 간격 0.3초로 조정", "v1.3.2", "Cooldown adjusted to 0.3s"], ["v1.4.3", "체력 4,800, 탄속 32로 조정", "v1.4.3", "Adjusted to 4,800 HP and 32 projectile speed"], ["v1.4.14", "전용 3D 모델과 걷기 애니메이션 적용", "v1.4.14", "Received a dedicated 3D model and walk animation"]],
-    other: ["공격 유형은 bullet입니다. 베타 일반 공격은 탄환 한 발당 1,000 피해, 탄속 35.2를 기준으로 합니다.", "The attack type is bullet. Its Beta basic attack deals 1,000 per shot with 35.2 projectile speed."],
+    history: [["초기", "최초 3개 캐릭터 중 하나로 등장", "Launch", "One of the original three characters"], ["v1.3.2", "공격 간격 0.3초로 조정", "v1.3.2", "Cooldown adjusted to 0.3s"], ["v1.4.3", "체력 4,800, 탄속 32로 조정", "v1.4.3", "Adjusted to 4,800 HP and 32 projectile speed"], ["v1.4.14", "전용 3D 모델과 걷기 애니메이션 적용", "v1.4.14", "Received a dedicated 3D model and walk animation"], ["v1.6.0", "구슬 피해 1,200·사거리 17.5·넉백 추가", "v1.6.0", "Marble 1,200 damage, 17.5 range, knockback added"]],
+    other: ["공격 유형은 bullet입니다. 구슬은 한 발당 1,200 피해, 탄속 68.75입니다. 특수 공격 돌진은 3회 적중으로 충전됩니다.", "The attack type is bullet. Each marble deals 1,200 damage at 68.75 speed. The Ricochet Dash special charges after three hits."],
   },
   orange: {
     setting: ["주황색을 대표하는 광역 피해 파이터입니다. 폭탄의 직격과 다섯 갈래 파편으로 길목을 통제하는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The orange area-damage fighter. Orange controls lanes with direct bomb hits and five-way fragments. No official story background has been published."],
-    attack: ["베타 일반 공격은 폭탄 한 발을 던져 적중 지점 주변에 750의 범위 피해를 줍니다. 공식 능력 ‘광역 폭발’ 적용 시 폭발 범위가 25% 증가합니다.", "The Beta basic attack throws one bomb that deals 750 area damage around the impact. The Wide Blast ability increases its blast radius by 25%."],
+    attack: ["폭탄 직격 시 750 피해를 주고, 터지며 흩어지는 과즙이 각각 1,300 피해를 줍니다. 공식 능력 ‘광역 폭발’ 적용 시 폭발 범위가 25% 증가합니다.", "A direct bomb hit deals 750 damage, and each juice splash from the burst deals 1,300. The Wide Blast ability increases its blast radius by 25%."],
     strong: ["Pink 같은 큰 근접 표적과 좁은 길의 적", "Large close-range targets such as Pink and enemies in corridors"],
     weak: ["Blue의 사거리와 Green의 빠른 측면 접근", "Blue's range and Green's fast flanks"],
     matchup: ["적의 현재 위치보다 이동할 방향에 폭탄을 놓으세요. 파편을 모두 맞히려 욕심내기보다 퇴로를 차단하는 것이 안정적입니다.", "Place bombs on escape paths rather than current positions. Denying movement is more reliable than chasing every fragment hit."],
-    history: [["v1.3.0", "네 번째 캐릭터로 정식 추가", "v1.3.0", "Added as the fourth character"], ["v1.3.2", "파편 범위 조정", "v1.3.2", "Fragment range adjusted"], ["v1.4.2", "직격 750, 파편 700으로 조정", "v1.4.2", "Adjusted to 750 direct and 700 fragment damage"], ["v1.4.10", "장전 0.5초, 폭탄 사거리 9로 개선", "v1.4.10", "Improved to 0.5s reload and 9 bomb range"]],
-    other: ["베타 시즌에서는 기존의 다섯 갈래 파편 대신 하나의 원형 폭발 판정을 사용합니다. 폭탄 속도는 22, 사거리는 9입니다.", "Beta Season replaces the former five-way fragments with a single circular blast. Bomb speed is 22 and range is 9."],
+    history: [["v1.3.0", "네 번째 캐릭터로 정식 추가", "v1.3.0", "Added as the fourth character"], ["v1.3.2", "파편 범위 조정", "v1.3.2", "Fragment range adjusted"], ["v1.4.2", "직격 750, 파편 700으로 조정", "v1.4.2", "Adjusted to 750 direct and 700 fragment damage"], ["v1.4.10", "장전 0.5초, 폭탄 사거리 9로 개선", "v1.4.10", "Improved to 0.5s reload and 9 bomb range"], ["v1.6.0", "체력 5,800→4,400, 과즙 피해 700→1,300", "v1.6.0", "HP 5,800→4,400; juice damage 700→1,300"]],
+    other: ["폭탄 속도는 22, 사거리는 9입니다. 시즌 6에서 체력이 4,400으로 낮아진 대신 과즙 피해가 크게 올랐습니다.", "Bomb speed is 22 and range is 9. Season 6 lowered health to 4,400 while sharply raising juice damage."],
   },
   yellow: {
     setting: ["노란색을 대표하는 전기 제어 파이터입니다. 직접 피해와 감속을 결합해 상대의 이동을 제한하는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The yellow electric controller. Yellow combines direct damage and slows to limit enemy movement. No official story background has been published."],
-    attack: ["전기 구슬 한 발을 발사해 2,400의 기본 피해를 주고, 명중한 적의 이동 속도를 1.5초 동안 감소시킵니다.", "Fires an electric orb for 2,400 base damage and slows the target's movement for 1.5 seconds."],
+    attack: ["0.3초 간격으로 전기 구슬을 발사해 2,200의 기본 피해를 주고, 명중한 적의 이동 속도를 2초 동안 25% 감소시킵니다.", "Fires electric orbs every 0.3 seconds for 2,200 base damage, slowing the target by 25% for 2 seconds."],
     strong: ["Red와 Green처럼 접근이 필요한 파이터", "Approach-dependent fighters such as Red and Green"],
     weak: ["Blue의 장거리 사격", "Blue's long-range fire"],
     matchup: ["첫 공격은 피해보다 감속을 건다는 생각으로 사용하세요. 감속된 적의 이동 방향을 읽으면 후속 공격 적중률이 크게 올라갑니다.", "Treat the first hit as setup for the slow. Reading the slowed movement makes follow-up shots much easier."],
-    history: [["v1.3.7", "다섯 번째 캐릭터로 추가", "v1.3.7", "Added as the fifth character"], ["v1.3.9", "사거리 12, 감속 1.5초로 조정", "v1.3.9", "Adjusted to 12 range and 1.5s slow"], ["v1.4.3", "피해량 2,400으로 조정", "v1.4.3", "Damage adjusted to 2,400"], ["v1.4.4", "감전 시각 효과 강화", "v1.4.4", "Enhanced electric hit effects"]],
-    other: ["공격 유형은 electric입니다. 감속은 피해와 별개로 위치 싸움과 아군의 추격을 돕는 제어 효과입니다.", "The attack type is electric. Its slow is a control effect that helps positioning and allied pursuit beyond raw damage."],
+    history: [["v1.3.7", "다섯 번째 캐릭터로 추가", "v1.3.7", "Added as the fifth character"], ["v1.3.9", "사거리 12, 감속 1.5초로 조정", "v1.3.9", "Adjusted to 12 range and 1.5s slow"], ["v1.4.3", "피해량 2,400으로 조정", "v1.4.3", "Damage adjusted to 2,400"], ["v1.4.4", "감전 시각 효과 강화", "v1.4.4", "Enhanced electric hit effects"], ["v1.6.0", "공격 간격 0.3초, 궁극기 전기 회로 출시", "v1.6.0", "0.3s cooldown; Electric Circuit ultimate released"]],
+    other: ["공격 유형은 electric입니다. 감속은 피해와 별개로 위치 싸움과 아군의 추격을 돕는 제어 효과입니다. 궁극기 전기 회로는 장치를 최대 4개 설치하고, 일반 공격으로 장치를 맞히면 설치 순서대로 구간당 1,200 피해의 전류가 흐릅니다.", "The attack type is electric. Its slow is a control effect that helps positioning and allied pursuit beyond raw damage. The Electric Circuit ultimate places up to four devices; hitting one with a basic attack sends current through them in order for 1,200 damage per segment."],
   },
   cyan: {
     setting: ["청록색을 대표하는 광역 제압 파이터입니다. 넓은 탄막과 충전형 궁극기로 다수의 적과 길목을 밀어내는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The cyan area-control fighter. Cyan uses a broad barrage and charged ultimate to suppress groups and lanes. No official story background has been published."],
-    attack: ["나란히 퍼지는 투사체 여섯 발을 발사하며 베타 기준 각 탄은 450 피해를 줍니다. 일반 공격을 적중시켜 궁극기 질풍 강타를 충전할 수 있습니다.", "Fires six parallel projectiles for 450 damage each in Beta. Landing basic attacks charges the Gale Strike ultimate."],
+    attack: ["나란히 퍼지는 투사체 여섯 발을 발사하며 각 탄은 650 피해를 줍니다. 일반 공격을 적중시켜 궁극기 질풍 강타를 충전할 수 있습니다.", "Fires six parallel projectiles for 650 damage each. Landing basic attacks charges the Gale Strike ultimate."],
     strong: ["Orange와 Pink처럼 넓은 탄막을 피하기 어려운 표적", "Targets that struggle to avoid broad barrages, such as Orange and Pink"],
     weak: ["Blue의 장거리 견제", "Blue's long-range pressure"],
     matchup: ["한 명에게 모든 탄을 맞히기보다 적의 이동 공간을 줄이는 데 집중하세요. 질풍 강타는 자기장 가장자리에서 밀어내기와 함께 사용하면 강력합니다.", "Focus on reducing movement space rather than landing every shot. Gale Strike is especially strong for knockback near the zone edge."],
-    history: [["v1.4.0", "여섯 번째 캐릭터로 추가", "v1.4.0", "Added as the sixth character"], ["v1.4.4", "광역 제압 역할과 효과 개선", "v1.4.4", "Improved area-control role and effects"], ["v1.4.8", "알파 시즌 4 전환과 함께 조정", "v1.4.8", "Adjusted with the Alpha Season 4 transition"], ["현재", "질풍 강타 궁극기와 전용 버튼 지원", "Current", "Supports the Gale Strike ultimate and dedicated control"]],
-    other: ["베타 일반 공격 여섯 발의 이론상 최대 피해는 2,700입니다. 궁극기는 12회 충전이 필요하며 피해와 넉백을 함께 적용합니다.", "All six Beta projectiles theoretically deal 2,700. The ultimate requires 12 charges and applies both damage and knockback."],
+    history: [["v1.4.0", "여섯 번째 캐릭터로 추가", "v1.4.0", "Added as the sixth character"], ["v1.4.4", "광역 제압 역할과 효과 개선", "v1.4.4", "Improved area-control role and effects"], ["v1.4.8", "알파 시즌 4 전환과 함께 조정", "v1.4.8", "Adjusted with the Alpha Season 4 transition"], ["현재", "질풍 강타 궁극기와 전용 버튼 지원", "Current", "Supports the Gale Strike ultimate and dedicated control"], ["v1.6.0", "궁극기 피해 2,600→3,120", "v1.6.0", "Ultimate damage 2,600→3,120"]],
+    other: ["여섯 발의 이론상 최대 피해는 3,900입니다. 궁극기는 10회 충전이 필요하며 3,120 피해와 넉백을 함께 적용합니다.", "All six projectiles theoretically deal 3,900. The ultimate requires 10 charges and applies 3,120 damage plus knockback."],
   },
   crimson: {
     setting: ["진홍색을 대표하는 근접 브루저입니다. 레드를 보고 권투를 시작해 세계적인 선수가 됐지만, 정작 레드는 못 이긴다고 말합니다. 베타 시즌 1에서 영웅 등급으로 합류했습니다.", "The crimson melee bruiser. Crimson took up boxing after watching Red and became world-class, yet still claims he cannot beat Red. Joined in Beta Season 1 as a Hero-tier character."],
-    attack: ["전방 84도 부채꼴에 -25도, 0도, +25도 순서로 0.12초 간격 3연타를 넣습니다. 타당 900 피해로 전부 맞히면 2,700이며, 범위 안 여러 적을 동시에 때립니다.", "Throws three punches at -25, 0 and +25 degrees within an 84-degree fan, 0.12s apart. Each hit deals 900 for 2,700 total and strikes every enemy in the arc."],
+    attack: ["전방 84도 부채꼴에 -25도, 0도, +25도 순서로 0.12초 간격 3연타를 넣습니다. 타당 약 1,333 피해로 전부 맞히면 4,000이며, 범위 안 여러 적을 동시에 때립니다.", "Throws three punches at -25, 0 and +25 degrees within an 84-degree fan, 0.12s apart. Each hit deals about 1,333 for 4,000 total and strikes every enemy in the arc."],
     strong: ["Blue처럼 체력이 낮고 근접전을 피하려는 원거리 딜러", "Squishy ranged fighters who want to avoid melee, such as Blue"],
     weak: ["Purple의 지속 피해와 거리를 유지하는 견제", "Purple's damage over time and disengage pressure"],
-    matchup: ["사거리가 2.5타일로 가장 짧습니다. 벽과 수풀로 접근 경로를 가린 뒤 한 번에 붙으세요. 궁극기는 벽을 부수며 들어가는 진입기로도 쓸 수 있습니다.", "With the shortest range at 2.5 tiles, approach behind walls and bushes, then commit once. The ultimate doubles as an engage tool since it destroys walls."],
-    history: [["v1.5.0", "베타 시즌 1 신규 영웅 캐릭터로 추가", "v1.5.0", "Added as the Beta Season 1 Hero-tier character"]],
-    other: ["궁극기 KO 스트레이트는 일반 공격 9회 명중으로 충전되며, 정면 5×5 범위에 2,500 피해와 넉백을 주고 범위 안의 벽을 영구히 제거합니다. 게이지는 사망해도 초기화되지 않습니다.", "The KO Straight ultimate charges from nine basic-attack hits, deals 2,500 damage with knockback in a 5x5 area ahead, and permanently removes walls inside it. The gauge is not reset on death."],
+    matchup: ["사거리가 3타일로 가장 짧습니다. 벽과 수풀로 접근 경로를 가린 뒤 한 번에 붙으세요. 궁극기는 벽을 부수며 들어가는 진입기로도 쓸 수 있습니다.", "With the shortest range at 3 tiles, approach behind walls and bushes, then commit once. The ultimate doubles as an engage tool since it destroys walls."],
+    history: [["v1.5.0", "베타 시즌 1 신규 영웅 캐릭터로 추가", "v1.5.0", "Added as the Beta Season 1 Hero-tier character"], ["v1.6.0", "체력 10,500, 궁극기 5,400 피해·충전 7", "v1.6.0", "HP 10,500; ultimate 5,400 damage, 7 charge"]],
+    other: ["궁극기 KO 스트레이트는 일반 공격 7회 명중으로 충전되며, 정면 6×6 범위에 5,400 피해와 넉백을 주고 범위 안의 벽을 영구히 제거합니다. 게이지는 사망해도 초기화되지 않습니다.", "The KO Straight ultimate charges from seven basic-attack hits, deals 5,400 damage with knockback in a 6x6 area ahead, and permanently removes walls inside it. The gauge is not reset on death."],
   },
   purple: {
     setting: ["보라색을 대표하는 지속 피해 컨트롤러입니다. 독침과 약병을 번갈아 사용해 회복과 위치 선정에 압박을 주는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The purple damage-over-time controller. Purple alternates needles and vials to pressure healing and positioning. No official story background has been published."],
-    attack: ["베타에서는 11도 부채꼴의 독침 두 발과 폭발 약병을 번갈아 사용합니다. 독침은 발당 700, 약병은 넓은 범위에 3,040 피해를 줍니다.", "Beta alternates two needles in an 11-degree fan with an explosive vial. Each needle deals 700, while the vial deals 3,040 area damage."],
+    attack: ["-12도·0도·+12도로 퍼지는 독침 세 발과 폭발 약병을 번갈아 사용합니다. 독침은 발당 1,100 피해와 4초간 초당 912의 독 피해를, 약병은 반경 4타일에 3,240 피해를 줍니다.", "Alternates three needles at -12, 0, and +12 degrees with an explosive vial. Each needle deals 1,100 plus 912 poison damage per second for 4 seconds; the vial deals 3,240 in a 4-tile radius."],
     strong: ["Pink처럼 높은 체력과 회복에 의존하는 파이터", "High-health or healing-dependent fighters such as Pink"],
     weak: ["Red와 Green의 빠른 근접 압박", "Fast close-range pressure from Red and Green"],
     matchup: ["독침을 맞힌 뒤 무리하게 추격하지 말고 지속 피해를 활용하세요. 약병 순서일 때는 수풀이나 좁은 길의 적을 노리세요.", "After applying poison, let the damage tick instead of over-chasing. Use the vial against enemies in bushes or narrow lanes."],
-    history: [["v1.4.3", "독침과 약병을 쓰는 캐릭터로 추가", "v1.4.3", "Added with alternating needle and vial attacks"], ["v1.4.6", "약병 폭발 범위 하향", "v1.4.6", "Vial blast radius reduced"], ["v1.4.10", "체력 6,000, 사거리 13으로 개선", "v1.4.10", "Improved to 6,000 HP and 13 range"], ["현재", "독 지속 피해와 약병 마무리 구조 유지", "Current", "Retains poison pressure and vial-finisher flow"]],
+    history: [["v1.4.3", "독침과 약병을 쓰는 캐릭터로 추가", "v1.4.3", "Added with alternating needle and vial attacks"], ["v1.4.6", "약병 폭발 범위 하향", "v1.4.6", "Vial blast radius reduced"], ["v1.4.10", "체력 6,000, 사거리 13으로 개선", "v1.4.10", "Improved to 6,000 HP and 13 range"], ["현재", "독 지속 피해와 약병 마무리 구조 유지", "Current", "Retains poison pressure and vial-finisher flow"], ["v1.6.0", "독침 1,100, 독 초당 912, 독병 3,240", "v1.6.0", "Needle 1,100, poison 912/s, vial 3,240"]],
     other: ["공격 유형은 poison입니다. 독에 걸린 대상은 지속 피해를 받고 회복 효율도 제한될 수 있어 직접 피해 수치 이상으로 압박을 줍니다.", "The attack type is poison. Damage over time and possible healing reduction create pressure beyond the direct damage value."],
   },
   pink: {
     setting: ["분홍색을 대표하는 탱커 겸 서포터입니다. 높은 체력과 빠른 이동, 음악을 연상시키는 원형 공격으로 아군과 함께 전진하는 콘셉트입니다. 공식 배경 이야기는 아직 공개되지 않았습니다.", "The pink tank-support. Pink advances with allies using high health, fast movement, and a music-inspired circular attack. No official story background has been published."],
-    attack: ["자신을 중심으로 원형 파동을 발생시킵니다. 베타 기준 범위 안의 적에게 2,400 피해를 주고 아군에게는 1,600의 체력을 회복시킵니다.", "Creates a circular wave centered on Pink. In Beta it deals 2,400 damage to enemies and heals allies for 1,600."],
+    attack: ["자신을 중심으로 원형 파동을 발생시킵니다. 범위 안의 적에게 2,000 피해를 주고 아군에게는 1,400의 체력을 회복시킵니다.", "Creates a circular wave centered on Pink. It deals 2,000 damage to enemies and heals allies for 1,400."],
     strong: ["Purple을 제외한 근접 난전과 팀 교전", "Close brawls and team fights, except against Purple's poison pressure"],
     weak: ["Purple의 지속 피해와 Blue의 장거리 견제", "Purple's damage over time and Blue's long-range pressure"],
     matchup: ["아군과 적을 동시에 범위에 넣는 위치가 가장 좋습니다. 높은 체력만 믿고 혼자 들어가면 짧은 사거리 때문에 집중 공격을 받기 쉽습니다.", "Position to catch allies and enemies in the same wave. Entering alone wastes the support value and exposes Pink's short range."],
-    history: [["v1.4.6", "여덟 번째 기본 캐릭터로 추가", "v1.4.6", "Added as the eighth base character"], ["v1.4.7", "기타 모델과 음파 효과 개선", "v1.4.7", "Improved guitar model and sound-wave effects"], ["v1.4.10", "추가 범위 보너스 조정", "v1.4.10", "Adjusted bonus attack range"], ["현재", "체력 11,500의 최고 체력 캐릭터", "Current", "Highest-health character at 11,500 HP"]],
+    history: [["v1.4.6", "여덟 번째 기본 캐릭터로 추가", "v1.4.6", "Added as the eighth base character"], ["v1.4.7", "기타 모델과 음파 효과 개선", "v1.4.7", "Improved guitar model and sound-wave effects"], ["v1.4.10", "추가 범위 보너스 조정", "v1.4.10", "Adjusted bonus attack range"], ["현재", "체력 11,500의 최고 체력 캐릭터", "Current", "Highest-health character at 11,500 HP"], ["v1.6.0", "체력 10,500→9,000, 음표 피해 2,000", "v1.6.0", "HP 10,500→9,000; note damage 2,000"]],
     other: ["공격 유형은 heal_circle입니다. 기본 게임 설정에서는 공격 피해와 회복량이 각각 관리되므로 밸런스 패치에서 서로 다르게 조정될 수 있습니다.", "The attack type is heal_circle. Damage and healing are configured separately and may change independently in balance updates."],
   },
 };
 
 characterDetails.gold = {
   setting: ["금을 사랑하는 전설 등급 컨트롤러입니다. 광석을 단계적으로 분열시켜 전장을 넓게 압박합니다.", "A Legendary controller who loves gold and pressures wide areas through staged ore splits."],
-  attack: ["첫 광석은 4,000 피해와 1.5타일 범위 피해를 주고 좌우로 분열합니다. 2단계는 각 2,000 피해, 마지막 금괴는 여섯 방향으로 각 1,000 피해를 줍니다.", "The first ore deals 4,000 damage with a 1.5-tile splash then splits sideways. Stage two deals 2,000 each; the final six gold bars deal 1,000 each."],
+  attack: ["1.5초 간격으로 던지는 첫 광석은 900 피해와 1.5타일 범위 피해를 주고 좌우로 분열합니다. 2단계는 각 450 피해, 마지막 금괴는 여섯 방향으로 각 225 피해를 줍니다.", "Thrown every 1.5 seconds, the first ore deals 900 damage with a 1.5-tile splash then splits sideways. Stage two deals 450 each; the final six gold bars deal 225 each."],
   strong: ["Crimson, Purple, Pink처럼 접근하거나 좁은 범위에 머무는 상대", "Close or confined fighters such as Crimson, Purple, and Pink"],
   weak: ["Blue, Yellow, Cyan의 장거리 견제", "Long-range pressure from Blue, Yellow, and Cyan"],
   matchup: ["분열 경로를 벽과 통로에 맞춰 예측하기 어렵게 만드세요. 고장 지대 안의 적은 공격할 수 없고 이동 속도가 50% 감소합니다.", "Use walls and lanes to make split paths unpredictable. Enemies in Malfunction Zone cannot attack and move 50% slower."],
-  history: [["v1.5.2", "베타 시즌 2 신규 전설 캐릭터", "v1.5.2", "Added as the Beta Season 2 Legendary fighter"]],
-  other: ["궁극기는 일반 공격 단계별 적중으로 최대 12 충전됩니다. 한 번의 일반 공격에서 얻는 충전량은 최대 6입니다.", "The ultimate needs 12 charge from stage hits. A single basic attack can contribute at most 6 charge."]
+  history: [["v1.5.2", "베타 시즌 2 신규 전설 캐릭터", "v1.5.2", "Added as the Beta Season 2 Legendary fighter"], ["v1.6.0", "체력 7,500, 단계 피해 900/450/225, 궁극기 충전 6", "v1.6.0", "HP 7,500; stage damage 900/450/225; 6 ultimate charge"]],
+  other: ["궁극기는 일반 공격 단계별 적중으로 6 충전됩니다. 한 번의 일반 공격에서 얻는 충전량은 최대 6입니다. 시즌 6부터 골드가 받는 투사체 피해는 한 발당 650 감소합니다.", "The ultimate needs 6 charge from stage hits. A single basic attack can contribute at most 6 charge. Since Season 6, projectile hits on Gold deal 650 less damage."]
 };
 
 characterDetails.ivory = {
   setting: ["아이스크림 가게의 직원입니다. 아이스크림을 던져 착탄 지점과 주변 길목을 장악하는 지역 제어형 파이터입니다.", "An ice cream shop employee who controls impact points and nearby lanes with thrown ice cream."],
-  attack: ["최대 사거리 10타일에 아이스크림을 던집니다. 착탄 시 1,100 피해를 주고, 4초 동안 매초 1,100 피해를 주는 장판을 만듭니다. 장판 피해는 중첩되지 않습니다.", "Throws ice cream up to 10 tiles. It deals 1,100 impact damage and leaves a four-second zone that deals 1,100 damage each second. Zone damage does not stack."],
+  attack: ["최대 사거리 6타일에 아이스크림을 던집니다. 착탄 시 2,000 피해를 주고, 반경 2.5타일에 4초 동안 0.5초마다 2,000 피해를 주는 장판을 만듭니다. 장판 피해는 중첩되지 않습니다.", "Throws ice cream up to 6 tiles. It deals 2,000 impact damage and leaves a 2.5-tile zone for four seconds that deals 2,000 damage every 0.5 seconds. Zone damage does not stack."],
   strong: ["좁은 길에서 이동 경로가 제한된 파이터", "Fighters whose movement is limited in narrow lanes"],
   weak: ["장판 밖에서 긴 사거리로 견제하는 파이터", "Fighters who can poke from long range outside the zone"],
   matchup: ["직접 명중만 노리기보다 도주로와 수풀 입구를 장판으로 막으세요. 궁극기 단체 주문은 여러 길목을 동시에 막거나 한 지역에 압박을 몰아줄 때 효과적입니다.", "Block escape routes and bush entrances with zones instead of relying only on direct hits. Group Order is effective for covering multiple lanes or concentrating pressure on one area."],
-  history: [["v1.5.3", "베타 시즌 3 신규 플레이어블 캐릭터로 추가", "v1.5.3", "Added as a new playable fighter in Beta Season 3"]],
-  other: ["궁극기 단체 주문은 목표 지점의 중앙과 네 방향에 아이스크림 5개를 던집니다. 궁극기 게이지는 일반 공격과 장판 피해가 적중할 때 충전됩니다.", "Group Order throws five ice creams at the target area: one in the center and one in each cardinal direction. Its gauge charges when basic attacks and zone damage hit."],
+  history: [["v1.5.3", "베타 시즌 3 신규 플레이어블 캐릭터로 추가", "v1.5.3", "Added as a new playable fighter in Beta Season 3"], ["v1.6.0", "사거리 6, 피해 2,000, 장판 0.5초 틱, 궁극기 충전 3", "v1.6.0", "Range 6, 2,000 damage, 0.5s zone tick, 3 ultimate charge"]],
+  other: ["궁극기 단체 주문은 목표 지점의 중앙과 네 방향에 아이스크림 5개를 던집니다. 궁극기 게이지는 일반 공격과 장판 피해가 적중할 때 충전되며 3회로 준비됩니다.", "Group Order throws five ice creams at the target area: one in the center and one in each cardinal direction. Its gauge charges when basic attacks and zone damage hit and is ready after three hits."],
 };
 
 characterDetails.chartreuse = {
   setting: ["어딘가 나사 빠지고 멍청해 보이지만, 그가 만든 ‘샤단라’는 늘 이런 식이라 본인에게는 평범한 영웅 파이터입니다.", "He may look absent-minded, but the strange Shadanra he built is perfectly ordinary by his standards."],
-  attack: ["샤단라는 공격할 때마다 네 탄환 중 하나를 무작위로 선택합니다. 강화탄은 2,400 피해, CC탄은 둔화·고장·발각·독·넉백·얼음 중 하나를 부여하고, 흑사병탄은 즉사 판정, 무탄은 피해 없이 발사됩니다. 기본 사거리는 9.5타일입니다.", "Shadanra randomly selects one of four rounds per attack. Enhanced rounds deal 2,400 damage; CC rounds apply slow, malfunction, reveal, poison, knockback, or freeze; plague rounds execute; and blank rounds deal no damage. Base range is 9.5 tiles."],
+  attack: ["샤단라는 공격할 때마다 네 탄환 중 하나를 무작위로 선택합니다. 강화탄은 2,400 피해, CC탄은 둔화·고장·발각·독·넉백·얼음 중 하나를 부여하고, 흑사병탄은 즉사 판정, 무탄은 피해 없이 발사됩니다. 기본 사거리는 9.5타일이며 탄환 판정은 3×3입니다.", "Shadanra randomly selects one of four rounds per attack. Enhanced rounds deal 2,400 damage; CC rounds apply slow, malfunction, reveal, poison, knockback, or freeze; plague rounds execute; and blank rounds deal no damage. Base range is 9.5 tiles with a 3x3 hitbox."],
   strong: ["상태 이상에 취약하거나 예측하기 쉬운 이동을 하는 상대", "Targets vulnerable to status effects or moving predictably"],
   weak: ["무탄이 나온 순간 빠르게 진입하는 근접 파이터", "Melee fighters who engage during a blank-round window"],
   matchup: ["탄환별 UI 색상으로 현재 탄환을 확인하세요. ‘49% 정신 차림’ 사용 중에는 무탄이 제외되고 나머지 세 탄환이 같은 확률로 등장합니다.", "Check the ammo UI color before firing. During 49% Focus, blank rounds are removed and the other three rounds appear at equal rates."],
-  history: [["v1.5.4", "베타 시즌 4 신규 영웅 캐릭터로 추가", "v1.5.4", "Added as the new Hero fighter for Beta Season 4"]],
-  other: ["궁극기는 8회 충전이 필요하며 6초간 지속됩니다. CC탄에는 넉백·고장·독·둔화·발각 등 CC기와 디버프가 포함됩니다.", "The ultimate requires 8 charge and lasts 6 seconds. CC rounds may apply effects such as knockback, malfunction, poison, slow, or reveal."],
+  history: [["v1.5.4", "베타 시즌 4 신규 영웅 캐릭터로 추가", "v1.5.4", "Added as the new Hero fighter for Beta Season 4"], ["v1.6.0", "탄환 판정 3×3, 궁극기 충전 7→4", "v1.6.0", "3x3 hitbox; ultimate charge 7→4"]],
+  other: ["궁극기는 4회 충전이 필요하며 6초간 지속됩니다. CC탄에는 넉백·고장·독·둔화·발각 등 CC기와 디버프가 포함됩니다.", "The ultimate requires 4 charge and lasts 6 seconds. CC rounds may apply effects such as knockback, malfunction, poison, slow, or reveal."],
+};
+
+characterDetails.mint = {
+  setting: ["놀이공원의 아이스크림 가판대에서 온 영웅 컨트롤러입니다. 차가운 아이스크림으로 적의 발을 묶어 전장의 흐름을 멈춥니다.", "A Hero controller from the amusement-park ice cream stand who stops the flow of battle by freezing enemies in place."],
+  attack: ["아이스크림 탄 3발을 0.12초 간격으로 연속 발사합니다. 한 발당 700 피해, 사거리 10타일이며 적중할 때마다 얼음 수치 25가 쌓입니다. 얼음 수치 100이 되면 대상은 2초 동안 빙결되어 이동·공격·궁극기를 쓸 수 없습니다.", "Fires three ice cream bullets 0.12 seconds apart. Each deals 700 damage up to 10 tiles and adds 25 ice. At 100 ice the target freezes for two seconds and cannot move, attack, or use its ultimate."],
+  strong: ["Green, Pink, Gold처럼 가까이 붙어야 하는 파이터", "Fighters who need to close in, such as Green, Pink, and Gold"],
+  weak: ["Blue, Orange, Yellow, Purple의 장거리·광역 견제", "Long-range and area pressure from Blue, Orange, Yellow, and Purple"],
+  matchup: ["첫 빙결을 걸기 전까지는 거리를 유지하세요. 장판은 적의 도주로나 자기장 가장자리에 깔면 미끄러짐이 가장 위협적입니다.", "Keep distance until the first freeze lands. Place the field on escape routes or near the zone edge where sliding is most dangerous."],
+  history: [["v1.5.5", "베타 시즌 5 신규 영웅 캐릭터로 추가, 얼음·빙결·장판 누락 보완", "v1.5.5", "Added as the Beta Season 5 Hero fighter; missing ice, freeze, and field features restored"], ["v1.6.0", "장판 초당 피해 300→450", "v1.6.0", "Field damage per second 300→450"]],
+  other: ["특수 공격 아이스크림 장판은 일반 공격 7회 적중으로 충전됩니다. 반경 9타일 장판이 10초 동안 유지되며, 위에 선 적은 매초 450 피해와 얼음 수치 5를 받고 점점 빠르게 바깥으로 미끄러집니다. Space/Q 또는 궁극기 버튼으로 사용합니다.", "The Ice Cream Field special charges after seven basic-attack hits. The 9-tile field lasts 10 seconds; enemies on it take 450 damage and 5 ice each second while sliding outward faster over time. Use it with Space/Q or the ultimate button."],
+};
+
+characterDetails.azure = {
+  setting: ["애저 해변의 서퍼입니다. 파도를 타고 곧장 적진으로 파고드는 베타 시즌 6 신규 영웅 캐릭터입니다.", "A surfer from Azure Beach and the Beta Season 6 Hero fighter who rides waves straight into enemy lines."],
+  attack: ["파도를 타고 전방으로 2타일 이동하며, 앞쪽 길이 4타일·폭 2타일 범위의 적에게 3,000 피해를 줍니다. 한 번의 대시에서 같은 대상은 한 번만 맞으며, 벽에 막히면 벽을 통과하지 않고 대시가 끝납니다.", "Rides a wave two tiles forward, dealing 3,000 damage to enemies in a 4-tile-long, 2-tile-wide area ahead. Each dash hits a target once and ends when blocked by a wall."],
+  strong: ["Crimson처럼 사거리가 짧아 정면으로 부딪치는 파이터", "Short-range fighters who meet Azure head-on, such as Crimson"],
+  weak: ["Green의 근거리 부메랑 집중 사격", "Green's close-range boomerang burst"],
+  matchup: ["재장전 0.65초와 짧은 공격 간격으로 대시를 연달아 이어갈 수 있습니다. 빅 웨이브는 두 번의 적중만으로 준비되니 교전마다 적극적으로 사용하세요.", "A 0.65-second reload and short cooldown let Azure chain dashes. Big Wave is ready after only two hits, so use it in every fight."],
+  history: [["v1.6.0", "베타 시즌 6 신규 영웅 캐릭터로 추가, 체력 10,500·재장전 0.65초로 출시", "v1.6.0", "Added as the Beta Season 6 Hero fighter, launching with 10,500 HP and a 0.65s reload"]],
+  other: ["궁극기 빅 웨이브는 폭 4타일의 큰 파도를 전방 6타일까지 보내 4,800 피해와 강한 넉백을 줍니다. 파도만 전진하고 애저 본인은 이동하지 않으며, 벽을 관통합니다. 시즌 스킨 ‘프로 서퍼 애저’가 함께 출시되었습니다.", "The Big Wave ultimate sends a 4-tile-wide wave 6 tiles forward for 4,800 damage and heavy knockback. Only the wave moves, and it passes through walls. The Pro Surfer Azure season skin launched alongside."],
 };
 
 const guides = [
+  { id:"beta6", icon:"β6", title:["베타 시즌 6", "Beta Season 6"], desc:["v1.6.0 바다·여름 해변 업데이트", "The v1.6.0 ocean and summer-beach update"], body:["베타 시즌 6는 2026년 9월 21일 18:00 KST에 시작했습니다. 신규 영웅 애저, 옐로우 궁극기 전기 회로, 3대3 축구 모드 SOCCER KICK, 애저 해변 로비와 14종 전체 밸런스 조정을 포함합니다.", "Beta Season 6 began on September 21, 2026 at 18:00 KST. It adds the Hero fighter Azure, Yellow's Electric Circuit ultimate, the 3v3 SOCCER KICK mode, the Azure Beach lobby, and a full 14-fighter balance pass."], sections:[[["애저", "Azure"], ["서프 대시로 직접 전진하며 3,000 피해를 주고, 빅 웨이브로 벽 너머까지 넉백을 줍니다.", "Surf Dash moves Azure forward for 3,000 damage, and Big Wave knocks enemies back even through walls."]], [["SOCCER KICK", "SOCCER KICK"], ["3대3, 3분 제한, 2골 선승 축구 모드입니다. 전용 60×80 경기장과 매칭 대기열을 사용합니다.", "A 3v3 soccer mode with a three-minute limit where the first team to two goals wins, played in a dedicated 60x80 arena with its own queue."]], [["밸런스", "Balance"], ["모든 일반 투사체 판정을 5×5로 통일했고(샤르트뢰즈는 3×3), 캐릭터별 봇이 전용 공격·궁극기·회피 행동을 사용합니다.", "All basic projectiles now use a 5x5 hitbox (Chartreuse uses 3x3), and bots use character-specific attacks, ultimates, and evasion."]], [["바다 테마", "Ocean theme"], ["애저 해변 로비, 시즌 음악 High Noon Tide, 전용 로딩 화면과 상어·복어·파도 소품이 추가되었습니다.", "Adds the Azure Beach lobby, the High Noon Tide track, a dedicated loading screen, and shark, pufferfish, and wave cosmetics."]]] },
+  { id:"soccer", icon:"⚽", title:["사커 킥", "Soccer Kick"], desc:["공을 차 2골을 먼저 넣는 3대3 모드", "A 3v3 mode where the first team to two goals wins"], body:["공을 공격하면 공격 방향으로 공이 날아갑니다. 아군에게 패스하거나 상대 골대로 슛해 득점하세요. 공은 벽에 맞으면 반사됩니다. 캐릭터는 사망해도 잠시 후 자기 진영에서 부활합니다.", "Attacking the ball sends it in the attack direction. Pass to allies or shoot at the enemy goal. The ball bounces off walls, and defeated fighters respawn on their own side after a short delay."], sections:[[["승리 조건", "Win condition"], ["먼저 2골을 넣은 팀이 즉시 승리합니다. 3분이 끝났을 때 0:0 또는 1:1이면 연장전에 들어가며, 연장전에서는 먼저 골을 넣은 팀이 승리합니다.", "The first team to score two goals wins immediately. If the score is 0-0 or 1-1 after three minutes, overtime begins and the next goal wins."]], [["경기 흐름", "Match flow"], ["킥오프와 득점 직후 3초 동안 경기가 멈추며, 득점 시 카메라가 골대를 비춥니다. 같은 팀에게는 조준·피해가 적용되지 않습니다.", "Play pauses for three seconds at kickoff and after each goal, and the camera shows the scoring goal. Aim assist and damage never affect teammates."]], [["매칭", "Matchmaking"], ["전용 대기열은 최대 6명을 받고, 빈자리는 AI로 채웁니다. 전적은 다른 모드와 합산하지 않고 따로 기록합니다.", "The dedicated queue takes up to six players and fills empty slots with AI. Results are recorded separately from other modes."]]] },
+  { id:"beta5", icon:"β5", title:["베타 시즌 5", "Beta Season 5"], desc:["v1.5.5 놀이공원 테마 업데이트", "The v1.5.5 amusement-park update"], body:["베타 시즌 5는 2026년 9월 7일 18:00 KST에 시작했습니다. 놀이공원 테마와 신규 영웅 민트, 블루의 특수 공격 돌진을 추가했습니다.", "Beta Season 5 began on September 7, 2026 at 18:00 KST, adding an amusement-park theme, the Hero fighter Mint, and Blue's Ricochet Dash special."], sections:[[["민트", "Mint"], ["아이스크림 탄 3연발로 얼음 수치를 쌓아 빙결시키고, 아이스크림 장판으로 적을 미끄러뜨립니다.", "Mint builds ice with three-round bursts to freeze enemies and makes them slide with Ice Cream Field."]], [["블루 돌진", "Blue's Ricochet Dash"], ["블루가 적중으로 충전한 돌진으로 빠르게 위치를 바꾸며 피해를 줄 수 있습니다.", "Blue can charge Ricochet Dash through hits to reposition quickly while dealing damage."]], [["테마", "Theme"], ["관람차·회전목마가 있는 놀이공원 로비, 시즌 음악 Clockwork Midway와 솜사탕 핑크 스킨이 추가되었습니다.", "Adds an amusement-park lobby with a Ferris wheel and carousel, the Clockwork Midway track, and the Cotton Candy Pink skin."]]] },
   { id:"beta4", icon:"β4", title:["베타 시즌 4", "Beta Season 4"], desc:["v1.5.4 도시 테마 업데이트", "The v1.5.4 urban-theme update"], body:["베타 시즌 4는 샤르트뢰즈, 레드 가드, 도시형 쇼다운과 도시 봉쇄 작전을 추가했습니다. 회색 빌딩 벽과 아스팔트·콘크리트 바닥을 사용하며 수풀은 등장하지 않습니다.", "Beta Season 4 adds Chartreuse, Red Guard, urban Showdown, and City Lockdown. Its battlefield uses gray building walls with asphalt and concrete floors and contains no bushes."], sections:[[["신규 전투 콘텐츠", "New combat content"], ["샤르트뢰즈의 무작위 탄환 4종과 ‘49% 정신 차림’, 레드의 8초 보호막 궁극기 ‘레드 가드’가 추가되었습니다.", "Added Chartreuse's four random rounds and 49% Focus plus Red's eight-second Red Guard shield."]], [["도시 쇼다운", "Urban Showdown"], ["수풀이 없는 도시 전장에서는 빌딩 벽, 사거리와 시야 관리가 핵심입니다.", "Without bushes, the urban arena emphasizes building walls, range, and sightline control."]], [["이벤트", "Event"], ["도시 봉쇄 작전이 추가되고 Take Down이 복각되었습니다.", "City Lockdown was added and Take Down returned."]]] },
   { id:"beta3", icon:"β3", title:["베타 시즌 3", "Beta Season 3"], desc:["v1.5.3 아이스크림 테마 업데이트", "The v1.5.3 ice-cream-theme update"], body:["베타 시즌 3는 지역 제어형 캐릭터 아이보리, 그린 궁극기와 시즌 이벤트를 추가했습니다.", "Beta Season 3 adds the area-control fighter Ivory, Green's ultimate, and seasonal events."], sections:[[["아이보리", "Ivory"], ["아이스크림 투척과 4초 지속 장판으로 길목을 통제하며, 궁극기 단체 주문은 다섯 장판을 배치합니다.", "Ivory controls lanes with ice-cream throws and four-second zones; Group Order deploys five zones."]], [["핑크 궁극기 패치", "Pink ultimate patch"], ["v1.5.3.1에서 핑크 궁극기가 모든 아군에게 부활 기회를 부여하도록 변경되었습니다.", "v1.5.3.1 changed Pink's ultimate to grant every ally a revival opportunity."]]] },
   { id:"beta2", icon:"β2", title:["베타 시즌 2", "Beta Season 2"], desc:["v1.5.2 정식 시즌 업데이트", "The v1.5.2 live season update"], body:["베타 시즌 2는 2026년 8월 3일 00:00 KST에 시작해 8월 10일 00:00 KST에 종료됩니다. Gold와 Gold Rush, 시즌 한정 스킨을 포함합니다.", "Beta Season 2 runs from August 3, 2026 00:00 KST to August 10, 2026 00:00 KST. It includes Gold, Gold Rush, and seasonal skins."], sections:[[["핵심 콘텐츠", "Highlights"], ["신규 전설 캐릭터 Gold, 연쇄 금광석과 고장 지대 궁극기, Gold Rush 경쟁 모드를 추가했습니다.", "Added Gold, the Chain Gold Ore and Malfunction Zone kit, and the Gold Rush competitive mode."]], [["기간", "Schedule"], ["시작 2026.08.03 00:00 KST · 종료 2026.08.10 00:00 KST", "Starts 2026.08.03 00:00 KST · Ends 2026.08.10 00:00 KST"]]] },
@@ -258,7 +297,7 @@ const guides = [
   { id:"combat", icon:"⚔", title:["전투 기본", "Combat Basics"], desc:["WASD 이동, 마우스 조준, 클릭 공격과 자동 장전의 기본 흐름을 설명합니다.", "Movement, aiming, attacks, ammo, and automatic reload."], body:["모든 캐릭터는 기본적으로 3발의 탄약을 사용합니다. 공격 후 탄약은 캐릭터별 장전 시간에 따라 한 발씩 자동 회복됩니다. 피해를 받지 않고 일정 시간이 지나면 체력이 자연 회복됩니다.", "Every character uses three ammo charges. Ammo automatically returns one at a time based on reload speed. Health regenerates after avoiding damage for a short period."] },
   { id:"showdown", icon:"♛", title:["쇼다운", "Showdown"], desc:["10명이 겨루고 마지막 생존자를 결정하는 배틀로얄 모드입니다.", "A ten-player battle royale where the last fighter standing wins."], body:["자기장은 다섯 단계에 걸쳐 줄어듭니다. 수풀에서는 모습을 숨길 수 있지만 공격하거나 피해를 받으면 잠시 발각됩니다. 마지막 생존자는 1위를 기록합니다.", "The zone shrinks through five phases. Bushes hide fighters, but attacking or taking damage reveals them temporarily. The last survivor takes first place."] },
   { id:"maps", icon:"⌖", title:["맵과 지형", "Maps & Terrain"], desc:["벽, 호수, 수풀과 맵 로테이션이 전투에 미치는 영향입니다.", "How walls, lakes, bushes, and map rotation shape combat."], body:["쇼다운은 세 개의 전장을 순환합니다. 벽은 투사체와 이동을 막고, 호수는 진입할 수 없습니다. 수풀 안의 플레이어는 같은 수풀에 들어오거나 발각되기 전까지 보이지 않습니다.", "Showdown rotates through three arenas. Walls block movement and projectiles, lakes are impassable, and bushes conceal fighters until revealed or approached."] },
-  { id:"modes", icon:"◉", title:["게임 모드", "Game Modes"], desc:["쇼다운, 나무 베기와 Take Down의 승리 조건입니다.", "Win conditions for Showdown, Chop Wood, and Take Down."], body:["나무 베기는 상대 팀의 나무를 먼저 파괴하는 팀 모드입니다. Take Down은 중앙 보스와 순위 경쟁을 함께 다룹니다.", "Chop Wood is a team race to destroy the enemy tree. Take Down combines a central boss fight with ranking competition."] },
+  { id:"modes", icon:"◉", title:["게임 모드", "Game Modes"], desc:["쇼다운, 나무 베기와 Take Down의 승리 조건입니다.", "Win conditions for Showdown, Chop Wood, and Take Down."], body:["나무 베기는 상대 팀의 나무를 먼저 파괴하는 팀 모드입니다. Take Down은 중앙 보스와 순위 경쟁을 함께 다룹니다. SOCCER KICK은 3대3으로 2골을 먼저 넣는 팀이 승리합니다.", "Chop Wood is a team race to destroy the enemy tree. Take Down combines a central boss fight with ranking competition. In SOCCER KICK, the first 3v3 team to score two goals wins."] },
   { id:"account", icon:"▣", title:["계정과 성장", "Account & Progression"], desc:["트로피, 승률, 연승, 캐릭터 레벨과 저장 방식입니다.", "Trophies, win rate, streaks, character levels, and saves."], body:["계정에는 모드별 승패, 캐릭터별 기록, 트로피와 최고 연승이 저장됩니다. 캐릭터는 최대 6레벨까지 성장하며, 레벨에 따라 최대 체력과 공격력이 증가합니다.", "Accounts track records by mode and character, trophies, and best streak. Characters can grow to level 6, increasing maximum health and attack power."] },
   { id:"currency", icon:"◇", title:["재화", "Currencies"], desc:["코인, 크레딧과 트로피를 어디서 얻고 사용하는지 확인하세요.", "How to earn and spend coins, credits, and trophies."], body:["코인은 꾸미기 아이템 상점에서 사용합니다. 크레딧은 캐릭터 구매와 성장에 사용되며, 베타 크레딧은 시즌 테스트에서 별도로 관리됩니다. 트로피는 경기 결과와 연승 보너스로 오르거나 내려갑니다.", "Coins buy cosmetics. Credits unlock and upgrade characters, while beta credits are stored separately for season tests. Trophies rise or fall through match results and streak bonuses."] },
 ];
@@ -305,6 +344,15 @@ const legacyPatches = [
 ];
 
 const patches = [
+  { version:"v1.6.0", date:"2026.09.21", title:["베타 시즌 6 업데이트", "Beta Season 6 Update"], items:[
+    ["신규 영웅 캐릭터 애저: 서프 대시와 궁극기 빅 웨이브, 프로 서퍼 애저 스킨 출시", "New Hero fighter Azure with Surf Dash, the Big Wave ultimate, and the Pro Surfer Azure skin"],
+    ["옐로우 궁극기 전기 회로: 장치를 최대 4개 설치하고 일반 공격으로 맞히면 설치 순서대로 전류가 흐름", "Yellow's Electric Circuit ultimate: place up to four devices and hit one with a basic attack to send current through them in order"],
+    ["신규 모드 SOCCER KICK: 3대3, 3분 제한, 2골 선승, 동점 연장전, 전용 경기장과 매칭", "New SOCCER KICK mode: 3v3, three-minute limit, first to two goals, overtime on ties, dedicated arena and matchmaking"],
+    ["버프: 레드 공격 2,400 · 퍼플 독침 1,100/독병 3,240 · 크림슨 체력 10,500/궁극기 5,400 · 애저 체력 10,500 · 시안 궁극기 3,120 · 민트 장판 초당 450", "Buffs: Red attack 2,400 · Purple needle 1,100/vial 3,240 · Crimson HP 10,500/ultimate 5,400 · Azure HP 10,500 · Cyan ultimate 3,120 · Mint field 450/s"],
+    ["조정: 블루 구슬 1,200·사거리 17.5·넉백 · 그린 부메랑 1,900 · 오렌지 체력 4,400/과즙 1,300 · 옐로우 공격 간격 0.3초 · 핑크 체력 9,000 · 골드 단계 피해 900/450/225 · 아이보리 사거리 6/피해 2,000 · 샤르트뢰즈 3×3 판정", "Adjustments: Blue marble 1,200, 17.5 range, knockback · Green boomerang 1,900 · Orange HP 4,400/juice 1,300 · Yellow 0.3s cooldown · Pink HP 9,000 · Gold stage damage 900/450/225 · Ivory range 6/damage 2,000 · Chartreuse 3x3 hitbox"],
+    ["모든 일반 투사체 판정 5×5 통일, 캐릭터별 봇 전투 리메이크, 궁극기 포함 상성표 재작성", "Unified 5x5 basic projectile hitboxes, rebuilt character-specific bots, and rewrote the matchup table with ultimates included"],
+    ["애저 해변 로비, 시즌 음악 High Noon Tide, 시즌 6 로딩 화면과 바다 소품 추가", "Added the Azure Beach lobby, the High Noon Tide track, a Season 6 loading screen, and ocean cosmetics"],
+  ], summary:["애저와 SOCCER KICK을 출시하고, 14종 전체 전투 계산을 하나로 통합해 밸런스를 다시 맞춘 시즌 업데이트입니다.", "A season update that launches Azure and SOCCER KICK and rebalances all 14 fighters on a single unified combat model."], impact:["하향만 받은 캐릭터는 없습니다. 오렌지·핑크·아이보리는 체력이나 사거리를 내준 대신 피해가 올랐고, 골드는 단계 피해가 크게 줄어든 대신 체력과 투사체 피해 감소를 얻었습니다. 봇이 캐릭터별 궁극기와 회피를 사용하므로 AI 전투 난도가 올라갑니다.", "No fighter received nerfs only. Orange, Pink, and Ivory traded health or range for damage, while Gold lost stage damage but gained health and projectile damage reduction. Bots now use character-specific ultimates and evasion, raising AI difficulty."] },
   { version:"v1.5.5", date:"2026.09.17", title:["상성표 수정·민트 누락 보완", "Matchup Corrections & Missing Mint Features"], items:[
     ["상성표 수정: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종을 다시 시뮬레이션해 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다.", "Matchup corrections: the previous character matchups were inaccurate. We reran simulations for all 13 characters, including Mint. Blue versus Chartreuse changed from Impossible to Dominant, and Red versus Orange from Severe Disadvantage to Disadvantage."],
     ["민트 누락: 민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다.", "Missing Mint features: Mint launched with several features absent from the main game, especially 25 ice per hit, a two-second freeze at 100 ice, ice and freeze indicators, and ultimate charging and activation."],
@@ -388,8 +436,8 @@ const loc = (pair) => pair[lang === "ko" ? 0 : 1];
 const fmt = (value) => new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 2 }).format(value);
 
 function wikiStats(id) {
-  const fallbackColors = { crimson: 0x8b0000, gold: 0xd4a928 };
-  return { color: fallbackColors[id], ...CHARACTERS[id], ...(BETA_CHARACTERS[id] || {}) };
+  const fallbackColors = { crimson: 0x8b0000, gold: 0xd4a928, azure: 0x007fff };
+  return { color: fallbackColors[id], ...CHARACTERS[id], ...(LIVE_CHARACTERS[id] || {}) };
 }
 
 function moveSpeedLabel(multiplier) {
@@ -411,6 +459,8 @@ function betaAttackStats(id) {
   if (id === "ivory") return { damage: stats.iceCreamDamage, range: stats.iceCreamRange };
   if (id === "chartreuse") return { damage: stats.chartreuseDamage, range: stats.chartreuseRange };
   if (id === "purple") return { damage: stats.vialDamage, range: stats.vialRange };
+  if (id === "mint") return { damage: stats.iceBulletDamage * stats.burstCount, range: stats.iceBulletRange };
+  if (id === "azure") return { damage: stats.surfDamage, range: stats.surfLength };
   return { damage: stats.healCircleDamage, range: stats.healCircleRange };
 }
 
@@ -477,7 +527,7 @@ function renderShop() {
   const fighters = [
     ["Red · Green · Blue", "common", 0],
     ["Orange · Yellow · Cyan · Purple · Pink", "rare", 200],
-    ["Crimson · Ivory · Chartreuse", "hero", 900],
+    ["Crimson · Ivory · Chartreuse · Mint · Azure", "hero", 900],
     ["Gold", "legendary", 1200],
   ];
   return `${sectionHead(tr("shopTitle"), tr("shopDesc"))}
