@@ -6231,7 +6231,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
     if (!bot.dead) bot.marker.material.color.setHex(CHARACTERS.find(c => c.id === bot.characterId)?.color ?? GOLD_RUSH_BOT_COLORS[bot.id - 1]);
   }, 90);
   if (bot.health > 0) return;
-  if (goldRushState.mode === "goldRush") dropGoldRushGold(bot, bot.mesh.position);
+  if (["goldRush", "gemGrab"].includes(goldRushState.mode)) dropGoldRushGold(bot, bot.mesh.position);
   bot.dead = true;
   // SHOWDOWN+: 플레이어가 마지막 타격을 준 처치만 점수로 인정한다 (봇끼리의 처치는 제외)
   if (fromPlayer && goldRushState.mode === "showdown") goldRushState.kills += 1;
