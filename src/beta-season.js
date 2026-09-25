@@ -27,10 +27,26 @@ betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
 let betaSeasonMusicStarted = false;
+// 젬 그랩 경기 동안만 흐르는 전용 음악. 경기가 끝나면 로비 음악으로 돌아간다.
+const gemGrabBgm = new Audio("./assets/beta7-before-the-vault-closes.mp3?v=1");
+gemGrabBgm.loop = true;
+gemGrabBgm.volume = 0.45;
+gemGrabBgm.preload = "auto";
+let activeBetaBgm = betaSeasonBgm;
+
+// track이 null이면 로비 음악으로 되돌린다.
+function setBetaMatchMusic(track) {
+  const next = track ?? betaSeasonBgm;
+  if (next === activeBetaBgm) return;
+  activeBetaBgm.pause();
+  activeBetaBgm.currentTime = 0;
+  activeBetaBgm = next;
+  if (betaSeasonMusicStarted && !document.hidden) activeBetaBgm.play().catch(() => {});
+}
 
 function startBetaSeasonMusic() {
   betaSeasonMusicStarted = true;
-  betaSeasonBgm.play().catch(() => {});
+  activeBetaBgm.play().catch(() => {});
   window.removeEventListener("pointerdown", startBetaSeasonMusic, true);
   window.removeEventListener("keydown", startBetaSeasonMusic, true);
 }
@@ -38,8 +54,8 @@ function startBetaSeasonMusic() {
 window.addEventListener("pointerdown", startBetaSeasonMusic, { once: true, capture: true });
 window.addEventListener("keydown", startBetaSeasonMusic, { once: true, capture: true });
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) betaSeasonBgm.pause();
-  else if (betaSeasonMusicStarted) betaSeasonBgm.play().catch(() => {});
+  if (document.hidden) activeBetaBgm.pause();
+  else if (betaSeasonMusicStarted) activeBetaBgm.play().catch(() => {});
 });
 const galeStrikeTexture = new THREE.TextureLoader().load("./assets/vfx/gale-strike.png");
 galeStrikeTexture.colorSpace = THREE.SRGBColorSpace;
@@ -6421,6 +6437,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
   saveBetaState();
   goldRushState.ended = true;
+  setBetaMatchMusic(null);
   document.body.classList.remove("temple-countdown-final");
   goldRushState.winCountdownStartedAt = null;
   playerGoldRushHealthBar.visible = false;
@@ -6458,6 +6475,8 @@ function startGoldRush(mode = "goldRush") {
     });
   }
   resetAllUltimateCharges();
+  // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
+  setBetaMatchMusic(mode === "gemGrab" ? gemGrabBgm : null);
   goldRushState.mode = mode;
   const arenaMode = mode === "showdown" || mode === "soccer" || mode === "gemGrab";
   currentArenaMode = mode === "soccer" || mode === "gemGrab" ? mode : arenaMode ? "showdown" : "lobby";

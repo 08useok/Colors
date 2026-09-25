@@ -21,6 +21,7 @@
 
 - 시즌명: **잃어버린 황금 유적**
 - 전용 로비 음악: `assets/beta7-beneath-sun-bleached-stone.mp3` (`Beneath Sun Bleached Stone`)
+- 젬 그랩 경기 음악: `assets/beta7-before-the-vault-closes.mp3` (`Before the Vault Closes`) — 경기 시작과 함께 로비 음악을 대신하고, 경기가 끝나면 되돌아간다.
 - 색상: 사암색, 짙은 갈색, 황금색, 청록색 에너지
 - 로비에는 피라미드, 발굴지 원형 지형, 유적 기둥과 빛나는 문양을 배치한다.
 - 대표 맵 후보는 황금 신전, 모래에 묻힌 도시, 왕의 무덤, 보석 광산이다.
