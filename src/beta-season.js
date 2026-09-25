@@ -1961,7 +1961,8 @@ function updateCrimsonControls() {
     ...(IS_BETA7_TEST ? ["purple"] : []),
     ...(IS_BETA8_TEST ? ["orange"] : []),
   ];
-  const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...specialCharacters].includes(betaState.selectedCharacter);
+  const seasonUltimates = IS_BETA7_TEST ? ["crystal"] : [];
+  const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...seasonUltimates, ...specialCharacters].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
   ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
