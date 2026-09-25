@@ -1485,7 +1485,26 @@ const MODEL_ATTACK_POSES = {
     ["upper_arm.L", 0.18, 0, -0.06], ["spine", 0, -0.14, 0],
     ["head", 0, 0.05, 0],
   ] },
+  // 크리스탈은 Mixamo식 뼈 이름(RightArm 등)을 쓰는 별도 리그다.
+  // 수정탄을 내밀어 쏘는 짧은 동작.
+  crystal: { duration: 0.4, peak: 0.28, bones: [
+    ["RightArm", 0, 0, -1.15], ["RightForeArm", 0, 0, -0.55],
+    ["LeftArm", 0, 0, 0.35], ["Spine02", 0, -0.18, 0],
+  ] },
+  // 궁극기 돌진 — 몸을 앞으로 숙이고 두 팔을 앞으로 뻗는다.
+  crystalCast: { duration: 0.75, peak: 0.3, bones: [
+    ["RightArm", 0, 0, -1.35], ["RightForeArm", 0, 0, -0.35],
+    ["LeftArm", 0, 0, 1.35], ["LeftForeArm", 0, 0, 0.35],
+    ["Spine02", 0.3, 0, 0], ["Head", -0.2, 0, 0],
+  ] },
+  // 붙잡고 있는 동안 유지하는 자세 — 한 손을 앞으로 뻗어 대상을 고정한다.
+  crystalAnalysis: { duration: 0.4, peak: 0.3, bones: [
+    ["RightArm", 0, 0, -1.5], ["RightForeArm", 0, 0, -0.2],
+    ["LeftArm", 0, 0, 0.45], ["Spine02", 0.12, 0, 0],
+  ] },
 };
+// 궁극기처럼 한동안 유지해야 하는 자세. 매 프레임 그대로 적용한다.
+let modelHeldPoseId = null;
 
 function startModelAttackMotion(characterId = betaState.selectedCharacter) {
   if (!MODEL_ATTACK_POSES[characterId]) return;
@@ -1500,9 +1519,28 @@ function restoreModelAttackPose() {
   modelAttackPoseRestore = [];
 }
 
+function applyModelPose(profile, strength) {
+  const sceneModel = activeCharacterMotion
+    ? activeCharacterMotion.scenes[activeCharacterMotion.current]
+    : activeCharacterModel;
+  if (!sceneModel) return;
+  for (const [name, rotateX = 0, rotateY = 0, rotateZ = 0] of profile.bones) {
+    const bone = sceneModel.getObjectByName(name);
+    if (!bone) continue;
+    modelAttackPoseRestore.push({ bone, quaternion: bone.quaternion.clone() });
+    if (rotateX) bone.rotateX(rotateX * strength);
+    if (rotateY) bone.rotateY(rotateY * strength);
+    if (rotateZ) bone.rotateZ(rotateZ * strength);
+  }
+}
+
 function updateModelAttackMotion(dt) {
   const profile = MODEL_ATTACK_POSES[modelAttackCharacter];
-  if ((!activeCharacterMotion && !activeCharacterModel) || modelAttackMotionTime < 0 || !profile) return;
+  if ((!activeCharacterMotion && !activeCharacterModel) || modelAttackMotionTime < 0 || !profile) {
+    const held = MODEL_ATTACK_POSES[modelHeldPoseId];
+    if (held) applyModelPose(held, 1);
+    return;
+  }
   modelAttackMotionTime += dt;
   const progress = Math.min(1, modelAttackMotionTime / profile.duration);
   const strength = progress < profile.peak
@@ -4038,6 +4076,7 @@ let crystalAnalysisBeam = null;
 
 function clearCrystalUltimate() {
   crystalDashState = null;
+  if (modelHeldPoseId === "crystalAnalysis") modelHeldPoseId = null;
   crystalAnalysisState = null;
   if (crystalAnalysisBeam) {
     scene.remove(crystalAnalysisBeam);
@@ -4055,6 +4094,7 @@ function crystalUltimateBusy() {
 function startCrystalAnalysis() {
   if (crystalUltimateBusy() || goldRushState.dead) return;
   crystalDashState = { yaw: player.rotation.y, traveled: 0 };
+  startModelAttackMotion("crystalCast");
   canvas.dataset.lastUltimate = "crystal:analysis";
   attackComboState.textContent = BETA_CHARACTERS.crystal.ultimate.name;
 }
@@ -4063,6 +4103,7 @@ function bindCrystalTarget(target) {
   const def = BETA_CHARACTERS.crystal.ultimate;
   crystalDashState = null;
   crystalAnalysisState = { target, until: clock.elapsedTime + def.analysisDuration };
+  modelHeldPoseId = "crystalAnalysis";
   crystalAnalysisBeam = new THREE.Mesh(
     new THREE.CylinderGeometry(0.09, 0.09, 1, 8),
     new THREE.MeshBasicMaterial({ color: 0x6ee7ff, transparent: true, opacity: 0.85 }),
