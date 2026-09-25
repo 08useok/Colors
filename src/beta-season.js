@@ -5507,7 +5507,9 @@ const GEM_PICKUP_RANGE = 1.5;
 const GEM_TARGET_COUNT = 10;
 const GEM_ESCAPE_DURATION = 15;
 const GEM_MATCH_DURATION = 180;
-const GEM_SPAWN_INTERVAL = 2.4;
+const GEM_SPAWN_INTERVAL = 1.5;
+// 경기가 시작되고 첫 젬이 솟기까지 기다리는 시간. 그 사이 양 팀이 자리를 잡는다.
+const GEM_FIRST_SPAWN_DELAY = 3;
 const GEM_MAX_IN_PLAY = 21;
 const GEM_BOT_RESPAWN_DELAY = 5;
 
@@ -5644,6 +5646,10 @@ function updateGemGrabHud() {
     const mine = gemGrabState.escapeA !== null && gemGrabState.escapeA !== undefined;
     goldRushStatusEl.textContent = `${mine ? "우리 팀" : "상대 팀"} 유적 탈출까지 ${left.toFixed(1)}초!`;
     document.body.classList.toggle("temple-countdown-final", left <= 3);
+  } else if (gemGrabState.spawnedGems === 0) {
+    const wait = Math.max(0, gemGrabState.nextGemAt - clock.elapsedTime);
+    goldRushStatusEl.textContent = `첫 젬까지 ${Math.ceil(wait)}초`;
+    document.body.classList.remove("temple-countdown-final");
   } else {
     goldRushStatusEl.textContent = "가운데 제단에서 고대 젬을 모으세요";
     document.body.classList.remove("temple-countdown-final");
@@ -6652,7 +6658,7 @@ function startGoldRush(mode = "goldRush") {
     showdownToggle.textContent = "쇼다운 재시작";
     canvas.dataset.betaMode = "ice-cream-showdown";
   } else if (mode === "gemGrab") {
-    gemGrabState.nextGemAt = clock.elapsedTime + 1.5;
+    gemGrabState.nextGemAt = clock.elapsedTime + GEM_FIRST_SPAWN_DELAY;
     gemGrabState.escapeA = null;
     gemGrabState.escapeB = null;
     gemGrabState.spawnedGems = 0;
