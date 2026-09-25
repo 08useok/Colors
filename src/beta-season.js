@@ -4078,6 +4078,16 @@ let crystalAnalysisBeam = null;
 function clearCrystalUltimate() {
   crystalDashState = null;
   if (modelHeldPoseId === "crystalAnalysis") modelHeldPoseId = null;
+  for (const key of ["mark", "finisher"]) {
+    const object = crystalAnalysisState?.[key];
+    if (!object) continue;
+    scene.remove(object);
+    object.traverse((part) => {
+      part.geometry?.dispose();
+      part.material?.map?.dispose();
+      part.material?.dispose();
+    });
+  }
   crystalAnalysisState = null;
   if (crystalAnalysisBeam) {
     scene.remove(crystalAnalysisBeam);
@@ -4100,11 +4110,82 @@ function startCrystalAnalysis() {
   attackComboState.textContent = BETA_CHARACTERS.crystal.ultimate.name;
 }
 
+// 붙잡힌 적 머리 위에 달리는 등급 표시
+function createCrystalAnalysisMark() {
+  const group = new THREE.Group();
+  const glow = (color, opacity) => new THREE.MeshBasicMaterial({
+    color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+  });
+  // 머리 위에서 도는 두 겹 고리
+  const outerRing = new THREE.Mesh(new THREE.TorusGeometry(0.95, 0.045, 8, 40), glow(0x9ef2ff, 0.9));
+  outerRing.rotation.x = Math.PI / 2;
+  const innerRing = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.03, 8, 32), glow(0xffffff, 0.75));
+  innerRing.rotation.x = Math.PI / 2;
+  group.add(outerRing, innerRing);
+  // 고리를 따라 도는 수정 조각
+  const shards = [];
+  for (let i = 0; i < 5; i += 1) {
+    const shard = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.17, 0),
+      new THREE.MeshStandardMaterial({
+        color: 0x9ef2ff, emissive: 0x2aa6c8, emissiveIntensity: 1.6,
+        metalness: 0.5, roughness: 0.12, transparent: true, opacity: 0.95,
+      }),
+    );
+    group.add(shard);
+    shards.push(shard);
+  }
+  // 대상을 감싸는 빛기둥
+  const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.05, 3.4, 18, 1, true), glow(0x6ee7ff, 0.22));
+  pillar.position.y = -1.6;
+  group.add(pillar);
+  group.userData.parts = { outerRing, innerRing, shards, pillar };
+  group.renderOrder = 40;
+  scene.add(group);
+  return group;
+}
+
+// urgency: 0이면 막 붙잡은 상태, 1이면 즉사 직전. 다가갈수록 빠르고 밝아진다.
+function updateCrystalAnalysisMark(mark, urgency, dt) {
+  const { outerRing, innerRing, shards, pillar } = mark.userData.parts;
+  const spin = 1.6 + urgency * 7;
+  outerRing.rotation.z += dt * spin;
+  innerRing.rotation.z -= dt * spin * 1.6;
+  const pulse = 1 + Math.sin(clock.elapsedTime * (5 + urgency * 12)) * (0.06 + urgency * 0.1);
+  outerRing.scale.setScalar(pulse);
+  innerRing.scale.setScalar(2 - pulse);
+  outerRing.material.opacity = 0.75 + urgency * 0.25;
+  pillar.material.opacity = 0.18 + urgency * 0.4;
+  pillar.scale.set(1 - urgency * 0.25, 1, 1 - urgency * 0.25);
+  for (let i = 0; i < shards.length; i += 1) {
+    const angle = clock.elapsedTime * spin + (i / shards.length) * Math.PI * 2;
+    // 즉사가 가까울수록 조각이 머리 쪽으로 좁혀 들어온다
+    const radius = 0.95 - urgency * 0.45;
+    shards[i].position.set(Math.cos(angle) * radius, Math.sin(angle * 2 + i) * 0.12, Math.sin(angle) * radius);
+    shards[i].rotation.y += dt * 4;
+    shards[i].rotation.x += dt * 2.5;
+  }
+}
+
+// 즉사 1초 전에 나타나는 수정. 위로 솟았다가 대상 위로 떨어진다.
+function createCrystalFinisherMesh() {
+  const mesh = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.85, 0),
+    new THREE.MeshStandardMaterial({
+      color: 0x9ef2ff, emissive: 0x2aa6c8, emissiveIntensity: 1.2,
+      metalness: 0.5, roughness: 0.15, transparent: true, opacity: 0.95,
+    }),
+  );
+  scene.add(mesh);
+  return mesh;
+}
+
 function bindCrystalTarget(target) {
   const def = BETA_CHARACTERS.crystal.ultimate;
   crystalDashState = null;
   crystalAnalysisState = { target, until: clock.elapsedTime + def.analysisDuration };
   modelHeldPoseId = "crystalAnalysis";
+  crystalAnalysisState.mark = createCrystalAnalysisMark();
   crystalAnalysisBeam = new THREE.Mesh(
     new THREE.CylinderGeometry(0.09, 0.09, 1, 8),
     new THREE.MeshBasicMaterial({ color: 0x6ee7ff, transparent: true, opacity: 0.85 }),
@@ -4124,6 +4205,23 @@ function updateCrystalUltimate(dt) {
     const remaining = Math.max(0, crystalAnalysisState.until - clock.elapsedTime);
     // 대상이 먼저 쓰러지면 속박도 바로 풀린다
     if (!target.visible || target.userData.health <= 0) { clearCrystalUltimate(); attackComboState.textContent = "준비"; return false; }
+    const head = target.position.y + 2.5;
+    if (crystalAnalysisState.mark) {
+      const urgency = 1 - THREE.MathUtils.clamp(remaining / def.analysisDuration, 0, 1);
+      crystalAnalysisState.mark.position.set(target.position.x, head + 0.35, target.position.z);
+      updateCrystalAnalysisMark(crystalAnalysisState.mark, urgency, dt);
+    }
+    // 남은 1초 동안 수정이 위로 솟았다가 대상 머리로 떨어진다
+    if (remaining <= 1) {
+      crystalAnalysisState.finisher ??= createCrystalFinisherMesh();
+      const progress = THREE.MathUtils.clamp(1 - remaining, 0, 1);
+      const rise = progress < 0.45
+        ? THREE.MathUtils.smoothstep(progress / 0.45, 0, 1)
+        : 1 - Math.pow((progress - 0.45) / 0.55, 2);
+      crystalAnalysisState.finisher.position.set(target.position.x, head + rise * 4.5, target.position.z);
+      crystalAnalysisState.finisher.rotation.y += dt * 6;
+      crystalAnalysisState.finisher.rotation.x = progress * 2.2;
+    }
     if (crystalAnalysisBeam) {
       const from = player.position;
       const to = target.position;
@@ -4138,6 +4236,8 @@ function updateCrystalUltimate(dt) {
     player.rotation.y = Math.atan2(target.position.x - player.position.x, target.position.z - player.position.z);
     attackComboState.textContent = `수정 분석 ${remaining.toFixed(1)}초`;
     if (remaining <= 0) {
+      createHitImpact(target.position);
+      createGroundPulse(1.6, 0x9ef2ff, target.position);
       damageTarget(target, target.userData.maxHealth * 10);
       canvas.dataset.crystalAnalysis = "eliminated";
       clearCrystalUltimate();
