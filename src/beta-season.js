@@ -34,6 +34,94 @@ gemGrabBgm.volume = 0.45;
 gemGrabBgm.preload = "auto";
 let activeBetaBgm = betaSeasonBgm;
 
+// 효과음은 파일 없이 오실레이터로 합성한다 (메인 게임과 같은 방식).
+// 브라우저 정책상 첫 클릭·키 입력에서 unlock()으로 켠다.
+const betaSfx = {
+  ctx: null,
+  unlock() {
+    if (!this.ctx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      this.ctx = new AudioContextClass();
+    }
+    if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
+  },
+  recipes: {
+    // 사커 킥
+    soccerKick: [
+      { wave: "sine", from: 190, to: 70, duration: 0.11, peak: 0.3 },
+      { wave: "triangle", from: 1000, to: 450, duration: 0.045, peak: 0.12 },
+    ],
+    soccerPost: [
+      { wave: "sine", from: 1300, to: 950, duration: 0.2, peak: 0.2 },
+      { wave: "triangle", from: 2600, to: 1900, duration: 0.12, peak: 0.08 },
+    ],
+    soccerWhistle: [
+      { wave: "sine", from: 2100, to: 2250, duration: 0.22, peak: 0.16 },
+      { wave: "sine", from: 2100, to: 2250, duration: 0.3, peak: 0.16, delay: 0.28 },
+    ],
+    soccerGoal: [
+      { wave: "triangle", from: 440, to: 660, duration: 0.12, peak: 0.22 },
+      { wave: "triangle", from: 660, to: 880, duration: 0.14, peak: 0.22, delay: 0.1 },
+      { wave: "triangle", from: 880, to: 1100, duration: 0.22, peak: 0.2, delay: 0.22 },
+      { wave: "sawtooth", from: 220, to: 330, duration: 0.35, peak: 0.1 },
+    ],
+    soccerConceded: [
+      { wave: "triangle", from: 330, to: 220, duration: 0.2, peak: 0.2 },
+      { wave: "triangle", from: 220, to: 140, duration: 0.28, peak: 0.18, delay: 0.16 },
+    ],
+    // 젬 그랩
+    gemPickup: [
+      { wave: "sine", from: 1200, to: 1800, duration: 0.08, peak: 0.2 },
+      { wave: "sine", from: 1600, to: 2400, duration: 0.1, peak: 0.15, delay: 0.06 },
+    ],
+    gemDrop: [
+      { wave: "triangle", from: 900, to: 300, duration: 0.2, peak: 0.2 },
+      { wave: "triangle", from: 700, to: 250, duration: 0.18, peak: 0.16, delay: 0.05 },
+      { wave: "triangle", from: 500, to: 200, duration: 0.16, peak: 0.12, delay: 0.1 },
+    ],
+    gemEscapeStart: [
+      { wave: "square", from: 330, to: 495, duration: 0.16, peak: 0.2 },
+      { wave: "square", from: 495, to: 660, duration: 0.2, peak: 0.2, delay: 0.14 },
+    ],
+    gemEscapeThreat: [
+      { wave: "sawtooth", from: 300, to: 200, duration: 0.18, peak: 0.22 },
+      { wave: "sawtooth", from: 300, to: 200, duration: 0.18, peak: 0.22, delay: 0.22 },
+    ],
+    // 공통 결과
+    win: [
+      { wave: "triangle", from: 440, to: 660, duration: 0.12, peak: 0.22 },
+      { wave: "triangle", from: 660, to: 880, duration: 0.15, peak: 0.22, delay: 0.1 },
+      { wave: "triangle", from: 880, to: 1100, duration: 0.18, peak: 0.2, delay: 0.25 },
+    ],
+    lose: [
+      { wave: "triangle", from: 440, to: 220, duration: 0.3, peak: 0.2 },
+      { wave: "triangle", from: 220, to: 110, duration: 0.35, peak: 0.18, delay: 0.2 },
+    ],
+  },
+  play(type) {
+    const ctx = this.ctx;
+    const recipe = this.recipes[type];
+    if (!ctx || ctx.state !== "running" || !recipe) return;
+    const now = ctx.currentTime;
+    for (const { wave = "triangle", from, to, duration, peak, attack = 0.005, delay = 0 } of recipe) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const startAt = now + delay;
+      osc.type = wave;
+      osc.frequency.setValueAtTime(from, startAt);
+      if (to !== from) osc.frequency.exponentialRampToValueAtTime(Math.max(20, to), startAt + duration);
+      gain.gain.setValueAtTime(0.001, startAt);
+      gain.gain.exponentialRampToValueAtTime(peak, startAt + attack);
+      gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startAt);
+      osc.stop(startAt + duration + 0.02);
+    }
+  },
+};
+
 // track이 null이면 로비 음악으로 되돌린다.
 function setBetaMatchMusic(track) {
   const next = track ?? betaSeasonBgm;
@@ -46,6 +134,7 @@ function setBetaMatchMusic(track) {
 
 function startBetaSeasonMusic() {
   betaSeasonMusicStarted = true;
+  betaSfx.unlock();
   activeBetaBgm.play().catch(() => {});
   window.removeEventListener("pointerdown", startBetaSeasonMusic, true);
   window.removeEventListener("keydown", startBetaSeasonMusic, true);
@@ -5057,6 +5146,7 @@ const soccerState = {
   lastKick: "a", lastKicker: "bot", kickoffUntil: 0, playerKickReadyAt: 0,
   prevPlayerX: 0, prevPlayerZ: 0,
   freezeUntil: 0, goalCamUntil: 0, goalCamZ: 0, goalTeam: null, pendingReset: false,
+  whistlePending: false, lastPostSoundAt: 0,
 };
 
 function isSoccerFrozen() {
@@ -5075,6 +5165,7 @@ function startSoccerFreeze(scoredTeam = null) {
   const now = clock.elapsedTime;
   soccerState.freezeUntil = now + SOCCER_FREEZE_DURATION;
   soccerState.kickoffUntil = soccerState.freezeUntil;
+  soccerState.whistlePending = true;
   soccerState.goalTeam = scoredTeam;
   soccerState.pendingReset = Boolean(scoredTeam);
   soccerState.goalCamUntil = scoredTeam ? now + SOCCER_GOAL_CAM_DURATION : 0;
@@ -5144,6 +5235,7 @@ function kickSoccerBall(from, yaw, team = "a", kicker = "bot") {
   soccerState.lastKick = team;
   soccerState.lastKicker = kicker;
   canvas.dataset.lastSoccerKick = `${team}:${kicker}:${yaw.toFixed(3)}`;
+  betaSfx.play("soccerKick");
   return true;
 }
 
@@ -5202,6 +5294,10 @@ function bounceSoccerBallOffPosts() {
       if (along < 0) {
         soccerState.vx -= 1.86 * along * nx;
         soccerState.vz -= 1.86 * along * nz;
+        if (-along > 2 && clock.elapsedTime - soccerState.lastPostSoundAt > 0.15) {
+          soccerState.lastPostSoundAt = clock.elapsedTime;
+          betaSfx.play("soccerPost");
+        }
       }
     }
   }
@@ -5276,6 +5372,10 @@ function updateSoccer(dt) {
       : `킥오프 ${Math.ceil(soccerState.freezeUntil - now)}`;
     return;
   }
+  if (soccerState.whistlePending) {
+    soccerState.whistlePending = false;
+    betaSfx.play("soccerWhistle");
+  }
   if (soccerState.freezeUntil && clock.elapsedTime - soccerState.freezeUntil < 0.1) {
     goldRushStatusEl.textContent = "공 근처에선 차고, 멀리선 공격하세요";
   }
@@ -5302,6 +5402,7 @@ function soccerGoal(team) {
   const won = soccerState.scoreA >= 2 || (soccerState.overtime && team === "a");
   const lost = soccerState.scoreB >= 2 || (soccerState.overtime && team === "b");
   if (won || lost) { endGoldRush(`SOCCER KICK ${won ? "승리" : "패배"} · ${soccerState.scoreA}:${soccerState.scoreB}`, won); return; }
+  betaSfx.play(team === "a" ? "soccerGoal" : "soccerConceded");
   goldRushStatusEl.textContent = `${team === "a" ? "파랑" : "빨강"} 팀 득점!`;
   soccerState.vx = 0; soccerState.vz = 0;
   startSoccerFreeze(team);
@@ -5523,7 +5624,10 @@ function spawnGemAtAltar() {
 function updateGemEscape(team, countdownKey) {
   const total = gemTeamGems(team);
   if (total < GEM_TARGET_COUNT) { gemGrabState[countdownKey] = null; return false; }
-  gemGrabState[countdownKey] ??= clock.elapsedTime;
+  if (gemGrabState[countdownKey] == null) {
+    gemGrabState[countdownKey] = clock.elapsedTime;
+    betaSfx.play(team === "a" ? "gemEscapeStart" : "gemEscapeThreat");
+  }
   return clock.elapsedTime - gemGrabState[countdownKey] >= GEM_ESCAPE_DURATION;
 }
 
@@ -5572,6 +5676,7 @@ function updateGemGrab(dt) {
     if (!collector) continue;
     removeGoldPickup(i);
     collector.gold += 1;
+    if (collector === goldRushState) betaSfx.play("gemPickup");
     canvas.dataset.lastGemCollector = collector === goldRushState ? "player" : `ai-${collector.id}`;
   }
   const weEscaped = updateGemEscape("a", "escapeA");
@@ -6098,6 +6203,7 @@ function dropGoldRushGold(owner, position) {
     const offset = new THREE.Vector3((Math.random() - 0.5) * 2.5, 0.65, (Math.random() - 0.5) * 2.5);
     spawnGoldPickup(position.clone().add(offset), true);
   }
+  if (droppedCount > 0 && goldRushState.mode === "gemGrab" && owner === goldRushState) betaSfx.play("gemDrop");
   owner.gold = 0;
   owner.winCountdownStartedAt = null;
   canvas.dataset.lastGoldRushDroppedGold = String(droppedCount);
@@ -6434,6 +6540,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
     betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
     playOrderVictoryEffect();
   }
+  if (goldRushState.mode === "soccer" || goldRushState.mode === "gemGrab") betaSfx.play(playerWon ? "win" : "lose");
   betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
   saveBetaState();
   goldRushState.ended = true;
