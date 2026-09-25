@@ -13,7 +13,8 @@
 | 메인 베타 4 | `assets/beta4-rooftop-motion.mp3` |
 | 메인·테스트 베타 5 | `assets/beta5-clockwork-midway.mp3` |
 | 테스트 베타 6 | `assets/beta6-high-noon-tide.mp3` |
-| 테스트 베타 7·8 | 전용 음원 미등록, 베타 6 음원 공유 |
+| 테스트 베타 7 | `assets/beta7-beneath-sun-bleached-stone.mp3` |
+| 테스트 베타 8 | 전용 음원 미등록, 베타 6 음원 공유 |
 
 테스트 페이지는 지원되지 않는 시즌 쿼리도 실제 활성 시즌인 베타 6과 같은 음악을 선택한다. 메인에서는 시즌 5 음악에도 전체 볼륨·음소거·전투 진입 시 일시 정지가 적용된다.
 

@@ -16,10 +16,13 @@ const requestedBetaSeason = betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta7";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
 const BETA_CHARACTERS = HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
-// 시즌 7·8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
-const betaSeasonBgm = new Audio(BETA_SEASON_ID === "beta5"
-  ? "./assets/beta5-clockwork-midway.mp3?v=1"
-  : "./assets/beta6-high-noon-tide.mp3?v=1");
+// 시즌 8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
+const BETA_SEASON_BGM = {
+  beta5: "./assets/beta5-clockwork-midway.mp3?v=1",
+  beta6: "./assets/beta6-high-noon-tide.mp3?v=1",
+  beta7: "./assets/beta7-beneath-sun-bleached-stone.mp3?v=1",
+};
+const betaSeasonBgm = new Audio(BETA_SEASON_BGM[BETA_SEASON_ID] ?? BETA_SEASON_BGM.beta6);
 betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
