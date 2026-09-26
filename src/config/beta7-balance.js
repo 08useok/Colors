@@ -5,9 +5,9 @@ import { applyBeta6Balance } from './beta6-balance.js';
 export const BETA7_BALANCE = {
   orange: { maxHealth: 4000, bombSplashDamage: 1170 },
   blue: { bulletDamage: 1080, bulletRange: 16 },
-  red: { maxHealth: 9000, attackDamage: 2160 },
+  red: { maxHealth: 9000 },
   purple: { poisonDPS: 820, vialDamage: 2920 },
-  green: { maxHealth: 7600, boomerangDamage: 1710 },
+  green: { boomerangDamage: 1710 },
   gold: { maxHealth: 8200, stage1Damage: 990, stage2Damage: 495, stage3Damage: 250 },
   ivory: { maxHealth: 6600, iceCreamDamage: 2200 },
   pink: { maxHealth: 9900, healCircleDamage: 2200 },

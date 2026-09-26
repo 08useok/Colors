@@ -1,0 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
+import { applyBeta6Balance } from '../src/config/beta6-balance.js';
+import { applyBeta7Balance } from '../src/config/beta7-balance.js';
+import { tournament } from './simulate-beta6-balance.mjs';
+const reps = Number(process.argv[2] ?? 20);
+const targets = JSON.parse(readFileSync(new URL('../specs/counter-targets.json', import.meta.url), 'utf8'));
+const s6 = tournament(applyBeta6Balance(BETA_CHARACTERS), reps), s7 = tournament(applyBeta7Balance(BETA_CHARACTERS), reps);
+const pct = v => (v * 100).toFixed(0).padStart(3) + '%';
+console.log('id        win-target     S6->S7 | loss-target    S6->S7 | avg S6->S7');
+for (const r of targets.selected) console.log(r.id.padEnd(11), r.targetWin.padEnd(11), pct(s6.matrix[r.id][r.targetWin].score), '->', pct(s7.matrix[r.id][r.targetWin].score), '|', r.targetLoss.padEnd(11), pct(s6.matrix[r.id][r.targetLoss].score), '->', pct(s7.matrix[r.id][r.targetLoss].score), '|', s6.averages[r.id].toFixed(1), '->', s7.averages[r.id].toFixed(1));
