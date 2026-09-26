@@ -16,5 +16,5 @@ for (const a of ids) rows.push(`| **${names[a]}** | ` + ids.map(b => {
 }).join(' | ') + ' |');
 const avg = ['| 이름 | 시즌 6 평균 | 시즌 7 평균 |', '|---|---:|---:|', ...ids.map(i => `| ${names[i]} | ${s6.averages[i].toFixed(1)}% | ${s7.averages[i].toFixed(1)}% |`)];
 const md = `# 시즌 6 → 시즌 7 상성 비교\n\n칸은 행 캐릭터 기준 승률(승리 + 무승부 0.5)이다. 바뀐 칸은 **이전 → 이후**로 굵게 표시한다. 조합당 600전. 시즌 6 열의 크리스탈은 충전 요구량 7 기준이다.\n\n${rows.join('\n')}\n\n바뀐 칸 ${changed / 2}쌍.\n\n${avg.join('\n')}\n`;
-writeFileSync(new URL('../specs/beta-season-7-vs-6-matchups.md', import.meta.url), md);
+// 결과는 specs/beta-season-7-balance-patch.md 「시즌 6 → 시즌 7 상성 비교」에 붙여 넣는다
 console.log(md);
