@@ -1,0 +1,20 @@
+import { writeFileSync } from 'node:fs';
+import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
+import { applyBeta6Balance } from '../src/config/beta6-balance.js';
+import { applyBeta7Balance } from '../src/config/beta7-balance.js';
+import { tournament } from './simulate-beta6-balance.mjs';
+const names = { red:'레드', green:'그린', blue:'블루', orange:'오렌지', yellow:'옐로우', cyan:'시안', purple:'퍼플', pink:'핑크', crimson:'크림슨', gold:'골드', ivory:'아이보리', chartreuse:'샤르트뢰즈', mint:'민트', azure:'애저', crystal:'크리스탈' };
+const s6 = tournament(applyBeta6Balance(BETA_CHARACTERS), 50), s7 = tournament(applyBeta7Balance(BETA_CHARACTERS), 50);
+const ids = Object.keys(names), f = v => Math.round(v * 100) + '%';
+let changed = 0;
+const rows = ['| 이름 | ' + ids.map(i => names[i]).join(' | ') + ' |', '|---|' + ids.map(() => '---:').join('|') + '|'];
+for (const a of ids) rows.push(`| **${names[a]}** | ` + ids.map(b => {
+  if (a === b) return 'x';
+  const x = s6.matrix[a][b].score, y = s7.matrix[a][b].score;
+  if (Math.abs(x - y) < 0.005) return f(y);
+  changed++; return `**${f(x)} → ${f(y)}**`;
+}).join(' | ') + ' |');
+const avg = ['| 이름 | 시즌 6 평균 | 시즌 7 평균 |', '|---|---:|---:|', ...ids.map(i => `| ${names[i]} | ${s6.averages[i].toFixed(1)}% | ${s7.averages[i].toFixed(1)}% |`)];
+const md = `# 시즌 6 → 시즌 7 상성 비교\n\n칸은 행 캐릭터 기준 승률(승리 + 무승부 0.5)이다. 바뀐 칸은 **이전 → 이후**로 굵게 표시한다. 조합당 600전. 시즌 6 열의 크리스탈은 충전 요구량 7 기준이다.\n\n${rows.join('\n')}\n\n바뀐 칸 ${changed / 2}쌍.\n\n${avg.join('\n')}\n`;
+writeFileSync(new URL('../specs/beta-season-7-vs-6-matchups.md', import.meta.url), md);
+console.log(md);
