@@ -18,5 +18,6 @@ function dfs(path, used) {
 }
 dfs([start], new Set([start]));
 console.log('azure>ivory', (score('azure','ivory')*100).toFixed(0)+'%', 'ivory avg', r.averages.ivory.toFixed(1), 'cycles', results.length);
+const need = (process.argv[5] ?? '').split('>'); if (need.length === 2) for (let k = results.length - 1; k >= 0; k--) { const pa = results[k].path, i = pa.indexOf(need[0]); if (pa[(i + 1) % pa.length] !== need[1]) results.splice(k, 1); }
 results.sort((x, y) => x.weak.length - y.weak.length || y.kept - x.kept);
 for (const b of results.slice(0, 3)) console.log('kept', b.kept, 'weak', b.weak.map(([a,c2])=>a+'>'+c2+':'+(score(a,c2)*100).toFixed(0)).join(' ')||'-', '\n ', b.path.join(' > '));

@@ -265,7 +265,7 @@ export function createBeta6Combat(definitions, options = {}) {
       // use it. This bot-only approach surf closes distance without consuming
       // ammo, dealing damage, or charging the ultimate.
       if (a.id === 'azure' && destination === target && a.d.approachSurfRange
-        && dist > range(a) + .5 && dist <= a.d.approachSurfRange && time >= a.approachNext
+        && dist > (a.d.botApproachMin ?? range(a) + .5) && dist <= a.d.approachSurfRange && time >= a.approachNext
         && time >= a.lockUntil && time >= a.frozenUntil && !a.wave && !a.dash) {
         const travel = Math.min(a.d.approachSurfDistance, dist - range(a) * .75);
         move(a, a.x + Math.cos(yaw) * travel, a.z + Math.sin(yaw) * travel);
@@ -274,7 +274,7 @@ export function createBeta6Combat(definitions, options = {}) {
         dist = distance(a, destination);
         yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
       }
-      const ideal = destination !== target ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: 2.5 })[a.id] ?? perceivedRange(a) * .7);
+      const ideal = destination !== target ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
       const retreatsAtLowHealth = a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth;
       const usesRangeBand = destination === target && Number.isFinite(a.d.attackPerceptionMinRange);
       const radial = retreatsAtLowHealth ? -.85 : usesRangeBand
@@ -290,7 +290,7 @@ export function createBeta6Combat(definitions, options = {}) {
         a.z + (dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;
       const attackDistance = destination === target ? dist : distance(a, target);
-      if (!(hidden(a) && a.ammo < (a.d.maxAmmo ?? 3)) && attackDistance <= perceivedRange(a)) fire(a, target);
+      if (!(hidden(a) && a.ammo < (a.d.maxAmmo ?? 3)) && attackDistance <= perceivedRange(a) * (a.id === 'azure' ? (a.d.botFireRangeFactor ?? 1) : 1)) fire(a, target);
     }
     for (const a of actors) if (a.dash) {
       const dash = a.dash;

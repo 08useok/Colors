@@ -13,6 +13,8 @@ export const BETA7_BALANCE = {
   pink: { maxHealth: 9900, healCircleDamage: 2200 },
   chartreuse: { maxHealth: 6800, chartreuseDamage: 1320, chartreuseEnhancedDamage: 2640 },
   crystal: { ultimate: { chargeRequired: 6 } },
+  // Bot-only tuning for the simulation: Azure closes in with the approach surf and fires only when the wave can reach.
+  azure: { botApproachMin: 3.2, botFireRangeFactor: 0.75, botIdealDistance: 2.2 },
 };
 
 export function applyBeta7Balance(source) {
