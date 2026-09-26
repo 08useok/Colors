@@ -9,7 +9,7 @@ export const BETA7_BALANCE = {
   purple: { poisonDPS: 820, vialDamage: 2920 },
   green: { boomerangDamage: 1710 },
   gold: { maxHealth: 8200, stage1Damage: 990, stage2Damage: 495, stage3Damage: 250 },
-  ivory: { maxHealth: 6600, iceCreamDamage: 2200, iceCreamZoneRadius: 2.5, iceCreamZoneTickInterval: 1, iceCreamSpeed: 28 },
+  ivory: { maxHealth: 6600, iceCreamDamage: 2200, iceCreamZoneRadius: 5, iceCreamZoneTickInterval: 1, iceCreamSpeed: 28 },
   pink: { maxHealth: 9900, healCircleDamage: 2200 },
   chartreuse: { maxHealth: 6800, chartreuseDamage: 1320, chartreuseEnhancedDamage: 2640 },
   crystal: { ultimate: { chargeRequired: 6 } },
