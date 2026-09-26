@@ -4077,6 +4077,12 @@ let crystalAnalysisBeam = null;
 
 function clearCrystalUltimate() {
   crystalDashState = null;
+  const boundTarget = crystalAnalysisState?.target;
+  if (boundTarget) {
+    boundTarget.userData.attackDisabled = false;
+    boundTarget.userData.specialDisabled = false;
+    boundTarget.userData.moveSpeedMultiplier = 1;
+  }
   if (modelHeldPoseId === "crystalAnalysis") modelHeldPoseId = null;
   for (const key of ["mark", "finisher"]) {
     const object = crystalAnalysisState?.[key];
@@ -4187,12 +4193,21 @@ function createCrystalFinisherMesh() {
   return mesh;
 }
 
+// 크리스탈 궁극기에 붙잡혀 있는 대상인지
+function isCrystalAnalysisTarget(target) {
+  return Boolean(crystalAnalysisState && crystalAnalysisState.target === target);
+}
+
 function bindCrystalTarget(target) {
   const def = BETA_CHARACTERS.crystal.ultimate;
   crystalDashState = null;
   crystalAnalysisState = { target, until: clock.elapsedTime + def.analysisDuration };
   modelHeldPoseId = "crystalAnalysis";
   crystalAnalysisState.mark = createCrystalAnalysisMark();
+  // 빙결·고장과 같은 방식으로 행동 불가를 표시한다
+  target.userData.attackDisabled = true;
+  target.userData.specialDisabled = true;
+  target.userData.moveSpeedMultiplier = 0;
   crystalAnalysisBeam = new THREE.Mesh(
     new THREE.CylinderGeometry(0.09, 0.09, 1, 8),
     new THREE.MeshBasicMaterial({ color: 0x6ee7ff, transparent: true, opacity: 0.85 }),
@@ -7571,7 +7586,7 @@ function animate() {
       redGuardMesh.rotation.y += dt * 0.6;
     }
   }
-  if (attackRobot?.visible && !goldRushState.active && !goldRushState.ended && !goldRushState.dead && clock.elapsedTime >= attackRobot.userData.nextAttackAt) {
+  if (attackRobot?.visible && !attackRobot.userData.attackDisabled && !goldRushState.active && !goldRushState.ended && !goldRushState.dead && clock.elapsedTime >= attackRobot.userData.nextAttackAt) {
     const distance = Math.hypot(player.position.x - attackRobot.position.x, player.position.z - attackRobot.position.z);
     attackRobot.userData.nextAttackAt = clock.elapsedTime + 2.4;
     if (distance <= 14) {
@@ -8166,7 +8181,7 @@ function animate() {
       const pulse = 1 + Math.sin(clock.elapsedTime * 10) * 0.12;
       activeIndicator.scale.setScalar(pulse);
       activeIndicator.userData.material.emissiveIntensity = 1.2 + Math.sin(clock.elapsedTime * 12) * 0.5;
-    } else if (!mintFrozen) {
+    } else if (!mintFrozen && !isCrystalAnalysisTarget(target)) {
       target.userData.moveSpeedMultiplier = 1;
       target.userData.attackDisabled = false;
       target.userData.specialDisabled = false;
