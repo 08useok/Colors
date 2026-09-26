@@ -11,9 +11,10 @@ export function beta6Duel(config, left, right, scenario, seed, mirror = 1, initi
     seed, aimError: scenario.aimError, bounds: scenario.bounds ?? 40,
     suddenDeath: scenario.noZone ? undefined : { start: 30, end: 45, startRadius: 40, endRadius: 8, damagePerSecond: .25 },
   });
-  const a = world.add(left, { x: -mirror * scenario.distance / 2, charge: initialCharge });
-  const b = world.add(right, { x: mirror * scenario.distance / 2, charge: initialCharge });
-  for (let frame = 0; frame < 45 * 60 && a.hp > 0 && b.hp > 0; frame++) world.update(1 / 60);
+  const wallZ = (scenario.bounds ?? 40) - 1;
+  const a = scenario.walls ? world.add(left, { x: 0, z: mirror * wallZ, charge: initialCharge }) : world.add(left, { x: -mirror * scenario.distance / 2, charge: initialCharge });
+  const b = scenario.walls ? world.add(right, { x: 0, z: -mirror * wallZ, charge: initialCharge }) : world.add(right, { x: mirror * scenario.distance / 2, charge: initialCharge });
+  for (let frame = 0; frame < (scenario.timeLimit ?? 45) * 60 && a.hp > 0 && b.hp > 0; frame++) world.update(1 / 60);
   assert([a.hp, b.hp, a.x, b.x, a.z, b.z].every(Number.isFinite));
   const healthDifference = a.hp / a.d.maxHealth - b.hp / b.d.maxHealth;
   return {
@@ -23,9 +24,9 @@ export function beta6Duel(config, left, right, scenario, seed, mirror = 1, initi
     lastDamageKind: [a.lastDamageKind ?? null, b.lastDamageKind ?? null], time: world.time,
   };
 }
-export function tournament(config, repetitions = 50, bounds = 40, noZone = false) {
+export function tournament(config, repetitions = 50, bounds = 40, noZone = false, walls = false, timeLimit = 45) {
   const ids = Object.keys(config), matrix = Object.fromEntries(ids.map(id => [id, {}])), casts = Object.fromEntries(ids.map(id => [id, 0]));
-  const scenarios = [10, 13, 16].flatMap(distance => [.035, .1].map(aimError => ({ distance, aimError, bounds, noZone })));
+  const scenarios = [10, 13, 16].flatMap(distance => [.035, .1].map(aimError => ({ distance, aimError, bounds, noZone, walls, timeLimit })));
   for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
     const a = ids[i], b = ids[j]; let wins = 0, losses = 0, draws = 0;
     for (let s = 0; s < scenarios.length; s++) for (let n = 0; n < repetitions; n++) for (const mirror of [1, -1]) {
