@@ -23,9 +23,9 @@ export function beta6Duel(config, left, right, scenario, seed, mirror = 1, initi
     lastDamageKind: [a.lastDamageKind ?? null, b.lastDamageKind ?? null], time: world.time,
   };
 }
-export function tournament(config, repetitions = 50) {
+export function tournament(config, repetitions = 50, bounds = 40) {
   const ids = Object.keys(config), matrix = Object.fromEntries(ids.map(id => [id, {}])), casts = Object.fromEntries(ids.map(id => [id, 0]));
-  const scenarios = [10, 13, 16].flatMap(distance => [.035, .1].map(aimError => ({ distance, aimError })));
+  const scenarios = [10, 13, 16].flatMap(distance => [.035, .1].map(aimError => ({ distance, aimError, bounds })));
   for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
     const a = ids[i], b = ids[j]; let wins = 0, losses = 0, draws = 0;
     for (let s = 0; s < scenarios.length; s++) for (let n = 0; n < repetitions; n++) for (const mirror of [1, -1]) {
