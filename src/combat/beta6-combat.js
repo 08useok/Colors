@@ -150,7 +150,8 @@ export function createBeta6Combat(definitions, options = {}) {
         if (healthRatio < a.d.ultimateUseHealthMin || healthRatio > a.d.ultimateUseHealthMax) return false;
       }
       if (a.automatic && (a.id === 'gold' && dist > u.radius || ['azure', 'cyan', 'crimson'].includes(a.id) && dist > u.range)) return false;
-      if (a.id === 'crystal' && dist > u.range) return false;
+      // 사거리 밖이거나 이미 분석당하는 적이면 충전을 쓰기 전에 물러난다
+      if (a.id === 'crystal' && (dist > u.range || target.analysisOwner)) return false;
       if (a.automatic && a.id === 'green' && a.ammo > 0 && a.hp > a.d.maxHealth * .4) return false;
       // Spend the stored charge before resolving the skill so successful
       // ultimate hits can immediately begin charging the next ultimate.
@@ -184,6 +185,8 @@ export function createBeta6Combat(definitions, options = {}) {
       else if (a.id === 'crystal') {
         move(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1);
         const until = time + u.analysisDuration;
+        // 붙잡힌 쪽이 걸어 둔 분석은 풀린다 — 먼저 잡는 쪽이 이긴다
+        if (target.analysisTarget) releaseAnalysis(target);
         a.lockUntil = target.lockUntil = until;
         a.analysisTarget = target; target.analysisOwner = a; target.analysisExpires = until;
         emit('analysis', { owner: a, target, expiresAt: until });

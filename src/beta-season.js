@@ -4,7 +4,7 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=1";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=1";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=2";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";

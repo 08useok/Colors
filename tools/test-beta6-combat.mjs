@@ -213,5 +213,23 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
     run(world, 7.5);
     assert.equal(victim.hp, 0, 'analysis eliminates the victim after its duration');
   }
+  {
+    // Tail chains: a victim may not be bound twice, and being bound frees the bind it owns.
+    const world = createBeta6Combat(config, { seed: 5 });
+    const first = world.add('crystal', { automatic: false, charge: 99 });
+    const second = world.add('crystal', { automatic: false, charge: 99, team: 'b', x: 6 });
+    const victim = world.add('red', { automatic: false, x: 2, hp: 100000 });
+    assert(world.cast(first, victim), 'first crystal binds the victim');
+    second.charge = 99;
+    assert.equal(world.cast(second, victim), false, 'a bound victim cannot be bound again');
+    assert.equal(second.charge, 99, 'a refused analysis keeps its charge');
+    assert.equal(victim.analysisOwner, first, 'the first caster keeps the victim');
+
+    const chained = world.add('crystal', { automatic: false, charge: 99, team: 'b', x: -3 });
+    assert(world.cast(chained, first), 'a caster can be bound by someone else');
+    assert.equal(first.analysisTarget, null, 'being bound releases the bind you own');
+    assert.equal(victim.analysisOwner, null, 'the freed victim is no longer analysed');
+    assert(victim.lockUntil <= world.time, 'the freed victim can act again');
+  }
 }
 console.log('PASS: shared combat isolation, 15 basic attacks, Crystal cascade/analysis, team revival, freezing, walls, cleanup, deterministic replay.');
