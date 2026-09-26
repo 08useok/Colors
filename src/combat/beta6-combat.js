@@ -220,14 +220,23 @@ export function createBeta6Combat(definitions, options = {}) {
     }
     if (p.kind === 'wave') a.wave = false;
   }
+  // 분석 속박 해제 — 한쪽이 쓰러지거나 사라지면 양쪽 모두 풀어 준다.
+  function releaseAnalysis(a) {
+    const target = a.analysisTarget;
+    if (!target) return;
+    target.analysisOwner = null; target.analysisExpires = 0; target.lockUntil = time;
+    a.analysisTarget = null; a.lockUntil = time;
+    emit('analysisReleased', { owner: a, target });
+  }
   function tick(dt) {
     time += dt;
     for (const a of actors) {
+      // 시전자가 쓰러져도 대상이 영원히 묶이지 않도록 죽음 검사보다 먼저 푼다
+      if (a.analysisTarget && (!alive(a) || !alive(a.analysisTarget))) releaseAnalysis(a);
       if (!alive(a)) continue;
       if (a.analysisTarget) {
         const target = a.analysisTarget;
-        if (!alive(target)) { a.analysisTarget = null; a.lockUntil = time; emit('analysisReleased', { owner: a, target }); }
-        else if (time >= target.analysisExpires) { hit(a, target, target.hp); target.analysisOwner = null; a.analysisTarget = null; a.lockUntil = time; emit('analysisExecute', { owner: a, target }); }
+        if (time >= target.analysisExpires) { hit(a, target, target.hp); target.analysisOwner = null; a.analysisTarget = null; a.lockUntil = time; emit('analysisExecute', { owner: a, target }); }
       }
       if (options.suddenDeath && time >= options.suddenDeath.start) {
         const progress = clamp((time - options.suddenDeath.start) / Math.max(.001, options.suddenDeath.end - options.suddenDeath.start), 0, 1);
@@ -356,6 +365,9 @@ export function createBeta6Combat(definitions, options = {}) {
   return { actors, projectiles, zones, add, fire, cast, hit, hidden, range, get time() { return time; },
     update(dt) { let remaining = Math.min(.25, Math.max(0, dt)); while (remaining > 1e-9) { const step = Math.min(1 / 60, remaining); tick(step); remaining -= step; } },
     remove(actor) {
+      // 사라지는 액터가 걸어 둔 속박도 함께 푼다
+      if (actor.analysisTarget) releaseAnalysis(actor);
+      if (actor.analysisOwner) releaseAnalysis(actor.analysisOwner);
       const index = actors.indexOf(actor); if (index >= 0) actors.splice(index, 1);
       for (const list of [projectiles, zones, scheduled]) for (let i = list.length - 1; i >= 0; i--) if (list[i].owner === actor) list.splice(i, 1);
     },

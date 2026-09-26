@@ -4167,6 +4167,13 @@ function updateCrystalAnalysisMark(mark, urgency, dt) {
   }
 }
 
+// 마무리 수정의 높이 비율. 앞부분에서 솟고 뒷부분에서 떨어진다.
+function crystalFinisherRise(progress) {
+  return progress < 0.45
+    ? THREE.MathUtils.smoothstep(progress / 0.45, 0, 1)
+    : 1 - Math.pow((progress - 0.45) / 0.55, 2);
+}
+
 // 즉사 1초 전에 나타나는 수정. 위로 솟았다가 대상 위로 떨어진다.
 function createCrystalFinisherMesh() {
   const mesh = new THREE.Mesh(
@@ -4215,9 +4222,7 @@ function updateCrystalUltimate(dt) {
     if (remaining <= 1) {
       crystalAnalysisState.finisher ??= createCrystalFinisherMesh();
       const progress = THREE.MathUtils.clamp(1 - remaining, 0, 1);
-      const rise = progress < 0.45
-        ? THREE.MathUtils.smoothstep(progress / 0.45, 0, 1)
-        : 1 - Math.pow((progress - 0.45) / 0.55, 2);
+      const rise = crystalFinisherRise(progress);
       crystalAnalysisState.finisher.position.set(target.position.x, head + rise * 4.5, target.position.z);
       crystalAnalysisState.finisher.rotation.y += dt * 6;
       crystalAnalysisState.finisher.rotation.x = progress * 2.2;
@@ -6216,10 +6221,15 @@ function clearGoldRushBots() {
   beta6PlayerActor = null;
   for (const mesh of beta6CombatVisuals.values()) {
     scene.remove(mesh);
-    mesh.geometry.dispose();
-    mesh.material.dispose();
+    // 종류별 모양은 조각을 묶은 그룹일 수 있다
+    mesh.traverse((part) => {
+      part.geometry?.dispose();
+      if (Array.isArray(part.material)) part.material.forEach((material) => material.dispose());
+      else part.material?.dispose();
+    });
   }
   beta6CombatVisuals.clear();
+  clearBeta6AnalysisVisuals();
   for (const bot of goldRushBots) {
     scene.remove(bot.mesh);
     scene.remove(bot.healthBar);
@@ -6366,6 +6376,14 @@ function processBeta6CombatEvent(event) {
         if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
         if (event.type === "ultimate") canvas.dataset[event.owner === beta6PlayerActor ? "lastBeta6PlayerUltimate" : "lastBeta6BotUltimate"] = event.owner.id;
       }
+      if (event.type === "analysisExecute") {
+        const position = beta6ActorPosition(event.target);
+        if (position) {
+          createHitImpact(position);
+          createGroundPulse(1.6, 0x9ef2ff, position);
+        }
+        canvas.dataset.lastCrystalAnalysis = event.owner === beta6PlayerActor ? "player" : "bot";
+      }
       if (event.type === "circuit") createGoldRushAttackEffect(new THREE.Vector3(event.from.x, 1, event.from.z), new THREE.Vector3(event.to.x, 1, event.to.z), 0xffff44);
 }
 
@@ -6443,6 +6461,64 @@ function createBeta6ProjectileMesh(projectile, color) {
     new THREE.SphereGeometry(Math.max(0.12, projectile.radius ?? 0.2), 8, 6),
     new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
   );
+}
+
+// 경기에서는 전투 모듈이 속박을 관리하므로, 붙잡힌 액터를 보고 연출만 붙인다.
+const beta6AnalysisVisuals = new Map();
+
+function beta6ActorPosition(actor) {
+  if (actor === beta6PlayerActor) return player.position;
+  return actor.bot?.mesh.position ?? null;
+}
+
+function disposeBeta6AnalysisVisual(visual) {
+  for (const object of [visual.mark, visual.finisher]) {
+    if (!object) continue;
+    scene.remove(object);
+    object.traverse((part) => {
+      part.geometry?.dispose();
+      part.material?.map?.dispose();
+      part.material?.dispose();
+    });
+  }
+}
+
+function clearBeta6AnalysisVisuals() {
+  for (const visual of beta6AnalysisVisuals.values()) disposeBeta6AnalysisVisual(visual);
+  beta6AnalysisVisuals.clear();
+}
+
+function updateBeta6AnalysisVisuals(world, dt) {
+  const duration = BETA_CHARACTERS.crystal.ultimate.analysisDuration;
+  const bound = new Set();
+  for (const actor of world.actors) {
+    if (!actor.analysisOwner || actor.hp <= 0) continue;
+    const position = beta6ActorPosition(actor);
+    if (!position) continue;
+    bound.add(actor.key);
+    let visual = beta6AnalysisVisuals.get(actor.key);
+    if (!visual) {
+      visual = { mark: createCrystalAnalysisMark(), finisher: null };
+      beta6AnalysisVisuals.set(actor.key, visual);
+    }
+    const remaining = Math.max(0, (actor.analysisExpires ?? 0) - world.time);
+    const urgency = 1 - THREE.MathUtils.clamp(remaining / duration, 0, 1);
+    const head = position.y + 2.5;
+    visual.mark.position.set(position.x, head + 0.35, position.z);
+    updateCrystalAnalysisMark(visual.mark, urgency, dt);
+    if (remaining <= 1) {
+      visual.finisher ??= createCrystalFinisherMesh();
+      const progress = THREE.MathUtils.clamp(1 - remaining, 0, 1);
+      visual.finisher.position.set(position.x, head + crystalFinisherRise(progress) * 4.5, position.z);
+      visual.finisher.rotation.y += dt * 6;
+      visual.finisher.rotation.x = progress * 2.2;
+    }
+  }
+  for (const [key, visual] of beta6AnalysisVisuals) {
+    if (bound.has(key)) continue;
+    disposeBeta6AnalysisVisual(visual);
+    beta6AnalysisVisuals.delete(key);
+  }
 }
 
 function updateBeta6BotCombat(dt) {
@@ -6525,6 +6601,7 @@ function updateBeta6BotCombat(dt) {
     if (world.time < a.guardUntil) draw(`g${a.key}`, { x: a.x, z: a.z, owner: a }, 1.1, "zone");
     if (world.time < a.hiddenUntil && a.bush) draw(`b${a.key}`, { ...a.bush, owner: a }, a.u.radius, "zone");
   }
+  updateBeta6AnalysisVisuals(world, dt);
   if (hero.id === "green") setPlayerConcealedVisual(world.hidden(hero));
   for (const [key, mesh] of beta6CombatVisuals) if (!visible.has(key)) {
     scene.remove(mesh);

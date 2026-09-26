@@ -185,4 +185,33 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
   for (let i = 0; i < 4; i++) world.update(.25);
   assert.deepEqual(yellow.devices[0], { x: 7, z: -3 }, 'manual circuit placement');
 }
+{
+  // A dead or removed caster must never leave its analysis victim locked forever.
+  const bind = () => {
+    const world = createBeta6Combat(config, { seed: 5 });
+    const caster = world.add('crystal', { automatic: false, charge: 99 });
+    const victim = world.add('red', { automatic: false, x: 2, hp: 100000 });
+    assert(world.cast(caster, victim), 'crystal analysis binds');
+    run(world, 1);
+    assert(victim.lockUntil > world.time, 'victim stays locked while analysed');
+    return { world, caster, victim };
+  };
+  {
+    const { world, caster, victim } = bind();
+    caster.hp = 0;
+    run(world, .2);
+    assert.equal(victim.analysisOwner, null, 'dead caster releases the victim');
+    assert(victim.lockUntil <= world.time, 'dead caster unlocks the victim');
+  }
+  {
+    const { world, caster, victim } = bind();
+    world.remove(caster);
+    assert.equal(victim.analysisOwner, null, 'removed caster releases the victim');
+  }
+  {
+    const { world, victim } = bind();
+    run(world, 7.5);
+    assert.equal(victim.hp, 0, 'analysis eliminates the victim after its duration');
+  }
+}
 console.log('PASS: shared combat isolation, 15 basic attacks, Crystal cascade/analysis, team revival, freezing, walls, cleanup, deterministic replay.');
