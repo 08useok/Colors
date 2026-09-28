@@ -9977,7 +9977,7 @@ function createCrimsonUltimateEffect(centerX, centerZ, yaw, size) {
   shock.rotation.z = -yaw;
   shock.position.set(centerX, 0.12, centerZ);
   scene.add(shock);
-  state.effects.push({ mesh: shock, life: 0.5, maxLife: 0.5, type: "punchImpact" });
+  state.effects.push({ mesh: shock, life: 10, maxLife: 10, type: "punchImpact" });
 
   const burst = new THREE.Mesh(
     new THREE.SphereGeometry(size * 0.42, 12, 10),
@@ -9985,7 +9985,7 @@ function createCrimsonUltimateEffect(centerX, centerZ, yaw, size) {
   );
   burst.position.set(centerX, 1.4, centerZ);
   scene.add(burst);
-  state.effects.push({ mesh: burst, life: 0.35, maxLife: 0.35, type: "punchBurst" });
+  state.effects.push({ mesh: burst, life: 10, maxLife: 10, type: "punchBurst" });
 }
 
 // KO 스트레이트 — 정면 5×5에 피해·넉백, 범위 안 벽은 부순다
