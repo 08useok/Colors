@@ -4,8 +4,8 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=1";
-import { applyBeta7Balance } from "./config/beta7-balance.js?v=1";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=2";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=2";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=3";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -18,6 +18,7 @@ const requestedBetaSeason = betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta7";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
 const BETA_CHARACTERS = BETA_SEASON_ID === "beta7" ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
+if (BETA_SEASON_ID === "beta8") BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
 // 시즌 8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
 const BETA_SEASON_BGM = {
   beta5: "./assets/beta5-clockwork-midway.mp3?v=1",
@@ -1960,8 +1961,8 @@ function updateCrimsonControls() {
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["blue"] : []),
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []),
     ...(HAS_BETA6_CONTENT ? ["azure", "yellow"] : []),
-    ...(IS_BETA7_TEST ? ["purple"] : []),
-    ...(IS_BETA8_TEST ? ["orange"] : []),
+    ...(IS_BETA7_TEST ? ["purple", "crystal"] : []),
+    ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["orange"] : []),
   ];
   const seasonUltimates = IS_BETA7_TEST ? ["crystal"] : [];
   const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...seasonUltimates, ...specialCharacters].includes(betaState.selectedCharacter);
@@ -6355,6 +6356,7 @@ function syncBeta6PlayerHud() {
     case "red": redUltimateCharge = charge; break;
     case "green": greenUltimateCharge = charge; break;
     case "blue": blueSpecialCharge = charge; break;
+    case "orange": orangeUltimateCharge = charge; break;
     case "cyan": cyanUltimateCharge = charge; break;
     case "pink": pinkUltimateCharge = charge; break;
     case "crimson": crimsonUltimateCharge = charge; break;
@@ -6476,6 +6478,15 @@ function createBeta6ProjectileMesh(projectile, color) {
   if (kind === "needle") return orient(createPurpleNeedleMesh());
   if (kind === "vial") return createPurpleVialMesh();
   if (kind === "mint") return orient(createMintIceCreamMesh());
+  if (kind === "orangePeel") {
+    const mesh = new THREE.Mesh(
+      new THREE.TorusGeometry(0.24, 0.075, 6, 14, Math.PI * 1.35),
+      new THREE.MeshStandardMaterial({ color: 0xff9b32, emissive: 0x8a2d00, emissiveIntensity: 0.34, roughness: 0.56 }),
+    );
+    mesh.rotation.x = Math.PI / 2;
+    mesh.userData.beta6Spin = true;
+    return mesh;
+  }
   if (["enhanced", "cc", "plague", "blank"].includes(kind)) return createChartreuseRoundMesh(kind);
   if (kind === "bullet") return orient(ownerId === "cyan" ? createCyanPillMesh() : createBlueMarbleMesh());
   if (kind === "crystal" || kind === "gold") {

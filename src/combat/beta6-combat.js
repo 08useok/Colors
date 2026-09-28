@@ -178,6 +178,12 @@ export function createBeta6Combat(definitions, options = {}) {
           shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage, { kind: 'ivory', ultimate: true });
         }
       } else if (a.id === 'chartreuse') a.focusUntil = time + u.duration;
+      else if (a.id === 'orange') {
+        for (let i = 0; i < u.count; i++) {
+          const offset = u.count > 1 ? -u.spreadAngle / 2 + i * u.spreadAngle / (u.count - 1) : 0;
+          shot(a, yaw + offset, u.speed, u.range, u.damage, { kind: 'orangePeel', ultimate: true, radius: u.hitRadius });
+        }
+      }
       else if (a.id === 'mint') {
         const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
         after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }));
@@ -304,13 +310,17 @@ export function createBeta6Combat(definitions, options = {}) {
     for (let i = projectiles.length - 1; i >= 0; i--) {
       const p = projectiles[i], a = p.owner, d = a.d;
       if (time < p.start) continue;
+      if (p.kind === 'orangePeel' && p.pausedUntil) {
+        if (time < p.pausedUntil) continue;
+        p.pausedUntil = 0; p.returning = true; p.hits.clear(); p.traveled = 0;
+      }
       if (p.kind === 'wave' && !alive(a)) { finish(p); projectiles.splice(i, 1); continue; }
       if (p.returning) p.yaw = Math.atan2(a.z - p.z, a.x - p.x);
       const before = { x: p.x, z: p.z }, advance = Math.min(p.speed * dt, p.returning ? Infinity : Math.max(0, p.reach - p.traveled));
       p.x += Math.cos(p.yaw) * advance; p.z += Math.sin(p.yaw) * advance; p.traveled += advance;
       const air = ['ivory', 'vial'].includes(p.kind);
       let ended = !p.returning && p.traveled >= p.reach;
-      const hitWall = !air && !(p.kind === 'wave' && p.ultimate) && blocked(p.x, p.z, p.radius);
+      const hitWall = !air && !(p.kind === 'wave' && p.ultimate) && !(p.kind === 'orangePeel' && p.returning) && blocked(p.x, p.z, p.radius);
       if (hitWall) { ended = true; p.x = before.x; p.z = before.z; }
       if (p.kind === 'wave') move(a, p.origin.x + Math.cos(p.yaw) * Math.min(p.traveled, p.ride), p.origin.z + Math.sin(p.yaw) * Math.min(p.traveled, p.ride));
       if (p.kind === 'electric' && a.devices.some(v => segmentDistance(v, before, p) <= .8 + p.radius)) {
@@ -343,11 +353,15 @@ export function createBeta6Combat(definitions, options = {}) {
           if (p.kind === 'cc') { const effect = Math.floor(random() * 6); if (effect === 0 || effect === 5) { b.slowUntil = time + 2; b.slow = effect === 5 ? 1 : .35; } if (effect === 1 || effect === 5) b.lockUntil = time + 2; if (effect === 2) b.frozenUntil = time + 2; if (effect === 3) { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; } if (effect === 4) knock(b, p.yaw, 3.5); }
           if (p.kind === 'bomb') hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount);
         }
-        if (!['wave', 'gale', 'boomerang'].includes(p.kind)) { ended = true; break; }
+        if (!['wave', 'gale', 'boomerang', 'orangePeel'].includes(p.kind)) { ended = true; break; }
       }
       if (p.kind === 'boomerang') {
         if (!p.returning && (ended || p.hits.size)) { p.returning = true; p.hits.clear(); p.traveled = 0; p.speed *= d.boomerangReturnSpeedMultiplier; ended = false; }
         else if (p.returning) ended = !alive(a) || distance(p, a) < .7;
+      }
+      if (p.kind === 'orangePeel') {
+        if (!p.returning && ended) { p.pausedUntil = time + a.u.pauseDuration; p.speed = 0; ended = false; }
+        else if (p.returning) { p.speed = a.u.speed; ended = !alive(a) || distance(p, a) < .7; }
       }
       if (ended) { finish(p); projectiles.splice(i, 1); }
     }

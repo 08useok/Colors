@@ -1,4 +1,4 @@
-import { applyBeta6Balance } from './beta6-balance.js';
+import { applyBeta6Balance } from './beta6-balance.js?v=2';
 
 // Season 7 only: weak (~10%) nudge on top of the beta6 overlay, based on the S6 simulation ranking.
 // Nerfs: orange, blue, red, purple, green. Buffs: gold, ivory, pink, chartreuse. Crystal joins the counter cycle as orange -> crystal -> red.
@@ -27,5 +27,6 @@ export function applyBeta7Balance(source) {
   result.blue.basicAttack.descriptionEn = `Throws a fast marble up to ${result.blue.bulletRange} tiles, dealing ${result.blue.bulletDamage} damage and ${result.blue.bulletKnockback} tiles of knockback.`;
   result.ivory.basicAttack.description = `최대 사거리 ${result.ivory.iceCreamRange}타일에 아이스크림을 던집니다. 착탄 시 ${result.ivory.iceCreamDamage} 피해를 주고, 반경 ${result.ivory.iceCreamZoneRadius}타일에 ${result.ivory.iceCreamZoneDuration}초 동안 ${result.ivory.iceCreamZoneTickInterval}초마다 ${result.ivory.iceCreamDamage} 피해를 주는 장판을 만듭니다. 장판 피해는 중첩되지 않습니다.`;
   result.ivory.basicAttack.descriptionEn = `Throws ice cream up to ${result.ivory.iceCreamRange} tiles. It deals ${result.ivory.iceCreamDamage} impact damage and leaves a ${result.ivory.iceCreamZoneRadius}-tile-radius zone for ${result.ivory.iceCreamZoneDuration} seconds that deals ${result.ivory.iceCreamDamage} damage every ${result.ivory.iceCreamZoneTickInterval} seconds. Zone damage does not stack.`;
+  result.orange.orangeUltimateEnabled = true;
   return result;
 }

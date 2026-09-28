@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
 import { applyBeta6Balance, beta6Ultimate } from '../src/config/beta6-balance.js';
+import { applyBeta7Balance } from '../src/config/beta7-balance.js';
 import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 import { beta6Duel } from './simulate-beta6-balance.mjs';
 const original = structuredClone(BETA_CHARACTERS), config = applyBeta6Balance();
@@ -22,6 +23,27 @@ assert.equal(beta6Ultimate(config.crimson, 'crimson').damage, 5400);
 assert.equal(beta6Ultimate(config.orange, 'orange'), null);
 assert.equal(beta6Ultimate(config.purple, 'purple'), null);
 const run = (world, seconds) => { for (let i = 0; i < seconds * 60; i++) world.update(1 / 60); };
+
+{
+  const beta7 = applyBeta7Balance(BETA_CHARACTERS);
+  assert.equal(beta6Ultimate(beta7.orange, 'orange').name, '오렌지 껍질 회수');
+  const world = createBeta6Combat(beta7, { aimError: 0, bounds: 40 });
+  const orange = world.add('orange', { x: 0, automatic: false, charge: 100 });
+  const target = world.add('red', { x: 8, automatic: false, hp: 100000 });
+  assert(world.cast(orange, target, { angle: 0 }));
+  assert.equal(world.projectiles.filter(projectile => projectile.kind === 'orangePeel').length, 5);
+  run(world, 0.7);
+  assert(world.projectiles.every(projectile => projectile.pausedUntil > world.time), 'Orange peels pause at maximum range');
+  run(world, 2.05);
+  assert(world.projectiles.every(projectile => projectile.returning), 'Orange peels return after the two-second pause');
+
+  const chargeWorld = createBeta6Combat(beta7, { aimError: 0, bounds: 40 });
+  const chargingOrange = chargeWorld.add('orange', { x: 0, automatic: false, next: 0 });
+  const chargeTarget = chargeWorld.add('red', { x: 4, automatic: false, hp: 100000 });
+  assert(chargeWorld.fire(chargingOrange, chargeTarget, 0));
+  run(chargeWorld, 0.4);
+  assert.equal(chargingOrange.charge, 1, 'Orange charges once per direct fruit hit');
+}
 for (const id of Object.keys(config)) {
   const world = createBeta6Combat(config, { seed: 9, aimError: 0 });
   const a = world.add(id, { x: 0, automatic: false, next: 0 }), b = world.add('red', { x: 2, hp: 100000, automatic: false, next: 0 });

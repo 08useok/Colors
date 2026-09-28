@@ -41,7 +41,7 @@
 - [`beta-season-6-release-notes.md`](beta-season-6-release-notes.md) — 베타 시즌 6 메인 적용 및 버프·너프·조정·리메이크
 - [`beta-season-6-balance-patch.md`](beta-season-6-balance-patch.md) — 시즌 6 캐릭터별 봇 전투·밸런스 적용 및 목표 미달 결과
 - [`beta-season-7.md`](beta-season-7.md) — 퍼플 독성 대도약
-- [`beta-season-8.md`](beta-season-8.md) — 오렌지 껍질 회수
+- [`beta-season-8.md`](beta-season-8.md) — 오렌지 궁극기 출시 순서 변경 기록
 - [`beta-season-8-rotation-tournament.md`](beta-season-8-rotation-tournament.md) — 로테이션 토너먼트 기획 메모
 - [`beta-ultimate-balance.md`](beta-ultimate-balance.md) — 궁극기 충전·피해 조정
 
