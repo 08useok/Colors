@@ -2192,6 +2192,7 @@ body.lobby-active #takedown-hud {
 .mu-ivory { color: #fffff0; }
 .mu-chartreuse { color: #c1f80a; }
 .mu-mint { color: #98ffdc; }
+.mu-azure { color: #4da6ff; }
 
 .matchup-desc {
   font-size: 11px;
