@@ -5,11 +5,12 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.152";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.185";
+import { CHARACTERS } from "./config/characters.js?v=1.5.186";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
+import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
 
 // ── i18n ────────────────────────────────────────────────────────────────
 // LANGS는 ./LANGS/langs.js에서 import
@@ -2368,7 +2369,7 @@ const FLASH_EMISSIVE = new THREE.Color(0x7f0f0f);
 const SHOCK_EMISSIVE = new THREE.Color(0x2299cc);
 const POISON_EMISSIVE = new THREE.Color(0x44aa22);
 const NO_EMISSIVE = new THREE.Color(0x000000);
-const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit", "ivoryZoneRing", "ivoryZoneFlash", "chartreuseUltimate", "chartreuseBurst"]);
+const GROUND_EFFECT_TYPES = new Set(["sonicWave", "healFill", "vialRing", "vialFill", "frostRing", "bombRing", "bombFlash", "bulletHit", "spreadHit", "needleHit", "boomerangHit", "ivoryZoneRing", "ivoryZoneFlash", "chartreuseUltimate", "chartreuseBurst", "yellowCircuit"]);
 
 function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false } = {}) {
   if (!root) return;
@@ -5174,6 +5175,7 @@ function clearTakeDownMap() {
 }
 
 function clearBattleMap() {
+  clearMainYellowDevices();
   battleMapGroup.traverse((obj) => {
     if (obj.geometry && obj.geometry !== bushClumpGeo) obj.geometry.dispose();
     if (obj.material) {
@@ -8770,28 +8772,126 @@ function tryUseAzureUltimate(fighter) {
 }
 
 const mainYellowDevices = [];
-function tryUseYellowUltimate(fighter) {
-  const def = CHARACTERS.yellow.ultimate;
-  if (fighter.yellowUltimateCharge < def.chargeRequired) return false;
-  fighter.yellowUltimateCharge = 0;
-  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(.4, .5, .35, 10), new THREE.MeshBasicMaterial({ color: 0xffff55 }));
-  mesh.position.set(fighter.mesh.position.x + Math.sin(fighter.yaw) * 6, .2, fighter.mesh.position.z + Math.cos(fighter.yaw) * 6);
-  scene.add(mesh); mainYellowDevices.push({ mesh, owner: fighter });
-  while (mainYellowDevices.length > def.maxDevices) disposeSceneObject(mainYellowDevices.shift().mesh);
-  if (mainYellowDevices.length > 1) {
-    for (let i = 1; i < mainYellowDevices.length; i++) {
-      const a = mainYellowDevices[i-1].mesh.position, b = mainYellowDevices[i].mesh.position;
-      const dx=b.x-a.x, dz=b.z-a.z, len=Math.hypot(dx,dz);
-      const line = new THREE.Mesh(new THREE.BoxGeometry(.18,.18,len),new THREE.MeshBasicMaterial({color:0xffff77,transparent:true,opacity:.8}));
-      line.position.copy(a).lerp(b,.5); line.position.y=.35; line.rotation.y=Math.atan2(dx,dz); scene.add(line);
-      state.effects.push({mesh:line,life:def.circuitDuration,maxLife:def.circuitDuration,type:"yellowCircuit"});
-      for (const target of state.players) {
-        if (target===fighter||target.dead||(fighter.team&&target.team===fighter.team)) continue;
-        const t=THREE.MathUtils.clamp(((target.mesh.position.x-a.x)*dx+(target.mesh.position.z-a.z)*dz)/Math.max(.001,len*len),0,1);
-        if(Math.hypot(target.mesh.position.x-(a.x+dx*t),target.mesh.position.z-(a.z+dz*t))<=def.connectionRadius+target.radius) applyDamage(target,def.connectionDamage,fighter);
-      }
+const mainYellowWires = [];
+
+function clearMainYellowWires() {
+  while (mainYellowWires.length) disposeSceneObject(mainYellowWires.pop());
+}
+
+function createMainYellowWire(start, end) {
+  const wire = createYellowCircuitWireMesh(start, end);
+  scene.add(wire);
+  mainYellowWires.push(wire);
+}
+
+function refreshMainYellowWires() {
+  clearMainYellowWires();
+  const ownerIds = new Set(mainYellowDevices.map((device) => device.ownerId));
+  for (const ownerId of ownerIds) {
+    const devices = mainYellowDevices.filter((device) => device.ownerId === ownerId);
+    for (let index = 1; index < devices.length; index += 1) {
+      const start = devices[index - 1].mesh.position.clone();
+      const end = devices[index].mesh.position.clone();
+      start.y += 0.5;
+      end.y += 0.5;
+      createMainYellowWire(start, end);
     }
   }
+}
+
+function clearMainYellowDevices() {
+  clearMainYellowWires();
+  while (mainYellowDevices.length) disposeSceneObject(mainYellowDevices.pop().mesh);
+}
+
+function pointToSegmentDistance2D(pointX, pointZ, startX, startZ, endX, endZ) {
+  const dx = endX - startX;
+  const dz = endZ - startZ;
+  const lengthSquared = dx * dx + dz * dz;
+  const t = lengthSquared > 0
+    ? THREE.MathUtils.clamp(((pointX - startX) * dx + (pointZ - startZ) * dz) / lengthSquared, 0, 1)
+    : 0;
+  return Math.hypot(pointX - (startX + dx * t), pointZ - (startZ + dz * t));
+}
+
+function installMainYellowDevice(projectile, owner) {
+  const def = CHARACTERS.yellow.ultimate;
+  projectile.mesh.position.set(projectile.x, 0.02, projectile.z);
+  const device = { mesh: projectile.mesh, ownerId: owner.id };
+  mainYellowDevices.push(device);
+  const owned = mainYellowDevices.filter((entry) => entry.ownerId === owner.id);
+  if (owned.length > def.maxDevices) {
+    const oldest = owned[0];
+    const index = mainYellowDevices.indexOf(oldest);
+    if (index >= 0) mainYellowDevices.splice(index, 1);
+    disposeSceneObject(oldest.mesh);
+  }
+  refreshMainYellowWires();
+  createElectricHitEffect(projectile.x, projectile.z);
+}
+
+function activateMainYellowCircuit(owner) {
+  const def = CHARACTERS.yellow.ultimate;
+  const devices = mainYellowDevices.filter((entry) => entry.ownerId === owner.id);
+  if (devices.length < 2) return false;
+  for (let i = 1; i < devices.length; i += 1) {
+    const a = devices[i - 1].mesh.position;
+    const b = devices[i].mesh.position;
+    if (Math.hypot(b.x - a.x, b.z - a.z) <= 0.001) continue;
+    const line = createYellowCircuitWireMesh(
+      new THREE.Vector3(a.x, a.y + 0.54, a.z),
+      new THREE.Vector3(b.x, b.y + 0.54, b.z),
+      true,
+    );
+    line.material.transparent = true;
+    line.material.opacity = 1;
+    scene.add(line);
+    state.effects.push({ mesh: line, life: def.circuitDuration, maxLife: def.circuitDuration, type: "yellowCircuit" });
+    for (const target of state.players) {
+      if (target === owner || target.dead || areSameTeam(target, owner)) continue;
+      if (pointToSegmentDistance2D(target.mesh.position.x, target.mesh.position.z, a.x, a.z, b.x, b.z) > def.connectionRadius + target.radius) continue;
+      const dealt = applyDamage(target, def.connectionDamage, owner);
+      if (dealt <= 0) continue;
+      target.shockUntil = state.gameTime + CHARACTERS.yellow.shockDuration;
+      target.shockSlowOverride = null;
+      createElectricHitEffect(target.mesh.position.x, target.mesh.position.z);
+    }
+  }
+  return true;
+}
+
+function tryUseYellowUltimate(fighter) {
+  const def = CHARACTERS.yellow.ultimate;
+  if ((fighter.yellowUltimateCharge ?? 0) < def.chargeRequired) return false;
+  fighter.yellowUltimateCharge = 0;
+  let castDistance = CHARACTERS.yellow.electricRange;
+  if (fighter.isPlayer && Number.isFinite(mouseAimWorld.x) && Number.isFinite(mouseAimWorld.z)) {
+    const aimedDistance = Math.hypot(mouseAimWorld.x - fighter.mesh.position.x, mouseAimWorld.z - fighter.mesh.position.z);
+    if (aimedDistance > 0.5) castDistance = aimedDistance;
+  }
+  const yaw = fighter.yaw;
+  const startX = fighter.mesh.position.x + Math.sin(yaw) * 0.75;
+  const startZ = fighter.mesh.position.z + Math.cos(yaw) * 0.75;
+  const mesh = createYellowCircuitDeviceMesh();
+  mesh.position.set(startX, 1.25, startZ);
+  scene.add(mesh);
+  state.projectiles.push({
+    mesh,
+    ownerId: fighter.id,
+    x: startX,
+    z: startZ,
+    vx: Math.sin(yaw) * def.deviceThrowSpeed,
+    vz: Math.cos(yaw) * def.deviceThrowSpeed,
+    damage: 0,
+    range: Math.max(0.25, castDistance - 0.75),
+    farThreshold: Infinity,
+    farMultiplier: 1,
+    distTraveled: 0,
+    launchAt: state.gameTime,
+    projRadius: 0.4,
+    isYellowDevice: true,
+  });
+  if (fighter.isPlayer) audio.play("projectileFire");
   return true;
 }
 
@@ -9644,7 +9744,16 @@ function beginElectricAttack(fighter) {
 
   setTimeout(() => {
     if (fighter.dead || !fighter.mesh?.parent || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return;
-    const yaw = fighter.yaw;
+    let yaw = fighter.yaw;
+    if (!fighter.isPlayer) {
+      const devices = mainYellowDevices.filter((device) => device.ownerId === fighter.id);
+      if (devices.length >= 2) {
+        const device = devices
+          .filter((entry) => Math.hypot(entry.mesh.position.x - fighter.mesh.position.x, entry.mesh.position.z - fighter.mesh.position.z) <= charDef.electricRange)
+          .sort((a, b) => fighter.mesh.position.distanceToSquared(a.mesh.position) - fighter.mesh.position.distanceToSquared(b.mesh.position))[0];
+        if (device) yaw = Math.atan2(device.mesh.position.x - fighter.mesh.position.x, device.mesh.position.z - fighter.mesh.position.z);
+      }
+    }
     const mesh = createElectricMesh(fighter.mesh.position, yaw);
     state.projectiles.push({
       ownerId: fighter.id,
@@ -10586,6 +10695,21 @@ function updateProjectiles(dt) {
       }
     }
 
+    if (proj.isYellowDevice) {
+      updateYellowCircuitDeviceMesh(proj.mesh, state.gameTime);
+      const progress = Math.min(1, proj.distTraveled / Math.max(0.01, proj.range));
+      proj.mesh.position.set(proj.x, 0.2 + Math.sin(progress * Math.PI) * 2.4, proj.z);
+      if (proj.distTraveled < proj.range) continue;
+      proj.vx = 0;
+      proj.vz = 0;
+      proj.mesh.position.y = 0.2;
+      proj.installAt ??= state.gameTime + CHARACTERS.yellow.ultimate.deviceInstallDelay;
+      if (state.gameTime < proj.installAt) continue;
+      installMainYellowDevice(proj, owner);
+      state.projectiles.splice(i, 1);
+      continue;
+    }
+
     // 아이보리 아이스크림은 지면 투사체가 아니라 벽 위로 넘기는 포물선 투척이다.
     // 부메랑은 벽을 만나면 귀환하고, 귀환 경로에서는 벽을 통과해야
     // 충돌 지점(entry=0)에 매 프레임 다시 걸려 벽에 박힌 채 멈추지 않는다.
@@ -10598,6 +10722,18 @@ function updateProjectiles(dt) {
       proj.z = sweptWallHit.z;
       proj.mesh.position.x = proj.x;
       proj.mesh.position.z = proj.z;
+    }
+
+    if (proj.isElectric) {
+      const hitDevice = mainYellowDevices.find((device) => device.ownerId === proj.ownerId
+        && pointToSegmentDistance2D(device.mesh.position.x, device.mesh.position.z, previousX, previousZ, proj.x, proj.z) <= 0.8 + (proj.projRadius || 0.2));
+      if (hitDevice) {
+        activateMainYellowCircuit(owner);
+        createElectricHitEffect(hitDevice.mesh.position.x, hitDevice.mesh.position.z);
+        disposeSceneObject(proj.mesh);
+        state.projectiles.splice(i, 1);
+        continue;
+      }
     }
 
     const trailSpacing = proj.isElectric ? 0.55 : 0.35;
@@ -11310,6 +11446,7 @@ emoteBtns.forEach((btn, i) => {
 updateEmoteBtns(loadAccount());
 
 function updateEffects(dt) {
+  for (const device of mainYellowDevices) updateYellowCircuitDeviceMesh(device.mesh, state.gameTime);
   for (const key of Object.keys(state.splashAccum)) {
     const entry = state.splashAccum[key];
     if (entry.expireAt <= state.gameTime) {
@@ -11450,6 +11587,8 @@ function updateEffects(dt) {
       effect.mesh.scale.setScalar(0.16 + eased * 1.08);
       effect.mesh.rotation.z += dt * 1.8;
       effect.mesh.material.opacity = alpha * 0.95;
+    } else if (effect.type === "yellowCircuit") {
+      effect.mesh.material.opacity = 0.55 + Math.sin(state.gameTime * 24) * 0.35;
     } else if (effect.type === "electricFlash") {
       effect.mesh.scale.setScalar(1 + (1 - alpha) * 2.0);
       effect.mesh.material.opacity = alpha * 0.9;
@@ -11881,6 +12020,7 @@ function updateBot(bot, dt, zone) {
       const canUseAttack = (bot.malfunctionUntil ?? 0) <= state.gameTime && (bot.mintFrozenUntil ?? 0) <= state.gameTime;
       if (canUseAttack && ct === "mint") tryUseMintUltimate(bot);
       if (canUseAttack && ct === "blue") tryUseBlueUltimate(bot);
+      if (canUseAttack && ct === "yellow") tryUseYellowUltimate(bot);
       if (canUseAttack && ct === "crimson" && (bot.crimsonUltimateCharge ?? 0) >= CHARACTERS.crimson.ultimate.chargeRequired) {
         tryUseCrimsonUltimate(bot);
       }

@@ -9,6 +9,7 @@ import { createBeta6Combat } from "./combat/beta6-combat.js?v=2";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
+import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
 
 const canvas = document.getElementById("beta-canvas");
 let azureWaveState = null;
@@ -2735,6 +2736,7 @@ const mintIceZones = [];
 const greenBushes = [];
 const yellowCircuitDevices = [];
 const yellowCircuitEffects = [];
+const yellowCircuitWires = [];
 const GREEN_BUSH_REVEAL_RANGE = 3;
 let greenStealthIndicator = null;
 let greenConcealedPrev = false;
@@ -4706,7 +4708,29 @@ function disposeYellowCircuitDevice(device) {
   });
 }
 
+function clearYellowCircuitWires() {
+  for (const wire of yellowCircuitWires.splice(0)) {
+    scene.remove(wire);
+    wire.geometry.dispose();
+    wire.material.dispose();
+  }
+}
+
+function refreshYellowCircuitWires() {
+  clearYellowCircuitWires();
+  for (let index = 1; index < yellowCircuitDevices.length; index += 1) {
+    const start = yellowCircuitDevices[index - 1].mesh.position.clone();
+    const end = yellowCircuitDevices[index].mesh.position.clone();
+    start.y += 0.5;
+    end.y += 0.5;
+    const wire = createYellowCircuitWireMesh(start, end);
+    scene.add(wire);
+    yellowCircuitWires.push(wire);
+  }
+}
+
 function clearYellowCircuit() {
+  clearYellowCircuitWires();
   for (const device of yellowCircuitDevices.splice(0)) disposeYellowCircuitDevice(device);
   for (const effect of yellowCircuitEffects.splice(0)) {
     scene.remove(effect.line);
@@ -4718,24 +4742,17 @@ function clearYellowCircuit() {
 }
 
 function createYellowCircuitDevice(position) {
-  const group = new THREE.Group();
-  const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.45, 0.55, 0.35, 12),
-    new THREE.MeshStandardMaterial({ color: 0x5d5418, metalness: 0.65, roughness: 0.35 }),
-  );
-  const coil = new THREE.Mesh(
-    new THREE.TorusGeometry(0.3, 0.09, 8, 20),
-    new THREE.MeshStandardMaterial({ color: 0xffff45, emissive: 0xffc400, emissiveIntensity: 1.8 }),
-  );
-  coil.rotation.x = Math.PI / 2;
-  coil.position.y = 0.42;
-  group.add(base, coil);
-  group.position.set(position.x, Math.max(0, groundHeightAt(position.x, position.z)) + 0.2, position.z);
+  const group = createYellowCircuitDeviceMesh();
+  const ground = groundHeightAt(position.x, position.z);
+  const safeGround = ground > -5 ? ground : groundHeightAt(player.position.x, player.position.z);
+  group.position.set(position.x, Math.max(0, safeGround) + 0.02, position.z);
   scene.add(group);
   const device = { mesh: group, x: group.position.x, z: group.position.z };
   yellowCircuitDevices.push(device);
   const maxDevices = BETA_CHARACTERS.yellow.ultimate.maxDevices;
   while (yellowCircuitDevices.length > maxDevices) disposeYellowCircuitDevice(yellowCircuitDevices.shift());
+  refreshYellowCircuitWires();
+  createGroundPulse(1.05, 0xffff45, group.position);
   canvas.dataset.yellowCircuitDevices = String(yellowCircuitDevices.length);
 }
 
@@ -4759,13 +4776,13 @@ function activateYellowCircuit() {
   for (let index = 0; index < yellowCircuitDevices.length - 1; index += 1) {
     const a = yellowCircuitDevices[index];
     const b = yellowCircuitDevices[index + 1];
-    const geometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(a.x, 0.48, a.z),
-      new THREE.Vector3(b.x, 0.48, b.z),
-    ]);
-    const material = new THREE.LineDashedMaterial({ color: 0xffff45, dashSize: 0.4, gapSize: 0.16, transparent: true, opacity: 0 });
-    const line = new THREE.Line(geometry, material);
-    line.computeLineDistances();
+    const line = createYellowCircuitWireMesh(
+      new THREE.Vector3(a.x, a.mesh.position.y + 0.54, a.z),
+      new THREE.Vector3(b.x, b.mesh.position.y + 0.54, b.z),
+      true,
+    );
+    line.material.transparent = true;
+    line.material.opacity = 0;
     scene.add(line);
     yellowCircuitEffects.push({ line, a, b, startsAt: startedAt + index * 0.18, expiresAt: startedAt + def.circuitDuration, activated: false });
   }
@@ -6400,7 +6417,15 @@ function processBeta6CombatEvent(event) {
         }
         canvas.dataset.lastCrystalAnalysis = event.owner === beta6PlayerActor ? "player" : "bot";
       }
-      if (event.type === "circuit") createGoldRushAttackEffect(new THREE.Vector3(event.from.x, 1, event.from.z), new THREE.Vector3(event.to.x, 1, event.to.z), 0xffff44);
+      if (event.type === "circuit") {
+        const from = new THREE.Vector3(event.from.x, groundHeightAt(event.from.x, event.from.z) + 0.56, event.from.z);
+        const to = new THREE.Vector3(event.to.x, groundHeightAt(event.to.x, event.to.z) + 0.56, event.to.z);
+        const line = createYellowCircuitWireMesh(from, to, true);
+        line.material.transparent = true;
+        scene.add(line);
+        const duration = BETA_CHARACTERS.yellow.ultimate.circuitDuration;
+        goldRushAttackEffects.push({ line, life: duration, maxLife: duration });
+      }
 }
 
 // 팀전(젬 그랩)에서만 편을 가른다. 나머지 모드는 예전처럼 전원 적이다.
@@ -6441,6 +6466,7 @@ function createBeta6ProjectileMesh(projectile, color) {
   const kind = projectile.kind;
   const ownerId = projectile.owner?.id;
   const orient = (mesh) => { mesh.userData.beta6Oriented = true; return mesh; };
+  if (kind === "yellowDevice") return createYellowCircuitDeviceMesh();
   if (kind === "boomerang") {
     const mesh = createGreenBoomerangMesh();
     mesh.userData.beta6Spin = true;
@@ -6603,17 +6629,39 @@ function updateBeta6BotCombat(dt) {
       scene.add(mesh); beta6CombatVisuals.set(key, mesh);
     }
     const location = object.kind === "lock" ? object.owner : object;
-    mesh.position.set(location.x, groundHeightAt(location.x, location.z) + (kind === "zone" ? .08 : .8), location.z);
+    const lift = object.kind === "yellowDevice" ? .02 : kind === "zone" ? .08 : .8;
+    mesh.position.set(location.x, groundHeightAt(location.x, location.z) + lift, location.z);
     if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
     // 전투의 각도는 (cos, sin) 기준이라 로비 모양이 쓰는 회전값으로 바꿔 준다
     if (mesh.userData.beta6Oriented) { mesh.rotation.order = "YXZ"; mesh.rotation.y = Math.PI / 2 - (object.yaw ?? 0); }
     if (mesh.userData.beta6Spin) mesh.rotation.y = world.time * 12;
   };
+  const drawCircuitWire = (key, from, to) => {
+    visible.add(key);
+    const start = new THREE.Vector3(from.x, groundHeightAt(from.x, from.z) + 0.52, from.z);
+    const end = new THREE.Vector3(to.x, groundHeightAt(to.x, to.z) + 0.52, to.z);
+    const signature = `${start.x.toFixed(3)},${start.y.toFixed(3)},${start.z.toFixed(3)}:${end.x.toFixed(3)},${end.y.toFixed(3)},${end.z.toFixed(3)}`;
+    let wire = beta6CombatVisuals.get(key);
+    if (wire?.userData.signature !== signature) {
+      if (wire) {
+        scene.remove(wire);
+        wire.geometry.dispose();
+        wire.material.dispose();
+      }
+      wire = createYellowCircuitWireMesh(start, end);
+      wire.userData.signature = signature;
+      scene.add(wire);
+      beta6CombatVisuals.set(key, wire);
+    }
+  };
   for (const p of world.projectiles) if (world.time >= p.start) draw(`p${p.key}`, p, p.radius, p.kind === "wave" ? "wave" : "projectile");
   for (const z of world.zones) draw(`z${z.key}`, z, z.radius, "zone");
   for (const a of world.actors) {
     if (a.hp <= 0) continue;
-    for (let i = 0; i < a.devices.length; i++) draw(`d${a.key}-${i}`, { ...a.devices[i], owner: a }, .4, "projectile");
+    for (let i = 0; i < a.devices.length; i++) {
+      draw(`d${a.key}-${i}`, { ...a.devices[i], owner: a, kind: "yellowDevice" }, .4, "projectile");
+      if (i > 0) drawCircuitWire(`dw${a.key}-${i - 1}`, a.devices[i - 1], a.devices[i]);
+    }
     if (world.time < a.guardUntil) draw(`g${a.key}`, { x: a.x, z: a.z, owner: a }, 1.1, "zone");
     if (world.time < a.hiddenUntil && a.bush) draw(`b${a.key}`, { ...a.bush, owner: a }, a.u.radius, "zone");
   }
@@ -8288,6 +8336,10 @@ function animate() {
   }
 
   portal.rotation.y += dt * 0.65;
+  for (const device of yellowCircuitDevices) updateYellowCircuitDeviceMesh(device.mesh, clock.elapsedTime);
+  for (const object of beta6CombatVisuals.values()) {
+    if (object.name === "YellowCircuitDevice") updateYellowCircuitDeviceMesh(object, clock.elapsedTime);
+  }
   goldMineCrystal.rotation.y += dt * 1.4;
   alphaBoss.rotation.y = Math.sin(clock.elapsedTime * 0.45) * 0.16;
   alphaBoss.position.y = 4.8 + Math.sin(clock.elapsedTime * 1.15) * 0.08;
