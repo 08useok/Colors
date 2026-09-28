@@ -353,8 +353,22 @@ if (CURRENT_SEASON === "beta6") {
   const releaseStats = applyBeta6Balance(BETA_CHARACTERS);
   for (const [id, stats] of Object.entries(releaseStats)) {
     const current = CHARACTERS[id] || {};
-    CHARACTERS[id] = { ...current, ...stats, color: current.color ?? (id === "azure" ? 0x007fff : 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
+    const merged = { ...current, ...stats, color: current.color ?? (id === "azure" ? 0x007fff : 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
+    // 베타 궁극기 객체에는 이름·설명만 있는 경우가 있어 통째로 덮으면 피해·범위·충전량이 사라진다(NaN 판정).
+    for (const key of ["ultimate", "special"]) {
+      if (current[key] && stats[key]) merged[key] = { ...current[key], ...stats[key] };
+    }
+    CHARACTERS[id] = merged;
   }
+  // 베타 크림슨·골드는 궁극기 수치를 바깥 칸에 둔다. 본 게임이 읽는 ultimate 안으로 옮긴다.
+  const crimson = releaseStats.crimson;
+  Object.assign(CHARACTERS.crimson.ultimate, {
+    damage: crimson.ultimateDamage ?? CHARACTERS.crimson.ultimate.damage,
+    size: crimson.ultimateLength ?? CHARACTERS.crimson.ultimate.size,
+    knockback: crimson.ultimateKnockback ?? CHARACTERS.crimson.ultimate.knockback,
+    chargeRequired: crimson.ultimateChargeRequired ?? CHARACTERS.crimson.ultimate.chargeRequired,
+  });
+  CHARACTERS.gold.ultimate.chargeRequired = releaseStats.gold.ultimateChargeRequired ?? CHARACTERS.gold.ultimate.chargeRequired;
 }
 const ALPHA_SEASONS = ["alpha1", "alpha2", "alpha3", "alpha4"];
 const ALPHA_REWARD_DATE = "2026-07-26";
