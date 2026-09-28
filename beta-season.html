@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season 7 Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.5.19">
+  <link rel="stylesheet" href="./beta-season.css?v=0.5.20">
   <script>
-    if (new URLSearchParams(location.search).get("test") === "beta5") {
+    const loadingSeason = new URLSearchParams(location.search).get("test");
+    if (loadingSeason === "beta5") {
       document.documentElement.classList.add("beta5-loading");
     } else {
       document.documentElement.classList.add("beta6-loading");
+      if (loadingSeason === "beta7" || !loadingSeason) document.documentElement.classList.add("beta7-loading");
     }
   </script>
   <script type="importmap">
@@ -49,6 +51,11 @@
 <body>
   <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="베타 시즌 6 불러오는 중">
     <img class="beta6-loading-bg" src="./assets/beta6-loading-bg.jpg?v=1" alt="애저 해변의 여름 바다 풍경">
+    <div class="beta7-loading-art" aria-hidden="true">
+      <i class="beta7-sun"></i><i class="beta7-dune beta7-dune-back"></i><i class="beta7-dune beta7-dune-front"></i>
+      <i class="beta7-pyramid beta7-pyramid-left"></i><i class="beta7-pyramid beta7-pyramid-right"></i>
+      <i class="beta7-gem"></i><i class="beta7-glyph beta7-glyph-left">◇</i><i class="beta7-glyph beta7-glyph-right">◇</i>
+    </div>
     <div class="beta6-loading-shade"></div>
     <img class="beta6-badge beta6-badge-wave" src="./assets/beta6-loading-badge-wave.png?v=1" alt="">
     <img class="beta6-badge beta6-badge-splash" src="./assets/beta6-loading-splash.png?v=1" alt="">
@@ -117,7 +124,7 @@
     <p><kbd>WASD</kbd> 이동 · 마우스 드래그 시점 · 휠 확대</p>
     <div class="test-actions">
       <button id="overview-btn" type="button">전체 보기</button>
-      <button id="reset-btn" type="button">시작점 복귀</button>
+      <button id="reset-btn" type="button">훈련장 텔레포트</button>
       <button id="test-death-btn" type="button">테스트 사망</button>
       <button id="test-ally-death-btn" type="button">아군 사망</button>
       <button id="slowmo-btn" type="button" aria-pressed="false">슬로우 모드</button>
@@ -228,6 +235,6 @@
     <button id="chop-wood-close" class="chop-wood-close" type="button">베타로 돌아가기</button>
     <iframe title="메인 게임 찹 우드" src="./index.html#chop-wood"></iframe>
   </div>
-  <script type="module" src="./src/beta-season.js?v=0.7.93"></script>
+  <script type="module" src="./src/beta-season.js?v=0.7.94"></script>
 </body>
 </html>

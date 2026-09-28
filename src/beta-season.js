@@ -241,7 +241,10 @@ if (IS_BETA5_TEST) {
 if (!IS_BETA5_TEST && beta6LoadingScreen) {
   const finishBeta6Loading = () => setTimeout(() => {
     beta6LoadingScreen.classList.add("is-complete");
-    setTimeout(() => { beta6LoadingScreen.remove(); document.documentElement.classList.remove("beta6-loading"); }, 700);
+    setTimeout(() => {
+      beta6LoadingScreen.remove();
+      document.documentElement.classList.remove("beta6-loading", "beta7-loading");
+    }, 700);
   }, 850);
   if (document.readyState === "complete") finishBeta6Loading();
   else window.addEventListener("load", finishBeta6Loading, { once: true });
@@ -302,12 +305,12 @@ if (IS_BETA7_TEST) {
   const rankChip = document.querySelector(".rank-chip");
   if (heading) heading.textContent = "베타 시즌 7 테스트";
   if (rankChip) rankChip.textContent = "베타 시즌 7 테스트";
-  if (locationName) locationName.textContent = "베타 시즌 7 광장";
+  if (locationName) locationName.textContent = "잃어버린 황금 유적";
   const loading = document.querySelector(".beta6-loading-status");
   if (loading) {
     loading.querySelector("strong").textContent = "BETA SEASON 7";
-    loading.querySelector("b").textContent = "TOXIC LEAP";
-    loading.querySelector("span").textContent = "퍼플의 새 시즌으로 이동 중…";
+    loading.querySelector("b").textContent = "LOST GOLDEN RUINS";
+    loading.querySelector("span").textContent = "모래 아래 잠든 신전을 발굴하는 중…";
   }
   beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 7 불러오는 중");
 }
@@ -438,7 +441,7 @@ scene.background = new THREE.Color(seasonSkyColor);
 scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA5_TEST ? 0.009 : 0.012);
 
 const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 300);
-const hemi = new THREE.HemisphereLight(0xe8fbff, 0x38515b, 2.2);
+const hemi = new THREE.HemisphereLight(IS_BETA7_TEST ? 0xffe2a1 : 0xe8fbff, IS_BETA7_TEST ? 0x48241c : 0x38515b, 2.2);
 scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff1ce, 3.4);
 sun.position.set(-35, 48, 20);
@@ -477,7 +480,13 @@ function box(x, y, z, width, height, depth, material = platformMaterial, solid =
 
 const water = new THREE.Mesh(
   new THREE.PlaneGeometry(240, 240),
-  new THREE.MeshPhysicalMaterial({ color: 0x167c99, roughness: 0.18, metalness: 0.1, transparent: true, opacity: 0.88 }),
+  new THREE.MeshPhysicalMaterial({
+    color: IS_BETA7_TEST ? 0xb97b3f : 0x167c99,
+    roughness: IS_BETA7_TEST ? 1 : 0.18,
+    metalness: IS_BETA7_TEST ? 0 : 0.1,
+    transparent: !IS_BETA7_TEST,
+    opacity: IS_BETA7_TEST ? 1 : 0.88,
+  }),
 );
 water.rotation.x = -Math.PI / 2;
 water.position.y = -2.6;
@@ -500,7 +509,7 @@ for (let i = 0; i < 8; i += 1) {
   const angle = (i / 8) * Math.PI * 2;
   box(Math.sin(angle) * 7, 3.6, Math.cos(angle) * 7, 1.2, 4.2, 1.2, stoneMaterial);
 }
-for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[-42,-5,2,6],[-38,7,5,2],[-6,38,5,2],[7,42,3,4]]) {
+for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[38,-5,2,6],[42,7,5,2],[-6,38,5,2],[7,42,3,4]]) {
   box(x, 5.5, z, w, 3, d, stoneMaterial);
 }
 
@@ -559,24 +568,54 @@ function createBeta5AmusementParkDecor() {
 
 createBeta5AmusementParkDecor();
 
+const beta7AnimatedArtifacts = [];
 function createBeta7AncientRuinDecor() {
   if (!IS_BETA7_TEST) return;
   const decor = new THREE.Group(); decor.name = "beta7-ancient-ruins";
-  const sandstone = new THREE.MeshStandardMaterial({ color: 0xb7864e, roughness: .94 });
+  const sandstone = new THREE.MeshStandardMaterial({ color: 0xc69252, roughness: .96 });
+  const lightStone = new THREE.MeshStandardMaterial({ color: 0xe0bb72, roughness: .92 });
   const darkStone = new THREE.MeshStandardMaterial({ color: 0x493027, roughness: .9 });
-  const jewel = new THREE.MeshStandardMaterial({ color: 0x7cf5d2, emissive: 0x174f4b, emissiveIntensity: 1.4, metalness: .38, roughness: .2 });
+  const gold = new THREE.MeshStandardMaterial({ color: 0xe6b83f, emissive: 0x5c3500, emissiveIntensity: .45, metalness: .62, roughness: .32 });
+  const jewel = new THREE.MeshStandardMaterial({ color: 0x7cf5d2, emissive: 0x174f4b, emissiveIntensity: 1.7, metalness: .38, roughness: .16 });
+  const addMesh = (geometry, material, x, y, z, rotationY = 0) => {
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(x, y, z); mesh.rotation.y = rotationY; mesh.castShadow = true; mesh.receiveShadow = true; decor.add(mesh); return mesh;
+  };
+  // 멀리 보이는 피라미드와 모래언덕으로 바다 시즌과 실루엣부터 구분한다.
   for (const [x, z, scale] of [[-37,-38,1],[39,-34,.8],[-42,37,.65]]) {
     const pyramid = new THREE.Mesh(new THREE.ConeGeometry(8 * scale, 9 * scale, 4), sandstone);
     pyramid.position.set(x, 4.5 * scale, z); pyramid.rotation.y = Math.PI / 4; decor.add(pyramid);
+  }
+  for (const [x, z, sx, sz] of [[-30,30,11,5],[32,31,13,6],[-31,-9,9,4],[34,-5,8,4]]) {
+    const dune = addMesh(new THREE.SphereGeometry(1, 20, 10), sandstone, x, -.8, z);
+    dune.scale.set(sx, 2.1, sz);
+  }
+  // 북쪽 신전 입구: 두 탑과 상인방, 금빛 봉인 문양.
+  addMesh(new THREE.BoxGeometry(3.4, 10, 3.4), darkStone, -7, 6.3, -46);
+  addMesh(new THREE.BoxGeometry(3.4, 10, 3.4), darkStone, 7, 6.3, -46);
+  addMesh(new THREE.BoxGeometry(17.4, 2.5, 3.8), sandstone, 0, 11.1, -46);
+  const seal = addMesh(new THREE.TorusGeometry(2.1, .22, 10, 40), gold, 0, 7.5, -44.05);
+  beta7AnimatedArtifacts.push({ mesh: seal, baseY: seal.position.y, spin: .18, bob: 0 });
+  // 발굴지에는 부서진 기둥과 반쯤 드러난 석판을 둔다.
+  for (const [x, z, height, lean] of [[-18,-24,5,.16],[18,-25,4,-.2],[-25,17,3.4,.32],[25,18,4.5,-.24]]) {
+    const broken = addMesh(new THREE.CylinderGeometry(.75, 1, height, 8), lightStone, x, 1.5 + height / 2, z, lean);
+    broken.rotation.z = lean;
   }
   for (const [x, z] of [[-11,-11],[11,-11],[-11,11],[11,11]]) {
     const column = new THREE.Mesh(new THREE.CylinderGeometry(.75, .95, 6, 8), darkStone);
     column.position.set(x, 3, z); decor.add(column);
     const glyph = new THREE.Mesh(new THREE.OctahedronGeometry(.28), jewel);
     glyph.position.set(x, 5.35, z); decor.add(glyph);
+    beta7AnimatedArtifacts.push({ mesh: glyph, baseY: glyph.position.y, spin: .8, bob: .13 });
   }
   const excavation = new THREE.Mesh(new THREE.RingGeometry(12, 17, 32), sandstone);
   excavation.rotation.x = -Math.PI / 2; excavation.position.y = 1.57; decor.add(excavation);
+  // 네 방향의 보석 광맥은 젬 그랩 중앙 제단으로 시선을 모은다.
+  for (const [x, z] of [[0,-14],[14,0],[0,14],[-14,0]]) {
+    const shard = addMesh(new THREE.OctahedronGeometry(.62, 0), jewel, x, 2.1, z);
+    shard.scale.y = 1.7;
+    beta7AnimatedArtifacts.push({ mesh: shard, baseY: shard.position.y, spin: 1.2, bob: .2 });
+  }
   map.add(decor);
   canvas.dataset.seasonTheme = "lost-golden-ruins";
 }
@@ -622,6 +661,32 @@ if (IS_BETA5_TEST) {
   }
   iceCreamShowdownMap.userData.theme = "amusement-park";
 }
+if (IS_BETA7_TEST) {
+  const tombGold = new THREE.MeshStandardMaterial({ color: 0xd9a83e, metalness: 0.42, roughness: 0.42 });
+  const tombGem = new THREE.MeshStandardMaterial({ color: 0x56efd2, emissive: 0x0b9c87, emissiveIntensity: 1.8, roughness: 0.22 });
+  const tombStone = new THREE.MeshStandardMaterial({ color: 0x72502f, roughness: 0.94 });
+  // 왕의 무덤 쇼다운: 모서리 석관과 중앙 의식 문양으로 일반 전장과 구분한다.
+  for (const [x, z] of [[-14, -14], [14, -14], [-14, 14], [14, 14]]) {
+    showdownBox(x, 2.05, z, 4.2, 1.05, 2.2, tombStone, false);
+    showdownBox(x, 2.66, z, 3.5, 0.22, 1.55, tombGold, false);
+    const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), tombGem);
+    gem.position.set(x, 3.35, z);
+    iceCreamShowdownMap.add(gem);
+    beta7AnimatedArtifacts.push({ mesh: gem, baseY: gem.position.y, spin: 1.4, bob: 0.14 });
+  }
+  for (const radius of [4.4, 8.2, 12]) {
+    const glyphRing = new THREE.Mesh(
+      new THREE.TorusGeometry(radius, 0.055, 6, 64),
+      radius === 8.2 ? tombGem : tombGold,
+    );
+    glyphRing.rotation.x = -Math.PI / 2;
+    glyphRing.position.y = 1.59;
+    iceCreamShowdownMap.add(glyphRing);
+  }
+  iceCreamShowdownMap.userData.theme = "royal-tomb";
+}
+const TRAINING_AREA_CENTER = Object.freeze({ x: -40, z: 0 });
+const TRAINING_TELEPORT_POINT = Object.freeze({ x: -40, y: 6.25, z: 10 });
 const testTargets = [];
 function createTestTarget(x, z, { ally = false } = {}) {
   const target = new THREE.Group();
@@ -650,7 +715,7 @@ function createTestTarget(x, z, { ally = false } = {}) {
 createTestTarget(-1.4, -2.4);
 createTestTarget(0, -3.2);
 createTestTarget(1.4, -2.4);
-for (const x of [35, 38, 41, 44, 47]) {
+for (const x of [-47, -44, -41, -38, -35]) {
   for (const z of [-7, -3, 3, 7]) createTestTarget(x, z);
 }
 createTestTarget(-2.2, 1.5, { ally: true });
@@ -689,11 +754,11 @@ function createAttackRobot(x, z) {
 const attackRobot = createAttackRobot(9, -8);
 canvas.dataset.testTargetCount = String(testTargets.length);
 
-// 베타 시즌 포털
+// 훈련장 텔레포트 도착점을 표식하는 포털
 const portal = new THREE.Group();
 const portalMat = new THREE.MeshStandardMaterial({ color: 0x75efff, emissive: 0x167b91, emissiveIntensity: 2 });
 portal.add(new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.35, 12, 40), portalMat));
-portal.position.set(0, 6.5, -40);
+portal.position.set(TRAINING_AREA_CENTER.x, 9.45, TRAINING_TELEPORT_POINT.z);
 map.add(portal);
 
 function createAlphaBoss() {
@@ -5351,7 +5416,11 @@ const manualAimRaycaster = new THREE.Raycaster();
 const manualAimPointer = new THREE.Vector2();
 const manualAimPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const manualAimPoint = new THREE.Vector3();
-const initialSpawnPoint = new THREE.Vector3(0, 1.7, 0);
+const initialSpawnPoint = new THREE.Vector3(
+  TRAINING_TELEPORT_POINT.x,
+  TRAINING_TELEPORT_POINT.y,
+  TRAINING_TELEPORT_POINT.z,
+);
 const goldPickups = [];
 const goldRushBots = [];
 let beta6Combat = null;
@@ -6293,7 +6362,7 @@ function createGoldRushBotAvatar(index, character = null) {
   const playerLoopScene = activeCharacterMotion?.scenes.loop;
   const playerLoopClip = activeCharacterMotion?.actions.loop?.getClip();
 
-  if (playerLoopScene && playerLoopClip && !IS_BETA6_TEST) {
+  if (playerLoopScene && playerLoopClip && !HAS_BETA6_CONTENT) {
     const avatar = skeletonClone(playerLoopScene);
     avatar.visible = true;
     avatar.traverse((part) => {
@@ -6448,7 +6517,7 @@ function startBeta6BotCombat() {
         if (Math.hypot(actor.x - target.x, actor.z - target.z) < 6) return target;
         return nearestGemPoint(actor);
       }
-      if (goldRushState.mode !== "goldRush" || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return target;
+      if (!["goldRush", "gemGrab"].includes(goldRushState.mode) || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return target;
       const pickup = goldPickups.slice().sort((a, b) => Math.hypot(a.mesh.position.x - actor.x, a.mesh.position.z - actor.z) - Math.hypot(b.mesh.position.x - actor.x, b.mesh.position.z - actor.z))[0];
       return { x: pickup?.mesh.position.x ?? goldMine.position.x, z: pickup?.mesh.position.z ?? goldMine.position.z };
     },
@@ -6700,7 +6769,7 @@ function createGoldRushBots() {
   const botCount = teamMode ? 5 : 9;
   for (let i = 0; i < botCount; i += 1) {
     const opponents = CHARACTERS.filter(c => c.id !== betaState.selectedCharacter);
-    const character = IS_BETA6_TEST ? opponents[(i + beta6BotRotation) % opponents.length] : null;
+    const character = HAS_BETA6_CONTENT ? opponents[(i + beta6BotRotation) % opponents.length] : null;
     const definition = BETA_CHARACTERS[character?.id ?? betaState.selectedCharacter];
     const avatar = createGoldRushBotAvatar(i, character);
     const mesh = avatar.group;
@@ -7025,7 +7094,7 @@ function updateGoldRushHud() {
   const remainingSeconds = Math.ceil(remaining);
   goldRushTimerEl.textContent = `${String(Math.floor(remainingSeconds / 60)).padStart(2, "0")}:${String(remainingSeconds % 60).padStart(2, "0")}`;
   const leader = goldRushBots.reduce((best, bot) => (!best || bot.gold > best.gold ? bot : best), null);
-  goldRushRivalsEl.textContent = leader ? `선두 AI ${leader.id} · 금 ${leader.gold}` : "AI 준비 중";
+  goldRushRivalsEl.textContent = leader ? `선두 AI ${leader.id} · ${gemGrab ? "젬" : "금"} ${leader.gold}` : "AI 준비 중";
   const threateningBot = goldRushBots.find((bot) => bot.winCountdownStartedAt !== null);
   const gemGrab = goldRushState.mode === "gemGrab";
   const escapeSeconds = gemGrab ? 15 : 10;
@@ -7120,7 +7189,11 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   alphaBoss.visible = true;
   for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = true;
   player.visible = true;
-  initialSpawnPoint.set(0, 1.7, 0);
+  initialSpawnPoint.set(
+    TRAINING_TELEPORT_POINT.x,
+    TRAINING_TELEPORT_POINT.y,
+    TRAINING_TELEPORT_POINT.z,
+  );
   resetPlayer();
   if (playerWon) showDailyRewardReveal();
 }
@@ -7200,13 +7273,13 @@ function startGoldRush(mode = "goldRush") {
     soccerToggle.textContent = "SOCCER KICK 재시작";
     canvas.dataset.betaMode = "soccer-kick";
   } else if (mode === "showdown") {
-    goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "SHOWDOWN+" : "ICE CREAM SHOWDOWN";
+    goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "SHOWDOWN+" : IS_BETA7_TEST ? "ROYAL TOMB SHOWDOWN" : "ICE CREAM SHOWDOWN";
     goldCountEl.parentElement.style.display = "none";
     goldRushTimerEl.textContent = IS_BETA5_TEST ? "처치 0" : "생존";
     goldRushRivalsEl.textContent = "10명 생존";
     goldRushStatusEl.textContent = IS_BETA5_TEST ? `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존` : "마지막 1명까지 살아남으세요";
     showdownToggle.textContent = "쇼다운 재시작";
-    canvas.dataset.betaMode = "ice-cream-showdown";
+    canvas.dataset.betaMode = IS_BETA7_TEST ? "royal-tomb-showdown" : "ice-cream-showdown";
   } else if (mode === "gemGrab") {
     gemGrabState.nextGemAt = clock.elapsedTime + GEM_FIRST_SPAWN_DELAY;
     gemGrabState.escapeA = null;
@@ -7610,7 +7683,7 @@ function updateLocation() {
   const { x, z } = player.position;
   if (z < -28) locationName.textContent = "포털 관문";
   else if (z > 28) locationName.textContent = "상층 정원";
-  else if (x < -28) locationName.textContent = "침식 유적";
+  else if (x < -28) locationName.textContent = "서쪽 유적 훈련장";
   else if (x > 28) locationName.textContent = "낮은 부두";
   else locationName.textContent = IS_BETA5_TEST ? "컬러 놀이공원" : "베타 광장";
 }
@@ -8395,7 +8468,15 @@ function animate() {
       target.scale.setScalar(baseScale);
     }
   }
-  water.material.opacity = 0.84 + Math.sin(clock.elapsedTime * 0.7) * 0.04;
+  if (!IS_BETA7_TEST) water.material.opacity = 0.84 + Math.sin(clock.elapsedTime * 0.7) * 0.04;
+  for (let index = 0; index < beta7AnimatedArtifacts.length; index += 1) {
+    const artifact = beta7AnimatedArtifacts[index];
+    artifact.mesh.rotation.y += dt * artifact.spin;
+    artifact.mesh.position.y = artifact.baseY + Math.sin(clock.elapsedTime * 1.7 + index) * artifact.bob;
+    if (artifact.mesh.material?.emissiveIntensity != null) {
+      artifact.mesh.material.emissiveIntensity = 1.35 + Math.sin(clock.elapsedTime * 2.2 + index) * .3;
+    }
+  }
   if (overview) {
     camera.position.lerp(new THREE.Vector3(0, 82, 0.01), 1 - Math.exp(-4 * dt));
     camera.lookAt(0, 0, 0);

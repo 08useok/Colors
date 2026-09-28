@@ -7,6 +7,7 @@ const state = { gameTime: 10, running: true, players: [], projectiles: [], chopW
 let relays = 0;
 const ctx = vm.createContext({ state, CHARACTERS, createHealEffect() {},
   isInBush: () => true, createBoomerangMesh: () => ({}), audio: { play() {} },
+  areSameTeam: (a, b) => a?.team != null && b?.team != null && a.team === b.team,
   setGreenConcealedVisual(f, concealed) { f.greenConcealedVisual = concealed; },
   getPlayer: () => state.players[0], bushStealthRevealRangeSq: 9,
   isVisibleThroughBush: () => true,

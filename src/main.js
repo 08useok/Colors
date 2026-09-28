@@ -2833,7 +2833,13 @@ function buildPinkRigModel(glbSet, skinId) {
     const gltf = glbSet[key];
     if (!gltf?.animations?.length) continue;
     mixers[key] = new THREE.AnimationMixer(sc);
-    const a = mixers[key].clipAction(gltf.animations[0]);
+    // 시즌 6 FBX는 첫 클립이 약 0.08초짜리 정지 포즈이고, 실제 걷기는
+    // 두 번째 0.67초 클립이다. 첫 클립을 고정 선택하면 모델만 이동하고
+    // 팔다리는 멈춰 보이므로 가장 긴 클립을 걷기 동작으로 사용한다.
+    const clip = skinId?.startsWith("beta6_")
+      ? gltf.animations.reduce((longest, candidate) => candidate.duration > longest.duration ? candidate : longest)
+      : gltf.animations[0];
+    const a = mixers[key].clipAction(clip);
     a.setLoop(key === 'loop' ? THREE.LoopRepeat : THREE.LoopOnce, Infinity);
     a.clampWhenFinished = true;
     actions[key] = a;
@@ -2912,7 +2918,7 @@ const SEASON6_SKIN_FBX = {
   beta6_orange_citrus_luau_buddy: ["orange", "orange/skins/citrus-luau-buddy"],
   beta6_azure_blue_wave_buddy: ["azure", "azure/skins/blue-wave-buddy"],
 };
-const SEASON6_SKIN_MODEL_VERSION = "2";
+const SEASON6_SKIN_MODEL_VERSION = "3";
 
 function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false, skipAssetLoading = false) {
   const season6Skin = SEASON6_SKIN_FBX[skinId];
@@ -2920,7 +2926,9 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     const [characterId, folder] = season6Skin;
     const source = ensureSeason6SkinFbxLoading(characterId, folder);
     if (source.loop) {
-      const model = buildPinkRigModel(resolveWalkGlbSet(source, isAiBot), skinId);
+      // 교체 스킨의 m1s/m2l/m3e 원본이 같은 파일이므로 전투에서는 한 장면만
+      // 유지하고 아래 절차형 보행을 적용한다. 겹친 모델 세 개가 보이는 것도 막는다.
+      const model = buildPinkRigModel(resolveWalkGlbSet(source, isAiBot, true), skinId);
       model.userData.season6SkinId = skinId;
       return model;
     }
@@ -4116,11 +4124,11 @@ function ensureSeason6SkinFbxLoading(characterId, folder) {
   if (entry) return entry;
   entry = { start: null, loop: null, end: null, requested: true };
   _season6SkinFbx.set(characterId, entry);
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => { entry.start = prepareSeason6SkinFbx(asset); });
+  // 현재 시즌 6 스킨의 세 FBX는 바이너리가 동일하고 각 파일 안에 정지·걷기
+  // 클립이 함께 있다. 전투에는 loop 한 개만 내려받아 로딩량을 1/3로 줄인다.
   _fbxLoader.load(`./assets/3d/${folder}/walk-m2l.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
     entry.loop = prepareSeason6SkinFbx(asset); refreshLoadedSeason6SkinModels(characterId);
   });
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m3e.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => { entry.end = prepareSeason6SkinFbx(asset); });
   return entry;
 }
 

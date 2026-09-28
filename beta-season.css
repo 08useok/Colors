@@ -9,6 +9,26 @@
 .hidden { display: none !important; }
 .beta5-loading-screen { display: none; }
 .beta6-loading-screen{display:none}.beta6-loading .beta6-loading-screen{position:fixed;inset:0;z-index:10000;display:block;overflow:hidden;background:#0e6d8f;transition:opacity .65s,visibility .65s}.beta6-loading .beta6-loading-screen.is-complete{opacity:0;visibility:hidden}.beta6-loading-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}.beta6-loading-shade{position:absolute;inset:0;background:linear-gradient(rgba(4,40,58,.15) 0%,rgba(4,30,50,.35) 62%,rgba(2,20,36,.72) 100%)}.beta6-badge{position:absolute;filter:drop-shadow(0 8px 18px rgba(0,20,35,.45));animation:beta6-bob 2.6s ease-in-out infinite alternate}.beta6-badge-wave{width:min(14vmin,110px);left:4%;top:8%}.beta6-badge-splash{width:min(13vmin,100px);right:5%;top:10%;animation-delay:.4s}.beta6-badge-shark{width:min(11vmin,84px);left:6%;bottom:10%;animation-delay:.8s}.beta6-badge-pufferfish{width:min(11vmin,84px);right:6%;bottom:9%;animation-delay:1.2s}@keyframes beta6-bob{to{transform:translateY(-10px)}}.beta6-loading-status{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);text-align:center;color:#fff;text-shadow:0 3px 12px #005b80;width:min(560px,86vw)}.beta6-loading-banner{position:absolute;left:50%;top:50%;width:min(640px,100%);transform:translate(-50%,-50%);opacity:.9;pointer-events:none}.beta6-loading-status strong,.beta6-loading-status b,.beta6-loading-status span{position:relative;display:block}.beta6-loading-status strong{font-size:clamp(26px,5vw,54px);letter-spacing:.1em}.beta6-loading-status b{margin:6px;color:#fff0a9;letter-spacing:.18em}
+.beta7-loading-art { display: none; }
+.beta7-loading .beta6-loading-screen { background: linear-gradient(#dd8e42 0 48%, #9f572f 100%); }
+.beta7-loading .beta6-loading-bg,
+.beta7-loading .beta6-badge,
+.beta7-loading .beta6-loading-banner { display: none; }
+.beta7-loading .beta6-loading-shade { background: linear-gradient(rgba(72, 25, 13, .04), rgba(35, 13, 12, .84)); }
+.beta7-loading .beta7-loading-art { position: absolute; inset: 0; display: block; overflow: hidden; }
+.beta7-sun { position: absolute; top: 9%; left: 50%; width: min(27vw, 330px); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; background: #ffe49a; box-shadow: 0 0 70px 28px rgba(255, 213, 109, .5); }
+.beta7-dune { position: absolute; left: -10%; width: 120%; height: 46%; border-radius: 50% 50% 0 0; transform: rotate(-3deg); }
+.beta7-dune-back { bottom: 6%; background: #c47b3e; }
+.beta7-dune-front { right: -12%; bottom: -18%; left: auto; background: #8f4d2d; transform: rotate(4deg); }
+.beta7-pyramid { position: absolute; bottom: 17%; width: 0; height: 0; border-right: clamp(95px, 15vw, 250px) solid transparent; border-bottom: clamp(145px, 24vw, 390px) solid #6d3c27; border-left: clamp(95px, 15vw, 250px) solid transparent; filter: drop-shadow(0 20px 20px rgba(45, 15, 8, .32)); }
+.beta7-pyramid-left { left: 4%; transform: scale(.72); transform-origin: bottom; }
+.beta7-pyramid-right { right: 1%; border-bottom-color: #7b472b; transform: scale(.52); transform-origin: bottom; }
+.beta7-gem { position: absolute; top: 31%; left: 50%; width: clamp(45px, 7vw, 90px); aspect-ratio: 1; transform: translateX(-50%) rotate(45deg); border: 5px solid #f8d66b; border-radius: 14px 40px 14px 40px; background: linear-gradient(135deg, #bbfff0, #38cdb4 55%, #0f726d); box-shadow: 0 0 38px 14px rgba(92, 255, 220, .55); animation: beta7-gem-float 1.8s ease-in-out infinite alternate; }
+.beta7-glyph { position: absolute; top: 34%; color: #f4cd68; font: 900 clamp(54px, 9vw, 130px)/1 serif; text-shadow: 0 0 24px rgba(255, 201, 75, .72); opacity: .68; }
+.beta7-glyph-left { left: 18%; transform: rotate(-18deg); }.beta7-glyph-right { right: 18%; transform: rotate(18deg); }
+.beta7-loading .beta6-loading-status { bottom: 7%; text-shadow: 0 3px 12px #37130b; }
+.beta7-loading .beta6-loading-status b { color: #7cf5d2; }
+@keyframes beta7-gem-float { to { transform: translate(-50%, -14px) rotate(45deg); filter: brightness(1.18); } }
 .beta5-loading .beta5-loading-screen { position: fixed; inset: 0; z-index: 10000; display: block; overflow: hidden; background: #0797eb; opacity: 1; transition: opacity .65s ease, visibility .65s ease; }
 .beta5-loading .beta5-loading-screen.is-complete { opacity: 0; visibility: hidden; pointer-events: none; }
 .beta5-loading-screen > img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
@@ -323,6 +343,15 @@ body.beta-season-7-theme .beta-header,body.beta-season-7-theme .beta-wallet,body
 body.beta-season-7-theme .test-chip,body.beta-season-7-theme .rank-chip{background:#e2ad3d;color:#321b0d}
 body.beta-season-7-theme .gold-rush-hud{border-color:rgba(255,211,90,.55);background:linear-gradient(135deg,rgba(45,24,17,.96),rgba(90,49,25,.93))}
 body.beta-season-7-theme .gold-rush-hud strong,body.beta-season-7-theme .gold-rush-hud b{color:#7cf5d2}
+body.beta-season-7-theme .beta-header h1{color:#ffe080;text-shadow:0 2px 14px rgba(255,182,52,.28)}
+body.beta-season-7-theme .beta-header p,body.beta-season-7-theme .test-panel p{color:#f2d7aa}
+body.beta-season-7-theme .beta-nav button,body.beta-season-7-theme .beta-header a{border-color:rgba(255,212,115,.36);background:rgba(50,27,16,.72);color:#ffe0a0}
+body.beta-season-7-theme .beta-nav button:hover,body.beta-season-7-theme .beta-header a:hover{border-color:#65e6cc;background:rgba(12,111,96,.48);color:#d6fff5}
+body.beta-season-7-theme .test-panel strong,body.beta-season-7-theme .location-card strong{color:#72f0d5}
+body.beta-season-7-theme .gold-rush-player-panel{border-color:rgba(255,211,102,.44);background:linear-gradient(145deg,rgba(55,31,21,.95),rgba(94,52,25,.91))}
+body.beta-season-7-theme .gold-rush-stat-label{color:#f0cea0}
+body.beta-season-7-theme .gold-rush-ammo-segment.filled{border-color:rgba(105,244,215,.8);background:linear-gradient(180deg,#aaffed,#29b99d 72%);box-shadow:0 0 11px rgba(54,226,195,.48)}
+body.beta-season-7-theme .ultimate-btn{--ultimate-color:#27c5aa;border-color:#bc9852;background:conic-gradient(var(--ultimate-color) 0 var(--charge-angle),#6b4b2c var(--charge-angle) 360deg)}
 body.beta-season-7-theme.temple-countdown-final::after{content:"";position:fixed;inset:0;z-index:2;pointer-events:none;box-shadow:inset 0 0 100px 28px rgba(255,183,47,.42);animation:temple-warning .45s ease-in-out infinite alternate}
 @keyframes temple-warning{to{box-shadow:inset 0 0 150px 45px rgba(122,49,16,.64)}}
 .gold-rush-player-panel { position: fixed; left: 346px; bottom: 18px; z-index: 3; width: 260px; padding: 14px 16px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 18px; background: rgba(7,19,28,.88); box-shadow: 0 16px 50px rgba(0,0,0,.32); backdrop-filter: blur(16px); }
