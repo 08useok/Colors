@@ -32,7 +32,7 @@ export function createBeta6Combat(definitions, options = {}) {
       automatic: true, team: null, phase: random() * Math.PI * 2, slowUntil: 0, slow: 0,
       frozenUntil: 0, lockUntil: 0, guardUntil: 0, invulnerableUntil: 0, hiddenUntil: 0, revealedUntil: 0,
       focusUntil: 0, ice: 0, poisonUntil: 0, poisonNext: 0, zoneNext: 0, combatAt: 0, regenNext: 0,
-      encoreUntil: 0, dodgeUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], castCount: 0, attackCount: 0, ...data };
+      encoreUntil: 0, dodgeUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
     a.rounds = Array.from({ length: a.ammo }, () => rollRound(false));
     actors.push(a); return a;
   }
@@ -86,7 +86,7 @@ export function createBeta6Combat(definitions, options = {}) {
     if (distance(a, b) <= reach && Math.abs(delta) <= halfAngle) hit(a, b, damage, true);
   }
   function fire(a, target, manualAngle) {
-    if (!alive(a) || a.ammo <= 0 || time < a.next || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash) return false;
+    if (!alive(a) || a.ammo <= 0 || time < a.next || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     const d = a.d, id = a.id;
     const speed = d.bulletSpeed ?? d.boomerangSpeed ?? d.bombSpeed ?? d.electricSpeed ?? d.needleSpeed ?? d.iceBulletSpeed ?? d.chartreuseSpeed ?? (id === 'azure' ? 10 : 20);
     const lead = distance(a, target) / speed * .65;
@@ -134,7 +134,7 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function cast(a, target, aim = {}) {
     const u = a.u;
-    if (!u || !alive(a) || a.charge < u.chargeRequired || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash) return false;
+    if (!u || !alive(a) || a.charge < u.chargeRequired || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     if (a.id === 'pink') {
       const allies = actors.filter(b => b !== a && !enemies(a, b) && distance(a, b) <= u.radius);
       if (!allies.length) return false;
@@ -145,6 +145,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const point = aim.point ?? target;
       const dist = distance(a, point);
       let yaw = aim.angle ?? Math.atan2(point.z - a.z, point.x - a.x);
+      if (a.id === 'purple' && aim.point) yaw = Math.atan2(point.z - a.z, point.x - a.x);
       if (a.automatic && a.id === 'blue') {
         const healthRatio = a.hp / a.d.maxHealth;
         if (healthRatio < a.d.ultimateUseHealthMin || healthRatio > a.d.ultimateUseHealthMax) return false;
@@ -183,6 +184,19 @@ export function createBeta6Combat(definitions, options = {}) {
           const offset = u.count > 1 ? -u.spreadAngle / 2 + i * u.spreadAngle / (u.count - 1) : 0;
           shot(a, yaw + offset, u.speed, u.range, u.damage, { kind: 'orangePeel', ultimate: true, radius: u.hitRadius });
         }
+      }
+      else if (a.id === 'purple') {
+        const reach = Math.min(u.range, dist);
+        const bounds = options.bounds ?? 24;
+        const from = { x: a.x, z: a.z };
+        const to = {
+          x: clamp(a.x + Math.cos(yaw) * reach, -bounds, bounds),
+          z: clamp(a.z + Math.sin(yaw) * reach, -bounds, bounds),
+        };
+        a.leap = { from, to, startedAt: time, duration: u.duration, jumpHeight: u.jumpHeight };
+        a.lockUntil = time + u.duration;
+        area(a, from, u.radius, u.damage, true);
+        emit('purpleLeap', { owner: a, phase: 'takeoff', position: from });
       }
       else if (a.id === 'mint') {
         const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
@@ -256,9 +270,26 @@ export function createBeta6Combat(definitions, options = {}) {
           if (!alive(a)) continue;
         }
       }
+      if (a.leap) {
+        const leap = a.leap;
+        const previousX = a.x, previousZ = a.z;
+        const progress = clamp((time - leap.startedAt) / leap.duration, 0, 1);
+        a.x = leap.from.x + (leap.to.x - leap.from.x) * progress;
+        a.z = leap.from.z + (leap.to.z - leap.from.z) * progress;
+        if (progress >= 1) {
+          a.leap = null;
+          a.lockUntil = time;
+          area(a, leap.to, a.u.radius, a.u.damage, true);
+          emit('purpleLeap', { owner: a, phase: 'landing', position: leap.to });
+        }
+        a.vx = (a.x - previousX) / dt;
+        a.vz = (a.z - previousZ) / dt;
+        continue;
+      }
       const target = actors.filter(b => alive(b) && enemies(a, b) && !hidden(b)).sort((b, c) => distance(a, b) - distance(a, c))[0];
       a.target = target;
       if (a.automatic) cast(a, target);
+      if (a.leap) continue;
       if (time < a.poisonUntil && time >= a.poisonNext) { hit(a.poisonOwner, a, a.poisonOwner.d.poisonDPS ?? definitions.purple.poisonDPS); a.poisonNext = time + 1; }
       if (a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
       else if (a.ammo >= (a.d.maxAmmo ?? 3)) a.reload = 0;
@@ -291,7 +322,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const speed = 8 * a.d.moveSpeedMultiplier * (dodging ? a.d.projectileDodgeSpeedMultiplier ?? 1 : 1) * (time < a.slowUntil ? 1 - a.slow : 1) * (time < a.frozenUntil ? 0 : 1);
       const dodgeForward = a.d.projectileDodgeForwardFactor ?? 0;
       const dodgeScale = 1 / Math.hypot(1, dodgeForward);
-      if (!a.wave && !a.dash && !hidden(a)) move(a,
+      if (!a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
         a.x + (dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(yaw) * radial - Math.sin(yaw) * strafe) * speed * dt,
         a.z + (dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;

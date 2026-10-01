@@ -27,12 +27,14 @@ const run = (world, seconds) => { for (let i = 0; i < seconds * 60; i++) world.u
 {
   const beta7 = applyBeta7Balance(BETA_CHARACTERS);
   assert.equal(beta6Ultimate(beta7.orange, 'orange').name, '오렌지 껍질 회수');
+  assert.equal(beta6Ultimate(beta7.purple, 'purple').name, '독성 대도약');
   const world = createBeta6Combat(beta7, { aimError: 0, bounds: 40 });
   const orange = world.add('orange', { x: 0, automatic: false, charge: 100 });
   const target = world.add('red', { x: 8, automatic: false, hp: 100000 });
   assert(world.cast(orange, target, { angle: 0 }));
   assert.equal(world.projectiles.filter(projectile => projectile.kind === 'orangePeel').length, 5);
   run(world, 0.7);
+  assert(orange.charge > 0, 'Orange ultimate hits charge the next ultimate');
   assert(world.projectiles.every(projectile => projectile.pausedUntil > world.time), 'Orange peels pause at maximum range');
   run(world, 2.05);
   assert(world.projectiles.every(projectile => projectile.returning), 'Orange peels return after the two-second pause');
@@ -43,6 +45,12 @@ const run = (world, seconds) => { for (let i = 0; i < seconds * 60; i++) world.u
   assert(chargeWorld.fire(chargingOrange, chargeTarget, 0));
   run(chargeWorld, 0.4);
   assert.equal(chargingOrange.charge, 1, 'Orange charges once per direct fruit hit');
+
+  const beta8 = applyBeta6Balance(BETA_CHARACTERS);
+  beta8.orange.orangeUltimateEnabled = true;
+  beta8.purple.purpleUltimateEnabled = true;
+  assert.equal(beta6Ultimate(beta8.orange, 'orange').name, '오렌지 껍질 회수');
+  assert.equal(beta6Ultimate(beta8.purple, 'purple').name, '독성 대도약');
 }
 for (const id of Object.keys(config)) {
   const world = createBeta6Combat(config, { seed: 9, aimError: 0 });
@@ -78,6 +86,38 @@ for (const id of ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'c
   assert(crystal.lockUntil === target.lockUntil && crystal.lockUntil > world.time, 'Crystal Analysis locks both actors');
   run(world, 8.1);
   assert.equal(target.hp, 0, 'Crystal Analysis executes its marked target after 8 seconds');
+}
+{
+  const leapEvents = [];
+  const world = createBeta6Combat(applyBeta7Balance(BETA_CHARACTERS), {
+    bounds: 40, blocked: x => x > .2 && x < 8.8, onEvent: event => leapEvents.push(event),
+  });
+  const purple = world.add('purple', { automatic: false, charge: 100 });
+  const takeoffVictim = world.add('red', { x: 1, hp: 12000, automatic: false });
+  const landingVictim = world.add('blue', { x: 9, hp: 12000, automatic: false });
+  assert(world.cast(purple, landingVictim, { angle: 0, point: { x: 9, z: 0 } }), 'Purple Toxic Leap casts');
+  assert.equal(takeoffVictim.hp, 7000, 'Purple deals 5,000 damage at takeoff');
+  assert.equal(purple.charge, 1, 'Purple takeoff hits charge the next ultimate');
+  assert.equal(landingVictim.hp, 12000, 'Purple landing damage is delayed until landing');
+  assert.equal(purple.leap.to.x, 9, 'Purple leap crosses blocking walls');
+  run(world, .4);
+  assert(Math.abs(purple.x - 4.5) < .1 && purple.leap, 'Purple is halfway through the 0.8-second leap');
+  assert.equal(world.fire(purple, landingVictim), false, 'Purple cannot attack during the leap');
+  run(world, .45);
+  assert.equal(purple.x, 9, 'Purple reaches the landing point');
+  assert.equal(landingVictim.hp, 7000, 'Purple deals 5,000 damage on landing');
+  assert.equal(purple.charge, 2, 'Purple landing hits charge the next ultimate');
+  assert.equal(purple.leap, null, 'Purple regains control on landing');
+  assert.deepEqual(leapEvents.filter(event => event.type === 'purpleLeap').map(event => event.phase), ['takeoff', 'landing']);
+}
+{
+  const world = createBeta6Combat(applyBeta7Balance(BETA_CHARACTERS), { seed: 3, aimError: 0 });
+  const purple = world.add('purple', { charge: 100, ammo: 0, next: 99 });
+  const target = world.add('red', { x: 3, hp: 12000, automatic: false, next: 99 });
+  world.update(1 / 60);
+  assert.equal(purple.castCount, 1, 'Purple bot uses its ultimate when charged');
+  assert(purple.leap, 'Purple bot starts the leap');
+  assert.equal(target.hp, 7000, 'Purple bot takeoff damages nearby enemies');
 }
 
 {
@@ -177,6 +217,9 @@ for (const id of ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'c
 assert.deepEqual(beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1 }, 27), beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1 }, 27));
 const runtime = readFileSync(new URL('../src/beta-season.js', import.meta.url), 'utf8');
 assert(runtime.includes('const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);'));
+assert(runtime.includes('BETA_CHARACTERS.purple.purpleUltimateEnabled = true;'));
+assert(runtime.includes('document.title = "Colors - Beta Season 8 Preview";'));
+assert(runtime.includes('if (betaState.selectedCharacter === "orange" && (IS_BETA7_TEST || IS_BETA8_TEST))'));
 assert(runtime.includes('HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS)'));
 assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (HAS_BETA6_CONTENT && beta6Combat) { updateBeta6BotCombat(dt); return; }'));
 assert(runtime.includes('if (beta6Combat !== world) return;'));
@@ -254,4 +297,4 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
     assert(victim.lockUntil <= world.time, 'the freed victim can act again');
   }
 }
-console.log('PASS: shared combat isolation, 15 basic attacks, Crystal cascade/analysis, team revival, freezing, walls, cleanup, deterministic replay.');
+console.log('PASS: shared combat isolation, 15 basic attacks, Orange return, Purple leap, Crystal cascade/analysis, team revival, freezing, walls, cleanup, deterministic replay.');

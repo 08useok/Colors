@@ -43,7 +43,7 @@ export function applyBeta6Balance(source = BETA_CHARACTERS) {
 
 export function beta6Ultimate(d, id) {
   if (id === 'orange') return d.orangeUltimateEnabled ? d.ultimate : null;
-  if (id === 'purple') return null; // Released in a later season.
+  if (id === 'purple') return d.purpleUltimateEnabled ? d.ultimate : null;
   if (id === 'crimson') return { ...d.ultimate, damage: d.ultimateDamage, range: d.ultimateLength, width: d.ultimateWidth, knockback: d.ultimateKnockback, chargeRequired: d.ultimateChargeRequired };
   if (id === 'gold') return { ...d.ultimate, chargeRequired: d.ultimateChargeRequired };
   return d.special || d.ultimate || null;

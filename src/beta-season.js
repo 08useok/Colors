@@ -3,9 +3,9 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
-import { applyBeta6Balance } from "./config/beta6-balance.js?v=1";
-import { applyBeta7Balance } from "./config/beta7-balance.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=3";
+import { applyBeta6Balance } from "./config/beta6-balance.js?v=2";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=3";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=4";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -18,7 +18,10 @@ const requestedBetaSeason = betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta7";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
 const BETA_CHARACTERS = BETA_SEASON_ID === "beta7" ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
-if (BETA_SEASON_ID === "beta8") BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
+if (BETA_SEASON_ID === "beta8") {
+  BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
+  BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
+}
 // 시즌 8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
 const BETA_SEASON_BGM = {
   beta5: "./assets/beta5-clockwork-midway.mp3?v=1",
@@ -313,6 +316,23 @@ if (IS_BETA7_TEST) {
     loading.querySelector("span").textContent = "모래 아래 잠든 신전을 발굴하는 중…";
   }
   beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 7 불러오는 중");
+}
+if (IS_BETA8_TEST) {
+  document.title = "Colors - Beta Season 8 Preview";
+  const heading = document.querySelector(".beta-header h1");
+  const rankChip = document.querySelector(".rank-chip");
+  const tagline = document.querySelector(".beta-header p");
+  if (heading) heading.textContent = "베타 시즌 8 미리보기";
+  if (rankChip) rankChip.textContent = "베타 시즌 8 미리보기";
+  if (tagline) tagline.textContent = "오렌지·퍼플 신규 궁극기 미리보기";
+  if (locationName) locationName.textContent = "시즌 8 테스트 구역";
+  const loading = document.querySelector(".beta6-loading-status");
+  if (loading) {
+    loading.querySelector("strong").textContent = "BETA SEASON 8";
+    loading.querySelector("b").textContent = "ULTIMATE PREVIEW";
+    loading.querySelector("span").textContent = "오렌지와 퍼플의 신규 궁극기를 시험하는 중…";
+  }
+  beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 8 미리보기 불러오는 중");
 }
 
 // 시즌 한정 꾸미기 소품: 캐릭터 성능과 무관, 이번 시즌 참여를 보여주는 장식물.
@@ -2026,7 +2046,8 @@ function updateCrimsonControls() {
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["blue"] : []),
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []),
     ...(HAS_BETA6_CONTENT ? ["azure", "yellow"] : []),
-    ...(IS_BETA7_TEST ? ["purple", "crystal"] : []),
+    ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple"] : []),
+    ...(IS_BETA7_TEST ? ["crystal"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["orange"] : []),
   ];
   const seasonUltimates = IS_BETA7_TEST ? ["crystal"] : [];
@@ -4124,18 +4145,16 @@ function breakVial(projectile) {
   const landing = projectile.mesh.position.clone();
   landing.y = 0;
   createGroundPulse(projectile.splash, 0xb13cff, landing);
-  let hitEnemy = false;
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly) continue;
     const distance = Math.hypot(target.position.x - landing.x, target.position.z - landing.z);
     if (distance <= projectile.splash) {
       damageTarget(target, projectile.damage);
-      hitEnemy = true;
+      if ((IS_BETA7_TEST || IS_BETA8_TEST) && projectile.characterId === "purple") {
+        purpleUltimateCharge = Math.min(BETA_CHARACTERS.purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
+        if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
+      }
     }
-  }
-  if (IS_BETA7_TEST && hitEnemy && projectile.characterId === "purple") {
-    purpleUltimateCharge = Math.min(BETA_CHARACTERS.purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
-    if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
   }
 }
 
@@ -5093,6 +5112,10 @@ function damagePurpleLeapArea(position) {
     if (!target.visible || target.userData.isAlly) continue;
     if (Math.hypot(target.position.x - position.x, target.position.z - position.z) <= def.radius) {
       damageTarget(target, def.damage);
+      if (IS_BETA7_TEST || IS_BETA8_TEST) {
+        purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + 1);
+        if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
+      }
     }
   }
 }
@@ -5148,7 +5171,7 @@ function performOrangeUltimate() {
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead || beta6PlayerAttackBlocked()) return;
   if (HAS_BETA6_CONTENT && beta6Combat) { useBeta6PlayerSkill(true, true); return; }
-  if (betaState.selectedCharacter === "purple" && IS_BETA7_TEST) {
+  if (betaState.selectedCharacter === "purple" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
     const def = BETA_CHARACTERS.purple.ultimate;
     if (purpleUltimateCharge < def.chargeRequired || purpleJumpState) return;
     purpleUltimateCharge = 0;
@@ -5156,7 +5179,7 @@ ultimateButton.addEventListener("click", () => {
     updateCrimsonUltimateGauge();
     return;
   }
-  if (betaState.selectedCharacter === "orange" && IS_BETA8_TEST) {
+  if (betaState.selectedCharacter === "orange" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
     const def = BETA_CHARACTERS.orange.ultimate;
     if (orangeUltimateCharge < def.chargeRequired) return;
     orangeUltimateCharge = 0;
@@ -6426,6 +6449,7 @@ function syncBeta6PlayerHud() {
     case "green": greenUltimateCharge = charge; break;
     case "blue": blueSpecialCharge = charge; break;
     case "orange": orangeUltimateCharge = charge; break;
+    case "purple": purpleUltimateCharge = charge; break;
     case "cyan": cyanUltimateCharge = charge; break;
     case "pink": pinkUltimateCharge = charge; break;
     case "crimson": crimsonUltimateCharge = charge; break;
@@ -6450,7 +6474,9 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
     .sort((a, b) => Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0]
     ?? { x: actor.x + Math.cos(facing) * world.range(actor), z: actor.z + Math.sin(facing) * world.range(actor), vx: 0, vz: 0, hp: 1 };
   const throwRange = actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
-  const point = actor.id === "yellow" && yellowUltimateAimPointValid ? { x: yellowUltimateAimPoint.x, z: yellowUltimateAimPoint.z }
+  const aimPoint = actor.id === "yellow" && yellowUltimateAimPointValid ? yellowUltimateAimPoint
+    : actor.id === "purple" && purpleUltimateAimPointValid ? purpleUltimateAimPoint : null;
+  const point = aimPoint ? { x: aimPoint.x, z: aimPoint.z }
     : { x: actor.x + Math.cos(facing) * throwRange, z: actor.z + Math.sin(facing) * throwRange };
   if (manualAim && !ultimate && actor.id === "ivory") target = { ...point, vx: 0, vz: 0, hp: 1 };
   const aim = manualAim ? { angle: facing, point } : {};
@@ -6487,6 +6513,11 @@ function processBeta6CombatEvent(event) {
           createGroundPulse(1.6, 0x9ef2ff, position);
         }
         canvas.dataset.lastCrystalAnalysis = event.owner === beta6PlayerActor ? "player" : "bot";
+      }
+      if (event.type === "purpleLeap") {
+        const position = new THREE.Vector3(event.position.x, groundHeightAt(event.position.x, event.position.z), event.position.z);
+        createGroundPulse(BETA_CHARACTERS.purple.ultimate.radius, 0xb13cff, position);
+        canvas.dataset.lastPurpleLeap = event.phase;
       }
       if (event.type === "circuit") {
         const from = new THREE.Vector3(event.from.x, groundHeightAt(event.from.x, event.from.z) + 0.56, event.from.z);
@@ -6679,11 +6710,16 @@ function updateBeta6BotCombat(dt) {
     processBeta6CombatEvent(event);
   }
   if (beta6Combat !== world) return;
+  const wasHeroLeaping = Boolean(hero.leap);
   player.position.x = hero.x; player.position.z = hero.z;
+  const heroLeapProgress = hero.leap ? THREE.MathUtils.clamp((world.time - hero.leap.startedAt) / hero.leap.duration, 0, 1) : 0;
+  if (hero.leap) player.position.y = groundHeightAt(hero.x, hero.z) + .05 + Math.sin(heroLeapProgress * Math.PI) * hero.leap.jumpHeight;
+  else if (wasHeroLeaping) player.position.y = groundHeightAt(hero.x, hero.z) + .05;
   for (const bot of goldRushBots) {
     const a = bot.combatActor;
     bot.mesh.position.x = a.x; bot.mesh.position.z = a.z;
-    bot.mesh.position.y = groundHeightAt(a.x, a.z) + .05;
+    const leapProgress = a.leap ? THREE.MathUtils.clamp((world.time - a.leap.startedAt) / a.leap.duration, 0, 1) : 0;
+    bot.mesh.position.y = groundHeightAt(a.x, a.z) + .05 + (a.leap ? Math.sin(leapProgress * Math.PI) * a.leap.jumpHeight : 0);
     bot.mesh.rotation.y = Math.PI / 2 - a.angle;
     bot.ammo = a.ammo; bot.reloadTimer = a.reload;
     bot.mesh.userData.mintIce = a.ice;
@@ -7909,12 +7945,16 @@ function animate() {
           }
         }
         if (projectile.type === "orangeFruit") {
-          if (IS_BETA8_TEST) {
+          if (IS_BETA7_TEST || IS_BETA8_TEST) {
             orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + 1);
             if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
           }
           shouldSplitOrange = true;
           orangeDirectHitTarget = target;
+        }
+        if (projectile.type === "orangePeel" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
+          orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + 1);
+          if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
         }
         if (projectile.type === "electric") {
           const yellow = BETA_CHARACTERS.yellow;
@@ -7924,9 +7964,9 @@ function animate() {
           target.userData.slowMultiplier = 1 - yellow.shockSlowPercent;
           createChartreuseStatusEffect("slow", target, yellow.shockDuration);
         }
-        if (projectile.characterId === "purple" && projectile.type === "needle") {
+        if (projectile.characterId === "purple" && ["needle", "vial"].includes(projectile.type)) {
           const purple = BETA_CHARACTERS.purple;
-          if (IS_BETA7_TEST) {
+          if (IS_BETA7_TEST || IS_BETA8_TEST) {
             purpleUltimateCharge = Math.min(purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
             if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
           }
@@ -8357,7 +8397,7 @@ function animate() {
   let isMoving = false;
   const blueDashing = updateBlueDash(dt);
   const azureDashing = updateAzureWave(dt);
-  const purpleJumping = updatePurpleLeap(dt);
+  const purpleJumping = Boolean(beta6Combat && beta6PlayerActor?.leap) || updatePurpleLeap(dt);
   const crystalDashing = updateCrystalUltimate(dt);
   if (blueDashing || azureDashing || purpleJumping || crystalDashing || (beta6Combat && (beta6PlayerActor?.wave || beta6PlayerActor?.dash))) {
     isMoving = true;
