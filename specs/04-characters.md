@@ -34,6 +34,7 @@
 | Ivory | [Ivory](characters/ivory.md) |
 | Chartreuse | [Chartreuse](characters/chartreuse.md) |
 | Mint | [Mint](characters/mint.md) |
+| Lavender (베타 전투 테스트) | [Lavender](characters/lavender.md) |
 
 Azure는 [베타 시즌 6](beta-season-6.md)에서 확인한다.
 

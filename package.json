@@ -12,7 +12,8 @@
     "check:characters": "node tools/test-character-audit.mjs",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "check": "node --check src/main.js && node --check src/beta-season.js && node --check src/multiplayer.js && node --check src/config/characters.js && node --check src/config/beta-characters.js && node --check src/config/beta6-balance.js && node --check src/combat/beta6-combat.js && node --check src/config/skins.js && node --check src/visuals/crown.js"
+    "check": "node --check src/main.js && node --check src/beta-season.js && node --check src/multiplayer.js && node --check src/config/characters.js && node --check src/config/beta-characters.js && node --check src/config/beta6-balance.js && node --check src/combat/beta6-combat.js && node --check src/config/skins.js && node --check src/visuals/crown.js",
+    "check:maps": "node tools/test-event-maps.mjs && node tools/test-event-map-matching.mjs && node tools/test-beta-chop-wood.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.100.0",

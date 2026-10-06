@@ -6,7 +6,21 @@ import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
 import { applyBeta6Balance } from '../src/config/beta6-balance.js';
 import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 const root = new URL('../', import.meta.url);
+export const SIMULATION_LEVEL = 6;
+export function atCharacterLevel(config, level = SIMULATION_LEVEL) {
+  if (!Number.isInteger(level) || level < 1 || level > 6) throw new RangeError('Character level must be 1–6');
+  const scaled = structuredClone(config), multiplier = 1 + (level - 1) * .02;
+  const scale = (object) => {
+    for (const [key, value] of Object.entries(object)) {
+      if (typeof value === 'number' && (key === 'maxHealth' || key.endsWith('Damage') || ['damage', 'damagePerSecond', 'poisonDPS'].includes(key))) {
+        object[key] = Math.round(value * multiplier);
+      } else if (value && typeof value === 'object') scale(value);
+    }
+  };
+  scale(scaled); return scaled;
+}
 export function beta6Duel(config, left, right, scenario, seed, mirror = 1, initialCharge = 0) {
+  config = atCharacterLevel(config, scenario.level ?? SIMULATION_LEVEL);
   const world = createBeta6Combat(config, {
     seed, aimError: scenario.aimError, bounds: scenario.bounds ?? 40,
     suddenDeath: scenario.noZone ? undefined : { start: 30, end: 45, startRadius: 40, endRadius: 8, damagePerSecond: .25 },
@@ -26,7 +40,7 @@ export function beta6Duel(config, left, right, scenario, seed, mirror = 1, initi
 }
 export function tournament(config, repetitions = 50, bounds = 40, noZone = false, walls = false, timeLimit = 45) {
   const ids = Object.keys(config), matrix = Object.fromEntries(ids.map(id => [id, {}])), casts = Object.fromEntries(ids.map(id => [id, 0]));
-  const scenarios = [10, 13, 16].flatMap(distance => [.035, .1].map(aimError => ({ distance, aimError, bounds, noZone, walls, timeLimit })));
+  const scenarios = [10, 13, 16].flatMap(distance => [.035, .1].map(aimError => ({ distance, aimError, bounds, noZone, walls, timeLimit, level: SIMULATION_LEVEL })));
   for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
     const a = ids[i], b = ids[j]; let wins = 0, losses = 0, draws = 0;
     for (let s = 0; s < scenarios.length; s++) for (let n = 0; n < repetitions; n++) for (const mirror of [1, -1]) {
@@ -41,7 +55,7 @@ export function tournament(config, repetitions = 50, bounds = 40, noZone = false
     matrix[b][a] = { wins: losses, losses: wins, draws, games, score: 1 - score };
   }
   const averages = Object.fromEntries(ids.map(a => [a, Object.values(matrix[a]).reduce((sum, r) => sum + r.score, 0) / (ids.length - 1) * 100]));
-  return { repetitions, seed: 20260919, scenarios, games: ids.length * (ids.length - 1) / 2 * scenarios.length * repetitions * 2, averages, matrix, casts };
+  return { level: SIMULATION_LEVEL, repetitions, seed: 20260919, scenarios, games: ids.length * (ids.length - 1) / 2 * scenarios.length * repetitions * 2, averages, matrix, casts };
 }
 function run() {
   const repetitions = process.argv.includes('--quick') ? 5 : 50;

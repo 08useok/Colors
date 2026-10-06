@@ -237,3 +237,7 @@ SHOWDOWN+는 베타 시즌 5의 쇼다운을 **대체**한다. `?test=beta5`에�
 | 앱 전환 별도 기획 | `specs/beta-season-5-app.md` |
 
 수치 변경 시 `src/config/beta-characters.js`를 최종 기준으로 삼고 이 문서를 함께 갱신한다.
+
+## 정규 이벤트 운영 결정
+
+쇼다운과 쇼다운+는 [정규 이벤트](regular-events.md)다. 베타 테스트에서 각각 선택하며, 쇼다운+ 처치 보너스는 시즌 5 여부가 아닌 선택한 규칙으로 적용한다.

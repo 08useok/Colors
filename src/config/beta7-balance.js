@@ -1,4 +1,4 @@
-import { applyBeta6Balance } from './beta6-balance.js?v=2';
+import { applyBeta6Balance } from './beta6-balance.js?v=3';
 
 // Season 7 only: weak (~10%) nudge on top of the beta6 overlay, based on the S6 simulation ranking.
 // Nerfs: orange, blue, red, purple, green. Buffs: gold, ivory, pink, chartreuse. Crystal joins the counter cycle as orange -> crystal -> red.

@@ -1,0 +1,393 @@
+{
+  "level": 6,
+  "multiplier": 1.1,
+  "games": 25200,
+  "gamesPerOpponentPerCondition": 600,
+  "scenarios": [
+    {
+      "distance": 10,
+      "aimError": 0.035
+    },
+    {
+      "distance": 10,
+      "aimError": 0.1
+    },
+    {
+      "distance": 13,
+      "aimError": 0.035
+    },
+    {
+      "distance": 13,
+      "aimError": 0.1
+    },
+    {
+      "distance": 16,
+      "aimError": 0.035
+    },
+    {
+      "distance": 16,
+      "aimError": 0.1
+    }
+  ],
+  "summary": {
+    "without": {
+      "winPct": 75.5,
+      "drawPct": 0.11904761904761904,
+      "timeoutPct": 0,
+      "meanSeconds": 2.9545119047618984,
+      "meanCasts": 0
+    },
+    "fromZero": {
+      "winPct": 75.5,
+      "drawPct": 0.11904761904761904,
+      "timeoutPct": 0,
+      "meanSeconds": 2.9545119047618984,
+      "meanCasts": 0
+    },
+    "fullCharge": {
+      "winPct": 76.54761904761904,
+      "drawPct": 0.9047619047619048,
+      "timeoutPct": 0,
+      "meanSeconds": 3.148311507936494,
+      "meanCasts": 1
+    }
+  },
+  "rows": [
+    {
+      "opponent": "red",
+      "without": {
+        "winPct": 94,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7671944444444472,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 94,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7671944444444472,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 94,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7671944444444472,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "green",
+      "without": {
+        "winPct": 96.83333333333333,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 3.882055555555513,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 96.83333333333333,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 3.882055555555513,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 97.5,
+        "drawPct": 0.6666666666666666,
+        "timeoutPct": 0,
+        "meanSeconds": 3.1764999999999723,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "blue",
+      "without": {
+        "winPct": 0,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 6.899361111111109,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 0,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 6.899361111111109,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 0,
+        "drawPct": 10.833333333333334,
+        "timeoutPct": 0,
+        "meanSeconds": 16.220972222222105,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "yellow",
+      "without": {
+        "winPct": 85.66666666666667,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 1.1680000000000006,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 85.66666666666667,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 1.1680000000000006,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 85.66666666666667,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 1.1681666666666672,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "cyan",
+      "without": {
+        "winPct": 99.33333333333333,
+        "drawPct": 0.16666666666666666,
+        "timeoutPct": 0,
+        "meanSeconds": 1.0416666666666683,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 99.33333333333333,
+        "drawPct": 0.16666666666666666,
+        "timeoutPct": 0,
+        "meanSeconds": 1.0416666666666683,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.8896111111111136,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "purple",
+      "without": {
+        "winPct": 34.666666666666664,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 3.7103333333333346,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 34.666666666666664,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 3.7103333333333346,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 34.666666666666664,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 3.7103333333333346,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "pink",
+      "without": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7903333333333319,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7903333333333319,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7903333333333319,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "crimson",
+      "without": {
+        "winPct": 0.8333333333333334,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 6.784805555555583,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 0.8333333333333334,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 6.784805555555583,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 3.1666666666666665,
+        "drawPct": 0.16666666666666666,
+        "timeoutPct": 0,
+        "meanSeconds": 5.739500000000024,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "gold",
+      "without": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.4097222222222228,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.4097222222222228,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.3766111111111115,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "ivory",
+      "without": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.0391111111111122,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.0391111111111122,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.853416666666666,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "chartreuse",
+      "without": {
+        "winPct": 78.16666666666667,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 8.825472222222174,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 78.16666666666667,
+        "drawPct": 0.3333333333333333,
+        "timeoutPct": 0,
+        "meanSeconds": 8.825472222222174,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 83,
+        "drawPct": 0.16666666666666666,
+        "timeoutPct": 0,
+        "meanSeconds": 5.690749999999932,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "mint",
+      "without": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.1465833333333335,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.1465833333333335,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 100,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 1.0318888888888886,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "azure",
+      "without": {
+        "winPct": 98.33333333333333,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7863333333333351,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 98.33333333333333,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7863333333333351,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 98.66666666666667,
+        "drawPct": 0,
+        "timeoutPct": 0,
+        "meanSeconds": 0.7852777777777795,
+        "meanCasts": 1
+      }
+    },
+    {
+      "opponent": "crystal",
+      "without": {
+        "winPct": 69.16666666666667,
+        "drawPct": 0.5,
+        "timeoutPct": 0,
+        "meanSeconds": 3.112194444444419,
+        "meanCasts": 0
+      },
+      "fromZero": {
+        "winPct": 69.16666666666667,
+        "drawPct": 0.5,
+        "timeoutPct": 0,
+        "meanSeconds": 3.112194444444419,
+        "meanCasts": 0
+      },
+      "fullCharge": {
+        "winPct": 75,
+        "drawPct": 0.5,
+        "timeoutPct": 0,
+        "meanSeconds": 1.8758055555555424,
+        "meanCasts": 1
+      }
+    }
+  ]
+}

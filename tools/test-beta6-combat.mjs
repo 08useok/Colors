@@ -5,10 +5,10 @@ import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
 import { applyBeta6Balance, beta6Ultimate } from '../src/config/beta6-balance.js';
 import { applyBeta7Balance } from '../src/config/beta7-balance.js';
 import { createBeta6Combat } from '../src/combat/beta6-combat.js';
-import { beta6Duel } from './simulate-beta6-balance.mjs';
+import { beta6Duel, atCharacterLevel } from './simulate-beta6-balance.mjs';
 const original = structuredClone(BETA_CHARACTERS), config = applyBeta6Balance();
 assert.deepEqual(BETA_CHARACTERS, original);
-assert.equal(Object.keys(config).length, 15);
+assert.equal(Object.keys(config).length, 16);
 assert.equal(beta6Ultimate(config.azure, 'azure').chargeRequired, 2);
 assert.equal(beta6Ultimate(config.gold, 'gold').chargeRequired, 6);
 assert.equal(config.blue.bulletRange, 17.5);
@@ -18,7 +18,7 @@ assert.equal(config.blue.attackPerceptionRange, 16);
 assert.equal(config.blue.ultimateUseHealthMin, 0.1);
 assert.equal(config.blue.ultimateUseHealthMax, 0.25);
 assert.equal(config.chartreuse.chartreuseRange, 9.5);
-assert.equal(config.chartreuse.projectileSize, 3);
+assert.equal(config.chartreuse.projectileSize, 0.3);
 assert.equal(beta6Ultimate(config.crimson, 'crimson').damage, 5400);
 assert.equal(beta6Ultimate(config.orange, 'orange'), null);
 assert.equal(beta6Ultimate(config.purple, 'purple'), null);
@@ -139,11 +139,44 @@ for (const id of ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'c
   const blue = world.add('blue', { automatic: false, next: 0 });
   const target = world.add('red', { x: 8, automatic: false });
   assert(world.fire(blue, target, 0));
-  assert.equal(world.projectiles[0].radius, 2.5, 'projectiles use a 5x5 hit area');
+  assert.equal(world.projectiles[0].radius, .2, 'ordinary bullets use a 0.4-tile diameter');
 
   const chartreuse = world.add('chartreuse', { z: 4, automatic: false, next: 0 });
   assert(world.fire(chartreuse, target, 0));
-  assert.equal(world.projectiles.at(-1).radius, 1.5, 'Chartreuse uses a 3x3 hit area');
+  assert.equal(world.projectiles.at(-1).radius, .15, 'Chartreuse uses a 0.3-tile diameter');
+}
+
+{
+  const scaled = atCharacterLevel(config);
+  assert.equal(scaled.lavender.maxHealth, 6600);
+  assert.equal(scaled.lavender.sprayDamage, 770);
+  assert.equal(scaled.lavender.special.damagePerSecond, 220);
+  assert.equal(scaled.orange.maxHealth, Math.round(config.orange.maxHealth * 1.1));
+  assert.equal(scaled.orange.bombSplashDamage, Math.round(config.orange.bombSplashDamage * 1.1));
+  assert.equal(scaled.orange.ultimate.damage, Math.round(config.orange.ultimate.damage * 1.1));
+  assert.equal(scaled.purple.poisonDPS, Math.round(config.purple.poisonDPS * 1.1));
+  assert.equal(scaled.mint.special.damagePerSecond, Math.round(config.mint.special.damagePerSecond * 1.1));
+  assert.equal(scaled.orange.attackCooldown, config.orange.attackCooldown);
+  assert.equal(scaled.orange.ultimate.chargeRequired, config.orange.ultimate.chargeRequired);
+  assert.equal(config.orange.maxHealth, 4400, 'level scaling does not mutate base stats');
+  const world = createBeta6Combat(applyBeta7Balance(BETA_CHARACTERS));
+  const orange = world.add('orange', { automatic: false, charge: 8 });
+  const target = world.add('red', { x: 8, automatic: false });
+  assert(world.cast(orange, target));
+  assert(world.projectiles.every(p => p.radius === config.orange.ultimate.hitRadius), 'peels preserve their authored radius');
+}
+
+{
+  const world = createBeta6Combat(config, { bounds: 40 });
+  const blue = world.add('blue', { automatic: false, next: 0 });
+  const target = world.add('red', { x: 8, z: 2, automatic: false });
+  const before = target.hp;
+  assert(world.fire(blue, target, 0));
+  run(world, .3);
+  assert.equal(target.hp, before, 'a bullet misses a target two tiles beside its path');
+  const azure = world.add('azure', { z: -10, automatic: false, next: 0 });
+  assert(world.fire(azure, target, 0));
+  assert.equal(world.projectiles.at(-1).width, config.azure.surfWidth, 'surf keeps its authored width');
 }
 
 {
@@ -215,13 +248,13 @@ for (const id of ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'c
   world.clear(); assert.equal(world.actors.length + world.projectiles.length + world.zones.length, 0);
 }
 assert.deepEqual(beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1 }, 27), beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1 }, 27));
-const runtime = readFileSync(new URL('../src/beta-season.js', import.meta.url), 'utf8');
+const runtime = readFileSync(new URL('../src/beta-season.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 assert(runtime.includes('const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);'));
 assert(runtime.includes('BETA_CHARACTERS.purple.purpleUltimateEnabled = true;'));
 assert(runtime.includes('document.title = "Colors - Beta Season 8 Preview";'));
 assert(runtime.includes('if (betaState.selectedCharacter === "orange" && (IS_BETA7_TEST || IS_BETA8_TEST))'));
 assert(runtime.includes('HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS)'));
-assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (HAS_BETA6_CONTENT && beta6Combat) { updateBeta6BotCombat(dt); return; }'));
+assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (beta6Combat) { updateBeta6BotCombat(dt); return; }'));
 assert(runtime.includes('if (beta6Combat !== world) return;'));
 // A lethal player hit can end the match and clear all actors during event delivery.
 // Exercise the bridge without a browser and verify it stops before using disposed state.
@@ -297,4 +330,77 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
     assert(victim.lockUntil <= world.time, 'the freed victim can act again');
   }
 }
-console.log('PASS: shared combat isolation, 15 basic attacks, Orange return, Purple leap, Crystal cascade/analysis, team revival, freezing, walls, cleanup, deterministic replay.');
+{
+  const world = createBeta6Combat(config, { bounds: 40 });
+  const lavender = world.add('lavender', { automatic: false, next: 0, team: 1 });
+  const front = world.add('red', { x: 4, hp: 10000, automatic: false, team: 2 });
+  const back = world.add('red', { x: -4, automatic: false, team: 2 });
+  const ally = world.add('red', { x: 4, hp: 10000, automatic: false, team: 1 });
+  const backHp = back.hp;
+  assert(world.fire(lavender, front, 0));
+  assert.equal(lavender.ammo, 2);
+  run(world, 1);
+  assert.equal(front.hp, 7900, 'spray hits three times for 700');
+  assert.equal(back.hp, backHp, 'spray does not hit behind its caster');
+  assert.equal(ally.hp, 10000, 'spray does not hit allies');
+  assert.equal(lavender.charge, 3, 'each spray hit charges the special');
+  lavender.charge = 6;
+  assert(world.cast(lavender, front));
+  run(world, .1);
+  assert.equal(front.slow, .3);
+  assert(front.slowUntil > world.time);
+  front.x = 10;
+  const hp = front.hp;
+  run(world, 1);
+  assert.equal(front.hp, hp, 'leaving the field stops damage');
+  assert(front.slowUntil < world.time, 'leaving the field stops slow');
+  world.remove(lavender);
+  assert.equal(world.zones.length, 0, 'removing Lavender clears her spray and field');
+
+  const wallWorld = createBeta6Combat(config, { blocked: x => x > 1 && x < 2 });
+  const caster = wallWorld.add('lavender', { automatic: false, next: 0 });
+  const victim = wallWorld.add('red', { x: 4, automatic: false });
+  const before = victim.hp;
+  assert(wallWorld.fire(caster, victim, 0));
+  run(wallWorld, 1);
+  assert.equal(victim.hp, before, 'walls block perfume spray');
+}
+{
+  const world = createBeta6Combat(config);
+  const caster = world.add('lavender', { automatic: false, charge: 6, team: 1 });
+  const target = world.add('red', { automatic: false, hp: 10000, x: 4, team: 2 });
+  assert(world.cast(caster, target));
+  caster.x = 20;
+  run(world, 6.1);
+  assert.equal(target.hp, 8800, 'fixed fragrance field deals six 200-damage ticks');
+  assert.equal(caster.charge, 6, 'field damage charges the next special');
+  assert.equal(world.zones.length, 0, 'fragrance expires after six seconds');
+  assert(target.slowUntil < world.time, 'expired field releases slow');
+}
+{
+  const mesh = { visible: true, position: { x: 4, z: 0 }, userData: { health: 10000 } };
+  const context = vm.createContext({ createBeta6Combat, BETA_CHARACTERS: config,
+    lavenderPractice: null, lavenderSpecialCharge: 0, beta6Combat: null,
+    betaState: { selectedCharacter: 'lavender' }, clock: { elapsedTime: 0 },
+    player: { position: { x: 0, z: 0 }, rotation: { y: Math.PI / 2 } },
+    goldRushState: { health: 6000, dead: false }, testTargets: [mesh],
+    getArenaSolids: () => [], groundHeightAt: () => 0,
+    createLavenderMist: () => ({}), disposeLavenderMist: () => {}, updateCrimsonUltimateGauge: () => {},
+    damageTarget: (target, damage) => { target.userData.health -= damage; },
+  });
+  for (const name of ['clearLavenderPractice', 'syncLavenderPractice', 'useLavenderPracticeSkill', 'updateLavenderPractice']) {
+    const start = runtime.indexOf(`function ${name}(`);
+    vm.runInContext(runtime.slice(start, runtime.indexOf('\n}', start) + 2), context);
+  }
+  vm.runInContext('useLavenderPracticeSkill(false);', context);
+  for (let i = 0; i < 60; i++) vm.runInContext('clock.elapsedTime += 1 / 60; updateLavenderPractice(1 / 60);', context);
+  assert.equal(mesh.userData.health, 7900, 'training uses the same three spray ticks');
+  assert.equal(context.lavenderSpecialCharge, 3, 'training HUD receives charge');
+  vm.runInContext('lavenderSpecialCharge = 6; useLavenderPracticeSkill(true); updateLavenderPractice(.1);', context);
+  assert.equal(mesh.userData.slowMultiplier, .7, 'training receives fragrance slow');
+  assert.equal(context.lavenderSpecialCharge, 1, 'field spends charge and starts charging again');
+  vm.runInContext('clearLavenderPractice();', context);
+  assert.equal(context.lavenderPractice, null, 'practice cleanup clears the combat world');
+  assert.equal(context.lavenderSpecialCharge, 0, 'practice cleanup clears charge');
+}
+console.log('PASS: shared combat isolation, 16 basic attacks, Lavender spray/slow/cleanup, Orange return, Purple leap, Crystal cascade/analysis, team revival, freezing, walls, deterministic replay.');

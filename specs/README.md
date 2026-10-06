@@ -49,7 +49,7 @@
 
 | 분야 | 문서 |
 |---|---|
-| 게임 모드 | [찹 우드](chop-wood.md), [훈련장](training-arena.md) |
+| 게임 모드 | [정규 이벤트](regular-events.md), [찹 우드](chop-wood.md), [훈련장](training-arena.md) |
 | 캐릭터 | [캐릭터별 스펙](04-characters.md), [선택](character-select.md), [통계](character-stats.md) |
 | 전투 | [조준](mouse-aim.md), [회복·재장전](combat-regen-autoreload.md), [결과 포즈](beta-result-poses.md) |
 | 로비 | [로비](lobby.md), [리더보드·전적 UI](leaderboard-stats-ui.md) |

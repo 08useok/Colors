@@ -30,7 +30,7 @@ export const mp = {
     this.send("RELAY", { relayType, ...data });
   },
 
-  connect(nickname, charType, mode = "takedown") {
+  connect(nickname, charType, mode = "takedown", mapId = 0) {
     return new Promise((resolve, reject) => {
       if (this.ws) {
         try { this.ws.close(); } catch {}
@@ -59,7 +59,7 @@ export const mp = {
         };
         this.ws.onclose = () => this._emit("DISCONNECTED", {});
         this.ws.onerror = () => {};
-        this.send("JOIN_QUEUE", { nickname, charType, mode });
+        this.send("JOIN_QUEUE", { nickname, charType, mode, mapId });
         resolve();
       };
       this.ws.onerror = () => {

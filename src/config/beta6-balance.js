@@ -11,7 +11,7 @@ export const BETA6_BALANCE = {
   crimson: { maxHealth: 10500, ultimateChargeRequired: 7, ultimateDamage: 5400, pursuesWhileLowHealth: true, projectileDodgeDuration: 0.18, projectileDodgeSpeedMultiplier: 5, projectileDodgeForwardFactor: 0.6, projectileDodgeDetectionRange: 20 },
   gold: { maxHealth: 7500, attackCooldown: 1.5, projectileDamageReduction: 650, stage1Damage: 900, stage2Damage: 450, stage3Damage: 225, ultimateChargeRequired: 6 },
   ivory: { maxHealth: 6000, reloadDuration: 0.9, iceCreamDamage: 2000, iceCreamRange: 6, iceCreamSpeed: 25, iceCreamZoneTickInterval: 0.5, ultimate: { chargeRequired: 3 } },
-  chartreuse: { projectileSize: 3, ultimate: { chargeRequired: 4 } },
+  chartreuse: { projectileSize: 0.3, ultimate: { chargeRequired: 4 } },
   azure: { maxHealth: 10500, reloadDuration: 0.65, surfSpeed: 17, approachSurfRange: 18, approachSurfDistance: 4, approachSurfCooldown: 0.5, ultimate: { chargeRequired: 2 } },
   cyan: { ultimate: { damage: 3120 } },
   yellow: { attackCooldown: 0.3, ultimate: { connectionDamage: 1200, deviceThrowSpeed: 14, deviceInstallDelay: 0.35 } },

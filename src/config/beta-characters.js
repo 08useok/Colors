@@ -3,6 +3,13 @@ const degrees = (value) => value * (Math.PI / 180);
 // Beta Season balance source of truth. Values here are intentionally
 // independent from the Alpha Season configuration in characters.js.
 export const BETA_CHARACTERS = {
+  lavender: {
+    maxHealth: 6000, moveSpeedMultiplier: 1, attackCooldown: 0.9, reloadDuration: 1.2, maxAmmo: 3,
+    attackRange: 6, sprayAngle: degrees(60), sprayDuration: 0.9, sprayTickInterval: 0.3, sprayDamage: 700,
+    description: "향수 분사로 전방을 압박하고 넓은 향기 장판으로 적의 이동을 방해하는 캐릭터입니다.",
+    basicAttack: { name: "향수 스프레이", description: "전방 6타일, 60도 범위에 향수를 뿌립니다. 남은 향수는 0.3초마다 700 피해를 주며 한 번의 공격으로 최대 3회 적중합니다." },
+    special: { id: "fragranceField", name: "향기 장판", description: "자신의 위치에 반경 6타일의 향기 장판을 6초 동안 생성합니다. 장판 안 적은 30% 느려지고 매초 200 피해를 받습니다.", radius: 6, duration: 6, tickInterval: 1, damagePerSecond: 200, slowPercent: 0.3, chargeRequired: 6 },
+  },
   red: {
     maxHealth: 9800, moveSpeedMultiplier: 1.4, attackCooldown: 0.55, reloadDuration: 0.9, maxAmmo: 3,
     attackRange: 5.5, attackHalfAngle: degrees(45), attackWidthMultiplier: 1 + 0.5 / 1.7,

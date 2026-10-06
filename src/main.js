@@ -1,3 +1,4 @@
+import { eventMap, bounceMapBall } from "./config/event-maps.js?v=1";
 import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -1670,20 +1671,10 @@ function toggleCharacterSkin(charKey) {
   setPreviewCharacter(charKey);
 }
 
-const EVENT_END_AT = new Date("2026-07-27T00:00:00+09:00").getTime();
-
-function isEventActive() {
-  return Date.now() < EVENT_END_AT;
-}
-
-function showLobbyEventMapIfActive() {
-  const active = isEventActive();
-  lobbyEventMap.classList.toggle("hidden", !active);
-  mobileEventToggle.classList.toggle("hidden", !active);
-  if (!active) {
-    lobbyEventMap.classList.remove("mobile-open");
-    mobileEventToggle.classList.remove("active");
-  }
+// 정규 이벤트는 시즌 종료일과 무관하게 로비에서 제공한다.
+function showLobbyRegularEventMap() {
+  lobbyEventMap.classList.remove("hidden");
+  mobileEventToggle.classList.remove("hidden");
 }
 
 function formatCountdown(remaining) {
@@ -1695,10 +1686,8 @@ function formatCountdown(remaining) {
   return `D-${days} (${String(hours).padStart(2, "0")}시 ${String(minutes).padStart(2, "0")}분 ${String(seconds).padStart(2, "0")}초)`;
 }
 
-function updateEventCountdown() {
-  const remaining = Math.max(0, EVENT_END_AT - Date.now());
-  eventCountdown.textContent = remaining <= 0 ? "이벤트 종료" : formatCountdown(remaining);
-  if (remaining <= 0) showLobbyEventMapIfActive();
+function updateRegularEventStatus() {
+  eventCountdown.textContent = "상시 운영";
   updateBetaCountdown();
   updateBetaPatchVisibility();
 }
@@ -1799,7 +1788,7 @@ function showLobby() {
     setTimeout(() => idInput.focus(), 50);
   } else if (isLoginDoneToday(account)) {
     startBattleBtn.classList.remove("hidden");
-    showLobbyEventMapIfActive();
+    showLobbyRegularEventMap();
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     characterPanel.classList.add("hidden");
@@ -5125,13 +5114,38 @@ const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
   return [x, 0, z];
 });
 
+function mainEventMapIndex() {
+  return Number.isInteger(mpConfig?.mapId) ? mpConfig.mapId % 3 : Number(document.getElementById("event-map-variant")?.value || 0);
+}
+function mainEventLayout(mode,halfWidth,halfDepth,reserved=[]) {
+  return eventMap(mode,mainEventMapIndex(),halfWidth,halfDepth,reserved);
+}
+function addMainEventTerrain(layout,group,solids,lakes,bushes) {
+  layout.walls.forEach(({x,z,width,depth})=>createWall(x,z,width,depth,2.8,group,solids));
+  layout.lakes.forEach(({x,z,width,depth})=>createLake(x,z,width,depth,group,lakes));
+  for(const patch of layout.bushes) {
+    const nx=Math.max(1,Math.ceil(patch.width/2)),nz=Math.max(1,Math.ceil(patch.depth/2));
+    for(let ix=0;ix<nx;ix++)for(let iz=0;iz<nz;iz++)createBush(patch.x-patch.width/2+(ix+.5)*patch.width/nx,patch.z-patch.depth/2+(iz+.5)*patch.depth/nz,1.4,group,bushes);
+  }
+  state.eventMapLayout=layout;
+  group.userData.eventMapName=layout.name;
+}
+function disposeMainMapChildren(group) {
+  const geometries=new Set(),materials=new Set();
+  group.traverse(obj=>{if(obj.geometry && obj.geometry!==bushClumpGeo)geometries.add(obj.geometry);
+    for(const mat of (Array.isArray(obj.material)?obj.material:[obj.material]))if(mat && !bushClumpMats.includes(mat))materials.add(mat);
+  });
+  geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());group.clear();
+}
+
 function createTakeDownMap() {
   clearTakeDownMap();
   scene.background = new THREE.Color(0x321b24);
   scene.fog.color.set(0x321b24);
   createGround(takedownMapGroup, { ground: 0x4b3642, gridMajor: 0xc94f64, gridMinor: 0x6f4b5b });
 
-  for (let i = 0; i < 8; i += 1) {
+  const layout=mainEventLayout("takedown",worldRadius,worldRadius,TD_SPAWNS.map(([x,y,z])=>[x,z,2]));
+  if(layout.index===0) for (let i = 0; i < 8; i += 1) {
     const angle = i * 45;
     const angleRad = angle * (Math.PI / 180);
 
@@ -5157,6 +5171,7 @@ function createTakeDownMap() {
     });
   }
 
+  addMainEventTerrain(layout,takedownMapGroup,state.takedownSolids,state.takedownLakeRects,state.takedownBushes);
   const boundary = worldRadius + 1;
   createWall(0, -worldRadius, boundary * 2, 2, undefined, takedownMapGroup, state.takedownSolids, 0x241820);
   createWall(0, worldRadius, boundary * 2, 2, undefined, takedownMapGroup, state.takedownSolids, 0x241820);
@@ -5205,10 +5220,10 @@ const SOCCER_RED_SPAWNS = [[-9, 22], [0, 16], [9, 22]];
 
 function clearSoccerKickMap() {
   soccerMapGroup.traverse((object) => {
-    object.geometry?.dispose?.();
+    if(object.geometry!==bushClumpGeo)object.geometry?.dispose?.();
     if (!object.material) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
-    materials.forEach((material) => material.dispose?.());
+    materials.forEach((material) => {if(!bushClumpMats.includes(material))material.dispose?.();});
   });
   soccerMapGroup.clear();
   state.soccerSolids = [];
@@ -5303,9 +5318,13 @@ function createSoccerKickMap() {
     soccerMapGroup.add(lamp);
   }
 
+  state.soccerLakeRects=[];state.soccerBushes=[];
+  const layout=mainEventLayout("soccer",SOCCER_FIELD_HALF_WIDTH,SOCCER_FIELD_HALF_LENGTH,[...SOCCER_BLUE_SPAWNS,...SOCCER_RED_SPAWNS,[0,0,4]]);
+  addMainEventTerrain(layout,soccerMapGroup,state.soccerSolids,state.soccerLakeRects,state.soccerBushes);
+  state.soccerCoverRects=layout.walls;
   state.solids = state.soccerSolids;
-  state.lakeRects = [];
-  state.bushes = [];
+  state.lakeRects = state.soccerLakeRects;
+  state.bushes = state.soccerBushes;
 }
 
 function createMap(mapData) {
@@ -5359,8 +5378,9 @@ function refreshLoadedCyanTemplateModels() {
   }
 }
 
-function createShowdownThemeMap() {
-  showdownMapGroup.clear();
+function createShowdownThemeMap(mode="showdown") {
+  disposeMainMapChildren(showdownMapGroup);
+  state.showdownLakeRects=[];state.showdownBushes=[];
   state.showdownSolids = [];
   const ivory = new THREE.MeshStandardMaterial({ color: 0x252b30, roughness: 0.94 });
   const sky = new THREE.MeshStandardMaterial({ color: 0x444d54, roughness: 0.9 });
@@ -5402,7 +5422,11 @@ function createShowdownThemeMap() {
       mesh,
     });
   };
-  [[0,-40,80,1],[0,40,80,1],[-40,0,1,80],[40,0,1,80],[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach((spec) => wall(...spec));
+  [[0,-40,80,1],[0,40,80,1],[-40,0,1,80],[40,0,1,80]].forEach(spec=>wall(...spec));
+  const reserved=[[-30,-37],[0,-37],[30,-37],[37,0],[30,37],[0,37],[-30,37],[-37,0],[-8,0],[8,0],[0,0,3]];
+  const layout=mainEventLayout(mode,40,40,reserved);
+  if(layout.index===0)[[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach(spec=>wall(...spec));
+  addMainEventTerrain(layout,showdownMapGroup,state.showdownSolids,state.showdownLakeRects,state.showdownBushes);
 }
 
 function createTrainingMap() {
@@ -5561,13 +5585,14 @@ function createChopWoodMap() {
   borderWalls.forEach(([x, z, w, d]) =>
     createWall(x, z, w, d, 3.5, chopWoodMapGroup, state.battleSolids, 0x7a5a3a));
 
+  const layout=mainEventLayout("chopWood",15,30,[[-8,-28],[0,-28],[8,-28],[-8,28],[0,28],[8,28],[0,-25,4],[0,25,4]]);
   const midWalls = [
     [-6, -6, 4, 2], [6, -6, 4, 2],
     [-6, 6, 4, 2], [6, 6, 4, 2],
     [0, 0, 2, 6],
     [0, -12, 8, 2], [0, 12, 8, 2],
   ];
-  midWalls.forEach(([x, z, w, d]) =>
+  if(layout.index===0) midWalls.forEach(([x, z, w, d]) =>
     createWall(x, z, w, d, undefined, chopWoodMapGroup, state.battleSolids));
 
   const bushPositions = [
@@ -5575,8 +5600,10 @@ function createChopWoodMap() {
     [-5, -18], [5, -18], [-5, 18], [5, 18],
     [-12, 0], [12, 0],
   ];
-  bushPositions.forEach(([x, z]) =>
+  if(layout.index===0) bushPositions.forEach(([x, z]) =>
     createBush(x, z, 1.4, chopWoodMapGroup, state.battleBushes));
+
+  addMainEventTerrain(layout,chopWoodMapGroup,state.battleSolids,state.battleLakeRects,state.battleBushes);
 
   const treeA = createTreeMesh(0x4caf50);
   treeA.position.set(0, 0, -25);
@@ -5861,7 +5888,7 @@ function startTakeDown() {
   state.takedownMode = true;
   state.mode = "takedown";
   createTakeDownMap();
-  mapNameEl.textContent = "Take Down";
+  mapNameEl.textContent = `Take Down · ${takedownMapGroup.userData.eventMapName}`;
   mapNameEl.classList.remove("hidden");
 
   state.gameTime = 0;
@@ -6737,6 +6764,7 @@ async function enterMatchmaking(mode = "takedown") {
       account.nickname,
       state.selectedCharacter,
       mode,
+      mainEventMapIndex(),
     );
   } catch (e) {
     matchmakingStatus.textContent = t("mmConnFail", e.message);
@@ -6764,7 +6792,7 @@ async function enterMatchmaking(mode = "takedown") {
   mp.on("GAME_START", async (data) => {
     audio.play("close");
     matchmakingOverlay.classList.add("hidden");
-    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId, spawnSeed: data.spawnSeed, mode: data.mode ?? mode };
+    mpConfig = { players: data.players, isHost: mp.isHost, hostId: data.hostId, spawnSeed: data.spawnSeed, mapId:data.mapId, mode: data.mode ?? mode };
     setupMpHandlers();
     await initAudio();
     audio.play("close");
@@ -6850,6 +6878,7 @@ function startChopWood() {
   state.safeCenter.set(0, 0);
 
   createChopWoodMap();
+  mapNameEl.textContent = `${t("chopWood")} · ${chopWoodMapGroup.userData.eventMapName}`;
 
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
@@ -8030,7 +8059,9 @@ function exitTraining() {
   showLobby();
 }
 
-function resetGame() {
+function resetGame(mode="showdown") {
+  state.currentMapId=mainEventMapIndex();
+  createShowdownThemeMap(mode);
   document.body.classList.remove("lobby-active");
   // 전투 초기화 중 오류가 나더라도 로비 UI와 결과창이 겹치지 않도록 먼저 닫는다.
   messageOverlay.style.display = "none";
@@ -8074,13 +8105,13 @@ function resetGame() {
   state.solids = useIceCreamShowdown ? state.showdownSolids : state.battleSolids;
   // 얼음 쇼다운에서는 이전 일반 쇼다운 맵의 호수/지형 충돌을 완전히 분리한다.
   // 보이지 않는 battleLakeRects가 남으면 과거 테마의 히트박스처럼 이동을 막는다.
-  state.lakeRects = useIceCreamShowdown ? [] : state.battleLakeRects;
+  state.lakeRects = useIceCreamShowdown ? state.showdownLakeRects : state.battleLakeRects;
   // 쇼다운 맵에는 일반 전투 맵의 풀 은신 판정을 적용하지 않는다.
   // 기존 목록을 그대로 쓰면 카운트다운 후 AI가 풀숲에 숨은 것으로 판정되어 사라진다.
-  state.bushes = useIceCreamShowdown ? [] : state.battleBushes;
+  state.bushes = useIceCreamShowdown ? state.showdownBushes : state.battleBushes;
   state.trainingMode = false;
   const currentMap = MAP_POOL[state.currentMapId];
-  mapNameEl.textContent = useIceCreamShowdown ? "ICE CREAM SHOWDOWN" : t("mapPrefix") + currentMap.name;
+  mapNameEl.textContent = useIceCreamShowdown ? showdownMapGroup.userData.eventMapName : t("mapPrefix") + currentMap.name;
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
   emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
@@ -8139,18 +8170,18 @@ function spawnGoldRushPickup(x, z) {
 }
 
 function startGoldRush() {
-  resetGame();
+  resetGame("goldRush");
   state.goldRushMode = true;
   state.freezeUntil = 3;
   state.goldRushEndsAt = 180;
   state.goldRushNextSpawnAt = 0;
   state.goldRushHoldStartedAt = 0;
   for (const fighter of state.players) fighter.goldCount = 0;
-  mapNameEl.textContent = "GOLD RUSH · 금 10개를 10초간 지키세요";
+  mapNameEl.textContent = `GOLD RUSH · ${showdownMapGroup.userData.eventMapName}`;
 }
 
 function startSoccerKick() {
-  resetGame();
+  resetGame("soccer");
   battleMapGroup.visible = false; trainingMapGroup.visible = false; showdownMapGroup.visible = false; takedownMapGroup.visible = false;
   createSoccerKickMap(); soccerMapGroup.visible = true;
   state.goldRushMode = true; state.soccerMode = true; state.mode = "soccer"; state.freezeUntil = 3;
@@ -8164,7 +8195,7 @@ function startSoccerKick() {
   });
   state.playerTeam = getPlayer()?.team ?? "blue";
   state.soccerBall = new THREE.Mesh(new THREE.SphereGeometry(.65,18,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65}));
-  state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent="SOCCER KICK · 3대3 · 2골 선승";
+  state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent=`SOCCER KICK · ${soccerMapGroup.userData.eventMapName}`;
 }
 function endSoccerKick(winningTeam, relayResult = true) {
   if(state.gameOver)return;
@@ -8182,7 +8213,10 @@ function updateSoccerKick(dt){
   if(state.gameTime>=state.soccerEndsAt){if(state.soccerScore[0]===state.soccerScore[1])state.soccerEndsAt+=60;else endSoccerKick(state.soccerScore[0]>state.soccerScore[1]?"blue":"red");return;}
   const ball=state.soccerBall;
   for(const f of state.players.slice(0,6)){if(f.dead)continue;if(Math.hypot(ball.position.x-f.mesh.position.x,ball.position.z-f.mesh.position.z)<2&&state.gameTime>=(f.soccerKickReadyAt??0)){const yaw=f.isPlayer?f.yaw:Math.atan2(-ball.position.x,(f.team==="blue"?45:-45)-ball.position.z);state.soccerBallVelocity.set(Math.sin(yaw)*24,Math.cos(yaw)*24);f.soccerKickReadyAt=state.gameTime+.65;}}
+  const previousBall={x:ball.position.x,z:ball.position.z};
   ball.position.x+=state.soccerBallVelocity.x*dt;ball.position.z+=state.soccerBallVelocity.y*dt;state.soccerBallVelocity.multiplyScalar(Math.pow(.985,dt*60));
+  const velocity={x:state.soccerBallVelocity.x,z:state.soccerBallVelocity.y};
+  bounceMapBall(ball.position,velocity,state.soccerCoverRects || [],.65,previousBall);state.soccerBallVelocity.set(velocity.x,velocity.z);
   if(Math.abs(ball.position.x)>SOCCER_FIELD_HALF_WIDTH){ball.position.x=Math.sign(ball.position.x)*SOCCER_FIELD_HALF_WIDTH;state.soccerBallVelocity.x*=-.8;}
   if(Math.abs(ball.position.z)>SOCCER_FIELD_HALF_LENGTH){if(Math.abs(ball.position.x)<SOCCER_GOAL_HALF_WIDTH){const blue=ball.position.z>0;const scoringTeam=blue?"blue":"red";state.soccerScore[blue?0:1]++;if(state.soccerScore[blue?0:1]>=2)endSoccerKick(scoringTeam);else resetSoccerBall();}else{ball.position.z=Math.sign(ball.position.z)*SOCCER_FIELD_HALF_LENGTH;state.soccerBallVelocity.y*=-.8;}}
   survivorsLabel.textContent=`SOCCER KICK · BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED · ${formatTime(Math.max(0,state.soccerEndsAt-state.gameTime))}`;
@@ -12921,8 +12955,7 @@ function updateBushVisuals() {
     const revealed = state.gameTime < fighter.revealedUntil;
     // 쇼다운에서는 AI 모델을 숨기지 않는다. 생존 인원에는 남아 있는데
     // 은신 가시성 갱신으로 모델만 사라지는 현상을 방지한다.
-    const shouldHide = !showdownMapGroup.visible && mpConfig?.mode !== "showdown"
-      && inBush && !revealed && distSq > bushStealthRevealRangeSq;
+    const shouldHide = inBush && !revealed && distSq > bushStealthRevealRangeSq;
     fighter.mesh.visible = !shouldHide && !fighter.dead;
     fighter.shadow.visible = !shouldHide && !fighter.dead;
     fighter.healthBar.visible = !shouldHide;
@@ -12937,6 +12970,7 @@ function keepShowdownModelsVisible() {
     || state.takedownMode || state.goldRushMode) return;
   for (const fighter of state.players) {
     if (fighter.isPlayer || fighter.dead || fighter.health <= 0 || !fighter.mesh) continue;
+    if(state.player && isInBush(fighter) && !isFighterVisible(state.player,fighter))continue;
     fighter.mesh.visible = true;
     fighter.mesh.traverse((node) => {
       if (node.isMesh || node.isSkinnedMesh || node.isGroup || node.isObject3D) node.visible = true;
@@ -13602,8 +13636,8 @@ function animate() {
         if (fighter.isPlayer) continue;
         // 화면 밖 모델도 렌더링 상태만 유지한다. 위치를 플레이어 주변으로
         // 끌어오면 외곽 스폰 8개가 한곳에 압축되어 시작부터 전원이 몰린다.
-        fighter.mesh.visible = true;
-        fighter.shadow.visible = true;
+        fighter.mesh.visible = !state.player || isFighterVisible(state.player,fighter);
+        fighter.shadow.visible = fighter.mesh.visible;
         if (fighter.healthBar) fighter.healthBar.visible = true;
       }
     }
@@ -13620,6 +13654,7 @@ function animate() {
       if (state.lastCountdownRemain !== null && !state.chopWoodMode && !state.takedownMode && !state.trainingMode) {
         triggerGameTitleAnnounce();
       }
+      if(state.lastCountdownRemain!==null && state.eventMapLayout)mapNameEl.textContent=state.eventMapLayout.name;
       state.lastCountdownRemain = null;
     }
 
@@ -14147,7 +14182,7 @@ function setupInput() {
     accountCreation.classList.add("hidden");
     lobbyMain.classList.remove("hidden");
     startBattleBtn.classList.remove("hidden");
-    showLobbyEventMapIfActive();
+    showLobbyRegularEventMap();
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     updateLobbyUI(account);
   });
@@ -14171,7 +14206,7 @@ function setupInput() {
     lobbyMain.classList.remove("hidden");
     document.getElementById("lobby-side-panel").classList.remove("hidden");
     startBattleBtn.classList.remove("hidden");
-    showLobbyEventMapIfActive();
+    showLobbyRegularEventMap();
     accountSwitchError.classList.add("hidden");
     accountSwitchError.textContent = "";
   }
@@ -14266,7 +14301,7 @@ function setupInput() {
       dailyLogin.classList.add("hidden");
       lobbyMain.classList.remove("hidden");
       startBattleBtn.classList.remove("hidden");
-      showLobbyEventMapIfActive();
+      showLobbyRegularEventMap();
       document.getElementById("lobby-side-panel").classList.remove("hidden");
       if (account.lang && account.lang !== currentLang) setLanguage(account.lang);
       updateLobbyUI(account);
@@ -14400,7 +14435,6 @@ function setupInput() {
   });
 
   mobileEventToggle.addEventListener("click", (event) => {
-    if (!isEventActive()) return;
     const button = event.currentTarget;
     const willOpen = !lobbyEventMap.classList.contains("mobile-open");
     lobbyEventMap.classList.toggle("mobile-open", willOpen);
@@ -14737,10 +14771,16 @@ if (window.location.hash === "#chop-wood") {
     });
   };
   noticeEventStartBtn?.addEventListener("click", () => {
-    if (CURRENT_SEASON === "beta5") enterMatchmaking("showdown");
-    else openTakeDownDirectly();
+    noticePanel.classList.add("hidden");
+    noticeToggle.textContent = "📢 공지";
+    startBattleBtn.click();
   });
   eventTakeDownBtn?.addEventListener("click", openTakeDownDirectly);
+  document.getElementById("mode-takedown")?.addEventListener("click", () => {
+    modeSelector.classList.add("hidden");
+    startBattleBtn.classList.remove("active");
+    openTakeDownDirectly();
+  });
 
 
   matchmakingCancelBtn.addEventListener("click", () => {
@@ -15095,5 +15135,5 @@ updateHud();
 applyLanguage();
 showLobby();
 applySeasonVisibility();
-updateEventCountdown();
-setInterval(updateEventCountdown, 1000);
+updateRegularEventStatus();
+setInterval(updateRegularEventStatus, 1000);

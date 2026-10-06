@@ -1,15 +1,23 @@
+import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js";
 import * as THREE from "three";
+import { AXES, resetAxe, upgradeAxe, chopTree, CHOP_WOOD_COVER, chopWoodDestination } from "./config/beta-chop-wood.js?v=2";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.22";
-import { applyBeta6Balance } from "./config/beta6-balance.js?v=2";
-import { applyBeta7Balance } from "./config/beta7-balance.js?v=3";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=4";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.6";
+import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.23";
+import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=4";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=8";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.9";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
+
+import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
+import { applyBetaWallModel } from "./visuals/beta-wall.js?v=1";
+
+import { createBetaStairs } from "./visuals/beta-stairs.js";
+import { BETA_LOBBY_FLOORS, BETA_LOBBY_STAIRS, lobbyStairAt, lobbyFloorHeight, betaLobbyWallSegments, canStandInBetaLobby } from "./config/beta-lobby-layout.js?v=1";
 
 const canvas = document.getElementById("beta-canvas");
 let azureWaveState = null;
@@ -179,10 +187,12 @@ const seaPropBackgroundEl = document.querySelector(".beta-modal-card");
 const aimModeButton = document.getElementById("aim-mode-btn");
 const ultimateState = document.getElementById("ultimate-state");
 const goldRushToggle = document.getElementById("gold-rush-toggle");
+const gemGrabToggle = document.getElementById("gem-grab-toggle");
+const showdownPlusToggle = document.getElementById("showdown-plus-toggle");
 const showdownToggle = document.getElementById("showdown-toggle");
 const soccerToggle = document.getElementById("soccer-toggle");
 const chopWoodOpen = document.getElementById("chop-wood-open");
-const chopWoodEmbed = document.getElementById("chop-wood-embed");
+const chopWoodHud = document.getElementById("chop-wood-hud");
 const chopWoodClose = document.getElementById("chop-wood-close");
 const goldRushHud = document.getElementById("gold-rush-hud");
 const goldCountEl = document.getElementById("gold-count");
@@ -261,7 +271,7 @@ const BETA_STORAGE_KEY = IS_BETA8_TEST
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
-const CHARACTER_MODEL_VERSION = "82";
+const CHARACTER_MODEL_VERSION = "86";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
   { id: "green", name: "Green", rarity: "common", price: 0, color: 0x42d66b },
@@ -278,6 +288,7 @@ const CHARACTERS = [
   ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
   ...(HAS_BETA6_CONTENT ? [{ id: "azure", name: "Azure", rarity: "hero", price: 0, color: 0x007fff }] : []),
   ...(IS_BETA7_TEST ? [{ id: "crystal", name: "Crystal", rarity: "hero", price: 0, color: 0x6ee7ff }] : []),
+  ...((IS_BETA7_TEST || IS_BETA8_TEST) ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
@@ -359,7 +370,10 @@ function loadBetaState() {
   const selectedSkins = {};
   for (const [characterId, skinId] of Object.entries(saved.selectedSkins || {})) {
     const migratedId = migrateSkinId(skinId);
-    if (SKINS[migratedId]?.character === characterId) selectedSkins[characterId] = migratedId;
+    const migratedCharacterId = SKINS[migratedId]?.character;
+    if (migratedCharacterId && (migratedCharacterId === characterId || skinId === "beta7_pink_ruin_explorer")) {
+      selectedSkins[migratedCharacterId] = migratedId;
+    }
   }
   const ownedSkins = [...new Set((saved.ownedSkins || []).map(migrateSkinId))]
     .filter((skinId) => Boolean(SKINS[skinId]));
@@ -424,7 +438,7 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...(IS_BETA7_TEST ? ["crystal"] : [])]) {
+  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...(IS_BETA7_TEST ? ["crystal"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["lavender"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
   }
   // 시즌 6 바다 소품은 아직 정식 획득 조건이 없어 베타 테스트에서는 바로 보유시킨다.
@@ -480,6 +494,8 @@ const showdownSolids = [];
 let currentArenaMode = "lobby";
 // 경기장 모드에 맞는 충돌·지면 판정 목록. 사커는 쇼다운 맵의 벽을 쓰면 안 된다.
 function getArenaSolids() {
+  if (currentArenaMode === "goldRush") return goldArenaSolids;
+  if (currentArenaMode === "chopWood") return chopWoodSolids;
   if (currentArenaMode === "soccer") return soccerSolids;
   if (currentArenaMode === "gemGrab") return gemGrabSolids;
   return currentArenaMode === "showdown" ? showdownSolids : solids;
@@ -488,12 +504,13 @@ const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ?
 const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0xe0b84d : IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
 const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0x5b3c2a : IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
 
-function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false) {
+function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false, wall = false) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   map.add(mesh);
+  if (solid && wall) applyBetaWallModel(mesh, width, height, depth, canvas);
   if (solid) solids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: y + height / 2, mesh, destructible });
   return mesh;
 }
@@ -512,29 +529,55 @@ water.rotation.x = -Math.PI / 2;
 water.position.y = -2.6;
 scene.add(water);
 
-// 중앙 광장과 서로 다른 높이의 네 테스트 구역
-box(0, 0, 0, 22, 3, 22);
+// 바닥의 실제 윤곽을 따라 방과 복도를 둘러싼다.
+for (const floor of BETA_LOBBY_FLOORS) {
+  const corridor = floor.width === 7 || floor.depth === 7;
+  box(floor.x, floor.y, floor.z, floor.width, floor.height, floor.depth, corridor ? stoneMaterial : platformMaterial);
+}
 box(0, 1.53, 0, 15, 0.06, 15, trimMaterial, false);
-box(0, 1.3, -22, 7, 1, 23, stoneMaterial);
-box(0, 1.3, 22, 7, 1, 23, stoneMaterial);
-box(-22, 1.3, 0, 23, 1, 7, stoneMaterial);
-box(22, 1.3, 0, 23, 1, 7, stoneMaterial);
-box(0, 2.3, -40, 25, 5, 17);
-box(0, 4.0, 40, 25, 8.4, 17);
-box(-40, 3.1, 0, 17, 6.2, 25);
-box(40, 1.5, 0, 17, 3, 25);
+const lobbyRoomWalls = betaLobbyWallSegments();
+for (const edge of lobbyRoomWalls) {
+  const thickness = .6;
+  const height = 2.6;
+  const middle = (edge.from + edge.to) / 2;
+  const line = edge.line + edge.sign * thickness / 2;
+  const mesh = box(edge.axis === "x" ? middle : line, edge.base + height / 2,
+    edge.axis === "x" ? line : middle,
+    edge.axis === "x" ? edge.to - edge.from + thickness : thickness,
+    height, edge.axis === "z" ? edge.to - edge.from + thickness : thickness,
+    stoneMaterial, true, false, true);
+  // Walls block movement but must not become a floor or a dash landing surface.
+  const solid = solids.at(-1);
+  solid.walkable = false;
+  mesh.userData.lobbyBoundary = true;
+}
+canvas.dataset.lobbyRoomWallCount = String(lobbyRoomWalls.length);
+for(const stair of BETA_LOBBY_STAIRS)map.add(createBetaStairs(stair,canvas));
+let lastSafeLobbyPosition = null;
+function keepPlayerInsideLobby() {
+  if (currentArenaMode !== "lobby") return;
+  if (canStandInBetaLobby(player.position.x, player.position.z)) {
+    lastSafeLobbyPosition = { x: player.position.x, z: player.position.z };
+    return;
+  }
+  if (lastSafeLobbyPosition) {
+    player.position.x = lastSafeLobbyPosition.x;
+    player.position.z = lastSafeLobbyPosition.z;
+  } else resetPlayer();
+}
 
 // 중앙 유적 기둥과 엄폐물
 for (let i = 0; i < 8; i += 1) {
   const angle = (i / 8) * Math.PI * 2;
-  box(Math.sin(angle) * 7, 3.6, Math.cos(angle) * 7, 1.2, 4.2, 1.2, stoneMaterial);
+  const column = box(Math.sin(angle) * 7, 3.6, Math.cos(angle) * 7, 1.2, 4.2, 1.2, stoneMaterial);
+  applyBetaObeliskModel(column, 1.2, 4.2, 1.2, canvas);
 }
 for (const [x, z, w, d] of [[-6,-38,5,2],[7,-42,3,5],[38,-5,2,6],[42,7,5,2],[-6,38,5,2],[7,42,3,4]]) {
-  box(x, 5.5, z, w, 3, d, stoneMaterial);
+  box(x, 5.5, z, w, 3, d, stoneMaterial, true, false, true);
 }
 
 // 첫 스폰 앞 시험 벽: 두 조각을 하나로 정리하고 기존 한 조각의 2.25배 길이로 확장한다.
-box(0, 2.55, -4.2, 2.2 * 2.25, 2.1, 0.55, stoneMaterial, true, true);
+box(0, 2.55, -4.2, 2.2 * 2.25, 2.1, 0.55, stoneMaterial, true, true, true);
 
 function createBeta5AmusementParkDecor() {
   if (!IS_BETA5_TEST) return;
@@ -614,22 +657,20 @@ function createBeta7AncientRuinDecor() {
   addMesh(new THREE.BoxGeometry(3.4, 10, 3.4), darkStone, -7, 6.3, -46);
   addMesh(new THREE.BoxGeometry(3.4, 10, 3.4), darkStone, 7, 6.3, -46);
   addMesh(new THREE.BoxGeometry(17.4, 2.5, 3.8), sandstone, 0, 11.1, -46);
-  const seal = addMesh(new THREE.TorusGeometry(2.1, .22, 10, 40), gold, 0, 7.5, -44.05);
-  beta7AnimatedArtifacts.push({ mesh: seal, baseY: seal.position.y, spin: .18, bob: 0 });
   // 발굴지에는 부서진 기둥과 반쯤 드러난 석판을 둔다.
   for (const [x, z, height, lean] of [[-18,-24,5,.16],[18,-25,4,-.2],[-25,17,3.4,.32],[25,18,4.5,-.24]]) {
     const broken = addMesh(new THREE.CylinderGeometry(.75, 1, height, 8), lightStone, x, 1.5 + height / 2, z, lean);
     broken.rotation.z = lean;
+    applyBetaObeliskModel(broken, 1.5, height, 1.5, canvas);
   }
   for (const [x, z] of [[-11,-11],[11,-11],[-11,11],[11,11]]) {
     const column = new THREE.Mesh(new THREE.CylinderGeometry(.75, .95, 6, 8), darkStone);
     column.position.set(x, 3, z); decor.add(column);
+    applyBetaObeliskModel(column, 1.5, 6, 1.5, canvas);
     const glyph = new THREE.Mesh(new THREE.OctahedronGeometry(.28), jewel);
     glyph.position.set(x, 5.35, z); decor.add(glyph);
     beta7AnimatedArtifacts.push({ mesh: glyph, baseY: glyph.position.y, spin: .8, bob: .13 });
   }
-  const excavation = new THREE.Mesh(new THREE.RingGeometry(12, 17, 32), sandstone);
-  excavation.rotation.x = -Math.PI / 2; excavation.position.y = 1.57; decor.add(excavation);
   // 네 방향의 보석 광맥은 젬 그랩 중앙 제단으로 시선을 모은다.
   for (const [x, z] of [[0,-14],[14,0],[0,14],[-14,0]]) {
     const shard = addMesh(new THREE.OctahedronGeometry(.62, 0), jewel, x, 2.1, z);
@@ -654,6 +695,7 @@ function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial,
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   iceCreamShowdownMap.add(mesh);
+  if (solid) applyBetaWallModel(mesh, width, height, depth, canvas);
   if (solid) showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: y + height / 2, mesh });
   return mesh;
 }
@@ -693,15 +735,6 @@ if (IS_BETA7_TEST) {
     gem.position.set(x, 3.35, z);
     iceCreamShowdownMap.add(gem);
     beta7AnimatedArtifacts.push({ mesh: gem, baseY: gem.position.y, spin: 1.4, bob: 0.14 });
-  }
-  for (const radius of [4.4, 8.2, 12]) {
-    const glyphRing = new THREE.Mesh(
-      new THREE.TorusGeometry(radius, 0.055, 6, 64),
-      radius === 8.2 ? tombGem : tombGold,
-    );
-    glyphRing.rotation.x = -Math.PI / 2;
-    glyphRing.position.y = 1.59;
-    iceCreamShowdownMap.add(glyphRing);
   }
   iceCreamShowdownMap.userData.theme = "royal-tomb";
 }
@@ -775,11 +808,7 @@ const attackRobot = createAttackRobot(9, -8);
 canvas.dataset.testTargetCount = String(testTargets.length);
 
 // 훈련장 텔레포트 도착점을 표식하는 포털
-const portal = new THREE.Group();
-const portalMat = new THREE.MeshStandardMaterial({ color: 0x75efff, emissive: 0x167b91, emissiveIntensity: 2 });
-portal.add(new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.35, 12, 40), portalMat));
-portal.position.set(TRAINING_AREA_CENTER.x, 9.45, TRAINING_TELEPORT_POINT.z);
-map.add(portal);
+
 
 function createAlphaBoss() {
   const boss = new THREE.Group();
@@ -1096,11 +1125,10 @@ function recolorSkinTintTexture(texture, targetHex) {
   return recolored;
 }
 
-function applySkinPaletteToModel(model, characterId) {
-  const skinId = betaState.selectedSkins[characterId] || "";
+function applySkinPaletteToModel(model, characterId, skinId = betaState.selectedSkins[characterId] || "") {
   // 시즌 6 모델 교체형 스킨은 자체 텍스처를 쓰는 완전히 다른 모델이므로
   // 시안 공유 리그 재색칠(baseCharacterTint) 로직을 건너뛴다.
-  if (SEASON6_MODEL_SKINS[characterId]?.skinId === skinId) return;
+  if (SEASON6_MODEL_SKINS[characterId]?.skinId === skinId || SEASON7_MODEL_SKINS[characterId]?.skinId === skinId) return;
   const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd700 : characterId === "chartreuse" ? 0xc1f80a : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
@@ -1266,12 +1294,14 @@ function clearCharacterModel() {
   canvas.dataset.characterModel = "primitive";
 }
 
-function prepareCharacterScene(model, characterId) {
-  const wearsSeason6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === (betaState.selectedSkins[characterId] || "");
-  const usesFbxRig = characterId === "mint" || characterId === "azure" || characterId === "crystal"
-    || (characterId === "pink" && betaState.selectedSkins.pink === "beta5_pink_cotton_candy")
-    || wearsSeason6ModelSkin;
-  if (wearsSeason6ModelSkin) {
+function prepareCharacterScene(model, characterId, skinId = betaState.selectedSkins[characterId] || "") {
+  const wearsSeason6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === skinId;
+  const wearsSeason7ModelSkin = SEASON7_MODEL_SKINS[characterId]?.skinId === skinId;
+  const wearsCustomModelSkin = wearsSeason6ModelSkin || wearsSeason7ModelSkin;
+  const usesFbxRig = characterId === "mint" || characterId === "azure" || characterId === "crystal" || characterId === "lavender"
+    || (characterId === "pink" && skinId === "beta5_pink_cotton_candy")
+    || wearsCustomModelSkin;
+  if (wearsCustomModelSkin || characterId === "lavender") {
     const previewSpheres = [];
     model.traverse((part) => {
       if (part.isMesh && /^Icosphere(?:\.\d+)?$/i.test(part.name)) previewSpheres.push(part);
@@ -1282,12 +1312,12 @@ function prepareCharacterScene(model, characterId) {
   // 바닥에 눕지 않게 변환을 먼저 적용한 뒤 크기와 발 위치를 계산한다.
   // 시즌 6 모델 교체 스킨은 FBXLoader가 이미 Y-up으로 변환해 주므로
   // (원본 FBX의 up-axis 메타데이터가 다름) 추가 회전을 적용하지 않는다.
-  if (usesFbxRig && !wearsSeason6ModelSkin && characterId !== "crystal") model.rotateX(-Math.PI / 2);
-  if (characterId === "blue") addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal"].includes(characterId) || wearsSeason6ModelSkin) {
+  if (usesFbxRig && !wearsCustomModelSkin && !["crystal", "lavender"].includes(characterId)) model.rotateX(-Math.PI / 2);
+  if (characterId === "blue" && !wearsSeason7ModelSkin) addBlueScarf(model);
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal", "lavender"].includes(characterId) || wearsCustomModelSkin) {
     applyBetaToonRendering(model, characterId);
   }
-  applySkinPaletteToModel(model, characterId);
+  applySkinPaletteToModel(model, characterId, skinId);
   // Skinned FBX needs a precise bound after axis conversion. The default
   // approximate bound keeps the pre-rotation Y/Z extents and over-scales
   // Mint by roughly 2.56x while also producing the wrong center offset.
@@ -1337,36 +1367,57 @@ const SEASON6_MODEL_SKINS = {
   orange: { skinId: "beta6_orange_citrus_luau_buddy", folder: "orange/skins/citrus-luau-buddy" },
   azure: { skinId: "beta6_azure_blue_wave_buddy", folder: "azure/skins/blue-wave-buddy" },
 };
+const SEASON7_MODEL_SKINS = {
+  crystal: { skinId: "beta7_crystal_ruin_explorer", folder: "crystal/skins/gem-princess" },
+  green: { skinId: "beta7_green_mummy", folder: "green/skins/emerald-mummy" },
+  gold: { skinId: "beta7_gold_pharaoh", folder: "gold/skins/pharaoh-guardian" },
+  blue: { skinId: "beta7_blue_scarab", folder: "blue/skins/scarab-blue" },
+};
 
-function loadCharacterMotionSet(characterId, token) {
-  const selectedSkinId = betaState.selectedSkins[characterId] || "";
+function getCharacterMotionSource(characterId, selectedSkinId = betaState.selectedSkins[characterId] || "") {
   const cottonCandyPink = characterId === "pink" && selectedSkinId === "beta5_pink_cotton_candy";
-  const season6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === selectedSkinId
-    ? SEASON6_MODEL_SKINS[characterId]
-    : null;
+  const customModelSkin = [SEASON6_MODEL_SKINS, SEASON7_MODEL_SKINS]
+    .map((skins) => skins[characterId])
+    .find((skin) => skin?.skinId === selectedSkinId);
   const modelCharacterId = characterId === "ivory" && selectedSkinId === "beta2_ivory_shopkeeper"
     ? "ivory/skin-shopkeeper"
     : cottonCandyPink
       ? "pink/skins/cotton-candy"
-      : season6ModelSkin
-        ? season6ModelSkin.folder
-        : ["crimson", "gold"].includes(characterId) ? "cyan" : characterId;
+      : customModelSkin
+        ? customModelSkin.folder
+        : ["crimson", "gold"].includes(characterId) ? "cyan" : ["mint", "azure"].includes(characterId) ? `${characterId}/normal` : characterId;
   // Mint's supplied walk set is FBX rather than GLB, but it follows the
   // same start → loop → stop structure used by the other character rigs.
-  // 시즌 6 모델 교체 스킨도 다운로드한 Meshy FBX를 가공 없이 그대로 쓴다.
-  const usesFbxMotion = characterId === "mint" || characterId === "azure" || characterId === "crystal" || cottonCandyPink || Boolean(season6ModelSkin);
+  // 시즌 6·7 모델 교체 스킨도 다운로드한 Meshy FBX와 걷기 동작을 그대로 쓴다.
+  const usesFbxMotion = characterId === "mint" || characterId === "azure" || characterId === "crystal" || characterId === "lavender" || cottonCandyPink || Boolean(customModelSkin);
   const extension = usesFbxMotion ? "fbx" : "glb";
-  const paths = characterId === "crystal" ? {
+  const paths = characterId === "lavender" ? {
+    start: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    loop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    stop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
+  } : characterId === "crystal" && !customModelSkin ? {
     start: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
+  } : customModelSkin?.skinId.startsWith("beta7_") ? {
+    start: `./assets/3d/${customModelSkin.folder}/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    loop: `./assets/3d/${customModelSkin.folder}/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
+    stop: `./assets/3d/${customModelSkin.folder}/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
   } : {
     start: `./assets/3d/${modelCharacterId}/walk-m1s.${extension}?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/${modelCharacterId}/walk-m2l.${extension}?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/${modelCharacterId}/walk-m3e.${extension}?v=${CHARACTER_MODEL_VERSION}`,
   };
   const motionLoader = usesFbxMotion ? staticCharacterLoader : characterLoader;
-  Promise.all(Object.entries(paths).map(async ([key, path]) => [key, await motionLoader.loadAsync(path)]))
+  return { customModelSkin, usesFbxMotion, paths, motionLoader };
+}
+
+function loadCharacterMotionSet(characterId, token) {
+  const { customModelSkin, usesFbxMotion, paths, motionLoader } = getCharacterMotionSource(characterId);
+  const motionEntries = paths.start === paths.loop && paths.loop === paths.stop
+    ? [["stop", paths.stop]]
+    : Object.entries(paths);
+  Promise.all(motionEntries.map(async ([key, path]) => [key, await motionLoader.loadAsync(path)]))
     .then((entries) => {
       if (token !== characterLoadToken || betaState.selectedCharacter !== characterId) return;
       const group = new THREE.Group();
@@ -1376,7 +1427,7 @@ function loadCharacterMotionSet(characterId, token) {
       for (const [key, asset] of entries) {
         const scene = usesFbxMotion ? asset : asset.scene;
         const { animations } = asset;
-        if (season6ModelSkin) {
+        if (customModelSkin) {
           // Meshy 원본 FBX에 스켈레톤과 무관한 미리보기용 구체("Icosphere")가
           // 섞여 있어, 바운딩 박스 계산과 렌더링을 오염시키기 전에 제거한다.
           for (const stray of [...scene.children]) {
@@ -1664,7 +1715,7 @@ function setPlayerModel(characterId) {
     loadCharacterMotionSet(characterId, token);
     return;
   }
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure", "crystal"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure", "crystal", "lavender"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -1702,7 +1753,7 @@ function setPlayerModel(characterId) {
 function selectCharacter(id) {
   const character = CHARACTERS.find((item) => item.id === id);
   if (!character || !betaState.ownedCharacters.includes(id)) return;
-  if (HAS_BETA6_CONTENT && goldRushState.active && !goldRushState.ended) { showToast("경기를 마친 뒤 캐릭터를 변경할 수 있습니다."); return; }
+  if (goldRushState.active && !goldRushState.ended) { showToast("경기를 마친 뒤 캐릭터를 변경할 수 있습니다."); return; }
   betaState.selectedCharacter = id;
   bodyMat.color.setHex(character.color);
   setPlayerModel(id);
@@ -1728,7 +1779,7 @@ function applySelectedSkinVisual() {
     beta7_gold_pharaoh: 0xe5b52b,
     beta7_green_mummy: 0xc9c19d,
     beta7_blue_scarab: 0x1769a8,
-    beta7_pink_ruin_explorer: 0xc78a68,
+    beta7_crystal_ruin_explorer: 0xc78a68,
   };
   bodyMat.color.setHex(skinColors[skinId] ?? character?.color ?? 0xef3c58);
   bodyMat.metalness = skinId.startsWith("beta2_gold_") ? 0.7 : skinId === "beta_red_red" ? 0.45 : skinId.startsWith("beta_red_") ? 0.2 : 0;
@@ -1796,6 +1847,7 @@ function updateHeadAttachedSkinAccessory() {
 function rebuildRedThemeAccessory(skinId) {
   disposeSkinAccessory();
   if (skinId.startsWith("beta7_")) {
+    if (SEASON7_MODEL_SKINS[betaState.selectedCharacter]?.skinId === skinId) return;
     const gold = new THREE.MeshStandardMaterial({ color: 0xffd65a, emissive: 0x5b3500, emissiveIntensity: .3, metalness: .8, roughness: .22 });
     const stone = new THREE.MeshStandardMaterial({ color: skinId === "beta7_green_mummy" ? 0xe2d9b9 : 0x28567a, roughness: .72 });
     if (skinId === "beta7_gold_pharaoh") {
@@ -1921,7 +1973,7 @@ function rebuildRedThemeAccessory(skinId) {
   });
 }
 
-const MODEL_RELOAD_ON_SKIN_CHANGE = ["ivory", "pink", ...Object.keys(SEASON6_MODEL_SKINS)];
+const MODEL_RELOAD_ON_SKIN_CHANGE = ["ivory", "pink", ...Object.keys(SEASON6_MODEL_SKINS), ...Object.keys(SEASON7_MODEL_SKINS)];
 
 function equipSkin(characterId, skinId) {
   const skin = SKINS[skinId];
@@ -2046,7 +2098,7 @@ function updateCrimsonControls() {
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["blue"] : []),
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []),
     ...(HAS_BETA6_CONTENT ? ["azure", "yellow"] : []),
-    ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple"] : []),
+    ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple", "lavender"] : []),
     ...(IS_BETA7_TEST ? ["crystal"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["orange"] : []),
   ];
@@ -2089,7 +2141,7 @@ function renderCharacters() {
     return `<article class="beta-card${selected ? " selected" : ""}">
       <div class="character-card-badges">
         <span class="rarity ${character.rarity}">${rarityName(character.rarity)}</span>
-        <span class="character-trophy" title="${character.name} 쇼다운 ${(betaState.characterShowdownWins[character.id] || 0).toLocaleString("ko-KR")}승${IS_BETA5_TEST ? ` · 누적 처치 ${(betaState.characterShowdownKills[character.id] || 0).toLocaleString("ko-KR")}` : ""}">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
+        <span class="character-trophy" title="${character.name} 쇼다운 ${(betaState.characterShowdownWins[character.id] || 0).toLocaleString("ko-KR")}승${(betaState.characterShowdownKills[character.id] || 0) > 0 ? ` · 누적 처치 ${(betaState.characterShowdownKills[character.id] || 0).toLocaleString("ko-KR")}` : ""}">🏆 ${(betaState.characterTrophies[character.id] || 0).toLocaleString("ko-KR")}</span>
       </div>
       <h3>${character.name}</h3>
       ${characterDescription ? `<p><strong>캐릭터 소개</strong><br>${characterDescription}</p>` : ""}
@@ -2146,7 +2198,7 @@ function openAssetShowroomViewer(modelPath, modelName) {
   viewer.classList.remove("hidden");
   title.textContent = modelName;
   const isFbx = /\.fbx(?:\?|$)/i.test(modelPath);
-  const isCrystalPreview = /assets\/3d\/crystal\//i.test(modelPath);
+  const isMeshyPreview = /assets\/3d\/(?:crystal|lavender)\//i.test(modelPath);
   status.textContent = `${isFbx ? "FBX" : "GLB"} 불러오는 중…`;
   host.replaceChildren();
 
@@ -2232,9 +2284,16 @@ function openAssetShowroomViewer(modelPath, modelName) {
     if (assetShowroomViewer !== state) return;
     const model = isFbx ? asset : asset.scene;
     const animations = asset.animations || [];
-    // FBXLoader already converts Crystal's Meshy rig to Y-up. Applying the
+    // FBXLoader already converts these Meshy rigs to Y-up. Applying the
     // legacy Azure correction here turns forward root motion into upward motion.
-    if (isFbx && !isCrystalPreview) model.rotateX(-Math.PI / 2);
+    if (isFbx && !isMeshyPreview) model.rotateX(-Math.PI / 2);
+    if (isMeshyPreview) {
+      const strayMeshes = [];
+      model.traverse((child) => {
+        if (child.isMesh && /^Icosphere(?:\.\d+)?$/i.test(child.name)) strayMeshes.push(child);
+      });
+      for (const stray of strayMeshes) stray.removeFromParent();
+    }
     model.traverse((child) => {
       if (!child.isMesh) return;
       child.castShadow = true;
@@ -2256,7 +2315,7 @@ function openAssetShowroomViewer(modelPath, modelName) {
       const clip = animations[0];
       clip.tracks = clip.tracks.filter((track) => {
         if (/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name)) return false;
-        if (!isCrystalPreview || !/\.position$/i.test(track.name)) return true;
+        if (!isMeshyPreview || !/\.position$/i.test(track.name)) return true;
         const nodeName = track.name.slice(0, -".position".length);
         const node = model.getObjectByName(nodeName);
         return node?.parent?.isBone === true;
@@ -2278,6 +2337,7 @@ function renderAssetShowroom() {
       ? [{ id: "azure", name: "Azure", rarity: "preview", previewOnly: true }]
       : []),
     { id: "crystal", name: "Crystal", rarity: "preview", previewOnly: true },
+    ...(!CHARACTERS.some((character) => character.id === "lavender") ? [{ id: "lavender", name: "라벤더", rarity: "preview", previewOnly: true }] : []),
   ];
   const seasonAssets = Object.values(SKINS).filter((skin) => skin.season === BETA_SEASON_ID);
   modalTitle.textContent = "에셋 쇼룸";
@@ -2286,11 +2346,12 @@ function renderAssetShowroom() {
     <div class="asset-showroom-canvas" data-asset-viewer-host></div>
     <p data-asset-viewer-status>GLB를 선택하세요.</p>
   </section><div class="beta-grid asset-showroom-grid">${previewCharacters.map((character) => {
-    const usesFbx = ["azure", "crystal"].includes(character.id);
+    const usesFbx = ["azure", "crystal", "lavender"].includes(character.id);
     const usesGlb = glbCharacters.has(character.id);
     const usesModel = usesGlb || usesFbx;
     const modelPath = usesFbx
-      ? character.id === "crystal" ? "assets/3d/crystal/normal/crystal-walk.fbx" : "assets/3d/azure/normal/walk-m2l.fbx"
+      ? character.id === "lavender" ? "assets/3d/lavender/normal/walk-m1s.fbx"
+        : character.id === "crystal" ? "assets/3d/crystal/normal/crystal-walk.fbx" : "assets/3d/azure/normal/walk-m2l.fbx"
       : usesGlb
       ? character.id === "ivory" ? "assets/3d/ivory/ivory_preview.glb" : ["crimson", "gold"].includes(character.id) ? "assets/3d/cyan/walk-m1s.glb" : `assets/3d/${character.id}/walk-m1s.glb`
       : "Three.js 절차형 모델";
@@ -2298,10 +2359,10 @@ function renderAssetShowroom() {
     return `<article class="beta-card">
       <span class="rarity ${character.rarity}">${usesFbx ? "NEW · FBX PREVIEW" : usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
-      <p>${character.id === "crystal" ? "크리스탈 · 시즌 미정 개발 중 걷기 프리뷰" : usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>${character.id === "crystal" ? "단일 걷기 애니메이션 · 프리뷰 전용" : usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
+      <p>${character.id === "lavender" ? "라벤더 · Violet Bloom 모델링" : character.id === "crystal" ? "크리스탈 · 시즌 미정 개발 중 걷기 프리뷰" : usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
+      <p>${character.id === "lavender" ? "달리기 애니메이션 · 베타 시즌 7·8 전투 테스트" : character.id === "crystal" ? "단일 걷기 애니메이션 · 프리뷰 전용" : usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
       <code>${modelPath}</code>
-      ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${character.id === "crystal" ? "크리스탈 프리뷰" : usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
+      ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${character.id === "lavender" ? "라벤더 프리뷰" : character.id === "crystal" ? "크리스탈 프리뷰" : usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
     </article>`;
   }).join("")}</div>`;
 }
@@ -2810,6 +2871,9 @@ let crystalUltimateCharge = 0;
 let yellowUltimateCharge = 0;
 let orangeUltimateCharge = 0;
 let purpleUltimateCharge = 0;
+let beta6PlayerActor = null;
+let lavenderSpecialCharge = 0;
+let lavenderPractice = null;
 let purpleJumpState = null;
 let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
@@ -3315,7 +3379,7 @@ function createIvoryIceCreamZone(x, z, fromUltimate = false) {
   ivoryIceCreamZones.push({ group, puddle, x, z, radius: def.iceCreamZoneRadius, expiresAt: now + def.iceCreamZoneDuration, nextTickAt: now + def.iceCreamZoneTickInterval, fromUltimate });
 
   for (const target of testTargets) {
-    if (!target.visible || target.userData.isAlly) continue;
+    if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
     if (Math.hypot(target.position.x - x, target.position.z - z) <= def.iceCreamZoneRadius) {
       damageTarget(target, def.iceCreamDamage);
       chargeIvoryUltimate(1);
@@ -3559,8 +3623,8 @@ function autoAimAtNearestTarget() {
   let best = null;
   let bestDistance = Infinity;
   for (const target of testTargets) {
-    if (!target.visible || target.userData.isAlly) continue;
-    if (HAS_BETA6_CONTENT && target.userData.goldRushBot?.combatActor && beta6Combat?.hidden(target.userData.goldRushBot.combatActor)) continue;
+    if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
+    if (target.userData.goldRushBot?.combatActor && beta6Combat?.hidden(target.userData.goldRushBot.combatActor)) continue;
     const dx = target.position.x - player.position.x;
     const dz = target.position.z - player.position.z;
     const targetDistance = Math.hypot(dx, dz);
@@ -3575,7 +3639,7 @@ function autoAimAtNearestTarget() {
 }
 
 // 부채꼴(각도) 스윙·확산 공격 — 실제 사격 각도를 파이 모양으로 보여준다
-const FAN_AIM_CHARACTERS = new Set(["crimson", "purple", "green"]);
+const FAN_AIM_CHARACTERS = new Set(["crimson", "purple", "green", "lavender"]);
 // 자기 중심 범위(광역) 공격 — 방향과 무관하게 반경만 보여준다
 const AREA_AIM_CHARACTERS = new Set(["pink"]);
 
@@ -3595,6 +3659,7 @@ function getBetaAttackRange(id, def) {
   if (id === "mint") return def.iceBulletRange;
   if (id === "azure") return def.surfLength;
   if (id === "crystal") return def.crystalRange;
+  if (id === "lavender") return def.attackRange;
   return 0;
 }
 
@@ -3603,6 +3668,7 @@ function getBetaAttackHalfAngle(id, def) {
   if (id === "crimson") return def.attackHalfAngle;
   if (id === "purple") return def.needleSpreadAngle / 2;
   if (id === "green") return Math.max(...def.boomerangAngles.map((angle) => Math.abs(angle)));
+  if (id === "lavender") return def.sprayAngle / 2;
   return 0;
 }
 
@@ -4146,7 +4212,7 @@ function breakVial(projectile) {
   landing.y = 0;
   createGroundPulse(projectile.splash, 0xb13cff, landing);
   for (const target of testTargets) {
-    if (!target.visible || target.userData.isAlly) continue;
+    if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
     const distance = Math.hypot(target.position.x - landing.x, target.position.z - landing.z);
     if (distance <= projectile.splash) {
       damageTarget(target, projectile.damage);
@@ -4488,7 +4554,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
       return;
     }
   }
-  if (HAS_BETA6_CONTENT && beta6Combat) { useBeta6PlayerSkill(false, manualAim); return; }
+  if (beta6Combat) { useBeta6PlayerSkill(false, manualAim); return; }
   if (!generalAttackReady || azureWaveState || beta6PlayerAttackBlocked()) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
@@ -4502,12 +4568,16 @@ function performCharacterAttack({ manualAim = false } = {}) {
   }
   generalAttackReady = false;
   goldRushState.ammo -= 1;
+  player.userData.eventRevealedUntil=clock.elapsedTime+3;
   goldRushState.reloadTimer = Math.min(goldRushState.reloadTimer, goldRushState.reloadDuration);
   updateGoldRushCombatHud();
   crimsonAttackButton.classList.add("cooldown");
   startModelAttackMotion(id);
   attackComboState.textContent = "공격 중";
-  if (id === "red") {
+  if (id === "lavender") {
+    useLavenderPracticeSkill(false);
+    attackComboState.textContent = "향수 스프레이";
+  } else if (id === "red") {
     const attackWidth = RED_BASE_ATTACK_WIDTH * def.attackWidthMultiplier;
     // 타격마다 기울어진 획(X자)과 가운데 일자를 함께 낸다. 획은 중앙에서
     // 교차했다가 양 끝으로 퍼진다.
@@ -4699,6 +4769,7 @@ let greenUltimateCharge = 0;
 let chartreuseUltimateCharge = 0;
 
 function resetAllUltimateCharges() {
+  clearLavenderPractice();
   redUltimateCharge = 0;
   greenUltimateCharge = 0;
   blueSpecialCharge = 0;
@@ -4904,6 +4975,10 @@ function updateCrimsonUltimateGauge() {
     azure: { charge: azureUltimateCharge, required: BETA_CHARACTERS.azure.ultimate.chargeRequired, name: BETA_CHARACTERS.azure.ultimate.name, color: "#007fff" },
     crystal: { charge: crystalUltimateCharge, required: BETA_CHARACTERS.crystal.ultimate.chargeRequired, name: BETA_CHARACTERS.crystal.ultimate.name, color: "#6ee7ff" },
   };
+  if (id === "lavender") {
+    const def = BETA_CHARACTERS.lavender.special;
+    configs.lavender = { charge: beta6PlayerActor?.id === "lavender" ? beta6PlayerActor.charge : lavenderSpecialCharge, required: def.chargeRequired, name: def.name, color: "#b48be8" };
+  }
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
   const ready = charge >= required;
@@ -4913,7 +4988,8 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.classList.toggle("ready", ready);
   ultimateButton.setAttribute("aria-valuenow", String(charge));
   ultimateButton.setAttribute("aria-valuemax", String(required));
-  const isSpecial = (id === "blue" && (IS_BETA5_TEST || HAS_BETA6_CONTENT)) || (id === "mint" && (IS_BETA5_TEST || HAS_BETA6_CONTENT));
+  const isSpecial = (id === "blue" && (IS_BETA5_TEST || HAS_BETA6_CONTENT)) || (id === "mint" && (IS_BETA5_TEST || HAS_BETA6_CONTENT)) || id === "lavender";
+  ultimateButton.querySelector("strong").textContent = isSpecial ? "특수 공격" : "궁극기";
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
   const remainingUnit = "회";
   ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
@@ -5109,7 +5185,7 @@ function damagePurpleLeapArea(position) {
   createGroundPulse(def.radius, 0xb13cff, position);
   createPinkNoteBurst(def.radius * 0.8, position);
   for (const target of testTargets) {
-    if (!target.visible || target.userData.isAlly) continue;
+    if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
     if (Math.hypot(target.position.x - position.x, target.position.z - position.z) <= def.radius) {
       damageTarget(target, def.damage);
       if (IS_BETA7_TEST || IS_BETA8_TEST) {
@@ -5170,7 +5246,11 @@ function performOrangeUltimate() {
 
 ultimateButton.addEventListener("click", () => {
   if (goldRushState.dead || beta6PlayerAttackBlocked()) return;
-  if (HAS_BETA6_CONTENT && beta6Combat) { useBeta6PlayerSkill(true, true); return; }
+  if (beta6Combat) { useBeta6PlayerSkill(true, true); return; }
+  if (betaState.selectedCharacter === "lavender") {
+    useLavenderPracticeSkill(true);
+    return;
+  }
   if (betaState.selectedCharacter === "purple" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
     const def = BETA_CHARACTERS.purple.ultimate;
     if (purpleUltimateCharge < def.chargeRequired || purpleJumpState) return;
@@ -5447,7 +5527,6 @@ const initialSpawnPoint = new THREE.Vector3(
 const goldPickups = [];
 const goldRushBots = [];
 let beta6Combat = null;
-let beta6PlayerActor = null;
 const beta6CombatVisuals = new Map();
 const beta6PendingEvents = [];
 let beta6BotRotation = 0;
@@ -5776,6 +5855,7 @@ function bounceSoccerBallOffPosts() {
 function updateSoccerBallPhysics(dt) {
   const r = SOCCER_BALL_RADIUS;
   const edge = SOCCER_FIELD_HALF - r;
+  const previousBall={x:soccerBall.position.x,z:soccerBall.position.z};
   soccerBall.position.x += soccerState.vx * dt;
   soccerBall.position.z += soccerState.vz * dt;
   const damping = Math.exp(-1.05 * dt);
@@ -5785,6 +5865,7 @@ function updateSoccerBallPhysics(dt) {
   soccerBall.rotation.x += soccerState.vz * dt / r;
   soccerBall.rotation.z -= soccerState.vx * dt / r;
 
+  if(activeEventLayout){const v={x:soccerState.vx,z:soccerState.vz};bounceMapBall(soccerBall.position,v,activeEventLayout.walls,r,previousBall);soccerState.vx=v.x;soccerState.vz=v.z;}
   bounceSoccerBallOffPosts();
   const insideGoalMouth = Math.abs(soccerBall.position.x) < SOCCER_GOAL_HALF_WIDTH;
   const beyondGoalLine = Math.abs(soccerBall.position.z) > SOCCER_FIELD_HALF;
@@ -5915,14 +5996,17 @@ function updateSoccerBots(dt) {
         targetX = THREE.MathUtils.clamp(ball.x * 0.5 + lane, -15, 15);
         targetZ = ownGoalZ * 0.55 + ball.z * 0.35;
       }
-      const dx = targetX - bot.mesh.position.x;
-      const dz = targetZ - bot.mesh.position.z;
+      const prevX=bot.mesh.position.x,prevZ=bot.mesh.position.z;
+      const waypoint=activeEventLayout ? navigateEventMap(activeEventLayout,{x:prevX,z:prevZ},{x:targetX,z:targetZ}):{x:targetX,z:targetZ};
+      const dx = waypoint.x - prevX;
+      const dz = waypoint.z - prevZ;
       const distance = Math.hypot(dx, dz);
       const step = Math.min(distance, bot.speed * dt);
       if (distance > 1e-4) {
         bot.mesh.position.x += dx / distance * step;
         bot.mesh.position.z += dz / distance * step;
       }
+      applyArenaWallBlock(bot.mesh.position,prevX,prevZ);
       clampSoccerActor(bot.mesh.position);
       bot.mesh.rotation.y = Math.atan2(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
       pushSoccerBallWithBody(bot.mesh.position, dt > 0 ? step / dt : 0, team, "bot");
@@ -5932,7 +6016,8 @@ function updateSoccerBots(dt) {
       }
       if (team === "b") updateSoccerBotAttack(bot, dt);
       faceGoldRushHealthBarToCamera(bot.healthBar);
-      bot.mixer?.update(dt);
+      bot.mesh.visible = !bot.dead && (team === "a" || !betaEventBushHidden(bot.mesh,player.position));
+      updateBetaBotModel(bot, dt);
     }
   }
   if (candidates.length === 0) return;
@@ -5957,11 +6042,16 @@ function updateSoccerBotAttack(bot, dt) {
   }
   if (goldRushState.dead || bot.ammo <= 0 || clock.elapsedTime < bot.nextAttackAt) return;
   const distance = Math.hypot(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
-  if (distance > SOCCER_BOT_ATTACK_RANGE) return;
+  if (distance > SOCCER_BOT_ATTACK_RANGE || betaEventBushHidden(player,bot.mesh.position)) return;
+  if(activeEventLayout){
+    const steps=Math.ceil(distance*4);
+    for(let i=1;i<steps;i++)if(activeEventLayout.walls.some(r=>insideMapRect(bot.mesh.position.x+(player.position.x-bot.mesh.position.x)*i/steps,bot.mesh.position.z+(player.position.z-bot.mesh.position.z)*i/steps,r)))return;
+  }
   bot.mesh.rotation.y = Math.atan2(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
   createGoldRushAttackEffect(bot.mesh.position, player.position, CHARACTERS.find((c) => c.id === bot.characterId)?.color ?? 0xff5a5a);
   damageGoldRushPlayer(bot.attackDamage);
   bot.ammo -= 1;
+  bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
   bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
 }
 
@@ -5998,6 +6088,7 @@ function addGemWall(x, z, width, depth) {
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   gemArena.add(mesh);
+  applyBetaWallModel(mesh, width, GEM_WALL_HEIGHT, depth, canvas);
   gemGrabSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: GEM_FIELD_Y + GEM_WALL_HEIGHT, mesh });
 }
 
@@ -6012,6 +6103,16 @@ function addGemWall(x, z, width, depth) {
   altar.position.set(0, GEM_FIELD_Y + 0.14, 0);
   altar.receiveShadow = true;
   gemArena.add(altar);
+  // 외곽을 닫아 경기장 경계를 눈으로도 알 수 있게 한다.
+  // 안쪽 면은 ±20타일, 모서리는 겹쳐 틈이 생기지 않는다.
+  const boundaryThickness = 1;
+  const boundaryOffset = GEM_FIELD_HALF + boundaryThickness / 2;
+  const boundaryLength = GEM_FIELD_HALF * 2 + boundaryThickness * 2;
+  for (const sign of [-1, 1]) {
+    addGemWall(0, sign * boundaryOffset, boundaryLength, boundaryThickness);
+    addGemWall(sign * boundaryOffset, 0, boundaryThickness, boundaryLength);
+  }
+  canvas.dataset.gemBoundaryWallCount = "4";
   // 좌우 ㄷ자 엄폐물과 안쪽 팔
   for (const side of [-1, 1]) {
     for (const end of [-1, 1]) {
@@ -6063,6 +6164,33 @@ function clampGemActor(position) {
 
 // 벽에 파묻히면 한 축씩 되돌려서 벽을 타고 미끄러지게 한다
 function applyArenaWallBlock(position, previousX, previousZ, radius = 0.5) {
+  if (currentArenaMode === "lobby") {
+    if (canStandInBetaLobby(position.x, position.z, radius)) return;
+    if (canStandInBetaLobby(position.x, previousZ, radius)) position.z = previousZ;
+    else if (canStandInBetaLobby(previousX, position.z, radius)) position.x = previousX;
+    else { position.x = previousX; position.z = previousZ; }
+    return;
+  }
+  if (currentArenaMode === "chopWood") {
+    position.x = THREE.MathUtils.clamp(position.x, -15 + radius, 15 - radius);
+    position.z = THREE.MathUtils.clamp(position.z, -30 + radius, 30 - radius);
+    const blocked = (x,z) => chopWoodSolids.some(s => s.walkable === false && Math.abs(x-s.x)<s.halfW+radius && Math.abs(z-s.z)<s.halfD+radius);
+    if (blocked(position.x,position.z)) {
+      if (!blocked(position.x,previousZ)) position.z=previousZ;
+      else if (!blocked(previousX,position.z)) position.x=previousX;
+      else { position.x=previousX; position.z=previousZ; }
+    }
+    return;
+  }
+  if (activeEventLayout) {
+    const blocked=(x,z)=>mapBlocked(activeEventLayout,x,z,radius);
+    if(blocked(position.x,position.z)){
+      if(!blocked(position.x,previousZ))position.z=previousZ;
+      else if(!blocked(previousX,position.z))position.x=previousX;
+      else {position.x=previousX;position.z=previousZ;}
+    }
+    return;
+  }
   if (currentArenaMode !== "gemGrab") return;
   const blocked = (x, z) => gemGrabSolids.some((solid) => solid.top > GEM_FIELD_Y + 0.4
     && Math.abs(x - solid.x) < solid.halfW + radius
@@ -6328,18 +6456,15 @@ if (IS_BETA7_TEST) {
   goldMineBase.material.color.setHex(0x9b6a22);
   goldMineCrystal.material.color.setHex(0x7cf5d2);
   goldMineCrystal.material.emissive.setHex(0x174f4b);
-  const altarRing = new THREE.Mesh(
-    new THREE.TorusGeometry(2.15, .16, 8, 32),
-    new THREE.MeshStandardMaterial({ color: 0xffd35a, emissive: 0x6f3f00, emissiveIntensity: .65, metalness: .72, roughness: .3 }),
-  );
-  altarRing.rotation.x = Math.PI / 2; altarRing.position.y = .58; goldMine.add(altarRing);
   for (let i = 0; i < 4; i++) {
     const pillar = new THREE.Mesh(new THREE.BoxGeometry(.45, 2.4, .45), new THREE.MeshStandardMaterial({ color: 0xb78b51, roughness: .9 }));
     const angle = i * Math.PI / 2; pillar.position.set(Math.cos(angle) * 3.2, 1.2, Math.sin(angle) * 3.2); goldMine.add(pillar);
+    applyBetaObeliskModel(pillar, .45, 2.4, .45, canvas);
   }
 }
 
 function clearGoldRushBots() {
+  clearLavenderPractice();
   if (beta6PlayerActor?.id === "green") setPlayerConcealedVisual(false);
   beta6PendingEvents.length = 0;
   beta6Combat?.clear();
@@ -6361,7 +6486,13 @@ function clearGoldRushBots() {
     scene.remove(bot.healthBar);
     const targetIndex = testTargets.indexOf(bot.mesh);
     if (targetIndex >= 0) testTargets.splice(targetIndex, 1);
+    bot.mesh.userData.disposed = true;
     bot.mixer?.stopAllAction();
+    bot.mixer?.uncacheRoot(bot.mixer.getRoot());
+    bot.model?.traverse(part => { if (part.isSkinnedMesh) part.skeleton.dispose(); });
+    bot.mesh.userData.chopAxe?.traverse(part => { part.geometry?.dispose(); part.material?.dispose(); });
+    for (const material of bot.modelMaterials || []) material.dispose();
+    for (const geometry of bot.modelGeometries || []) geometry.dispose();
     for (const material of bot.healthBar?.userData.materials || []) material.dispose();
     for (const geometry of bot.healthBar?.userData.geometries || []) geometry.dispose();
     for (const disposable of bot.disposableMeshes || []) {
@@ -6374,6 +6505,87 @@ function clearGoldRushBots() {
     scene.remove(effect.line);
     effect.line.geometry.dispose();
     effect.line.material.dispose();
+  }
+}
+
+// Parsed motion assets stay shared; every bot owns its skeleton and materials.
+const betaBotAssetCache = new Map();
+function loadBetaBotModel(bot) {
+  const { paths, motionLoader, usesFbxMotion } = getCharacterMotionSource(bot.characterId, "");
+  const path = paths.loop;
+  if (!betaBotAssetCache.has(path)) {
+    const pending = motionLoader.loadAsync(path).catch(error => { betaBotAssetCache.delete(path); throw error; });
+    betaBotAssetCache.set(path, pending);
+  }
+  betaBotAssetCache.get(path).then(asset => {
+    if (bot.mesh.userData.disposed || !goldRushBots.includes(bot)) return;
+    const source = usesFbxMotion ? asset : asset.scene;
+    const avatar = skeletonClone(source);
+    const sharedGeometries = new Set();
+    const initialMaterials = new Set();
+    avatar.traverse(part => {
+      if (!part.isMesh) return;
+      sharedGeometries.add(part.geometry);
+      part.material = Array.isArray(part.material) ? part.material.map(material => material.clone()) : part.material.clone();
+      for (const material of Array.isArray(part.material) ? part.material : [part.material]) initialMaterials.add(material);
+    });
+    const model = prepareCharacterScene(avatar, bot.characterId, "");
+    const clip = asset.animations[0]?.clone();
+    if (clip) {
+      clip.tracks = usesFbxMotion
+        ? clip.tracks.filter(track => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name))
+        : clip.tracks.filter(track => !/^(?:RootMotion|RL_BoneRoot)\.position/.test(track.name));
+      bot.mixer = new THREE.AnimationMixer(model);
+      bot.walkAction = bot.mixer.clipAction(clip);
+      bot.walkAction.setLoop(THREE.LoopRepeat, Infinity).play();
+      bot.mixer.setTime(0);
+      if (usesFbxMotion) {
+        model.updateMatrixWorld(true);
+        const bounds = new THREE.Box3().setFromObject(model, true);
+        const center = bounds.getCenter(new THREE.Vector3());
+        model.position.x -= center.x; model.position.y -= bounds.min.y; model.position.z -= center.z;
+      }
+    }
+    bot.model = model;
+    bot.modelMaterials = new Set(); bot.modelGeometries = new Set();
+    model.traverse(part => {
+      if (!part.isMesh) return;
+      if (!sharedGeometries.has(part.geometry)) bot.modelGeometries.add(part.geometry);
+      for (const material of Array.isArray(part.material) ? part.material : [part.material]) {
+        bot.modelMaterials.add(material);
+        material.userData.botOpacity = material.opacity;
+      }
+    });
+    for (const material of initialMaterials) if (!bot.modelMaterials.has(material)) material.dispose();
+    bot.mesh.add(model);
+    for (const mesh of bot.disposableMeshes) if (mesh.geometry.type === "CapsuleGeometry") mesh.visible = false;
+    bot.marker.position.y = 3.05; bot.healthBar.position.y = 3.25;
+    bot.mesh.userData.modelCharacter = bot.characterId;
+    bot.usesPlayerModel = true;
+    bot.previousModelPosition = bot.mesh.position.clone();
+    canvas.dataset.goldRushPlayerModelBots = String(goldRushBots.filter(item => item.usesPlayerModel).length);
+  }).catch(error => {
+    if (bot.mesh.userData.disposed) return;
+    console.error(`Beta AI model failed: ${bot.characterId}`, error);
+  });
+}
+
+function updateBetaBotModel(bot, dt, concealed = false) {
+  if (!bot.model) { bot.mixer?.update(dt); return; }
+  const moving = !bot.dead && bot.mesh.position.distanceToSquared(bot.previousModelPosition) > 1e-6;
+  if (bot.walkAction) {
+    bot.walkAction.paused = !moving;
+    if (!moving && bot.modelMoving) bot.mixer.setTime(0);
+    bot.mixer.update(dt);
+  }
+  bot.modelMoving = moving;
+  bot.previousModelPosition.copy(bot.mesh.position);
+  if (bot.modelConcealed !== concealed) {
+    for (const material of bot.modelMaterials) {
+      material.transparent = true;
+      material.opacity = concealed ? material.userData.botOpacity * .25 : material.userData.botOpacity;
+    }
+    bot.modelConcealed = concealed;
   }
 }
 
@@ -6409,7 +6621,7 @@ function createGoldRushBotAvatar(index, character = null) {
   }
 
   const marker = new THREE.Mesh(
-    new THREE.TorusGeometry(0.58, 0.06, 5, 20),
+    new THREE.OctahedronGeometry(0.22),
     new THREE.MeshBasicMaterial({ color: character?.color ?? GOLD_RUSH_BOT_COLORS[index], transparent: true, opacity: 0.9 }),
   );
   marker.rotation.x = Math.PI / 2;
@@ -6435,7 +6647,7 @@ function createGoldRushBotAvatar(index, character = null) {
 }
 
 function beta6PlayerAttackBlocked() {
-  return Boolean(HAS_BETA6_CONTENT && beta6Combat && beta6PlayerActor &&
+  return Boolean(beta6Combat && beta6PlayerActor &&
     (beta6Combat.time < beta6PlayerActor.frozenUntil || beta6Combat.time < beta6PlayerActor.lockUntil));
 }
 
@@ -6470,7 +6682,7 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
   if (!world || !actor || goldRushState.dead) return;
   actor.x = player.position.x; actor.z = player.position.z; actor.hp = goldRushState.health;
   const facing = Math.PI / 2 - player.rotation.y;
-  let target = world.actors.filter(a => a !== actor && a.hp > 0 && !world.hidden(a))
+  let target = world.actors.filter(a => a !== actor && a.hp > 0 && (!actor.team || a.team !== actor.team) && !world.hidden(a,actor))
     .sort((a, b) => Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0]
     ?? { x: actor.x + Math.cos(facing) * world.range(actor), z: actor.z + Math.sin(facing) * world.range(actor), vx: 0, vz: 0, hp: 1 };
   const throwRange = actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
@@ -6493,8 +6705,16 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
 
 function processBeta6CombatEvent(event) {
       if (event.type === "damage") {
+        const victim = event.target === beta6PlayerActor ? goldRushState : event.target.bot;
+        const attacker = event.owner === beta6PlayerActor ? goldRushState : event.owner?.bot;
+        const wasAlive = victim && !victim.dead;
+        const victimRank = victim?.axeLevel || 0;
         if (event.target === beta6PlayerActor) damageGoldRushPlayer(event.amount);
         else if (event.target.bot) damageGoldRushBot(event.target.bot, event.amount, event.owner === beta6PlayerActor, true);
+        if (goldRushState.mode === "chopWood" && wasAlive && victim.dead) {
+          if (attacker && attacker !== victim && event.owner.team !== event.target.team) upgradeAxe(attacker, victimRank);
+          resetAxe(victim);
+        }
       }
       if (event.type === "heal" || event.type === "revive") {
         const bot = event.target.bot;
@@ -6532,31 +6752,38 @@ function processBeta6CombatEvent(event) {
 
 // 팀전(젬 그랩)에서만 편을 가른다. 나머지 모드는 예전처럼 전원 적이다.
 function beta6PlayerTeam() {
-  return goldRushState.mode === "gemGrab" ? "a" : null;
+  return ["gemGrab", "chopWood"].includes(goldRushState.mode) ? "a" : null;
 }
 
 function startBeta6BotCombat() {
-  if (!HAS_BETA6_CONTENT || goldRushState.mode === "soccer") return;
+  if (goldRushState.mode === "soccer") return;
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
     seed: Math.floor(Math.random() * 0x7fffffff),
-    bounds: goldRushState.mode === "showdown" ? 19 : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 48,
+    bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? 19 : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
+    retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
     destination(actor, target) {
+      if (goldRushState.mode === "chopWood") {
+        const tree = chopWoodTrees[actor.team === "a" ? "b" : "a"];
+        return navigateEventMap(activeEventLayout,actor,tree);
+      }
       // 젬 그랩에서는 적이 바싹 붙었을 때만 싸우고, 그 밖에는 젬을 주우러 간다.
       if (goldRushState.mode === "gemGrab") {
         // 팀이 10개를 채웠으면 자기 진영으로 물러나 버티고, 아니면 젬을 주우러 간다.
-        if (gemTeamGems(actor.team) >= GEM_TARGET_COUNT) return gemHomePoint(actor);
+        if (gemTeamGems(actor.team) >= GEM_TARGET_COUNT) return navigateEventMap(activeEventLayout,actor,gemHomePoint(actor));
         if (Math.hypot(actor.x - target.x, actor.z - target.z) < 6) return target;
-        return nearestGemPoint(actor);
+        return navigateEventMap(activeEventLayout,actor,nearestGemPoint(actor));
       }
-      if (!["goldRush", "gemGrab"].includes(goldRushState.mode) || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return target;
+      if (!["goldRush", "gemGrab"].includes(goldRushState.mode) || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return navigateEventMap(activeEventLayout,actor,target);
       const pickup = goldPickups.slice().sort((a, b) => Math.hypot(a.mesh.position.x - actor.x, a.mesh.position.z - actor.z) - Math.hypot(b.mesh.position.x - actor.x, b.mesh.position.z - actor.z))[0];
-      return { x: pickup?.mesh.position.x ?? goldMine.position.x, z: pickup?.mesh.position.z ?? goldMine.position.z };
+      return navigateEventMap(activeEventLayout,actor,{ x: pickup?.mesh.position.x ?? goldMine.position.x, z: pickup?.mesh.position.z ?? goldMine.position.z });
     },
     blocked(x, z, radius) {
+      if(activeEventLayout && mapBlocked(activeEventLayout,x,z,radius))return true;
       const geometry = getArenaSolids();
       const floor = groundHeightAt(x, z);
-      return floor < -5 || geometry.some(s => s.top > floor + .5 && Math.abs(x - s.x) < s.halfW + radius && Math.abs(z - s.z) < s.halfD + radius);
+      return (goldRushState.mode === "chopWood" && (Math.abs(x) > 15-radius || Math.abs(z) > 30-radius)) || floor < -5 || geometry.some(s => s.top > floor + .5 && Math.abs(x - s.x) < s.halfW + radius && Math.abs(z - s.z) < s.halfD + radius);
     },
+    bushAt: (x,z)=>activeEventLayout?.bushes.some(r=>insideMapRect(x,z,r)) ?? false,
     onEvent(event) { beta6PendingEvents.push(event); }
   });
   beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z });
@@ -6721,10 +6948,11 @@ function updateBeta6BotCombat(dt) {
     const leapProgress = a.leap ? THREE.MathUtils.clamp((world.time - a.leap.startedAt) / a.leap.duration, 0, 1) : 0;
     bot.mesh.position.y = groundHeightAt(a.x, a.z) + .05 + (a.leap ? Math.sin(leapProgress * Math.PI) * a.leap.jumpHeight : 0);
     bot.mesh.rotation.y = Math.PI / 2 - a.angle;
+    bot.mesh.visible = !bot.dead && ((a.team && a.team===hero.team) || !world.hidden(a,hero));
     bot.ammo = a.ammo; bot.reloadTimer = a.reload;
     bot.mesh.userData.mintIce = a.ice;
     bot.mesh.userData.mintFrozenUntil = clock.elapsedTime + Math.max(0, a.frozenUntil - world.time);
-    bot.mesh.traverse(part => { if (part.isMesh && part.geometry.type === "CapsuleGeometry") { part.material.transparent = true; part.material.opacity = world.hidden(a) ? .25 : 1; } });
+    updateBetaBotModel(bot, dt, !(a.team && a.team===beta6PlayerActor.team) && world.hidden(a,beta6PlayerActor));
     updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
     updateTargetMintIceIndicator(bot.mesh);
     faceGoldRushHealthBarToCamera(bot.healthBar);
@@ -6738,15 +6966,22 @@ function updateBeta6BotCombat(dt) {
       if (kind === "projectile") {
         mesh = createBeta6ProjectileMesh(object, color);
       } else {
-        const geometry = kind === "zone" ? new THREE.CircleGeometry(radius, 32) : new THREE.BoxGeometry(object.width, .5, .25);
-        mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: kind === "zone" ? .25 : .9, depthWrite: false, side: THREE.DoubleSide }));
-        if (kind === "zone") mesh.rotation.x = -Math.PI / 2;
+        if (["perfumeSpray", "fragrance"].includes(object.kind)) mesh = createLavenderMist(object);
+        else {
+          const geometry = kind === "zone" ? new THREE.CircleGeometry(radius, 32) : new THREE.BoxGeometry(object.width, .5, .25);
+          mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: kind === "zone" ? .25 : .9, depthWrite: false, side: THREE.DoubleSide }));
+          if (kind === "zone") mesh.rotation.x = -Math.PI / 2;
+        }
       }
       scene.add(mesh); beta6CombatVisuals.set(key, mesh);
     }
     const location = object.kind === "lock" ? object.owner : object;
     const lift = object.kind === "yellowDevice" ? .02 : kind === "zone" ? .08 : .8;
     mesh.position.set(location.x, groundHeightAt(location.x, location.z) + lift, location.z);
+    if (object.kind === "perfumeSpray") {
+      mesh.rotation.order = "YXZ";
+      mesh.rotation.set(-Math.PI / 2, -object.yaw, 0);
+    }
     if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
     // 전투의 각도는 (cos, sin) 기준이라 로비 모양이 쓰는 회전값으로 바꿔 준다
     if (mesh.userData.beta6Oriented) { mesh.rotation.order = "YXZ"; mesh.rotation.y = Math.PI / 2 - (object.yaw ?? 0); }
@@ -6801,11 +7036,11 @@ function updateBeta6BotCombat(dt) {
 function createGoldRushBots() {
   clearGoldRushBots();
   let playerModelCount = 0;
-  const teamMode = goldRushState.mode === "soccer" || goldRushState.mode === "gemGrab";
+  const teamMode = ["soccer", "gemGrab", "chopWood"].includes(goldRushState.mode);
   const botCount = teamMode ? 5 : 9;
   for (let i = 0; i < botCount; i += 1) {
     const opponents = CHARACTERS.filter(c => c.id !== betaState.selectedCharacter);
-    const character = HAS_BETA6_CONTENT ? opponents[(i + beta6BotRotation) % opponents.length] : null;
+    const character = opponents[(i + beta6BotRotation) % opponents.length];
     const definition = BETA_CHARACTERS[character?.id ?? betaState.selectedCharacter];
     const avatar = createGoldRushBotAvatar(i, character);
     const mesh = avatar.group;
@@ -6852,10 +7087,11 @@ function createGoldRushBots() {
     testTargets.push(mesh);
     updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
     goldRushBots.push(bot);
+    if (character) loadBetaBotModel(bot);
   }
   canvas.dataset.goldRushBotCount = String(goldRushBots.length);
   canvas.dataset.goldRushPlayerModelBots = String(playerModelCount);
-  if (HAS_BETA6_CONTENT) { beta6BotRotation++; startBeta6BotCombat(); }
+  beta6BotRotation++; startBeta6BotCombat();
 }
 
 function dropGoldRushGold(owner, position) {
@@ -6875,12 +7111,13 @@ function dropGoldRushGold(owner, position) {
 
 function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = false) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
-  if (bot.team === "a") return;
-  if (IS_BETA6_TEST && bot.combatActor && !fromBeta6Engine) {
+  if (bot.team === "a" && !fromBeta6Engine) return;
+  if (bot.combatActor && !fromBeta6Engine) {
     const a = bot.combatActor;
     if (beta6Combat.time < a.guardUntil) damage *= 1 - a.d.ultimate.damageReduction;
     a.revealedUntil = beta6Combat.time + 3;
   }
+  bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
   bot.health = Math.max(0, bot.health - damage);
   if (bot.combatActor) bot.combatActor.hp = bot.health;
   bot.mesh.userData.health = bot.health;
@@ -6894,6 +7131,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
   if (bot.health > 0) return;
   if (["goldRush", "gemGrab"].includes(goldRushState.mode)) dropGoldRushGold(bot, bot.mesh.position);
   bot.dead = true;
+  if (goldRushState.mode === "chopWood") resetAxe(bot);
   // SHOWDOWN+: 플레이어가 마지막 타격을 준 처치만 점수로 인정한다 (봇끼리의 처치는 제외)
   if (fromPlayer && goldRushState.mode === "showdown") goldRushState.kills += 1;
   bot.respawnAt = clock.elapsedTime + 5;
@@ -6903,6 +7141,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
 
 function damageGoldRushPlayer(damage) {
   if (goldRushState.dead || clock.elapsedTime < goldRushState.invulnerableUntil) return;
+  player.userData.eventRevealedUntil=clock.elapsedTime+3;
   goldRushState.health = Math.max(0, goldRushState.health - damage);
   goldRushState.lastDamageAt = clock.elapsedTime;
   updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
@@ -6967,7 +7206,7 @@ function removeGoldPickup(index) {
 function updateGoldRushBots(dt) {
   updateGoldRushAttackEffects(dt);
   if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }
-  if (HAS_BETA6_CONTENT && beta6Combat) { updateBeta6BotCombat(dt); return; }
+  if (beta6Combat) { updateBeta6BotCombat(dt); return; }
   for (const bot of goldRushBots) {
     if (bot.dead) {
       if (goldRushState.mode === "showdown") continue;
@@ -7021,7 +7260,7 @@ function updateGoldRushBots(dt) {
       const ground = groundHeightAt(bot.mesh.position.x, bot.mesh.position.z);
       if (ground > -5) bot.mesh.position.y = THREE.MathUtils.damp(bot.mesh.position.y, ground + 0.05, 12, dt);
     }
-    bot.mixer?.update(dt);
+    updateBetaBotModel(bot, dt);
     bot.marker.rotation.z += dt * 2.4;
 
     const combatCandidates = [];
@@ -7045,7 +7284,8 @@ function updateGoldRushBots(dt) {
       if (combatTarget === goldRushState) damageGoldRushPlayer(bot.attackDamage);
       else damageGoldRushBot(combatTarget, bot.attackDamage);
       bot.ammo -= 1;
-      bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
+      bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
+  bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
     }
   }
   canvas.dataset.goldRushDamagedBots = String(goldRushBots.filter((bot) => !bot.dead && bot.health < bot.maxHealth).length);
@@ -7091,7 +7331,104 @@ function updateGoldRushCombatHud() {
   canvas.dataset.playerHealth = `${Math.ceil(goldRushState.health)}/${goldRushState.maxHealth}`;
 }
 
+// Training and soccer reuse the same Lavender combat rules as full battles.
+function clearLavenderPractice() {
+  if (lavenderPractice) {
+    lavenderPractice.world.clear();
+    for (const mesh of lavenderPractice.visuals.values()) disposeLavenderMist(mesh);
+    lavenderPractice = null;
+  }
+  lavenderSpecialCharge = 0;
+  updateCrimsonUltimateGauge();
+}
+
+function disposeLavenderMist(mesh) {
+  scene.remove(mesh);
+  mesh.traverse(part => { part.geometry?.dispose(); part.material?.dispose(); });
+}
+
+function createLavenderMist(zone) {
+  const spray = zone.kind === "perfumeSpray";
+  const mesh = new THREE.Mesh(spray
+    ? new THREE.CircleGeometry(zone.radius, 32, -zone.halfAngle, zone.halfAngle * 2)
+    : new THREE.CircleGeometry(zone.radius, 32),
+    new THREE.MeshBasicMaterial({ color: 0xb48be8, transparent: true, opacity: .25, depthWrite: false, side: THREE.DoubleSide }));
+  mesh.rotation.order = "YXZ";
+  mesh.rotation.set(-Math.PI / 2, spray ? -zone.yaw : 0, 0);
+  mesh.position.set(zone.x, groundHeightAt(zone.x, zone.z) + .08, zone.z);
+  for (let index = 0; index < 12; index++) {
+    const angle = spray ? -zone.halfAngle + (index % 4) / 3 * zone.halfAngle * 2 : index / 12 * Math.PI * 2;
+    const reach = zone.radius * (.25 + (index % 3) * .28);
+    const mist = new THREE.Mesh(new THREE.SphereGeometry(.18, 8, 6),
+      new THREE.MeshBasicMaterial({ color: 0xe6c4ff, transparent: true, opacity: .35, depthWrite: false }));
+    mist.position.set(Math.cos(angle) * reach, Math.sin(angle) * reach, -.35 - (index % 3) * .25);
+    mesh.add(mist);
+  }
+  scene.add(mesh);
+  return mesh;
+}
+
+function syncLavenderPractice() {
+  if (!lavenderPractice) {
+    const world = createBeta6Combat(BETA_CHARACTERS, {
+      blocked: (x, z, radius = .1) => getArenaSolids().some(solid =>
+        solid.top > groundHeightAt(x, z) + .5 && Math.abs(x - solid.x) < solid.halfW + radius && Math.abs(z - solid.z) < solid.halfD + radius),
+      onEvent: event => {
+        if (event.type === "damage" && event.target.practiceMesh) damageTarget(event.target.practiceMesh, event.amount);
+      },
+    });
+    lavenderPractice = { world, actor: world.add("lavender", { automatic: false, team: "player", next: 0 }), targets: new Map(), visuals: new Map() };
+  }
+  const { world, actor, targets } = lavenderPractice;
+  actor.x = player.position.x; actor.z = player.position.z;
+  actor.hp = goldRushState.health; actor.charge = lavenderSpecialCharge;
+  for (const mesh of testTargets) {
+    if (!mesh.visible || mesh.userData.isAlly || mesh.userData.health <= 0) continue;
+    if (!targets.has(mesh)) targets.set(mesh, world.add("red", { automatic: false, team: "enemy", practiceMesh: mesh }));
+  }
+  for (const [mesh, target] of targets) {
+    if (!mesh.visible || !testTargets.includes(mesh) || mesh.userData.health <= 0) {
+      world.remove(target); targets.delete(mesh); continue;
+    }
+    target.x = mesh.position.x; target.z = mesh.position.z; target.hp = mesh.userData.health;
+  }
+  return lavenderPractice;
+}
+
+function useLavenderPracticeSkill(special) {
+  const { world, actor, targets } = syncLavenderPractice();
+  const target = [...targets.values()][0] ?? { x: actor.x + 1, z: actor.z, vx: 0, vz: 0, hp: 1 };
+  if (special) {
+    if (!world.cast(actor, target)) return;
+  } else {
+    // The training HUD already consumes ammo and enforces the attack cooldown.
+    actor.ammo = 1; actor.next = world.time;
+    world.fire(actor, target, Math.PI / 2 - player.rotation.y);
+  }
+  lavenderSpecialCharge = actor.charge;
+  updateCrimsonUltimateGauge();
+}
+
+function updateLavenderPractice(dt) {
+  if (!lavenderPractice) return;
+  if (betaState.selectedCharacter !== "lavender" || beta6Combat || goldRushState.dead) { clearLavenderPractice(); return; }
+  const { world, actor, targets, visuals } = syncLavenderPractice();
+  world.update(dt);
+  lavenderSpecialCharge = actor.charge;
+  for (const [mesh, target] of targets) {
+    if (target.slowUntil > world.time) {
+      mesh.userData.slowUntil = Math.max(mesh.userData.slowUntil ?? 0, clock.elapsedTime + target.slowUntil - world.time);
+      mesh.userData.slowMultiplier = 1 - target.slow;
+    }
+  }
+  const active = new Set(world.zones.map(zone => zone.key));
+  for (const zone of world.zones) if (!visuals.has(zone.key)) visuals.set(zone.key, createLavenderMist(zone));
+  for (const [key, mesh] of visuals) if (!active.has(key)) { disposeLavenderMist(mesh); visuals.delete(key); }
+  updateCrimsonUltimateGauge();
+}
+
 function resetTestCombatHud() {
+  clearLavenderPractice();
   if (goldRushState.active && !goldRushState.ended) return;
   const def = BETA_CHARACTERS[betaState.selectedCharacter];
   goldRushState.maxHealth = def?.maxHealth || 6000;
@@ -7122,6 +7459,8 @@ function updateTestCombatHud(dt) {
 }
 
 function updateGoldRushHud() {
+  if (goldRushState.mode === "chopWood") { updateGoldRushCombatHud(); return; }
+  const gemGrab = goldRushState.mode === "gemGrab";
   if (goldRushState.mode === "gemGrab") { updateGemGrabHud(); return; }
   goldCountEl.textContent = String(goldRushState.gold);
   updateGoldRushCombatHud();
@@ -7132,7 +7471,6 @@ function updateGoldRushHud() {
   const leader = goldRushBots.reduce((best, bot) => (!best || bot.gold > best.gold ? bot : best), null);
   goldRushRivalsEl.textContent = leader ? `선두 AI ${leader.id} · ${gemGrab ? "젬" : "금"} ${leader.gold}` : "AI 준비 중";
   const threateningBot = goldRushBots.find((bot) => bot.winCountdownStartedAt !== null);
-  const gemGrab = goldRushState.mode === "gemGrab";
   const escapeSeconds = gemGrab ? 15 : 10;
   if (goldRushState.winCountdownStartedAt !== null) {
     const winRemaining = Math.max(0, escapeSeconds - (clock.elapsedTime - goldRushState.winCountdownStartedAt));
@@ -7160,13 +7498,13 @@ function calcShowdownStreakBonus(streak) {
   return Math.min(streak - 1, 4);
 }
 
-function endGoldRush(message, playerWon = false, showdownRank = null) {
+function endGoldRush(message, playerWon = false, showdownRank = null, abandoned = false) {
   clearAzureWave();
   clearYellowCircuit();
   if (goldRushState.ended) return;
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
-  let trophyDelta = playerWon ? 8 : -2;
+  let trophyDelta = abandoned ? 0 : playerWon ? 8 : -2;
   if (goldRushState.mode === "soccer") {
     betaState.soccerKick.games += 1;
     if (playerWon) {
@@ -7190,13 +7528,13 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
     }
     // SHOWDOWN+: 최종 등수는 생존 순위 그대로 두고, 처치 점수는 트로피에만 가산한다
     const showdownKills = Math.max(0, Math.floor(goldRushState.kills) || 0);
-    const killBonus = IS_BETA5_TEST ? showdownKills * SHOWDOWN_PLUS_KILL_SCORE : 0;
-    if (IS_BETA5_TEST) {
+    const killBonus = goldRushState.showdownPlus ? showdownKills * SHOWDOWN_PLUS_KILL_SCORE : 0;
+    if (goldRushState.showdownPlus) {
       betaState.characterShowdownKills[characterId] = (betaState.characterShowdownKills[characterId] || 0) + showdownKills;
       betaState.bestShowdownKills = Math.max(betaState.bestShowdownKills || 0, showdownKills);
     }
     trophyDelta = calcShowdownTrophyChange(rank) + calcShowdownStreakBonus(betaState.showdownWinStreak) + killBonus;
-    message = `${rank}위 · ${placedInTopFour ? "승리" : "패배"}${IS_BETA5_TEST ? ` · 처치 ${showdownKills}` : ""}`;
+    message = `${rank}위 · ${placedInTopFour ? "승리" : "패배"}${goldRushState.showdownPlus ? ` · 처치 ${showdownKills}` : ""}`;
   } else if (playerWon) {
     betaState.daily.pendingRewards = (betaState.daily.pendingRewards || 0) + 1;
     playOrderVictoryEffect();
@@ -7217,6 +7555,11 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   clearGoldRushBots();
   goldMine.visible = false;
   gemArena.visible = false;
+  chopWoodArena.visible = false;
+  goldArena.visible = false; activeEventLayout=null;
+  chopWoodHud.classList.add("hidden");
+  playerAxe.visible = false;
+  respawnOverlay.classList.add("hidden");
   goldRushHud.classList.add("hidden");
   currentArenaMode = "lobby";
   iceCreamShowdownMap.visible = false;
@@ -7234,7 +7577,134 @@ function endGoldRush(message, playerWon = false, showdownRank = null) {
   if (playerWon) showDailyRewardReveal();
 }
 
-function startGoldRush(mode = "goldRush") {
+// 베타 자체 경기장: 메인 페이지나 계정에 의존하지 않는다.
+const chopWoodArena = new THREE.Group();
+chopWoodArena.visible = false;
+scene.add(chopWoodArena);
+const chopWoodSolids = [];
+function chopBox(x,z,w,h,d,color,wall=false) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,roughness:.9}));
+  mesh.position.set(x,wall ? 1.5+h/2 : 0,z);
+  mesh.receiveShadow = true; mesh.castShadow = wall;
+  chopWoodArena.add(mesh);
+  chopWoodSolids.push({x,z,halfW:w/2,halfD:d/2,top:wall ? 1.5+h : h/2,walkable:!wall,mesh});
+  if (wall) applyBetaWallModel(mesh,w,h,d,canvas);
+}
+chopBox(0,0,30,3,60,0x628749);
+for (const [x,z,w,d] of [[-15.3,0,.6,60.6],[15.3,0,.6,60.6],[0,-30.3,30,.6],[0,30.3,30,.6],...CHOP_WOOD_COVER]) chopBox(x,z,w,2.6,d,0x796249,true);
+const chopWoodTrees = {};
+for (const [team,z,color] of [["a",-25,0x459ee4],["b",25,0xee6956]]) {
+  const tree = new THREE.Group(); tree.position.set(0,1.5,z);
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.55,.85,3.8,10),new THREE.MeshStandardMaterial({color:0x805333}));
+  trunk.position.y=1.9; tree.add(trunk);
+  for (let i=0;i<3;i++) {
+    const crown = new THREE.Mesh(new THREE.ConeGeometry(2.3-i*.45,2.8,9),new THREE.MeshStandardMaterial({color:0x246b3a+i*0x080800}));
+    crown.position.y=3.5+i*1.35; crown.castShadow=true; tree.add(crown);
+  }
+  const banner = new THREE.Mesh(new THREE.BoxGeometry(.8,1.2,.12),new THREE.MeshStandardMaterial({color}));
+  banner.position.set(0,2.3,-.65); tree.add(banner);
+  chopWoodArena.add(tree);
+  // Deliberately not a combat target: only the axe timer can reduce tree health.
+  chopWoodTrees[team]={x:0,z,health:100,mesh:tree};
+}
+for (const [x,z] of [[-10,0],[10,0],[0,-10],[0,10]]) {
+  for (let i=0;i<7;i++) {
+    const bush=new THREE.Mesh(new THREE.IcosahedronGeometry(.7,0),new THREE.MeshStandardMaterial({color:0x3b6e35}));
+    bush.userData.eventBaseBush = true; bush.position.set(x+(i%3-1)*.8,1.95,z+(Math.floor(i/3)-1)*.8); chopWoodArena.add(bush);
+  }
+}
+function makeChopAxe() {
+  const axe=new THREE.Group();
+  const handle=new THREE.Mesh(new THREE.BoxGeometry(.08,.7,.08),new THREE.MeshBasicMaterial({color:0x805333}));
+  const blade=new THREE.Mesh(new THREE.BoxGeometry(.4,.24,.09),new THREE.MeshBasicMaterial({color:AXES[0][2]}));
+  blade.position.set(.15,.22,0); axe.add(handle,blade); axe.userData.blade=blade; axe.position.y=3.7;
+  return axe;
+}
+const playerAxe=makeChopAxe(); playerAxe.visible=false; player.add(playerAxe);
+function updateChopWood(dt) {
+  const fighters=[{fighter:goldRushState,position:player.position,team:"a",mesh:player},...goldRushBots.map(bot=>({fighter:bot,position:bot.mesh.position,team:bot.team,mesh:bot.mesh}))];
+  for (const {fighter,position,team,mesh} of fighters) {
+    const target=chopWoodTrees[team==="a"?"b":"a"];
+    const damage=chopTree(fighter,position,target,dt);
+    const axe=mesh===player ? playerAxe : (mesh.userData.chopAxe ??= (()=>{const a=makeChopAxe();mesh.add(a);return a;})());
+    axe.userData.blade.material.color.setHex(AXES[fighter.axeLevel||0][2]);
+    if (fighter.axeLevel===9) axe.userData.blade.material.color.setHSL((clock.elapsedTime*.3)%1,.8,.6);
+    axe.rotation.z=fighter.chopTimer ? Math.sin(clock.elapsedTime*8)*.5 : 0;
+    if (damage) createDamagePopup(target.mesh.position,damage);
+  }
+  const a=chopWoodTrees.a.health,b=chopWoodTrees.b.health;
+  document.getElementById("chop-tree-health").textContent=`우리 나무 ${a}/100 · 상대 나무 ${b}/100`;
+  document.getElementById("chop-axe").textContent=`🪓 ${AXES[goldRushState.axeLevel||0][0]} 도끼 · 처치 ${goldRushState.chopKills||0} · 벌목 ${goldRushState.chopDamage||0}`;
+  document.getElementById("chop-progress").value=goldRushState.chopTimer||0;
+  goldRushTimerEl.textContent="시간 제한 없음";
+  goldRushRivalsEl.textContent="아군 3명 : 적 3명";
+  goldRushStatusEl.textContent=goldRushState.chopTimer ? "벌목 중..." : "상대 나무 가까이에서 2초마다 자동 벌목";
+  canvas.dataset.chopWoodTreeA=String(a); canvas.dataset.chopWoodTreeB=String(b);
+  for (const tree of Object.values(chopWoodTrees)) tree.mesh.scale.y=.8+tree.health/500;
+  if (a<=0 || b<=0) {
+    const stats=`처치 ${goldRushState.chopKills||0} · 벌목 피해 ${goldRushState.chopDamage||0} · 최고 ${AXES[goldRushState.maxAxeLevel||0][0]} 도끼`;
+    endGoldRush(`${b<=0 ? "나무를 파괴했습니다!" : "나무가 파괴되었습니다..."} · ${stats}`,b<=0);
+  }
+}
+
+const goldArena = new THREE.Group(); goldArena.visible=false; scene.add(goldArena);
+const goldArenaSolids=[];
+const goldFloor=new THREE.Mesh(new THREE.BoxGeometry(40,3,40),new THREE.MeshStandardMaterial({color:0x937448,roughness:.9}));
+goldFloor.position.y=.06; goldArena.add(goldFloor);
+goldArenaSolids.push({x:0,z:0,halfW:20,halfD:20,top:1.56,mesh:goldFloor});
+let activeEventLayout=null;
+function betaEventBushHidden(mesh,observer) {
+  return goldRushState.active && activeEventLayout?.bushes.some(r=>insideMapRect(mesh.position.x,mesh.position.z,r))
+    && clock.elapsedTime >= (mesh.userData.eventRevealedUntil ?? 0)
+    && Math.hypot(mesh.position.x-observer.x,mesh.position.z-observer.z)>3;
+}
+const eventArenaRecords=new Map();
+function prepareBetaEventMap(mode,plus) {
+  const key=plus ? "showdownPlus" : mode;
+  const group=({showdown:iceCreamShowdownMap,soccer:soccerArena,gemGrab:gemArena,chopWood:chopWoodArena,goldRush:goldArena})[mode];
+  const geometry=getArenaSolids();
+  let record=eventArenaRecords.get(group);
+  if(!record){
+    const half=mode==="chopWood" ? [15,30] : [20,20];
+    const walls=geometry.filter(s=>s.top>2 && Math.abs(s.x)<half[0]-1 && Math.abs(s.z)<half[1]-1);
+    geometry.filter(s=>s.top>2).forEach(s=>s.walkable=false);
+    record={walls,bushes:group.children.filter(m=>m.userData.eventBaseBush),overlay:new THREE.Group()};
+    group.add(record.overlay); eventArenaRecords.set(group,record);
+  }
+  const index=Number(document.getElementById("beta-event-map-variant").value);
+  geometry.splice(0,geometry.length,...geometry.filter(s=>!s.eventTerrain));
+  for(const m of record.overlay.children){m.userData.disposed=true;m.traverse(part=>{if(part.isInstancedMesh)part.dispose();});m.geometry?.dispose();m.material?.dispose();} record.overlay.clear();
+  for(const wall of record.walls){wall.mesh.visible=index===0;const i=geometry.indexOf(wall);if(index!==0 && i>=0)geometry.splice(i,1);else if(index===0 && i<0)geometry.push(wall);}
+  record.bushes.forEach(m=>m.visible=index===0);
+  const reserved=mode==="chopWood" ? [[0,-25,4],[0,25,4],...[-8,0,8].flatMap(x=>[[x,-28,2],[x,28,2]])]
+    : mode==="soccer" ? [[0,0,3],[-6,-12,2],[6,-12,2],[-7,12,2],[0,12,2],[7,12,2],[0,-14,2]]
+    : mode==="gemGrab" ? [[0,0,3],[-5,15,2],[5,15,2],[-6,-15,2],[0,-15,2],[6,-15,2],[0,15,2]]
+    : [[0,15,2],[0,0,3],...Array.from({length:9},(_,i)=>[Math.sin(i*Math.PI*2/9)*9,Math.cos(i*Math.PI*2/9)*9,1.4])];
+  activeEventLayout=eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:20,reserved);
+  const addWall=r=>{
+    const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));
+    m.userData.eventTerrain=true;m.position.set(r.x,2.86,r.z);m.castShadow=true;m.receiveShadow=true;record.overlay.add(m);
+    geometry.push({x:r.x,z:r.z,halfW:r.width/2,halfD:r.depth/2,top:4.16,walkable:false,eventTerrain:true,mesh:m});
+    applyBetaWallModel(m,r.width,2.6,r.depth,canvas);
+  };
+  activeEventLayout.walls.forEach(addWall);
+  if(mode==="goldRush") for(const r of [{x:-20.3,z:0,width:.6,depth:40.6},{x:20.3,z:0,width:.6,depth:40.6},{x:0,z:-20.3,width:40,depth:.6},{x:0,z:20.3,width:40,depth:.6}])addWall(r);
+  for(const r of activeEventLayout.lakes){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,.08,r.depth),new THREE.MeshStandardMaterial({color:0x279fc0,transparent:true,opacity:.85}));
+    m.position.set(r.x,1.65,r.z);record.overlay.add(m);
+    geometry.push({x:r.x,z:r.z,halfW:r.width/2,halfD:r.depth/2,top:1.65,walkable:false,eventTerrain:true,mesh:m});
+  }
+  for(const r of activeEventLayout.bushes){
+    const cols=Math.ceil(r.width/.8),rows=Math.ceil(r.depth/.8),m=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.65,0),new THREE.MeshStandardMaterial({color:0x3b7138,roughness:1}),cols*rows),matrix=new THREE.Matrix4();
+    let i=0;for(let x=0;x<cols;x++)for(let z=0;z<rows;z++){matrix.makeTranslation(r.x-r.width/2+(x+.5)*r.width/cols,2,r.z-r.depth/2+(z+.5)*r.depth/rows);m.setMatrixAt(i++,matrix);}m.castShadow=true;record.overlay.add(m);
+  }
+  // Include the original map walls in navigation without replacing their visuals.
+  if(index===0)activeEventLayout.walls=record.walls.map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2}));
+  if(index===0 && mode==="chopWood")activeEventLayout.bushes=[[-10,0],[10,0],[0,-10],[0,10]].map(([x,z])=>({x,z,width:2.4,depth:2.4}));
+  canvas.dataset.eventMap=activeEventLayout.id;canvas.dataset.eventMapWalls=String(activeEventLayout.walls.length);canvas.dataset.eventMapBushes=String(activeEventLayout.bushes.length);
+}
+
+function startGoldRush(mode = "goldRush", showdownPlus = false) {
   clearAzureWave();
   clearYellowCircuit();
   // 이전 경기의 공격이 새 경기에서 피해를 주거나 궁극기를 충전하지 않도록 정리한다.
@@ -7250,11 +7720,17 @@ function startGoldRush(mode = "goldRush") {
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
   setBetaMatchMusic(mode === "gemGrab" ? gemGrabBgm : null);
   goldRushState.mode = mode;
-  const arenaMode = mode === "showdown" || mode === "soccer" || mode === "gemGrab";
-  currentArenaMode = mode === "soccer" || mode === "gemGrab" ? mode : arenaMode ? "showdown" : "lobby";
+  goldRushState.showdownPlus = mode === "showdown" && showdownPlus;
+  const arenaMode = true;
+  currentArenaMode = mode;
+  prepareBetaEventMap(mode,showdownPlus);
+  goldArena.visible = mode === "goldRush";
   iceCreamShowdownMap.visible = mode === "showdown";
   soccerArena.visible = mode === "soccer";
   gemArena.visible = mode === "gemGrab";
+  chopWoodArena.visible = mode === "chopWood";
+  chopWoodHud.classList.toggle("hidden", mode !== "chopWood");
+  playerAxe.visible = mode === "chopWood";
   map.visible = !arenaMode;
   alphaBoss.visible = !arenaMode;
   for (const target of testTargets) if (!target.userData.goldRushBot) target.visible = !arenaMode;
@@ -7276,7 +7752,7 @@ function startGoldRush(mode = "goldRush") {
   goldRushState.reloadTimer = 0;
   goldRushState.reloadDuration = BETA_CHARACTERS[betaState.selectedCharacter]?.reloadDuration || 0.5;
   canvas.dataset.goldRushDroppedGoldTotal = "0";
-  initialSpawnPoint.set(0, 1.7, 15);
+  initialSpawnPoint.set(0, 1.7, mode === "chopWood" ? -28 : 15);
   resetPlayer();
   player.visible = true;
   playerGoldRushHealthBar.visible = true;
@@ -7289,10 +7765,23 @@ function startGoldRush(mode = "goldRush") {
   goldRushPlayerPanel.classList.remove("hidden");
   renderGoldRushAmmoFan(goldRushState.maxAmmo);
   respawnOverlay.classList.add("hidden");
-  goldRushToggle.textContent = mode === "gemGrab" ? "젬 그랩 재시작" : "골드 러쉬 재시작";
+  goldRushToggle.textContent = mode === "goldRush" ? "골드 러쉬 재시작" : "골드 러쉬 시작";
+  gemGrabToggle.textContent = mode === "gemGrab" ? "젬 그랩 재시작" : "젬 그랩 시작";
+  showdownToggle.textContent = mode === "showdown" && !showdownPlus ? "쇼다운 재시작" : "쇼다운 시작";
+  showdownPlusToggle.textContent = mode === "showdown" && showdownPlus ? "쇼다운+ 재시작" : "쇼다운+ 시작";
+  soccerToggle.textContent = mode === "soccer" ? "SOCCER KICK 재시작" : "SOCCER KICK 시작";
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
   createGoldRushBots();
-  if (mode === "soccer") {
+  if (mode === "chopWood") {
+    for (const tree of Object.values(chopWoodTrees)) { tree.health = 100; tree.mesh.scale.setScalar(1); }
+    [goldRushState, ...goldRushBots].forEach(fighter => { resetAxe(fighter); fighter.chopDamage = 0; fighter.chopKills = 0; fighter.maxAxeLevel = 0; });
+    const spawns = [[-8,-28],[8,-28],[-8,28],[0,28],[8,28]];
+    goldRushBots.forEach((bot,i) => { bot.spawn.set(spawns[i][0],1.55,spawns[i][1]); bot.mesh.position.copy(bot.spawn); bot.combatActor.x = bot.spawn.x; bot.combatActor.z = bot.spawn.z; });
+    goldRushHud.querySelector("strong").textContent = "CHOP WOOD · 3v3";
+    goldCountEl.parentElement.style.display = "none";
+    canvas.dataset.betaMode = "chop-wood";
+    updateChopWood(0);
+  } else if (mode === "soccer") {
     soccerState.scoreA = 0; soccerState.scoreB = 0; soccerState.overtime = false;
     soccerState.lastKick = "a"; soccerState.lastKicker = "bot"; soccerState.playerKickReadyAt = 0;
     resetSoccerBall();
@@ -7309,13 +7798,12 @@ function startGoldRush(mode = "goldRush") {
     soccerToggle.textContent = "SOCCER KICK 재시작";
     canvas.dataset.betaMode = "soccer-kick";
   } else if (mode === "showdown") {
-    goldRushHud.querySelector("strong").textContent = IS_BETA5_TEST ? "SHOWDOWN+" : IS_BETA7_TEST ? "ROYAL TOMB SHOWDOWN" : "ICE CREAM SHOWDOWN";
+    goldRushHud.querySelector("strong").textContent = goldRushState.showdownPlus ? "SHOWDOWN+" : IS_BETA7_TEST ? "ROYAL TOMB SHOWDOWN" : "ICE CREAM SHOWDOWN";
     goldCountEl.parentElement.style.display = "none";
-    goldRushTimerEl.textContent = IS_BETA5_TEST ? "처치 0" : "생존";
+    goldRushTimerEl.textContent = goldRushState.showdownPlus ? "처치 0" : "생존";
     goldRushRivalsEl.textContent = "10명 생존";
-    goldRushStatusEl.textContent = IS_BETA5_TEST ? `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존` : "마지막 1명까지 살아남으세요";
-    showdownToggle.textContent = "쇼다운 재시작";
-    canvas.dataset.betaMode = IS_BETA7_TEST ? "royal-tomb-showdown" : "ice-cream-showdown";
+    goldRushStatusEl.textContent = goldRushState.showdownPlus ? `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존` : "마지막 1명까지 살아남으세요";
+    canvas.dataset.betaMode = goldRushState.showdownPlus ? "showdown-plus" : IS_BETA7_TEST ? "royal-tomb-showdown" : "ice-cream-showdown";
   } else if (mode === "gemGrab") {
     gemGrabState.nextGemAt = clock.elapsedTime + GEM_FIRST_SPAWN_DELAY;
     gemGrabState.escapeA = null;
@@ -7354,6 +7842,7 @@ function killGoldRushPlayer() {
   goldRushState.health = 0;
   goldRushState.dead = true;
   goldRushState.respawnAt = clock.elapsedTime + 5;
+  if (goldRushState.mode === "chopWood") resetAxe(goldRushState);
   player.visible = false;
   playerGoldRushHealthBar.visible = false;
   respawnOverlay.classList.remove("hidden");
@@ -7414,7 +7903,7 @@ function updateGoldRush(dt) {
     }
   }
   // 한 발만 써도 곧바로 채워진다. 공격 쿨다운과 무관하게 진행한다.
-  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(HAS_BETA6_CONTENT && beta6Combat)) {
+  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(beta6Combat)) {
     goldRushState.reloadTimer += dt;
     let reloaded = false;
     while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
@@ -7428,12 +7917,13 @@ function updateGoldRush(dt) {
   }
   updateGoldRushBots(dt);
   if (!goldRushState.active || goldRushState.ended) return;
+  if (goldRushState.mode === "chopWood") { updateChopWood(dt); return; }
   if (goldRushState.mode === "soccer") { updateSoccer(dt); return; }
   if (goldRushState.mode === "gemGrab") { updateGemGrab(dt); return; }
   if (goldRushState.mode === "showdown") {
     const survivors = goldRushBots.filter((bot) => !bot.dead).length + (goldRushState.dead ? 0 : 1);
     goldRushRivalsEl.textContent = `${survivors}명 생존`;
-    if (IS_BETA5_TEST) {
+    if (goldRushState.showdownPlus) {
       goldRushTimerEl.textContent = `처치 ${goldRushState.kills}`;
       goldRushStatusEl.textContent = `처치 1회당 🏆+${SHOWDOWN_PLUS_KILL_SCORE} · 마지막 1명까지 생존`;
     } else {
@@ -7654,14 +8144,16 @@ canvas.addEventListener("wheel", (event) => {
   distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 3.5, 24);
 }, { passive: true });
 
-function resetPlayer() { clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
+function resetPlayer() { clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", resetPlayer);
-goldRushToggle.addEventListener("click", () => startGoldRush(IS_BETA7_TEST ? "gemGrab" : "goldRush"));
+goldRushToggle.addEventListener("click", () => startGoldRush("goldRush"));
+gemGrabToggle.addEventListener("click", () => startGoldRush("gemGrab"));
+showdownPlusToggle.addEventListener("click", () => startGoldRush("showdown", true));
 showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
-soccerToggle?.addEventListener("click", () => { if (IS_BETA6_TEST) startGoldRush("soccer"); else showToast("베타 시즌 6 전용 모드입니다."); });
-chopWoodOpen.addEventListener("click", () => chopWoodEmbed.classList.remove("hidden"));
-chopWoodClose.addEventListener("click", () => chopWoodEmbed.classList.add("hidden"));
+soccerToggle?.addEventListener("click", () => startGoldRush("soccer"));
+chopWoodOpen.addEventListener("click", () => startGoldRush("chopWood"));
+chopWoodClose.addEventListener("click", () => endGoldRush("찹 우드 종료", false, null, true));
 document.getElementById("test-death-btn").addEventListener("click", () => {
   if (betaState.selectedCharacter === "pink") {
     let marked = 0;
@@ -7695,15 +8187,19 @@ document.getElementById("overview-btn").addEventListener("click", (event) => {
 });
 
 function groundHeightAt(x, z) {
+  if(currentArenaMode === "lobby" && lobbyStairAt(x,z))return lobbyFloorHeight(x,z);
   let best = -20;
   const arenaSolids = getArenaSolids();
   for (const solid of arenaSolids) {
+    if (solid.walkable === false) continue;
     if (Math.abs(x - solid.x) <= solid.halfW && Math.abs(z - solid.z) <= solid.halfD) best = Math.max(best, solid.top);
   }
   return best;
 }
 
 function updateLocation() {
+  if(currentArenaMode!=="lobby" && activeEventLayout){locationName.textContent=activeEventLayout.name;return;}
+  if (currentArenaMode === "chopWood") { locationName.textContent = "찹 우드 · 톱밥 숲"; return; }
   if (currentArenaMode === "soccer") {
     locationName.textContent = "사커 경기장";
     return;
@@ -7743,6 +8239,7 @@ slowmoButton.addEventListener("click", () => {
 function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
+  updateLavenderPractice(dt);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   if (redGuardMesh) {
     if (clock.elapsedTime >= redGuardUntil) {
@@ -7842,21 +8339,21 @@ function animate() {
         projectile.mesh.rotation.x += dt * 6;
       }
     }
-    if (projectile.goldStage && solids.some((solid) =>
+    if (projectile.goldStage && getArenaSolids().some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
       && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
       && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
       remove = true;
       shouldSplitGold = projectile.goldStage < 3;
     }
-    if (projectile.crystalStage && solids.some((solid) =>
+    if (projectile.crystalStage && getArenaSolids().some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
       && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
       && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
       remove = true;
       shouldSplitCrystal = projectile.crystalStage < 3;
     }
-    if ((projectile.type === "orangeFruit" || projectile.type === "orangeJuice") && solids.some((solid) =>
+    if ((projectile.type === "orangeFruit" || projectile.type === "orangeJuice") && getArenaSolids().some((solid) =>
       solid.top >= projectile.mesh.position.y - projectile.hitRadius
       && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
       && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) {
@@ -8196,7 +8693,7 @@ function animate() {
     if (clock.elapsedTime >= zone.nextTickAt && zone.nextTickAt <= zone.expiresAt) {
       zone.nextTickAt += BETA_CHARACTERS.ivory.iceCreamZoneTickInterval;
       for (const target of testTargets) {
-        if (!target.visible || target.userData.isAlly) continue;
+        if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
         if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) dueIvoryZoneTargets.add(target);
       }
     }
@@ -8230,7 +8727,7 @@ function animate() {
     const currentSlideSpeed = zone.slideStrength + zone.slideAcceleration * slideElapsed;
     canvas.dataset.mintSlideSpeed = currentSlideSpeed.toFixed(2);
     for (const target of testTargets) {
-      if (!target.visible || target.userData.isAlly) continue;
+      if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
       const dx = target.position.x - zone.x;
       const dz = target.position.z - zone.z;
       const distance = Math.hypot(dx, dz);
@@ -8256,7 +8753,7 @@ function animate() {
       effect.activated = true;
       const def = BETA_CHARACTERS.yellow.ultimate;
       for (const target of testTargets) {
-        if (!target.visible || target.userData.isAlly) continue;
+        if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
         if (distanceToSegment(target.position.x, target.position.z,
           effect.a.x, effect.a.z, effect.b.x, effect.b.z) > def.connectionRadius + 0.85) continue;
         damageTarget(target, def.connectionDamage);
@@ -8295,7 +8792,7 @@ function animate() {
       continue;
     }
     for (const target of testTargets) {
-      if (!target.visible || target.userData.isAlly) continue;
+      if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
       if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) {
         target.userData.inMalfunctionZone = true;
         target.userData.malfunctionUntil = clock.elapsedTime + 0.1;
@@ -8441,6 +8938,7 @@ function animate() {
     updateModelAttackMotion(dt);
   }
   updateHeadAttachedSkinAccessory();
+  if (!purpleJumping) keepPlayerInsideLobby();
   const ground = groundHeightAt(player.position.x, player.position.z);
   if (!purpleJumping) {
     if (ground < -5) resetPlayer();
@@ -8459,7 +8957,7 @@ function animate() {
     updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
   }
 
-  portal.rotation.y += dt * 0.65;
+
   for (const device of yellowCircuitDevices) updateYellowCircuitDeviceMesh(device.mesh, clock.elapsedTime);
   for (const object of beta6CombatVisuals.values()) {
     if (object.name === "YellowCircuitDevice") updateYellowCircuitDeviceMesh(object, clock.elapsedTime);
@@ -8560,4 +9058,9 @@ function resize() {
 addEventListener("resize", resize);
 resize();
 resetTestCombatHud();
+// Keep the match HUD below the menu when regular event buttons wrap.
+const betaHeader = document.querySelector(".beta-header");
+new ResizeObserver(() => {
+  document.documentElement.style.setProperty("--beta-header-bottom", `${betaHeader.getBoundingClientRect().bottom + 12}px`);
+}).observe(betaHeader);
 animate();

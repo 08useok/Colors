@@ -1,8 +1,6 @@
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-const PROJECTILE_SIZE = 5;
-const PROJECTILE_HALF_SIZE = PROJECTILE_SIZE / 2;
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
   const dx = b.x - a.x, dz = b.z - a.z;
@@ -16,7 +14,7 @@ export function createBeta6Combat(definitions, options = {}) {
   const emit = (type, data) => options.onEvent?.({ type, time, ...data });
   const enemies = (a, b) => a !== b && (a.team == null || b.team !== a.team);
   const alive = a => a.hp > 0;
-  const hidden = a => time < a.hiddenUntil && time >= a.revealedUntil && distance(a, a.bush || a) <= (a.u?.radius ?? 0);
+  const hidden = (a,observer) => time >= a.revealedUntil && ((time < a.hiddenUntil && distance(a, a.bush || a) <= (a.u?.radius ?? 0)) || (observer && options.bushAt?.(a.x,a.z) && distance(a,observer)>3));
   const blocked = (x, z, radius = .55) => options.blocked?.(x, z, radius) ?? false;
   function move(a, x, z) {
     const bounds = options.bounds ?? 24;
@@ -69,8 +67,11 @@ export function createBeta6Combat(definitions, options = {}) {
     const projectile = { key: ++serial, owner: a, x: a.x + Math.cos(yaw) * spawn, z: a.z + Math.sin(yaw) * spawn,
       origin: { x: a.x, z: a.z }, yaw, speed, reach, traveled: 0, damage, radius: .2, hits: new Set(), start: time,
       ultimate: false, kind: 'bullet', ...extra };
-    projectile.radius = (a.d.projectileSize ?? PROJECTILE_SIZE) / 2;
-    if (projectile.kind === 'wave') projectile.width = Math.max(PROJECTILE_SIZE, projectile.width ?? 0);
+    // Preserve the authored radius of peels, fragments and boomerangs.
+    // Character size overrides apply only to ordinary bullets.
+    if (a.d.projectileSize != null && ['bullet', 'enhanced', 'cc', 'plague'].includes(projectile.kind)) {
+      projectile.radius = a.d.projectileSize / 2;
+    }
     projectiles.push(projectile);
     for (const b of actors) if (!['wave', 'gale'].includes(projectile.kind) && b.automatic && b.d.projectileDodgeDuration && enemies(a, b)
       && distance(a, b) <= (b.d.projectileDodgeDetectionRange ?? 20)) {
@@ -98,7 +99,10 @@ export function createBeta6Combat(definitions, options = {}) {
     a.angle = yaw; a.ammo--; a.next = time + d.attackCooldown; a.combatAt = time; a.revealedUntil = time + 3; a.attackCount++;
     emit('attack', { owner: a, target, kind: id });
     const launch = (v, reach, amount, extra = {}, angle = yaw) => shot(a, angle, v, reach, amount, extra);
-    if (id === 'red' || id === 'crimson') for (let i = 0; i < d.attackCount; i++) after(i * d.attackIntervalMs / 1000, a, () => {
+    if (id === 'lavender') {
+      zones.push({ key: ++serial, owner: a, kind: 'perfumeSpray', x: a.x, z: a.z, yaw, radius: d.attackRange,
+        halfAngle: d.sprayAngle / 2, until: time + d.sprayDuration, next: time, tickInterval: d.sprayTickInterval, damage: d.sprayDamage });
+    } else if (id === 'red' || id === 'crimson') for (let i = 0; i < d.attackCount; i++) after(i * d.attackIntervalMs / 1000, a, () => {
       if (time < a.lockUntil || time < a.frozenUntil) return;
       for (const b of actors.filter(b => enemies(a, b))) strike(a, b, yaw + (d.attackAngles?.[i] ?? 0), d.attackRange, d.attackHalfAngle, d.attackDamages?.[i] ?? d.attackDamage);
     });
@@ -141,7 +145,7 @@ export function createBeta6Combat(definitions, options = {}) {
       a.charge = 0;
       for (const b of allies) { if (!alive(b)) revive(b, a); else { b.encoreUntil = time + 12; b.encoreOwner = a; } }
     } else {
-      if (!target || !alive(target) || hidden(target)) return false;
+      if (!target || !alive(target) || hidden(target,a)) return false;
       const point = aim.point ?? target;
       const dist = distance(a, point);
       let yaw = aim.angle ?? Math.atan2(point.z - a.z, point.x - a.x);
@@ -159,7 +163,9 @@ export function createBeta6Combat(definitions, options = {}) {
       a.charge = 0;
       if (a.id === 'blue' && a.automatic && a.d.dashAwayFromTarget) yaw += Math.PI;
       a.angle = yaw;
-      if (a.id === 'red') a.guardUntil = time + u.duration;
+      if (a.id === 'lavender') zones.push({ key: ++serial, owner: a, kind: 'fragrance', x: a.x, z: a.z,
+        radius: u.radius, until: time + u.duration, next: time, tickInterval: u.tickInterval });
+      else if (a.id === 'red') a.guardUntil = time + u.duration;
       else if (a.id === 'green') { a.hiddenUntil = time + u.duration; a.revealedUntil = 0; a.bush = { x: a.x, z: a.z }; }
       else if (a.id === 'blue') {
         a.dash = { yaw, until: time + u.duration, hits: new Set() };
@@ -286,7 +292,8 @@ export function createBeta6Combat(definitions, options = {}) {
         a.vz = (a.z - previousZ) / dt;
         continue;
       }
-      const target = actors.filter(b => alive(b) && enemies(a, b) && !hidden(b)).sort((b, c) => distance(a, b) - distance(a, c))[0];
+      const opponents=actors.filter(b=>alive(b)&&enemies(a,b)).sort((b,c)=>distance(a,b)-distance(a,c));
+      const target=opponents.find(b=>!hidden(b,a)) ?? opponents[0];
       a.target = target;
       if (a.automatic) cast(a, target);
       if (a.leap) continue;
@@ -312,7 +319,7 @@ export function createBeta6Combat(definitions, options = {}) {
         yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
       }
       const ideal = destination !== target ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
-      const retreatsAtLowHealth = a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth;
+      const retreatsAtLowHealth = options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth);
       const usesRangeBand = destination === target && Number.isFinite(a.d.attackPerceptionMinRange);
       const radial = retreatsAtLowHealth ? -.85 : usesRangeBand
         ? (dist > perceivedRange(a) ? .85 : dist < a.d.attackPerceptionMinRange ? -.85 : 0)
@@ -327,7 +334,7 @@ export function createBeta6Combat(definitions, options = {}) {
         a.z + (dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;
       const attackDistance = destination === target ? dist : distance(a, target);
-      if (!(hidden(a) && a.ammo < (a.d.maxAmmo ?? 3)) && attackDistance <= perceivedRange(a) * (a.id === 'azure' ? (a.d.botFireRangeFactor ?? 1) : 1)) fire(a, target);
+      if (!(hidden(a) && a.ammo < (a.d.maxAmmo ?? 3)) && !hidden(target,a) && attackDistance <= perceivedRange(a) * (a.id === 'azure' ? (a.d.botFireRangeFactor ?? 1) : 1)) fire(a, target);
     }
     for (const a of actors) if (a.dash) {
       const dash = a.dash;
@@ -398,16 +405,32 @@ export function createBeta6Combat(definitions, options = {}) {
     }
     for (let i = zones.length - 1; i >= 0; i--) {
       const zone = zones[i], a = zone.owner;
-      if (time >= zone.until) { zones.splice(i, 1); continue; }
+      if (time + 1e-9 >= zone.until) { zones.splice(i, 1); continue; }
       const center = zone.kind === 'lock' ? a : zone;
       for (const b of actors) if (alive(b) && enemies(a, b) && distance(center, b) <= zone.radius) {
+        if (zone.kind === 'perfumeSpray') {
+          const yaw = Math.atan2(b.z - zone.z, b.x - zone.x);
+          if (Math.abs(Math.atan2(Math.sin(yaw - zone.yaw), Math.cos(yaw - zone.yaw))) > zone.halfAngle) continue;
+          const length = distance(zone, b);
+          let occluded = false;
+          for (let step = .25; step < length; step += .25) {
+            if (blocked(zone.x + Math.cos(yaw) * step, zone.z + Math.sin(yaw) * step, .1)) { occluded = true; break; }
+          }
+          if (!occluded && time + 1e-9 >= zone.next) hit(a, b, zone.damage, true);
+        }
+        if (zone.kind === 'fragrance') {
+          const previousSlow = time < b.slowUntil ? b.slow : 0;
+          b.slowUntil = Math.max(b.slowUntil, time + .05);
+          b.slow = Math.max(previousSlow, a.u.slowPercent);
+          if (time + 1e-9 >= zone.next) hit(a, b, a.u.damagePerSecond, true);
+        }
         if (zone.kind === 'lock' && alive(a)) { b.lockUntil = time + .05; b.slowUntil = time + .05; b.slow = .5; }
         if (zone.kind === 'mint') { if (time >= zone.next) { hit(a, b, a.u.damagePerSecond, true); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
         if (zone.kind === 'ivory') {
           if (time >= zone.next && time >= b.zoneNext) { hit(a, b, a.d.iceCreamDamage, true); b.zoneNext = time + a.d.iceCreamZoneTickInterval; }
         }
       }
-      if (time >= zone.next) zone.next = time + (zone.kind === 'ivory' ? a.d.iceCreamZoneTickInterval : 1);
+      if (time + 1e-9 >= zone.next) zone.next += zone.tickInterval ?? (zone.kind === 'ivory' ? a.d.iceCreamZoneTickInterval : 1);
     }
   }
   return { actors, projectiles, zones, add, fire, cast, hit, hidden, range, get time() { return time; },

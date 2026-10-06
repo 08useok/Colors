@@ -61,10 +61,11 @@ export class ColorsServer extends Server {
     const previousMatchId = this.playerMatch.get(player.id);
     if (previousMatchId) this.leaveMatch(player.id, previousMatchId);
 
+    const requestedMap = Number.isInteger(data.mapId) && data.mapId >= 0 && data.mapId < 3 ? data.mapId : 0;
     const roomMax = player.mode === "soccer" ? SOCCER_ROOM_MAX : ROOM_MAX;
-    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.playerIds.length < roomMax);
+    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.mapId === requestedMap && item.playerIds.length < roomMax);
     if (!match) {
-      const currentMapId = Math.floor(Date.now() / 86400000) % 3;
+      const currentMapId = requestedMap;
       match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: currentMapId, playerIds: [], started: false, countdownTimer: null };
       this.matches.set(match.id, match);
     }

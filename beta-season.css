@@ -49,9 +49,9 @@
   .beta5-loading-screen > img { object-position: 52% center; }
   .beta5-loading-status { bottom: max(20px, env(safe-area-inset-bottom)); }
 }
-.chop-wood-embed { position: fixed; inset: 0; z-index: 100; background: #07131c; }
-.chop-wood-embed iframe { width: 100%; height: 100%; border: 0; }
-.chop-wood-close { position: absolute; top: 14px; right: 18px; z-index: 2; padding: 10px 14px; border: 1px solid rgba(255,255,255,.35); border-radius: 10px; color: #fff; background: rgba(7,19,28,.86); font-weight: 800; cursor: pointer; }
+.chop-wood-hud { position: fixed; top: 175px; left: 20px; z-index: 20; padding: 12px; max-width: calc(100vw - 40px); background: #152b20e8; border-radius: 12px; color: white; }
+.chop-wood-hud progress { width: 160px; accent-color: #66d879; }
+.chop-wood-hud button { padding: 7px 10px; border: 1px solid #ffffff55; border-radius: 8px; background: #ffffff20; color: white; cursor: pointer; }
 html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 body.beta-season-5-theme { background: linear-gradient(180deg, #86ddff 0%, #d6f7ff 48%, #ffe0ec 100%); }
 body.beta-season-5-theme .beta-header,
@@ -181,7 +181,10 @@ button { text-align: center; }
   border: 0;
   cursor: pointer;
 }
-.beta-nav { display: flex; align-items: center; gap: 7px; }
+.beta-header { gap: 16px; }
+.beta-header > div { flex: 0 0 270px; }
+.beta-nav { display: flex; flex: 1; min-width: 0; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 7px; }
+.beta-nav button, .beta-nav a { flex-shrink: 0; white-space: nowrap; }
 
 .test-chip {
   padding: 5px 8px;
@@ -543,7 +546,8 @@ body.beta-season-7-theme.temple-countdown-final::after{content:"";position:fixed
 @keyframes order-ready-pulse { to { transform:scale(1.09); box-shadow:0 0 20px rgba(79,226,105,.8); } }
 
 @media (max-width: 640px) {
-  .beta-header { align-items: flex-start; gap: 8px; }
+  .beta-header { align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+  .beta-header > div { flex: 1 1 100%; }
   .beta-header p { display: none; }
   .beta-header h1 { font-size: 15px; }
   .beta-nav { flex-wrap: wrap; justify-content: flex-end; }
@@ -558,3 +562,9 @@ body.beta-season-7-theme.temple-countdown-final::after{content:"";position:fixed
   .gold-rush-player-panel { left: 18px; bottom: 184px; width: 230px; }
   .daily-reward-star { width: 130px; height: 130px; font-size: 112px; }
 }
+
+.beta-wallet, .gold-rush-hud { top: var(--beta-header-bottom, 148px); }
+.chop-wood-hud { top: calc(var(--beta-header-bottom, 148px) + 65px); }
+
+.beta-nav label { display:flex; align-items:center; gap:6px; color:#fff1b5; white-space:nowrap; }
+.beta-nav select { max-width:180px; padding:8px; border:1px solid #a68452; border-radius:8px; background:#57391f; color:#fff1b5; }

@@ -48,6 +48,7 @@ function startCountdown(room, duration = COUNTDOWN_SEC, restart = false) {
       roomBroadcast(room, {
         type: "GAME_START",
         mode: room.mode,
+        mapId: room.mapId,
         hostId,
         players: room.playerIds.map((pid) => ({
           id: pid,
@@ -83,17 +84,18 @@ wss.on("connection", (ws) => {
     if (msg.type === "JOIN_QUEUE") {
       player.nickname = msg.nickname || "플레이어";
       player.charType = msg.charType || "red";
-      player.mode = ["showdown", "takedown", "chopwood"].includes(msg.mode) ? msg.mode : "takedown";
+      player.mode = ["showdown", "takedown", "chopwood", "soccer"].includes(msg.mode) ? msg.mode : "takedown";
       player.newAbilityChars = Array.isArray(msg.newAbilityChars)
         ? [...new Set(msg.newAbilityChars.filter((charType) => ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"].includes(charType)))]
         : [];
 
+      const mapId = Number.isInteger(msg.mapId) && msg.mapId >= 0 && msg.mapId < 3 ? msg.mapId : 0;
       let room = Object.values(rooms).find(
-        (r) => !r.started && r.mode === player.mode && r.playerIds.length < ROOM_MAX
+        (r) => !r.started && r.mode === player.mode && r.mapId === mapId && r.playerIds.length < ROOM_MAX
       );
       if (!room) {
         const rid = `r${nextId++}`;
-        room = { id: rid, mode: player.mode, playerIds: [], started: false, countdownTimer: null };
+        room = { id: rid, mode: player.mode, mapId, playerIds: [], started: false, countdownTimer: null };
         rooms[rid] = room;
       }
 
