@@ -6,7 +6,7 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.153";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.7.0.1";
+import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.1";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
 import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=1";
@@ -356,7 +356,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.1" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -371,6 +371,8 @@ document.body.dataset.season=CURRENT_SEASON;
 if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
   const releaseStats = CURRENT_SEASON === "beta7" ? applyBeta7Balance(BETA_CHARACTERS) : applyBeta6Balance(BETA_CHARACTERS);
   for (const [id, stats] of Object.entries(releaseStats)) {
+    // 라벤더는 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.
+    if (id === "lavender") continue;
     const current = CHARACTERS[id] || {};
     const merged = { ...current, ...stats, color: current.color ?? ({ azure: 0x007fff, crystal: 0x6ee7ff, lavender: 0xb48be8 }[id] ?? 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
     // 베타 궁극기 객체에는 이름·설명만 있는 경우가 있어 통째로 덮으면 피해·범위·충전량이 사라진다(NaN 판정).
@@ -411,7 +413,7 @@ const SEASONS = {
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set([...(CURRENT_SEASON === "beta7" ? ["orange", "purple", "crystal", "lavender"] : []),"red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
+const ULTIMATE_CHARACTERS = new Set([...(CURRENT_SEASON === "beta7" ? ["orange", "purple", "crystal"] : []),"red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
@@ -1103,6 +1105,10 @@ function loadAccount() {
       }
     }
     let migrated = false;
+    if (!ROSTER.includes(account.selectedCharacter)) {
+      account.selectedCharacter = "red";
+      migrated = true;
+    }
     if (!account.charStats) {
       account.charStats = createCharacterStats();
       migrated = true;

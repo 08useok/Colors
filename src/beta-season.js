@@ -25,7 +25,7 @@ const betaSearchParams = new URLSearchParams(location.search);
 const requestedBetaSeason = betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta7";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
-const BETA_CHARACTERS = BETA_SEASON_ID === "beta7" ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
+const BETA_CHARACTERS = ["beta7", "beta8"].includes(BETA_SEASON_ID) ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
 if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
@@ -287,8 +287,8 @@ const CHARACTERS = [
   { id: "chartreuse", name: "Chartreuse", rarity: "hero", price: 900, color: 0xc1f80a },
   ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
   ...(HAS_BETA6_CONTENT ? [{ id: "azure", name: "Azure", rarity: "hero", price: 0, color: 0x007fff }] : []),
-  ...(IS_BETA7_TEST ? [{ id: "crystal", name: "Crystal", rarity: "hero", price: 0, color: 0x6ee7ff }] : []),
-  ...((IS_BETA7_TEST || IS_BETA8_TEST) ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }] : []),
+  ...((IS_BETA7_TEST || IS_BETA8_TEST) ? [{ id: "crystal", name: "Crystal", rarity: "hero", price: 0, color: 0x6ee7ff }] : []),
+  ...(IS_BETA8_TEST ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
@@ -377,19 +377,20 @@ function loadBetaState() {
   }
   const ownedSkins = [...new Set((saved.ownedSkins || []).map(migrateSkinId))]
     .filter((skinId) => Boolean(SKINS[skinId]));
-  const selectedCharacter = saved.selectedCharacter || "red";
-  const characterTrophies = Object.fromEntries(CHARACTERS.map((character) => [
+  const recordedCharacter = saved.selectedCharacter || "red";
+  const selectedCharacter = CHARACTERS.some((character) => character.id === recordedCharacter) ? recordedCharacter : "red";
+  const characterTrophies = { ...saved.characterTrophies, ...Object.fromEntries(CHARACTERS.map((character) => [
     character.id,
     Math.max(0, Math.floor(Number(saved.characterTrophies?.[character.id]) || 0)),
-  ]));
-  const characterShowdownWins = Object.fromEntries(CHARACTERS.map((character) => [
+  ])) };
+  const characterShowdownWins = { ...saved.characterShowdownWins, ...Object.fromEntries(CHARACTERS.map((character) => [
     character.id,
     Math.max(0, Math.floor(Number(saved.characterShowdownWins?.[character.id]) || 0)),
-  ]));
-  const characterShowdownKills = Object.fromEntries(CHARACTERS.map((character) => [
+  ])) };
+  const characterShowdownKills = { ...saved.characterShowdownKills, ...Object.fromEntries(CHARACTERS.map((character) => [
     character.id,
     Math.max(0, Math.floor(Number(saved.characterShowdownKills?.[character.id]) || 0)),
-  ]));
+  ])) };
   const existingShowdownWins = Math.max(0, Math.floor(Number(saved.oneVsOne?.wins) || 0));
   if (!saved.characterTrophyRankMigration) {
     characterShowdownWins[selectedCharacter] += existingShowdownWins;
@@ -438,7 +439,7 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...(IS_BETA7_TEST ? ["crystal"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["lavender"] : [])]) {
+  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []), ...(IS_BETA8_TEST ? ["lavender"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
   }
   // 시즌 6 바다 소품은 아직 정식 획득 조건이 없어 베타 테스트에서는 바로 보유시킨다.
@@ -2098,11 +2099,12 @@ function updateCrimsonControls() {
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["blue"] : []),
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []),
     ...(HAS_BETA6_CONTENT ? ["azure", "yellow"] : []),
-    ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple", "lavender"] : []),
-    ...(IS_BETA7_TEST ? ["crystal"] : []),
+    ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple"] : []),
+    ...(IS_BETA8_TEST ? ["lavender"] : []),
+    ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["orange"] : []),
   ];
-  const seasonUltimates = IS_BETA7_TEST ? ["crystal"] : [];
+  const seasonUltimates = (IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : [];
   const hideUltimate = !["red", "crimson", "cyan", "pink", "gold", "ivory", "green", "chartreuse", ...seasonUltimates, ...specialCharacters].includes(betaState.selectedCharacter);
   ultimateButton.classList.toggle("hidden", hideUltimate);
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
@@ -2360,7 +2362,7 @@ function renderAssetShowroom() {
       <span class="rarity ${character.rarity}">${usesFbx ? "NEW · FBX PREVIEW" : usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
       <p>${character.id === "lavender" ? "라벤더 · Violet Bloom 모델링" : character.id === "crystal" ? "크리스탈 · 시즌 미정 개발 중 걷기 프리뷰" : usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>${character.id === "lavender" ? "달리기 애니메이션 · 베타 시즌 7·8 전투 테스트" : character.id === "crystal" ? "단일 걷기 애니메이션 · 프리뷰 전용" : usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
+      <p>${character.id === "lavender" ? "시즌 8 출시 · 달리기 애니메이션 · 시즌 8에서 전투 테스트" : character.id === "crystal" ? "단일 걷기 애니메이션 · 프리뷰 전용" : usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
       <code>${modelPath}</code>
       ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${character.id === "lavender" ? "라벤더 프리뷰" : character.id === "crystal" ? "크리스탈 프리뷰" : usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
     </article>`;
@@ -5289,7 +5291,7 @@ ultimateButton.addEventListener("click", () => {
     updateCrimsonUltimateGauge();
     return;
   }
-  if (betaState.selectedCharacter === "crystal" && IS_BETA7_TEST) {
+  if (betaState.selectedCharacter === "crystal" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
     const def = BETA_CHARACTERS.crystal.ultimate;
     if (crystalUltimateCharge < def.chargeRequired || crystalUltimateBusy()) return;
     crystalUltimateCharge = 0;
