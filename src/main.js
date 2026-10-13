@@ -1,3 +1,5 @@
+import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
+import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
 import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
 import * as THREE from "three";
@@ -7,9 +9,9 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.153";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.1";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=1";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=2";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=1";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
@@ -356,7 +358,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.1" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.2" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -6434,6 +6436,7 @@ function setupMpHandlers() {
     if (CURRENT_SEASON === "beta7" && ["S7_ULTIMATE","S7_ATTACK"].includes(msg.relayType)) {
       const f=msg.id==null?mpNetFighters[msg.fromId]:state.players.find(f=>(f.syncId??f.id)===msg.id);
       if(!f||!Number.isFinite(msg.yaw))return; f.yaw=msg.yaw;
+      f.seasonAimPoint=Number.isFinite(msg.aimX)&&Number.isFinite(msg.aimZ)?{x:msg.aimX,z:msg.aimZ}:null;
       if(msg.relayType==="S7_ULTIMATE")getSeasonCombat().cast(f,true);else getSeasonCombat().fire(f,true);return;
     }
     if (msg.relayType === "PSTATE") {
@@ -6760,7 +6763,7 @@ function updateNetworkPlayers(dt) {
 }
 
 function playNetworkAttack(fighter, msg) {
-  if (CURRENT_SEASON === "beta7") {if(Number.isFinite(msg.yaw)){fighter.yaw=msg.yaw;getSeasonCombat().fire(fighter,true);}return;}
+  if (CURRENT_SEASON === "beta7") {if(Number.isFinite(msg.yaw)){fighter.yaw=msg.yaw;fighter.seasonAimPoint=Number.isFinite(msg.aimX)&&Number.isFinite(msg.aimZ)?{x:msg.aimX,z:msg.aimZ}:null;getSeasonCombat().fire(fighter,true);}return;}
   if (fighter.dead || !Number.isFinite(msg.yaw)) return;
   fighter.yaw = msg.yaw;
   fighter.netTargetYaw = msg.yaw;
@@ -9083,6 +9086,7 @@ function beginAttack(fighter) {
     mp.relay("ATTACK", {
       yaw: fighter.yaw,
       attackIndex: fighter.attackIndex ?? 0,
+      ...(CURRENT_SEASON === "beta7" ? {aimX:mouseAimWorld.x,aimZ:mouseAimWorld.z} : {}),
     });
   }
   return started;
@@ -10402,7 +10406,7 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (CURRENT_SEASON === "beta7") {
     if(fighter.dead||state.gameTime<state.freezeUntil)return false;
     const used = getSeasonCombat().cast(fighter);
-    if (used && fighter.isPlayer && mpConfig) mp.relay("S7_ULTIMATE", {yaw:fighter.yaw});
+    if (used && fighter.isPlayer && mpConfig) mp.relay("S7_ULTIMATE", {yaw:fighter.yaw,aimX:mouseAimWorld.x,aimZ:mouseAimWorld.z});
     return used;
   }
   if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return false;
@@ -11851,7 +11855,7 @@ function updatePlayerControls(dt) {
     }
   }
 
-  if (autoTarget) {
+  if (autoTarget && !state.ultimateAiming) {
     // 타겟 발견 → 마우스/조이스틱 무시하고 자동 추적
     const dx = autoTarget.mesh.position.x - player.mesh.position.x;
     const dz = autoTarget.mesh.position.z - player.mesh.position.z;
@@ -12882,8 +12886,14 @@ function updateCamera(dt) {
 
 function updateAttackAimIndicator() {
   season7AttackAim.visible=false;
+  supplementalAttackAim.hide();
+  seasonUltimateAim.hide();
   const player = getPlayer();
-  updateMintUltimateAim(player);
+  if (!state.running || !player || player.dead) state.ultimateAiming = false;
+  if (state.mintUltimateAim) state.mintUltimateAim.visible = false;
+  if (player && !player.dead && state.running && state.ultimateAiming) {
+    seasonUltimateAim.show(ultimateGuide(player.characterType, CHARACTERS[player.characterType], { distance: Math.hypot(mouseAimWorld.x-player.mesh.position.x, mouseAimWorld.z-player.mesh.position.z), yaw: player.yaw }), player.mesh.position, player.yaw);
+  }
   const charType = player?.characterType;
 
   if (!player || player.dead || !state.running || (!state.mouseHeld && !state.manualAimActive)) {
@@ -12919,7 +12929,13 @@ function updateAttackAimIndicator() {
   ivoryAimIndicator.visible = false;
   chartreuseAimIndicator.visible = false;
 
+  if (state.ultimateAiming) return;
   const alpha = unavailable ? 0.06 : 0.2;
+  if (["gold", "mint", "azure", "ivory", "crystal"].includes(charType)) {
+    const distance = Math.hypot(mouseAimWorld.x-pos.x, mouseAimWorld.z-pos.z);
+    supplementalAttackAim.show(attackGuide(charType, CHARACTERS[charType], { distance }), pos, yaw, unavailable ? .07 : .35);
+    return;
+  }
   if (["crystal","lavender"].includes(charType)) {
     const d=CHARACTERS[charType],range=charType==="crystal"?d.crystalRange:d.attackRange;
     season7AttackAim.children[0].visible=charType==="crystal";season7AttackAim.children[1].visible=charType==="lavender";
@@ -14045,7 +14061,7 @@ function setupInput() {
     if (event.code === "Digit1" || event.code === "Numpad1") triggerEmote(0);
     if (event.code === "Digit2" || event.code === "Numpad2") triggerEmote(1);
     if (event.code === "Digit3" || event.code === "Numpad3") triggerEmote(2);
-    if (!event.repeat && (event.code === "Space" || event.code === "KeyQ")) tryUseUltimate();
+    if (!event.repeat && (event.code === "Space" || event.code === "KeyQ") && state.running) state.ultimateAiming = true;
     state.keyState[event.code] = true;
   });
 
@@ -14054,6 +14070,7 @@ function setupInput() {
     if (["KeyW", "KeyA", "KeyS", "KeyD", "Space"].includes(event.code)) {
       event.preventDefault();
     }
+    if ((event.code === "Space" || event.code === "KeyQ") && state.ultimateAiming) { state.ultimateAiming = false; tryUseUltimate(); }
     state.keyState[event.code] = false;
   });
 
@@ -15226,8 +15243,20 @@ if (window.location.hash === "#chop-wood") {
   mobileAttackButton.addEventListener("pointercancel", () => { state.mouseHeld = false; });
   ultimateButton.addEventListener("pointerdown", (event) => {
     event.preventDefault();
-    tryUseUltimate();
+    if (!state.running) return;
+    state.ultimateAiming = true;
+    ultimateButton.setPointerCapture(event.pointerId);
   });
+  ultimateButton.addEventListener("pointermove", (event) => {
+    if (!state.ultimateAiming) return;
+    state.mouse.screenX = event.clientX; state.mouse.screenY = event.clientY;
+  });
+  ultimateButton.addEventListener("pointerup", () => {
+    if (!state.ultimateAiming) return;
+    state.ultimateAiming = false; tryUseUltimate();
+  });
+  ultimateButton.addEventListener("pointercancel", () => { state.ultimateAiming = false; seasonUltimateAim.hide(); });
+  window.addEventListener("blur", () => { state.ultimateAiming = false; seasonUltimateAim.hide(); });
 }
 
 
@@ -15243,7 +15272,7 @@ function getSeasonCombat(){
    let goal=target;if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?-15:15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
    return state.eventMapLayout?navigateEventMap(state.eventMapLayout,{x:f.mesh.position.x,z:f.mesh.position.z},goal):goal;
   },
-  aim:f=>!f.isNetworkPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
+  aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
   automatic:f=>!state.chopWoodMode&&!state.takedownMode&&(!mpConfig||mpConfig.isHost),
   damage:(target,amount,source)=>{if(!mpConfig||mpConfig.isHost)applyDamage(target,amount,source,true,false,true);},
   heal:(f,hp,revive)=>{if(mpConfig&&!mpConfig.isHost)return;f.health=hp;if(revive){f.dead=false;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;f.respawnAt=0;}},
@@ -15274,6 +15303,8 @@ function updateMainGemGrab(dt){
  document.body.classList.toggle('temple-countdown-final',!!leader&&state.gameTime-state.gemEscapeAt>=12);
  if(escaped||timedOut){const won=escaped===state.playerTeam;const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?'시간 종료 · 무승부':won?'유적 탈출 성공!':'유적 탈출 실패';resultBody.textContent=timedOut?'경기 시간이 종료됐습니다.':'팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.';resultStats.textContent+=' · 아군 젬 '+gemTeamCount(state.playerTeam)+' · 적 젬 '+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
 }
+const supplementalAttackAim=createAimGuide(THREE,scene);
+const seasonUltimateAim=createAimGuide(THREE,scene,0xffdf65);
 const season7AttackAim=new THREE.Group();
 for(const geometry of [new THREE.PlaneGeometry(1,.04),new THREE.CircleGeometry(1,32,-Math.PI/6,Math.PI/3)]){const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0xc9a7f5,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}));mesh.rotation.x=-Math.PI/2;if(season7AttackAim.children.length===0)mesh.position.x=.5;season7AttackAim.add(mesh);}scene.add(season7AttackAim);season7AttackAim.visible=false;
 createLights();

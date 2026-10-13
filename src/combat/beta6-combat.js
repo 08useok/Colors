@@ -157,7 +157,10 @@ export function createBeta6Combat(definitions, options = {}) {
     else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
     else if (id === 'yellow') launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', start: time + d.attackDelay });
-    else if (id === 'cyan') for (let i = 0; i < d.spreadLineCount; i++) launch(d.spreadLineSpeed, d.spreadLineRange, d.spreadLineDamage, {}, yaw + (i - (d.spreadLineCount - 1) / 2) * d.betaAngleSpacing);
+    else if (id === 'cyan') for (let i = 0; i < d.spreadLineCount; i++) {
+      const offset = (i - (d.spreadLineCount - 1) / 2) * (d.spreadLineSpacing ?? .75);
+      launch(d.spreadLineSpeed, d.spreadLineRange, d.spreadLineDamage, { x: a.x + Math.cos(yaw) * .6 - Math.sin(yaw) * offset, z: a.z + Math.sin(yaw) * .6 + Math.cos(yaw) * offset });
+    }
     else if (id === 'purple') {
       if (a.index++ % 2) launch(d.vialSpeed, d.vialRange, d.vialDamage, { kind: 'vial' });
       else for (let i = 0; i < d.needleCount; i++) launch(d.needleSpeed, d.needleRange, d.needleDamage, { kind: 'needle' }, yaw + (i / (d.needleCount - 1) - .5) * d.needleSpreadAngle);

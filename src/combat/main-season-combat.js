@@ -1,4 +1,4 @@
-import {createBeta6Combat} from './beta6-combat.js?v=22';
+import {createBeta6Combat} from './beta6-combat.js?v=23';
 import {beta6Ultimate} from '../config/beta6-balance.js';
 
 // Main fighters use Three.js positions and wall-clock status fields; the shared
@@ -42,7 +42,7 @@ export function createMainSeasonCombat(definitions,hooks) {
   }
   return {
     world,actor:add,
-    fire(f,visualOnly=false){synchronize();const a=add(f),b=target(a)??{x:a.x+Math.sin(f.yaw)*20,z:a.z+Math.cos(f.yaw)*20,vx:0,vz:0};const old=a.next;if(visualOnly)a.next=0;const fired=world.fire(a,b,Math.PI/2-f.yaw);if(visualOnly)a.next=old;for(const unit of world.actors)out(unit);return fired;},
+    fire(f,visualOnly=false){synchronize();const a=add(f),point=f.characterType==="ivory"?hooks.aim?.(f):null,b=point?{...point,vx:0,vz:0}:target(a)??{x:a.x+Math.sin(f.yaw)*20,z:a.z+Math.cos(f.yaw)*20,vx:0,vz:0};const old=a.next;if(visualOnly)a.next=0;const fired=world.fire(a,b,Math.PI/2-f.yaw);if(visualOnly)a.next=old;for(const unit of world.actors)out(unit);return fired;},
     cast(f,remote=false){synchronize();const a=add(f),b=target(a);if(remote)a.charge=a.u?.chargeRequired??0;const aim=hooks.aim?.(f);const cast=world.cast(a,b,{angle:Math.PI/2-f.yaw,...(aim?{point:aim}:{})});for(const unit of world.actors)out(unit);return cast;},
     update(dt){synchronize(dt);const locked=world.actors.filter(a=>a.automatic&&world.time<a.lockUntil);for(const a of locked)a.automatic=false;world.update(dt);for(const a of locked)a.automatic=true;for(const a of world.actors)out(a);hooks.render?.(world);},
     remove(f){const a=units.get(f);if(a)world.remove(a);units.delete(f);},

@@ -1,13 +1,15 @@
+import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
+import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js";
 import * as THREE from "three";
 import { AXES, resetAxe, upgradeAxe, chopTree, CHOP_WOOD_COVER, chopWoodDestination } from "./config/beta-chop-wood.js?v=2";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.26";
+import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=22";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=23";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.9";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -850,6 +852,8 @@ const alphaBoss = createAlphaBoss();
 canvas.dataset.alphaEnemies = "jjajjal:3,bossHp:120000";
 
 const player = new THREE.Group();
+const betaUltimateGuide = createAimGuide(THREE,scene,0xffdf65);
+const betaCyanGuide = createAimGuide(THREE,scene);
 const attackAimIndicator = new THREE.Group();
 const attackAimBeam = new THREE.Mesh(
   new THREE.PlaneGeometry(1, 1),
@@ -5454,8 +5458,16 @@ const purpleUltimateAimPoint = new THREE.Vector3();
 let purpleUltimateAimPointValid = false;
 // 아이보리를 제외한 방향성 궁극기 — 거리는 각 캐릭터의 기존 사거리를 그대로
 // 쓰고, 누르고 있는 동안 바라보는 방향만 마우스/키보드로 조준한다.
-const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure"]);
+const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure", "orange", "crystal", "gold", "green", "pink", "chartreuse", "red", "lavender"]);
 let directionalUltimateAiming = false;
+function cancelUltimateAim() {
+  ivoryUltimateAiming = false; directionalUltimateAiming = false;
+  ivoryUltimateKeyboardAiming = false; directionalUltimateKeyboardAiming = false;
+  betaUltimateGuide.hide(); ivoryUltimateAimIndicator.visible = false; mintUltimateAimIndicator.visible = false;
+  updateAttackAimIndicator();
+}
+ultimateButton.addEventListener("pointercancel", cancelUltimateAim);
+addEventListener("blur", cancelUltimateAim);
 ultimateButton.addEventListener("pointerdown", (event) => {
   if (betaState.selectedCharacter === "ivory") {
     ivoryUltimateAiming = true;
@@ -5469,9 +5481,11 @@ ultimateButton.addEventListener("pointerdown", (event) => {
     ultimateButton.setPointerCapture(event.pointerId);
     canvas.dataset.ultimateAim = "manual";
     if (betaState.selectedCharacter === "yellow" && groundPointAtPointer(event)) {
+      player.rotation.y = Math.atan2(manualAimPoint.x-player.position.x,manualAimPoint.z-player.position.z);
       yellowUltimateAimPoint.copy(manualAimPoint);
       yellowUltimateAimPointValid = true;
     } else if (betaState.selectedCharacter === "purple" && groundPointAtPointer(event)) {
+      player.rotation.y = Math.atan2(manualAimPoint.x-player.position.x,manualAimPoint.z-player.position.z);
       purpleUltimateAimPoint.copy(manualAimPoint);
       purpleUltimateAimPointValid = true;
     }
@@ -8306,6 +8320,17 @@ function animate() {
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   updateLavenderPractice(dt);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
+  const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
+  if (ivoryUltimateAiming || directionalUltimateAiming) {
+    const u = aimDef.special || aimDef.ultimate;
+    const distance = aimId === "ivory" ? ivoryUltimateAimRange : aimId === "yellow" && yellowUltimateAimPointValid ? player.position.distanceTo(yellowUltimateAimPoint) : aimId === "purple" && purpleUltimateAimPointValid ? player.position.distanceTo(purpleUltimateAimPoint) : u.castRange ?? u.range ?? Infinity;
+    betaUltimateGuide.show(ultimateGuide(aimId, aimDef, {distance, yaw:player.rotation.y}), player.position, player.rotation.y);
+    attackAimIndicator.visible=false; ivoryUltimateAimIndicator.visible=false; mintUltimateAimIndicator.visible=false; betaCyanGuide.hide();
+  } else {
+    betaUltimateGuide.hide();
+    if (aimId === "cyan" && attackAimIndicator.visible) { betaCyanGuide.show(attackGuide(aimId,aimDef),player.position,player.rotation.y); attackAimBeam.visible=false; }
+    else betaCyanGuide.hide();
+  }
   if (redGuardMesh) {
     if (clock.elapsedTime >= redGuardUntil) {
       player.remove(redGuardMesh);

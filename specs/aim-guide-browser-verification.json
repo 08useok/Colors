@@ -1,0 +1,175 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "page": "main",
+      "id": "red",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "green",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "blue",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "orange",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "yellow",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "cyan",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "purple",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "pink",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "crimson",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "gold",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "ivory",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "chartreuse",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "mint",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "azure",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "main",
+      "id": "crystal",
+      "basic": true,
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "blue",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "cyan",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "crimson",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "yellow",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "purple",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "azure",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "orange",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "crystal",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "ivory",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "lavender",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "gold",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "green",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "pink",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "red",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "chartreuse",
+      "ultimate": true
+    },
+    {
+      "page": "beta8",
+      "id": "mint",
+      "ultimate": true
+    }
+  ]
+}
