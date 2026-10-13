@@ -1,0 +1,972 @@
+{
+  "applied": false,
+  "level": 6,
+  "repetitions": 30,
+  "seed": 20260919,
+  "totalGames": 21600,
+  "engine": "shared beta6 combat; mainStats is a stats-based proxy, not a main-page runtime test",
+  "patch": {
+    "stage1Damage": 2200,
+    "ultimateChargeRequired": 7
+  },
+  "reports": {
+    "mainStats": {
+      "beforeGold": {
+        "maxHealth": 7500,
+        "moveSpeedMultiplier": 1,
+        "attackCooldown": 1.5,
+        "reloadDuration": 1.2,
+        "maxAmmo": 3,
+        "description": "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+        "descriptionEn": "A color who loves gold. He is rich, he loves money, and he keeps side-eyeing Orange for some reason.",
+        "basicAttack": {
+          "name": "연쇄 금광석",
+          "description": "2×2타일 정십이면체 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 각각 6개의 금괴 투사체로 갈라집니다.",
+          "nameEn": "Chain Gold Ore",
+          "descriptionEn": "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles."
+        },
+        "stage1Damage": 900,
+        "stage1Range": 8,
+        "stage1Speed": 16,
+        "stage1Size": 2,
+        "stage1SplashRadius": 1.5,
+        "stage2Damage": 450,
+        "stage2Range": 8,
+        "stage2Speed": 18,
+        "stage3Damage": 225,
+        "stage3Range": 6,
+        "stage3Speed": 20,
+        "projectileRadius": 0.2,
+        "ultimateChargeRequired": 6,
+        "maxChargePerAttack": 6,
+        "ultimate": {
+          "id": "malfunctionZone",
+          "name": "고장 지대",
+          "description": "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다.",
+          "nameEn": "Malfunction Zone",
+          "descriptionEn": "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower.",
+          "castRange": 0,
+          "radius": 6,
+          "duration": 4,
+          "delay": 0.35,
+          "followsCaster": true
+        },
+        "projectileDamageReduction": 650
+      },
+      "afterGold": {
+        "maxHealth": 7500,
+        "moveSpeedMultiplier": 1,
+        "attackCooldown": 1.5,
+        "reloadDuration": 1.2,
+        "maxAmmo": 3,
+        "description": "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+        "descriptionEn": "A color who loves gold. He is rich, he loves money, and he keeps side-eyeing Orange for some reason.",
+        "basicAttack": {
+          "name": "연쇄 금광석",
+          "description": "2×2타일 정십이면체 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 각각 6개의 금괴 투사체로 갈라집니다.",
+          "nameEn": "Chain Gold Ore",
+          "descriptionEn": "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles."
+        },
+        "stage1Damage": 2200,
+        "stage1Range": 8,
+        "stage1Speed": 16,
+        "stage1Size": 2,
+        "stage1SplashRadius": 1.5,
+        "stage2Damage": 450,
+        "stage2Range": 8,
+        "stage2Speed": 18,
+        "stage3Damage": 225,
+        "stage3Range": 6,
+        "stage3Speed": 20,
+        "projectileRadius": 0.2,
+        "ultimateChargeRequired": 7,
+        "maxChargePerAttack": 6,
+        "ultimate": {
+          "id": "malfunctionZone",
+          "name": "고장 지대",
+          "description": "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다.",
+          "nameEn": "Malfunction Zone",
+          "descriptionEn": "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower.",
+          "castRange": 0,
+          "radius": 6,
+          "duration": 4,
+          "delay": 0.35,
+          "followsCaster": true,
+          "chargeRequired": 7
+        },
+        "projectileDamageReduction": 650
+      },
+      "rows": [
+        {
+          "opponent": "lavender",
+          "before": {
+            "wins": 358,
+            "losses": 2,
+            "draws": 0,
+            "games": 360,
+            "casts": 774,
+            "seconds": 9581.949999999904,
+            "winRate": 99.44444444444444,
+            "castsPerGame": 2.15,
+            "averageSeconds": 26.616527777777513
+          },
+          "after": {
+            "wins": 360,
+            "losses": 0,
+            "draws": 0,
+            "games": 360,
+            "casts": 50,
+            "seconds": 3578.5499999999884,
+            "winRate": 100,
+            "castsPerGame": 0.1388888888888889,
+            "averageSeconds": 9.940416666666634
+          }
+        },
+        {
+          "opponent": "red",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 234,
+            "seconds": 1263.733333333337,
+            "winRate": 0,
+            "castsPerGame": 0.65,
+            "averageSeconds": 3.5103703703703806
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 471.0000000000018,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 1.3083333333333385
+          }
+        },
+        {
+          "opponent": "green",
+          "before": {
+            "wins": 272,
+            "losses": 65,
+            "draws": 23,
+            "games": 360,
+            "casts": 750,
+            "seconds": 11402.966666666474,
+            "winRate": 78.75,
+            "castsPerGame": 2.0833333333333335,
+            "averageSeconds": 31.674907407406874
+          },
+          "after": {
+            "wins": 253,
+            "losses": 107,
+            "draws": 0,
+            "games": 360,
+            "casts": 102,
+            "seconds": 10340.699999999837,
+            "winRate": 70.27777777777777,
+            "castsPerGame": 0.2833333333333333,
+            "averageSeconds": 28.724166666666214
+          }
+        },
+        {
+          "opponent": "blue",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 6837.700000000056,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 18.993611111111267
+          },
+          "after": {
+            "wins": 2,
+            "losses": 358,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 6845.433333333389,
+            "winRate": 0.5555555555555556,
+            "castsPerGame": 0,
+            "averageSeconds": 19.015092592592747
+          }
+        },
+        {
+          "opponent": "orange",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 430.9166666666667,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 1.1969907407407407
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 1940.1333333333102,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 5.3892592592591955
+          }
+        },
+        {
+          "opponent": "yellow",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 6448.483333333374,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 17.912453703703815
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 6475.100000000038,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 17.986388888888992
+          }
+        },
+        {
+          "opponent": "cyan",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 137,
+            "seconds": 11040.966666666467,
+            "winRate": 0,
+            "castsPerGame": 0.38055555555555554,
+            "averageSeconds": 30.669351851851296
+          },
+          "after": {
+            "wins": 2,
+            "losses": 358,
+            "draws": 0,
+            "games": 360,
+            "casts": 3,
+            "seconds": 11015.249999999805,
+            "winRate": 0.5555555555555556,
+            "castsPerGame": 0.008333333333333333,
+            "averageSeconds": 30.597916666666126
+          }
+        },
+        {
+          "opponent": "purple",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 2283.883333333323,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 6.344120370370343
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 2283.883333333323,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 6.344120370370343
+          }
+        },
+        {
+          "opponent": "pink",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 820,
+            "seconds": 3197.0000000000155,
+            "winRate": 0,
+            "castsPerGame": 2.2777777777777777,
+            "averageSeconds": 8.880555555555599
+          },
+          "after": {
+            "wins": 91,
+            "losses": 269,
+            "draws": 0,
+            "games": 360,
+            "casts": 91,
+            "seconds": 1269.799999999998,
+            "winRate": 25.27777777777778,
+            "castsPerGame": 0.25277777777777777,
+            "averageSeconds": 3.5272222222222163
+          }
+        },
+        {
+          "opponent": "crimson",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 37,
+            "seconds": 3571.150000000026,
+            "winRate": 0,
+            "castsPerGame": 0.10277777777777777,
+            "averageSeconds": 9.919861111111183
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 10,
+            "seconds": 3411.250000000021,
+            "winRate": 0,
+            "castsPerGame": 0.027777777777777776,
+            "averageSeconds": 9.475694444444503
+          }
+        },
+        {
+          "opponent": "ivory",
+          "before": {
+            "wins": 297,
+            "losses": 63,
+            "draws": 0,
+            "games": 360,
+            "casts": 755,
+            "seconds": 9479.38333333324,
+            "winRate": 82.5,
+            "castsPerGame": 2.0972222222222223,
+            "averageSeconds": 26.33162037037011
+          },
+          "after": {
+            "wins": 347,
+            "losses": 13,
+            "draws": 0,
+            "games": 360,
+            "casts": 21,
+            "seconds": 10848.78333333318,
+            "winRate": 96.38888888888889,
+            "castsPerGame": 0.058333333333333334,
+            "averageSeconds": 30.135509259258832
+          }
+        },
+        {
+          "opponent": "chartreuse",
+          "before": {
+            "wins": 12,
+            "losses": 348,
+            "draws": 0,
+            "games": 360,
+            "casts": 2,
+            "seconds": 6265.916666666588,
+            "winRate": 3.3333333333333335,
+            "castsPerGame": 0.005555555555555556,
+            "averageSeconds": 17.405324074073857
+          },
+          "after": {
+            "wins": 130,
+            "losses": 230,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 9191.749999999862,
+            "winRate": 36.111111111111114,
+            "castsPerGame": 0,
+            "averageSeconds": 25.532638888888506
+          }
+        },
+        {
+          "opponent": "mint",
+          "before": {
+            "wins": 18,
+            "losses": 342,
+            "draws": 0,
+            "games": 360,
+            "casts": 9,
+            "seconds": 9753.549999999888,
+            "winRate": 5,
+            "castsPerGame": 0.025,
+            "averageSeconds": 27.093194444444133
+          },
+          "after": {
+            "wins": 238,
+            "losses": 119,
+            "draws": 3,
+            "games": 360,
+            "casts": 2,
+            "seconds": 10213.033333333206,
+            "winRate": 66.52777777777777,
+            "castsPerGame": 0.005555555555555556,
+            "averageSeconds": 28.369537037036682
+          }
+        },
+        {
+          "opponent": "azure",
+          "before": {
+            "wins": 0,
+            "losses": 359,
+            "draws": 1,
+            "games": 360,
+            "casts": 604,
+            "seconds": 3115.0500000000043,
+            "winRate": 0.1388888888888889,
+            "castsPerGame": 1.6777777777777778,
+            "averageSeconds": 8.652916666666679
+          },
+          "after": {
+            "wins": 74,
+            "losses": 286,
+            "draws": 0,
+            "games": 360,
+            "casts": 369,
+            "seconds": 9293.649999999856,
+            "winRate": 20.555555555555557,
+            "castsPerGame": 1.025,
+            "averageSeconds": 25.815694444444045
+          }
+        },
+        {
+          "opponent": "crystal",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 4353.016666666728,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 12.091712962963134
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 4353.016666666728,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 12.091712962963134
+          }
+        }
+      ],
+      "beforeAverage": 17.944444444444446,
+      "afterAverage": 27.749999999999996,
+      "beforeCasts": 0.7633333333333334,
+      "afterCasts": 0.11999999999999998
+    },
+    "beta7": {
+      "beforeGold": {
+        "maxHealth": 8200,
+        "moveSpeedMultiplier": 1,
+        "attackCooldown": 1.5,
+        "reloadDuration": 1.2,
+        "maxAmmo": 3,
+        "description": "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+        "descriptionEn": "A color who loves gold. He is rich, he loves money, and he keeps side-eyeing Orange for some reason.",
+        "basicAttack": {
+          "name": "연쇄 금광석",
+          "description": "2×2타일 정십이면체 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 각각 6개의 금괴 투사체로 갈라집니다. 단계별 피해는 1190 / 495 / 250입니다.",
+          "nameEn": "Chain Gold Ore",
+          "descriptionEn": "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles. Stage damage: 1190 / 495 / 250."
+        },
+        "stage1Damage": 1190,
+        "stage1Range": 8,
+        "stage1Speed": 16,
+        "stage1Size": 2,
+        "stage1SplashRadius": 1.5,
+        "stage2Damage": 495,
+        "stage2Range": 8,
+        "stage2Speed": 18,
+        "stage3Damage": 250,
+        "stage3Range": 6,
+        "stage3Speed": 20,
+        "projectileRadius": 0.2,
+        "ultimateChargeRequired": 6,
+        "maxChargePerAttack": 6,
+        "ultimate": {
+          "id": "malfunctionZone",
+          "name": "고장 지대",
+          "description": "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다. 설치 대기는 0.2초이며, 장판 안 적에게 1초마다 100 피해를 줍니다.",
+          "nameEn": "Malfunction Zone",
+          "descriptionEn": "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower. Activates after 0.2 seconds and deals 100 damage to enemies inside every 1 seconds.",
+          "castRange": 0,
+          "radius": 6,
+          "duration": 4,
+          "delay": 0.2,
+          "followsCaster": true,
+          "tickDamage": 100,
+          "tickInterval": 1
+        },
+        "projectileDamageReduction": 650
+      },
+      "afterGold": {
+        "maxHealth": 8200,
+        "moveSpeedMultiplier": 1,
+        "attackCooldown": 1.5,
+        "reloadDuration": 1.2,
+        "maxAmmo": 3,
+        "description": "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+        "descriptionEn": "A color who loves gold. He is rich, he loves money, and he keeps side-eyeing Orange for some reason.",
+        "basicAttack": {
+          "name": "연쇄 금광석",
+          "description": "2×2타일 정십이면체 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 각각 6개의 금괴 투사체로 갈라집니다. 단계별 피해는 1190 / 495 / 250입니다.",
+          "nameEn": "Chain Gold Ore",
+          "descriptionEn": "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles. Stage damage: 1190 / 495 / 250."
+        },
+        "stage1Damage": 2200,
+        "stage1Range": 8,
+        "stage1Speed": 16,
+        "stage1Size": 2,
+        "stage1SplashRadius": 1.5,
+        "stage2Damage": 495,
+        "stage2Range": 8,
+        "stage2Speed": 18,
+        "stage3Damage": 250,
+        "stage3Range": 6,
+        "stage3Speed": 20,
+        "projectileRadius": 0.2,
+        "ultimateChargeRequired": 7,
+        "maxChargePerAttack": 6,
+        "ultimate": {
+          "id": "malfunctionZone",
+          "name": "고장 지대",
+          "description": "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다. 설치 대기는 0.2초이며, 장판 안 적에게 1초마다 100 피해를 줍니다.",
+          "nameEn": "Malfunction Zone",
+          "descriptionEn": "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower. Activates after 0.2 seconds and deals 100 damage to enemies inside every 1 seconds.",
+          "castRange": 0,
+          "radius": 6,
+          "duration": 4,
+          "delay": 0.2,
+          "followsCaster": true,
+          "tickDamage": 100,
+          "tickInterval": 1,
+          "chargeRequired": 7
+        },
+        "projectileDamageReduction": 650
+      },
+      "rows": [
+        {
+          "opponent": "lavender",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 11139.666666666506,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 30.943518518518072
+          },
+          "after": {
+            "wins": 94,
+            "losses": 248,
+            "draws": 18,
+            "games": 360,
+            "casts": 0,
+            "seconds": 11128.83333333318,
+            "winRate": 28.61111111111111,
+            "castsPerGame": 0,
+            "averageSeconds": 30.913425925925498
+          }
+        },
+        {
+          "opponent": "red",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 234,
+            "seconds": 1244.366666666668,
+            "winRate": 0,
+            "castsPerGame": 0.65,
+            "averageSeconds": 3.4565740740740774
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 471.0000000000018,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 1.3083333333333385
+          }
+        },
+        {
+          "opponent": "green",
+          "before": {
+            "wins": 360,
+            "losses": 0,
+            "draws": 0,
+            "games": 360,
+            "casts": 751,
+            "seconds": 10998.683333333165,
+            "winRate": 100,
+            "castsPerGame": 2.0861111111111112,
+            "averageSeconds": 30.551898148147682
+          },
+          "after": {
+            "wins": 335,
+            "losses": 25,
+            "draws": 0,
+            "games": 360,
+            "casts": 149,
+            "seconds": 8306.816666666602,
+            "winRate": 93.05555555555556,
+            "castsPerGame": 0.41388888888888886,
+            "averageSeconds": 23.07449074074056
+          }
+        },
+        {
+          "opponent": "blue",
+          "before": {
+            "wins": 2,
+            "losses": 358,
+            "draws": 0,
+            "games": 360,
+            "casts": 5,
+            "seconds": 8710.883333333288,
+            "winRate": 0.5555555555555556,
+            "castsPerGame": 0.013888888888888888,
+            "averageSeconds": 24.196898148148023
+          },
+          "after": {
+            "wins": 21,
+            "losses": 339,
+            "draws": 0,
+            "games": 360,
+            "casts": 1,
+            "seconds": 8710.116666666618,
+            "winRate": 5.833333333333333,
+            "castsPerGame": 0.002777777777777778,
+            "averageSeconds": 24.194768518518384
+          }
+        },
+        {
+          "opponent": "orange",
+          "before": {
+            "wins": 1,
+            "losses": 359,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 621.5999999999979,
+            "winRate": 0.2777777777777778,
+            "castsPerGame": 0,
+            "averageSeconds": 1.7266666666666608
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 3899.216666666618,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 10.831157407407272
+          }
+        },
+        {
+          "opponent": "yellow",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 8088.599999999989,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 22.468333333333305
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 8145.416666666655,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 22.626157407407376
+          }
+        },
+        {
+          "opponent": "cyan",
+          "before": {
+            "wins": 360,
+            "losses": 0,
+            "draws": 0,
+            "games": 360,
+            "casts": 109,
+            "seconds": 11377.483333333135,
+            "winRate": 100,
+            "castsPerGame": 0.30277777777777776,
+            "averageSeconds": 31.60412037036982
+          },
+          "after": {
+            "wins": 360,
+            "losses": 0,
+            "draws": 0,
+            "games": 360,
+            "casts": 3,
+            "seconds": 11174.816666666473,
+            "winRate": 100,
+            "castsPerGame": 0.008333333333333333,
+            "averageSeconds": 31.041157407406867
+          }
+        },
+        {
+          "opponent": "purple",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 2358.066666666663,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 6.550185185185175
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 2358.066666666663,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 6.550185185185175
+          }
+        },
+        {
+          "opponent": "pink",
+          "before": {
+            "wins": 12,
+            "losses": 348,
+            "draws": 0,
+            "games": 360,
+            "casts": 819,
+            "seconds": 3672.2666666667005,
+            "winRate": 3.3333333333333335,
+            "castsPerGame": 2.275,
+            "averageSeconds": 10.200740740740835
+          },
+          "after": {
+            "wins": 26,
+            "losses": 334,
+            "draws": 0,
+            "games": 360,
+            "casts": 91,
+            "seconds": 1305.249999999997,
+            "winRate": 7.222222222222222,
+            "castsPerGame": 0.25277777777777777,
+            "averageSeconds": 3.625694444444436
+          }
+        },
+        {
+          "opponent": "crimson",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 5,
+            "seconds": 1954.4166666666615,
+            "winRate": 0,
+            "castsPerGame": 0.013888888888888888,
+            "averageSeconds": 5.428935185185171
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 1,
+            "seconds": 1939.7999999999947,
+            "winRate": 0,
+            "castsPerGame": 0.002777777777777778,
+            "averageSeconds": 5.3883333333333185
+          }
+        },
+        {
+          "opponent": "ivory",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 360,
+            "seconds": 1467.41666666666,
+            "winRate": 0,
+            "castsPerGame": 1,
+            "averageSeconds": 4.076157407407389
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 21,
+            "seconds": 933.533333333333,
+            "winRate": 0,
+            "castsPerGame": 0.058333333333333334,
+            "averageSeconds": 2.5931481481481473
+          }
+        },
+        {
+          "opponent": "chartreuse",
+          "before": {
+            "wins": 8,
+            "losses": 352,
+            "draws": 0,
+            "games": 360,
+            "casts": 1,
+            "seconds": 6317.5666666665875,
+            "winRate": 2.2222222222222223,
+            "castsPerGame": 0.002777777777777778,
+            "averageSeconds": 17.548796296296075
+          },
+          "after": {
+            "wins": 37,
+            "losses": 323,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 9827.766666666523,
+            "winRate": 10.277777777777779,
+            "castsPerGame": 0,
+            "averageSeconds": 27.29935185185145
+          }
+        },
+        {
+          "opponent": "mint",
+          "before": {
+            "wins": 19,
+            "losses": 341,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 9045.083333333247,
+            "winRate": 5.277777777777778,
+            "castsPerGame": 0,
+            "averageSeconds": 25.12523148148124
+          },
+          "after": {
+            "wins": 233,
+            "losses": 127,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 10439.94999999984,
+            "winRate": 64.72222222222223,
+            "castsPerGame": 0,
+            "averageSeconds": 28.99986111111067
+          }
+        },
+        {
+          "opponent": "azure",
+          "before": {
+            "wins": 35,
+            "losses": 325,
+            "draws": 0,
+            "games": 360,
+            "casts": 591,
+            "seconds": 4634.099999999959,
+            "winRate": 9.722222222222221,
+            "castsPerGame": 1.6416666666666666,
+            "averageSeconds": 12.872499999999887
+          },
+          "after": {
+            "wins": 51,
+            "losses": 309,
+            "draws": 0,
+            "games": 360,
+            "casts": 243,
+            "seconds": 6409.8499999998885,
+            "winRate": 14.166666666666666,
+            "castsPerGame": 0.675,
+            "averageSeconds": 17.805138888888578
+          }
+        },
+        {
+          "opponent": "crystal",
+          "before": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 3664.4833333333604,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 10.179120370370445
+          },
+          "after": {
+            "wins": 0,
+            "losses": 360,
+            "draws": 0,
+            "games": 360,
+            "casts": 0,
+            "seconds": 3664.4833333333604,
+            "winRate": 0,
+            "castsPerGame": 0,
+            "averageSeconds": 10.179120370370445
+          }
+        }
+      ],
+      "beforeAverage": 14.75925925925926,
+      "afterAverage": 21.592592592592595,
+      "beforeCasts": 0.5324074074074074,
+      "afterCasts": 0.09425925925925926
+    }
+  },
+  "affectedTargets": [
+    {
+      "id": "ivory",
+      "targetWin": "gold",
+      "targetLoss": "yellow",
+      "before": 100,
+      "after": 100,
+      "broken": false
+    },
+    {
+      "id": "gold",
+      "targetWin": "green",
+      "targetLoss": "ivory",
+      "before": 100,
+      "after": 93.05555555555556,
+      "broken": true
+    }
+  ]
+}

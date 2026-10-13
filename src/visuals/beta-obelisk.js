@@ -25,6 +25,7 @@ function loadObelisk() {
 // The existing root keeps its position, lean, visibility and collision bounds.
 export function applyBetaObeliskModel(root, width, height, depth, canvas) {
   loadObelisk().then(({ size, parts }) => {
+    if(root.userData.disposed)return;
     const model = new THREE.Group();
     model.name = 'beta-obelisk-model';
     model.position.y = -height / 2;

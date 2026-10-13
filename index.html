@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./styles.css?v=1.5.161">
+  <link rel="stylesheet" href="./styles.css?v=1.7.0.1">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -161,28 +161,7 @@
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
           <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
           <div id="matchup-table" class="matchup-table hidden">
-            <p class="matchup-desc" data-i18n="matchupDesc">베타 시즌 6 기준 14종 · 궁극기 포함 1대1 시뮬레이션(베타 전투 엔진). 충전 0에서 시작, 조합당 600회, 시작 거리 10·13·16타일, 80×80 전장·최대 45초(30초부터 자기장 축소). 수치는 (승리 + 무승부 × 0.5) 비율이며 실전 승률이 아닙니다. 지형·팀 효과 제외, 핑크 부활은 아군이 없어 미발동. 경합은 45% 초과~55% 미만, 유불리 경계는 55·70·85·95%와 반대쪽 45·30·15·5%입니다.</p>
-            <table>
-              <thead>
-                <tr><th data-i18n="muChar">캐릭터</th><th data-i18n="muPerfectCounter">압도적 유리</th><th data-i18n="muDominant">완전 유리</th><th data-i18n="muAdv">유리</th><th data-i18n="muSlightAdv">약간 유리</th><th data-i18n="muEven">경합</th><th data-i18n="muSlightDis">약간 불리</th><th data-i18n="muDis">불리</th><th data-i18n="muSevereDis">완전 불리</th><th data-i18n="muImpossible">압도적 불리</th></tr>
-              </thead>
-              <tbody>
-                <tr><th scope="row" class="mu-red">🔴 Red</th><td>🔵 Blue 100.0%<br>🩵 Cyan 100.0%<br>🟣 Purple 100.0%<br>🩷 Pink 100.0%<br>🟥 Crimson 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%<br>🌊 Azure 100.0%</td><td>🍃 Mint 87.8%</td><td>🟩 Chartreuse 83.7%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🟢 Green 0.0%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.0%</td></tr>
-                <tr><th scope="row" class="mu-green">🟢 Green</th><td>🔴 Red 100.0%<br>🩷 Pink 100.0%<br>🟥 Crimson 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%<br>🍃 Mint 100.0%<br>🌊 Azure 100.0%</td><td>🟠 Orange 90.0%</td><td>🟩 Chartreuse 80.7%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🔵 Blue 0.0%<br>🟡 Yellow 0.0%<br>🩵 Cyan 0.0%<br>🟣 Purple 0.0%</td></tr>
-                <tr><th scope="row" class="mu-blue">🔵 Blue</th><td>🟢 Green 100.0%<br>🟠 Orange 100.0%<br>🩵 Cyan 100.0%<br>🩷 Pink 100.0%<br>🟥 Crimson 99.8%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%<br>🟩 Chartreuse 100.0%<br>🍃 Mint 95.8%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🟡 Yellow 33.3%<br>🌊 Azure 31.5%</td><td>🟣 Purple 23.3%</td><td>—</td><td>🔴 Red 0.0%</td></tr>
-                <tr><th scope="row" class="mu-orange">🟠 Orange</th><td>🔴 Red 100.0%<br>🟡 Yellow 100.0%<br>🩵 Cyan 98.6%<br>🩷 Pink 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%<br>🍃 Mint 100.0%<br>🌊 Azure 100.0%</td><td>🟥 Crimson 94.3%<br>🟩 Chartreuse 91.7%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🟢 Green 10.0%</td><td>🔵 Blue 0.0%<br>🟣 Purple 0.0%</td></tr>
-                <tr><th scope="row" class="mu-yellow">🟡 Yellow</th><td>🔴 Red 100.0%<br>🟢 Green 100.0%<br>🩷 Pink 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%<br>🍃 Mint 100.0%</td><td>—</td><td>🟩 Chartreuse 84.7%</td><td>🔵 Blue 66.7%<br>🌊 Azure 67.3%</td><td>—</td><td>—</td><td>—</td><td>🟣 Purple 9.7%</td><td>🟠 Orange 0.0%<br>🩵 Cyan 2.7%<br>🟥 Crimson 0.0%</td></tr>
-                <tr><th scope="row" class="mu-cyan">🩵 Cyan</th><td>🟢 Green 100.0%<br>🟡 Yellow 97.3%<br>🩷 Pink 100.0%<br>🟥 Crimson 100.0%<br>🤍 Ivory 100.0%<br>🍃 Mint 100.0%<br>🌊 Azure 100.0%</td><td>—</td><td>🟩 Chartreuse 83.9%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🔴 Red 0.0%<br>🔵 Blue 0.0%<br>🟠 Orange 1.4%<br>🟣 Purple 0.0%<br>🟨 Gold 0.0%</td></tr>
-                <tr><th scope="row" class="mu-purple">🟣 Purple</th><td>🟢 Green 100.0%<br>🟠 Orange 100.0%<br>🩵 Cyan 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%<br>🍃 Mint 100.0%</td><td>🟡 Yellow 90.3%<br>🟩 Chartreuse 91.7%</td><td>🔵 Blue 76.7%</td><td>🌊 Azure 63.0%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🔴 Red 0.0%<br>🩷 Pink 0.0%<br>🟥 Crimson 4.2%</td></tr>
-                <tr><th scope="row" class="mu-pink">🩷 Pink</th><td>🟣 Purple 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%</td><td>—</td><td>—</td><td>—</td><td>🟩 Chartreuse 47.0%</td><td>—</td><td>—</td><td>🌊 Azure 8.3%</td><td>🔴 Red 0.0%<br>🟢 Green 0.0%<br>🔵 Blue 0.0%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.0%<br>🩵 Cyan 0.0%<br>🟥 Crimson 0.0%<br>🍃 Mint 0.0%</td></tr>
-                <tr><th scope="row" class="mu-crimson">🟥 Crimson</th><td>🟡 Yellow 100.0%<br>🟣 Purple 95.8%<br>🩷 Pink 100.0%<br>🤍 Ivory 99.0%</td><td>🟩 Chartreuse 93.1%</td><td>🟨 Gold 72.5%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🟠 Orange 5.7%<br>🍃 Mint 9.3%</td><td>🔴 Red 0.0%<br>🟢 Green 0.0%<br>🔵 Blue 0.2%<br>🩵 Cyan 0.0%<br>🌊 Azure 0.0%</td></tr>
-                <tr><th scope="row" class="mu-gold">🟨 Gold</th><td>🩵 Cyan 100.0%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🟥 Crimson 27.5%</td><td>🟩 Chartreuse 8.7%</td><td>🔴 Red 0.0%<br>🟢 Green 0.0%<br>🔵 Blue 0.0%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.0%<br>🟣 Purple 0.0%<br>🩷 Pink 0.0%<br>🤍 Ivory 0.0%<br>🍃 Mint 0.0%<br>🌊 Azure 2.5%</td></tr>
-                <tr><th scope="row" class="mu-ivory">🤍 Ivory</th><td>🟨 Gold 100.0%</td><td>—</td><td>—</td><td>—</td><td>—</td><td>🌊 Azure 34.5%</td><td>—</td><td>—</td><td>🔴 Red 0.0%<br>🟢 Green 0.0%<br>🔵 Blue 0.0%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.0%<br>🩵 Cyan 0.0%<br>🟣 Purple 0.0%<br>🩷 Pink 0.0%<br>🟥 Crimson 1.0%<br>🟩 Chartreuse 0.0%<br>🍃 Mint 0.0%</td></tr>
-                <tr><th scope="row" class="mu-chartreuse">🟩 Chartreuse</th><td>🤍 Ivory 100.0%</td><td>🟨 Gold 91.3%</td><td>—</td><td>🍃 Mint 68.8%</td><td>🩷 Pink 53.0%</td><td>🌊 Azure 42.3%</td><td>🔴 Red 16.3%<br>🟢 Green 19.3%<br>🟡 Yellow 15.3%<br>🩵 Cyan 16.1%</td><td>🟠 Orange 8.3%<br>🟣 Purple 8.3%<br>🟥 Crimson 6.9%</td><td>🔵 Blue 0.0%</td></tr>
-                <tr><th scope="row" class="mu-mint">🍃 Mint</th><td>🩷 Pink 100.0%<br>🟨 Gold 100.0%<br>🤍 Ivory 100.0%</td><td>🟥 Crimson 90.7%<br>🌊 Azure 94.3%</td><td>—</td><td>—</td><td>—</td><td>🟩 Chartreuse 31.2%</td><td>—</td><td>🔴 Red 12.2%</td><td>🟢 Green 0.0%<br>🔵 Blue 4.2%<br>🟠 Orange 0.0%<br>🟡 Yellow 0.0%<br>🩵 Cyan 0.0%<br>🟣 Purple 0.0%</td></tr>
-                <tr><th scope="row" class="mu-azure">🌊 Azure</th><td>🟥 Crimson 100.0%<br>🟨 Gold 97.5%</td><td>🩷 Pink 91.7%</td><td>—</td><td>🔵 Blue 68.5%<br>🤍 Ivory 65.5%<br>🟩 Chartreuse 57.7%</td><td>—</td><td>🟡 Yellow 32.7%<br>🟣 Purple 37.0%</td><td>—</td><td>🍃 Mint 5.7%</td><td>🔴 Red 0.0%<br>🟢 Green 0.0%<br>🟠 Orange 0.0%<br>🩵 Cyan 0.0%</td></tr>
-              </tbody>
-            </table>
+            <p class="matchup-desc">시즌 7 · 16종 · 6레벨 · 궁 포함 · 총 43,200경기(상대별 360경기). 무승부는 0.5승입니다. 지정 100%·0%는 굵게, 지정 외 극단 승률은 이탤릭체로 표시합니다. 지형·팀 효과를 제외한 시뮬레이션이며 실전 승률은 아닙니다.</p><table><thead><tr><th>카운터 / 카운팅</th><th>라벤더</th><th>레드</th><th>그린</th><th>블루</th><th>오렌지</th><th>옐로우</th><th>시안</th><th>퍼플</th><th>핑크</th><th>크림슨</th><th>골드</th><th>아이보리</th><th>샤르트뢰즈</th><th>민트</th><th>애저</th><th>크리스탈</th></tr></thead><tbody><tr><th>라벤더</th><td>×</td><td><em>0.0</em></td><td>96.1</td><td><em>0.0</em></td><td><em>0.0</em></td><td>42.5</td><td>93.1</td><td>1.9</td><td>97.8</td><td><strong>100.0</strong></td><td><em>100.0</em></td><td><em>0.0</em></td><td>17.5</td><td>68.1</td><td><strong>0.0</strong></td><td>5.3</td></tr><tr><th>레드</th><td><em>100.0</em></td><td>×</td><td><em>100.0</em></td><td><strong>100.0</strong></td><td>6.7</td><td>34.4</td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td>80.0</td><td>81.7</td><td><em>100.0</em></td><td><strong>0.0</strong></td></tr><tr><th>그린</th><td>3.9</td><td><em>0.0</em></td><td>×</td><td><em>0.0</em></td><td>3.3</td><td><em>0.0</em></td><td>48.1</td><td><em>0.0</em></td><td>65.6</td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>0.0</em></td><td>1.9</td><td>0.3</td><td><strong>100.0</strong></td><td>0.3</td></tr><tr><th>블루</th><td><em>100.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>×</td><td><strong>100.0</strong></td><td>89.7</td><td><em>100.0</em></td><td>59.2</td><td><em>100.0</em></td><td>7.8</td><td>99.4</td><td><em>100.0</em></td><td>1.1</td><td><em>100.0</em></td><td><em>0.0</em></td><td>44.7</td></tr><tr><th>오렌지</th><td><em>100.0</em></td><td>93.3</td><td>96.7</td><td><strong>0.0</strong></td><td>×</td><td>86.8</td><td>98.6</td><td>34.2</td><td><em>100.0</em></td><td>0.3</td><td>99.7</td><td><em>100.0</em></td><td>72.2</td><td><strong>100.0</strong></td><td>98.6</td><td>45.7</td></tr><tr><th>옐로우</th><td>57.5</td><td>65.6</td><td><em>100.0</em></td><td>10.3</td><td>13.2</td><td>×</td><td><em>100.0</em></td><td>10.3</td><td>85.8</td><td><em>0.0</em></td><td><em>100.0</em></td><td><strong>100.0</strong></td><td><strong>0.0</strong></td><td>79.7</td><td>26.9</td><td>10.8</td></tr><tr><th>시안</th><td>6.9</td><td><em>0.0</em></td><td>51.9</td><td><em>0.0</em></td><td>1.4</td><td><em>0.0</em></td><td>×</td><td><em>0.0</em></td><td><strong>100.0</strong></td><td><em>0.0</em></td><td><em>0.0</em></td><td><em>0.0</em></td><td>0.6</td><td><strong>0.0</strong></td><td>90.6</td><td><em>0.0</em></td></tr><tr><th>퍼플</th><td>98.1</td><td><em>0.0</em></td><td><em>100.0</em></td><td>40.8</td><td>65.8</td><td>89.7</td><td><em>100.0</em></td><td>×</td><td><strong>0.0</strong></td><td><em>0.0</em></td><td><em>100.0</em></td><td>8.6</td><td><strong>100.0</strong></td><td><em>100.0</em></td><td><em>0.0</em></td><td>30.0</td></tr><tr><th>핑크</th><td>2.2</td><td><em>0.0</em></td><td>34.4</td><td><em>0.0</em></td><td><em>0.0</em></td><td>14.2</td><td><strong>0.0</strong></td><td><strong>100.0</strong></td><td>×</td><td><em>0.0</em></td><td>96.7</td><td><em>100.0</em></td><td>51.7</td><td>5.6</td><td>98.6</td><td>0.3</td></tr><tr><th>크림슨</th><td><strong>0.0</strong></td><td><em>0.0</em></td><td><em>100.0</em></td><td>92.2</td><td>99.7</td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td>×</td><td><em>100.0</em></td><td>93.3</td><td><em>100.0</em></td><td>99.7</td><td>49.4</td><td><strong>100.0</strong></td></tr><tr><th>골드</th><td><em>0.0</em></td><td><em>0.0</em></td><td><strong>100.0</strong></td><td>0.6</td><td>0.3</td><td><em>0.0</em></td><td><em>100.0</em></td><td><em>0.0</em></td><td>3.3</td><td><em>0.0</em></td><td>×</td><td><strong>0.0</strong></td><td>2.2</td><td>5.3</td><td>9.7</td><td><em>0.0</em></td></tr><tr><th>아이보리</th><td><em>100.0</em></td><td><em>0.0</em></td><td><em>100.0</em></td><td><em>0.0</em></td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>91.4</td><td><em>0.0</em></td><td>6.7</td><td><strong>100.0</strong></td><td>×</td><td>54.7</td><td>99.4</td><td>18.1</td><td>68.6</td></tr><tr><th>샤르트뢰즈</th><td>82.5</td><td>20.0</td><td>98.1</td><td>98.9</td><td>27.8</td><td><strong>100.0</strong></td><td>99.4</td><td><strong>0.0</strong></td><td>48.3</td><td><em>0.0</em></td><td>97.8</td><td>45.3</td><td>×</td><td>67.2</td><td>62.5</td><td>3.6</td></tr><tr><th>민트</th><td>31.9</td><td>18.3</td><td>99.7</td><td><em>0.0</em></td><td><strong>0.0</strong></td><td>20.3</td><td><strong>100.0</strong></td><td><em>0.0</em></td><td>94.4</td><td>0.3</td><td>94.7</td><td>0.6</td><td>32.8</td><td>×</td><td>30.6</td><td>2.5</td></tr><tr><th>애저</th><td><strong>100.0</strong></td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>1.4</td><td>73.1</td><td>9.4</td><td><em>100.0</em></td><td>1.4</td><td>50.6</td><td>90.3</td><td>81.9</td><td>37.5</td><td>69.4</td><td>×</td><td>11.1</td></tr><tr><th>크리스탈</th><td>94.7</td><td><strong>100.0</strong></td><td>99.7</td><td>55.3</td><td>54.3</td><td>89.2</td><td><em>100.0</em></td><td>70.0</td><td>99.7</td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>31.4</td><td>96.4</td><td>97.5</td><td>88.9</td><td>×</td></tr></tbody></table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
@@ -696,29 +675,26 @@
               <button class="notice-tab" type="button" role="tab" aria-selected="false" aria-controls="notice-next" data-notice-tab="next">로드맵</button>
             </div>
             <div id="notice-current" class="notice-content" role="tabpanel" data-notice-content="current">
-              <div class="notice-kicker">BETA SEASON 6 · UPDATED 2026.10.06</div>
-              <h2>베타 시즌 6 · 정규 이벤트 맵 업데이트</h2>
-              <p class="notice-summary">애저와 바다 테마, 옐로우 궁극기, 사커 킥을 즐기세요. 정규 모드마다 기본·벽 중심·부쉬 중심 맵 3종을 선택할 수 있습니다.</p>
-              <dl class="notice-schedule">
-                <div><dt>시즌 6 시작</dt><dd>2026.09.21 18:00</dd></div>
-                <div><dt>공지 갱신</dt><dd>2026.10.06</dd></div>
-                <div><dt>정규 이벤트</dt><dd>시즌 종료와 관계없이 상시 운영</dd></div>
-              </dl>
-              <ul class="notice-highlights">
-                <li><strong>신규 캐릭터 애저</strong> — 서프 대시와 궁극기 「빅 웨이브」</li>
-                <li><strong>옐로우 궁극기 「전기 회로」</strong> — 장치를 최대 4개 설치하고 일반 공격으로 맞혀 전류 연결</li>
-                <li><strong>사커 킥</strong> — 3대3, 3분, 2골 선승 · 전용 경기장과 매칭</li>
-                <li><strong>시즌 6 스킨</strong> — 프로 서퍼 애저, 잠수부 시안, 복어 샤트, 트로피컬 오렌지</li>
-                <li><strong>메인 맵 3종씩</strong> — 쇼다운·찹 우드·골드 러쉬·사커 킥·테이크다운에서 맵 유형 선택</li>
-                <li><strong>지형 전투</strong> — 벽을 우회하는 봇, 부쉬 은신, 일부 맵의 호수, 벽에 튕기는 사커 공</li>
-                <li><strong>베타 미리보기</strong> — 시즌 7 사막 유적, 젬 그랩·쇼다운+의 맵 3종, 높은 방 입구의 전용 계단</li>
-              </ul>
-              <div class="order-event-lobby-card">
+              <div class="notice-kicker">BETA SEASON 7 · UPDATED 2026.10.13</div>
+<h2>베타 시즌 7 · 잃어버린 황금 유적</h2>
+<p class="notice-summary">보물을 훔치기 시작하자 잠들어 있던 유적이 깨어납니다. 신규 캐릭터와 젬 그랩, 검증된 시즌 7 전투 업데이트를 메인에서 즐기세요.</p>
+<ul class="notice-highlights">
+<li><strong>크리스탈</strong> — 연쇄 수정탄 3단 분열과 궁극기 「수정 분석」</li>
+<li><strong>라벤더</strong> — 향수 지속 공격과 자신을 따라가는 둔화 70% 향기 장판</li>
+<li><strong>신규 궁극기</strong> — 오렌지 「오렌지 껍질 회수」, 퍼플 「독성 대도약」</li>
+<li><strong>젬 그랩</strong> — 3대3, 팀 젬 10개 이상을 확보하고 15초간 유적 탈출</li>
+<li><strong>스킨 4종</strong> — 파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈</li>
+<li><strong>밸런스·봇</strong> — 최신 16종 능력치, 궁 재충전량, 회피·이동 예측 보정</li>
+<li><strong>정규 이벤트</strong> — 모드별 맵 3종, SHOWDOWN+ 처치당 트로피 +2</li>
+<li><strong>사막 유적 테마</strong> — 실제 석벽 모델과 시즌 7 로비·젬 그랩 음악</li>
+<li><strong>유적 조사 퀘스트</strong> — 베타와 같이 준비 중: 첫 번째 발굴·이건 내 보물이다·보물 운반자·도굴꾼·유적 수호자·욕심은 위험해·대탈출·보석 수집가</li>
+</ul>
+<div class="order-event-lobby-card">
                 <strong>정규 이벤트 · 맵 3종</strong>
                 <span>벽이 많은 맵과 부쉬가 많은 맵에서 다른 전략을 펼치세요.</span>
                 <small>기본 맵 · 벽 많음/부쉬 적음 · 부쉬 많음/벽 적음</small>
                 <button id="notice-event-start-btn" type="button">정규 이벤트 선택</button>
-                <a href="./beta-season.html?test=beta7">시즌 7 베타 미리보기</a>
+                <a href="./beta-season.html?test=beta7">시즌 7 베타 테스트</a>
               </div>
               <p class="notice-timezone">한국 시간(KST) 기준 · 베타 미리보기 콘텐츠는 베타 테스트 페이지에서 이용할 수 있습니다.</p>
             </div>
@@ -1023,6 +999,7 @@
               <span class="char-winrate" id="winrate-mint"></span>
               <span class="char-skin-toggle disabled" data-char="mint">스킨 없음</span>
             </button>
+            <button id="select-crystal" class="char-btn" type="button" data-char="crystal"><span class="selected-badge">선택됨</span><span class="char-icon" style="background:#6ee7ff">💎</span><span class="char-name">크리스탈</span><span class="char-trophy" id="trophy-crystal"></span><span class="char-winrate" id="winrate-crystal"></span><span class="char-skin-toggle disabled" data-char="crystal">스킨 없음</span></button><button id="select-lavender" class="char-btn" type="button" data-char="lavender"><span class="selected-badge">선택됨</span><span class="char-icon" style="background:#b48be8">🌸</span><span class="char-name">라벤더</span><span class="char-trophy" id="trophy-lavender"></span><span class="char-winrate" id="winrate-lavender"></span><span class="char-skin-toggle disabled" data-char="lavender">스킨 없음</span></button>
             <button id="select-azure" class="char-btn" type="button" data-char="azure">
               <span class="selected-badge">선택됨</span><span class="char-icon" style="background:#007fff;color:white">Az</span>
               <span class="char-name">Azure</span><span class="char-trophy" id="trophy-azure"></span>
@@ -1038,7 +1015,8 @@
           </div>
           <div id="mode-selector" class="mode-selector hidden">
             <div class="map-select-title">정규 이벤트 선택</div>
-            <label>맵 유형 <select id="event-map-variant"><option value="0">기본 맵</option><option value="1">벽 많음 · 부쉬 적음</option><option value="2">부쉬 많음 · 벽 적음</option></select></label>
+            <div>맵은 매 경기 3개 중 무작위로 선택됩니다.</div>
+            <button id="mode-showdown-plus" class="mode-btn" type="button"><span class="mode-icon-text">🔥</span><span>SHOWDOWN+</span><small class="mode-current-map">생존 순위 · 처치당 트로피 +2</small></button>
             <button id="mode-showdown" class="mode-btn mode-showdown" type="button">
               <img src="./assets/showdown.webp" class="mode-icon" alt="Showdown">
               <span data-i18n="modeShowdown">쇼다운</span>
@@ -1048,6 +1026,7 @@
               <span class="mode-icon-text">🪓</span>
               <span data-i18n="modeChopWood">찹 우드</span>
             </button>
+            <button id="mode-gemgrab" class="mode-btn" type="button"><span class="mode-icon-text">💎</span><span>GEM GRAB</span><small class="mode-current-map">3대3 · 젬 10개 · 유적 탈출 15초</small></button>
             <button id="mode-goldrush" class="mode-btn mode-goldrush" type="button">
               <span class="mode-icon-text">🪙</span>
               <span>Gold Rush</span>
@@ -1170,6 +1149,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.6.0.21"></script>
+  <script type="module" src="./src/main.js?v=1.7.0.1"></script>
 </body>
 </html>

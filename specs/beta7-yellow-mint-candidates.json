@@ -1,0 +1,885 @@
+{
+  "level": 6,
+  "initialCharge": 0,
+  "repetitions": 3,
+  "report": [
+    {
+      "name": "yellow-mint",
+      "edges": [
+        [
+          "crimson",
+          "yellow"
+        ],
+        [
+          "yellow",
+          "mint"
+        ],
+        [
+          "mint",
+          "pink"
+        ]
+      ],
+      "candidates": [
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 28
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.136542443064182
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 15,
+              "electricSpeed": 28
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.219875776397515
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 28
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.2452380952380953
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 15,
+              "electricSpeed": 28
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.3285714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.886542443064182
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 15,
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.969875776397515
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 2.9952380952380953
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 15,
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 3.0785714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 4.136542443064182
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 15,
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 4.219875776397515
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 4.245238095238095
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 15,
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 4.328571428571428
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "electricDamage": 3000
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 4.3335121400338785
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "electricDamage": 3000
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 4.442207792207792
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 28,
+              "electricDamage": 3000
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 2.333512140033879
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 28,
+              "electricDamage": 3000
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 2.442207792207792
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 3000
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 3.083512140033879
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 3000
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 3.192207792207792
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 3.486542443064182
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 14,
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 3.595238095238095
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "electricDamage": 3300
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 4.469875776397515
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "electricDamage": 3300
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            1
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 4.578571428571428
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "electricDamage": 2800
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            1
+          ],
+          "min": 0.9444444444444444,
+          "sum": 2.9444444444444446,
+          "cost": 4.242603049124788
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "electricDamage": 2800
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            1
+          ],
+          "min": 0.9444444444444444,
+          "sum": 2.9444444444444446,
+          "cost": 4.351298701298701
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2800
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            1
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 2.992603049124788
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2800
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            1
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 3.101298701298701
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 3300
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            1
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 3.3285714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 28,
+              "electricDamage": 2800
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 2.242603049124788
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 28,
+              "electricDamage": 2800
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 2.351298701298701
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 13,
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 2.8032091097308487
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 13,
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 2.9119047619047618
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 3300
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 3.219875776397515
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 13,
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 4.053209109730848
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 13,
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            1
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 4.161904761904761
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 28,
+              "electricDamage": 3300
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.8333333333333334,
+            1
+          ],
+          "min": 0.8333333333333334,
+          "sum": 2.8333333333333335,
+          "cost": 2.469875776397515
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 28,
+              "electricDamage": 3300
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.8333333333333334,
+            1
+          ],
+          "min": 0.8333333333333334,
+          "sum": 2.8333333333333335,
+          "cost": 2.5785714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 13,
+              "electricSpeed": 28
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.75,
+            1
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 2.0532091097308487
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricRange": 13,
+              "electricSpeed": 28
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.75,
+            1
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 2.1619047619047618
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "reloadDuration": 0.7
+            }
+          },
+          "scores": [
+            1,
+            0.5555555555555556,
+            1
+          ],
+          "min": 0.5555555555555556,
+          "sum": 2.5555555555555554,
+          "cost": 1.2198757763975154
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "freezeDuration": 3
+            }
+          },
+          "scores": [
+            1,
+            0.5555555555555556,
+            1
+          ],
+          "min": 0.5555555555555556,
+          "sum": 2.5555555555555554,
+          "cost": 1.3285714285714285
+        }
+      ]
+    }
+  ],
+  "best": [
+    {
+      "patch": {
+        "yellow": {
+          "electricRange": 14,
+          "electricSpeed": 28
+        },
+        "mint": {
+          "iceBulletDamage": 1000,
+          "iceBulletSpeed": 28,
+          "reloadDuration": 0.7
+        }
+      },
+      "scores": [
+        1,
+        1,
+        1
+      ],
+      "min": 1,
+      "sum": 3,
+      "cost": 2.136542443064182
+    }
+  ]
+}

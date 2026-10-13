@@ -4,10 +4,10 @@ import { AXES, resetAxe, upgradeAxe, chopTree, CHOP_WOOD_COVER, chopWoodDestinat
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
-import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.23";
+import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.26";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
-import { applyBeta7Balance } from "./config/beta7-balance.js?v=4";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=8";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=22";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.9";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -976,7 +976,7 @@ for (const angle of [Math.PI / 4, -Math.PI / 4]) {
 ivoryUltimateAimIndicator.position.y = 0.14;
 ivoryUltimateAimIndicator.visible = false;
 player.add(ivoryUltimateAimIndicator);
-const THROW_AIM_MIN_RANGE = 1.5;
+const THROW_AIM_MIN_RANGE = 0;
 let ivoryAttackAimRange = BETA_CHARACTERS.ivory.iceCreamRange;
 let ivoryUltimateAimRange = BETA_CHARACTERS.ivory.ultimate.castRange;
 
@@ -3381,8 +3381,9 @@ function createIvoryIceCreamZone(x, z, fromUltimate = false) {
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
     if (Math.hypot(target.position.x - x, target.position.z - z) <= def.iceCreamZoneRadius) {
+      const healthBefore = target.userData.health;
       damageTarget(target, def.iceCreamDamage);
-      chargeIvoryUltimate(1);
+      if (target.userData.health < healthBefore) chargeIvoryUltimate(fromUltimate ? (def.ultimate.rechargePerHit ?? 1) : 1);
     }
   }
   canvas.dataset.lastIvoryLanding = `${x.toFixed(2)},${z.toFixed(2)}`;
@@ -3912,7 +3913,12 @@ function updateBlueDash(dt) {
       if (!target.visible || target.userData.isAlly || dash.hitTargets.has(target)) continue;
       if (Math.hypot(target.position.x - player.position.x, target.position.z - player.position.z) > def.hitRadius) continue;
       dash.hitTargets.add(target);
+      const healthBefore = target.userData.health;
       damageTarget(target, def.damage, true);
+      if (target.userData.health < healthBefore) {
+        blueSpecialCharge = Math.min(def.chargeRequired, blueSpecialCharge + def.rechargePerHit);
+        updateCrimsonUltimateGauge();
+      }
     }
   }
   if (!blueDashState) return true;
@@ -5043,6 +5049,9 @@ function performGoldUltimate() {
       mesh, x: center.x, z: center.z, radius: def.radius,
       expiresAt: clock.elapsedTime + def.duration,
       followsPlayer: def.followsCaster,
+      nextDamageAt: clock.elapsedTime,
+      tickInterval: def.tickInterval ?? 1,
+      tickDamage: def.tickDamage ?? 0,
     });
     canvas.dataset.lastMalfunctionZone = `${center.x.toFixed(2)},${center.y.toFixed(2)},${center.z.toFixed(2)}`;
     attackComboState.textContent = "고장 지대 설치";
@@ -6978,10 +6987,7 @@ function updateBeta6BotCombat(dt) {
     const location = object.kind === "lock" ? object.owner : object;
     const lift = object.kind === "yellowDevice" ? .02 : kind === "zone" ? .08 : .8;
     mesh.position.set(location.x, groundHeightAt(location.x, location.z) + lift, location.z);
-    if (object.kind === "perfumeSpray") {
-      mesh.rotation.order = "YXZ";
-      mesh.rotation.set(-Math.PI / 2, -object.yaw, 0);
-    }
+    if (["perfumeSpray", "fragrance"].includes(object.kind)) updateLavenderMist(mesh, object, world.time);
     if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
     // 전투의 각도는 (cos, sin) 기준이라 로비 모양이 쓰는 회전값으로 바꿔 준다
     if (mesh.userData.beta6Oriented) { mesh.rotation.order = "YXZ"; mesh.rotation.y = Math.PI / 2 - (object.yaw ?? 0); }
@@ -7347,25 +7353,70 @@ function disposeLavenderMist(mesh) {
   mesh.traverse(part => { part.geometry?.dispose(); part.material?.dispose(); });
 }
 
+let lavenderMistTexture = null;
+function getLavenderMistTexture() {
+  if (lavenderMistTexture) return lavenderMistTexture;
+  const image = document.createElement("canvas");
+  image.width = image.height = 64;
+  const context = image.getContext("2d");
+  const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, "rgba(255,255,255,0.8)");
+  gradient.addColorStop(.4, "rgba(255,255,255,0.4)");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, 64, 64);
+  lavenderMistTexture = new THREE.CanvasTexture(image);
+  return lavenderMistTexture;
+}
+
 function createLavenderMist(zone) {
   const spray = zone.kind === "perfumeSpray";
-  const mesh = new THREE.Mesh(spray
+  // Keep the root upright: only the range marker lies on the ground.
+  const mesh = new THREE.Group();
+  const footprint = new THREE.Mesh(spray
     ? new THREE.CircleGeometry(zone.radius, 32, -zone.halfAngle, zone.halfAngle * 2)
     : new THREE.CircleGeometry(zone.radius, 32),
-    new THREE.MeshBasicMaterial({ color: 0xb48be8, transparent: true, opacity: .25, depthWrite: false, side: THREE.DoubleSide }));
-  mesh.rotation.order = "YXZ";
-  mesh.rotation.set(-Math.PI / 2, spray ? -zone.yaw : 0, 0);
-  mesh.position.set(zone.x, groundHeightAt(zone.x, zone.z) + .08, zone.z);
-  for (let index = 0; index < 12; index++) {
-    const angle = spray ? -zone.halfAngle + (index % 4) / 3 * zone.halfAngle * 2 : index / 12 * Math.PI * 2;
-    const reach = zone.radius * (.25 + (index % 3) * .28);
-    const mist = new THREE.Mesh(new THREE.SphereGeometry(.18, 8, 6),
-      new THREE.MeshBasicMaterial({ color: 0xe6c4ff, transparent: true, opacity: .35, depthWrite: false }));
-    mist.position.set(Math.cos(angle) * reach, Math.sin(angle) * reach, -.35 - (index % 3) * .25);
+    new THREE.MeshBasicMaterial({ color: 0xb48be8, transparent: true, opacity: .1, depthWrite: false, side: THREE.DoubleSide }));
+  footprint.rotation.x = -Math.PI / 2;
+  mesh.add(footprint);
+  mesh.userData.lavenderFootprint = footprint;
+  mesh.userData.lavenderParticles = [];
+  const count = spray ? 24 : 32;
+  for (let index = 0; index < count; index++) {
+    const mist = new THREE.Sprite(new THREE.SpriteMaterial({ map: getLavenderMistTexture(),
+      color: 0xe6c4ff, transparent: true, opacity: 0, depthWrite: false }));
+    mist.userData.seed = (index * .61803398875) % 1;
+    mist.userData.angle = spray ? -zone.halfAngle + (index + .5) / count * zone.halfAngle * 2 : index / count * Math.PI * 2;
     mesh.add(mist);
+    mesh.userData.lavenderParticles.push(mist);
   }
+  updateLavenderMist(mesh, zone, zone.startedAt ?? (zone.kind === "perfumeSpray" ? zone.until - BETA_CHARACTERS.lavender.sprayDuration : zone.until - BETA_CHARACTERS.lavender.special.duration));
   scene.add(mesh);
   return mesh;
+}
+
+function updateLavenderMist(mesh, zone, time) {
+  const spray = zone.kind === "perfumeSpray";
+  const duration = spray ? BETA_CHARACTERS.lavender.sprayDuration : BETA_CHARACTERS.lavender.special.duration;
+  const age = Math.max(0, time - (zone.startedAt ?? zone.until - duration));
+  const progress = Math.min(1, age / duration);
+  const fade = Math.min(1, (zone.until - time) / (spray ? .25 : .7));
+  const center = spray ? zone : (zone.owner ?? zone);
+  mesh.position.set(center.x, groundHeightAt(center.x, center.z) + .08, center.z);
+  mesh.rotation.y = spray ? -zone.yaw : 0;
+  const front = spray ? Math.min(zone.radius, age * (zone.spraySpeed ?? BETA_CHARACTERS.lavender.spraySpeed)) : zone.radius;
+  mesh.userData.lavenderFootprint.scale.set(front / zone.radius, front / zone.radius, 1);
+  mesh.userData.lavenderFootprint.material.opacity = .1 * Math.max(0, fade);
+  for (const mist of mesh.userData.lavenderParticles) {
+    const seed = mist.userData.seed;
+    const phase = spray ? Math.min(1, progress * 1.5 + seed * .45) : (age * .35 + seed) % 1;
+    const angle = mist.userData.angle + (spray ? 0 : Math.sin(age + seed * 6) * .12);
+    const reach = spray ? front * (.15 + seed * .85) : zone.radius * (.15 + Math.sqrt(seed) * .7);
+    mist.position.set(Math.cos(angle) * reach, .35 + phase * 1.1, Math.sin(angle) * reach);
+    const size = (spray ? .6 : .8) + phase * .8;
+    mist.scale.set(size, size, 1);
+    mist.material.opacity = (spray ? .38 : .24) * Math.sin(Math.PI * (.1 + phase * .8)) * Math.max(0, fade);
+  }
 }
 
 function syncLavenderPractice() {
@@ -7422,7 +7473,10 @@ function updateLavenderPractice(dt) {
     }
   }
   const active = new Set(world.zones.map(zone => zone.key));
-  for (const zone of world.zones) if (!visuals.has(zone.key)) visuals.set(zone.key, createLavenderMist(zone));
+  for (const zone of world.zones) {
+    if (!visuals.has(zone.key)) visuals.set(zone.key, createLavenderMist(zone));
+    updateLavenderMist(visuals.get(zone.key), zone, world.time);
+  }
   for (const [key, mesh] of visuals) if (!active.has(key)) { disposeLavenderMist(mesh); visuals.delete(key); }
   updateCrimsonUltimateGauge();
 }
@@ -7543,6 +7597,15 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
   saveBetaState();
   goldRushState.ended = true;
+  // 경기 종료 후 로비에서는 사망/부활 대기 상태를 이어받지 않는다.
+  goldRushState.active = false;
+  goldRushState.dead = false;
+  goldRushState.respawnAt = 0;
+  goldRushState.health = goldRushState.maxHealth;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+  canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
   setBetaMatchMusic(null);
   document.body.classList.remove("temple-countdown-final");
   goldRushState.winCountdownStartedAt = null;
@@ -8017,8 +8080,8 @@ function aimPlayerAtPointer(event, aimKind = "attack") {
   const aimX = manualAimPoint.x - player.position.x;
   const aimZ = manualAimPoint.z - player.position.z;
   const pointerRange = Math.hypot(aimX, aimZ);
-  if (pointerRange < 0.25) return false;
-  player.rotation.y = Math.atan2(aimX, aimZ);
+  if (pointerRange < 0.25 && betaState.selectedCharacter !== "ivory") return false;
+  if (pointerRange > 0.001) player.rotation.y = Math.atan2(aimX, aimZ);
   if (betaState.selectedCharacter === "ivory") {
     if (aimKind === "ultimate") {
       ivoryUltimateAimRange = THREE.MathUtils.clamp(pointerRange, THROW_AIM_MIN_RANGE, BETA_CHARACTERS.ivory.ultimate.castRange);
@@ -8450,7 +8513,7 @@ function animate() {
           orangeDirectHitTarget = target;
         }
         if (projectile.type === "orangePeel" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
-          orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + 1);
+          orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + (BETA_CHARACTERS.orange.ultimate.rechargePerHit ?? 1));
           if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
         }
         if (projectile.type === "electric") {
@@ -8684,7 +8747,7 @@ function animate() {
       damagePopups.splice(i, 1);
     }
   }
-  const dueIvoryZoneTargets = new Set();
+  const dueIvoryZoneTargets = new Map();
   for (let i = ivoryIceCreamZones.length - 1; i >= 0; i -= 1) {
     const zone = ivoryIceCreamZones[i];
     const remaining = Math.max(0, zone.expiresAt - clock.elapsedTime);
@@ -8694,7 +8757,10 @@ function animate() {
       zone.nextTickAt += BETA_CHARACTERS.ivory.iceCreamZoneTickInterval;
       for (const target of testTargets) {
         if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
-        if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) dueIvoryZoneTargets.add(target);
+        if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) {
+          const award = zone.fromUltimate ? (BETA_CHARACTERS.ivory.ultimate.rechargePerHit ?? 1) : 1;
+          dueIvoryZoneTargets.set(target, Math.max(dueIvoryZoneTargets.get(target) ?? 0, award));
+        }
       }
     }
     if (clock.elapsedTime >= zone.expiresAt) {
@@ -8703,9 +8769,10 @@ function animate() {
       ivoryIceCreamZones.splice(i, 1);
     }
   }
-  for (const target of dueIvoryZoneTargets) {
-    damageTarget(target, BETA_CHARACTERS.ivory.iceCreamDamage);
-    chargeIvoryUltimate(1);
+  for (const [target, award] of dueIvoryZoneTargets) {
+    const healthBefore = target.userData.health;
+    damageTarget(target, BETA_CHARACTERS.ivory.iceCreamZoneDamage ?? BETA_CHARACTERS.ivory.iceCreamDamage);
+    if (target.userData.health < healthBefore) chargeIvoryUltimate(award);
   }
   canvas.dataset.ivoryZones = String(ivoryIceCreamZones.length);
 
@@ -8735,7 +8802,10 @@ function animate() {
       target.userData.inMintIceZone = true;
       if (tickDue) {
         applyMintIce(target, BETA_CHARACTERS.mint.special.icePerSecond);
+        const healthBefore = target.userData.health;
         damageTarget(target, BETA_CHARACTERS.mint.special.damagePerSecond);
+        if (target.userData.health < healthBefore && BETA_CHARACTERS.mint.special.rechargePerHit != null) mintUltimateCharge = Math.min(BETA_CHARACTERS.mint.special.chargeRequired, mintUltimateCharge + BETA_CHARACTERS.mint.special.rechargePerHit);
+        if (betaState.selectedCharacter === "mint") updateCrimsonUltimateGauge();
       }
       if ((target.userData.mintFrozenUntil || 0) <= clock.elapsedTime) {
         const length = distance || 1;
@@ -8800,8 +8870,10 @@ function animate() {
         target.userData.moveSpeedMultiplier = isBoss ? 0.75 : 0.5;
         target.userData.attackDisabled = !isBoss;
         target.userData.specialDisabled = !isBoss;
+        if (clock.elapsedTime >= zone.nextDamageAt) damageTarget(target, zone.tickDamage);
       }
     }
+    if (clock.elapsedTime >= zone.nextDamageAt) zone.nextDamageAt = clock.elapsedTime + zone.tickInterval;
   }
   if (malfunctionZones.length === 0) {
     for (const target of testTargets) target.userData.inMalfunctionZone = false;

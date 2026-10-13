@@ -14,3 +14,21 @@ assert.equal(server.playerMatch.get('a'),server.playerMatch.get('e'));
 assert.notEqual(server.playerMatch.get('a'),server.playerMatch.get('b'));
 assert.notEqual(server.playerMatch.get('b'),server.playerMatch.get('d'));
 console.log('Matchmaking: selected maps partition rooms; invalid map safely defaults to 0');
+
+// Main random queues share a room and the server selects its map exactly once.
+for (const [index,roll] of [0,.34,.99].entries()) {
+ let calls=0;
+ const randomJoin=vm.runInNewContext('({'+method+'}).joinQueue',{
+  PLAYABLE_CHARACTERS:new Set(['red']),ROOM_MAX:8,SOCCER_ROOM_MAX:6,
+  crypto:{randomUUID:()=> 'seed'},Math:{random:()=>{calls++;return roll;},floor:Math.floor},
+ });
+ for (const id of [`random-${index}-a`,`random-${index}-b`]) {
+  server.players.set(id,{id});randomJoin.call(server,{id},{nickname:id,charType:'red',mode:'soccer',mapId:-1});
+ }
+ const match=server.matches.get(server.playerMatch.get(`random-${index}-a`));
+ assert.equal(match.mapId,index);
+ assert.equal(server.playerMatch.get(`random-${index}-a`),server.playerMatch.get(`random-${index}-b`));
+ assert.equal(calls,1);
+ match.started=true;
+}
+console.log('Random matchmaking: all three maps, one draw per room, shared participant map passed');

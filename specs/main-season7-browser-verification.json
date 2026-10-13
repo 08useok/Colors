@@ -1,0 +1,89 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "season": "beta7",
+      "ids": [
+        "red",
+        "green",
+        "blue",
+        "orange",
+        "yellow",
+        "cyan",
+        "purple",
+        "pink",
+        "crimson",
+        "gold",
+        "ivory",
+        "chartreuse",
+        "mint",
+        "lavender",
+        "azure",
+        "crystal"
+      ]
+    },
+    {
+      "names": [
+        "파라오 골드",
+        "미라 그린",
+        "스카라베 블루",
+        "보석 공주 크리스탈"
+      ],
+      "coins": 17500,
+      "bought": true,
+      "equipped": "beta7_blue_scarab"
+    },
+    {
+      "practice": "crystal"
+    },
+    {
+      "practice": "lavender"
+    },
+    {
+      "practice": "orange"
+    },
+    {
+      "practice": "purple"
+    },
+    {
+      "id": "gold",
+      "skin": "beta7_gold_pharaoh",
+      "model": true,
+      "spheres": 0,
+      "walk": true
+    },
+    {
+      "id": "green",
+      "skin": "beta7_green_mummy",
+      "model": true,
+      "spheres": 0,
+      "walk": true
+    },
+    {
+      "id": "blue",
+      "skin": "beta7_blue_scarab",
+      "model": true,
+      "spheres": 0,
+      "walk": true
+    },
+    {
+      "id": "crystal",
+      "skin": "beta7_crystal_ruin_explorer",
+      "model": true,
+      "spheres": 0,
+      "walk": true
+    },
+    {
+      "teams": [
+        "a",
+        "a",
+        "a",
+        "b",
+        "b",
+        "b"
+      ],
+      "mode": true,
+      "map": "비밀 정원"
+    }
+  ]
+}

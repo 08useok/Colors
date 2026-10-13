@@ -1,0 +1,463 @@
+{
+  "games": 43200,
+  "targetLinksAchieved": 16,
+  "uniqueExtremesAchieved": false,
+  "audit": [
+    {
+      "id": "red",
+      "target": "blue",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "blue",
+      "target": "orange",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "orange",
+      "target": "mint",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "mint",
+      "target": "cyan",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "cyan",
+      "target": "pink",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "pink",
+      "target": "purple",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "purple",
+      "target": "chartreuse",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "chartreuse",
+      "target": "yellow",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "yellow",
+      "target": "ivory",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "ivory",
+      "target": "gold",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "gold",
+      "target": "green",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "green",
+      "target": "azure",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "azure",
+      "target": "lavender",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "lavender",
+      "target": "crimson",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "crimson",
+      "target": "crystal",
+      "before": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    },
+    {
+      "id": "crystal",
+      "target": "red",
+      "before": {
+        "wins": 358,
+        "losses": 2,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9944444444444445
+      },
+      "after": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      }
+    }
+  ],
+  "changed": [
+    {
+      "a": "lavender",
+      "b": "crystal",
+      "before": {
+        "wins": 16,
+        "losses": 344,
+        "draws": 0,
+        "games": 360,
+        "score": 0.044444444444444446
+      },
+      "after": {
+        "wins": 19,
+        "losses": 341,
+        "draws": 0,
+        "games": 360,
+        "score": 0.05277777777777778
+      }
+    },
+    {
+      "a": "red",
+      "b": "crystal",
+      "before": {
+        "wins": 2,
+        "losses": 358,
+        "draws": 0,
+        "games": 360,
+        "score": 0.005555555555555556
+      },
+      "after": {
+        "wins": 0,
+        "losses": 360,
+        "draws": 0,
+        "games": 360,
+        "score": 0
+      }
+    },
+    {
+      "a": "blue",
+      "b": "crystal",
+      "before": {
+        "wins": 157,
+        "losses": 203,
+        "draws": 0,
+        "games": 360,
+        "score": 0.4361111111111111
+      },
+      "after": {
+        "wins": 161,
+        "losses": 199,
+        "draws": 0,
+        "games": 360,
+        "score": 0.44722222222222224
+      }
+    },
+    {
+      "a": "orange",
+      "b": "crystal",
+      "before": {
+        "wins": 168,
+        "losses": 186,
+        "draws": 6,
+        "games": 360,
+        "score": 0.475
+      },
+      "after": {
+        "wins": 161,
+        "losses": 192,
+        "draws": 7,
+        "games": 360,
+        "score": 0.45694444444444443
+      }
+    },
+    {
+      "a": "yellow",
+      "b": "crystal",
+      "before": {
+        "wins": 37,
+        "losses": 323,
+        "draws": 0,
+        "games": 360,
+        "score": 0.10277777777777777
+      },
+      "after": {
+        "wins": 39,
+        "losses": 321,
+        "draws": 0,
+        "games": 360,
+        "score": 0.10833333333333334
+      }
+    },
+    {
+      "a": "purple",
+      "b": "crystal",
+      "before": {
+        "wins": 103,
+        "losses": 257,
+        "draws": 0,
+        "games": 360,
+        "score": 0.2861111111111111
+      },
+      "after": {
+        "wins": 108,
+        "losses": 252,
+        "draws": 0,
+        "games": 360,
+        "score": 0.3
+      }
+    },
+    {
+      "a": "pink",
+      "b": "crystal",
+      "before": {
+        "wins": 2,
+        "losses": 358,
+        "draws": 0,
+        "games": 360,
+        "score": 0.005555555555555556
+      },
+      "after": {
+        "wins": 1,
+        "losses": 359,
+        "draws": 0,
+        "games": 360,
+        "score": 0.002777777777777778
+      }
+    },
+    {
+      "a": "ivory",
+      "b": "crystal",
+      "before": {
+        "wins": 240,
+        "losses": 120,
+        "draws": 0,
+        "games": 360,
+        "score": 0.6666666666666666
+      },
+      "after": {
+        "wins": 247,
+        "losses": 113,
+        "draws": 0,
+        "games": 360,
+        "score": 0.6861111111111111
+      }
+    },
+    {
+      "a": "azure",
+      "b": "crystal",
+      "before": {
+        "wins": 37,
+        "losses": 323,
+        "draws": 0,
+        "games": 360,
+        "score": 0.10277777777777777
+      },
+      "after": {
+        "wins": 40,
+        "losses": 320,
+        "draws": 0,
+        "games": 360,
+        "score": 0.1111111111111111
+      }
+    }
+  ],
+  "averages": {
+    "before": 78.74074074074073,
+    "after": 78.47222222222221
+  }
+}

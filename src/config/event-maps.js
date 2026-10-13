@@ -14,6 +14,10 @@ for(const x of [-.3,.3])for(const z of [-.5,.5])denseWalls.push([x,z,.07,.2]);
 for(const x of [-.3,.3])for(const z of [-.25,.25])denseWalls.push([x,z,.065,.16]);
 for(const x of [-.62,.62])for(const z of [-.32,.32])denseWalls.push([x,z,.055,.12]);
 const fewWalls = [[-.56,-.25,.25,.075],[.56,-.25,.25,.075],[-.56,.25,.25,.075],[.56,.25,.25,.075]];
+// Main wall maps form wide blocks with connecting lanes and an open center.
+export const MAIN_DENSE_WALLS = [];
+for (const x of [-.7,-.3,.3,.7])
+  for (const z of [-.7,-.42,-.14,.14,.42,.7]) MAIN_DENSE_WALLS.push([x,z,.25,.18]);
 const fewBushes = [[-.32,-.18,.1,.13],[.32,-.18,.1,.13],[-.32,.18,.1,.13],[.32,.18,.1,.13]];
 const denseBushes = [];
 for(const x of [-.7,-.36,.36,.7])for(const z of [-.57,-.18,.18,.57])denseBushes.push([x,z,.18,.18]);
@@ -29,12 +33,12 @@ EVENT_MAPS.takedown[1].walls=[.38,.5,.62,.74].flatMap(r=>Array.from({length:16},
 EVENT_MAPS.takedown[1].bushes=[[-.4,-.5,.12,.12],[.4,-.5,.12,.12],[-.4,.5,.12,.12],[.4,.5,.12,.12]];
 EVENT_MAPS.takedown[2].bushes=denseBushes.filter(([x,z])=>Math.hypot(x,z)>.48).map(v=>[...v]);
 EVENT_MAPS.takedown[2].walls=fewWalls.map(([x,z,w,d])=>[x,z*2,w,d]);
-export function eventMap(mode,index=0,halfWidth=20,halfDepth=20,reserved=[]) {
+export function eventMap(mode,index=0,halfWidth=20,halfDepth=20,reserved=[],wallLayout=null) {
   const source=EVENT_MAPS[mode]?.[Math.max(0,Math.min(2,Math.trunc(Number(index))||0))];
   if(!source)throw new Error(`Unknown regular event ${mode}`);
   const scale=([x,z,w,d])=>({x:x*halfWidth,z:z*halfDepth,width:w*halfWidth,depth:d*halfDepth});
   const keep=rect=>!reserved.some(([x,z,r=2])=>Math.abs(x-rect.x)<rect.width/2+r && Math.abs(z-rect.z)<rect.depth/2+r);
-  return {...source,halfWidth,halfDepth,walls:source.walls.map(scale).filter(keep),
+  return {...source,halfWidth,halfDepth,walls:(wallLayout ?? source.walls).map(scale).filter(keep),
     bushes:source.bushes.map(scale),lakes:source.lakes.map(scale).filter(keep)};
 }
 export function insideMapRect(x,z,rect,radius=0) {
@@ -45,8 +49,22 @@ export function mapBlocked(layout,x,z,radius=.6) {
     || layout.walls.some(rect=>insideMapRect(x,z,rect,radius)) || layout.lakes.some(rect=>insideMapRect(x,z,rect,radius));
 }
 function clearSegment(layout,a,b,radius) {
-  const n=Math.ceil(Math.hypot(a.x-b.x,a.z-b.z)*2);
-  for(let i=0;i<=n;i++)if(mapBlocked(layout,a.x+(b.x-a.x)*i/Math.max(1,n),a.z+(b.z-a.z)*i/Math.max(1,n),radius))return false;
+  if(mapBlocked(layout,a.x,a.z,radius)||mapBlocked(layout,b.x,b.z,radius))return false;
+  // Continuous intersection prevents a short segment from skipping a wall corner.
+  for(const rect of [...layout.walls,...layout.lakes]) {
+    let enter=0,leave=1;
+    for(const [key,size] of [["x","width"],["z","depth"]]) {
+      const delta=b[key]-a[key],extent=rect[size]/2+radius;
+      if(Math.abs(delta)<1e-9) {
+        if(Math.abs(a[key]-rect[key])>=extent){enter=Infinity;break;}
+      } else {
+        let near=(rect[key]-extent-a[key])/delta,far=(rect[key]+extent-a[key])/delta;
+        if(near>far)[near,far]=[far,near];
+        enter=Math.max(enter,near);leave=Math.min(leave,far);
+      }
+    }
+    if(enter<=leave)return false;
+  }
   return true;
 }
 const fields=new WeakMap();

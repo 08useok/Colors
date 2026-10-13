@@ -1,0 +1,302 @@
+{
+  "losses": [
+    {
+      "seed": 20290941,
+      "scenario": {
+        "distance": 13,
+        "aimError": 0.1
+      },
+      "mirror": 1,
+      "result": {
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          2,
+          3
+        ],
+        "hp": [
+          6050,
+          0
+        ],
+        "charge": [
+          2,
+          3
+        ],
+        "distance": 4.116338116849905,
+        "lastDamageKind": [
+          "crystal",
+          null
+        ],
+        "time": 1.9999999999999978
+      },
+      "events": [
+        {
+          "time": 1.4333333333333331,
+          "type": "damage",
+          "owner": "red",
+          "target": "crystal",
+          "amount": 2640,
+          "targetHP": 3960,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.5333333333333328,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "red",
+          "amount": 2200,
+          "targetHP": 7700,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.5499999999999994,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "red",
+          "amount": 1100,
+          "targetHP": 6600,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.566666666666666,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "red",
+          "amount": 550,
+          "targetHP": 6050,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.5833333333333326,
+          "type": "ultimate",
+          "owner": "red",
+          "target": "crystal",
+          "targetHP": 3960,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.6833333333333322,
+          "type": "damage",
+          "owner": "red",
+          "target": "crystal",
+          "amount": 2640,
+          "targetHP": 1320,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.9999999999999978,
+          "type": "damage",
+          "owner": "red",
+          "target": "crystal",
+          "amount": 1320,
+          "targetHP": 0,
+          "guardUntil": 0
+        }
+      ],
+      "snapshots": [
+        {
+          "time": 0.016666666666666666,
+          "actors": [
+            {
+              "id": "red",
+              "hp": 9900,
+              "x": -6.341333333333333,
+              "z": 0.07464514967952512,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            },
+            {
+              "id": "crystal",
+              "hp": 6600,
+              "x": 6.381019435580465,
+              "z": 0.0036893998269543348,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            }
+          ]
+        },
+        {
+          "time": 1.016666666666668,
+          "actors": [
+            {
+              "id": "red",
+              "hp": 9900,
+              "x": 2.716837650694757,
+              "z": -1.0895003586322998,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            },
+            {
+              "id": "crystal",
+              "hp": 6600,
+              "x": 8.527641619185388,
+              "z": -3.8443624685789164,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": 20290948,
+      "scenario": {
+        "distance": 13,
+        "aimError": 0.1
+      },
+      "mirror": -1,
+      "result": {
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          3,
+          2
+        ],
+        "hp": [
+          0,
+          6050
+        ],
+        "charge": [
+          3,
+          1
+        ],
+        "distance": 4.005472221878996,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 1.9999999999999978
+      },
+      "events": [
+        {
+          "time": 1.4333333333333331,
+          "type": "damage",
+          "owner": "red",
+          "target": "crystal",
+          "amount": 2640,
+          "targetHP": 3960,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.649999999999999,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "red",
+          "amount": 2200,
+          "targetHP": 7700,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.6666666666666656,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "red",
+          "amount": 1100,
+          "targetHP": 6600,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.6833333333333322,
+          "type": "damage",
+          "owner": "red",
+          "target": "crystal",
+          "amount": 2640,
+          "targetHP": 1320,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.6833333333333322,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "red",
+          "amount": 550,
+          "targetHP": 6050,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.6999999999999988,
+          "type": "ultimate",
+          "owner": "red",
+          "target": "crystal",
+          "targetHP": 1320,
+          "guardUntil": 0
+        },
+        {
+          "time": 1.9999999999999978,
+          "type": "damage",
+          "owner": "red",
+          "target": "crystal",
+          "amount": 1320,
+          "targetHP": 0,
+          "guardUntil": 0
+        }
+      ],
+      "snapshots": [
+        {
+          "time": 0.016666666666666666,
+          "actors": [
+            {
+              "id": "crystal",
+              "hp": 6600,
+              "x": 6.381,
+              "z": 0.005886246234868178,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            },
+            {
+              "id": "red",
+              "hp": 9900,
+              "x": -6.341309607216036,
+              "z": -0.05188412281009963,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            }
+          ]
+        },
+        {
+          "time": 1.016666666666668,
+          "actors": [
+            {
+              "id": "crystal",
+              "hp": 6600,
+              "x": 7.882306236126256,
+              "z": 4.4335264115806785,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            },
+            {
+              "id": "red",
+              "hp": 9900,
+              "x": 3.1663063680689083,
+              "z": 0.2316918022835745,
+              "charge": 0,
+              "lockUntil": 0,
+              "guardUntil": 0,
+              "analysis": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

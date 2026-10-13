@@ -1,0 +1,559 @@
+{
+  "level": 6,
+  "initialCharge": 0,
+  "repetitions": 30,
+  "rows": [
+    {
+      "name": "baseline",
+      "stats": {},
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 2.49175925925926
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 0,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "speed1.1",
+      "stats": {
+        "moveSpeedMultiplier": 1.1
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 2.8405092592592593
+        },
+        "gold": {
+          "wins": 359,
+          "draws": 1,
+          "games": 360,
+          "winRate": 99.86111111111111,
+          "casts": 0,
+          "averageTime": 30.99722222222176
+        }
+      }
+    },
+    {
+      "name": "speed1.2",
+      "stats": {
+        "moveSpeedMultiplier": 1.2
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 3.5694907407407355
+        },
+        "gold": {
+          "wins": 359,
+          "draws": 0,
+          "games": 360,
+          "winRate": 99.72222222222223,
+          "casts": 0,
+          "averageTime": 30.943194444443996
+        }
+      }
+    },
+    {
+      "name": "speed1.3",
+      "stats": {
+        "moveSpeedMultiplier": 1.3
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 1,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0.2777777777777778,
+          "casts": 3,
+          "averageTime": 5.771249999999989
+        },
+        "gold": {
+          "wins": 344,
+          "draws": 1,
+          "games": 360,
+          "winRate": 95.69444444444444,
+          "casts": 0,
+          "averageTime": 30.963472222221778
+        }
+      }
+    },
+    {
+      "name": "speed1.4",
+      "stats": {
+        "moveSpeedMultiplier": 1.4
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 16,
+          "draws": 0,
+          "games": 360,
+          "winRate": 4.444444444444445,
+          "casts": 26,
+          "averageTime": 6.284768518518504
+        },
+        "gold": {
+          "wins": 345,
+          "draws": 1,
+          "games": 360,
+          "winRate": 95.97222222222223,
+          "casts": 0,
+          "averageTime": 30.74912037036991
+        }
+      }
+    },
+    {
+      "name": "speed1.5",
+      "stats": {
+        "moveSpeedMultiplier": 1.5
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 31,
+          "draws": 0,
+          "games": 360,
+          "winRate": 8.61111111111111,
+          "casts": 45,
+          "averageTime": 6.701435185185182
+        },
+        "gold": {
+          "wins": 342,
+          "draws": 2,
+          "games": 360,
+          "winRate": 95.27777777777777,
+          "casts": 0,
+          "averageTime": 30.77398148148105
+        }
+      }
+    },
+    {
+      "name": "hp7000",
+      "stats": {
+        "maxHealth": 7000
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 2.7866203703703736
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 0,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "hp8000",
+      "stats": {
+        "maxHealth": 8000
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 3.1282870370370315
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 0,
+          "averageTime": 20.74671296296277
+        }
+      }
+    },
+    {
+      "name": "hp9000",
+      "stats": {
+        "maxHealth": 9000
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 3.1449537037037056
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 0,
+          "averageTime": 19.433981481481336
+        }
+      }
+    },
+    {
+      "name": "hp10000",
+      "stats": {
+        "maxHealth": 10000
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 3.1449537037037056
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 0,
+          "averageTime": 18.22694444444433
+        }
+      }
+    },
+    {
+      "name": "charge5",
+      "stats": {},
+      "special": {
+        "chargeRequired": 5
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 360,
+          "winRate": 0,
+          "casts": 0,
+          "averageTime": 2.49175925925926
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 5,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "charge4",
+      "stats": {},
+      "special": {
+        "chargeRequired": 4
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 78,
+          "draws": 0,
+          "games": 360,
+          "winRate": 21.666666666666668,
+          "casts": 112,
+          "averageTime": 3.7686574074073893
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 360,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "charge3",
+      "stats": {},
+      "special": {
+        "chargeRequired": 3
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 340,
+          "draws": 0,
+          "games": 360,
+          "winRate": 94.44444444444444,
+          "casts": 718,
+          "averageTime": 8.000370370370394
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 360,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "charge2",
+      "stats": {},
+      "special": {
+        "chargeRequired": 2
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 1080,
+          "averageTime": 4.427592592592557
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 720,
+          "averageTime": 30.943518518518072
+        }
+      }
+    },
+    {
+      "name": "charge1",
+      "stats": {},
+      "special": {
+        "chargeRequired": 1
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 2160,
+          "averageTime": 2.5654629629629593
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 1473,
+          "averageTime": 30.943472222221775
+        }
+      }
+    },
+    {
+      "name": "charge3-recharge.075",
+      "stats": {},
+      "special": {
+        "chargeRequired": 3,
+        "rechargePerHit": 0.075
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 340,
+          "draws": 0,
+          "games": 360,
+          "winRate": 94.44444444444444,
+          "casts": 718,
+          "averageTime": 8.000370370370394
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 360,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "charge2-recharge.05",
+      "stats": {},
+      "special": {
+        "chargeRequired": 2,
+        "rechargePerHit": 0.05
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 1080,
+          "averageTime": 4.427592592592557
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 720,
+          "averageTime": 30.943518518518072
+        }
+      }
+    },
+    {
+      "name": "hp7000-charge3",
+      "stats": {
+        "maxHealth": 7000
+      },
+      "special": {
+        "chargeRequired": 3,
+        "rechargePerHit": 0.075
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 344,
+          "draws": 0,
+          "games": 360,
+          "winRate": 95.55555555555556,
+          "casts": 719,
+          "averageTime": 8.008750000000022
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 360,
+          "averageTime": 31.024351851851392
+        }
+      }
+    },
+    {
+      "name": "hp8000-charge3",
+      "stats": {
+        "maxHealth": 8000
+      },
+      "special": {
+        "chargeRequired": 3,
+        "rechargePerHit": 0.075
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 351,
+          "draws": 0,
+          "games": 360,
+          "winRate": 97.5,
+          "casts": 719,
+          "averageTime": 7.123472222222224
+        },
+        "gold": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 360,
+          "averageTime": 20.74671296296277
+        }
+      }
+    },
+    {
+      "name": "speed1.1-charge3",
+      "stats": {
+        "moveSpeedMultiplier": 1.1
+      },
+      "special": {
+        "chargeRequired": 3
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 333,
+          "draws": 0,
+          "games": 360,
+          "winRate": 92.5,
+          "casts": 714,
+          "averageTime": 7.9276388888889215
+        },
+        "gold": {
+          "wins": 359,
+          "draws": 1,
+          "games": 360,
+          "winRate": 99.86111111111111,
+          "casts": 360,
+          "averageTime": 30.99722222222176
+        }
+      }
+    },
+    {
+      "name": "speed1.2-charge3",
+      "stats": {
+        "moveSpeedMultiplier": 1.2
+      },
+      "special": {
+        "chargeRequired": 3
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 720,
+          "averageTime": 6.164583333333316
+        },
+        "gold": {
+          "wins": 359,
+          "draws": 0,
+          "games": 360,
+          "winRate": 99.72222222222223,
+          "casts": 360,
+          "averageTime": 30.943194444443996
+        }
+      }
+    },
+    {
+      "name": "speed1.3-charge3",
+      "stats": {
+        "moveSpeedMultiplier": 1.3
+      },
+      "special": {
+        "chargeRequired": 3
+      },
+      "opponents": {
+        "crimson": {
+          "wins": 360,
+          "draws": 0,
+          "games": 360,
+          "winRate": 100,
+          "casts": 720,
+          "averageTime": 5.963055555555567
+        },
+        "gold": {
+          "wins": 344,
+          "draws": 1,
+          "games": 360,
+          "winRate": 95.69444444444444,
+          "casts": 360,
+          "averageTime": 30.963472222221778
+        }
+      }
+    }
+  ]
+}

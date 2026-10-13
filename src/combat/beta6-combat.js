@@ -73,27 +73,69 @@ export function createBeta6Combat(definitions, options = {}) {
       projectile.radius = a.d.projectileSize / 2;
     }
     projectiles.push(projectile);
-    for (const b of actors) if (!['wave', 'gale'].includes(projectile.kind) && b.automatic && b.d.projectileDodgeDuration && enemies(a, b)
+    for (const b of actors) if (!['wave', 'gale'].includes(projectile.kind) && b.automatic && b.d.projectileDodgeDuration
+      && (!b.d.projectileDodgeKinds || b.d.projectileDodgeKinds.includes(projectile.kind)) && enemies(a, b)
       && distance(a, b) <= (b.d.projectileDodgeDetectionRange ?? 20)) {
       b.dodgeUntil = time + b.d.projectileDodgeDuration;
       b.dodgeYaw = yaw + (random() < .5 ? -Math.PI / 2 : Math.PI / 2);
     }
   }
   function after(delay, owner, run) { scheduled.push({ at: time + delay, owner, run }); }
-  function area(a, center, radius, damage, basic = false) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic); }
+  function area(a, center, radius, damage, basic = false, award = 1) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic, award); }
   function strike(a, b, yaw, reach, halfAngle, damage) {
     const dx = b.x - a.x, dz = b.z - a.z;
     const delta = Math.atan2(Math.sin(Math.atan2(dz, dx) - yaw), Math.cos(Math.atan2(dz, dx) - yaw));
     if (distance(a, b) <= reach && Math.abs(delta) <= halfAngle) hit(a, b, damage, true);
   }
+  function landingEvasion(a, speed) {
+    if (!a.d.botAvoidLandingZones || time < a.lockUntil || time < a.frozenUntil) return null;
+    const threats=[];
+    for(const p of projectiles) if(p.kind==='ivory' && alive(p.owner) && enemies(a,p.owner)) {
+      const remaining=Math.max(0,p.reach-p.traveled);
+      const eta=Math.max(0,p.start-time)+remaining/p.speed;
+      const center={x:p.x+Math.cos(p.yaw)*remaining,z:p.z+Math.sin(p.yaw)*remaining};
+      const radius=p.owner.d.iceCreamZoneRadius;
+      if(eta<=1.2 && distance(a,center)<radius+speed*eta+.5)
+        threats.push({...center,radius,eta:Math.max(1/60,eta),key:p.key,ultimate:p.ultimate});
+    }
+    // Include every field reachable during the escape horizon. A fixed narrow
+    // margin toggled a neighboring field in/out every frame and reversed dodges.
+    for(const zone of zones) if(zone.kind==='ivory' && enemies(a,zone.owner) && zone.until>time
+      && distance(a,zone)<zone.radius+speed*.3+1.2)
+      threats.push({x:zone.x,z:zone.z,radius:zone.radius,eta:.3,key:zone.key,ultimate:zone.ultimate});
+    if(!threats.length)return null;
+    const bounds=options.bounds??24;
+    let best=null,bestScore=-Infinity;
+    for(let i=0;i<16;i++) {
+      const yaw=i*Math.PI/8,dx=Math.cos(yaw),dz=Math.sin(yaw);
+      // Check the whole path so a dodge never crosses a solid wall.
+      const horizon=Math.max(...threats.map(t=>t.eta));
+      let clear=true;
+      for(let t=.05;t<=horizon+.05;t+=.05) {
+        const x=clamp(a.x+dx*speed*t,-bounds,bounds),z=clamp(a.z+dz*speed*t,-bounds,bounds);
+        if(blocked(x,z)){clear=false;break;}
+      }
+      if(!clear)continue;
+      const score=Math.min(...threats.map(t=>Math.hypot(
+        clamp(a.x+dx*speed*t.eta,-bounds,bounds)-t.x,
+        clamp(a.z+dz*speed*t.eta,-bounds,bounds)-t.z)-t.radius));
+      if(score>bestScore){bestScore=score;best={x:dx,z:dz,yaw};}
+    }
+    if(best) {
+      const key=threats.map(t=>t.key).join(':');
+      if(a.lastLandingThreat!==key)emit('landingDodge',{owner:a,ultimate:threats.some(t=>t.ultimate),clearance:bestScore});
+      a.lastLandingThreat=key;
+    }
+    return best;
+  }
   function fire(a, target, manualAngle) {
     if (!alive(a) || a.ammo <= 0 || time < a.next || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     const d = a.d, id = a.id;
     const speed = d.bulletSpeed ?? d.boomerangSpeed ?? d.bombSpeed ?? d.electricSpeed ?? d.needleSpeed ?? d.iceBulletSpeed ?? d.chartreuseSpeed ?? (id === 'azure' ? 10 : 20);
-    const lead = distance(a, target) / speed * .65;
+    const lead = distance(a, target) / speed * (a.automatic ? d.botAimLeadFactor ?? .65 : .65);
     let yaw = manualAngle ?? Math.atan2(target.z + target.vz * lead - a.z, target.x + target.vx * lead - a.x) + (random() * 2 - 1) * (options.aimError ?? .08);
-    if (id === 'yellow' && a.devices.length >= 2) {
-      const device = a.devices.find(p => distance(a, p) <= range(a));
+    if (id === 'yellow' && a.automatic && manualAngle == null && a.devices.length >= 2) {
+      const device = a.devices.filter(p => distance(a, p) <= range(a)).sort((b,c)=>distance(a,b)-distance(a,c))[0];
       if (device) yaw = Math.atan2(device.z - a.z, device.x - a.x);
     }
     a.angle = yaw; a.ammo--; a.next = time + d.attackCooldown; a.combatAt = time; a.revealedUntil = time + 3; a.attackCount++;
@@ -101,7 +143,9 @@ export function createBeta6Combat(definitions, options = {}) {
     const launch = (v, reach, amount, extra = {}, angle = yaw) => shot(a, angle, v, reach, amount, extra);
     if (id === 'lavender') {
       zones.push({ key: ++serial, owner: a, kind: 'perfumeSpray', x: a.x, z: a.z, yaw, radius: d.attackRange,
-        halfAngle: d.sprayAngle / 2, until: time + d.sprayDuration, next: time, tickInterval: d.sprayTickInterval, damage: d.sprayDamage });
+        halfAngle: d.sprayAngle / 2, startedAt: time, spraySpeed: d.spraySpeed,
+        until: time + d.attackRange / d.spraySpeed + d.sprayDuration, hits: new Map(),
+        next: time, tickInterval: d.sprayTickInterval, damage: d.sprayDamage });
     } else if (id === 'red' || id === 'crimson') for (let i = 0; i < d.attackCount; i++) after(i * d.attackIntervalMs / 1000, a, () => {
       if (time < a.lockUntil || time < a.frozenUntil) return;
       for (const b of actors.filter(b => enemies(a, b))) strike(a, b, yaw + (d.attackAngles?.[i] ?? 0), d.attackRange, d.attackHalfAngle, d.attackDamages?.[i] ?? d.attackDamage);
@@ -177,12 +221,12 @@ export function createBeta6Combat(definitions, options = {}) {
           if (front >= 0 && front <= u.range && Math.abs(-dx * Math.sin(yaw) + dz * Math.cos(yaw)) <= u.width / 2) { hit(a, b, u.damage, true); knock(b, yaw, u.knockback); }
         }
       } else if (a.id === 'cyan') shot(a, yaw, a.d.spreadLineSpeed * u.speedMultiplier, u.range, u.damage, { kind: 'gale', ultimate: true, radius: u.projectileRadius });
-      else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius }));
+      else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }));
       else if (a.id === 'ivory') {
         const x = a.x + Math.cos(yaw) * Math.min(dist, u.castRange), z = a.z + Math.sin(yaw) * Math.min(dist, u.castRange), offset = u.patternRadius / Math.sqrt(2);
         for (const [ox, oz] of [[0, 0], [-offset, -offset], [-offset, offset], [offset, -offset], [offset, offset]]) {
           const dx = x + ox - a.x, dz = z + oz - a.z;
-          shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage, { kind: 'ivory', ultimate: true });
+          shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage, { kind: 'ivory', ultimate: true, spawn: 0 });
         }
       } else if (a.id === 'chartreuse') a.focusUntil = time + u.duration;
       else if (a.id === 'orange') {
@@ -233,7 +277,7 @@ export function createBeta6Combat(definitions, options = {}) {
   function finish(p) {
     const a = p.owner, d = a.d;
     if (p.kind === 'vial') area(a, p, d.vialSplashRadius, p.damage, true);
-    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
+    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
     if (p.kind === 'bomb') for (let i = 0; i < d.bombSplashCount - (p.hits.size ? d.bombDirectHitJuiceCount : 0); i++) shot(a, i * Math.PI * 2 / d.bombSplashCount, d.bombSplashSpeed, d.bombSplashRange, d.bombSplashDamage, { x: p.x, z: p.z, radius: d.bombSplashHitRadius, kind: 'juice', hits: new Set(p.hits) });
     if (p.kind === 'gold' && p.stage < 3) {
       const stage = p.stage + 1;
@@ -301,7 +345,11 @@ export function createBeta6Combat(definitions, options = {}) {
       if (a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
       else if (a.ammo >= (a.d.maxAmmo ?? 3)) a.reload = 0;
       if (!a.automatic || !target) continue;
-      const destination = options.destination?.(a, target) ?? target;
+      const circuitDevice = a.id === 'yellow' && a.d.botTargetCircuitDevices && a.devices.length >= 2
+        ? [...a.devices].sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;
+      const approachingDevice = circuitDevice && distance(a,circuitDevice)>range(a);
+      const moveTarget = approachingDevice ? circuitDevice : target;
+      const destination = options.destination?.(a, moveTarget) ?? moveTarget;
       const previousX = a.x, previousZ = a.z;
       let dist = distance(a, destination), yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
       // Azure's normal surf only reaches four tiles. Ranged bots retreat at the
@@ -318,23 +366,27 @@ export function createBeta6Combat(definitions, options = {}) {
         dist = distance(a, destination);
         yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
       }
-      const ideal = destination !== target ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
-      const retreatsAtLowHealth = options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth);
+      const ideal = destination !== moveTarget ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
+      const retreatsAtLowHealth = !approachingDevice && (options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth));
       const usesRangeBand = destination === target && Number.isFinite(a.d.attackPerceptionMinRange);
       const radial = retreatsAtLowHealth ? -.85 : usesRangeBand
         ? (dist > perceivedRange(a) ? .85 : dist < a.d.attackPerceptionMinRange ? -.85 : 0)
         : dist > ideal + .5 ? .85 : dist < ideal - .5 ? -.85 : 0;
       const strafe = Math.sin(time * 2.4 + a.phase) * .4;
       const dodging = time < a.dodgeUntil;
-      const speed = 8 * a.d.moveSpeedMultiplier * (dodging ? a.d.projectileDodgeSpeedMultiplier ?? 1 : 1) * (time < a.slowUntil ? 1 - a.slow : 1) * (time < a.frozenUntil ? 0 : 1);
+      let speed = 8 * a.d.moveSpeedMultiplier * (dodging ? a.d.projectileDodgeSpeedMultiplier ?? 1 : 1) * (time < a.slowUntil ? 1 - a.slow : 1) * (time < a.frozenUntil ? 0 : 1);
+      const landingSpeed=speed*(a.d.botLandingDodgeSpeedMultiplier??1);
+      const evasion=landingEvasion(a,landingSpeed);
+      if(evasion)speed=landingSpeed;
       const dodgeForward = a.d.projectileDodgeForwardFactor ?? 0;
       const dodgeScale = 1 / Math.hypot(1, dodgeForward);
       if (!a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
-        a.x + (dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(yaw) * radial - Math.sin(yaw) * strafe) * speed * dt,
-        a.z + (dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
+        a.x + (evasion ? evasion.x : dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(yaw) * radial - Math.sin(yaw) * strafe) * speed * dt,
+        a.z + (evasion ? evasion.z : dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;
       const attackDistance = destination === target ? dist : distance(a, target);
-      if (!(hidden(a) && a.ammo < (a.d.maxAmmo ?? 3)) && !hidden(target,a) && attackDistance <= perceivedRange(a) * (a.id === 'azure' ? (a.d.botFireRangeFactor ?? 1) : 1)) fire(a, target);
+      if (circuitDevice && distance(a,circuitDevice)<=range(a)) fire(a,{...circuitDevice,vx:0,vz:0});
+      else if (!(hidden(a) && a.ammo < (a.d.maxAmmo ?? 3)) && !hidden(target,a) && attackDistance <= perceivedRange(a) * (a.id === 'azure' ? (a.d.botFireRangeFactor ?? 1) : 1)) fire(a, target);
     }
     for (const a of actors) if (a.dash) {
       const dash = a.dash;
@@ -342,7 +394,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const x = a.x + Math.cos(dash.yaw) * a.u.speed * dt, z = a.z + Math.sin(dash.yaw) * a.u.speed * dt;
       if (blocked(x, z) || Math.abs(x) > (options.bounds ?? 24) || Math.abs(z) > (options.bounds ?? 24)) dash.yaw += Math.PI;
       else move(a, x, z);
-      for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true); knock(b, dash.yaw, .65); }
+      for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit); knock(b, dash.yaw, .65); }
     }
     for (let i = scheduled.length - 1; i >= 0; i--) if (scheduled[i].at <= time) { const event = scheduled.splice(i, 1)[0]; if (alive(event.owner)) event.run(); }
     for (let i = projectiles.length - 1; i >= 0; i--) {
@@ -380,7 +432,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (p.kind === 'gold') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); award = Math.min([0, 3, 2, 1][p.stage], d.maxChargePerAttack - p.token.charge); p.token.charge += award; }
         if (p.kind === 'crystal') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); }
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
-        const dealt = hit(a, b, amount, true, award);
+        const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) : award);
         if (dealt > 0) {
           b.lastDamageKind = p.kind;
           if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
@@ -406,6 +458,7 @@ export function createBeta6Combat(definitions, options = {}) {
     for (let i = zones.length - 1; i >= 0; i--) {
       const zone = zones[i], a = zone.owner;
       if (time + 1e-9 >= zone.until) { zones.splice(i, 1); continue; }
+      if (zone.kind === 'fragrance') { zone.x = a.x; zone.z = a.z; }
       const center = zone.kind === 'lock' ? a : zone;
       for (const b of actors) if (alive(b) && enemies(a, b) && distance(center, b) <= zone.radius) {
         if (zone.kind === 'perfumeSpray') {
@@ -416,18 +469,33 @@ export function createBeta6Combat(definitions, options = {}) {
           for (let step = .25; step < length; step += .25) {
             if (blocked(zone.x + Math.cos(yaw) * step, zone.z + Math.sin(yaw) * step, .1)) { occluded = true; break; }
           }
-          if (!occluded && time + 1e-9 >= zone.next) hit(a, b, zone.damage, true);
+          if (occluded) continue;
+          const arrivalAt = zone.startedAt + length / zone.spraySpeed;
+          if (time + 1e-9 < arrivalAt) continue;
+          const record = zone.hits.get(b.key) ?? { count: 0, nextAt: arrivalAt };
+          const maxHits = Math.round(a.d.sprayDuration / zone.tickInterval);
+          if (record.count < maxHits && time + 1e-9 >= record.nextAt) {
+            const damage = zone.damage * (1 + (a.d.sprayDistanceDamageBonus ?? 0) * clamp(length / zone.radius, 0, 1));
+            if (hit(a, b, damage, true) > 0) {
+              record.count++;
+              record.nextAt = time + zone.tickInterval;
+              zone.hits.set(b.key, record);
+            }
+          }
         }
         if (zone.kind === 'fragrance') {
           const previousSlow = time < b.slowUntil ? b.slow : 0;
           b.slowUntil = Math.max(b.slowUntil, time + .05);
           b.slow = Math.max(previousSlow, a.u.slowPercent);
-          if (time + 1e-9 >= zone.next) hit(a, b, a.u.damagePerSecond, true);
+          if (time + 1e-9 >= zone.next) hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1);
         }
-        if (zone.kind === 'lock' && alive(a)) { b.lockUntil = time + .05; b.slowUntil = time + .05; b.slow = .5; }
-        if (zone.kind === 'mint') { if (time >= zone.next) { hit(a, b, a.u.damagePerSecond, true); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
+        if (zone.kind === 'lock' && alive(a)) {
+          b.lockUntil = time + .05; b.slowUntil = time + .05; b.slow = .5;
+          if (time + 1e-9 >= zone.next) hit(a, b, a.u.tickDamage ?? 0);
+        }
+        if (zone.kind === 'mint') { if (time >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
         if (zone.kind === 'ivory') {
-          if (time >= zone.next && time >= b.zoneNext) { hit(a, b, a.d.iceCreamDamage, true); b.zoneNext = time + a.d.iceCreamZoneTickInterval; }
+          if (time + 1e-9 >= zone.next && time + 1e-9 >= b.zoneNext) { hit(a, b, a.d.iceCreamZoneDamage ?? a.d.iceCreamDamage, true, zone.ultimate ? (a.u.rechargePerHit ?? 1) : 1); b.zoneNext = time + a.d.iceCreamZoneTickInterval; }
         }
       }
       if (time + 1e-9 >= zone.next) zone.next += zone.tickInterval ?? (zone.kind === 'ivory' ? a.d.iceCreamZoneTickInterval : 1);

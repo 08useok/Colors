@@ -1,0 +1,637 @@
+{
+  "scope": "beta season 7, Lavender vs other 15 characters",
+  "level": 6,
+  "initialCharge": 0,
+  "appliedDamage": 1100,
+  "repetitions": 3,
+  "distances": [
+    10,
+    13,
+    16
+  ],
+  "aimErrors": [
+    0.035,
+    0.1
+  ],
+  "seeds": [
+    20261006,
+    20261007,
+    20261008
+  ],
+  "bothOrders": true,
+  "drawScore": 0.5,
+  "rows": [
+    {
+      "damage": 700,
+      "games": 540,
+      "wins": 0,
+      "draws": 0,
+      "casts": 45,
+      "totalTime": 2504.4666666666626,
+      "matchups": {
+        "red": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "green": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "blue": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "orange": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "yellow": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "cyan": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "purple": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "pink": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "gold": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "ivory": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "chartreuse": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "mint": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "azure": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crystal": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        }
+      },
+      "winRate": 0,
+      "averageTime": 4.637901234567893
+    },
+    {
+      "damage": 900,
+      "games": 540,
+      "wins": 0,
+      "draws": 0,
+      "casts": 0,
+      "totalTime": 3579.283333333309,
+      "matchups": {
+        "red": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "green": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "blue": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "orange": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "yellow": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "cyan": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "purple": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "pink": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "gold": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "ivory": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "chartreuse": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "mint": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "azure": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crystal": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        }
+      },
+      "winRate": 0,
+      "averageTime": 6.6283024691357575
+    },
+    {
+      "damage": 1100,
+      "games": 540,
+      "wins": 0,
+      "draws": 0,
+      "casts": 0,
+      "totalTime": 3619.699999999975,
+      "matchups": {
+        "red": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "green": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "blue": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "orange": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "yellow": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "cyan": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "purple": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "pink": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "gold": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "ivory": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "chartreuse": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "mint": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "azure": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crystal": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        }
+      },
+      "winRate": 0,
+      "averageTime": 6.7031481481481014
+    },
+    {
+      "damage": 1400,
+      "games": 540,
+      "wins": 0,
+      "draws": 0,
+      "casts": 0,
+      "totalTime": 3731.5666666666384,
+      "matchups": {
+        "red": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "green": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "blue": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "orange": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "yellow": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "cyan": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "purple": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "pink": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "gold": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "ivory": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "chartreuse": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "mint": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "azure": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crystal": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        }
+      },
+      "winRate": 0,
+      "averageTime": 6.910308641975257
+    },
+    {
+      "damage": 1700,
+      "games": 540,
+      "wins": 1,
+      "draws": 0,
+      "casts": 0,
+      "totalTime": 4705.04999999995,
+      "matchups": {
+        "red": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "green": {
+          "wins": 1,
+          "draws": 0,
+          "games": 36,
+          "winRate": 2.7777777777777777
+        },
+        "blue": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "orange": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "yellow": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "cyan": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "purple": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "pink": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "gold": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "ivory": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "chartreuse": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "mint": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "azure": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crystal": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        }
+      },
+      "winRate": 0.18518518518518517,
+      "averageTime": 8.713055555555464
+    },
+    {
+      "damage": 2000,
+      "games": 540,
+      "wins": 17,
+      "draws": 0,
+      "casts": 0,
+      "totalTime": 4700.366666666619,
+      "matchups": {
+        "red": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "green": {
+          "wins": 3,
+          "draws": 0,
+          "games": 36,
+          "winRate": 8.333333333333334
+        },
+        "blue": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "orange": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "yellow": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "cyan": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "purple": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "pink": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crimson": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "gold": {
+          "wins": 14,
+          "draws": 0,
+          "games": 36,
+          "winRate": 38.888888888888886
+        },
+        "ivory": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "chartreuse": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "mint": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "azure": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        },
+        "crystal": {
+          "wins": 0,
+          "draws": 0,
+          "games": 36,
+          "winRate": 0
+        }
+      },
+      "winRate": 3.1481481481481484,
+      "averageTime": 8.704382716049293
+    }
+  ]
+}

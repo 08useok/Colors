@@ -1,0 +1,1375 @@
+{
+  "applied": false,
+  "baseline": {
+    "lavender": {
+      "maxHealth": 6000,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.9,
+      "reloadDuration": 1.2,
+      "maxAmmo": 3,
+      "attackRange": 9,
+      "sprayAngle": 1.0471975511965976,
+      "spraySpeed": 20,
+      "sprayDuration": 1.5,
+      "sprayTickInterval": 0.5,
+      "sprayDamage": 1100,
+      "description": "향수 분사로 전방을 압박하고 넓은 향기 장판으로 적의 이동을 방해하는 캐릭터입니다.",
+      "basicAttack": {
+        "name": "향수 스프레이",
+        "description": "전방 9타일, 60도 범위로 향수를 분사합니다. 연기가 적에게 도달한 뒤 0.5초마다 1100~1650 피해를 줍니다. 구름의 발사 위치에서 멀수록 피해가 증가하며 같은 적에게 최대 3회 적중합니다."
+      },
+      "special": {
+        "id": "fragranceField",
+        "name": "향기 장판",
+        "description": "자신을 따라다니는 반경 6타일의 향기 장판을 6초 동안 생성합니다. 장판 안 적은 70% 느려지고 매초 200 피해를 받습니다.",
+        "radius": 6,
+        "duration": 6,
+        "tickInterval": 1,
+        "damagePerSecond": 200,
+        "slowPercent": 0.7,
+        "chargeRequired": 2,
+        "rechargePerHit": 0.05
+      },
+      "sprayDistanceDamageBonus": 0.5
+    },
+    "red": {
+      "maxHealth": 9000,
+      "moveSpeedMultiplier": 1.4,
+      "attackCooldown": 0.55,
+      "reloadDuration": 0.9,
+      "maxAmmo": 3,
+      "attackRange": 5.5,
+      "attackHalfAngle": 0.7853981633974483,
+      "attackWidthMultiplier": 1.2941176470588236,
+      "attackDamage": 2400,
+      "attackCount": 2,
+      "attackIntervalMs": 240,
+      "description": "레드는 TV에 나오는 복싱 선수입니다. 하지만 때로는 무식해서 펀치를 잘 못 때리죠.",
+      "descriptionEn": "Red is a boxer you see on TV. He is not always the sharpest, though, so his punches sometimes miss.",
+      "basicAttack": {
+        "name": "잽 잽",
+        "description": "레드의 주 공격 기술입니다. 왼쪽 팔로 오른쪽을 때리고 오른쪽 팔로 왼쪽을 때리지요.",
+        "nameEn": "Jab Jab",
+        "descriptionEn": "Red's signature move. He swings his left arm to the right, then his right arm to the left."
+      },
+      "ultimate": {
+        "id": "redGuard",
+        "name": "레드 가드",
+        "description": "8초 동안 피해를 60% 감소시키는 보호막을 생성합니다. 피해를 받을 때마다 궁극기가 2칸 충전됩니다.",
+        "nameEn": "Red Guard",
+        "descriptionEn": "Creates a shield that reduces damage taken by 60% for 8 seconds. Taking a hit charges 2 ultimate units.",
+        "duration": 8,
+        "damageReduction": 0.6,
+        "chargeRequired": 7
+      },
+      "ultimateChargeOnHit": 2,
+      "pursuesWhileLowHealth": true
+    },
+    "green": {
+      "maxHealth": 8400,
+      "moveSpeedMultiplier": 1.2,
+      "attackCooldown": 0.45,
+      "reloadDuration": 1,
+      "maxAmmo": 3,
+      "boomerangDamage": 1710,
+      "boomerangRange": 7,
+      "boomerangSpeed": 20,
+      "boomerangReturnSpeedMultiplier": 1.1,
+      "boomerangReturnDamageMultiplier": 0.35,
+      "boomerangFarThreshold": 3.5,
+      "boomerangFarMultiplier": 0.625,
+      "boomerangAngles": [
+        -0.4363323129985824,
+        -0.1454441043328608,
+        0.1454441043328608,
+        0.4363323129985824
+      ],
+      "description": "그린은 유일하게 항구 출신이 아닌 캐릭터입니다. 그가 살던 곳은 평범한 시골인데, 돈을 벌어서 이사 가려고 이 대회에 참가하게 되었습니다.",
+      "descriptionEn": "Green is the only fighter who is not from the harbor. He grew up in an ordinary rural town and entered the tournament hoping to earn enough to move away.",
+      "basicAttack": {
+        "name": "부메랑",
+        "description": "부메랑 4개를 던집니다. 적이 가까울수록 더 큰 피해를 줍니다.",
+        "nameEn": "Boomerang",
+        "descriptionEn": "Throws four boomerangs. The closer the enemy, the more damage each one deals."
+      },
+      "ultimate": {
+        "id": "hidingBush",
+        "name": "은신 수풀",
+        "description": "자신의 위치에 3타일 크기의 수풀을 소환해 최대 10초 동안 그 안에 숨습니다. 공격하면 3초간 노출됩니다.",
+        "nameEn": "Hiding Bush",
+        "descriptionEn": "Summons a 3-tile bush at your feet and hides inside it for up to 10 seconds. Attacking exposes you for 3 seconds.",
+        "chargeRequired": 7,
+        "radius": 1.5,
+        "duration": 10,
+        "revealDuration": 3
+      }
+    },
+    "blue": {
+      "maxHealth": 5200,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.3,
+      "reloadDuration": 0.5,
+      "maxAmmo": 3,
+      "bulletDamage": 1080,
+      "bulletRange": 16,
+      "bulletSpeed": 68.75,
+      "description": "블루는 평범한 일반인입니다. 하지만 그의 손만큼 빠른 사람은 없습니다. 아마도요?",
+      "descriptionEn": "Blue is an ordinary guy. But nobody has hands as fast as his. Probably.",
+      "basicAttack": {
+        "name": "스피드 구슬",
+        "description": "사거리 16타일의 구슬을 빠르게 던져 1080 피해와 1.5타일 넉백을 줍니다.",
+        "nameEn": "Speed Marble",
+        "descriptionEn": "Throws a fast marble up to 16 tiles, dealing 1080 damage and 1.5 tiles of knockback."
+      },
+      "special": {
+        "id": "blueDash",
+        "name": "돌진",
+        "description": "빠르게 굴러 전진합니다. 벽에 부딪히면 튕겨 나가며, 경로의 적에게 피해와 넉백을 줍니다.",
+        "nameEn": "Ricochet Dash",
+        "descriptionEn": "Roll forward at high speed, bouncing off walls and damaging and knocking back enemies in your path.",
+        "damage": 1600,
+        "speed": 24,
+        "duration": 1.15,
+        "hitRadius": 1.2,
+        "chargeRequired": 3,
+        "rechargePerHit": 0.33
+      },
+      "bulletKnockback": 1.5,
+      "attackPerceptionMinRange": 10,
+      "attackPerceptionRange": 16,
+      "ultimateUseHealthMin": 0.1,
+      "ultimateUseHealthMax": 0.25,
+      "dashAwayFromTarget": true
+    },
+    "orange": {
+      "maxHealth": 4000,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.35,
+      "reloadDuration": 1,
+      "maxAmmo": 3,
+      "bombDamage": 750,
+      "bombRange": 9,
+      "bombSpeed": 22,
+      "bombSplashDamage": 1170,
+      "bombSplashCount": 5,
+      "bombDirectHitJuiceCount": 4,
+      "bombSplashSpeed": 10,
+      "bombSplashRange": 4.4,
+      "bombSplashHitRadius": 0.75,
+      "description": "오렌지는 평범한 오렌지 농부입니다. 하지만 컬러스의 첫 번째 우승자가 되려고 합니다. 오직 오렌지 하나만으로요...",
+      "descriptionEn": "Orange is a plain orange farmer, yet he intends to become the first champion of Colors. Armed with nothing but oranges...",
+      "basicAttack": {
+        "name": "오렌지 슛",
+        "description": "평범한 오렌지를 투척합니다. 오렌지가 최대 사정거리에 도달하면 과즙 5개를 퍼트립니다. 그러나 조심하세요! 오렌지를 그냥 맞으면 과즙을 다 맞아버립니다!",
+        "nameEn": "Orange Shot",
+        "descriptionEn": "Throws an ordinary orange. At maximum range it bursts into five splashes of juice. Careful though: taking the orange head-on means eating every splash too!"
+      },
+      "officialAbility": {
+        "id": "wideBlast",
+        "name": "광역 폭발",
+        "description": "폭발 범위 25% 증가",
+        "nameEn": "Wide Blast",
+        "descriptionEn": "Increases blast radius by 25%."
+      },
+      "blastRadiusMultiplier": 1.25,
+      "ultimate": {
+        "id": "returningPeels",
+        "name": "오렌지 껍질 회수",
+        "description": "오렌지 껍질 5개를 부채꼴로 던집니다. 최대 사거리에서 2초간 멈춘 뒤 같은 피해량으로 되돌아옵니다.",
+        "nameEn": "Returning Peels",
+        "descriptionEn": "Throws five peels in a fan. They wait for two seconds at maximum range, then return at full damage.",
+        "chargeRequired": 8,
+        "count": 5,
+        "damage": 1400,
+        "range": 10,
+        "speed": 16,
+        "spreadAngle": 1.0471975511965976,
+        "pauseDuration": 2,
+        "hitRadius": 0.32,
+        "rechargePerHit": 0.33
+      },
+      "orangeUltimateEnabled": true
+    },
+    "yellow": {
+      "maxHealth": 5800,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.3,
+      "reloadDuration": 0.9,
+      "maxAmmo": 3,
+      "electricDamage": 2200,
+      "electricRange": 12,
+      "electricSpeed": 16,
+      "attackDelay": 0.12,
+      "shockSlowPercent": 0.25,
+      "shockDuration": 3,
+      "description": "옐로우는 평범한 전기 기술자입니다. 그가 월세를 벌고자 이 대회에 참가했습니다.",
+      "descriptionEn": "Yellow is an ordinary electrician who joined the tournament to cover his rent.",
+      "basicAttack": {
+        "name": "찌릿찌릿 전기구슬",
+        "description": "전기구슬을 날립니다. 맞은 캐릭터는 이동속도가 대폭 감소됩니다. 그래서 적군이 자꾸 피하는 거군요! 적중 시 3초 동안 이동속도를 25% 감소시킵니다.",
+        "nameEn": "Zappy Orb",
+        "descriptionEn": "Fires an electric orb. Anyone hit is slowed sharply, which is why enemies keep dodging it. Hits slow enemies by 25% for 3 seconds."
+      },
+      "ultimate": {
+        "id": "electricCircuit",
+        "name": "전기 회로",
+        "description": "장치를 목표 지점으로 던지고 0.35초 설치 대기 후 사용할 수 있습니다. 장치가 2개 이상일 때 일반 공격으로 맞히면 설치 순서대로 전기가 흐르며 구간당 1200 피해를 줍니다.",
+        "nameEn": "Electric Circuit",
+        "descriptionEn": "Places a device anywhere. With two or more devices, hit one with a basic attack to power a three-second circuit that damages enemies along each connection.",
+        "chargeRequired": 2,
+        "maxDevices": 4,
+        "duration": null,
+        "circuitDuration": 3,
+        "connectionDamage": 1200,
+        "connectionRadius": 0.7,
+        "deviceThrowSpeed": 14,
+        "deviceInstallDelay": 0.35
+      },
+      "botTargetCircuitDevices": true,
+      "botAvoidLandingZones": true,
+      "botLandingDodgeSpeedMultiplier": 2
+    },
+    "cyan": {
+      "maxHealth": 6200,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.35,
+      "reloadDuration": 0.8,
+      "maxAmmo": 3,
+      "spreadLineDamage": 700,
+      "spreadLineRange": 8.33,
+      "spreadLineSpeed": 18,
+      "spreadLineCount": 6,
+      "betaAngleSpacing": 0.095,
+      "description": "시안은 평범하게 사는 컬러이지만, 아무래도 수상합니다. 그가 다녔던 회사의 제품은 다 이상한 걸까요?",
+      "descriptionEn": "Cyan lives an ordinary life, but something about him is off. Was every product at his old company this strange?",
+      "basicAttack": {
+        "name": "압축 알약",
+        "description": "압축된 알약을 발사하여 적에게 피해를 입힙니다. 알약은 직선으로 빠르게 날아가며, 멀리 있는 적도 정확하게 공격할 수 있습니다.",
+        "nameEn": "Compressed Pill",
+        "descriptionEn": "Fires compressed pills that travel fast in a straight line, letting him hit distant targets accurately."
+      },
+      "ultimate": {
+        "id": "galeStrike",
+        "name": "질풍 강타",
+        "description": "전방으로 거대한 강풍을 발사해 피해를 주고 강하게 밀쳐냅니다.",
+        "nameEn": "Gale Strike",
+        "descriptionEn": "Unleashes a massive gust forward that damages and strongly knocks back everything it hits.",
+        "damage": 3120,
+        "range": 10,
+        "projectileRadius": 4,
+        "speedMultiplier": 1.6666666666666667,
+        "knockback": 8,
+        "chargeRequired": 10
+      }
+    },
+    "purple": {
+      "maxHealth": 6000,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.45,
+      "reloadDuration": 1.1,
+      "maxAmmo": 3,
+      "needleDamage": 1100,
+      "needleRange": 13,
+      "needleSpeed": 18,
+      "poisonDPS": 820,
+      "poisonDuration": 4,
+      "vialDamage": 2920,
+      "vialRange": 11,
+      "vialSpeed": 18,
+      "vialSplashRadius": 4,
+      "description": "퍼플은 향수 가게의 사장님이자 의사 자격증이 있는 컬러입니다. 그녀의 향수 가게가 잘 되는 탓인지는 모르지만 그녀의 독침은 꽤나 아픕니다.",
+      "descriptionEn": "Purple runs a perfume shop and holds a medical license. Perhaps that is why business is good, but her needles sting badly.",
+      "basicAttack": {
+        "name": "독침과 독병",
+        "description": "첫 번째 일반 공격은 독침 3발을 전방 24도 부채꼴로 발사하여 적에게 피해를 입힙니다. 명중한 적은 일정 시간 동안 독에 걸립니다. 두 번째 일반 공격은 벽을 넘어가는 독병을 던집니다. 독병은 착지 후 깨지며 주변 적에게 광역 피해를 부여합니다.",
+        "nameEn": "Needle & Vial",
+        "descriptionEn": "The first attack fires three needles in a 24-degree forward fan, poisoning anyone they hit. The second lobs a vial over walls that shatters on landing for area damage."
+      },
+      "officialAbility": {
+        "id": "wideNeedle",
+        "name": "광각 독침",
+        "description": "독침 3발을 -12도, 0도, +12도로 발사",
+        "nameEn": "Wide Needle",
+        "descriptionEn": "Fires three needles at -12, 0, and +12 degrees."
+      },
+      "needleCount": 3,
+      "needleRadial": false,
+      "needleSpreadAngle": 0.4188790204786391,
+      "ultimate": {
+        "id": "toxicLeap",
+        "name": "독성 대도약",
+        "description": "장거리 도약을 시작할 때와 착지할 때 각각 5000의 범위 피해를 줍니다.",
+        "nameEn": "Toxic Leap",
+        "descriptionEn": "Deals 5,000 area damage both on takeoff and on landing after a long leap.",
+        "chargeRequired": 8,
+        "damage": 5000,
+        "range": 12,
+        "radius": 3.5,
+        "duration": 0.8,
+        "jumpHeight": 5
+      },
+      "purpleUltimateEnabled": true
+    },
+    "pink": {
+      "maxHealth": 9900,
+      "moveSpeedMultiplier": 1.3,
+      "attackCooldown": 0.3,
+      "reloadDuration": 0.8,
+      "maxAmmo": 3,
+      "healCircleDamage": 2200,
+      "healCircleHeal": 1400,
+      "healCircleRange": 4.5,
+      "abilityRangeMultiplier": 1.2,
+      "description": "핑크는 음악을 좋아하는 스트리머입니다. 그녀는 음악이 너무 좋아서 돈벌이를 까먹는 바람에 돈을 벌려고 대회에 나갔다가 우승해버립니다.",
+      "descriptionEn": "Pink is a streamer who loves music so much she forgets to earn a living. She entered the tournament for the prize money and ended up winning it.",
+      "basicAttack": {
+        "name": "퍼지는 음표",
+        "description": "원형으로 퍼지는 음표를 발사합니다. 음표는 적에게 피해를 주고, 아군에게는 체력을 회복시킵니다.",
+        "nameEn": "Spreading Notes",
+        "descriptionEn": "Releases notes that spread in a circle, damaging enemies and healing allies."
+      },
+      "ultimate": {
+        "id": "encore",
+        "name": "앙코르!",
+        "description": "반경 8타일 안의 모든 아군에게 12초 동안 부활 효과를 부여합니다. 효과를 받은 아군이 사망하면 그 자리에서 체력 40%와 2초 무적으로 부활하며, 이미 쓰러진 아군은 즉시 부활합니다.",
+        "nameEn": "Encore!",
+        "descriptionEn": "Grants every ally within 8 tiles a 12-second revival effect. If an affected ally falls, they revive in place at 40% health with 2 seconds of invulnerability; already-fallen allies revive immediately.",
+        "chargeRequired": 12,
+        "radius": 8,
+        "reviveHealthRatio": 0.4,
+        "invulnerabilityDuration": 2
+      },
+      "pursuesWhileLowHealth": true
+    },
+    "crimson": {
+      "maxHealth": 10500,
+      "moveSpeedMultiplier": 1.4,
+      "attackCooldown": 0.74,
+      "reloadDuration": 0.9,
+      "maxAmmo": 3,
+      "attackRange": 3,
+      "attackDamage": 1333.3333333333333,
+      "attackDamages": [
+        1333,
+        1333,
+        1334
+      ],
+      "attackCount": 3,
+      "attackIntervalMs": 120,
+      "attackHalfAngle": 0.7330382858376184,
+      "attackAngles": [
+        -0.4363323129985824,
+        0,
+        0.4363323129985824
+      ],
+      "description": "크림슨은 레드를 보고 권투를 시작해서 세계적인 권투 선수가 되었습니다. 근데 정작 자기는 레드를 못 이긴다고 하네요.",
+      "descriptionEn": "Crimson took up boxing after watching Red and became world class, yet he still says he cannot beat Red.",
+      "basicAttack": {
+        "name": "3연속 펀치",
+        "description": "3연속 펀치로 적에게 피해를 입힙니다.",
+        "nameEn": "Triple Punch",
+        "descriptionEn": "Hammers enemies with three consecutive punches."
+      },
+      "ultimate": {
+        "name": "KO 스트레이트",
+        "description": "엄청난 펀치를 날립니다. 너무 강한 펀치를 날린 나머지 벽도 부서지고 적도 밀려납니다.",
+        "nameEn": "KO Straight",
+        "descriptionEn": "Throws a monstrous punch. It lands so hard that walls break and enemies are shoved away."
+      },
+      "ultimateDamage": 5400,
+      "ultimateLength": 6,
+      "ultimateWidth": 6,
+      "ultimateKnockback": 1,
+      "ultimateChargeRequired": 3,
+      "pursuesWhileLowHealth": true,
+      "projectileDodgeDuration": 0.18,
+      "projectileDodgeSpeedMultiplier": 5,
+      "projectileDodgeForwardFactor": 0.6,
+      "projectileDodgeDetectionRange": 20
+    },
+    "gold": {
+      "maxHealth": 8200,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 1.5,
+      "reloadDuration": 1.2,
+      "maxAmmo": 3,
+      "description": "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+      "descriptionEn": "A color who loves gold. He is rich, he loves money, and he keeps side-eyeing Orange for some reason.",
+      "basicAttack": {
+        "name": "연쇄 금광석",
+        "description": "2×2타일 정십이면체 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 각각 6개의 금괴 투사체로 갈라집니다. 단계별 피해는 1190 / 495 / 250입니다.",
+        "nameEn": "Chain Gold Ore",
+        "descriptionEn": "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles. Stage damage: 1190 / 495 / 250."
+      },
+      "stage1Damage": 1190,
+      "stage1Range": 8,
+      "stage1Speed": 16,
+      "stage1Size": 2,
+      "stage1SplashRadius": 1.5,
+      "stage2Damage": 495,
+      "stage2Range": 8,
+      "stage2Speed": 18,
+      "stage3Damage": 250,
+      "stage3Range": 6,
+      "stage3Speed": 20,
+      "projectileRadius": 0.2,
+      "ultimateChargeRequired": 6,
+      "maxChargePerAttack": 6,
+      "ultimate": {
+        "id": "malfunctionZone",
+        "name": "고장 지대",
+        "description": "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다. 설치 대기는 0.2초이며, 장판 안 적에게 1초마다 100 피해를 줍니다.",
+        "nameEn": "Malfunction Zone",
+        "descriptionEn": "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower. Activates after 0.2 seconds and deals 100 damage to enemies inside every 1 seconds.",
+        "castRange": 0,
+        "radius": 6,
+        "duration": 4,
+        "delay": 0.2,
+        "followsCaster": true,
+        "tickDamage": 100,
+        "tickInterval": 1
+      },
+      "projectileDamageReduction": 650
+    },
+    "ivory": {
+      "maxHealth": 6600,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.7,
+      "reloadDuration": 0.9,
+      "maxAmmo": 3,
+      "iceCreamDamage": 2400,
+      "iceCreamRange": 9,
+      "iceCreamSpeed": 28,
+      "iceCreamZoneRadius": 5,
+      "iceCreamZoneDuration": 4,
+      "iceCreamZoneTickInterval": 1,
+      "description": "아이스크림 가게의 직원입니다. 근데 아이스크림을 너무 좋아해서 아이스크림이 자꾸 사라집니다.",
+      "descriptionEn": "A cheerful ice cream shop employee who controls the battlefield with ice cream that refuses to melt.",
+      "basicAttack": {
+        "name": "안 녹는 아이스크림",
+        "description": "0~9타일 안의 조준한 위치에 아이스크림을 던집니다. 착탄 시 2400 피해를 주고, 반경 5타일에 4초 동안 1초마다 2600 피해를 주는 장판을 만듭니다. 장판 피해는 중첩되지 않습니다.",
+        "nameEn": "Unmelting Ice Cream",
+        "descriptionEn": "Throws ice cream at an aimed position within 9 tiles, including at your feet. It deals 2400 impact damage and leaves a 5-tile-radius zone for 4 seconds that deals 2600 damage every 1 seconds. Zone damage does not stack."
+      },
+      "ultimate": {
+        "id": "groupOrder",
+        "name": "단체 주문",
+        "description": "0~20타일 안의 조준한 위치를 중심으로 중앙과 대각선 네 방향에 아이스크림 5개를 던집니다. 착탄 피해는 2400, 장판 피해는 1초마다 2600입니다. 장판 피해는 중첩되지 않습니다.",
+        "nameEn": "Group Order",
+        "descriptionEn": "Aims the center within 20 tiles, including at your feet, and throws five ice creams in a diagonal pattern. Each deals 2400 impact damage and leaves a non-stacking zone dealing 2600 damage every 1 seconds.",
+        "castRange": 20,
+        "patternRadius": 3.5,
+        "chargeRequired": 3,
+        "rechargePerHit": 0.1
+      },
+      "iceCreamZoneDamage": 2600
+    },
+    "chartreuse": {
+      "maxHealth": 8200,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 0.55,
+      "reloadDuration": 1.2,
+      "maxAmmo": 3,
+      "chartreuseRange": 9.5,
+      "chartreuseSpeed": 22,
+      "chartreuseDamage": 1320,
+      "chartreuseEnhancedDamage": 2640,
+      "description": "어딘가 나사빠지고 멍청해 보이는 캐릭터, 하지만 그가 만든 '샤단라'는 항상 이래서 평범합니다.",
+      "descriptionEn": "A controller-leaning random damage dealer.",
+      "basicAttack": {
+        "name": "무슨 공격이지?",
+        "description": "강화탄, CC탄, 흑사병탄, 무탄 중 하나를 무작위로 발사합니다.",
+        "nameEn": "What Attack?",
+        "descriptionEn": "Fires one random round: enhanced, CC, plague, or blank."
+      },
+      "ultimate": {
+        "id": "clearMind",
+        "name": "49% 정신 차림",
+        "description": "6초 동안 무탄이 사라지고 세 탄환이 동일 확률로 등장합니다.",
+        "nameEn": "49% Clear Mind",
+        "descriptionEn": "For 6 seconds, blank rounds are removed and the other three appear equally.",
+        "chargeRequired": 4,
+        "duration": 6
+      },
+      "projectileSize": 0.3
+    },
+    "mint": {
+      "maxHealth": 6600,
+      "moveSpeedMultiplier": 1.05,
+      "attackCooldown": 0.75,
+      "reloadDuration": 1.15,
+      "maxAmmo": 3,
+      "iceBulletDamage": 1000,
+      "iceBulletRange": 10,
+      "iceBulletSpeed": 20,
+      "burstCount": 3,
+      "burstIntervalMs": 120,
+      "icePerHit": 25,
+      "freezeThreshold": 100,
+      "freezeDuration": 2,
+      "description": "차가운 아이스크림으로 적의 움직임을 얼려 버리는 베타 시즌 5 신규 컨트롤러입니다.",
+      "descriptionEn": "A Beta Season 5 controller who freezes enemy movement with ice-cold ice cream.",
+      "basicAttack": {
+        "name": "아이스크림 탄",
+        "description": "아이스크림 탄환을 3발 연속 발사합니다. 적중할 때마다 얼음 수치가 25 누적되며, 100이 되면 적이 2초 동안 빙결됩니다.",
+        "nameEn": "Ice Cream Bullets",
+        "descriptionEn": "Fires three ice cream bullets in succession. Each hit adds 25 ice; at 100, the target freezes for 2 seconds."
+      },
+      "special": {
+        "id": "iceCreamField",
+        "name": "아이스크림 장판",
+        "description": "지정한 위치에 10초 동안 반경 9타일의 얼음 장판을 생성합니다. 적은 미끄러지며 매초 450 피해와 얼음 수치 5를 받습니다.",
+        "nameEn": "Ice Cream Field",
+        "descriptionEn": "Creates a 9-tile ice field for 10 seconds. Enemies slide faster over time and take 300 damage plus 5 ice each second.",
+        "castRange": 10,
+        "radius": 9,
+        "duration": 10,
+        "icePerSecond": 5,
+        "damagePerSecond": 450,
+        "chargeRequired": 7,
+        "slideStrength": 3.2,
+        "slideAcceleration": 0.6,
+        "rechargePerHit": 0.33
+      }
+    },
+    "azure": {
+      "maxHealth": 10500,
+      "moveSpeedMultiplier": 1.12,
+      "attackCooldown": 0.2,
+      "reloadDuration": 0.65,
+      "maxAmmo": 3,
+      "surfDashDistance": 2,
+      "surfDamage": 3000,
+      "surfLength": 4,
+      "surfWidth": 2,
+      "description": "파도를 타고 전장을 가로지르는 베타 시즌 6 신규 돌격 캐릭터입니다.",
+      "descriptionEn": "A Beta Season 6 diver who rides waves straight through the fight.",
+      "basicAttack": {
+        "name": "서프 대시",
+        "description": "파도를 타고 전방 2타일 이동하며, 앞쪽 4×2타일 범위의 적에게 3000 피해를 줍니다.",
+        "nameEn": "Surf Dash",
+        "descriptionEn": "Rides a wave two tiles forward and deals 3000 damage in a 4-by-2-tile area ahead."
+      },
+      "ultimate": {
+        "id": "bigWave",
+        "name": "빅 웨이브",
+        "description": "큰 파도를 전방으로 보내 4800 피해와 강한 넉백을 줍니다. 애저 본인은 이동하지 않습니다.",
+        "nameEn": "Big Wave",
+        "descriptionEn": "Launches a huge wave dealing 4800 damage and knockback while Azure remains in place.",
+        "damage": 4800,
+        "range": 6,
+        "width": 4,
+        "knockback": 9,
+        "chargeRequired": 2
+      },
+      "surfSpeed": 17,
+      "approachSurfRange": 18,
+      "approachSurfDistance": 4,
+      "approachSurfCooldown": 0.5,
+      "botApproachMin": 3.2,
+      "botFireRangeFactor": 0.75,
+      "botIdealDistance": 2.2
+    },
+    "crystal": {
+      "maxHealth": 6000,
+      "moveSpeedMultiplier": 1.05,
+      "attackCooldown": 0.65,
+      "reloadDuration": 1.1,
+      "maxAmmo": 3,
+      "crystalDamage": 2000,
+      "crystalRange": 12,
+      "crystalSpeed": 20,
+      "fragmentDamage": 1000,
+      "fragmentCount": 6,
+      "fragmentRange": 4.5,
+      "fragmentSpeed": 16,
+      "shardDamage": 500,
+      "shardCount": 12,
+      "shardRange": 3.5,
+      "shardSpeed": 18,
+      "description": "수정탄을 연쇄 분열시키고 적을 분석해 제거하는 캐릭터입니다.",
+      "descriptionEn": "Splits crystal shots into cascading shards and analyzes one enemy for elimination.",
+      "basicAttack": {
+        "name": "연쇄 수정탄",
+        "description": "2000 피해의 수정탄이 6개 조각, 다시 12개 작은 조각으로 분열합니다. 같은 단계는 한 대상에게 한 번만 적중합니다.",
+        "nameEn": "Crystal Cascade",
+        "descriptionEn": "A 2,000-damage crystal splits into six fragments, then twelve shards. Each stage can hit the same target only once."
+      },
+      "ultimate": {
+        "id": "crystalAnalysis",
+        "name": "수정 분석",
+        "chargeRequired": 6,
+        "range": 18,
+        "dashSpeed": 28,
+        "analysisDuration": 8,
+        "description": "긴 거리를 이동해 적 한 명을 붙잡습니다. 둘 다 행동할 수 없고, 대상은 8초 뒤 즉사합니다. 대상이 먼저 죽으면 즉시 해제됩니다.",
+        "nameEn": "Crystal Analysis",
+        "descriptionEn": "Dash a long distance and bind one enemy. Both are disabled; the marked enemy dies after 8 seconds, or the bind ends early if they die first."
+      }
+    }
+  },
+  "quick": [
+    {
+      "patch": {},
+      "win": {
+        "wins": 34,
+        "losses": 2,
+        "draws": 0,
+        "games": 36,
+        "score": 0.9444444444444444
+      },
+      "loss": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "cost": 0
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 26,
+        "losses": 10,
+        "draws": 0,
+        "games": 36,
+        "score": 0.7222222222222222
+      },
+      "cost": 2.162
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 26,
+        "losses": 10,
+        "draws": 0,
+        "games": 36,
+        "score": 0.7222222222222222
+      },
+      "cost": 2.212
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 21,
+        "losses": 15,
+        "draws": 0,
+        "games": 36,
+        "score": 0.5833333333333334
+      },
+      "cost": 2.168
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 20,
+        "losses": 16,
+        "draws": 0,
+        "games": 36,
+        "score": 0.5555555555555556
+      },
+      "cost": 2.312
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 19,
+        "losses": 17,
+        "draws": 0,
+        "games": 36,
+        "score": 0.5277777777777778
+      },
+      "cost": 2.218
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 17,
+        "losses": 19,
+        "draws": 0,
+        "games": 36,
+        "score": 0.4722222222222222
+      },
+      "cost": 2.175
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 11,
+        "losses": 25,
+        "draws": 0,
+        "games": 36,
+        "score": 0.3055555555555556
+      },
+      "cost": 2.412
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 10,
+        "losses": 26,
+        "draws": 0,
+        "games": 36,
+        "score": 0.2777777777777778
+      },
+      "cost": 2.225
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 10,
+        "losses": 26,
+        "draws": 0,
+        "games": 36,
+        "score": 0.2777777777777778
+      },
+      "cost": 2.318
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 9,
+        "losses": 27,
+        "draws": 0,
+        "games": 36,
+        "score": 0.25
+      },
+      "cost": 2.325
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 9,
+        "losses": 27,
+        "draws": 0,
+        "games": 36,
+        "score": 0.25
+      },
+      "cost": 2.418
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 8,
+        "losses": 28,
+        "draws": 0,
+        "games": 36,
+        "score": 0.2222222222222222
+      },
+      "cost": 2.185
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 7,
+        "losses": 29,
+        "draws": 0,
+        "games": 36,
+        "score": 0.19444444444444445
+      },
+      "cost": 2.235
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 5,
+        "losses": 31,
+        "draws": 0,
+        "games": 36,
+        "score": 0.1388888888888889
+      },
+      "cost": 2.425
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 1,
+        "losses": 35,
+        "draws": 0,
+        "games": 36,
+        "score": 0.027777777777777776
+      },
+      "cost": 2.335
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 36,
+        "losses": 0,
+        "draws": 0,
+        "games": 36,
+        "score": 1
+      },
+      "loss": {
+        "wins": 1,
+        "losses": 35,
+        "draws": 0,
+        "games": 36,
+        "score": 0.027777777777777776
+      },
+      "cost": 2.435
+    }
+  ],
+  "verified": [
+    {
+      "patch": {},
+      "win": {
+        "wins": 320,
+        "losses": 40,
+        "draws": 0,
+        "games": 360,
+        "score": 0.8888888888888888
+      },
+      "loss": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "cost": 0
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 337,
+        "losses": 23,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9361111111111111
+      },
+      "loss": {
+        "wins": 290,
+        "losses": 70,
+        "draws": 0,
+        "games": 360,
+        "score": 0.8055555555555556
+      },
+      "cost": 2.162
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 349,
+        "losses": 11,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9694444444444444
+      },
+      "loss": {
+        "wins": 271,
+        "losses": 89,
+        "draws": 0,
+        "games": 360,
+        "score": 0.7527777777777778
+      },
+      "cost": 2.212
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 358,
+        "losses": 2,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9944444444444445
+      },
+      "loss": {
+        "wins": 233,
+        "losses": 127,
+        "draws": 0,
+        "games": 360,
+        "score": 0.6472222222222223
+      },
+      "cost": 2.168
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 186,
+        "losses": 174,
+        "draws": 0,
+        "games": 360,
+        "score": 0.5166666666666667
+      },
+      "cost": 2.312
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 358,
+        "losses": 2,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9944444444444445
+      },
+      "loss": {
+        "wins": 179,
+        "losses": 181,
+        "draws": 0,
+        "games": 360,
+        "score": 0.49722222222222223
+      },
+      "cost": 2.218
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "loss": {
+        "wins": 145,
+        "losses": 215,
+        "draws": 0,
+        "games": 360,
+        "score": 0.4027777777777778
+      },
+      "cost": 2.175
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.12,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 88,
+        "losses": 272,
+        "draws": 0,
+        "games": 360,
+        "score": 0.24444444444444444
+      },
+      "cost": 2.412
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 91,
+        "losses": 269,
+        "draws": 0,
+        "games": 360,
+        "score": 0.25277777777777777
+      },
+      "cost": 2.225
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "loss": {
+        "wins": 67,
+        "losses": 293,
+        "draws": 0,
+        "games": 360,
+        "score": 0.18611111111111112
+      },
+      "cost": 2.318
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 65,
+        "losses": 295,
+        "draws": 0,
+        "games": 360,
+        "score": 0.18055555555555555
+      },
+      "cost": 2.325
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.18,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 76,
+        "losses": 284,
+        "draws": 0,
+        "games": 360,
+        "score": 0.2111111111111111
+      },
+      "cost": 2.418
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 1.5,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "loss": {
+        "wins": 93,
+        "losses": 267,
+        "draws": 0,
+        "games": 360,
+        "score": 0.25833333333333336
+      },
+      "cost": 2.185
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 2,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 357,
+        "losses": 3,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9916666666666667
+      },
+      "loss": {
+        "wins": 61,
+        "losses": 299,
+        "draws": 0,
+        "games": 360,
+        "score": 0.16944444444444445
+      },
+      "cost": 2.235
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.25,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 358,
+        "losses": 2,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9944444444444445
+      },
+      "loss": {
+        "wins": 49,
+        "losses": 311,
+        "draws": 0,
+        "games": 360,
+        "score": 0.1361111111111111
+      },
+      "cost": 2.425
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 3,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 22,
+        "losses": 338,
+        "draws": 0,
+        "games": 360,
+        "score": 0.06111111111111111
+      },
+      "cost": 2.335
+    },
+    {
+      "patch": {
+        "projectileDodgeDuration": 0.35,
+        "projectileDodgeSpeedMultiplier": 4,
+        "projectileDodgeDetectionRange": 20
+      },
+      "win": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "loss": {
+        "wins": 15,
+        "losses": 345,
+        "draws": 0,
+        "games": 360,
+        "score": 0.041666666666666664
+      },
+      "cost": 2.435
+    }
+  ],
+  "selected": {
+    "patch": {},
+    "win": {
+      "wins": 320,
+      "losses": 40,
+      "draws": 0,
+      "games": 360,
+      "score": 0.8888888888888888
+    },
+    "loss": {
+      "wins": 360,
+      "losses": 0,
+      "draws": 0,
+      "games": 360,
+      "score": 1
+    },
+    "cost": 0
+  },
+  "level": 6,
+  "repetitions": 30
+}

@@ -1,4 +1,4 @@
-import { eventMap, bounceMapBall } from "./config/event-maps.js?v=1";
+import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
 import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -6,8 +6,15 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { LANGS } from "./LANGS/langs.js?v=1.5.153";
 import { mp } from "./multiplayer.js?v=1.5.50";
-import { CHARACTERS } from "./config/characters.js?v=1.5.186";
-import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.172";
+import { CHARACTERS } from "./config/characters.js?v=1.5.187";
+import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.5.173";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=1";
+import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=1";
+import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
+import { navigateEventMap } from "./config/event-maps.js?v=2";
+import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
+import { applyBetaWallModel } from "./visuals/beta-wall.js?v=1";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -17,6 +24,8 @@ import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYello
 // LANGS는 ./LANGS/langs.js에서 import
 // (LANGS 데이터는 ./LANGS/langs.js로 이동됨)
 
+Object.assign(LANGS.ko,{crystal:"크리스탈",lavender:"라벤더",descCrystal:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",descLavender:"향수 스프레이와 둔화 장판을 사용하는 캐릭터"});
+Object.assign(LANGS.en,{crystal:"Crystal",lavender:"Lavender",descCrystal:"Cascading crystals and crystal analysis",descLavender:"Perfume spray and a slowing fragrance field"});
 let currentLang = localStorage.getItem("skullCreekLang") || "ko";
 
 function t(key, ...args) {
@@ -38,7 +47,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = CURRENT_SEASON === "beta6"
+  const seasonLabel = CURRENT_SEASON === "beta7"
+    ? (currentLang === "ko" ? "베타 시즌 7 · 잃어버린 황금 유적" : "Beta Season 7 · Lost Golden Ruins")
+    : CURRENT_SEASON === "beta6"
     ? (currentLang === "ko" ? "베타 시즌 6" : "Beta Season 6")
     : CURRENT_SEASON === "beta5"
     ? (currentLang === "ko" ? "베타 시즌 5" : "Beta Season 5")
@@ -172,6 +183,10 @@ const beta4LobbyBgm = new Audio("./assets/beta4-rooftop-motion.mp3?v=1.5.4");
 beta4LobbyBgm.loop = true;
 const beta5LobbyBgm = new Audio("./assets/beta5-clockwork-midway.mp3?v=1");
 beta5LobbyBgm.loop = true;
+const beta7LobbyBgm = new Audio("./assets/beta7-beneath-sun-bleached-stone.mp3?v=1");
+beta7LobbyBgm.loop = true;
+const gemGrabBgm = new Audio("./assets/beta7-before-the-vault-closes.mp3?v=1");
+gemGrabBgm.loop = true;
 const beta6LobbyBgm = new Audio("./assets/beta6-high-noon-tide.mp3?v=1");
 beta6LobbyBgm.loop = true;
 const storedMasterVolume = Number.parseFloat(localStorage.getItem("colorsMasterVolume"));
@@ -180,8 +195,8 @@ let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(s
 function applyMasterVolume() {
   // 설정에 표시되는 비율과 실제 출력 비율을 동일하게 유지한다.
   const outputVolume = masterVolume;
-  const mediaTracks = [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm, showdownBgm, showdownMusic];
-  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
+  const mediaTracks = [beta7LobbyBgm, gemGrabBgm, lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm, showdownBgm, showdownMusic];
+  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
   mediaTracks.forEach((track, index) => {
     track.volume = baseVolumes[index] * outputVolume;
     track.muted = outputVolume === 0;
@@ -197,7 +212,7 @@ function pauseLobbyBgm() {
   beta2LobbyBgm.pause();
   beta4LobbyBgm.pause();
   beta5LobbyBgm.pause();
-  beta6LobbyBgm.pause();
+  beta6LobbyBgm.pause(); beta7LobbyBgm.pause(); gemGrabBgm.pause();
 }
 
 function stopAllBgm() {
@@ -210,8 +225,8 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  const activeLobbyBgm = CURRENT_SEASON === "beta6" ? beta6LobbyBgm : CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
-  [lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
+  const activeLobbyBgm = CURRENT_SEASON === "beta7" ? beta7LobbyBgm : CURRENT_SEASON === "beta6" ? beta6LobbyBgm : CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  [beta7LobbyBgm, gemGrabBgm, lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
   applyMasterVolume();
   activeLobbyBgm.play().catch(() => {});
 }
@@ -340,8 +355,9 @@ const BETA_SEASON_3_START_AT = new Date("2026-08-10T16:00:00+09:00").getTime();
 const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
+const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
   ? "beta4"
@@ -351,15 +367,17 @@ const CURRENT_SEASON = Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now
   ? "beta2"
   : Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
 const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
-if (CURRENT_SEASON === "beta6") {
-  const releaseStats = applyBeta6Balance(BETA_CHARACTERS);
+document.body.dataset.season=CURRENT_SEASON;
+if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
+  const releaseStats = CURRENT_SEASON === "beta7" ? applyBeta7Balance(BETA_CHARACTERS) : applyBeta6Balance(BETA_CHARACTERS);
   for (const [id, stats] of Object.entries(releaseStats)) {
     const current = CHARACTERS[id] || {};
-    const merged = { ...current, ...stats, color: current.color ?? (id === "azure" ? 0x007fff : 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
+    const merged = { ...current, ...stats, color: current.color ?? ({ azure: 0x007fff, crystal: 0x6ee7ff, lavender: 0xb48be8 }[id] ?? 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
     // 베타 궁극기 객체에는 이름·설명만 있는 경우가 있어 통째로 덮으면 피해·범위·충전량이 사라진다(NaN 판정).
     for (const key of ["ultimate", "special"]) {
       if (current[key] && stats[key]) merged[key] = { ...current[key], ...stats[key] };
     }
+    if (stats.special) merged.ultimate = { ...stats.special };
     CHARACTERS[id] = merged;
   }
   // 베타 크림슨·골드는 궁극기 수치를 바깥 칸에 둔다. 본 게임이 읽는 ultimate 안으로 옮긴다.
@@ -386,25 +404,26 @@ const SEASONS = {
   beta4: "베타 시즌 4",
   beta5: "베타 시즌 5",
   beta6: "베타 시즌 6",
+  beta7: "베타 시즌 7",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set(["red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
+const ULTIMATE_CHARACTERS = new Set([...(CURRENT_SEASON === "beta7" ? ["orange", "purple", "crystal", "lavender"] : []),"red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero", azure: "hero",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero", azure: "hero", crystal: "hero", lavender: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = ["beta2", "beta3", "beta4", "beta5", "beta6"].includes(CURRENT_SEASON)
+const ROSTER = CURRENT_SEASON === "beta7" ? Object.keys(CHARACTERS) : ["beta2", "beta3", "beta4", "beta5", "beta6"].includes(CURRENT_SEASON)
   ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5", "beta6"].includes(CURRENT_SEASON) ? ["chartreuse"] : []), ...(["beta5", "beta6"].includes(CURRENT_SEASON) ? ["mint"] : []), ...(CURRENT_SEASON === "beta6" ? ["azure"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
@@ -925,6 +944,7 @@ const SEASON_LOBBY_BACKGROUNDS = {
   beta3: "radial-gradient(circle at 50% 38%, rgba(100, 196, 214, 0.38), rgba(7, 22, 28, 0.9) 78%)",
   beta4: "radial-gradient(circle at 50% 38%, rgba(255, 214, 231, 0.38), rgba(17, 37, 40, 0.9) 78%)",
   beta5: "radial-gradient(circle at 50% 38%, rgba(255, 180, 215, 0.38), rgba(24, 18, 38, 0.9) 78%)",
+  beta7: "radial-gradient(circle at 50% 30%, #d7ad64, #59412a 76%)",
   beta6: "radial-gradient(circle at 50% 30%, rgba(72, 218, 235, 0.5), rgba(7, 62, 101, 0.92) 76%)",
 };
 
@@ -1157,6 +1177,7 @@ function loadAccount() {
       account.charLevels = { red: 1, green: 1, blue: 1, orange: 1, yellow: 1, cyan: 1, purple: 1, pink: 1 };
       migrated = true;
     }
+    for(const id of ROSTER)if(!account.charLevels[id]){account.charLevels[id]=1;migrated=true;}
     if (!account.charLevels.yellow) { account.charLevels.yellow = 1; migrated = true; }
     if (!account.charLevels.cyan) { account.charLevels.cyan = 1; migrated = true; }
     if (!account.charLevels.purple) { account.charLevels.purple = 1; migrated = true; }
@@ -1491,7 +1512,9 @@ function statBar(label, value) {
 function getPrimaryAttackDamage(charKey, charDef) {
   if (!charDef) return null;
   // 레드는 캐릭터 설정이 아니라 공용 attackEvents 상수에서 펀치 데미지를 가져온다
-  if (charKey === "red") return attackEvents[0]?.damage;
+  if (charKey === "red") return charDef.attackDamage ?? attackEvents[0]?.damage;
+  if (charKey === "crystal") return charDef.crystalDamage;
+  if (charKey === "lavender") return charDef.sprayDamage;
   if (charKey === "crimson") return charDef.attackDamage;
   if (charKey === "green") return charDef.boomerangDamage;
   if (charKey === "blue") return charDef.bulletDamage;
@@ -1558,7 +1581,7 @@ function updateColorInfo(charKey, account) {
       const equipped = account.selectedSkins[charKey] === skinId;
       skinHtml += `<div class="ci-skin-row">`
         + `<span class="ci-skin-info">`
-        + `<span class="ci-skin-name">${t(skin.nameKey)}</span>`
+        + `<span class="ci-skin-name">${t(skin.nameKey || skin.name)}</span>`
         + `<span class="char-rarity shop-card-rarity rarity-${skin.rarity}">${t("rarity_" + skin.rarity)}</span>`
         + `</span>`
         + `<button class="ci-skin-btn${equipped ? " ci-skin-active" : ""}" data-skin="${skinId}" data-char="${charKey}" type="button">`
@@ -2140,6 +2163,8 @@ function recordGameResult(rank, mode = "showdown") {
   if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
 
   const char = account.selectedCharacter;
+  const killBonus=state.showdownPlus?(state.seasonKills??0)*2:0;
+  account.trophies+=killBonus;account.charTrophies[char]=(account.charTrophies[char]??0)+killBonus;
   const prevStreak = account.winStreak;
   let bonus = 0;
   let milestone = false;
@@ -2364,6 +2389,7 @@ function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false 
   if (!root) return;
   root.removeFromParent();
   root.traverse((object) => {
+    object.userData.disposed=true;
     if (disposeGeometry) object.geometry?.dispose?.();
     if (!object.material) return;
     const materials = Array.isArray(object.material) ? object.material : [object.material];
@@ -2379,6 +2405,7 @@ function disposeSceneObject(root, { disposeGeometry = true, disposeMaps = false 
 }
 
 function disposeFighter(fighter) {
+  seasonCombat?.remove(fighter);
   if (!fighter) return;
   removeGreenUltimateBush(fighter);
   const data = fighter.mesh?.userData ?? {};
@@ -2906,6 +2933,10 @@ const SEASON6_SKIN_FBX = {
   beta6_chartreuse_pufferfish_boy: ["chartreuse", "chartreuse/skins/pufferfish-boy"],
   beta6_orange_citrus_luau_buddy: ["orange", "orange/skins/citrus-luau-buddy"],
   beta6_azure_blue_wave_buddy: ["azure", "azure/skins/blue-wave-buddy"],
+  beta7_gold_pharaoh: ["gold", "gold/skins/pharaoh-guardian"],
+  beta7_green_mummy: ["green", "green/skins/emerald-mummy"],
+  beta7_blue_scarab: ["blue", "blue/skins/scarab-blue"],
+  beta7_crystal_ruin_explorer: ["crystal", "crystal/skins/gem-princess"],
 };
 const SEASON6_SKIN_MODEL_VERSION = "3";
 
@@ -3062,6 +3093,11 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     if (_azureFbx.loop) return buildPinkRigModel(resolveWalkGlbSet(_azureFbx, isAiBot), skinId);
   }
 
+  if (!skipAssetLoading && [CHARACTERS.crystal?.color, CHARACTERS.lavender?.color].includes(color)) {
+    const id = color === CHARACTERS.crystal.color ? "crystal" : "lavender";
+    const data = ensureSeason7NormalLoading(id);
+    if (data.loop) return buildPinkRigModel({start:null,loop:data.loop,end:null},skinId);
+  }
   const group = new THREE.Group();
   const material = new THREE.MeshStandardMaterial({
     color,
@@ -4109,13 +4145,14 @@ function refreshLoadedSeason6SkinModels(characterId) {
 }
 
 function ensureSeason6SkinFbxLoading(characterId, folder) {
-  let entry = _season6SkinFbx.get(characterId);
+  const cacheKey = `${characterId}:${folder}`;
+  let entry = _season6SkinFbx.get(cacheKey);
   if (entry) return entry;
   entry = { start: null, loop: null, end: null, requested: true };
-  _season6SkinFbx.set(characterId, entry);
+  _season6SkinFbx.set(cacheKey, entry);
   // 현재 시즌 6 스킨의 세 FBX는 바이너리가 동일하고 각 파일 안에 정지·걷기
   // 클립이 함께 있다. 전투에는 loop 한 개만 내려받아 로딩량을 1/3로 줄인다.
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m2l.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
+  _fbxLoader.load(`./assets/3d/${folder}/${folder.includes("/skins/") && !folder.match(/aqua-scout|pufferfish-boy|citrus-luau-buddy|blue-wave-buddy/) ? "walk-m1s" : "walk-m2l"}.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
     entry.loop = prepareSeason6SkinFbx(asset); refreshLoadedSeason6SkinModels(characterId);
   });
   return entry;
@@ -4138,15 +4175,15 @@ function ensureAzureFbxLoading() {
 const _lobbyStartFbx = new Map();
 function ensureLobbyStartFbx(characterId, skinId) {
   const season6Skin = SEASON6_SKIN_FBX[skinId];
-  const folder = season6Skin?.[1] ?? (characterId === "azure" ? "azure/normal" : null);
+  const folder = season6Skin?.[1] ?? (["azure","crystal","lavender"].includes(characterId) ? `${characterId}/normal` : null);
   if (!folder) return null;
   const key = `${characterId}:${skinId ?? "base"}`;
   let entry = _lobbyStartFbx.get(key);
   if (entry) return entry;
   entry = { model: null };
   _lobbyStartFbx.set(key, entry);
-  _fbxLoader.load(`./assets/3d/${folder}/walk-m1s.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
-    entry.model = season6Skin ? prepareSeason6SkinFbx(asset) : prepareMintFbx(asset);
+  _fbxLoader.load(`./assets/3d/${folder}/${characterId === "crystal" && !season6Skin ? "crystal-walk" : "walk-m1s"}.fbx?v=${SEASON6_SKIN_MODEL_VERSION}`, (asset) => {
+    entry.model = season6Skin || ["crystal","lavender"].includes(characterId) ? prepareSeason6SkinFbx(asset) : prepareMintFbx(asset);
     refreshLoadedPreviewCharacter(characterId);
   });
   return entry;
@@ -4441,7 +4478,7 @@ function setPreviewCharacter(charType) {
   previewCharType = charType;
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
-  const usesLobbyStartFbx = charType === "azure" || Boolean(SEASON6_SKIN_FBX[skinId]);
+  const usesLobbyStartFbx = ["azure","crystal","lavender"].includes(charType) || Boolean(SEASON6_SKIN_FBX[skinId]);
   const lobbyStartFbx = usesLobbyStartFbx ? createLobbyStartFbxModel(charType, skinId) : null;
   if (charType === "blue") ensureBluePreviewGlbLoading();
   else if (charType === "cyan" || CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType)) ensureCyanPreviewGlbLoading();
@@ -4838,7 +4875,7 @@ function addTeamMarker(fighter, team) {
 function areSameTeam(first, second) {
   return Boolean(
     first && second
-    && (state.chopWoodMode || state.soccerMode)
+    && (state.chopWoodMode || state.soccerMode || state.gemGrabMode)
     && first.team != null
     && first.team === second.team
   );
@@ -4858,6 +4895,7 @@ function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr =
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   group.add(mesh);
+  if(CURRENT_SEASON==="beta7")applyBetaWallModel(mesh,width,height,depth,canvas);
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   const aabbHalfX = Math.abs(cos) * width * 0.5 + Math.abs(sin) * depth * 0.5;
@@ -5115,10 +5153,14 @@ const TD_SPAWNS = Array.from({ length: 8 }, (_, i) => {
 });
 
 function mainEventMapIndex() {
-  return Number.isInteger(mpConfig?.mapId) ? mpConfig.mapId % 3 : Number(document.getElementById("event-map-variant")?.value || 0);
+  return Number.isInteger(mpConfig?.mapId) ? mpConfig.mapId % 3 : state.currentMapId ?? 0;
+}
+function selectMainEventMap() {
+  state.currentMapId = Number.isInteger(mpConfig?.mapId) ? mpConfig.mapId % 3 : Math.floor(Math.random() * 3);
 }
 function mainEventLayout(mode,halfWidth,halfDepth,reserved=[]) {
-  return eventMap(mode,mainEventMapIndex(),halfWidth,halfDepth,reserved);
+  const index = mainEventMapIndex();
+  return eventMap(mode,index,halfWidth,halfDepth,reserved,index === 1 && mode !== "takedown" ? MAIN_DENSE_WALLS : null);
 }
 function addMainEventTerrain(layout,group,solids,lakes,bushes) {
   layout.walls.forEach(({x,z,width,depth})=>createWall(x,z,width,depth,2.8,group,solids));
@@ -5132,7 +5174,7 @@ function addMainEventTerrain(layout,group,solids,lakes,bushes) {
 }
 function disposeMainMapChildren(group) {
   const geometries=new Set(),materials=new Set();
-  group.traverse(obj=>{if(obj.geometry && obj.geometry!==bushClumpGeo)geometries.add(obj.geometry);
+  group.traverse(obj=>{obj.userData.disposed=true;if(obj.geometry && obj.geometry!==bushClumpGeo)geometries.add(obj.geometry);
     for(const mat of (Array.isArray(obj.material)?obj.material:[obj.material]))if(mat && !bushClumpMats.includes(mat))materials.add(mat);
   });
   geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());group.clear();
@@ -5330,13 +5372,15 @@ function createSoccerKickMap() {
 function createMap(mapData) {
   clearBattleMap();
 
-  const season3Theme = CURRENT_SEASON === "beta6"
+  const season3Theme = CURRENT_SEASON === "beta7"
+    ? {ground:0xcaa267,gridMajor:0xb48d4c,gridMinor:0x9f8055}
+    : CURRENT_SEASON === "beta6"
     ? { ground: 0xe8d19b, gridMajor: 0x39d5d0, gridMinor: 0x8fc9c4 }
     : CURRENT_SEASON === "beta3"
     ? { ground: [0xffe8c7, 0xdff6ef, 0xffd6e7][mapData.id % 3], gridMajor: 0xfff7df, gridMinor: 0xb7e7dd }
     : null;
   if (season3Theme) {
-    const sky = CURRENT_SEASON === "beta6" ? 0x54bfe8 : [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
+    const sky = CURRENT_SEASON === "beta7" ? 0xd4ac71 : CURRENT_SEASON === "beta6" ? 0x54bfe8 : [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
     scene.background = new THREE.Color(sky);
     scene.fog.color.set(sky);
   } else {
@@ -5382,10 +5426,10 @@ function createShowdownThemeMap(mode="showdown") {
   disposeMainMapChildren(showdownMapGroup);
   state.showdownLakeRects=[];state.showdownBushes=[];
   state.showdownSolids = [];
-  const ivory = new THREE.MeshStandardMaterial({ color: 0x252b30, roughness: 0.94 });
-  const sky = new THREE.MeshStandardMaterial({ color: 0x444d54, roughness: 0.9 });
-  const iceWall = new THREE.MeshStandardMaterial({ color: 0x65717a, emissive: 0x26323a, emissiveIntensity: 0.08, roughness: 0.82 });
-  const iceWallTop = new THREE.MeshStandardMaterial({ color: 0x8b969e, emissive: 0x39464f, emissiveIntensity: 0.06, roughness: 0.72 });
+  const ivory = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xcaa267:0x252b30, roughness: 0.94 });
+  const sky = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xb99660:0x444d54, roughness: 0.9 });
+  const iceWall = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xbd975f:0x65717a, emissive: 0x26323a, emissiveIntensity: 0.08, roughness: 0.82 });
+  const iceWallTop = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xdbb77f:0x8b969e, emissive: 0x39464f, emissiveIntensity: 0.06, roughness: 0.72 });
   const tile = (x, z, material) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), material);
     mesh.position.set(x, 0.06, z);
@@ -5402,6 +5446,7 @@ function createShowdownThemeMap(mode="showdown") {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
+    if(CURRENT_SEASON==="beta7")applyBetaWallModel(mesh,width,2,depth,canvas);
     const cap = new THREE.Mesh(new THREE.BoxGeometry(width + 0.08, 0.14, depth + 0.08), iceWallTop);
     cap.position.set(x, 2.07, z);
     cap.castShadow = true;
@@ -5422,10 +5467,13 @@ function createShowdownThemeMap(mode="showdown") {
       mesh,
     });
   };
-  [[0,-40,80,1],[0,40,80,1],[-40,0,1,80],[40,0,1,80]].forEach(spec=>wall(...spec));
+  const half=mode==="gemGrab"?20:40;
+  [[0,-half,half*2,1],[0,half,half*2,1],[-half,0,1,half*2],[half,0,1,half*2]].forEach(spec=>wall(...spec));
+  if(CURRENT_SEASON==="beta7")for(const x of [-half-1.5,half+1.5])for(const z of [-half-1.5,half+1.5]){const pillar=new THREE.Mesh(new THREE.BoxGeometry(1.8,6,1.8),new THREE.MeshStandardMaterial({color:0xd9b876}));pillar.position.set(x,3,z);showdownMapGroup.add(pillar);applyBetaObeliskModel(pillar,1.8,6,1.8,canvas);}
   const reserved=[[-30,-37],[0,-37],[30,-37],[37,0],[30,37],[0,37],[-30,37],[-37,0],[-8,0],[8,0],[0,0,3]];
-  const layout=mainEventLayout(mode,40,40,reserved);
-  if(layout.index===0)[[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach(spec=>wall(...spec));
+  const layout=mainEventLayout(mode,half,half,mode==="gemGrab"?[[0,0,3],[-6,-15,2],[0,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]:reserved);
+  if(layout.index===0&&mode==="gemGrab")for(const side of [-1,1])for(const end of [-1,1])[[side*16,end*8,.8,8],[side*12,end*8,.8,8],[side*14,end*12,4.8,.8],[side*8.5,end*4,7.8,.8]].forEach(spec=>wall(...spec));
+  if(layout.index===0&&mode!=="gemGrab")[[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach(spec=>wall(...spec));
   addMainEventTerrain(layout,showdownMapGroup,state.showdownSolids,state.showdownLakeRects,state.showdownBushes);
 }
 
@@ -5565,7 +5613,7 @@ function createChopWoodMap() {
   state.battleBushes = [];
 
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(34, 64, 17, 32),
+    new THREE.PlaneGeometry(32, 62, 16, 31),
     new THREE.MeshStandardMaterial({ color: 0xc8895a, roughness: 0.98, metalness: 0 }),
   );
   ground.rotation.x = -Math.PI / 2;
@@ -5579,8 +5627,8 @@ function createChopWoodMap() {
   chopWoodMapGroup.add(grid);
 
   const borderWalls = [
-    [-18, 0, 2, 64], [18, 0, 2, 64],
-    [0, -33, 36, 2], [0, 33, 36, 2],
+    [-15.5, 0, 1, 62], [15.5, 0, 1, 62],
+    [0, -30.5, 32, 1], [0, 30.5, 32, 1],
   ];
   borderWalls.forEach(([x, z, w, d]) =>
     createWall(x, z, w, d, 3.5, chopWoodMapGroup, state.battleSolids, 0x7a5a3a));
@@ -5859,6 +5907,9 @@ function initTakeDownPlayers() {
 }
 
 function startTakeDown() {
+  selectMainEventMap();
+  seasonCombat?.clear(); state.gemGrabMode=false;
+
   document.body.classList.remove("lobby-active");
   messageOverlay.style.display = "none";
   resultOverlay.style.display = "none";
@@ -6374,6 +6425,11 @@ function broadcastBossDefeated() {
 
 function setupMpHandlers() {
   mp.on("RELAY", (msg) => {
+    if (CURRENT_SEASON === "beta7" && ["S7_ULTIMATE","S7_ATTACK"].includes(msg.relayType)) {
+      const f=msg.id==null?mpNetFighters[msg.fromId]:state.players.find(f=>(f.syncId??f.id)===msg.id);
+      if(!f||!Number.isFinite(msg.yaw))return; f.yaw=msg.yaw;
+      if(msg.relayType==="S7_ULTIMATE")getSeasonCombat().cast(f,true);else getSeasonCombat().fire(f,true);return;
+    }
     if (msg.relayType === "PSTATE") {
       const f = mpNetFighters[msg.fromId];
       if (!f || !Number.isFinite(msg.x) || !Number.isFinite(msg.z) || !Number.isFinite(msg.yaw)) return;
@@ -6698,6 +6754,7 @@ function updateNetworkPlayers(dt) {
 }
 
 function playNetworkAttack(fighter, msg) {
+  if (CURRENT_SEASON === "beta7") {if(Number.isFinite(msg.yaw)){fighter.yaw=msg.yaw;getSeasonCombat().fire(fighter,true);}return;}
   if (fighter.dead || !Number.isFinite(msg.yaw)) return;
   fighter.yaw = msg.yaw;
   fighter.netTargetYaw = msg.yaw;
@@ -6764,7 +6821,7 @@ async function enterMatchmaking(mode = "takedown") {
       account.nickname,
       state.selectedCharacter,
       mode,
-      mainEventMapIndex(),
+      -1, // The server chooses one map for every participant in the room.
     );
   } catch (e) {
     matchmakingStatus.textContent = t("mmConnFail", e.message);
@@ -6816,6 +6873,9 @@ async function enterMatchmaking(mode = "takedown") {
 }
 
 function startChopWood() {
+  selectMainEventMap();
+  seasonCombat?.clear(); state.gemGrabMode=false;
+
   document.body.classList.remove("lobby-active");
   messageOverlay.style.display = "none";
   resultOverlay.style.display = "none";
@@ -7980,6 +8040,7 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
+  seasonCombat?.clear(); state.gemGrabMode=false;
   // 로비에서 바로 진입할 때 남아 있는 로비 상태가 캔버스와 HUD를 숨기지 않게 한다.
   document.body.classList.remove("lobby-active");
   messageOverlay.style.display = "none";
@@ -8027,6 +8088,7 @@ function startTraining() {
 }
 
 function exitTraining() {
+  seasonCombat?.clear();
   state.running = false;
   state.gameOver = true;
   state.trainingMode = false;
@@ -8060,7 +8122,10 @@ function exitTraining() {
 }
 
 function resetGame(mode="showdown") {
-  state.currentMapId=mainEventMapIndex();
+  selectMainEventMap();
+  state.showdownPlus=mode==="showdownPlus";state.mode=mode;state.seasonKills=0;
+  seasonCombat?.clear(); state.gemGrabMode=false;
+
   createShowdownThemeMap(mode);
   document.body.classList.remove("lobby-active");
   // 전투 초기화 중 오류가 나더라도 로비 UI와 결과창이 겹치지 않도록 먼저 닫는다.
@@ -8080,8 +8145,9 @@ function resetGame(mode="showdown") {
   // 쇼다운 진입 때 맵 그룹의 자식(벽 포함)이 이전 모드 상태로 숨겨지지 않도록 보장한다.
   if (useIceCreamShowdown) showdownMapGroup.traverse((node) => { node.visible = true; });
   if (useIceCreamShowdown) {
-    scene.background = new THREE.Color(0x8ac9dc);
-    scene.fog.color.set(0x8ac9dc);
+    const sky=CURRENT_SEASON==="beta7"?0xd4ac71:0x8ac9dc;
+    scene.background = new THREE.Color(sky);
+    scene.fog.color.set(sky);
   }
   chopWoodMapGroup.visible = false;
   state.chopWoodMode = false;
@@ -8163,7 +8229,7 @@ function resetGame(mode="showdown") {
 }
 
 function spawnGoldRushPickup(x, z) {
-  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.34, 0), new THREE.MeshStandardMaterial({ color: 0xffd34f, emissive: 0xaa6400, emissiveIntensity: 0.8, metalness: 0.7, roughness: 0.2 }));
+  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.34, 0), new THREE.MeshStandardMaterial({ color: state.gemGrabMode ? 0xc539d8 : 0xffd34f, emissive: 0xaa6400, emissiveIntensity: 0.8, metalness: 0.7, roughness: 0.2 }));
   mesh.position.set(x, 0.6, z);
   scene.add(mesh);
   state.goldRushItems.push({ mesh, x, z, spawnedAt: state.gameTime });
@@ -8227,7 +8293,7 @@ function finishGoldRush(winner) {
   state.gameOver = true;
   state.running = false;
   const player = getPlayer();
-  const rank = winner?.isPlayer ? 1 : Math.max(2, state.players.filter((fighter) => (fighter.goldCount ?? 0) > (player?.goldCount ?? 0)).length + 2);
+  const rank = state.gemGrabMode ? (winner?.team===state.playerTeam?1:10) : winner?.isPlayer ? 1 : Math.max(2, state.players.filter((fighter) => (fighter.goldCount ?? 0) > (player?.goldCount ?? 0)).length + 2);
   const { coinsEarned, betaCreditsEarned } = recordGameResult(rank);
   resultTitle.textContent = winner?.isPlayer ? "GOLD RUSH 승리!" : "GOLD RUSH 종료";
   resultBody.textContent = winner?.isPlayer ? "금 10개를 10초간 지켰습니다." : `${winner?.name ?? "AI"}가 금을 지켰습니다.`;
@@ -8240,6 +8306,7 @@ function finishGoldRush(winner) {
 function updateGoldRush(dt) {
   if (!state.goldRushMode || state.gameOver) return;
   if (state.soccerMode) return;
+  if (state.gemGrabMode) { updateMainGemGrab(dt); return; }
   if (state.gameTime >= state.goldRushEndsAt) {
     const winner = [...state.players].filter((fighter) => !fighter.dead).sort((a, b) => (b.goldCount ?? 0) - (a.goldCount ?? 0))[0];
     finishGoldRush(winner);
@@ -8521,7 +8588,7 @@ function findWallEscapeDir(fighter, dirX, dirZ, lookahead) {
 }
 
 function moveFighter(fighter, desiredMove, dt) {
-  if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime) {
+  if (fighter.dead || fighter.seasonActionLocked || (fighter.mintFrozenUntil ?? 0) > state.gameTime) {
     return;
   }
 
@@ -8529,7 +8596,7 @@ function moveFighter(fighter, desiredMove, dt) {
   const next = tempVec32.copy(pos);
   next.x += desiredMove.x * dt;
   next.z += desiredMove.z * dt;
-  const zone = (fighter.isPlayer && !state.chopWoodMode && !state.trainingMode && !state.takedownMode) ? getCurrentZone() : null;
+  const zone = (fighter.isPlayer && !state.goldRushMode && !state.chopWoodMode && !state.trainingMode && !state.takedownMode) ? getCurrentZone() : null;
   // 샤르트뢰즈 GLB는 기본 파이터보다 몸의 가로 폭이 넓다. 실제 피격 판정은
   // 유지하되 이동 충돌만 넓혀서 벽 안으로 몸이 파고들어 보이지 않게 한다.
   const movementRadius = fighter.characterType === "chartreuse" ? 1.55 : fighter.radius;
@@ -8938,6 +9005,7 @@ function tryUseYellowUltimate(fighter) {
 }
 
 function beginAttackCore(fighter) {
+  if (CURRENT_SEASON === "beta7") return state.gameTime >= state.freezeUntil && !fighter.dead && getSeasonCombat().fire(fighter);
   if (state.gameTime < state.freezeUntil || (fighter.mintFrozenUntil ?? 0) > state.gameTime) return false;
   if (fighter.malfunctionUntil > state.gameTime) return false;
   if (fighter.characterType === "green") {
@@ -9033,6 +9101,7 @@ function findAutoAimTarget(player) {
 }
 
 function getAttackRange(fighter) {
+  if (CURRENT_SEASON === "beta7") return getSeasonCombat().world.range(getSeasonCombat().actor(fighter));
   let baseRange = attackDepth;
   if (fighter.characterType === "green") baseRange = CHARACTERS.green.boomerangRange;
   else if (fighter.characterType === "blue") baseRange = CHARACTERS.blue.bulletRange;
@@ -9050,6 +9119,7 @@ function getAttackRange(fighter) {
 }
 
 function getMoveSpeed(fighter) {
+  if (CURRENT_SEASON === "beta7") return 8 * CHARACTERS[fighter.characterType].moveSpeedMultiplier * (fighter.seasonSlow ?? 1);
   if ((fighter.mintFrozenUntil ?? 0) > state.gameTime) return 0;
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
   let speed = baseMoveSpeed * multiplier;
@@ -10303,7 +10373,10 @@ function updateBlueDashes(dt) {
         if (target.dead || target.id === fighter.id || dash.hits.has(target.id) || areSameTeam(target, fighter)) continue;
         if (Math.hypot(target.mesh.position.x - pos.x, target.mesh.position.z - pos.z) > def.hitRadius) continue;
         dash.hits.add(target.id);
-        applyDamage(target, def.damage, fighter);
+        const dealt = applyDamage(target, def.damage, fighter);
+        if (dealt > 0) {
+          fighter.blueUltimateCharge = Math.min(def.chargeRequired, (fighter.blueUltimateCharge ?? 0) + def.rechargePerHit);
+        }
         const dx = target.mesh.position.x - pos.x, dz = target.mesh.position.z - pos.z;
         const length = Math.hypot(dx, dz) || 1;
         const strength = target.isBoss ? 2.2 : 5.5;
@@ -10320,6 +10393,12 @@ function updateBlueDashes(dt) {
 
 function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
+  if (CURRENT_SEASON === "beta7") {
+    if(fighter.dead||state.gameTime<state.freezeUntil)return false;
+    const used = getSeasonCombat().cast(fighter);
+    if (used && fighter.isPlayer && mpConfig) mp.relay("S7_ULTIMATE", {yaw:fighter.yaw});
+    return used;
+  }
   if (fighter.dead || (fighter.mintFrozenUntil ?? 0) > state.gameTime || (fighter.malfunctionUntil ?? 0) > state.gameTime) return false;
   if (!ULTIMATE_CHARACTERS.has(fighter.characterType)) return false;
   if (fighter.characterType === "blue") return tryUseBlueUltimate(fighter);
@@ -11181,6 +11260,7 @@ function isInBush(fighter) {
 }
 
 function isFighterVisible(observer, target) {
+  if (target.seasonHidden && target !== observer && !areSameTeam(observer,target)) return Math.hypot(observer.mesh.position.x-target.mesh.position.x,observer.mesh.position.z-target.mesh.position.z)<=3;
   if (state.gameTime < target.revealedUntil) return true;
   // 그린 궁극기 은신은 일반 수풀의 근거리 감지 규칙과 별개다.
   // 발각 디버프가 없으면 AI와 자동 조준 모두에게 완전히 숨긴다.
@@ -11282,7 +11362,7 @@ function resolveAttack(attacker, hitIndex, damage) {
   }
 }
 
-function applyDamage(target, amount, attacker = null, updateCombatTime = true, noPopup = false) {
+function applyDamage(target, amount, attacker = null, updateCombatTime = true, noPopup = false, resolved = false) {
   if ((target?.invulnerableUntil ?? 0) > state.gameTime) return 0;
   if (!target || target.dead || target.health <= 0) return 0;
   if (target.dead) {
@@ -11304,9 +11384,9 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
     return 0;
   }
 
-  const scaledAmount = (attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
+  const scaledAmount = (!resolved && attacker && attacker.levelMult) ? Math.round(amount * attacker.levelMult) : amount;
   const guardActive = target.characterType === "red" && (target.redGuardUntil ?? 0) > state.gameTime;
-  const finalAmount = guardActive ? Math.round(scaledAmount * (1 - CHARACTERS.red.ultimate.damageReduction)) : scaledAmount;
+  const finalAmount = guardActive && !resolved ? Math.round(scaledAmount * (1 - CHARACTERS.red.ultimate.damageReduction)) : scaledAmount;
   const healthBefore = target.health;
   target.health = Math.max(0, target.health - finalAmount);
   target.flashTimer = 0.12;
@@ -11349,6 +11429,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
   }
 
   if (target.health <= 0) {
+    if(state.showdownPlus&&attacker?.isPlayer&&attacker!==target)state.seasonKills=(state.seasonKills??0)+1;
     if (target.revivePendingUntil > state.gameTime && !target.reviveAt) {
       target.reviveAt = state.gameTime + CHARACTERS.pink.ultimate.reviveDelay;
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
@@ -11391,7 +11472,8 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
         if (attacker.isPlayer || target.isPlayer) audio.play("kill");
       }
     } else if (state.goldRushMode) {
-      target.respawnAt = state.gameTime + 3;
+      target.respawnAt = state.gameTime + (state.gemGrabMode?GEM_GRAB_RULES.respawnDelay:3);
+      if(state.gemGrabMode){for(let i=0;i<(target.goldCount??0);i++)spawnGoldRushPickup(target.mesh.position.x+Math.cos(i)*.7,target.mesh.position.z+Math.sin(i)*.7);target.goldCount=0;}
       target.goldCount = Math.max(0, (target.goldCount ?? 0) - 1);
       if (attacker) addKillFeed(t("killFeed", attacker.name, target.name), null, null, getPersonalKillTone(attacker, target));
     } else {
@@ -11732,7 +11814,7 @@ function updateEffects(dt) {
 
 function updatePlayerControls(dt) {
   const player = getPlayer();
-  if (!player || player.dead || player.blueDash) {
+  if (!player || player.dead || player.blueDash || player.seasonActionLocked) {
     return;
   }
 
@@ -11888,6 +11970,7 @@ function tryBotAttackWithWindup(bot, target) {
 }
 
 function updateBot(bot, dt, zone) {
+  if (CURRENT_SEASON === "beta7" && !state.chopWoodMode && !state.takedownMode) return;
   if (bot.dead || bot.blueDash || bot.isDummy || bot.isBoss || bot.isNetworkPlayer) {
     return;
   }
@@ -12693,6 +12776,7 @@ function updateFighterAnimation(fighter, dt) {
 }
 
 function updateAmmoRegen(dt) {
+  if (CURRENT_SEASON === "beta7") return;
   for (const fighter of state.players) {
     if (fighter.dead) {
       continue;
@@ -12791,6 +12875,7 @@ function updateCamera(dt) {
 }
 
 function updateAttackAimIndicator() {
+  season7AttackAim.visible=false;
   const player = getPlayer();
   updateMintUltimateAim(player);
   const charType = player?.characterType;
@@ -12829,6 +12914,11 @@ function updateAttackAimIndicator() {
   chartreuseAimIndicator.visible = false;
 
   const alpha = unavailable ? 0.06 : 0.2;
+  if (["crystal","lavender"].includes(charType)) {
+    const d=CHARACTERS[charType],range=charType==="crystal"?d.crystalRange:d.attackRange;
+    season7AttackAim.children[0].visible=charType==="crystal";season7AttackAim.children[1].visible=charType==="lavender";
+    season7AttackAim.visible=true;season7AttackAim.position.set(pos.x,aimGroundY+.02,pos.z);season7AttackAim.rotation.y=yaw-Math.PI/2;season7AttackAim.scale.set(range,1,range);return;
+  }
 
   if (charType === "red") {
     attackAimIndicator.visible = true;
@@ -12940,7 +13030,7 @@ function updateBushVisuals() {
     });
   }
 
-  const greenVisualActive = player.characterType === "green"
+  const greenVisualActive = player.seasonHidden || player.characterType === "green"
     && Boolean(player.greenUltimateBush)
     && player.greenUltimateBush.expiresAt > state.gameTime
     && state.gameTime >= player.revealedUntil;
@@ -12955,7 +13045,7 @@ function updateBushVisuals() {
     const revealed = state.gameTime < fighter.revealedUntil;
     // 쇼다운에서는 AI 모델을 숨기지 않는다. 생존 인원에는 남아 있는데
     // 은신 가시성 갱신으로 모델만 사라지는 현상을 방지한다.
-    const shouldHide = inBush && !revealed && distSq > bushStealthRevealRangeSq;
+    const shouldHide = (inBush && !revealed || fighter.seasonHidden) && distSq > bushStealthRevealRangeSq;
     fighter.mesh.visible = !shouldHide && !fighter.dead;
     fighter.shadow.visible = !shouldHide && !fighter.dead;
     fighter.healthBar.visible = !shouldHide;
@@ -13077,7 +13167,7 @@ function updateHud() {
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   if (state.goldRushMode) {
-    survivorsLabel.textContent = `GOLD RUSH · 금 ${player.goldCount ?? 0}/10 · ${formatTime(Math.max(0, state.goldRushEndsAt - state.gameTime))}`;
+    survivorsLabel.textContent = state.gemGrabMode ? `GEM GRAB · 아군 ${gemTeamCount(state.playerTeam)}/10 · 적 ${gemTeamCount(state.playerTeam==="a"?"b":"a")}/10 · ${state.gemEscapeTeam?"유적 탈출까지 "+Math.max(0,15-(state.gameTime-state.gemEscapeAt)).toFixed(1)+"초":"젬을 모으세요"}` : `GOLD RUSH · 금 ${player.goldCount ?? 0}/10 · ${formatTime(Math.max(0, state.goldRushEndsAt - state.gameTime))}`;
   }
   updateAmmoPips(player.ammo);
 
@@ -13088,7 +13178,7 @@ function updateHud() {
   if (hasUltimate) {
     const isCrimson = player.characterType === "crimson";
     const ultimate = CHARACTERS[player.characterType].ultimate;
-    const charge = isCrimson ? (player.crimsonUltimateCharge ?? 0)
+    const charge = CURRENT_SEASON === "beta7" ? (player.seasonUltimateCharge ?? 0) : isCrimson ? (player.crimsonUltimateCharge ?? 0)
       : player.characterType === "red" ? (player.redUltimateCharge ?? 0)
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "mint" ? (player.mintUltimateCharge ?? 0)
@@ -13194,6 +13284,10 @@ function updateHud() {
         fighter.axeIndicator.quaternion.copy(camera.quaternion);
       }
     }
+   } else if (state.goldRushMode) {
+    survivorsPanel.style.display="";survivorsPanel.classList.add("event-scoreboard");survivorsPanel.querySelector('.stat-label').textContent=state.gemGrabMode?'젬 그랩':state.soccerMode?'사커 킥':'골드 러쉬';
+    if(state.soccerMode)survivorsLabel.textContent='BLUE '+state.soccerScore[0]+' : '+state.soccerScore[1]+' RED';
+    zonePanel.classList.add('is-hidden-panel');warning.classList.add('hidden');zoneRing.ring.visible=false;zoneRing.wall.visible=false;exitTrainingBtn.classList.add('hidden');cwHud.classList.add('hidden');
   } else if (state.trainingMode) {
     cwHud.classList.add("hidden");
     survivorsPanel.style.display = "none";
@@ -13206,6 +13300,7 @@ function updateHud() {
     cwHud.classList.add("hidden");
     exitTrainingBtn.classList.add("hidden");
     survivorsPanel.style.display = "";
+    survivorsPanel.classList.remove("event-scoreboard");survivorsPanel.querySelector(".stat-label").textContent=t("survivorsLabel");
     const alive = state.players.filter((fighter) => !fighter.dead).length;
     survivorsLabel.textContent = `${alive}`;
     if (alive === 2 && !state.showdownAnnounced && !state.gameOver) {
@@ -13328,6 +13423,7 @@ function updateChopWoodRespawn() {
       }
       const spawns = state.soccerMode
         ? (fighter.team === "blue" ? SOCCER_BLUE_SPAWNS : SOCCER_RED_SPAWNS)
+        : state.gemGrabMode ? (fighter.team==="a"?[[-6,-15],[0,-15],[6,-15]]:[[-6,15],[0,15],[6,15]])
         : state.goldRushMode ? MAP_POOL[state.currentMapId].spawns
         : (fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B);
       const spawn = spawns[Math.floor(Math.random() * spawns.length)];
@@ -13578,6 +13674,7 @@ function animate() {
       for (const fighter of state.players) {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
       }
+      if (CURRENT_SEASON === "beta7") getSeasonCombat().update(dt);
       updateAmmoRegen(dt);
       updatePinkRevives();
       if (!mpConfig || mpConfig.isHost) updateNaturalRegen();
@@ -14480,6 +14577,8 @@ if (window.location.hash === "#chop-wood") {
   });
 }
 
+  document.getElementById("mode-showdown-plus")?.addEventListener("click",async()=>{await initAudio();modeSelector.classList.add("hidden");startBattleBtn.classList.remove("active");resetGame("showdownPlus");});
+  document.getElementById("mode-gemgrab")?.addEventListener("click",async()=>{await initAudio();modeSelector.classList.add("hidden");startBattleBtn.classList.remove("active");startMainGemGrab();});
   document.getElementById("mode-goldrush")?.addEventListener("click", async () => {
     await initAudio();
     modeSelector.classList.add("hidden");
@@ -14649,7 +14748,7 @@ if (window.location.hash === "#chop-wood") {
       const seasonOk = seasonAvailable;
       const borderColor = colorMap[skin.character] || "#fff";
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
-      html += `<div class="shop-card-name" style="color:${borderColor}">${t(skin.nameKey)}</div>`;
+      html += `<div class="shop-card-name" style="color:${borderColor}">${t(skin.nameKey || skin.name)}</div>`;
       html += `<div class="shop-card-rarity rarity-${skin.rarity}">${t("rarity_" + skin.rarity)}</div>`;
       html += `<div class="shop-card-effect">${t(skin.desc)}</div>`;
       if (!seasonOk && !owned) {
@@ -15023,6 +15122,7 @@ if (window.location.hash === "#chop-wood") {
 
   // 재시작 → 로비
   restartButton.addEventListener("click", () => {
+    seasonCombat?.clear(); state.gemGrabMode=false;
     if (state.soccerMode || mpConfig?.mode === "soccer") {
       mp.disconnect();
       mpConfig = null;
@@ -15124,6 +15224,52 @@ if (window.location.hash === "#chop-wood") {
   });
 }
 
+
+let seasonCombat=null,seasonCombatVisuals=null;
+function getSeasonCombat(){
+ if(seasonCombat)return seasonCombat;
+ seasonCombatVisuals=createSeasonCombatVisuals(scene,CHARACTERS);
+ seasonCombat=createMainSeasonCombat(CHARACTERS,{
+  fighters:()=>state.players,time:()=>state.gameTime,
+  blocked:(x,z,r)=>state.solids.some(s=>Math.abs(x-s.x)<(s.halfW??s.width/2)+r&&Math.abs(z-s.z)<(s.halfD??s.depth/2)+r)||state.lakeRects.some(s=>Math.abs(x-s.x)<s.width/2+r&&Math.abs(z-s.z)<s.depth/2+r),
+  bushAt:(x,z)=>state.bushes.some(b=>Math.hypot(x-b.x,z-b.z)<(b.radius??2)),
+  destination:(f,target)=>{
+   let goal=target;if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?-15:15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
+   return state.eventMapLayout?navigateEventMap(state.eventMapLayout,{x:f.mesh.position.x,z:f.mesh.position.z},goal):goal;
+  },
+  aim:f=>!f.isNetworkPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
+  automatic:f=>!state.chopWoodMode&&!state.takedownMode&&(!mpConfig||mpConfig.isHost),
+  damage:(target,amount,source)=>{if(!mpConfig||mpConfig.isHost)applyDamage(target,amount,source,true,false,true);},
+  heal:(f,hp,revive)=>{if(mpConfig&&!mpConfig.isHost)return;f.health=hp;if(revive){f.dead=false;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;f.respawnAt=0;}},
+  event:e=>{const f=e.owner?.fighter;if(e.type==='attack'&&f&&['red','crimson'].includes(f.characterType))createAttackEffect(f,0);if(e.type==='ultimate'&&f?.isPlayer)audio.play('attack');if(mpConfig?.isHost&&f&&!f.isPlayer&&!f.isNetworkPlayer&&['attack','ultimate'].includes(e.type))mp.relay(e.type==='attack'?'S7_ATTACK':'S7_ULTIMATE',{id:f.syncId??f.id,yaw:Math.PI/2-e.owner.angle});},
+  render:world=>seasonCombatVisuals.sync(world),clear:()=>seasonCombatVisuals.clear(),
+ });return seasonCombat;
+}
+const season7NormalModels=new Map();
+function ensureSeason7NormalLoading(id){
+ let entry=season7NormalModels.get(id);if(entry)return entry;entry={loop:null};season7NormalModels.set(id,entry);
+ const name=id==='crystal'?'crystal-walk':'walk-m1s';
+ _fbxLoader.load('./assets/3d/'+id+'/normal/'+name+'.fbx?v=1',(asset)=>{entry.loop=prepareSeason6SkinFbx(asset);refreshLoadedPreviewCharacter(id);if(frontModelCharType===id)setupFrontModel(id);for(const f of state.players){if(f.characterType!==id||f.skinId||f.mesh.userData.isGlbModel)continue;const old=f.mesh,replacement=createStickman(CHARACTERS[id].color,null,false,!f.isPlayer);replacement.position.copy(old.position);replacement.rotation.copy(old.rotation);replacement.visible=old.visible;if(f.healthBar)replacement.add(f.healthBar);if(f.nameLabel)replacement.add(f.nameLabel);if(f.teamMarker)replacement.add(f.teamMarker);scene.remove(old);scene.add(replacement);f.mesh=replacement;f.bodyMaterials=replacement.userData.bodyMaterials;}});return entry;
+}
+
+function gemTeamCount(team){return state.players.filter(f=>f.team===team&&!f.dead).reduce((sum,f)=>sum+(f.goldCount??0),0);}
+function startMainGemGrab(){
+ resetGame('gemGrab');state.gemGrabMode=true;state.goldRushMode=true;state.freezeUntil=3;state.gemEscapeTeam=null;state.gemEscapeAt=0;state.gemEscape={a:null,b:null};state.gemStartedAt=3;state.gemNextSpawnAt=3+GEM_GRAB_RULES.firstSpawnDelay;
+ state.players.slice(6).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
+ state.players.slice(0,6).forEach((f,i)=>{f.team=i<3?'a':'b';f.goldCount=0;f.mesh.position.set((i%3-1)*6,1.85,i<3?-15:15);f.shadow.position.set(f.mesh.position.x,.04,f.mesh.position.z);addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
+ const altar=new THREE.Mesh(new THREE.CylinderGeometry(2,2.4,.4,24),new THREE.MeshStandardMaterial({color:0x9d733b,emissive:0xaa38cc,emissiveIntensity:.2}));altar.position.y=.2;showdownMapGroup.add(altar);
+ stopAllBgm();gemGrabBgm.currentTime=0;gemGrabBgm.play().catch(()=>{});mapNameEl.textContent='GEM GRAB · '+showdownMapGroup.userData.eventMapName;
+}
+function updateMainGemGrab(dt){
+ if(state.gameTime>=state.gemNextSpawnAt&&state.goldRushItems.length+gemTeamCount("a")+gemTeamCount("b")<GEM_GRAB_RULES.maxInPlay){spawnGoldRushPickup(0,0);state.gemNextSpawnAt=state.gameTime+GEM_GRAB_RULES.spawnInterval;}
+ for(let i=state.goldRushItems.length-1;i>=0;i--){const item=state.goldRushItems[i];item.mesh.rotation.y+=dt*3;const f=state.players.find(f=>!f.dead&&Math.hypot(f.mesh.position.x-item.x,f.mesh.position.z-item.z)<=GEM_GRAB_RULES.pickupRange);if(f){f.goldCount=(f.goldCount??0)+1;disposeSceneObject(item.mesh);state.goldRushItems.splice(i,1);}}
+ const a=gemTeamCount('a'),b=gemTeamCount('b');let escaped=gemEscapeResult(state.gemEscape,{a,b},state.gameTime);const leader=state.gemEscape.a!=null?'a':state.gemEscape.b!=null?'b':null;state.gemEscapeTeam=leader;state.gemEscapeAt=leader?state.gemEscape[leader]:0;
+ const timedOut=state.gameTime-state.gemStartedAt>=GEM_GRAB_RULES.matchSeconds;if(timedOut)escaped=a>b?'a':b>a?'b':null;
+ document.body.classList.toggle('temple-countdown-final',!!leader&&state.gameTime-state.gemEscapeAt>=12);
+ if(escaped||timedOut){const won=escaped===state.playerTeam;const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?'시간 종료 · 무승부':won?'유적 탈출 성공!':'유적 탈출 실패';resultBody.textContent=timedOut?'경기 시간이 종료됐습니다.':'팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.';resultStats.textContent+=' · 아군 젬 '+gemTeamCount(state.playerTeam)+' · 적 젬 '+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
+}
+const season7AttackAim=new THREE.Group();
+for(const geometry of [new THREE.PlaneGeometry(1,.04),new THREE.CircleGeometry(1,32,-Math.PI/6,Math.PI/3)]){const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0xc9a7f5,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}));mesh.rotation.x=-Math.PI/2;if(season7AttackAim.children.length===0)mesh.position.x=.5;season7AttackAim.add(mesh);}scene.add(season7AttackAim);season7AttackAim.visible=false;
 createLights();
 createMap(MAP_POOL[0]);
 createTrainingMap();

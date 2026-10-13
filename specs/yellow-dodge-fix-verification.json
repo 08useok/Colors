@@ -1,0 +1,57 @@
+{
+  "seed": 20310946,
+  "scenario": {
+    "distance": 16,
+    "aimError": 0.1
+  },
+  "mirror": 1,
+  "before": {
+    "time": 30.56666666666621,
+    "hp": [
+      0,
+      1391.5
+    ],
+    "outcome": -1
+  },
+  "after": {
+    "time": 31.266666666666172,
+    "hp": [
+      4359.66666666669,
+      0
+    ],
+    "casts": [
+      1,
+      0
+    ],
+    "attacks": [
+      16,
+      5
+    ],
+    "damages": [
+      {
+        "time": 0.8666666666666677,
+        "owner": "yellow",
+        "target": "ivory",
+        "amount": 2420
+      },
+      {
+        "time": 1.3833333333333333,
+        "owner": "yellow",
+        "target": "ivory",
+        "amount": 2420
+      },
+      {
+        "time": 31.266666666666172,
+        "owner": "yellow",
+        "target": "ivory",
+        "amount": 121
+      }
+    ]
+  },
+  "matchup": {
+    "wins": 360,
+    "losses": 0,
+    "draws": 0,
+    "games": 360
+  }
+}

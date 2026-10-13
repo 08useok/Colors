@@ -1,0 +1,5092 @@
+{
+  "level": 6,
+  "initialCharge": 0,
+  "repetitions": 3,
+  "report": [
+    {
+      "name": "gold-cyan",
+      "edges": [
+        [
+          "ivory",
+          "gold"
+        ],
+        [
+          "gold",
+          "cyan"
+        ],
+        [
+          "cyan",
+          "green"
+        ]
+      ],
+      "candidates": [
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 0.30048019207683074
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 0.4312494228460615
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 0.5850955766922152
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 0.7389417305383692
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 1.046634038230677
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9722222222222222
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 0.1804321728691478
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9722222222222222
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 0.31120140363837856
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9722222222222222
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 0.4650475574845323
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9722222222222222
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 0.6188937113306863
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9722222222222222
+          ],
+          "min": 0.9722222222222222,
+          "sum": 2.9722222222222223,
+          "cost": 0.926586019022994
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.7777777777777778
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.7777777777777777,
+          "cost": 0.9230769230769231
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.7777777777777778
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.7777777777777777,
+          "cost": 1.2307692307692308
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            1,
+            0.8333333333333334,
+            0.7777777777777778
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.611111111111111,
+          "cost": 0.6153846153846154
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 0.6153846153846154
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 0.7692307692307694
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 0.8461538461538463
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 1.076923076923077
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.75,
+          "cost": 1.153846153846154
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            1,
+            0.9027777777777778,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.6527777777777777,
+          "cost": 0.3307692307692309
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.638888888888889,
+          "cost": 0.5384615384615385
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            1,
+            0.7777777777777778,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.5277777777777777,
+          "cost": 0.4076923076923078
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            1,
+            0.75,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.5,
+          "cost": 0.23076923076923084
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {}
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.10000000000000009
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {}
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.23076923076923084
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.3500000000000002
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {}
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.3846153846153846
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.48076923076923095
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {}
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.5384615384615385
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.6346153846153847
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.7884615384615387
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {}
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.8461538461538463
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 1.0961538461538463
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6666666666666666
+          ],
+          "min": 0.6666666666666666,
+          "sum": 2.6666666666666665,
+          "cost": 0.43333333333333335
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6666666666666666
+          ],
+          "min": 0.6666666666666666,
+          "sum": 2.6666666666666665,
+          "cost": 0.5641025641025641
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6666666666666666
+          ],
+          "min": 0.6666666666666666,
+          "sum": 2.6666666666666665,
+          "cost": 0.7179487179487178
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6666666666666666
+          ],
+          "min": 0.6666666666666666,
+          "sum": 2.6666666666666665,
+          "cost": 0.8717948717948718
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6666666666666666
+          ],
+          "min": 0.6666666666666666,
+          "sum": 2.6666666666666665,
+          "cost": 1.1794871794871795
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            1,
+            0.6388888888888888,
+            0.7777777777777778
+          ],
+          "min": 0.6388888888888888,
+          "sum": 2.4166666666666665,
+          "cost": 0.48461538461538467
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.611111111111111,
+          "cost": 0.5384615384615383
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1000
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.611111111111111,
+          "cost": 0.6923076923076923
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 1200
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.611111111111111,
+          "cost": 1
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            1,
+            0.8333333333333334,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.4444444444444446,
+          "cost": 0.15384615384615374
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0.75,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.3055555555555554,
+          "cost": 0.27884615384615374
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0.8055555555555556,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.2777777777777777,
+          "cost": 0.21634615384615374
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 715
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            1,
+            0.6111111111111112,
+            0.6111111111111112
+          ],
+          "min": 0.6111111111111112,
+          "sum": 2.2222222222222223,
+          "cost": 0.25384615384615383
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0.5833333333333334,
+            0.75
+          ],
+          "min": 0.5833333333333334,
+          "sum": 2.2777777777777777,
+          "cost": 0.35576923076923084
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0.5833333333333334,
+            0.75
+          ],
+          "min": 0.5833333333333334,
+          "sum": 2.1944444444444446,
+          "cost": 0.29326923076923084
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0.25,
+            0.75
+          ],
+          "min": 0.25,
+          "sum": 1.9444444444444444,
+          "cost": 0.4326923076923077
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            1,
+            0.2222222222222222,
+            0.75
+          ],
+          "min": 0.2222222222222222,
+          "sum": 1.9722222222222223,
+          "cost": 0.3076923076923077
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            1,
+            0.2222222222222222,
+            0.75
+          ],
+          "min": 0.2222222222222222,
+          "sum": 1.9722222222222223,
+          "cost": 0.6923076923076923
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            1,
+            0.2222222222222222,
+            0.6111111111111112
+          ],
+          "min": 0.2222222222222222,
+          "sum": 1.8333333333333335,
+          "cost": 0.3846153846153846
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0.1388888888888889,
+            0.75
+          ],
+          "min": 0.1388888888888889,
+          "sum": 1.75,
+          "cost": 0.3701923076923077
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 0.20048019207683065
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.9722222222222222
+          ],
+          "min": 0,
+          "sum": 1.9722222222222223,
+          "cost": 0.08043217286914772
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 1.9444444444444444,
+          "cost": 0.32548019207683065
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0,
+            0.9722222222222222
+          ],
+          "min": 0,
+          "sum": 1.9166666666666665,
+          "cost": 0.20543217286914772
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 1.8611111111111112,
+          "cost": 0.26298019207683065
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0,
+            0.9722222222222222
+          ],
+          "min": 0,
+          "sum": 1.8333333333333335,
+          "cost": 0.14293217286914772
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.7777777777777778
+          ],
+          "min": 0,
+          "sum": 1.7777777777777777,
+          "cost": 0.3846153846153846
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 900
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.7777777777777778
+          ],
+          "min": 0,
+          "sum": 1.7777777777777777,
+          "cost": 0.7692307692307692
+        },
+        {
+          "patch": {
+            "gold": {
+              "projectileDamageReduction": 800
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.75,
+          "cost": 0.4615384615384617
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0,
+            0.7777777777777778
+          ],
+          "min": 0,
+          "sum": 1.7222222222222223,
+          "cost": 0.5096153846153846
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {}
+          },
+          "scores": [
+            1,
+            0,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.6944444444444444,
+          "cost": 0
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.6944444444444444,
+          "cost": 0.2500000000000001
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "spreadLineDamage": 800
+            }
+          },
+          "scores": [
+            0,
+            0.9444444444444444,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.6944444444444444,
+          "cost": 0.48076923076923084
+        },
+        {
+          "patch": {
+            "gold": {},
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.6666666666666666
+          ],
+          "min": 0,
+          "sum": 1.6666666666666665,
+          "cost": 0.33333333333333326
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {}
+          },
+          "scores": [
+            0.9444444444444444,
+            0,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.6388888888888888,
+          "cost": 0.125
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.6388888888888888,
+          "cost": 0.3750000000000001
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0,
+            0.7777777777777778
+          ],
+          "min": 0,
+          "sum": 1.6388888888888888,
+          "cost": 0.4471153846153846
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "spreadLineDamage": 750
+            }
+          },
+          "scores": [
+            0,
+            1,
+            0.6111111111111112
+          ],
+          "min": 0,
+          "sum": 1.6111111111111112,
+          "cost": 0.40384615384615374
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 9
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            0.9444444444444444,
+            0,
+            0.6666666666666666
+          ],
+          "min": 0,
+          "sum": 1.6111111111111112,
+          "cost": 0.45833333333333326
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {}
+          },
+          "scores": [
+            0.8611111111111112,
+            0,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.5555555555555556,
+          "cost": 0.0625
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.5555555555555556,
+          "cost": 0.3125000000000001
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 8.5
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            0.8611111111111112,
+            0,
+            0.6666666666666666
+          ],
+          "min": 0,
+          "sum": 1.5277777777777777,
+          "cost": 0.39583333333333326
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {}
+          },
+          "scores": [
+            0,
+            0.5,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.1944444444444444,
+          "cost": 0.25
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "reloadDuration": 0.6
+            }
+          },
+          "scores": [
+            0,
+            0.4166666666666667,
+            0.6944444444444444
+          ],
+          "min": 0,
+          "sum": 1.1111111111111112,
+          "cost": 0.5000000000000001
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "spreadLineDamage": 850
+            }
+          },
+          "scores": [
+            0,
+            0.3333333333333333,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.0833333333333333,
+          "cost": 0.5576923076923077
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "maxAmmo": 4
+            }
+          },
+          "scores": [
+            0,
+            0.3472222222222222,
+            0.6666666666666666
+          ],
+          "min": 0,
+          "sum": 1.0138888888888888,
+          "cost": 0.5833333333333333
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "spreadLineRange": 10
+            }
+          },
+          "scores": [
+            0,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 1,
+          "cost": 0.45048019207683065
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "spreadLineRange": 9
+            }
+          },
+          "scores": [
+            0,
+            0,
+            0.9722222222222222
+          ],
+          "min": 0,
+          "sum": 0.9722222222222222,
+          "cost": 0.3304321728691477
+        },
+        {
+          "patch": {
+            "gold": {
+              "stage1Range": 10
+            },
+            "cyan": {
+              "spreadLineDamage": 900
+            }
+          },
+          "scores": [
+            0,
+            0,
+            0.7777777777777778
+          ],
+          "min": 0,
+          "sum": 0.7777777777777778,
+          "cost": 0.6346153846153846
+        }
+      ]
+    },
+    {
+      "name": "yellow-mint",
+      "edges": [
+        [
+          "crimson",
+          "yellow"
+        ],
+        [
+          "yellow",
+          "mint"
+        ],
+        [
+          "mint",
+          "pink"
+        ]
+      ],
+      "candidates": [
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.9722222222222222
+          ],
+          "min": 0.9444444444444444,
+          "sum": 2.9166666666666665,
+          "cost": 4.178571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.9722222222222222
+          ],
+          "min": 0.9444444444444444,
+          "sum": 2.9166666666666665,
+          "cost": 4.464285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 2.1103896103896105
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 3.178571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 3.4642857142857144
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 4.428571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.9166666666666665,
+          "cost": 4.714285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 1.9285714285714286
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.2142857142857144
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.396103896103896
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.5103896103896104
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.5285714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.814285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.8603896103896105
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 2.928571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 3.2142857142857144
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 3.7785714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 4.064285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 4.5285714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 4.814285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 4.828571428571428
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.9166666666666666,
+            0.9722222222222222
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.888888888888889,
+          "cost": 5.114285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.861111111111111,
+          "cost": 1.4285714285714286
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.9166666666666666
+          ],
+          "min": 0.9166666666666666,
+          "sum": 2.861111111111111,
+          "cost": 1.7142857142857142
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 2.414737436476567
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 3.482919254658385
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.888888888888889,
+          "cost": 4.732919254658385
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.178571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.232919254658385
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.3285714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.4642857142857144
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.614285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.678571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.796103896103896
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.832919254658385
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 2.9642857142857144
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 3.146103896103896
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 3.2785714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 3.564285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 3.5785714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 3.864285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 3.928571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            0.9722222222222222,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 4.0829192546583855
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 4.214285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 5.178571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.9722222222222222
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.861111111111111,
+          "cost": 5.464285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.833333333333333,
+          "cost": 1.732919254658385
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8888888888888888,
+            0.8888888888888888
+          ],
+          "min": 0.8888888888888888,
+          "sum": 2.7777777777777777,
+          "cost": 2.5103896103896104
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8611111111111112,
+            0.9722222222222222
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.8333333333333335,
+          "cost": 1.8285714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8611111111111112,
+            0.9722222222222222
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.8333333333333335,
+          "cost": 2.114285714285714
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8611111111111112,
+            0.8888888888888888
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.75,
+          "cost": 3.5785714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8611111111111112,
+            0.8888888888888888
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.75,
+          "cost": 4.828571428571428
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8333333333333334,
+            0.8888888888888888
+          ],
+          "min": 0.8333333333333334,
+          "sum": 2.7222222222222223,
+          "cost": 2.3285714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8333333333333334,
+            0.8888888888888888
+          ],
+          "min": 0.8333333333333334,
+          "sum": 2.7222222222222223,
+          "cost": 4.178571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.9444444444444444
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.75,
+          "cost": 2.9103896103896103
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "reloadDuration": 0.8
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8888888888888888
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.6944444444444446,
+          "cost": 0.732919254658385
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8888888888888888
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.6944444444444446,
+          "cost": 1.8285714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8888888888888888
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.6944444444444446,
+          "cost": 2.928571428571429
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.7777777777777778,
+            0.9166666666666666
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.694444444444444,
+          "cost": 0.4285714285714286
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 20
+            }
+          },
+          "scores": [
+            1,
+            0.7777777777777778,
+            0.9166666666666666
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.694444444444444,
+          "cost": 0.7142857142857142
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.75,
+            0.9444444444444444
+          ],
+          "min": 0.75,
+          "sum": 2.6944444444444446,
+          "cost": 2.7285714285714286
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.9444444444444444
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.666666666666667,
+          "cost": 2.2285714285714286
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.9444444444444444
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.666666666666667,
+          "cost": 4.578571428571428
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.6944444444444444,
+            0.9444444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.638888888888889,
+          "cost": 3.3285714285714283
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.6944444444444444,
+            0.9444444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.638888888888889,
+          "cost": 5.228571428571429
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.6666666666666666,
+            0.9444444444444444
+          ],
+          "min": 0.6666666666666666,
+          "sum": 2.6111111111111107,
+          "cost": 3.9785714285714286
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.5555555555555556,
+            0.9722222222222222
+          ],
+          "min": 0.5555555555555556,
+          "sum": 2.5277777777777777,
+          "cost": 0.8285714285714285
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.5277777777777778,
+            0.9722222222222222
+          ],
+          "min": 0.5277777777777778,
+          "sum": 2.5,
+          "cost": 1.114285714285714
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.4722222222222222,
+            0.9722222222222222
+          ],
+          "min": 0.4722222222222222,
+          "sum": 2.4444444444444446,
+          "cost": 1.1785714285714286
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1200,
+              "iceBulletSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.4444444444444444,
+            0.9722222222222222
+          ],
+          "min": 0.4444444444444444,
+          "sum": 2.4166666666666665,
+          "cost": 1.4642857142857142
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.2777777777777778,
+            0.8888888888888888
+          ],
+          "min": 0.2777777777777778,
+          "sum": 2.1666666666666665,
+          "cost": 0.8285714285714285
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "electricDamage": 2600
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            1,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.25,
+          "cost": 1.6818181818181819
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.1944444444444446,
+          "cost": 1.5
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 40,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.1944444444444446,
+          "cost": 2.1
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.1944444444444446,
+          "cost": 2.75
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 60,
+              "shockSlowPercent": 0.4
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.1944444444444446,
+          "cost": 3.35
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 80
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.1944444444444446,
+          "cost": 4
+        },
+        {
+          "patch": {
+            "yellow": {
+              "electricSpeed": 32
+            },
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.8611111111111112,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 2.111111111111111,
+          "cost": 1
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {}
+          },
+          "scores": [
+            1,
+            0.5277777777777778,
+            0.25
+          ],
+          "min": 0.25,
+          "sum": 1.7777777777777777,
+          "cost": 0
+        },
+        {
+          "patch": {
+            "yellow": {},
+            "mint": {
+              "iceBulletDamage": 1000,
+              "iceBulletSpeed": 28,
+              "icePerHit": 35
+            }
+          },
+          "scores": [
+            1,
+            0.16666666666666666,
+            0.9444444444444444
+          ],
+          "min": 0.16666666666666666,
+          "sum": 2.111111111111111,
+          "cost": 1.2285714285714284
+        }
+      ]
+    },
+    {
+      "name": "orange-purple",
+      "edges": [
+        [
+          "pink",
+          "purple"
+        ],
+        [
+          "purple",
+          "orange"
+        ],
+        [
+          "orange",
+          "crystal"
+        ]
+      ],
+      "candidates": [
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            1,
+            1
+          ],
+          "min": 1,
+          "sum": 3,
+          "cost": 0.4467754467754468
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            1
+          ],
+          "min": 0.9444444444444444,
+          "sum": 2.9444444444444446,
+          "cost": 1.557886557886558
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.8611111111111112
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.861111111111111,
+          "cost": 0.4606643356643356
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.8611111111111112
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.861111111111111,
+          "cost": 0.5856643356643356
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.8611111111111112
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.8055555555555554,
+          "cost": 1.5717754467754468
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.8611111111111112
+          ],
+          "min": 0.8611111111111112,
+          "sum": 2.8055555555555554,
+          "cost": 1.6967754467754468
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8611111111111112
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.666666666666667,
+          "cost": 0.6805555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8611111111111112
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.666666666666667,
+          "cost": 0.8055555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8611111111111112
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.666666666666667,
+          "cost": 1.0694444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8611111111111112
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.666666666666667,
+          "cost": 1.1944444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8611111111111112
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.666666666666667,
+          "cost": 1.2361111111111112
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.8055555555555556,
+            0.8611111111111112
+          ],
+          "min": 0.8055555555555556,
+          "sum": 2.666666666666667,
+          "cost": 1.3611111111111112
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.7777777777777778,
+            0.8611111111111112
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.638888888888889,
+          "cost": 0.45833333333333326
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.7777777777777778,
+            0.8611111111111112
+          ],
+          "min": 0.7777777777777778,
+          "sum": 2.638888888888889,
+          "cost": 0.5833333333333333
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.75,
+            0.75
+          ],
+          "min": 0.75,
+          "sum": 2.5,
+          "cost": 0.7031857031857033
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 0.125
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 0.25
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 0.45833333333333326
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 0.5833333333333333
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 0.6805555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 0.8055555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 4500
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 1.0694444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "maxHealth": 5000
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.7222222222222222,
+            0.8611111111111112
+          ],
+          "min": 0.7222222222222222,
+          "sum": 2.5833333333333335,
+          "cost": 1.1944444444444444
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            1,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.6944444444444446,
+          "cost": 0.3356643356643356
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.9444444444444444,
+            0.6944444444444444
+          ],
+          "min": 0.6944444444444444,
+          "sum": 2.638888888888889,
+          "cost": 1.4467754467754468
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.6388888888888888,
+            0.6944444444444444
+          ],
+          "min": 0.6388888888888888,
+          "sum": 2.333333333333333,
+          "cost": 0
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.6388888888888888,
+            0.6944444444444444
+          ],
+          "min": 0.6388888888888888,
+          "sum": 2.333333333333333,
+          "cost": 0.33333333333333326
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.6388888888888888,
+            0.6944444444444444
+          ],
+          "min": 0.6388888888888888,
+          "sum": 2.333333333333333,
+          "cost": 0.5555555555555556
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.6388888888888888,
+            0.6944444444444444
+          ],
+          "min": 0.6388888888888888,
+          "sum": 2.333333333333333,
+          "cost": 0.9444444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.5,
+            0.75
+          ],
+          "min": 0.5,
+          "sum": 2.25,
+          "cost": 1.8142968142968146
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.4722222222222222,
+            0.9444444444444444
+          ],
+          "min": 0.4722222222222222,
+          "sum": 2.416666666666667,
+          "cost": 0.5578865578865579
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.4444444444444444,
+            0.6944444444444444
+          ],
+          "min": 0.4444444444444444,
+          "sum": 2.138888888888889,
+          "cost": 0.33333333333333326
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.3888888888888889,
+            0.6944444444444444
+          ],
+          "min": 0.3888888888888889,
+          "sum": 2.083333333333333,
+          "cost": 0.5555555555555556
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.3888888888888889,
+            0.6944444444444444
+          ],
+          "min": 0.3888888888888889,
+          "sum": 2.083333333333333,
+          "cost": 0.9444444444444444
+        },
+        {
+          "patch": {
+            "orange": {},
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.3888888888888889,
+            0.6944444444444444
+          ],
+          "min": 0.3888888888888889,
+          "sum": 2.083333333333333,
+          "cost": 1.1111111111111112
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.3611111111111111,
+            0.9444444444444444
+          ],
+          "min": 0.3611111111111111,
+          "sum": 2.3055555555555554,
+          "cost": 1.668997668997669
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.2916666666666667,
+            0.8472222222222222
+          ],
+          "min": 0.2916666666666667,
+          "sum": 2.138888888888889,
+          "cost": 1.3888888888888888
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.25,
+            0.7777777777777778
+          ],
+          "min": 0.25,
+          "sum": 2.0277777777777777,
+          "cost": 1.423076923076923
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.25,
+            0.7777777777777778
+          ],
+          "min": 0.25,
+          "sum": 2.0277777777777777,
+          "cost": 1.5897435897435899
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.19444444444444445,
+            0.9444444444444444
+          ],
+          "min": 0.19444444444444445,
+          "sum": 2.138888888888889,
+          "cost": 1.2777777777777777
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.16666666666666666,
+            0.7777777777777778
+          ],
+          "min": 0.16666666666666666,
+          "sum": 1.9444444444444446,
+          "cost": 1.034188034188034
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.1527777777777778,
+            0.8472222222222222
+          ],
+          "min": 0.1527777777777778,
+          "sum": 2,
+          "cost": 1.5555555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.1388888888888889,
+            0.9444444444444444
+          ],
+          "min": 0.1388888888888889,
+          "sum": 2.083333333333333,
+          "cost": 0.6666666666666665
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.1388888888888889,
+            0.9444444444444444
+          ],
+          "min": 0.1388888888888889,
+          "sum": 2.083333333333333,
+          "cost": 0.8888888888888888
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.1388888888888889,
+            0.9444444444444444
+          ],
+          "min": 0.1388888888888889,
+          "sum": 2.083333333333333,
+          "cost": 1.4444444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.1388888888888889,
+            0.7777777777777778
+          ],
+          "min": 0.1388888888888889,
+          "sum": 1.9166666666666665,
+          "cost": 0.8119658119658119
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.125,
+            0.8472222222222222
+          ],
+          "min": 0.125,
+          "sum": 1.9722222222222223,
+          "cost": 1
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.9722222222222222
+          ],
+          "min": 0.1111111111111111,
+          "sum": 2.0833333333333335,
+          "cost": 1.90510878010878
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.9444444444444444
+          ],
+          "min": 0.1111111111111111,
+          "sum": 2.0555555555555554,
+          "cost": 0.33333333333333326
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.9444444444444444
+          ],
+          "min": 0.1111111111111111,
+          "sum": 2.0555555555555554,
+          "cost": 0.6666666666666665
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.9444444444444444
+          ],
+          "min": 0.1111111111111111,
+          "sum": 2.0555555555555554,
+          "cost": 0.8888888888888888
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.8472222222222222
+          ],
+          "min": 0.1111111111111111,
+          "sum": 1.9583333333333335,
+          "cost": 0.7777777777777777
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.7777777777777778
+          ],
+          "min": 0.1111111111111111,
+          "sum": 1.8888888888888888,
+          "cost": 0.4786324786324786
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.7777777777777778
+          ],
+          "min": 0.1111111111111111,
+          "sum": 1.8888888888888888,
+          "cost": 0.8119658119658119
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.7777777777777778
+          ],
+          "min": 0.1111111111111111,
+          "sum": 1.8888888888888888,
+          "cost": 1.034188034188034
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.1111111111111111,
+            0.7777777777777778
+          ],
+          "min": 0.1111111111111111,
+          "sum": 1.8888888888888888,
+          "cost": 1.423076923076923
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            1
+          ],
+          "min": 0.08333333333333333,
+          "sum": 2.083333333333333,
+          "cost": 0.11111111111111116
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            1
+          ],
+          "min": 0.08333333333333333,
+          "sum": 2.083333333333333,
+          "cost": 0.4444444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            1
+          ],
+          "min": 0.08333333333333333,
+          "sum": 2.083333333333333,
+          "cost": 0.6666666666666667
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            1
+          ],
+          "min": 0.08333333333333333,
+          "sum": 2.083333333333333,
+          "cost": 1.0555555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            0.9444444444444444
+          ],
+          "min": 0.08333333333333333,
+          "sum": 2.0277777777777777,
+          "cost": 1.2777777777777777
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            0.8472222222222222
+          ],
+          "min": 0.08333333333333333,
+          "sum": 1.9305555555555554,
+          "cost": 0.4444444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            0.8472222222222222
+          ],
+          "min": 0.08333333333333333,
+          "sum": 1.9305555555555554,
+          "cost": 0.7777777777777777
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            0.8472222222222222
+          ],
+          "min": 0.08333333333333333,
+          "sum": 1.9305555555555554,
+          "cost": 1
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            0.8472222222222222
+          ],
+          "min": 0.08333333333333333,
+          "sum": 1.9305555555555554,
+          "cost": 1.3888888888888888
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.08333333333333333,
+            0.7777777777777778
+          ],
+          "min": 0.08333333333333333,
+          "sum": 1.8611111111111112,
+          "cost": 1.9254079254079253
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            1
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0555555555555554,
+          "cost": 0.4444444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 0.45833333333333326
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 0.7916666666666665
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 0.7916666666666665
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 0.7939976689976689
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 1.0138888888888888
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 1.0138888888888888
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 1.4027777777777777
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.9722222222222222
+          ],
+          "min": 0.05555555555555555,
+          "sum": 2.0277777777777777,
+          "cost": 1.5694444444444444
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.75
+          ],
+          "min": 0.05555555555555555,
+          "sum": 1.8055555555555556,
+          "cost": 0.36752136752136766
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.75
+          ],
+          "min": 0.05555555555555555,
+          "sum": 1.8055555555555556,
+          "cost": 0.7008547008547009
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.75
+          ],
+          "min": 0.05555555555555555,
+          "sum": 1.8055555555555556,
+          "cost": 0.9230769230769232
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.05555555555555555,
+            0.75
+          ],
+          "min": 0.05555555555555555,
+          "sum": 1.8055555555555556,
+          "cost": 1.3119658119658122
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            1
+          ],
+          "min": 0.027777777777777776,
+          "sum": 2.0277777777777777,
+          "cost": 0.49494949494949503
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            1
+          ],
+          "min": 0.027777777777777776,
+          "sum": 2.0277777777777777,
+          "cost": 0.8282828282828283
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            1
+          ],
+          "min": 0.027777777777777776,
+          "sum": 2.0277777777777777,
+          "cost": 1.0505050505050506
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            1
+          ],
+          "min": 0.027777777777777776,
+          "sum": 2.0277777777777777,
+          "cost": 1.4393939393939394
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "maxHealth": 4500
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9722222222222222
+          ],
+          "min": 0.027777777777777776,
+          "sum": 2,
+          "cost": 1.4027777777777777
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {}
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9444444444444444
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.972222222222222,
+          "cost": 0.22222222222222232
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "vialSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9444444444444444
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.972222222222222,
+          "cost": 0.5555555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9444444444444444
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.972222222222222,
+          "cost": 0.6689976689976689
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9444444444444444
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.972222222222222,
+          "cost": 0.7777777777777779
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "vialSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9444444444444444
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.972222222222222,
+          "cost": 1.1666666666666667
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.9444444444444444
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.972222222222222,
+          "cost": 1.78010878010878
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.8472222222222222
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.875,
+          "cost": 1.8912198912198912
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 12,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0.027777777777777776,
+            0.7777777777777778
+          ],
+          "min": 0.027777777777777776,
+          "sum": 1.8055555555555554,
+          "cost": 0.8142968142968142
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 0.6666666666666667
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 0.8282828282828283
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 0.8306138306138307
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 1.0505050505050506
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 1.0555555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 10
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 1.2222222222222223
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 1.4393939393939394
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 1.6060606060606062
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSpeed": 28
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28,
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0,
+            1
+          ],
+          "min": 0,
+          "sum": 2,
+          "cost": 1.9417249417249418
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.9444444444444444
+          ],
+          "min": 0,
+          "sum": 1.9444444444444444,
+          "cost": 0.5555555555555556
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.9444444444444444
+          ],
+          "min": 0,
+          "sum": 1.9444444444444444,
+          "cost": 0.7777777777777779
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.9444444444444444
+          ],
+          "min": 0,
+          "sum": 1.9444444444444444,
+          "cost": 1.1666666666666667
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.9444444444444444
+          ],
+          "min": 0,
+          "sum": 1.9444444444444444,
+          "cost": 1.3333333333333335
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 13
+            },
+            "purple": {
+              "needleRange": 15,
+              "vialRange": 13
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.8472222222222222
+          ],
+          "min": 0,
+          "sum": 1.8472222222222223,
+          "cost": 0.78010878010878
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 24
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.75,
+          "cost": 0.7008547008547009
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.75,
+          "cost": 0.9230769230769232
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 35
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.75,
+          "cost": 1.3119658119658122
+        },
+        {
+          "patch": {
+            "orange": {
+              "bombRange": 11,
+              "bombSplashDamage": 1000
+            },
+            "purple": {
+              "needleSpeed": 28,
+              "vialSpeed": 28
+            }
+          },
+          "scores": [
+            1,
+            0,
+            0.75
+          ],
+          "min": 0,
+          "sum": 1.75,
+          "cost": 1.4786324786324787
+        }
+      ]
+    }
+  ],
+  "best": [
+    {
+      "patch": {
+        "gold": {
+          "projectileDamageReduction": 715
+        },
+        "cyan": {
+          "spreadLineRange": 10
+        }
+      },
+      "scores": [
+        1,
+        1,
+        1
+      ],
+      "min": 1,
+      "sum": 3,
+      "cost": 0.30048019207683074
+    },
+    {
+      "patch": {
+        "yellow": {
+          "electricSpeed": 60,
+          "shockSlowPercent": 0.4
+        },
+        "mint": {
+          "iceBulletDamage": 1000,
+          "iceBulletSpeed": 28
+        }
+      },
+      "scores": [
+        1,
+        0.9444444444444444,
+        0.9722222222222222
+      ],
+      "min": 0.9444444444444444,
+      "sum": 2.9166666666666665,
+      "cost": 4.178571428571429
+    },
+    {
+      "patch": {
+        "orange": {
+          "bombRange": 10
+        },
+        "purple": {
+          "needleRange": 15,
+          "vialRange": 13
+        }
+      },
+      "scores": [
+        1,
+        1,
+        1
+      ],
+      "min": 1,
+      "sum": 3,
+      "cost": 0.4467754467754468
+    }
+  ]
+}

@@ -1,0 +1,3394 @@
+{
+  "config": {
+    "gold": {
+      "maxHealth": 8200,
+      "moveSpeedMultiplier": 1,
+      "attackCooldown": 1.5,
+      "reloadDuration": 1.2,
+      "maxAmmo": 3,
+      "description": "금을 좋아하는 컬러입니다. 부자이고, 돈을 좋아합니다. 근데 자꾸 오렌지한테 눈치를 주는데요?",
+      "descriptionEn": "A color who loves gold. He is rich, he loves money, and he keeps side-eyeing Orange for some reason.",
+      "basicAttack": {
+        "name": "연쇄 금광석",
+        "description": "2×2타일 정십이면체 금광석을 직선으로 8타일 발사합니다. 충돌한 금광석은 폭발하며 좌우 90도로 분열하고, 분열탄은 각각 6개의 금괴 투사체로 갈라집니다. 단계별 피해는 1190 / 495 / 250입니다.",
+        "nameEn": "Chain Gold Ore",
+        "descriptionEn": "Launches a 2x2 dodecahedral gold ore 8 tiles forward. On impact it explodes and splits 90 degrees to each side, and each fragment breaks into six gold bar projectiles. Stage damage: 1190 / 495 / 250."
+      },
+      "stage1Damage": 1190,
+      "stage1Range": 8,
+      "stage1Speed": 16,
+      "stage1Size": 2,
+      "stage1SplashRadius": 1.5,
+      "stage2Damage": 495,
+      "stage2Range": 8,
+      "stage2Speed": 18,
+      "stage3Damage": 250,
+      "stage3Range": 6,
+      "stage3Speed": 20,
+      "projectileRadius": 0.2,
+      "ultimateChargeRequired": 6,
+      "maxChargePerAttack": 6,
+      "ultimate": {
+        "id": "malfunctionZone",
+        "name": "고장 지대",
+        "description": "자신의 위치에 반경 6타일 장판을 소환합니다. 장판은 4초 동안 자신을 따라다니며 적의 공격을 막고 이동속도를 50% 감소시킵니다. 장판 안 적에게 1초마다 100 피해를 줍니다.",
+        "nameEn": "Malfunction Zone",
+        "descriptionEn": "Summons a 6-tile radius field on Gold that follows for 4 seconds. Enemies inside cannot attack and move 50% slower. Deals 100 damage to enemies inside every 1 seconds.",
+        "castRange": 0,
+        "radius": 6,
+        "duration": 4,
+        "delay": 0.35,
+        "followsCaster": true,
+        "tickDamage": 100,
+        "tickInterval": 1
+      },
+      "projectileDamageReduction": 650
+    },
+    "green": {
+      "maxHealth": 8400,
+      "moveSpeedMultiplier": 1.2,
+      "attackCooldown": 0.45,
+      "reloadDuration": 1,
+      "maxAmmo": 3,
+      "boomerangDamage": 1710,
+      "boomerangRange": 7,
+      "boomerangSpeed": 20,
+      "boomerangReturnSpeedMultiplier": 1.1,
+      "boomerangReturnDamageMultiplier": 0.35,
+      "boomerangFarThreshold": 3.5,
+      "boomerangFarMultiplier": 0.625,
+      "boomerangAngles": [
+        -0.4363323129985824,
+        -0.1454441043328608,
+        0.1454441043328608,
+        0.4363323129985824
+      ],
+      "description": "그린은 유일하게 항구 출신이 아닌 캐릭터입니다. 그가 살던 곳은 평범한 시골인데, 돈을 벌어서 이사 가려고 이 대회에 참가하게 되었습니다.",
+      "descriptionEn": "Green is the only fighter who is not from the harbor. He grew up in an ordinary rural town and entered the tournament hoping to earn enough to move away.",
+      "basicAttack": {
+        "name": "부메랑",
+        "description": "부메랑 4개를 던집니다. 적이 가까울수록 더 큰 피해를 줍니다.",
+        "nameEn": "Boomerang",
+        "descriptionEn": "Throws four boomerangs. The closer the enemy, the more damage each one deals."
+      },
+      "ultimate": {
+        "id": "hidingBush",
+        "name": "은신 수풀",
+        "description": "자신의 위치에 3타일 크기의 수풀을 소환해 최대 10초 동안 그 안에 숨습니다. 공격하면 3초간 노출됩니다.",
+        "nameEn": "Hiding Bush",
+        "descriptionEn": "Summons a 3-tile bush at your feet and hides inside it for up to 10 seconds. Attacking exposes you for 3 seconds.",
+        "chargeRequired": 7,
+        "radius": 1.5,
+        "duration": 10,
+        "revealDuration": 3
+      }
+    }
+  },
+  "wins": 359,
+  "draws": 0,
+  "losses": [
+    {
+      "scenario": {
+        "distance": 10,
+        "aimError": 0.1,
+        "bounds": 40,
+        "noZone": false,
+        "walls": false,
+        "timeLimit": 45,
+        "level": 6
+      },
+      "seed": 20270939,
+      "mirror": -1,
+      "left": "gold",
+      "right": "green",
+      "result": {
+        "outcome": -1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          115
+        ],
+        "charge": [
+          1,
+          5
+        ],
+        "distance": 80.01346411152163,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.633333333332818
+      },
+      "events": [
+        {
+          "type": "attack",
+          "time": 0.16666666666666666,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 9020,
+          "targetHP": 9240,
+          "ownerCharge": 0,
+          "distance": 7.645056585245468
+        },
+        {
+          "type": "attack",
+          "time": 0.21666666666666665,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 9240,
+          "targetHP": 9020,
+          "ownerCharge": 0,
+          "distance": 6.761757893154301
+        },
+        {
+          "type": "damage",
+          "time": 0.41666666666666663,
+          "owner": "gold",
+          "target": "green",
+          "damage": 1309,
+          "ownerHP": 9020,
+          "targetHP": 7931,
+          "ownerCharge": 0,
+          "distance": 5.018353046900267
+        },
+        {
+          "type": "damage",
+          "time": 0.4666666666666666,
+          "owner": "gold",
+          "target": "green",
+          "damage": 545,
+          "ownerHP": 9020,
+          "targetHP": 7386,
+          "ownerCharge": 3,
+          "distance": 4.950684392978592
+        },
+        {
+          "type": "damage",
+          "time": 0.4833333333333333,
+          "owner": "gold",
+          "target": "green",
+          "damage": 275,
+          "ownerHP": 9020,
+          "targetHP": 7111,
+          "ownerCharge": 5,
+          "distance": 4.928124451605187
+        },
+        {
+          "type": "ultimate",
+          "time": 0.49999999999999994,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 9020,
+          "targetHP": 7111,
+          "ownerCharge": 0,
+          "distance": 4.928124451605187
+        },
+        {
+          "type": "attack",
+          "time": 0.6666666666666671,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 7111,
+          "targetHP": 9020,
+          "ownerCharge": 0,
+          "distance": 4.680352397069357
+        },
+        {
+          "type": "damage",
+          "time": 0.850000000000001,
+          "owner": "gold",
+          "target": "green",
+          "damage": 110,
+          "ownerHP": 9020,
+          "targetHP": 7001,
+          "ownerCharge": 0,
+          "distance": 4.434519170475166
+        },
+        {
+          "type": "damage",
+          "time": 0.9500000000000013,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 7001,
+          "targetHP": 8494.375,
+          "ownerCharge": 0,
+          "distance": 4.707550753054536
+        },
+        {
+          "type": "damage",
+          "time": 0.966666666666668,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 7001,
+          "targetHP": 8486.025,
+          "ownerCharge": 1,
+          "distance": 4.753092783609006
+        },
+        {
+          "type": "attack",
+          "time": 1.6833333333333322,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 8486.025,
+          "targetHP": 7001,
+          "ownerCharge": 0,
+          "distance": 5.195340801913719
+        },
+        {
+          "type": "damage",
+          "time": 1.8499999999999983,
+          "owner": "gold",
+          "target": "green",
+          "damage": 110,
+          "ownerHP": 8486.025,
+          "targetHP": 6891,
+          "ownerCharge": 0,
+          "distance": 5.128238629553559
+        },
+        {
+          "type": "damage",
+          "time": 1.866666666666665,
+          "owner": "gold",
+          "target": "green",
+          "damage": 1309,
+          "ownerHP": 8486.025,
+          "targetHP": 5582,
+          "ownerCharge": 0,
+          "distance": 5.060292480063347
+        },
+        {
+          "type": "damage",
+          "time": 2.8499999999999948,
+          "owner": "gold",
+          "target": "green",
+          "damage": 110,
+          "ownerHP": 8486.025,
+          "targetHP": 5472,
+          "ownerCharge": 3,
+          "distance": 5.14056902152524
+        },
+        {
+          "type": "attack",
+          "time": 3.1999999999999935,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 8486.025,
+          "targetHP": 5472,
+          "ownerCharge": 3,
+          "distance": 5.143116428126263
+        },
+        {
+          "type": "damage",
+          "time": 3.3666666666666596,
+          "owner": "gold",
+          "target": "green",
+          "damage": 1309,
+          "ownerHP": 8486.025,
+          "targetHP": 4163,
+          "ownerCharge": 3,
+          "distance": 5.075661386817406
+        },
+        {
+          "type": "ultimate",
+          "time": 3.383333333333326,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 8486.025,
+          "targetHP": 4163,
+          "ownerCharge": 0,
+          "distance": 5.075661386817406
+        },
+        {
+          "type": "attack",
+          "time": 3.599999999999992,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 4163,
+          "targetHP": 8486.025,
+          "ownerCharge": 2,
+          "distance": 6.210927023488692
+        },
+        {
+          "type": "damage",
+          "time": 3.7999999999999914,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 4163,
+          "targetHP": 7960.4,
+          "ownerCharge": 2,
+          "distance": 6.488336003411354
+        },
+        {
+          "type": "damage",
+          "time": 3.816666666666658,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 4163,
+          "targetHP": 7434.775,
+          "ownerCharge": 3,
+          "distance": 6.5114518449213765
+        },
+        {
+          "type": "damage",
+          "time": 3.816666666666658,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 7426.424999999999,
+          "ownerCharge": 4,
+          "distance": 6.5114518449213765
+        },
+        {
+          "type": "damage",
+          "time": 3.8333333333333246,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 7418.074999999999,
+          "ownerCharge": 5,
+          "distance": 6.534562018252128
+        },
+        {
+          "type": "attack",
+          "time": 4.0666666666666575,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 4163,
+          "targetHP": 7418.074999999999,
+          "ownerCharge": 6,
+          "distance": 6.857009623015211
+        },
+        {
+          "type": "damage",
+          "time": 4.2833333333333234,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 4163,
+          "targetHP": 6892.449999999999,
+          "ownerCharge": 6,
+          "distance": 7.154036090555371
+        },
+        {
+          "type": "damage",
+          "time": 4.29999999999999,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 6884.0999999999985,
+          "ownerCharge": 7,
+          "distance": 7.176805875609916
+        },
+        {
+          "type": "damage",
+          "time": 4.566666666666656,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 6875.749999999998,
+          "ownerCharge": 7,
+          "distance": 7.540832311592011
+        },
+        {
+          "type": "attack",
+          "time": 10.966666666666791,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 6875.749999999998,
+          "targetHP": 4163,
+          "ownerCharge": 0,
+          "distance": 7.87215081391117
+        },
+        {
+          "type": "attack",
+          "time": 11.116666666666799,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 4163,
+          "targetHP": 6875.749999999998,
+          "ownerCharge": 7,
+          "distance": 6.9809182202700395
+        },
+        {
+          "type": "damage",
+          "time": 11.350000000000144,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 4163,
+          "targetHP": 6350.124999999998,
+          "ownerCharge": 7,
+          "distance": 6.081394057895846
+        },
+        {
+          "type": "damage",
+          "time": 11.366666666666811,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 6341.774999999998,
+          "ownerCharge": 7,
+          "distance": 6.1352729523464875
+        },
+        {
+          "type": "damage",
+          "time": 11.550000000000153,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 6333.424999999997,
+          "ownerCharge": 7,
+          "distance": 6.165402319456391
+        },
+        {
+          "type": "attack",
+          "time": 11.566666666666821,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 4163,
+          "targetHP": 6333.424999999997,
+          "ownerCharge": 7,
+          "distance": 6.1472427801015455
+        },
+        {
+          "type": "damage",
+          "time": 11.766666666666831,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 4163,
+          "targetHP": 5807.799999999997,
+          "ownerCharge": 7,
+          "distance": 6.238021566714599
+        },
+        {
+          "type": "damage",
+          "time": 11.783333333333498,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 5799.449999999997,
+          "ownerCharge": 7,
+          "distance": 6.2477469107382
+        },
+        {
+          "type": "damage",
+          "time": 11.783333333333498,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 4163,
+          "targetHP": 5273.824999999997,
+          "ownerCharge": 7,
+          "distance": 6.2477469107382
+        },
+        {
+          "type": "damage",
+          "time": 11.800000000000166,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 4163,
+          "targetHP": 5265.474999999997,
+          "ownerCharge": 7,
+          "distance": 6.258582407839514
+        },
+        {
+          "type": "damage",
+          "time": 11.96666666666684,
+          "owner": "gold",
+          "target": "green",
+          "damage": 275,
+          "ownerHP": 5265.474999999997,
+          "targetHP": 3888,
+          "ownerCharge": 0,
+          "distance": 6.404939730719052
+        },
+        {
+          "type": "attack",
+          "time": 12.016666666666843,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 3888,
+          "targetHP": 5265.474999999997,
+          "ownerCharge": 7,
+          "distance": 6.455523488964285
+        },
+        {
+          "type": "ultimate",
+          "time": 12.03333333333351,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 3888,
+          "targetHP": 5265.474999999997,
+          "ownerCharge": 0,
+          "distance": 6.34236536677474
+        },
+        {
+          "type": "damage",
+          "time": 12.283333333333523,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 3888,
+          "targetHP": 4739.849999999997,
+          "ownerCharge": 0,
+          "distance": 6.004061765311378
+        },
+        {
+          "type": "damage",
+          "time": 12.30000000000019,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 3888,
+          "targetHP": 4731.499999999996,
+          "ownerCharge": 1,
+          "distance": 6.131416052806985
+        },
+        {
+          "type": "attack",
+          "time": 12.466666666666866,
+          "owner": "gold",
+          "target": "green",
+          "ownerHP": 4731.499999999996,
+          "targetHP": 3888,
+          "ownerCharge": 1,
+          "distance": 6.147489396093583
+        },
+        {
+          "type": "attack",
+          "time": 13.416666666666913,
+          "owner": "green",
+          "target": "gold",
+          "ownerHP": 3888,
+          "targetHP": 4731.499999999996,
+          "ownerCharge": 2,
+          "distance": 6.856797737835519
+        },
+        {
+          "type": "damage",
+          "time": 13.650000000000258,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 3888,
+          "targetHP": 4205.874999999996,
+          "ownerCharge": 2,
+          "distance": 7.090496034794418
+        },
+        {
+          "type": "damage",
+          "time": 13.650000000000258,
+          "owner": "green",
+          "target": "gold",
+          "damage": 525.625,
+          "ownerHP": 3888,
+          "targetHP": 3680.2499999999964,
+          "ownerCharge": 3,
+          "distance": 7.090496034794418
+        },
+        {
+          "type": "damage",
+          "time": 13.666666666666925,
+          "owner": "green",
+          "target": "gold",
+          "damage": 8.349999999999909,
+          "ownerHP": 3888,
+          "targetHP": 3671.8999999999965,
+          "ownerCharge": 4,
+          "distance": 7.338939145031085
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.016666666666243,
+          "target": "gold",
+          "targetHP": 3634.316666666663
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.016666666666243,
+          "target": "green",
+          "targetHP": 3849.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.03333333333291,
+          "target": "gold",
+          "targetHP": 3596.7333333333295
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.03333333333291,
+          "target": "green",
+          "targetHP": 3811
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.049999999999574,
+          "target": "gold",
+          "targetHP": 3559.149999999996
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.049999999999574,
+          "target": "green",
+          "targetHP": 3772.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.06666666666624,
+          "target": "gold",
+          "targetHP": 3521.5666666666625
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.06666666666624,
+          "target": "green",
+          "targetHP": 3734
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.083333333332906,
+          "target": "gold",
+          "targetHP": 3483.983333333329
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.083333333332906,
+          "target": "green",
+          "targetHP": 3695.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.09999999999957,
+          "target": "gold",
+          "targetHP": 3446.3999999999955
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.09999999999957,
+          "target": "green",
+          "targetHP": 3657
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.116666666666237,
+          "target": "gold",
+          "targetHP": 3408.816666666662
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.116666666666237,
+          "target": "green",
+          "targetHP": 3618.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.133333333332903,
+          "target": "gold",
+          "targetHP": 3371.2333333333286
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.133333333332903,
+          "target": "green",
+          "targetHP": 3580
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.14999999999957,
+          "target": "gold",
+          "targetHP": 3333.649999999995
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.14999999999957,
+          "target": "green",
+          "targetHP": 3541.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.166666666666234,
+          "target": "gold",
+          "targetHP": 3296.0666666666616
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.166666666666234,
+          "target": "green",
+          "targetHP": 3503
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.1833333333329,
+          "target": "gold",
+          "targetHP": 3258.483333333328
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.1833333333329,
+          "target": "green",
+          "targetHP": 3464.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.199999999999566,
+          "target": "gold",
+          "targetHP": 3220.8999999999946
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.199999999999566,
+          "target": "green",
+          "targetHP": 3426
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.21666666666623,
+          "target": "gold",
+          "targetHP": 3183.316666666661
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.21666666666623,
+          "target": "green",
+          "targetHP": 3387.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.233333333332897,
+          "target": "gold",
+          "targetHP": 3145.7333333333277
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.233333333332897,
+          "target": "green",
+          "targetHP": 3349
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.249999999999563,
+          "target": "gold",
+          "targetHP": 3108.149999999994
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.249999999999563,
+          "target": "green",
+          "targetHP": 3310.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.26666666666623,
+          "target": "gold",
+          "targetHP": 3070.5666666666607
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.26666666666623,
+          "target": "green",
+          "targetHP": 3272
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.283333333332894,
+          "target": "gold",
+          "targetHP": 3032.983333333327
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.283333333332894,
+          "target": "green",
+          "targetHP": 3233.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.29999999999956,
+          "target": "gold",
+          "targetHP": 2995.3999999999937
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.29999999999956,
+          "target": "green",
+          "targetHP": 3195
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.316666666666226,
+          "target": "gold",
+          "targetHP": 2957.8166666666602
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.316666666666226,
+          "target": "green",
+          "targetHP": 3156.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.33333333333289,
+          "target": "gold",
+          "targetHP": 2920.2333333333268
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.33333333333289,
+          "target": "green",
+          "targetHP": 3118
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.349999999999557,
+          "target": "gold",
+          "targetHP": 2882.6499999999933
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.349999999999557,
+          "target": "green",
+          "targetHP": 3079.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.366666666666223,
+          "target": "gold",
+          "targetHP": 2845.06666666666
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.366666666666223,
+          "target": "green",
+          "targetHP": 3041
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.38333333333289,
+          "target": "gold",
+          "targetHP": 2807.4833333333263
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.38333333333289,
+          "target": "green",
+          "targetHP": 3002.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.399999999999554,
+          "target": "gold",
+          "targetHP": 2769.899999999993
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.399999999999554,
+          "target": "green",
+          "targetHP": 2964
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.41666666666622,
+          "target": "gold",
+          "targetHP": 2732.3166666666593
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.41666666666622,
+          "target": "green",
+          "targetHP": 2925.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.433333333332886,
+          "target": "gold",
+          "targetHP": 2694.733333333326
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.433333333332886,
+          "target": "green",
+          "targetHP": 2887
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.44999999999955,
+          "target": "gold",
+          "targetHP": 2657.1499999999924
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.44999999999955,
+          "target": "green",
+          "targetHP": 2848.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.466666666666217,
+          "target": "gold",
+          "targetHP": 2619.566666666659
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.466666666666217,
+          "target": "green",
+          "targetHP": 2810
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.483333333332883,
+          "target": "gold",
+          "targetHP": 2581.9833333333254
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.483333333332883,
+          "target": "green",
+          "targetHP": 2771.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.49999999999955,
+          "target": "gold",
+          "targetHP": 2544.399999999992
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.49999999999955,
+          "target": "green",
+          "targetHP": 2733
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.516666666666215,
+          "target": "gold",
+          "targetHP": 2506.8166666666584
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.516666666666215,
+          "target": "green",
+          "targetHP": 2694.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.53333333333288,
+          "target": "gold",
+          "targetHP": 2469.233333333325
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.53333333333288,
+          "target": "green",
+          "targetHP": 2656
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.549999999999546,
+          "target": "gold",
+          "targetHP": 2431.6499999999915
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.549999999999546,
+          "target": "green",
+          "targetHP": 2617.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.56666666666621,
+          "target": "gold",
+          "targetHP": 2394.066666666658
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.56666666666621,
+          "target": "green",
+          "targetHP": 2579
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.583333333332877,
+          "target": "gold",
+          "targetHP": 2356.4833333333245
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.583333333332877,
+          "target": "green",
+          "targetHP": 2540.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.599999999999543,
+          "target": "gold",
+          "targetHP": 2318.899999999991
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.599999999999543,
+          "target": "green",
+          "targetHP": 2502
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.61666666666621,
+          "target": "gold",
+          "targetHP": 2281.3166666666575
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.61666666666621,
+          "target": "green",
+          "targetHP": 2463.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.633333333332875,
+          "target": "gold",
+          "targetHP": 2243.733333333324
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.633333333332875,
+          "target": "green",
+          "targetHP": 2425
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.64999999999954,
+          "target": "gold",
+          "targetHP": 2206.1499999999905
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.64999999999954,
+          "target": "green",
+          "targetHP": 2386.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.666666666666206,
+          "target": "gold",
+          "targetHP": 2168.566666666657
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.666666666666206,
+          "target": "green",
+          "targetHP": 2348
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.68333333333287,
+          "target": "gold",
+          "targetHP": 2130.9833333333236
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.68333333333287,
+          "target": "green",
+          "targetHP": 2309.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.699999999999537,
+          "target": "gold",
+          "targetHP": 2093.39999999999
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.699999999999537,
+          "target": "green",
+          "targetHP": 2271
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.716666666666203,
+          "target": "gold",
+          "targetHP": 2055.8166666666566
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.716666666666203,
+          "target": "green",
+          "targetHP": 2232.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.73333333333287,
+          "target": "gold",
+          "targetHP": 2018.2333333333233
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.73333333333287,
+          "target": "green",
+          "targetHP": 2194
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.749999999999535,
+          "target": "gold",
+          "targetHP": 1980.64999999999
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.749999999999535,
+          "target": "green",
+          "targetHP": 2155.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.7666666666662,
+          "target": "gold",
+          "targetHP": 1943.0666666666568
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.7666666666662,
+          "target": "green",
+          "targetHP": 2117
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.783333333332866,
+          "target": "gold",
+          "targetHP": 1905.4833333333236
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.783333333332866,
+          "target": "green",
+          "targetHP": 2078.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.79999999999953,
+          "target": "gold",
+          "targetHP": 1867.8999999999903
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.79999999999953,
+          "target": "green",
+          "targetHP": 2040
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.816666666666197,
+          "target": "gold",
+          "targetHP": 1830.316666666657
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.816666666666197,
+          "target": "green",
+          "targetHP": 2001.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.833333333332863,
+          "target": "gold",
+          "targetHP": 1792.7333333333238
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.833333333332863,
+          "target": "green",
+          "targetHP": 1963
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.84999999999953,
+          "target": "gold",
+          "targetHP": 1755.1499999999905
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.84999999999953,
+          "target": "green",
+          "targetHP": 1924.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.866666666666195,
+          "target": "gold",
+          "targetHP": 1717.5666666666573
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.866666666666195,
+          "target": "green",
+          "targetHP": 1886
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.88333333333286,
+          "target": "gold",
+          "targetHP": 1679.983333333324
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.88333333333286,
+          "target": "green",
+          "targetHP": 1847.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.899999999999526,
+          "target": "gold",
+          "targetHP": 1642.3999999999908
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.899999999999526,
+          "target": "green",
+          "targetHP": 1809
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.916666666666192,
+          "target": "gold",
+          "targetHP": 1604.8166666666575
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.916666666666192,
+          "target": "green",
+          "targetHP": 1770.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.933333333332858,
+          "target": "gold",
+          "targetHP": 1567.2333333333243
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.933333333332858,
+          "target": "green",
+          "targetHP": 1732
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.949999999999523,
+          "target": "gold",
+          "targetHP": 1529.649999999991
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.949999999999523,
+          "target": "green",
+          "targetHP": 1693.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.96666666666619,
+          "target": "gold",
+          "targetHP": 1492.0666666666577
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.96666666666619,
+          "target": "green",
+          "targetHP": 1655
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.983333333332855,
+          "target": "gold",
+          "targetHP": 1454.4833333333245
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.983333333332855,
+          "target": "green",
+          "targetHP": 1616.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.99999999999952,
+          "target": "gold",
+          "targetHP": 1416.8999999999912
+        },
+        {
+          "type": "zoneDamage",
+          "time": 30.99999999999952,
+          "target": "green",
+          "targetHP": 1578
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.016666666666186,
+          "target": "gold",
+          "targetHP": 1379.316666666658
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.016666666666186,
+          "target": "green",
+          "targetHP": 1539.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.033333333332852,
+          "target": "gold",
+          "targetHP": 1341.7333333333247
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.033333333332852,
+          "target": "green",
+          "targetHP": 1501
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.049999999999518,
+          "target": "gold",
+          "targetHP": 1304.1499999999915
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.049999999999518,
+          "target": "green",
+          "targetHP": 1462.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.066666666666183,
+          "target": "gold",
+          "targetHP": 1266.5666666666582
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.066666666666183,
+          "target": "green",
+          "targetHP": 1424
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.08333333333285,
+          "target": "gold",
+          "targetHP": 1228.983333333325
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.08333333333285,
+          "target": "green",
+          "targetHP": 1385.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.099999999999515,
+          "target": "gold",
+          "targetHP": 1191.3999999999917
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.099999999999515,
+          "target": "green",
+          "targetHP": 1347
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.11666666666618,
+          "target": "gold",
+          "targetHP": 1153.8166666666584
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.11666666666618,
+          "target": "green",
+          "targetHP": 1308.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.133333333332846,
+          "target": "gold",
+          "targetHP": 1116.2333333333252
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.133333333332846,
+          "target": "green",
+          "targetHP": 1270
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.149999999999512,
+          "target": "gold",
+          "targetHP": 1078.649999999992
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.149999999999512,
+          "target": "green",
+          "targetHP": 1231.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.166666666666178,
+          "target": "gold",
+          "targetHP": 1041.0666666666586
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.166666666666178,
+          "target": "green",
+          "targetHP": 1193
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.183333333332843,
+          "target": "gold",
+          "targetHP": 1003.4833333333253
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.183333333332843,
+          "target": "green",
+          "targetHP": 1154.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.19999999999951,
+          "target": "gold",
+          "targetHP": 965.8999999999919
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.19999999999951,
+          "target": "green",
+          "targetHP": 1116
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.216666666666175,
+          "target": "gold",
+          "targetHP": 928.3166666666585
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.216666666666175,
+          "target": "green",
+          "targetHP": 1077.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.23333333333284,
+          "target": "gold",
+          "targetHP": 890.7333333333252
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.23333333333284,
+          "target": "green",
+          "targetHP": 1039
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.249999999999506,
+          "target": "gold",
+          "targetHP": 853.1499999999918
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.249999999999506,
+          "target": "green",
+          "targetHP": 1000.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.266666666666172,
+          "target": "gold",
+          "targetHP": 815.5666666666584
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.266666666666172,
+          "target": "green",
+          "targetHP": 962
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.283333333332838,
+          "target": "gold",
+          "targetHP": 777.983333333325
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.283333333332838,
+          "target": "green",
+          "targetHP": 923.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.299999999999503,
+          "target": "gold",
+          "targetHP": 740.3999999999917
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.299999999999503,
+          "target": "green",
+          "targetHP": 885
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.31666666666617,
+          "target": "gold",
+          "targetHP": 702.8166666666583
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.31666666666617,
+          "target": "green",
+          "targetHP": 846.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.333333333332835,
+          "target": "gold",
+          "targetHP": 665.2333333333249
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.333333333332835,
+          "target": "green",
+          "targetHP": 808
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.3499999999995,
+          "target": "gold",
+          "targetHP": 627.6499999999916
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.3499999999995,
+          "target": "green",
+          "targetHP": 769.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.366666666666166,
+          "target": "gold",
+          "targetHP": 590.0666666666582
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.366666666666166,
+          "target": "green",
+          "targetHP": 731
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.383333333332832,
+          "target": "gold",
+          "targetHP": 552.4833333333248
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.383333333332832,
+          "target": "green",
+          "targetHP": 692.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.399999999999498,
+          "target": "gold",
+          "targetHP": 514.8999999999915
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.399999999999498,
+          "target": "green",
+          "targetHP": 654
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.416666666666163,
+          "target": "gold",
+          "targetHP": 477.31666666665814
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.416666666666163,
+          "target": "green",
+          "targetHP": 615.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.43333333333283,
+          "target": "gold",
+          "targetHP": 439.7333333333248
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.43333333333283,
+          "target": "green",
+          "targetHP": 577
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.449999999999495,
+          "target": "gold",
+          "targetHP": 402.1499999999915
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.449999999999495,
+          "target": "green",
+          "targetHP": 538.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.46666666666616,
+          "target": "gold",
+          "targetHP": 364.5666666666582
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.46666666666616,
+          "target": "green",
+          "targetHP": 500
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.483333333332826,
+          "target": "gold",
+          "targetHP": 326.9833333333249
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.483333333332826,
+          "target": "green",
+          "targetHP": 461.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.499999999999492,
+          "target": "gold",
+          "targetHP": 289.39999999999156
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.499999999999492,
+          "target": "green",
+          "targetHP": 423
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.516666666666158,
+          "target": "gold",
+          "targetHP": 251.81666666665822
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.516666666666158,
+          "target": "green",
+          "targetHP": 384.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.533333333332823,
+          "target": "gold",
+          "targetHP": 214.23333333332488
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.533333333332823,
+          "target": "green",
+          "targetHP": 346
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.54999999999949,
+          "target": "gold",
+          "targetHP": 176.64999999999154
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.54999999999949,
+          "target": "green",
+          "targetHP": 307.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.566666666666155,
+          "target": "gold",
+          "targetHP": 139.0666666666582
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.566666666666155,
+          "target": "green",
+          "targetHP": 269
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.58333333333282,
+          "target": "gold",
+          "targetHP": 101.48333333332485
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.58333333333282,
+          "target": "green",
+          "targetHP": 230.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.599999999999486,
+          "target": "gold",
+          "targetHP": 63.899999999991515
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.599999999999486,
+          "target": "green",
+          "targetHP": 192
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.616666666666152,
+          "target": "gold",
+          "targetHP": 26.31666666665818
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.616666666666152,
+          "target": "green",
+          "targetHP": 153.5
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.633333333332818,
+          "target": "gold",
+          "targetHP": 0
+        },
+        {
+          "type": "zoneDamage",
+          "time": 31.633333333332818,
+          "target": "green",
+          "targetHP": 115
+        }
+      ],
+      "snapshots": [
+        {
+          "time": 0.016666666666666666,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 9020,
+              "ammo": 3,
+              "charge": 0,
+              "x": 4.886666666666667,
+              "z": -0.05316666112574305,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 9240,
+              "ammo": 3,
+              "charge": 0,
+              "x": -4.863749014426421,
+              "z": 0.04630663151040677,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 0.5166666666666666,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 9020,
+              "ammo": 2,
+              "charge": 0,
+              "x": 3.9033689929969984,
+              "z": -1.4000607110154173,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 7111,
+              "ammo": 2,
+              "charge": 0,
+              "x": -0.8339794378090863,
+              "z": -0.21629597208952225,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 5
+        },
+        {
+          "time": 1.016666666666668,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 8486.025,
+              "ammo": 2,
+              "charge": 0,
+              "x": 7.241871449153968,
+              "z": -1.5609257622623818,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 7001,
+              "ammo": 1,
+              "charge": 2,
+              "x": 2.3638778081208622,
+              "z": -1.900203332465987,
+              "hidden": false,
+              "locked": true
+            }
+          ],
+          "projectiles": 10
+        },
+        {
+          "time": 1.5166666666666662,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 8486.025,
+              "ammo": 2,
+              "charge": 0,
+              "x": 8.985050511902438,
+              "z": 0.4386688901251835,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 7001,
+              "ammo": 1,
+              "charge": 2,
+              "x": 4.4882461040033235,
+              "z": -2.02077088083351,
+              "hidden": false,
+              "locked": true
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 2.0166666666666644,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 8486.025,
+              "ammo": 1,
+              "charge": 3,
+              "x": 10.220807962104006,
+              "z": 2.272297826304541,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 5582,
+              "ammo": 1,
+              "charge": 2,
+              "x": 6.029622230970057,
+              "z": -0.6836815789125448,
+              "hidden": false,
+              "locked": true
+            }
+          ],
+          "projectiles": 2
+        },
+        {
+          "time": 2.5166666666666626,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 8486.025,
+              "ammo": 1,
+              "charge": 3,
+              "x": 12.396877994787548,
+              "z": 2.377777523495136,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 5582,
+              "ammo": 2,
+              "charge": 2,
+              "x": 7.443079151517813,
+              "z": 1.0275122305887676,
+              "hidden": false,
+              "locked": true
+            }
+          ],
+          "projectiles": 12
+        },
+        {
+          "time": 3.016666666666661,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 8486.025,
+              "ammo": 1,
+              "charge": 3,
+              "x": 14.530673619041952,
+              "z": 1.050600721017612,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 5472,
+              "ammo": 2,
+              "charge": 2,
+              "x": 9.413734980236823,
+              "z": 1.5607490030517683,
+              "hidden": false,
+              "locked": true
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 3.516666666666659,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 8486.025,
+              "ammo": 0,
+              "charge": 0,
+              "x": 15.964632639158907,
+              "z": 0.708151622146596,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 2,
+              "x": 10.164182780477455,
+              "z": 0.837871232919443,
+              "hidden": false,
+              "locked": true
+            }
+          ],
+          "projectiles": 2
+        },
+        {
+          "time": 4.016666666666658,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 7418.074999999999,
+              "ammo": 0,
+              "charge": 0,
+              "x": 12.940223353881334,
+              "z": 1.3551395241255364,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 2,
+              "charge": 6,
+              "x": 6.7795066696717425,
+              "z": -1.4951729269113931,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 16
+        },
+        {
+          "time": 4.516666666666656,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6884.0999999999985,
+              "ammo": 0,
+              "charge": 0,
+              "x": 9.475929577127303,
+              "z": 0.525147254756499,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 1,
+              "charge": 7,
+              "x": 3.3390122000601252,
+              "z": -3.738290122720516,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 6
+        },
+        {
+          "time": 5.016666666666654,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 0,
+              "charge": 0,
+              "x": 6.709744570415589,
+              "z": -1.5635725232024396,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 1,
+              "charge": 7,
+              "x": -1.0078066586468393,
+              "z": -4.2128688307153555,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 3
+        },
+        {
+          "time": 5.516666666666652,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 0,
+              "charge": 0,
+              "x": 3.5948920082617923,
+              "z": -3.564723358089211,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 2,
+              "charge": 7,
+              "x": -5.252820749558561,
+              "z": -3.579088806753128,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 6.016666666666651,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 1,
+              "charge": 0,
+              "x": 0.17994206746282576,
+              "z": -4.060283780478708,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 2,
+              "charge": 7,
+              "x": -9.349186221678488,
+              "z": -4.217429360787014,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 6.516666666666649,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 1,
+              "charge": 0,
+              "x": -3.362028589550854,
+              "z": -3.5026749517811533,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -13.094378949431702,
+              "z": -6.615900986826254,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 7.016666666666647,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 1,
+              "charge": 0,
+              "x": -7.006822748479443,
+              "z": -3.6467543437395467,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -16.601361256262294,
+              "z": -8.824213086632973,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 7.516666666666645,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 2,
+              "charge": 0,
+              "x": -10.035614928562756,
+              "z": -5.232254834868455,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -20.864566367897943,
+              "z": -9.351387313752015,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 8.016666666666644,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 2,
+              "charge": 0,
+              "x": -13.009179911645516,
+              "z": -7.419430816431484,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -25.20746301826732,
+              "z": -8.766897369579247,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 8.51666666666667,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 3,
+              "charge": 0,
+              "x": -16.340567924771722,
+              "z": -8.561698890631444,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -29.27651171530247,
+              "z": -9.255593062009266,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 9.016666666666694,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 3,
+              "charge": 0,
+              "x": -19.829356018453094,
+              "z": -8.271345628710435,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -33.07091260575763,
+              "z": -11.541685505348735,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 9.516666666666719,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 3,
+              "charge": 0,
+              "x": -23.52294061752154,
+              "z": -8.010723238863644,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -36.58534625297874,
+              "z": -13.887956070150167,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 10.016666666666744,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 3,
+              "charge": 0,
+              "x": -26.76455391008427,
+              "z": -9.105186622818469,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -40,
+              "z": -14.625672912164246,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 10.516666666666769,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 3,
+              "charge": 0,
+              "x": -29.548643447883777,
+              "z": -11.434220502974688,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -40,
+              "z": -14.339520639041647,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 11.016666666666794,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6875.749999999998,
+              "ammo": 2,
+              "charge": 0,
+              "x": -32.59580901544242,
+              "z": -13.371870528790184,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 3,
+              "charge": 7,
+              "x": -40,
+              "z": -14.960189307225425,
+              "locked": false
+            }
+          ],
+          "projectiles": 1
+        },
+        {
+          "time": 11.516666666666818,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 6341.774999999998,
+              "ammo": 2,
+              "charge": 0,
+              "x": -35.31014080936755,
+              "z": -14.039183569523084,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 4163,
+              "ammo": 2,
+              "charge": 7,
+              "x": -40,
+              "z": -17.93658755061326,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 6
+        },
+        {
+          "time": 12.016666666666843,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 5265.474999999997,
+              "ammo": 2,
+              "charge": 1,
+              "x": -38.188544030079726,
+              "z": -15.937159094771129,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 0,
+              "charge": 7,
+              "x": -40,
+              "z": -22.133320066341334,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 19
+        },
+        {
+          "time": 12.516666666666868,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 4731.499999999996,
+              "ammo": 1,
+              "charge": 1,
+              "x": -39.23409538625381,
+              "z": -17.668522691143636,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 0,
+              "charge": 2,
+              "x": -40,
+              "z": -23.940774486489936,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 5
+        },
+        {
+          "time": 13.016666666666893,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 4731.499999999996,
+              "ammo": 1,
+              "charge": 1,
+              "x": -38.75059820145605,
+              "z": -21.17649631543316,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 0,
+              "charge": 2,
+              "x": -40,
+              "z": -27.71842811722506,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 2
+        },
+        {
+          "time": 13.516666666666918,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 4731.499999999996,
+              "ammo": 1,
+              "charge": 1,
+              "x": -38.16811941470187,
+              "z": -24.81281583721145,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 0,
+              "charge": 2,
+              "x": -40,
+              "z": -31.507467155371224,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 16
+        },
+        {
+          "time": 14.016666666666943,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 1,
+              "charge": 1,
+              "x": -37.82847749648037,
+              "z": -23.284622729825756,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 0,
+              "charge": 5,
+              "x": -39.53172858272323,
+              "z": -35.74625649063138,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 4
+        },
+        {
+          "time": 14.516666666666968,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 1,
+              "charge": 1,
+              "x": -39.07729029957744,
+              "z": -19.85365798831792,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 0,
+              "charge": 5,
+              "x": -38.01622508279683,
+              "z": -39.88804045233867,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 15.016666666666993,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 1,
+              "charge": 1,
+              "x": -40,
+              "z": -16.563013927808587,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 1,
+              "charge": 5,
+              "x": -37.699139231080345,
+              "z": -40,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 15.516666666667017,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 2,
+              "charge": 1,
+              "x": -39.51812845765408,
+              "z": -13.143961832492243,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 1,
+              "charge": 5,
+              "x": -39.145440801289716,
+              "z": -40,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 16.01666666666704,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 2,
+              "charge": 1,
+              "x": -37.89610215040665,
+              "z": -9.799558801769921,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 2,
+              "charge": 5,
+              "x": -40,
+              "z": -40,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 16.51666666666701,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.14860760628853,
+              "z": -6.4473929481122685,
+              "hidden": false,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 2,
+              "charge": 5,
+              "x": -39.40555578353067,
+              "z": -40,
+              "hidden": false,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 17.016666666666982,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.194252951565154,
+              "z": -3.0221578174341803,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.736294359223,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 17.516666666666953,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.66157552016155,
+              "z": 0.32072498808964245,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.114395526876315,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 18.016666666666925,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.647188578862234,
+              "z": 3.720955339777963,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -38.370774341846385,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 18.516666666666897,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.171890115704244,
+              "z": 7.111967224752964,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.8996099599199,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 19.01666666666687,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.14241312831929,
+              "z": 10.467538708005058,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.636028472723005,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 19.51666666666684,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.877108925536724,
+              "z": 13.884188701113906,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.97061059945457,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 20.01666666666681,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.426381045955964,
+              "z": 17.250087505427185,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -36.95930831217495,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 20.516666666666783,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.80080273296023,
+              "z": 20.635490805534463,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.907693025490474,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 21.016666666666755,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.526264947405515,
+              "z": 24.042241312130944,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.60232236315693,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 21.516666666666726,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.244293086669,
+              "z": 27.40545317227606,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.84545663815816,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 22.016666666666698,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.60003510557847,
+              "z": 30.81257649909291,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -38.32684905127577,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 22.51666666666667,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.13767764033941,
+              "z": 34.19608307808019,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -36.969636312102374,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 23.01666666666664,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.89010713953223,
+              "z": 37.57269710097703,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.51185460830383,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 23.516666666666612,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.90086458277425,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.25844620612236,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 24.016666666666584,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.44079020469701,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.970486847326285,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 24.516666666666556,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.37763689029154,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -38.733303407822824,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 25.016666666666527,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.79745937759425,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.11791042551553,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 25.5166666666665,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.89511166940777,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.1776207472024,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 26.01666666666647,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.27758441888464,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -38.82826042129334,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 26.516666666666442,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.73910405980789,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.956422015101246,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 27.016666666666413,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.249634203743355,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.11400998197002,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 27.516666666666385,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.4418693530045,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.364879236686875,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 28.016666666666357,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.804521175720055,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -36.92873618281008,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 28.516666666666328,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.610398117250796,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -38.34893168014929,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 29.0166666666663,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.11795151010671,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.801154068908374,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 29.51666666666627,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3671.8999999999965,
+              "ammo": 3,
+              "charge": 1,
+              "x": -37.24312420334705,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3888,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.41816922801189,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 30.016666666666243,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 3634.316666666663,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.114981874883064,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 3849.5,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.672038168680096,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 30.516666666666215,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 2506.8166666666584,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.63654789829031,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 2694.5,
+              "ammo": 3,
+              "charge": 5,
+              "x": -36.771806502924264,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 31.016666666666186,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 1379.316666666658,
+              "ammo": 3,
+              "charge": 1,
+              "x": -39.86980829350659,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 1539.5,
+              "ammo": 3,
+              "charge": 5,
+              "x": -37.84564361381527,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        },
+        {
+          "time": 31.516666666666158,
+          "actors": [
+            {
+              "id": "gold",
+              "hp": 251.81666666665822,
+              "ammo": 3,
+              "charge": 1,
+              "x": -38.54465717854007,
+              "z": 40,
+              "locked": false
+            },
+            {
+              "id": "green",
+              "hp": 384.5,
+              "ammo": 3,
+              "charge": 5,
+              "x": -39.503418888130135,
+              "z": -40,
+              "locked": false
+            }
+          ],
+          "projectiles": 0
+        }
+      ],
+      "damageByOwner": {
+        "gold": 5352,
+        "green": 5348.1
+      }
+    }
+  ]
+}

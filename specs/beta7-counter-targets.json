@@ -1,0 +1,251 @@
+{
+  "kind": "design-targets-not-combat-rules",
+  "season": "beta7",
+  "cycle": [
+    "red",
+    "blue",
+    "orange",
+    "mint",
+    "cyan",
+    "pink",
+    "purple",
+    "chartreuse",
+    "yellow",
+    "ivory",
+    "gold",
+    "green",
+    "azure",
+    "lavender",
+    "crimson",
+    "crystal"
+  ],
+  "selected": [
+    {
+      "id": "red",
+      "targetWin": "blue",
+      "targetLoss": "crystal"
+    },
+    {
+      "id": "blue",
+      "targetWin": "orange",
+      "targetLoss": "red"
+    },
+    {
+      "id": "orange",
+      "targetWin": "mint",
+      "targetLoss": "blue"
+    },
+    {
+      "id": "mint",
+      "targetWin": "cyan",
+      "targetLoss": "orange"
+    },
+    {
+      "id": "cyan",
+      "targetWin": "pink",
+      "targetLoss": "mint"
+    },
+    {
+      "id": "pink",
+      "targetWin": "purple",
+      "targetLoss": "cyan"
+    },
+    {
+      "id": "purple",
+      "targetWin": "chartreuse",
+      "targetLoss": "pink"
+    },
+    {
+      "id": "chartreuse",
+      "targetWin": "yellow",
+      "targetLoss": "purple"
+    },
+    {
+      "id": "yellow",
+      "targetWin": "ivory",
+      "targetLoss": "chartreuse"
+    },
+    {
+      "id": "ivory",
+      "targetWin": "gold",
+      "targetLoss": "yellow"
+    },
+    {
+      "id": "gold",
+      "targetWin": "green",
+      "targetLoss": "ivory"
+    },
+    {
+      "id": "green",
+      "targetWin": "azure",
+      "targetLoss": "gold"
+    },
+    {
+      "id": "azure",
+      "targetWin": "lavender",
+      "targetLoss": "green"
+    },
+    {
+      "id": "lavender",
+      "targetWin": "crimson",
+      "targetLoss": "azure"
+    },
+    {
+      "id": "crimson",
+      "targetWin": "crystal",
+      "targetLoss": "lavender"
+    },
+    {
+      "id": "crystal",
+      "targetWin": "red",
+      "targetLoss": "crimson"
+    }
+  ],
+  "audit": [
+    {
+      "id": "red",
+      "targetWin": "blue",
+      "targetLoss": "crystal",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 10,
+      "lossCount": 1
+    },
+    {
+      "id": "blue",
+      "targetWin": "orange",
+      "targetLoss": "red",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 7,
+      "lossCount": 2
+    },
+    {
+      "id": "orange",
+      "targetWin": "mint",
+      "targetLoss": "blue",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 4,
+      "lossCount": 1
+    },
+    {
+      "id": "mint",
+      "targetWin": "cyan",
+      "targetLoss": "orange",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 1,
+      "lossCount": 3
+    },
+    {
+      "id": "cyan",
+      "targetWin": "pink",
+      "targetLoss": "mint",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 1,
+      "lossCount": 9
+    },
+    {
+      "id": "pink",
+      "targetWin": "purple",
+      "targetLoss": "cyan",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 2,
+      "lossCount": 5
+    },
+    {
+      "id": "purple",
+      "targetWin": "chartreuse",
+      "targetLoss": "pink",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 5,
+      "lossCount": 4
+    },
+    {
+      "id": "chartreuse",
+      "targetWin": "yellow",
+      "targetLoss": "purple",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 1,
+      "lossCount": 2
+    },
+    {
+      "id": "yellow",
+      "targetWin": "ivory",
+      "targetLoss": "chartreuse",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 4,
+      "lossCount": 2
+    },
+    {
+      "id": "ivory",
+      "targetWin": "gold",
+      "targetLoss": "yellow",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 4,
+      "lossCount": 5
+    },
+    {
+      "id": "gold",
+      "targetWin": "green",
+      "targetLoss": "ivory",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 2,
+      "lossCount": 7
+    },
+    {
+      "id": "green",
+      "targetWin": "azure",
+      "targetLoss": "gold",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 1,
+      "lossCount": 7
+    },
+    {
+      "id": "azure",
+      "targetWin": "lavender",
+      "targetLoss": "green",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 3,
+      "lossCount": 2
+    },
+    {
+      "id": "lavender",
+      "targetWin": "crimson",
+      "targetLoss": "azure",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 2,
+      "lossCount": 5
+    },
+    {
+      "id": "crimson",
+      "targetWin": "crystal",
+      "targetLoss": "lavender",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 8,
+      "lossCount": 2
+    },
+    {
+      "id": "crystal",
+      "targetWin": "red",
+      "targetLoss": "crimson",
+      "winScore": 1,
+      "lossScore": 0,
+      "winCount": 3,
+      "lossCount": 1
+    }
+  ],
+  "achieved": false
+}

@@ -19,9 +19,9 @@ class Mesh {
 }
 const state = { gameTime: 0, running: true, players: [], projectiles: [], mintZones: [], chopWoodMode: true };
 let moved = 0, disposed = 0;
-const ctx = vm.createContext({ CHARACTERS, state, baseMoveSpeed: 10.4,
+const ctx = vm.createContext({ CURRENT_SEASON: "beta6", CHARACTERS, state, baseMoveSpeed: 10.4,
   THREE: { Mesh, CircleGeometry: class {}, SphereGeometry: class {}, MeshStandardMaterial: class {}, MeshBasicMaterial: class {}, DoubleSide: 2 },
-  createMintIceHitEffect() {},
+  createMintIceHitEffect() {}, areSameTeam:(a,b)=>a.team!=null&&a.team===b.team,
   scene: { add() {} }, audio: { play() {} },
   tempVec3: { set(x, y, z) { Object.assign(this, { x, y, z }); } },
   moveFighter() { moved++; }, disposeSceneObject() { disposed++; },
@@ -76,7 +76,7 @@ ctx.applyMintBulletHit(attacker, victim, 0); assert.equal(attacker.mintUltimateC
 for (let i = 0; i < 10; i++) ctx.applyMintBulletHit(attacker, victim, 700);
 assert.equal(attacker.mintUltimateCharge, 7);
 assert.match(source, /if \(proj\.isMintIce\)[\s\S]*?applyMintBulletHit\(attacker, target, dealt\)/);
-assert.match(source, /new Set\(\[[^\n]+"mint"\]\)/);
+assert.match(source, /const ULTIMATE_CHARACTERS = new Set\(\[[^\n]*"mint"/);
 console.log('Mint checks passed: beta settings, arcing throw, landing delay, field lifetime, ice/freeze, action locks, charge, damage, allies, sliding, cleanup.');
 
 // Guard the exact beta badge geometry and drawing rules without launching a browser.

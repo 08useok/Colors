@@ -5,7 +5,7 @@ const ROOM_MAX = 8;
 const SOCCER_ROOM_MAX = 6;
 const COUNTDOWN_SEC = 5;
 // 매칭에서 허용하는 캐릭터 — 베타 시즌 1에서 크림슨 추가
-const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse", "mint", "azure"]);
+const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse", "mint", "azure", "crystal", "lavender"]);
 export class LeaderboardStore extends DurableObject {
   async getLeaderboard() {
     return await this.ctx.storage.get("global-leaderboard") ?? [];
@@ -61,12 +61,13 @@ export class ColorsServer extends Server {
     const previousMatchId = this.playerMatch.get(player.id);
     if (previousMatchId) this.leaveMatch(player.id, previousMatchId);
 
+    const randomMap = data.mapId === -1;
     const requestedMap = Number.isInteger(data.mapId) && data.mapId >= 0 && data.mapId < 3 ? data.mapId : 0;
     const roomMax = player.mode === "soccer" ? SOCCER_ROOM_MAX : ROOM_MAX;
-    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && item.mapId === requestedMap && item.playerIds.length < roomMax);
+    let match = [...this.matches.values()].find((item) => !item.started && item.mode === player.mode && (randomMap ? item.randomMap === true : item.randomMap !== true && item.mapId === requestedMap) && item.playerIds.length < roomMax);
     if (!match) {
-      const currentMapId = requestedMap;
-      match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: currentMapId, playerIds: [], started: false, countdownTimer: null };
+      const currentMapId = randomMap ? Math.floor(Math.random() * 3) : requestedMap;
+      match = { id: `match-${this.nextMatchId++}`, spawnSeed: crypto.randomUUID(), mode: player.mode, mapId: currentMapId, randomMap, playerIds: [], started: false, countdownTimer: null };
       this.matches.set(match.id, match);
     }
     match.playerIds.push(player.id);

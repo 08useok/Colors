@@ -3807,3 +3807,12 @@ body.lobby-active #takedown-hud {
   max-height: none;
   margin: 0;
 }
+
+/* Season 7 release: keep main controls and account panels in the ruins theme. */
+body[data-season="beta7"] #message-overlay { background: radial-gradient(ellipse at 50% 20%, rgba(202,162,103,.36), rgba(57,37,22,.9)); }
+body[data-season="beta7"] .lobby-season-tag { color: #f5d47d; border-color: #b48d4c; }
+body[data-season="beta7"] .temple-countdown-final { color: #f5d47d; }
+body[data-season="beta7"].temple-countdown-final::after { content:""; position:fixed; inset:0; z-index:2; pointer-events:none; box-shadow:inset 0 0 100px 28px rgba(255,183,47,.42); animation:main-temple-warning .45s ease-in-out infinite alternate; }
+@keyframes main-temple-warning { from { opacity:.4; } to { opacity:1; } }
+.event-scoreboard { max-width:min(420px,calc(100vw - 32px)); }
+.event-scoreboard .stat-value { font-size:16px; line-height:1.5; white-space:normal; }

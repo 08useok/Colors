@@ -1,0 +1,570 @@
+{
+  "level": 6,
+  "repetitions": 30,
+  "rows": [
+    {
+      "name": "baseline",
+      "patch": {},
+      "goldGreen": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "ivoryGold": {
+        "wins": 343,
+        "losses": 17,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9527777777777777
+      },
+      "historical": {
+        "outcome": -1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          115
+        ],
+        "charge": [
+          1,
+          5
+        ],
+        "distance": 80.01346411152163,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.633333333332818
+      }
+    },
+    {
+      "name": "delay-0.25",
+      "patch": {
+        "ultimate": {
+          "delay": 0.25
+        }
+      },
+      "goldGreen": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "ivoryGold": {
+        "wins": 343,
+        "losses": 17,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9527777777777777
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          2,
+          2
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          927.7749999999902,
+          0
+        ],
+        "charge": [
+          3,
+          2
+        ],
+        "distance": 82.37444097983114,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.449999999999495
+      }
+    },
+    {
+      "name": "delay-0.2",
+      "patch": {
+        "ultimate": {
+          "delay": 0.2
+        }
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 344,
+        "losses": 16,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9555555555555556
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          2,
+          2
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          2205.608333333322,
+          0
+        ],
+        "charge": [
+          6,
+          2
+        ],
+        "distance": 82.72364768228593,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.88333333333286
+      }
+    },
+    {
+      "name": "delay-0.15",
+      "patch": {
+        "ultimate": {
+          "delay": 0.15
+        }
+      },
+      "goldGreen": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "ivoryGold": {
+        "wins": 345,
+        "losses": 15,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9583333333333334
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          3,
+          3
+        ],
+        "attacks": [
+          6,
+          9
+        ],
+        "hp": [
+          3070.5666666666607,
+          0
+        ],
+        "charge": [
+          3,
+          0
+        ],
+        "distance": 81.83076442217896,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.26666666666623
+      }
+    },
+    {
+      "name": "delay-0.1",
+      "patch": {
+        "ultimate": {
+          "delay": 0.1
+        }
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 345,
+        "losses": 15,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9583333333333334
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          3,
+          2
+        ],
+        "attacks": [
+          6,
+          8
+        ],
+        "hp": [
+          3049.14166666666,
+          0
+        ],
+        "charge": [
+          1,
+          2
+        ],
+        "distance": 90.3236191619811,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.516666666666215
+      }
+    },
+    {
+      "name": "delay-0",
+      "patch": {
+        "ultimate": {
+          "delay": 0
+        }
+      },
+      "goldGreen": {
+        "wins": 359,
+        "losses": 1,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9972222222222222
+      },
+      "ivoryGold": {
+        "wins": 345,
+        "losses": 15,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9583333333333334
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          2,
+          2
+        ],
+        "attacks": [
+          6,
+          9
+        ],
+        "hp": [
+          1604.2749999999892,
+          0
+        ],
+        "charge": [
+          3,
+          6
+        ],
+        "distance": 80.00259449167295,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.149999999999512
+      }
+    },
+    {
+      "name": "radius-6.5",
+      "patch": {
+        "ultimate": {
+          "radius": 6.5
+        }
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 345,
+        "losses": 15,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9583333333333334
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          3,
+          1
+        ],
+        "attacks": [
+          7,
+          6
+        ],
+        "hp": [
+          6341.774999999998,
+          0
+        ],
+        "charge": [
+          3,
+          4
+        ],
+        "distance": 6.126355218633712,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 14.550000000000303
+      }
+    },
+    {
+      "name": "radius-7",
+      "patch": {
+        "ultimate": {
+          "radius": 7
+        }
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 345,
+        "losses": 15,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9583333333333334
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          3,
+          1
+        ],
+        "attacks": [
+          7,
+          6
+        ],
+        "hp": [
+          6341.774999999998,
+          0
+        ],
+        "charge": [
+          3,
+          4
+        ],
+        "distance": 6.126355218633712,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 14.550000000000303
+      }
+    },
+    {
+      "name": "ore-speed-18",
+      "patch": {
+        "stage1Speed": 18
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 349,
+        "losses": 11,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9694444444444444
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          2,
+          2
+        ],
+        "attacks": [
+          6,
+          8
+        ],
+        "hp": [
+          1679.9833333333245,
+          0
+        ],
+        "charge": [
+          6,
+          2
+        ],
+        "distance": 113.13708498984761,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.88333333333286
+      }
+    },
+    {
+      "name": "ore-speed-20",
+      "patch": {
+        "stage1Speed": 20
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 344,
+        "losses": 16,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9555555555555556
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          2,
+          2
+        ],
+        "attacks": [
+          5,
+          9
+        ],
+        "hp": [
+          2213.9583333333226,
+          0
+        ],
+        "charge": [
+          6,
+          4
+        ],
+        "distance": 80.21725528835202,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.88333333333286
+      }
+    },
+    {
+      "name": "ore-damage-1390",
+      "patch": {
+        "stage1Damage": 1390
+      },
+      "goldGreen": {
+        "wins": 316,
+        "losses": 44,
+        "draws": 0,
+        "games": 360,
+        "score": 0.8777777777777778
+      },
+      "ivoryGold": {
+        "wins": 343,
+        "losses": 17,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9527777777777777
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          2,
+          2
+        ],
+        "attacks": [
+          4,
+          7
+        ],
+        "hp": [
+          1575.0416666666563,
+          0
+        ],
+        "charge": [
+          3,
+          5
+        ],
+        "distance": 81.5562560953941,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.166666666666178
+      }
+    },
+    {
+      "name": "delay-.2-radius-6.5",
+      "patch": {
+        "ultimate": {
+          "delay": 0.2,
+          "radius": 6.5
+        }
+      },
+      "goldGreen": {
+        "wins": 360,
+        "losses": 0,
+        "draws": 0,
+        "games": 360,
+        "score": 1
+      },
+      "ivoryGold": {
+        "wins": 346,
+        "losses": 14,
+        "draws": 0,
+        "games": 360,
+        "score": 0.9611111111111111
+      },
+      "historical": {
+        "outcome": 1,
+        "casts": [
+          3,
+          1
+        ],
+        "attacks": [
+          7,
+          6
+        ],
+        "hp": [
+          5816.149999999998,
+          0
+        ],
+        "charge": [
+          3,
+          5
+        ],
+        "distance": 6.058448610843612,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 14.250000000000288
+      }
+    }
+  ],
+  "kind": "candidate-comparison",
+  "selectedApplied": {
+    "name": "delay-0.2",
+    "patch": {
+      "ultimate": {
+        "delay": 0.2
+      }
+    }
+  }
+}

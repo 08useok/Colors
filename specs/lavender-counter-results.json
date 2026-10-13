@@ -1,0 +1,825 @@
+{
+  "level": 6,
+  "initialCharge": 0,
+  "repetitions": 30,
+  "distances": [
+    10,
+    13,
+    16
+  ],
+  "aimErrors": [
+    0.035,
+    0.1
+  ],
+  "bothOrders": true,
+  "bounds": 40,
+  "rows": [
+    {
+      "version": "before",
+      "opponent": "crimson",
+      "wins": 0,
+      "losses": 360,
+      "draws": 0,
+      "games": 360,
+      "casts": 0,
+      "seconds": 897.0333333333335,
+      "winRate": 0,
+      "averageTime": 2.49175925925926
+    },
+    {
+      "version": "before",
+      "opponent": "gold",
+      "wins": 360,
+      "losses": 0,
+      "draws": 0,
+      "games": 360,
+      "casts": 0,
+      "seconds": 11168.7666666665,
+      "winRate": 100,
+      "averageTime": 31.024351851851392
+    },
+    {
+      "version": "before",
+      "opponent": "azure",
+      "wins": 0,
+      "losses": 360,
+      "draws": 0,
+      "games": 360,
+      "casts": 0,
+      "seconds": 390.81666666666655,
+      "winRate": 0,
+      "averageTime": 1.0856018518518515
+    },
+    {
+      "version": "after",
+      "opponent": "crimson",
+      "wins": 360,
+      "losses": 0,
+      "draws": 0,
+      "games": 360,
+      "casts": 1080,
+      "seconds": 1593.9333333333207,
+      "winRate": 100,
+      "averageTime": 4.427592592592557
+    },
+    {
+      "version": "after",
+      "opponent": "gold",
+      "wins": 360,
+      "losses": 0,
+      "draws": 0,
+      "games": 360,
+      "casts": 720,
+      "seconds": 11139.666666666506,
+      "winRate": 100,
+      "averageTime": 30.943518518518072
+    },
+    {
+      "version": "after",
+      "opponent": "azure",
+      "wins": 0,
+      "losses": 360,
+      "draws": 0,
+      "games": 360,
+      "casts": 159,
+      "seconds": 390.81666666666655,
+      "winRate": 0,
+      "averageTime": 1.0856018518518515
+    }
+  ],
+  "traces": {
+    "crimson": {
+      "before": {
+        "hp": [
+          0,
+          7246.905526019509
+        ],
+        "time": 2.4333333333333296,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          3,
+          2
+        ],
+        "damageHits": 8,
+        "events": [
+          {
+            "type": "attack",
+            "time": 0.26666666666666666,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 8.8120144813112,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 0.5666666666666668,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1597.8974662143635,
+            "distance": 5.461226959200338,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 1.1666666666666674,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 3.998098234724546,
+            "charge": 1
+          },
+          {
+            "type": "damage",
+            "time": 1.3000000000000003,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1380.9720876784702,
+            "distance": 3.486012747721478,
+            "charge": 1
+          },
+          {
+            "type": "attack",
+            "time": 1.5499999999999994,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 2.82408734357077,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.5499999999999994,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 1333,
+            "distance": 2.82408734357077,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.6833333333333322,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 1333,
+            "distance": 2.468650691529087,
+            "charge": 1
+          },
+          {
+            "type": "damage",
+            "time": 1.7999999999999985,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 1334,
+            "distance": 2.472111757538201,
+            "charge": 2
+          },
+          {
+            "type": "attack",
+            "time": 2.083333333333331,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 2.4960591583430367,
+            "charge": 2
+          },
+          {
+            "type": "damage",
+            "time": 2.1833333333333305,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1324.224920087658,
+            "distance": 2.3842065720218826,
+            "charge": 2
+          },
+          {
+            "type": "attack",
+            "time": 2.2999999999999967,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 2.3884535826436957,
+            "charge": 3
+          },
+          {
+            "type": "damage",
+            "time": 2.2999999999999967,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 1333,
+            "distance": 2.3884535826436957,
+            "charge": 3
+          },
+          {
+            "type": "damage",
+            "time": 2.4333333333333296,
+            "owner": "crimson",
+            "target": "lavender",
+            "damage": 1267,
+            "distance": 2.3520071203830217,
+            "charge": 4
+          }
+        ]
+      },
+      "after": {
+        "hp": [
+          6600,
+          0
+        ],
+        "time": 4.416666666666656,
+        "casts": [
+          3,
+          0
+        ],
+        "attacks": [
+          4,
+          0
+        ],
+        "damageHits": 16,
+        "events": [
+          {
+            "type": "attack",
+            "time": 0.26666666666666666,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 8.8120144813112,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 0.5666666666666668,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1597.8974662143635,
+            "distance": 5.461226959200338,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 1.1666666666666674,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 3.998098234724546,
+            "charge": 1
+          },
+          {
+            "type": "damage",
+            "time": 1.3000000000000003,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1380.9720876784702,
+            "distance": 3.486012747721478,
+            "charge": 1
+          },
+          {
+            "type": "ultimate",
+            "time": 1.3166666666666669,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 3.486012747721478,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.3166666666666669,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 3.441880951127301,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.7999999999999985,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1271.8918775379523,
+            "distance": 5.355483345382812,
+            "charge": 0.05
+          },
+          {
+            "type": "attack",
+            "time": 2.083333333333331,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 5.84074737617502,
+            "charge": 1.05
+          },
+          {
+            "type": "damage",
+            "time": 2.3166666666666633,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.808008370465677,
+            "charge": 1.05
+          },
+          {
+            "type": "damage",
+            "time": 2.3499999999999965,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1547.7108776309813,
+            "distance": 5.826495636465491,
+            "charge": 1.1
+          },
+          {
+            "type": "ultimate",
+            "time": 2.366666666666663,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 5.826495636465491,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 2.366666666666663,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.779089543604851,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 2.8499999999999948,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1444.7972821835267,
+            "distance": 5.766105983956375,
+            "charge": 0.05
+          },
+          {
+            "type": "damage",
+            "time": 3.3166666666666598,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.795251720293044,
+            "charge": 1.05
+          },
+          {
+            "type": "damage",
+            "time": 3.349999999999993,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 1354.599080041136,
+            "distance": 5.813400752129266,
+            "charge": 1.1
+          },
+          {
+            "type": "ultimate",
+            "time": 3.3666666666666596,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 5.813400752129266,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 3.3666666666666596,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.765815053571648,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 3.3666666666666596,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.765815053571648,
+            "charge": 0.05
+          },
+          {
+            "type": "attack",
+            "time": 4.149999999999991,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 0,
+            "distance": 5.851989283066699,
+            "charge": 0.1
+          },
+          {
+            "type": "damage",
+            "time": 4.316666666666657,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.783283035842082,
+            "charge": 0.1
+          },
+          {
+            "type": "damage",
+            "time": 4.3666666666666565,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.754058813861732,
+            "charge": 0.15000000000000002
+          },
+          {
+            "type": "damage",
+            "time": 4.3666666666666565,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 220,
+            "distance": 5.754058813861732,
+            "charge": 0.2
+          },
+          {
+            "type": "damage",
+            "time": 4.416666666666656,
+            "owner": "lavender",
+            "target": "crimson",
+            "damage": 972.1313287135704,
+            "distance": 5.8380817951049595,
+            "charge": 0.25
+          }
+        ]
+      }
+    },
+    "gold": {
+      "before": {
+        "hp": [
+          539,
+          0
+        ],
+        "time": 31.033333333332852,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "damageHits": 8,
+        "events": [
+          {
+            "type": "attack",
+            "time": 0.31666666666666665,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 8.810733263236507,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 0.3833333333333333,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 7.791472863405073,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 0.6833333333333338,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1687.064807552728,
+            "distance": 6.092420436956266,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 0.733333333333334,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.092442722437342,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.183333333333334,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1685.4216807656826,
+            "distance": 6.0980080925213,
+            "charge": 1
+          },
+          {
+            "type": "attack",
+            "time": 1.2166666666666672,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.098656623640084,
+            "charge": 2
+          },
+          {
+            "type": "damage",
+            "time": 1.5166666666666662,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1607.4588982798016,
+            "distance": 5.993561875601922,
+            "charge": 2
+          },
+          {
+            "type": "damage",
+            "time": 1.6833333333333322,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1726.1263241543181,
+            "distance": 6.902862387027889,
+            "charge": 3
+          },
+          {
+            "type": "attack",
+            "time": 1.8999999999999981,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 6.903877228556251,
+            "charge": 3
+          },
+          {
+            "type": "attack",
+            "time": 2.1333333333333306,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.790752273897212,
+            "charge": 4
+          },
+          {
+            "type": "damage",
+            "time": 2.1333333333333306,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.904106725328016,
+            "charge": 3
+          },
+          {
+            "type": "attack",
+            "time": 3.4166666666666594,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 6.920320373341355,
+            "charge": 6
+          },
+          {
+            "type": "damage",
+            "time": 3.649999999999992,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.922282733553425,
+            "charge": 6
+          },
+          {
+            "type": "attack",
+            "time": 4.19999999999999,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.820624188144394,
+            "charge": 4
+          },
+          {
+            "type": "attack",
+            "time": 6.083333333333317,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 6.952970350959229,
+            "charge": 6
+          },
+          {
+            "type": "attack",
+            "time": 6.299999999999983,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.841796035319801,
+            "charge": 4
+          },
+          {
+            "type": "damage",
+            "time": 6.3166666666666496,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.95554197227856,
+            "charge": 6
+          }
+        ]
+      },
+      "after": {
+        "hp": [
+          1859,
+          0
+        ],
+        "time": 30.233333333332897,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "damageHits": 9,
+        "events": [
+          {
+            "type": "attack",
+            "time": 0.31666666666666665,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 8.810733263236507,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 0.3833333333333333,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 7.791472863405073,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 0.6833333333333338,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1687.064807552728,
+            "distance": 6.092420436956266,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 0.733333333333334,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.092442722437342,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.183333333333334,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1685.4216807656826,
+            "distance": 6.0980080925213,
+            "charge": 1
+          },
+          {
+            "type": "ultimate",
+            "time": 1.2000000000000006,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.0980080925213,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 1.2166666666666672,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.098656623640084,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.5166666666666662,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1610.6751454540763,
+            "distance": 5.990685353693893,
+            "charge": 0
+          },
+          {
+            "type": "damage",
+            "time": 1.6833333333333322,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1721.4336646025747,
+            "distance": 6.88822923358533,
+            "charge": 1
+          },
+          {
+            "type": "ultimate",
+            "time": 1.6999999999999988,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.88822923358533,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 1.8999999999999981,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 6.889246245693474,
+            "charge": 3
+          },
+          {
+            "type": "damage",
+            "time": 2.0166666666666644,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 1810.9607618904463,
+            "distance": 6.88927310373276,
+            "charge": 0
+          },
+          {
+            "type": "attack",
+            "time": 2.1333333333333306,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.77612173867101,
+            "charge": 1
+          },
+          {
+            "type": "damage",
+            "time": 2.1333333333333306,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.88947623494834,
+            "charge": 3
+          },
+          {
+            "type": "attack",
+            "time": 3.4166666666666594,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 6.905724521986049,
+            "charge": 6
+          },
+          {
+            "type": "damage",
+            "time": 3.649999999999992,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.907691067688013,
+            "charge": 6
+          },
+          {
+            "type": "attack",
+            "time": 4.19999999999999,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.806057351792322,
+            "charge": 1
+          },
+          {
+            "type": "attack",
+            "time": 6.083333333333317,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 0,
+            "distance": 6.938443758838648,
+            "charge": 6
+          },
+          {
+            "type": "attack",
+            "time": 6.299999999999983,
+            "owner": "lavender",
+            "target": "gold",
+            "damage": 0,
+            "distance": 6.827274006045213,
+            "charge": 1
+          },
+          {
+            "type": "damage",
+            "time": 6.3166666666666496,
+            "owner": "gold",
+            "target": "lavender",
+            "damage": 1089,
+            "distance": 6.941020811579925,
+            "charge": 6
+          }
+        ]
+      }
+    }
+  }
+}

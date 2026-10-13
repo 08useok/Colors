@@ -369,13 +369,20 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
   const world = createBeta6Combat(config);
   const caster = world.add('lavender', { automatic: false, charge: 6, team: 1 });
   const target = world.add('red', { automatic: false, hp: 10000, x: 4, team: 2 });
+  const followedTarget = world.add('red', { automatic: false, hp: 10000, x: 24, team: 2 });
   assert(world.cast(caster, target));
   caster.x = 20;
+  run(world, .1);
+  assert.equal(world.zones[0].x,20,'fragrance center follows the caster');
+  assert.equal(target.hp,10000,'old cast location stops dealing damage');
+  assert(followedTarget.slowUntil>world.time,'moving field slows enemies at its new location');
   run(world, 6.1);
-  assert.equal(target.hp, 8800, 'fixed fragrance field deals six 200-damage ticks');
+  assert.equal(target.hp,10000,'old cast location remains safe');
+  assert.equal(followedTarget.hp, 8800, 'following fragrance field deals six 200-damage ticks');
   assert.equal(caster.charge, 6, 'field damage charges the next special');
   assert.equal(world.zones.length, 0, 'fragrance expires after six seconds');
   assert(target.slowUntil < world.time, 'expired field releases slow');
+  assert(followedTarget.slowUntil < world.time, 'following field releases slow on expiry');
 }
 {
   const mesh = { visible: true, position: { x: 4, z: 0 }, userData: { health: 10000 } };
@@ -385,7 +392,7 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
     player: { position: { x: 0, z: 0 }, rotation: { y: Math.PI / 2 } },
     goldRushState: { health: 6000, dead: false }, testTargets: [mesh],
     getArenaSolids: () => [], groundHeightAt: () => 0,
-    createLavenderMist: () => ({}), disposeLavenderMist: () => {}, updateCrimsonUltimateGauge: () => {},
+    createLavenderMist: () => ({}), updateLavenderMist: () => {}, disposeLavenderMist: () => {}, updateCrimsonUltimateGauge: () => {},
     damageTarget: (target, damage) => { target.userData.health -= damage; },
   });
   for (const name of ['clearLavenderPractice', 'syncLavenderPractice', 'useLavenderPracticeSkill', 'updateLavenderPractice']) {
@@ -399,6 +406,12 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
   vm.runInContext('lavenderSpecialCharge = 6; useLavenderPracticeSkill(true); updateLavenderPractice(.1);', context);
   assert.equal(mesh.userData.slowMultiplier, .7, 'training receives fragrance slow');
   assert.equal(context.lavenderSpecialCharge, 1, 'field spends charge and starts charging again');
+  const healthBeforeMoving = mesh.userData.health;
+  vm.runInContext('player.position.x = 20; updateLavenderPractice(.2);', context);
+  assert.equal(context.lavenderPractice.world.zones.find(zone => zone.kind === 'fragrance').x,20,'practice field follows player movement');
+  for(let i=0;i<60;i++)vm.runInContext('updateLavenderPractice(1 / 60);',context);
+  assert.equal(mesh.userData.health,healthBeforeMoving,'practice field leaves no damage at its original position');
+  assert(context.lavenderPractice.targets.get(mesh).slowUntil < context.lavenderPractice.world.time,'practice releases slow after caster moves away');
   vm.runInContext('clearLavenderPractice();', context);
   assert.equal(context.lavenderPractice, null, 'practice cleanup clears the combat world');
   assert.equal(context.lavenderSpecialCharge, 0, 'practice cleanup clears charge');
