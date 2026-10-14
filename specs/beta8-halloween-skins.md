@@ -4,6 +4,10 @@
 
 ![할로윈 스킨 4종 T포즈](../assets/art/beta8-halloween-skins-tpose.png)
 
+## 개별 이미지
+
+[캐릭터별 PNG 4개와 제작 기록](beta8-halloween-skins-individual.md)을 제공한다.
+
 ## 캐릭터와 베이스
 
 | 캐릭터 | 스킨 | 성별·참고 베이스 | 주요 장식 |
