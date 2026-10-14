@@ -31,4 +31,3 @@ TOXIC / #98D84D
 BONE / #F3E5C9
 MIDNIGHT / #171321
 Keep the swatches exactly these specified solid colors, without gradients or shading. Use crisp readable sans-serif labels, dark text on light swatches and bone-white text on the dark swatch. Generous margins, balanced polished game design poster, sharp typography and exact spelling. All six colors should be easy to compare and use as a design reference. Gradients allowed only in upper illustration. No watermark, no date, no fake reward claims. Opaque background.
-
