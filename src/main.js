@@ -1,3 +1,5 @@
+import { characterDisplayName } from "./LANGS/character-names.js?v=1";
+import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
@@ -18,7 +20,7 @@ import { navigateEventMap } from "./config/event-maps.js?v=2";
 import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
 import { applyBetaWallModel } from "./visuals/beta-wall.js?v=1";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
-import { SKINS, migrateSkinId } from "./config/skins.js?v=1.5.142";
+import { SKINS, migrateSkinId } from "./config/skins.js?v=1.7.0.4";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
 
@@ -26,9 +28,14 @@ import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYello
 // LANGS는 ./LANGS/langs.js에서 import
 // (LANGS 데이터는 ./LANGS/langs.js로 이동됨)
 
-Object.assign(LANGS.ko,{crystal:"크리스탈",lavender:"라벤더",descCrystal:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",descLavender:"향수 스프레이와 둔화 장판을 사용하는 캐릭터"});
-Object.assign(LANGS.en,{crystal:"Crystal",lavender:"Lavender",descCrystal:"Cascading crystals and crystal analysis",descLavender:"Perfume spray and a slowing fragrance field"});
-let currentLang = localStorage.getItem("skullCreekLang") || "ko";
+Object.assign(LANGS.ko,{crystal:"크리스탈",lavender:"라벤더",crystalDesc:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",lavenderDesc:"향수 스프레이와 둔화 장판을 사용하는 캐릭터",azureDesc:"파도를 타고 돌진하는 다이버"});
+Object.assign(LANGS.en,{crystal:"Crystal",lavender:"Lavender",crystalDesc:"Cascading crystals and crystal analysis",lavenderDesc:"Perfume spray and a slowing fragrance field",azureDesc:"A diver who dashes forward on a wave"});
+MAIN_UI.forEach(([ko, en], i) => { LANGS.ko["mainUi" + i] = ko; LANGS.en["mainUi" + i] = en; });
+LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다. 최종 검증은 추후 진행합니다.";
+LANGS.en.mainLanguagePatch = "v1.7.0.4 — Updated Korean/English character names and menu translations. Three Halloween skin models are connected in beta. Final verification is deferred.";
+let currentLang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
+const displayName = (id) => characterDisplayName(id, currentLang);
+const ui = (text) => mainUiText(text, currentLang);
 
 function t(key, ...args) {
   let str = LANGS[currentLang]?.[key] ?? LANGS.ko[key] ?? key;
@@ -37,6 +44,9 @@ function t(key, ...args) {
 }
 
 function applyLanguage() {
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll("[data-character-name]").forEach(el => { el.textContent = displayName(el.dataset.characterName); });
+  document.querySelectorAll(".char-btn[data-char] .char-name").forEach(el => { el.textContent = displayName(el.closest(".char-btn").dataset.char); });
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     el.textContent = t(el.dataset.i18n);
   });
@@ -45,6 +55,9 @@ function applyLanguage() {
   });
   document.getElementById("lang-toggle").textContent = currentLang === "ko" ? "EN" : "KO";
   applySeasonLabels();
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
+  document.querySelectorAll("[data-i18n-title]").forEach(el => { el.title = t(el.dataset.i18nTitle); });
+  document.dispatchEvent(new Event("colors-language-change"));
 }
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
@@ -69,21 +82,22 @@ function applySeasonLabels() {
   if (tag) tag.textContent = seasonLabel;
   if (sidebarSeason) sidebarSeason.textContent = seasonLabel;
   document.querySelectorAll(".lobby-version").forEach((el) => { el.textContent = CURRENT_VERSION; });
-  if (IS_BETA_SEASON) return;
   document.querySelectorAll('[data-i18n="charCount"]').forEach((el) => {
-    el.textContent = currentLang === "ko" ? "캐릭터 8종" : "8 Characters";
+    el.textContent = currentLang === "ko" ? `캐릭터 ${ROSTER.length}종` : `${ROSTER.length} Characters`;
   });
 }
 
 function setLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem("skullCreekLang", lang);
+  currentLang = lang === "en" ? "en" : "ko";
+  localStorage.setItem("skullCreekLang", currentLang);
   const account = loadAccount();
   if (account) {
-    account.lang = lang;
+    account.lang = currentLang;
     saveAccount(account);
   }
   applyLanguage();
+  const updatedAccount = loadAccount();
+  if (updatedAccount) updateLobbyUI(updatedAccount);
 }
 
 const canvas = document.getElementById("game-canvas");
@@ -358,7 +372,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.3" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.4" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -1418,10 +1432,10 @@ function updateLobbyUI(account) {
   }
 
   // 캐릭터별 승률
-  for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
+  for (const char of ROSTER) {
     const el = document.getElementById(`winrate-${char}`);
     if (!el) continue;
-    const s = account.charStats[char];
+    const s = account.charStats[char] ?? { games: 0, wins: 0 };
     if (s.games === 0) {
       el.textContent = t("firstGame");
     } else {
@@ -1574,7 +1588,7 @@ function updateColorInfo(charKey, account) {
   if (!el) return;
   const charDef = CHARACTERS[charKey];
   if (!charDef) { el.innerHTML = ""; return; }
-  const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
+  const name = displayName(charKey);
   const desc = t(charKey + "Desc");
   const s = account?.charStats?.[charKey];
   let winrateText = t("firstGame");
@@ -1599,11 +1613,11 @@ function updateColorInfo(charKey, account) {
       const equipped = account.selectedSkins[charKey] === skinId;
       skinHtml += `<div class="ci-skin-row">`
         + `<span class="ci-skin-info">`
-        + `<span class="ci-skin-name">${t(skin.nameKey || skin.name)}</span>`
+        + `<span class="ci-skin-name">${(currentLang === "en" && skin.nameEn ? skin.nameEn : t(skin.nameKey || skin.name))}</span>`
         + `<span class="char-rarity shop-card-rarity rarity-${skin.rarity}">${t("rarity_" + skin.rarity)}</span>`
         + `</span>`
         + `<button class="ci-skin-btn${equipped ? " ci-skin-active" : ""}" data-skin="${skinId}" data-char="${charKey}" type="button">`
-        + (equipped ? "장착 중" : "장착")
+        + (equipped ? ui("장착 중") : ui("장착"))
         + `</button></div>`;
     }
   }
@@ -1728,7 +1742,7 @@ function formatCountdown(remaining) {
 }
 
 function updateRegularEventStatus() {
-  eventCountdown.textContent = "상시 운영";
+  eventCountdown.textContent = ui("상시 운영");
   updateBetaCountdown();
   updateBetaPatchVisibility();
 }
@@ -1927,13 +1941,13 @@ function renderDailyRewardOdds() {
   const bulkCommon = Math.min(1, DAILY_REWARD_COMMON_UPGRADE_CHANCE + DAILY_REWARD_UPGRADE_ALL_BONUS);
   const bulkLater = Math.min(1, DAILY_REWARD_UPGRADE_CHANCE + DAILY_REWARD_UPGRADE_ALL_BONUS);
   dailyRewardUpgradeOddsBody.innerHTML = `
-    <tr><td>별 클릭</td><td>${formatDailyRewardChance(DAILY_REWARD_COMMON_UPGRADE_CHANCE)}</td><td>${formatDailyRewardChance(DAILY_REWARD_UPGRADE_CHANCE)}</td></tr>
-    <tr><td>한 번에 사용</td><td>${formatDailyRewardChance(bulkCommon)}</td><td>${formatDailyRewardChance(bulkLater)}</td></tr>
-    <tr><td>일반 마지막 기회</td><td>100%</td><td>-</td></tr>
+    <tr><td>${currentLang === "en" ? "Click Star" : "별 클릭"}</td><td>${formatDailyRewardChance(DAILY_REWARD_COMMON_UPGRADE_CHANCE)}</td><td>${formatDailyRewardChance(DAILY_REWARD_UPGRADE_CHANCE)}</td></tr>
+    <tr><td>${currentLang === "en" ? "Use All" : "한 번에 사용"}</td><td>${formatDailyRewardChance(bulkCommon)}</td><td>${formatDailyRewardChance(bulkLater)}</td></tr>
+    <tr><td>${currentLang === "en" ? "Last Common Attempt" : "일반 마지막 기회"}</td><td>100%</td><td>-</td></tr>
   `;
   const totalWeight = DAILY_REWARD_JUMP_WEIGHTS.reduce((sum, item) => sum + item.weight, 0);
   const cells = DAILY_REWARD_JUMP_WEIGHTS.map(({ steps, weight }) =>
-    `<td>${steps}단계</td><td>${formatDailyRewardChance(weight / totalWeight)}</td>`
+    `<td>${steps}${currentLang === "en" ? " tiers" : "단계"}</td><td>${formatDailyRewardChance(weight / totalWeight)}</td>`
   );
   dailyRewardJumpOddsBody.innerHTML = Array.from({ length: Math.ceil(cells.length / 4) }, (_, row) =>
     `<tr>${cells.slice(row * 4, row * 4 + 4).join("")}</tr>`
@@ -2040,20 +2054,20 @@ function updateDailyRewardReveal() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
   const remaining = dailyRewardAttemptsLeft();
   dailyRewardReveal.dataset.tier = tier.id;
-  dailyRewardGrade.textContent = tier.name;
+  dailyRewardGrade.textContent = ui(tier.name);
   dailyRewardAttempts.textContent = dailyRewardComplete
-    ? `업그레이드 ${dailyRewardAttemptsUsed}회 완료`
-    : `업그레이드 기회 ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}`;
+    ? currentLang === "en" ? `${dailyRewardAttemptsUsed} upgrades completed` : `업그레이드 ${dailyRewardAttemptsUsed}회 완료`
+    : currentLang === "en" ? `Upgrade attempts ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}` : `업그레이드 기회 ${remaining} / ${DAILY_REWARD_UPGRADE_ATTEMPTS}`;
   const showUpgradeAll = !dailyRewardComplete && remaining > 0 && !dailyRewardAtTopTier();
   dailyRewardUpgradeAll.classList.toggle("hidden", !showUpgradeAll);
-  dailyRewardUpgradeAll.textContent = `남은 ${remaining}회 한 번에 사용`;
+  dailyRewardUpgradeAll.textContent = currentLang === "en" ? `Use all ${remaining} remaining attempts` : `남은 ${remaining}회 한 번에 사용`;
   triggerDailyRewardTierEffect(dailyRewardTierIndex);
 }
 
 function showDailyRewardReveal() {
   const account = loadAccount();
   if ((account?.daily?.pendingRewards || 0) <= 0) {
-    showToast("승리해서 별 보상을 획득하세요");
+    showToast(ui("승리해서 별 보상을 획득하세요"));
     return false;
   }
   dailyRewardTierIndex = 0;
@@ -2073,7 +2087,7 @@ function showDailyRewardReveal() {
   dailyRewardStar.disabled = false;
   dailyRewardStar.classList.remove("spinning");
   dailyRewardUpgradeAll.disabled = false;
-  dailyRewardMessage.textContent = "별을 클릭해 보상을 확인하세요";
+  dailyRewardMessage.textContent = ui("별을 클릭해 보상을 확인하세요");
   dailyRewardReturn.classList.add("hidden");
   setDailyRewardOddsOpen(false);
   updateDailyRewardReveal();
@@ -2085,7 +2099,7 @@ function finishDailyReward() {
   const tier = DAILY_REWARD_TIERS[dailyRewardTierIndex];
   const rewardType = Math.random() < 0.5 ? "coins" : "credits";
   const rewardAmount = tier[rewardType];
-  const rewardCurrency = rewardType === "coins" ? "코인" : "β 크레딧";
+  const rewardCurrency = rewardType === "coins" ? ui("코인") : ui("β 크레딧");
   dailyRewardComplete = true;
   updateDailyRewardReveal();
   const account = loadAccount();
@@ -2101,7 +2115,7 @@ function finishDailyReward() {
     if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
   }
   dailyRewardStar.disabled = true;
-  dailyRewardMessage.textContent = `${tier.name} 보상 · ${rewardAmount} ${rewardCurrency} 획득!`;
+  dailyRewardMessage.textContent = currentLang === "en" ? `${ui(tier.name)} reward · Received ${rewardAmount} ${rewardCurrency}!` : `${tier.name} 보상 · ${rewardAmount} ${rewardCurrency} 획득!`;
   dailyRewardReturn.classList.remove("hidden");
 }
 
@@ -2111,15 +2125,15 @@ dailyRewardUpgradeAll?.addEventListener("click", () => {
   dailyRewardSpinning = true;
   dailyRewardUpgradeAll.disabled = true;
   const startTierIndex = dailyRewardTierIndex;
-  const startTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  const startTier = ui(DAILY_REWARD_TIERS[dailyRewardTierIndex].name);
   // 등급 판정을 먼저 끝낸 뒤, 확정된 등급의 색상과 이펙트로 회전한다.
   while (dailyRewardAttemptsLeft() > 0 && !dailyRewardAtTopTier()) {
     rollDailyRewardUpgrade(DAILY_REWARD_UPGRADE_ALL_BONUS);
   }
   const gained = dailyRewardTierIndex - startTierIndex;
-  const endTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
+  const endTier = ui(DAILY_REWARD_TIERS[dailyRewardTierIndex].name);
   updateDailyRewardReveal();
-  dailyRewardMessage.textContent = `${endTier} 등급 확정 · 회전 연출 중…`;
+  dailyRewardMessage.textContent = currentLang === "en" ? `${endTier} confirmed · Revealing…` : `${endTier} 등급 확정 · 회전 연출 중…`;
   void dailyRewardStar.offsetWidth;
   dailyRewardStar.classList.add("spinning");
   setTimeout(() => {
@@ -2127,8 +2141,8 @@ dailyRewardUpgradeAll?.addEventListener("click", () => {
     dailyRewardSpinning = false;
     finishDailyReward();
     dailyRewardMessage.textContent = gained > 0
-      ? `${startTier} → ${endTier} · ${gained}단계 상승! ${dailyRewardMessage.textContent}`
-      : `${startTier} 등급 유지 · ${dailyRewardMessage.textContent}`;
+      ? currentLang === "en" ? `${startTier} → ${endTier} · Gained ${gained} tiers! ${dailyRewardMessage.textContent}` : `${startTier} → ${endTier} · ${gained}단계 상승! ${dailyRewardMessage.textContent}`
+      : currentLang === "en" ? `${startTier} unchanged · ${dailyRewardMessage.textContent}` : `${startTier} 등급 유지 · ${dailyRewardMessage.textContent}`;
   }, 900);
 });
 
@@ -2139,8 +2153,8 @@ dailyRewardStar?.addEventListener("click", () => {
   const upgraded = rollDailyRewardUpgrade();
   updateDailyRewardReveal();
   const attemptsRemaining = dailyRewardAttemptsLeft();
-  const resultTier = DAILY_REWARD_TIERS[dailyRewardTierIndex].name;
-  dailyRewardMessage.textContent = `${resultTier} 등급 확정 · 회전 연출 중…`;
+  const resultTier = ui(DAILY_REWARD_TIERS[dailyRewardTierIndex].name);
+  dailyRewardMessage.textContent = currentLang === "en" ? `${resultTier} confirmed · Revealing…` : `${resultTier} 등급 확정 · 회전 연출 중…`;
   void dailyRewardStar.offsetWidth;
   dailyRewardStar.classList.add("spinning");
   setTimeout(() => {
@@ -2151,8 +2165,8 @@ dailyRewardStar?.addEventListener("click", () => {
       return;
     }
     dailyRewardMessage.textContent = upgraded
-      ? `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 기회는 그대로 ${attemptsRemaining}회`
-      : `등급 유지 · 남은 기회 ${attemptsRemaining}회`;
+      ? currentLang === "en" ? `Upgraded to ${ui(DAILY_REWARD_TIERS[dailyRewardTierIndex].name)}! ${attemptsRemaining} attempts remain` : `${DAILY_REWARD_TIERS[dailyRewardTierIndex].name} 등급으로 상승! 기회는 그대로 ${attemptsRemaining}회`
+      : currentLang === "en" ? `Tier unchanged · ${attemptsRemaining} attempts remain` : `등급 유지 · 남은 기회 ${attemptsRemaining}회`;
   }, 900);
 });
 
@@ -5713,7 +5727,7 @@ function initChopWoodPlayers() {
   const botTypes = [...ROSTER].sort(() => Math.random() - 0.5);
   const teamASpawns = CHOP_WOOD_SPAWNS_A;
   const teamBSpawns = CHOP_WOOD_SPAWNS_B;
-  const playerLabel = state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1);
+  const playerLabel = displayName(state.selectedCharacter);
   const participants = mpConfig?.mode === "chopwood"
     ? mpConfig.players.slice(0, 6)
     : [{ id: null, nickname: playerLabel, charType: state.selectedCharacter }];
@@ -5859,7 +5873,7 @@ function initTakeDownPlayers() {
   } else {
     addFighter({
       id: spawnIdx,
-      name: state.selectedCharacter.charAt(0).toUpperCase() + state.selectedCharacter.slice(1),
+      name: displayName(state.selectedCharacter),
       characterType: state.selectedCharacter,
       isPlayer: true,
       yaw: Math.random() * Math.PI * 2,
@@ -5957,7 +5971,7 @@ function startTakeDown() {
   state.takedownMode = true;
   state.mode = "takedown";
   createTakeDownMap();
-  mapNameEl.textContent = `Take Down · ${takedownMapGroup.userData.eventMapName}`;
+  mapNameEl.textContent = `Take Down · ${ui(takedownMapGroup.userData.eventMapName)}`;
   mapNameEl.classList.remove("hidden");
 
   state.gameTime = 0;
@@ -6957,7 +6971,7 @@ function startChopWood() {
   state.safeCenter.set(0, 0);
 
   createChopWoodMap();
-  mapNameEl.textContent = `${t("chopWood")} · ${chopWoodMapGroup.userData.eventMapName}`;
+  mapNameEl.textContent = `${t("chopWood")} · ${ui(chopWoodMapGroup.userData.eventMapName)}`;
 
   state.solids = state.battleSolids;
   state.lakeRects = state.battleLakeRects;
@@ -7979,7 +7993,7 @@ function initPlayers() {
   let botTypeIndex = 0;
   spawns.forEach((spawn, index) => {
     const characterType = index === 0 ? state.selectedCharacter : shuffledBotTypes[botTypeIndex++ % shuffledBotTypes.length];
-    const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
+    const label = displayName(characterType);
     const name = index === 0 ? label : randomBotName();
     const fighter = makeFighter({
       id: index,
@@ -8005,7 +8019,7 @@ function initTrainingPlayers() {
 
   // 플레이어
   const characterType = state.selectedCharacter;
-  const label = characterType.charAt(0).toUpperCase() + characterType.slice(1);
+  const label = displayName(characterType);
   const player = makeFighter({
     id: 0,
     name: label,
@@ -8196,7 +8210,7 @@ function resetGame(mode="showdown") {
   state.bushes = useIceCreamShowdown ? state.showdownBushes : state.battleBushes;
   state.trainingMode = false;
   const currentMap = MAP_POOL[state.currentMapId];
-  mapNameEl.textContent = useIceCreamShowdown ? showdownMapGroup.userData.eventMapName : t("mapPrefix") + currentMap.name;
+  mapNameEl.textContent = useIceCreamShowdown ? ui(showdownMapGroup.userData.eventMapName) : t("mapPrefix") + ui(currentMap.name);
   mapNameEl.classList.remove("hidden");
   state.gameTime = 0;
   emoteCooldownUntil.fill(0); // gameTime이 0으로 돌아가므로 쿨다운도 같이 초기화해야 한다
@@ -8262,7 +8276,7 @@ function startGoldRush() {
   state.goldRushNextSpawnAt = 0;
   state.goldRushHoldStartedAt = 0;
   for (const fighter of state.players) fighter.goldCount = 0;
-  mapNameEl.textContent = `GOLD RUSH · ${showdownMapGroup.userData.eventMapName}`;
+  mapNameEl.textContent = `GOLD RUSH · ${ui(showdownMapGroup.userData.eventMapName)}`;
 }
 
 function startSoccerKick() {
@@ -8280,7 +8294,7 @@ function startSoccerKick() {
   });
   state.playerTeam = getPlayer()?.team ?? "blue";
   state.soccerBall = new THREE.Mesh(new THREE.SphereGeometry(.65,18,12),new THREE.MeshStandardMaterial({color:0xffffff,roughness:.65}));
-  state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent=`SOCCER KICK · ${soccerMapGroup.userData.eventMapName}`;
+  state.soccerBall.position.set(0,.7,0); scene.add(state.soccerBall); mapNameEl.textContent=`SOCCER KICK · ${ui(soccerMapGroup.userData.eventMapName)}`;
 }
 function endSoccerKick(winningTeam, relayResult = true) {
   if(state.gameOver)return;
@@ -11546,7 +11560,7 @@ function updateEmoteBtns(account) {
     const emote = EMOTES[id];
     if (!emote) { btn.classList.add("hidden"); return; }
     btn.innerHTML = emote.image ? '<img src="'+emote.image+'" alt="'+emote.name+'" style="width:34px;height:34px;object-fit:contain;pointer-events:none">' : emote.emoji;
-    btn.setAttribute("aria-label", emote.name + " · " + (i + 1));
+    btn.setAttribute("aria-label", ui(emote.name) + " · " + (i + 1));
     btn.classList.remove("hidden");
   });
 }
@@ -13173,7 +13187,7 @@ function updateHud() {
   healthFill.style.width = `${healthRatio * 100}%`;
   healthText.textContent = `${Math.round(player.health)} / ${player.maxHealth}`;
   healthValue.textContent = `${Math.round(player.health)}`;
-  charName.textContent = player.name;
+  charName.textContent = displayName(player.characterType);
   const reloadInterval = getReloadInterval(player);
   const reloadProgress = player.ammo >= player.maxAmmo
     ? 1
@@ -13201,11 +13215,16 @@ function updateHud() {
   player.characterType === "gold" ? t("goldAttack") :
   player.characterType === "ivory" ? t("ivoryAttack") :
   player.characterType === "chartreuse" ? t("chartreuseAttack") :
-  t("attack");
+  (currentLang === "en" ? BETA_CHARACTERS[player.characterType]?.basicAttack?.nameEn : BETA_CHARACTERS[player.characterType]?.basicAttack?.name) ?? t("attack");
   attackState.textContent = player.ammo <= 0 ? t("noAmmo") : attackLabel;
   spreadState.textContent = t("stability", Math.round((1 - player.spread * 0.55) * 100));
   if (state.goldRushMode) {
-    survivorsLabel.textContent = state.gemGrabMode ? `GEM GRAB · 아군 ${gemTeamCount(state.playerTeam)}/10 · 적 ${gemTeamCount(state.playerTeam==="a"?"b":"a")}/10 · ${state.gemEscapeTeam?"유적 탈출까지 "+Math.max(0,15-(state.gameTime-state.gemEscapeAt)).toFixed(1)+"초":"젬을 모으세요"}` : `GOLD RUSH · 금 ${player.goldCount ?? 0}/10 · ${formatTime(Math.max(0, state.goldRushEndsAt - state.gameTime))}`;
+    const escape = state.gemEscapeTeam
+      ? (currentLang === "en" ? "Escape in " : "유적 탈출까지 ") + Math.max(0, 15 - (state.gameTime - state.gemEscapeAt)).toFixed(1) + (currentLang === "en" ? "s" : "초")
+      : (currentLang === "en" ? "Collect gems" : "젬을 모으세요");
+    survivorsLabel.textContent = state.gemGrabMode
+      ? `GEM GRAB · ${currentLang === "en" ? "Allies" : "아군"} ${gemTeamCount(state.playerTeam)}/10 · ${currentLang === "en" ? "Enemies" : "적"} ${gemTeamCount(state.playerTeam === "a" ? "b" : "a")}/10 · ${escape}`
+      : `GOLD RUSH · ${currentLang === "en" ? "Gold" : "금"} ${player.goldCount ?? 0}/10 · ${formatTime(Math.max(0, state.goldRushEndsAt - state.gameTime))}`;
   }
   updateAmmoPips(player.ammo);
 
@@ -13233,8 +13252,8 @@ function updateHud() {
     ultimateButton.classList.toggle("ready", ratio >= 1);
     ultimateStateEl.textContent = ratio >= 1 ? "READY" : `${Math.round(ratio * 100)}%`;
     ultimateButton.title = ratio >= 1
-      ? `Space 또는 Q · ${ultimate.name}`
-      : `궁극기 ${charge}/${ultimate.chargeRequired}`;
+      ? `Space / Q · ${currentLang === "en" ? (BETA_CHARACTERS[player.characterType]?.ultimate?.nameEn ?? ultimate.name) : ultimate.name}`
+      : `${t("loreUltimate")} ${charge}/${ultimate.chargeRequired}`;
   }
 
   emoteBtns.forEach((btn, i) => {
@@ -13789,7 +13808,7 @@ function animate() {
       if (state.lastCountdownRemain !== null && !state.chopWoodMode && !state.takedownMode && !state.trainingMode) {
         triggerGameTitleAnnounce();
       }
-      if(state.lastCountdownRemain!==null && state.eventMapLayout)mapNameEl.textContent=state.eventMapLayout.name;
+      if(state.lastCountdownRemain!==null && state.eventMapLayout)mapNameEl.textContent=ui(state.eventMapLayout.name);
       state.lastCountdownRemain = null;
     }
 
@@ -13866,20 +13885,20 @@ function setupInput() {
         html += `<div class="stats-row">${t("showdownWins", account.showdownWins || 0)}</div>`;
         html += `<div class="stats-row">${t("chopWoodWins", account.chopWoodWins || 0)}</div>`;
         html += `<div class="stats-divider"></div>`;
-    for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
+    for (const char of ROSTER) {
           const s = account.charStats?.[char];
           if (!s || s.games === 0) {
-            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("statsNoRecord")}</div>`;
+            html += `<div class="stats-char">${displayName(char)}: ${t("statsNoRecord")}</div>`;
           } else {
             const r = Math.round((s.wins / s.games) * 100);
-            html += `<div class="stats-char">${char.charAt(0).toUpperCase() + char.slice(1)}: ${t("charWinrate", r, s.wins, s.games)}</div>`;
+            html += `<div class="stats-char">${displayName(char)}: ${t("charWinrate", r, s.wins, s.games)}</div>`;
           }
         }
         html += `<div class="stats-divider"></div>`;
         html += `<div class="stats-row" style="font-weight:700">🪓 ${t("statsChopWood")}</div>`;
-        for (const char of ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory"]) {
+        for (const char of ROSTER) {
           const s = account.chopWoodCharStats?.[char];
-          const name = char.charAt(0).toUpperCase() + char.slice(1);
+          const name = displayName(char);
           if (!s || s.games === 0) {
             html += `<div class="stats-char">${name}: ${t("statsNoRecord")}</div>`;
           } else {
@@ -13888,16 +13907,16 @@ function setupInput() {
           }
         }
         html += `<div class="stats-divider"></div>`;
-        html += `<div class="stats-row" style="font-weight:700">📅 시즌별 전적</div>`;
+        html += `<div class="stats-row" style="font-weight:700">📅 ${currentLang === "en" ? "Season Records" : "시즌별 전적"}</div>`;
         for (const [key, label] of Object.entries(SEASONS)) {
           const ss = account.seasonStats?.[key];
-          if (!ss) { html += `<div class="stats-char">${label}: -</div>`; continue; }
+          if (!ss) { html += `<div class="stats-char">${currentLang === "en" ? label.replace("알파 시즌", "Alpha Season").replace("베타 시즌", "Beta Season") : label}: -</div>`; continue; }
           const sg = ss.wins + ss.losses;
           const sr = sg === 0 ? 0 : Math.round((ss.wins / sg) * 100);
           const current = key === CURRENT_SEASON ? " ⬅" : "";
           const expanded = key === CURRENT_SEASON;
           html += `<div class="stats-char season-toggle" data-season="${key}" style="font-weight:600">`;
-          html += `<span class="season-arrow">${expanded ? "▼" : "▶"}</span> ${label}: ${sr}% (${ss.wins}W/${sg}G)${current}`;
+          html += `<span class="season-arrow">${expanded ? "▼" : "▶"}</span> ${currentLang === "en" ? label.replace("알파 시즌", "Alpha Season").replace("베타 시즌", "Beta Season") : label}: ${sr}% (${ss.wins}W/${sg}G)${current}`;
           html += `</div>`;
           html += `<div class="season-detail${expanded ? "" : " hidden"}" data-season-detail="${key}">`;
           const scs = account.seasonCharStats?.[key];
@@ -13905,10 +13924,10 @@ function setupInput() {
             for (const c of getSeasonCharacterIds(scs)) {
               const cs = scs[c];
               if (!cs || cs.games === 0) {
-                html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: -</div>`;
+                html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${displayName(c)}: -</div>`;
               } else {
                 const cr = Math.round((cs.wins / cs.games) * 100);
-                html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${c.charAt(0).toUpperCase() + c.slice(1)}: ${cr}% (${cs.wins}W/${cs.games}G)</div>`;
+                html += `<div class="stats-char" style="padding-left:12px;font-size:11px;color:var(--muted)">  ${displayName(c)}: ${cr}% (${cs.wins}W/${cs.games}G)</div>`;
               }
             }
           }
@@ -13925,7 +13944,7 @@ function setupInput() {
           if (cwSeasonChars) {
             for (const c of getSeasonCharacterIds(cwSeasonChars)) {
               const cs = cwSeasonChars[c];
-              const name = c.charAt(0).toUpperCase() + c.slice(1);
+              const name = displayName(c);
               if (!cs || cs.games === 0) {
                 html += `<div class="stats-char" style="padding-left:24px;font-size:11px;color:var(--muted)">${name}: ${t("statsNoRecord")}</div>`;
               } else {
@@ -13989,11 +14008,11 @@ function setupInput() {
           const wins = Number(stats?.wins) || 0;
           return { id, games, wins, winRate: games > 0 ? Math.round((wins / games) * 100) : 0 };
         }).sort((a, b) => b.wins - a.wins || b.winRate - a.winRate || b.games - a.games);
-        html += `<div class="leaderboard-divider"></div><div class="leaderboard-section-title">캐릭터 랭킹</div>`;
-        html += `<div class="character-ranking-head"><span>순위 · 캐릭터</span><span>승리 / 승률</span></div>`;
+        html += `<div class="leaderboard-divider"></div><div class="leaderboard-section-title">${ui("캐릭터 랭킹")}</div>`;
+        html += `<div class="character-ranking-head"><span>${ui("순위 · 캐릭터")}</span><span>${ui("승리 / 승률")}</span></div>`;
         characterRanking.forEach((entry, index) => {
-          const name = entry.id.charAt(0).toUpperCase() + entry.id.slice(1);
-          html += `<div class="character-ranking-row char-${entry.id}"><span><b>${index + 1}</b> ${name}</span><span>${entry.wins}승 · ${entry.winRate}%</span></div>`;
+          const name = displayName(entry.id);
+          html += `<div class="character-ranking-row char-${entry.id}"><span><b>${index + 1}</b> ${name}</span><span>${entry.wins}${currentLang === "en" ? " wins" : "승"} · ${entry.winRate}%</span></div>`;
         });
         panel.innerHTML = html;
       }
@@ -14002,7 +14021,7 @@ function setupInput() {
 
   matchupToggle.addEventListener("click", () => {
     noticePanel.classList.add("hidden");
-    noticeToggle.textContent = "📢 공지";
+    noticeToggle.textContent = ui("📢 공지");
     patchnotesPanel.classList.add("hidden");
     patchnotesToggle.textContent = t("patchnotesBtn");
     matchupPanel.classList.toggle("hidden");
@@ -14011,7 +14030,7 @@ function setupInput() {
 
   patchnotesToggle.addEventListener("click", () => {
     noticePanel.classList.add("hidden");
-    noticeToggle.textContent = "📢 공지";
+    noticeToggle.textContent = ui("📢 공지");
     matchupPanel.classList.add("hidden");
     matchupToggle.textContent = t("matchupBtn");
     patchnotesPanel.classList.toggle("hidden");
@@ -14024,7 +14043,7 @@ function setupInput() {
     matchupPanel.classList.add("hidden");
     matchupToggle.textContent = t("matchupBtn");
     noticePanel.classList.toggle("hidden");
-    noticeToggle.textContent = noticePanel.classList.contains("hidden") ? "📢 공지" : "닫기";
+    noticeToggle.textContent = noticePanel.classList.contains("hidden") ? ui("📢 공지") : ui("닫기");
   });
 
   document.querySelectorAll("[data-notice-tab]").forEach((tab) => {
@@ -14050,8 +14069,6 @@ function setupInput() {
 
   document.getElementById("lang-toggle").addEventListener("click", () => {
     setLanguage(currentLang === "ko" ? "en" : "ko");
-    const account = loadAccount();
-    if (account) updateLobbyUI(account);
   });
 
   const coarsePointerQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
@@ -14146,7 +14163,7 @@ function setupInput() {
     aimModeButton.setAttribute("aria-pressed", String(state.manualAimActive));
     aimModeButton.textContent = state.manualAimActive
       ? "수동 에임 고정"
-      : "좌클릭 공격 · 드래그해 조준";
+      : ui("좌클릭 공격 · 드래그해 조준");
   });
   window.addEventListener("mousedown", startAiming);
   window.addEventListener("mouseup", attackOnRelease);
@@ -14378,7 +14395,7 @@ function setupInput() {
     const { id, nickname } = readSwitchCredentials();
     const account = findAccount(id, nickname);
     if (!account) {
-      accountSwitchError.textContent = "이 브라우저에 저장된 계정과 아이디·닉네임이 일치하지 않습니다. 다른 브라우저나 기기에서 만든 계정은 자동으로 불러올 수 없습니다.";
+      accountSwitchError.textContent = ui("이 브라우저에 저장된 계정과 아이디·닉네임이 일치하지 않습니다. 다른 브라우저나 기기에서 만든 계정은 자동으로 불러올 수 없습니다.");
       accountSwitchError.classList.remove("hidden");
       return;
     }
@@ -14391,12 +14408,12 @@ function setupInput() {
   document.getElementById("add-account-btn").addEventListener("click", () => {
     const { id, nickname } = readSwitchCredentials();
     if (!id || !nickname) {
-      accountSwitchError.textContent = "아이디와 닉네임을 모두 입력하세요.";
+      accountSwitchError.textContent = ui("아이디와 닉네임을 모두 입력하세요.");
       accountSwitchError.classList.remove("hidden");
       return;
     }
     if (loadAccountRegistry()[id]) {
-      accountSwitchError.textContent = "이미 사용 중인 아이디입니다.";
+      accountSwitchError.textContent = ui("이미 사용 중인 아이디입니다.");
       accountSwitchError.classList.remove("hidden");
       return;
     }
@@ -14644,7 +14661,7 @@ if (window.location.hash === "#chop-wood") {
     for (const c of chars) {
       if (!CHARACTERS[c]) continue;
       const lv = getCharLevel(account, c);
-      const name = c.charAt(0).toUpperCase() + c.slice(1);
+      const name = displayName(c);
       const wins = account.charStats[c]?.wins ?? 0;
       const mastery = getMasteryTier(wins);
       const masteryText = mastery ? `${mastery.emoji} ${mastery.name}` : "";
@@ -14720,7 +14737,7 @@ if (window.location.hash === "#chop-wood") {
       const price = getCharacterPrice(charKey);
       const canBuy = !owned && (account.credits ?? 0) >= price;
       const borderColor = colorMap[charKey] || "#fff";
-      const name = charKey.charAt(0).toUpperCase() + charKey.slice(1);
+      const name = displayName(charKey);
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
       html += `<div class="shop-card-name" style="color:${borderColor}">${name}</div>`;
       html += `<div class="shop-card-rarity rarity-${CHARACTER_RARITY[charKey]}">${t("rarity_" + CHARACTER_RARITY[charKey])}</div>`;
@@ -14755,7 +14772,7 @@ if (window.location.hash === "#chop-wood") {
         renderShopCharacters();
         renderCharacterLocks(acc);
         if (lobbyCredits) lobbyCredits.textContent = acc.credits;
-        showToast(t("charUnlocked", charKey.charAt(0).toUpperCase() + charKey.slice(1)));
+        showToast(t("charUnlocked", displayName(charKey)));
       });
     });
   }
@@ -14787,9 +14804,9 @@ if (window.location.hash === "#chop-wood") {
       const seasonOk = seasonAvailable;
       const borderColor = colorMap[skin.character] || "#fff";
       html += `<div class="shop-card" style="border-color:${borderColor}">`;
-      html += `<div class="shop-card-name" style="color:${borderColor}">${t(skin.nameKey || skin.name)}</div>`;
+      html += `<div class="shop-card-name" style="color:${borderColor}">${currentLang === "en" && skin.nameEn ? skin.nameEn : t(skin.nameKey || skin.name)}</div>`;
       html += `<div class="shop-card-rarity rarity-${skin.rarity}">${t("rarity_" + skin.rarity)}</div>`;
-      html += `<div class="shop-card-effect">${t(skin.desc)}</div>`;
+      html += `<div class="shop-card-effect">${(currentLang === "en" && skin.descEn ? skin.descEn : t(skin.desc))}</div>`;
       if (!seasonOk && !owned) {
         html += `<div class="shop-card-mastery">${t("shopSeasonEnded")}</div>`;
       } else if (equipped) {
@@ -14843,6 +14860,16 @@ if (window.location.hash === "#chop-wood") {
     });
   }
 
+  document.addEventListener("colors-language-change", () => {
+    if (!shopOverlay.classList.contains("hidden")) { renderShopLevelUp(); renderShopCharacters(); renderShopSkins(); renderCosmeticsShop(); }
+    matchupToggle.textContent = t(matchupPanel.classList.contains("hidden") ? "matchupBtn" : "matchupBtnClose");
+    patchnotesToggle.textContent = t(patchnotesPanel.classList.contains("hidden") ? "patchnotesBtn" : "patchnotesBtnClose");
+    noticeToggle.textContent = ui(noticePanel.classList.contains("hidden") ? "📢 공지" : "닫기");
+    updateRegularEventStatus();
+    renderDailyRewardOdds();
+    updateEmoteBtns(loadAccount() ?? {});
+    if (state.running) { state.lastHudUpdateAt = -1; updateHud(); }
+  });
   openShopBtn.addEventListener("click", () => {
     audio.play("open");
     shopOverlay.classList.remove("hidden");
@@ -14869,7 +14896,7 @@ if (window.location.hash === "#chop-wood") {
     const chars = [...ROSTER];
 
     tdCharSelectGrid.innerHTML = chars.map((c) => {
-      const name = c.charAt(0).toUpperCase() + c.slice(1);
+      const name = displayName(c);
       const color = TD_CHAR_COLORS[c] ?? "#ffffff";
       const emoji = TD_CHAR_EMOJIS[c] ?? "⚪";
       return `<button class="td-char-btn"
@@ -14910,7 +14937,7 @@ if (window.location.hash === "#chop-wood") {
   };
   noticeEventStartBtn?.addEventListener("click", () => {
     noticePanel.classList.add("hidden");
-    noticeToggle.textContent = "📢 공지";
+    noticeToggle.textContent = ui("📢 공지");
     startBattleBtn.click();
   });
   eventTakeDownBtn?.addEventListener("click", openTakeDownDirectly);
@@ -14987,18 +15014,18 @@ if (window.location.hash === "#chop-wood") {
       card.className = "cosmetics-card";
       card.innerHTML = `<div class="cosmetics-preview">${preview}</div>
         <div class="cosmetics-name">${name}</div>
-        <div class="cosmetics-price">${price === 0 ? "무료" : `🪙 ${price}`}</div>`;
+        <div class="cosmetics-price">${price === 0 ? ui("무료") : `🪙 ${price}`}</div>`;
       const btn = document.createElement("button");
       btn.className = "cosmetics-btn";
       if (equipped) {
-        btn.textContent = "장착됨";
+        btn.textContent = ui("장착됨");
         btn.classList.add("equipped");
         btn.disabled = true;
       } else if (owned) {
-        btn.textContent = "장착";
+        btn.textContent = ui("장착");
         btn.addEventListener("click", () => { onEquip(); renderCosmeticsShop(); });
       } else {
-        btn.textContent = `구매 🪙${price}`;
+        btn.textContent = `${currentLang === "en" ? "Buy" : "구매"} 🪙${price}`;
         if ((acc.coins ?? 0) < price) btn.disabled = true;
         btn.addEventListener("click", () => { onBuy(); renderCosmeticsShop(); });
       }
@@ -15022,7 +15049,7 @@ if (window.location.hash === "#chop-wood") {
       const slots = c.equippedEmotes ?? [null, null, null];
       const equippedSlot = slots.indexOf(id);
       const equipped = equippedSlot !== -1;
-      emoteGrid.appendChild(makeCard(em.image ? `<img src="${em.image}" alt="${em.name}" style="width:64px;height:64px;object-fit:contain">` : em.emoji, em.name, em.price, owned, equipped,
+      emoteGrid.appendChild(makeCard(em.image ? `<img src="${em.image}" alt="${ui(em.name)}" style="width:64px;height:64px;object-fit:contain">` : em.emoji, ui(em.name), em.price, owned, equipped,
         () => {
           const a = loadAccount();
           if ((a.coins ?? 0) < em.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }
@@ -15061,7 +15088,7 @@ if (window.location.hash === "#chop-wood") {
       const owned = c.ownedBgs.includes(id);
       const equipped = c.equippedBg === id;
       const preview = `<div class="cosmetics-bg-preview" style="background:${bg.css}"></div>`;
-      bgGrid.appendChild(makeCard(preview, bg.name, bg.price, owned, equipped,
+      bgGrid.appendChild(makeCard(preview, ui(bg.name), bg.price, owned, equipped,
         () => {
           const a = loadAccount();
           if ((a.coins ?? 0) < bg.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }
@@ -15090,7 +15117,7 @@ if (window.location.hash === "#chop-wood") {
       const owned = c.ownedBadges.includes(id);
       const equipped = c.equippedBadge === id;
       const preview = badge.emoji || "—";
-      badgeGrid.appendChild(makeCard(preview, badge.name, badge.price, owned, equipped,
+      badgeGrid.appendChild(makeCard(preview, ui(badge.name), badge.price, owned, equipped,
         () => {
           const a = loadAccount();
           if ((a.coins ?? 0) < badge.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }
@@ -15309,7 +15336,7 @@ function startMainGemGrab(){
  state.players.slice(6).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
  state.players.slice(0,6).forEach((f,i)=>{f.team=i<3?'a':'b';f.goldCount=0;f.mesh.position.set((i%3-1)*6,1.85,i<3?-15:15);f.shadow.position.set(f.mesh.position.x,.04,f.mesh.position.z);addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
  const altar=new THREE.Mesh(new THREE.CylinderGeometry(2,2.4,.4,24),new THREE.MeshStandardMaterial({color:0x9d733b,emissive:0xaa38cc,emissiveIntensity:.2}));altar.position.y=.2;showdownMapGroup.add(altar);
- stopAllBgm();gemGrabBgm.currentTime=0;gemGrabBgm.play().catch(()=>{});mapNameEl.textContent='GEM GRAB · '+showdownMapGroup.userData.eventMapName;
+ stopAllBgm();gemGrabBgm.currentTime=0;gemGrabBgm.play().catch(()=>{});mapNameEl.textContent='GEM GRAB · '+ui(showdownMapGroup.userData.eventMapName);
 }
 function updateMainGemGrab(dt){
  if(state.gameTime>=state.gemNextSpawnAt&&state.goldRushItems.length+gemTeamCount("a")+gemTeamCount("b")<GEM_GRAB_RULES.maxInPlay){spawnGoldRushPickup(0,0);state.gemNextSpawnAt=state.gameTime+GEM_GRAB_RULES.spawnInterval;}

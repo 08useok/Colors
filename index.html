@@ -60,7 +60,7 @@
         <div class="stat-label" data-i18n="ammoLabel">탄약</div>
         <div class="ammo-fan" id="ammo-fan"></div>
         <div class="stat-row">
-          <span id="attack-state">공격</span>
+          <span id="attack-state" data-i18n="mainUi169">공격</span>
           <span id="spread-state">안정성 100%</span>
         </div>
       </div>
@@ -87,32 +87,32 @@
         </div>
       </div>
 
-      <button id="mobile-attack-button" type="button" aria-label="공격" data-i18n="attack">공격</button>
-      <button id="aim-mode-button" class="aim-mode-button" type="button" aria-pressed="false">
+      <button id="mobile-attack-button" type="button" aria-label="공격" data-i18n-aria="mainUi169" data-i18n="attack">공격</button>
+      <button id="aim-mode-button" class="aim-mode-button" type="button" aria-pressed="false" data-i18n="mainUi180">
         좌클릭 공격 · 드래그해 조준
       </button>
-      <button id="ultimate-button" class="ultimate-button hidden" type="button" aria-label="궁극기">
-        <span>궁극기</span>
+      <button id="ultimate-button" class="ultimate-button hidden" type="button" aria-label="궁극기" data-i18n-aria="mainUi170">
+        <span data-i18n="mainUi170">궁극기</span>
         <strong id="ultimate-state">0%</strong>
       </button>
 
       <div id="chop-wood-hud" class="hidden">
         <div class="cw-tree-bar cw-tree-left">
-          <div class="cw-tree-label" id="cw-tree-a-label">아군 나무</div>
+          <div class="cw-tree-label" id="cw-tree-a-label" data-i18n="mainUi176">아군 나무</div>
           <div class="cw-tree-hp-outer"><div class="cw-tree-hp-fill cw-fill-ally" id="cw-tree-a-fill"></div></div>
           <div class="cw-tree-hp-text" id="cw-tree-a-text">100</div>
         </div>
         <div class="cw-tree-bar cw-tree-right">
-          <div class="cw-tree-label" id="cw-tree-b-label">적군 나무</div>
+          <div class="cw-tree-label" id="cw-tree-b-label" data-i18n="mainUi177">적군 나무</div>
           <div class="cw-tree-hp-outer"><div class="cw-tree-hp-fill cw-fill-enemy" id="cw-tree-b-fill"></div></div>
           <div class="cw-tree-hp-text" id="cw-tree-b-text">100</div>
         </div>
         <div class="cw-axe-display" id="cw-axe-display">
           <span class="cw-axe-icon" id="cw-axe-icon"></span>
-          <span class="cw-axe-name" id="cw-axe-name">나무 도끼</span>
+          <span class="cw-axe-name" id="cw-axe-name" data-i18n="mainUi178">나무 도끼</span>
         </div>
         <div class="cw-chop-bar hidden" id="cw-chop-bar">
-          <div class="cw-chop-label" id="cw-chop-label">벌목 중...</div>
+          <div class="cw-chop-label" id="cw-chop-label" data-i18n="mainUi179">벌목 중...</div>
           <div class="cw-chop-progress-outer"><div class="cw-chop-progress-fill" id="cw-chop-progress-fill"></div></div>
         </div>
         <div class="cw-respawn hidden" id="cw-respawn"></div>
@@ -151,17 +151,17 @@
           </div>
           <button id="lang-toggle" class="side-toggle-btn" type="button">EN</button>
           <div class="side-nav-divider"></div>
-          <button id="character-toggle" class="side-nav-btn" type="button">🎨 캐릭터</button>
+          <button id="character-toggle" class="side-nav-btn" type="button" data-i18n="mainUi172">🎨 캐릭터</button>
           <button id="daily-reward-toggle" class="side-nav-btn" type="button">★ 일일 보상<span id="daily-reward-badge" class="daily-reward-badge hidden">0</span></button>
-          <button id="mobile-event-toggle" class="side-nav-btn mobile-event-toggle" type="button">🎯 이벤트</button>
-          <button id="open-shop-btn" class="side-nav-btn" type="button">🪙 상점</button>
-          <a id="open-wiki-btn" class="side-nav-btn side-nav-link" href="./wiki/">📖 위키</a>
-          <button id="settings-toggle" class="side-nav-btn" type="button">⚙️ 설정</button>
+          <button id="mobile-event-toggle" class="side-nav-btn mobile-event-toggle" type="button" data-i18n="mainUi173">🎯 이벤트</button>
+          <button id="open-shop-btn" class="side-nav-btn" type="button" data-i18n="mainUi49">🪙 상점</button>
+          <a id="open-wiki-btn" class="side-nav-btn side-nav-link" href="./wiki/" data-i18n="mainUi174">📖 위키</a>
+          <button id="settings-toggle" class="side-nav-btn" type="button" data-i18n="mainUi22">⚙️ 설정</button>
           <div class="side-nav-divider"></div>
           <button id="leaderboard-toggle" class="side-toggle-btn" type="button" data-i18n="leaderboardBtn">리더보드</button>
           <button id="matchup-toggle" class="side-toggle-btn" type="button" data-i18n="matchupBtn">상성표</button>
           <div id="matchup-table" class="matchup-table hidden">
-            <p class="matchup-desc">시안 평행 발사 복구 전 기록 · 시즌 7 · 15종 · 6레벨 · 궁 포함 · 총 37,800경기(기존 16종 개발 비교에서 시즌 7 캐릭터만 표시)(상대별 360경기). 무승부는 0.5승입니다. 지정 100%·0%는 굵게, 지정 외 극단 승률은 이탤릭체로 표시합니다. 지형·팀 효과를 제외한 시뮬레이션이며 실전 승률은 아닙니다.</p><table><thead><tr><th>카운터 / 카운팅</th><th>레드</th><th>그린</th><th>블루</th><th>오렌지</th><th>옐로우</th><th>시안</th><th>퍼플</th><th>핑크</th><th>크림슨</th><th>골드</th><th>아이보리</th><th>샤르트뢰즈</th><th>민트</th><th>애저</th><th>크리스탈</th></tr></thead><tbody><tr><th>레드</th><td>×</td><td><em>100.0</em></td><td><strong>100.0</strong></td><td>6.7</td><td>34.4</td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td>80.0</td><td>81.7</td><td><em>100.0</em></td><td><strong>0.0</strong></td></tr><tr><th>그린</th><td><em>0.0</em></td><td>×</td><td><em>0.0</em></td><td>3.3</td><td><em>0.0</em></td><td>48.1</td><td><em>0.0</em></td><td>65.6</td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>0.0</em></td><td>1.9</td><td>0.3</td><td><strong>100.0</strong></td><td>0.3</td></tr><tr><th>블루</th><td><strong>0.0</strong></td><td><em>100.0</em></td><td>×</td><td><strong>100.0</strong></td><td>89.7</td><td><em>100.0</em></td><td>59.2</td><td><em>100.0</em></td><td>7.8</td><td>99.4</td><td><em>100.0</em></td><td>1.1</td><td><em>100.0</em></td><td><em>0.0</em></td><td>44.7</td></tr><tr><th>오렌지</th><td>93.3</td><td>96.7</td><td><strong>0.0</strong></td><td>×</td><td>86.8</td><td>98.6</td><td>34.2</td><td><em>100.0</em></td><td>0.3</td><td>99.7</td><td><em>100.0</em></td><td>72.2</td><td><strong>100.0</strong></td><td>98.6</td><td>45.7</td></tr><tr><th>옐로우</th><td>65.6</td><td><em>100.0</em></td><td>10.3</td><td>13.2</td><td>×</td><td><em>100.0</em></td><td>10.3</td><td>85.8</td><td><em>0.0</em></td><td><em>100.0</em></td><td><strong>100.0</strong></td><td><strong>0.0</strong></td><td>79.7</td><td>26.9</td><td>10.8</td></tr><tr><th>시안</th><td><em>0.0</em></td><td>51.9</td><td><em>0.0</em></td><td>1.4</td><td><em>0.0</em></td><td>×</td><td><em>0.0</em></td><td><strong>100.0</strong></td><td><em>0.0</em></td><td><em>0.0</em></td><td><em>0.0</em></td><td>0.6</td><td><strong>0.0</strong></td><td>90.6</td><td><em>0.0</em></td></tr><tr><th>퍼플</th><td><em>0.0</em></td><td><em>100.0</em></td><td>40.8</td><td>65.8</td><td>89.7</td><td><em>100.0</em></td><td>×</td><td><strong>0.0</strong></td><td><em>0.0</em></td><td><em>100.0</em></td><td>8.6</td><td><strong>100.0</strong></td><td><em>100.0</em></td><td><em>0.0</em></td><td>30.0</td></tr><tr><th>핑크</th><td><em>0.0</em></td><td>34.4</td><td><em>0.0</em></td><td><em>0.0</em></td><td>14.2</td><td><strong>0.0</strong></td><td><strong>100.0</strong></td><td>×</td><td><em>0.0</em></td><td>96.7</td><td><em>100.0</em></td><td>51.7</td><td>5.6</td><td>98.6</td><td>0.3</td></tr><tr><th>크림슨</th><td><em>0.0</em></td><td><em>100.0</em></td><td>92.2</td><td>99.7</td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td>×</td><td><em>100.0</em></td><td>93.3</td><td><em>100.0</em></td><td>99.7</td><td>49.4</td><td><strong>100.0</strong></td></tr><tr><th>골드</th><td><em>0.0</em></td><td><strong>100.0</strong></td><td>0.6</td><td>0.3</td><td><em>0.0</em></td><td><em>100.0</em></td><td><em>0.0</em></td><td>3.3</td><td><em>0.0</em></td><td>×</td><td><strong>0.0</strong></td><td>2.2</td><td>5.3</td><td>9.7</td><td><em>0.0</em></td></tr><tr><th>아이보리</th><td><em>0.0</em></td><td><em>100.0</em></td><td><em>0.0</em></td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>91.4</td><td><em>0.0</em></td><td>6.7</td><td><strong>100.0</strong></td><td>×</td><td>54.7</td><td>99.4</td><td>18.1</td><td>68.6</td></tr><tr><th>샤르트뢰즈</th><td>20.0</td><td>98.1</td><td>98.9</td><td>27.8</td><td><strong>100.0</strong></td><td>99.4</td><td><strong>0.0</strong></td><td>48.3</td><td><em>0.0</em></td><td>97.8</td><td>45.3</td><td>×</td><td>67.2</td><td>62.5</td><td>3.6</td></tr><tr><th>민트</th><td>18.3</td><td>99.7</td><td><em>0.0</em></td><td><strong>0.0</strong></td><td>20.3</td><td><strong>100.0</strong></td><td><em>0.0</em></td><td>94.4</td><td>0.3</td><td>94.7</td><td>0.6</td><td>32.8</td><td>×</td><td>30.6</td><td>2.5</td></tr><tr><th>애저</th><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>1.4</td><td>73.1</td><td>9.4</td><td><em>100.0</em></td><td>1.4</td><td>50.6</td><td>90.3</td><td>81.9</td><td>37.5</td><td>69.4</td><td>×</td><td>11.1</td></tr><tr><th>크리스탈</th><td><strong>100.0</strong></td><td>99.7</td><td>55.3</td><td>54.3</td><td>89.2</td><td><em>100.0</em></td><td>70.0</td><td>99.7</td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>31.4</td><td>96.4</td><td>97.5</td><td>88.9</td><td>×</td></tr></tbody></table>
+            <p class="matchup-desc" data-i18n="mainUi64">시안 평행 발사 복구 전 기록 · 시즌 7 · 15종 · 6레벨 · 궁 포함 · 총 37,800경기(기존 16종 개발 비교에서 시즌 7 캐릭터만 표시)(상대별 360경기). 무승부는 0.5승입니다. 지정 100%·0%는 굵게, 지정 외 극단 승률은 이탤릭체로 표시합니다. 지형·팀 효과를 제외한 시뮬레이션이며 실전 승률은 아닙니다.</p><table><thead><tr><th data-i18n="mainUi63">카운터 / 카운팅</th><th data-character-name="red">레드</th><th data-character-name="green">그린</th><th data-character-name="blue">블루</th><th data-character-name="orange">오렌지</th><th data-character-name="yellow">옐로우</th><th data-character-name="cyan">시안</th><th data-character-name="purple">퍼플</th><th data-character-name="pink">핑크</th><th data-character-name="crimson">크림슨</th><th data-character-name="gold">골드</th><th data-character-name="ivory">아이보리</th><th data-character-name="chartreuse">샤르트뢰즈</th><th data-character-name="mint">민트</th><th data-character-name="azure">애저</th><th data-character-name="crystal">크리스탈</th></tr></thead><tbody><tr><th data-character-name="red">레드</th><td>×</td><td><em>100.0</em></td><td><strong>100.0</strong></td><td>6.7</td><td>34.4</td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td>80.0</td><td>81.7</td><td><em>100.0</em></td><td><strong>0.0</strong></td></tr><tr><th data-character-name="green">그린</th><td><em>0.0</em></td><td>×</td><td><em>0.0</em></td><td>3.3</td><td><em>0.0</em></td><td>48.1</td><td><em>0.0</em></td><td>65.6</td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>0.0</em></td><td>1.9</td><td>0.3</td><td><strong>100.0</strong></td><td>0.3</td></tr><tr><th data-character-name="blue">블루</th><td><strong>0.0</strong></td><td><em>100.0</em></td><td>×</td><td><strong>100.0</strong></td><td>89.7</td><td><em>100.0</em></td><td>59.2</td><td><em>100.0</em></td><td>7.8</td><td>99.4</td><td><em>100.0</em></td><td>1.1</td><td><em>100.0</em></td><td><em>0.0</em></td><td>44.7</td></tr><tr><th data-character-name="orange">오렌지</th><td>93.3</td><td>96.7</td><td><strong>0.0</strong></td><td>×</td><td>86.8</td><td>98.6</td><td>34.2</td><td><em>100.0</em></td><td>0.3</td><td>99.7</td><td><em>100.0</em></td><td>72.2</td><td><strong>100.0</strong></td><td>98.6</td><td>45.7</td></tr><tr><th data-character-name="yellow">옐로우</th><td>65.6</td><td><em>100.0</em></td><td>10.3</td><td>13.2</td><td>×</td><td><em>100.0</em></td><td>10.3</td><td>85.8</td><td><em>0.0</em></td><td><em>100.0</em></td><td><strong>100.0</strong></td><td><strong>0.0</strong></td><td>79.7</td><td>26.9</td><td>10.8</td></tr><tr><th data-character-name="cyan">시안</th><td><em>0.0</em></td><td>51.9</td><td><em>0.0</em></td><td>1.4</td><td><em>0.0</em></td><td>×</td><td><em>0.0</em></td><td><strong>100.0</strong></td><td><em>0.0</em></td><td><em>0.0</em></td><td><em>0.0</em></td><td>0.6</td><td><strong>0.0</strong></td><td>90.6</td><td><em>0.0</em></td></tr><tr><th data-character-name="purple">퍼플</th><td><em>0.0</em></td><td><em>100.0</em></td><td>40.8</td><td>65.8</td><td>89.7</td><td><em>100.0</em></td><td>×</td><td><strong>0.0</strong></td><td><em>0.0</em></td><td><em>100.0</em></td><td>8.6</td><td><strong>100.0</strong></td><td><em>100.0</em></td><td><em>0.0</em></td><td>30.0</td></tr><tr><th data-character-name="pink">핑크</th><td><em>0.0</em></td><td>34.4</td><td><em>0.0</em></td><td><em>0.0</em></td><td>14.2</td><td><strong>0.0</strong></td><td><strong>100.0</strong></td><td>×</td><td><em>0.0</em></td><td>96.7</td><td><em>100.0</em></td><td>51.7</td><td>5.6</td><td>98.6</td><td>0.3</td></tr><tr><th data-character-name="crimson">크림슨</th><td><em>0.0</em></td><td><em>100.0</em></td><td>92.2</td><td>99.7</td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td><em>100.0</em></td><td>×</td><td><em>100.0</em></td><td>93.3</td><td><em>100.0</em></td><td>99.7</td><td>49.4</td><td><strong>100.0</strong></td></tr><tr><th data-character-name="gold">골드</th><td><em>0.0</em></td><td><strong>100.0</strong></td><td>0.6</td><td>0.3</td><td><em>0.0</em></td><td><em>100.0</em></td><td><em>0.0</em></td><td>3.3</td><td><em>0.0</em></td><td>×</td><td><strong>0.0</strong></td><td>2.2</td><td>5.3</td><td>9.7</td><td><em>0.0</em></td></tr><tr><th data-character-name="ivory">아이보리</th><td><em>0.0</em></td><td><em>100.0</em></td><td><em>0.0</em></td><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>91.4</td><td><em>0.0</em></td><td>6.7</td><td><strong>100.0</strong></td><td>×</td><td>54.7</td><td>99.4</td><td>18.1</td><td>68.6</td></tr><tr><th data-character-name="chartreuse">샤르트뢰즈</th><td>20.0</td><td>98.1</td><td>98.9</td><td>27.8</td><td><strong>100.0</strong></td><td>99.4</td><td><strong>0.0</strong></td><td>48.3</td><td><em>0.0</em></td><td>97.8</td><td>45.3</td><td>×</td><td>67.2</td><td>62.5</td><td>3.6</td></tr><tr><th data-character-name="mint">민트</th><td>18.3</td><td>99.7</td><td><em>0.0</em></td><td><strong>0.0</strong></td><td>20.3</td><td><strong>100.0</strong></td><td><em>0.0</em></td><td>94.4</td><td>0.3</td><td>94.7</td><td>0.6</td><td>32.8</td><td>×</td><td>30.6</td><td>2.5</td></tr><tr><th data-character-name="azure">애저</th><td><em>0.0</em></td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>1.4</td><td>73.1</td><td>9.4</td><td><em>100.0</em></td><td>1.4</td><td>50.6</td><td>90.3</td><td>81.9</td><td>37.5</td><td>69.4</td><td>×</td><td>11.1</td></tr><tr><th data-character-name="crystal">크리스탈</th><td><strong>100.0</strong></td><td>99.7</td><td>55.3</td><td>54.3</td><td>89.2</td><td><em>100.0</em></td><td>70.0</td><td>99.7</td><td><strong>0.0</strong></td><td><em>100.0</em></td><td>31.4</td><td>96.4</td><td>97.5</td><td>88.9</td><td>×</td></tr></tbody></table>
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
@@ -180,7 +180,7 @@
                 <li><strong>출시</strong>: 애저와 궁극기 「빅 웨이브」, 옐로우 궁극기 「전기 회로」, 3대3 사커 킥을 추가했습니다.</li>
                 <li><strong>신규 스킨</strong>: 프로 서퍼 애저·잠수부 시안·복어 샤트·트로피컬 오렌지를 추가하고, 스킨 모델과 걷기 모션 적용을 보완했습니다.</li>
                 <li><strong>시즌 테마</strong>: 애저 해변 로비, High Noon Tide 음악, 바다 테마 로딩 화면을 적용했습니다.</li>
-                <li><strong>밸런스·봇</strong>: 시즌 6 캐릭터 수치를 메인에 반영하고, 캐릭터별 봇 전투와 궁극기 포함 상성표를 적용했습니다.</li>
+                <li><strong data-i18n="mainUi122">밸런스·봇</strong>: 시즌 6 캐릭터 수치를 메인에 반영하고, 캐릭터별 봇 전투와 궁극기 포함 상성표를 적용했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
@@ -661,111 +661,112 @@
               </ul>
             </div>
           </div>
-          <button id="pinkfront-toggle" class="side-toggle-btn" type="button">앞모습</button>
+          <button id="pinkfront-toggle" class="side-toggle-btn" type="button" data-i18n="mainUi175">앞모습</button>
           <canvas id="pink-front-canvas" class="pink-front-canvas hidden"></canvas>
         </div>
 
         <div id="patchnotes-dock" class="patchnotes-dock">
           <div id="lobby-dock-actions" class="lobby-dock-actions">
-            <button id="notice-toggle" class="side-toggle-btn notice-toggle" type="button">📢 공지</button>
+            <button id="notice-toggle" class="side-toggle-btn notice-toggle" type="button" data-i18n="mainUi0">📢 공지</button>
           </div>
           <section id="notice-panel" class="lobby-notice hidden" aria-live="polite">
-            <div class="notice-tabs" role="tablist" aria-label="공지 구분">
-              <button class="notice-tab active" type="button" role="tab" aria-selected="true" aria-controls="notice-current" data-notice-tab="current">현재</button>
-              <button class="notice-tab" type="button" role="tab" aria-selected="false" aria-controls="notice-next" data-notice-tab="next">로드맵</button>
+            <div class="notice-tabs" role="tablist" aria-label="공지 구분" data-i18n-aria="mainUi163">
+              <button class="notice-tab active" type="button" role="tab" aria-selected="true" aria-controls="notice-current" data-notice-tab="current" data-i18n="mainUi1">현재</button>
+              <button class="notice-tab" type="button" role="tab" aria-selected="false" aria-controls="notice-next" data-notice-tab="next" data-i18n="mainUi2">로드맵</button>
             </div>
             <div id="notice-current" class="notice-content" role="tabpanel" data-notice-content="current">
-              <div class="notice-kicker">BETA SEASON 7 · v1.7.0.3 · UPDATED 2026.10.14</div>
-<h2>베타 시즌 7 · 잃어버린 황금 유적</h2>
-<p class="notice-summary">보물을 훔치기 시작하자 잠들어 있던 유적이 깨어납니다. 신규 캐릭터와 젬 그랩, 검증된 시즌 7 전투 업데이트를 메인에서 즐기세요.</p>
+              <div class="notice-kicker">BETA SEASON 7 · v1.7.0.4 · UPDATED 2026.10.14</div>
+<h2 data-i18n="mainUi13">베타 시즌 7 · 잃어버린 황금 유적</h2>
+<p class="notice-summary" data-i18n="mainUi14">보물을 훔치기 시작하자 잠들어 있던 유적이 깨어납니다. 신규 캐릭터와 젬 그랩, 검증된 시즌 7 전투 업데이트를 메인에서 즐기세요.</p>
 <ul class="notice-highlights">
-<li><strong>v1.7.0.3 · 이모지 출시</strong> — 상어·복어·스카라베·파라오 왕관 핀을 메인 상점에 추가했습니다. 각 300코인이며, 장착 후 전투에서 숫자키 1·2·3 또는 버튼으로 사용할 수 있습니다.</li>
-<li><strong>베타 시즌 8</strong> — 기본 베타 페이지를 라벤더 포함 16종 테스트로 변경했습니다. 시즌 7 스킨 4종도 계속 시험할 수 있습니다. 호박등·묘비·유령 성과 보라색 달이 있는 할로윈 로딩 화면·로비·UI를 적용했습니다.</li>
-<li><strong>v1.7.0.2 · 시안</strong> — 알약 6발이 부채꼴로 퍼지던 문제를 수정했습니다. 이제 0.75타일 간격으로 평행하게 발사되며, 시즌 7 알약당 피해량 700은 유지됩니다.</li>
-<li><strong>일반 공격 조준 표시</strong> — 메인 골드·민트·애저의 누락된 표시를 추가했습니다. 애저는 파도 폭을 표시하고, 아이보리는 실제 투척 위치에 착탄 범위를 표시합니다.</li>
-<li><strong>궁극기 조준 표시</strong> — 메인·베타에서 궁극기 버튼 또는 Q/Space를 누르는 동안 범위를 확인하고 놓으면 사용합니다. 오렌지 부채꼴, 아이보리 5개 착탄 범위, 돌진 경로와 투척 위치도 표시합니다.</li>
-<li><strong>조준 해제</strong> — 조준을 취소하거나 게임 창에서 포커스가 벗어나면 조준 표시가 해제됩니다.</li>
-<li><strong>상성표 안내</strong> — 현재 표는 시안 평행 발사 복구 전 시뮬레이션 기록입니다.</li>
-<li><strong>v1.7.0.1 오류 수정</strong> — 라벤더는 시즌 8 출시입니다. 시즌 7 선택 목록과 상성표에서 제외하고 기존 보유·성장·전적 정보는 유지했습니다.</li>
-<li><strong>크리스탈</strong> — 연쇄 수정탄 3단 분열과 궁극기 「수정 분석」</li>
-<li><strong>신규 궁극기</strong> — 오렌지 「오렌지 껍질 회수」, 퍼플 「독성 대도약」</li>
-<li><strong>젬 그랩</strong> — 3대3, 팀 젬 10개 이상을 확보하고 15초간 유적 탈출</li>
-<li><strong>스킨 4종</strong> — 파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈</li>
-<li><strong>밸런스·봇</strong> — 최신 15종 능력치, 궁 재충전량, 회피·이동 예측 보정</li>
-<li><strong>정규 이벤트</strong> — 모드별 맵 3종, SHOWDOWN+ 처치당 트로피 +2</li>
-<li><strong>사막 유적 테마</strong> — 실제 석벽 모델과 시즌 7 로비·젬 그랩 음악</li>
-<li><strong>유적 조사 퀘스트</strong> — 베타와 같이 준비 중: 첫 번째 발굴·이건 내 보물이다·보물 운반자·도굴꾼·유적 수호자·욕심은 위험해·대탈출·보석 수집가</li>
+<li data-i18n="mainLanguagePatch">v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다. 최종 검증은 추후 진행합니다.</li>
+<li><strong data-i18n="mainUi110">v1.7.0.3 · 이모지 출시</strong><span data-i18n="mainUi125"> — 상어·복어·스카라베·파라오 왕관 핀을 메인 상점에 추가했습니다. 각 300코인이며, 장착 후 전투에서 숫자키 1·2·3 또는 버튼으로 사용할 수 있습니다.</span></li>
+<li><strong data-i18n="mainUi111">베타 시즌 8</strong><span data-i18n="mainUi126"> — 기본 베타 페이지를 라벤더 포함 16종 테스트로 변경했습니다. 시즌 7 스킨 4종도 계속 시험할 수 있습니다. 호박등·묘비·유령 성과 보라색 달이 있는 할로윈 로딩 화면·로비·UI를 적용했습니다.</span></li>
+<li><strong data-i18n="mainUi112">v1.7.0.2 · 시안</strong><span data-i18n="mainUi127"> — 알약 6발이 부채꼴로 퍼지던 문제를 수정했습니다. 이제 0.75타일 간격으로 평행하게 발사되며, 시즌 7 알약당 피해량 700은 유지됩니다.</span></li>
+<li><strong data-i18n="mainUi113">일반 공격 조준 표시</strong><span data-i18n="mainUi128"> — 메인 골드·민트·애저의 누락된 표시를 추가했습니다. 애저는 파도 폭을 표시하고, 아이보리는 실제 투척 위치에 착탄 범위를 표시합니다.</span></li>
+<li><strong data-i18n="mainUi114">궁극기 조준 표시</strong><span data-i18n="mainUi129"> — 메인·베타에서 궁극기 버튼 또는 Q/Space를 누르는 동안 범위를 확인하고 놓으면 사용합니다. 오렌지 부채꼴, 아이보리 5개 착탄 범위, 돌진 경로와 투척 위치도 표시합니다.</span></li>
+<li><strong data-i18n="mainUi115">조준 해제</strong><span data-i18n="mainUi130"> — 조준을 취소하거나 게임 창에서 포커스가 벗어나면 조준 표시가 해제됩니다.</span></li>
+<li><strong data-i18n="mainUi116">상성표 안내</strong><span data-i18n="mainUi131"> — 현재 표는 시안 평행 발사 복구 전 시뮬레이션 기록입니다.</span></li>
+<li><strong data-i18n="mainUi117">v1.7.0.1 오류 수정</strong><span data-i18n="mainUi132"> — 라벤더는 시즌 8 출시입니다. 시즌 7 선택 목록과 상성표에서 제외하고 기존 보유·성장·전적 정보는 유지했습니다.</span></li>
+<li><strong data-i18n="mainUi118">크리스탈</strong><span data-i18n="mainUi133"> — 연쇄 수정탄 3단 분열과 궁극기 「수정 분석」</span></li>
+<li><strong data-i18n="mainUi119">신규 궁극기</strong><span data-i18n="mainUi134"> — 오렌지 「오렌지 껍질 회수」, 퍼플 「독성 대도약」</span></li>
+<li><strong data-i18n="mainUi120">젬 그랩</strong><span data-i18n="mainUi135"> — 3대3, 팀 젬 10개 이상을 확보하고 15초간 유적 탈출</span></li>
+<li><strong data-i18n="mainUi121">스킨 4종</strong><span data-i18n="mainUi136"> — 파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈</span></li>
+<li><strong data-i18n="mainUi122">밸런스·봇</strong><span data-i18n="mainUi137"> — 최신 15종 능력치, 궁 재충전량, 회피·이동 예측 보정</span></li>
+<li><strong data-i18n="mainUi4">정규 이벤트</strong><span data-i18n="mainUi138"> — 모드별 맵 3종, SHOWDOWN+ 처치당 트로피 +2</span></li>
+<li><strong data-i18n="mainUi123">사막 유적 테마</strong><span data-i18n="mainUi139"> — 실제 석벽 모델과 시즌 7 로비·젬 그랩 음악</span></li>
+<li><strong data-i18n="mainUi124">유적 조사 퀘스트</strong><span data-i18n="mainUi140"> — 베타와 같이 준비 중: 첫 번째 발굴·이건 내 보물이다·보물 운반자·도굴꾼·유적 수호자·욕심은 위험해·대탈출·보석 수집가</span></li>
 </ul>
 <div class="order-event-lobby-card">
-                <strong>정규 이벤트 · 맵 3종</strong>
-                <span>벽이 많은 맵과 부쉬가 많은 맵에서 다른 전략을 펼치세요.</span>
-                <small>기본 맵 · 벽 많음/부쉬 적음 · 부쉬 많음/벽 적음</small>
-                <button id="notice-event-start-btn" type="button">정규 이벤트 선택</button>
-                <a href="./beta-season.html">시즌 8 베타 테스트</a>
+                <strong data-i18n="mainUi7">정규 이벤트 · 맵 3종</strong>
+                <span data-i18n="mainUi8">벽이 많은 맵과 부쉬가 많은 맵에서 다른 전략을 펼치세요.</span>
+                <small data-i18n="mainUi9">기본 맵 · 벽 많음/부쉬 적음 · 부쉬 많음/벽 적음</small>
+                <button id="notice-event-start-btn" type="button" data-i18n="mainUi6">정규 이벤트 선택</button>
+                <a href="./beta-season.html" data-i18n="mainUi10">시즌 8 베타 테스트</a>
               </div>
-              <p class="notice-timezone">한국 시간(KST) 기준 · 베타 미리보기 콘텐츠는 베타 테스트 페이지에서 이용할 수 있습니다.</p>
+              <p class="notice-timezone" data-i18n="mainUi11">한국 시간(KST) 기준 · 베타 미리보기 콘텐츠는 베타 테스트 페이지에서 이용할 수 있습니다.</p>
             </div>
             <div id="notice-next" class="notice-content hidden" role="tabpanel" data-notice-content="next">
               <div class="notice-kicker">PUBLIC ROADMAP</div>
-              <h2>Project Colors 베타 로드맵</h2>
-              <p class="notice-summary">베타 시즌 5~9의 테마와 콘텐츠 계획입니다. 출시된 모드는 시즌에 관계없이 정규 이벤트로 운영합니다.</p>
+              <h2 data-i18n="mainUi15">Project Colors 베타 로드맵</h2>
+              <p class="notice-summary" data-i18n="mainUi16">베타 시즌 5~9의 테마와 콘텐츠 계획입니다. 출시된 모드는 시즌에 관계없이 정규 이벤트로 운영합니다.</p>
               <dl class="notice-schedule">
-                <div><dt>공개 범위</dt><dd>베타 시즌 5~9</dd></div>
-                <div><dt>정기 업데이트</dt><dd>오후 6:00</dd></div>
+                <div><dt data-i18n="mainUi17">공개 범위</dt><dd data-i18n="mainUi18">베타 시즌 5~9</dd></div>
+                <div><dt data-i18n="mainUi19">정기 업데이트</dt><dd data-i18n="mainUi20">오후 6:00</dd></div>
               </dl>
               <ol class="public-roadmap">
                 <li class="roadmap-season roadmap-season-5">
                   <span>SEASON 5</span>
                   <div>
-                    <strong>🎡 놀이공원</strong>
-                    <small>놀이공원을 배경으로 베타 후반부가 시작됩니다.</small>
-                    <small><b>SHOWDOWN+</b> — 쇼다운과 별도로 선택하는 정규 이벤트입니다. 순위는 생존 순서로 정해지고, 적 처치 1회마다 트로피 +2가 추가로 붙습니다.</small>
-                    <small>🍨 신규 영웅 민트 · 🔵 블루 특수 공격 등 새로운 전투 콘텐츠 추가</small>
+                    <strong data-i18n="mainUi141">🎡 놀이공원</strong>
+                    <small data-i18n="mainUi142">놀이공원을 배경으로 베타 후반부가 시작됩니다.</small>
+                    <small><b>SHOWDOWN+</b><span data-i18n="mainUi143"> — 쇼다운과 별도로 선택하는 정규 이벤트입니다. 순위는 생존 순서로 정해지고, 적 처치 1회마다 트로피 +2가 추가로 붙습니다.</span></small>
+                    <small data-i18n="mainUi144">🍨 신규 영웅 민트 · 🔵 블루 특수 공격 등 새로운 전투 콘텐츠 추가</small>
                   </div>
                 </li>
                 <li class="roadmap-season roadmap-season-6">
                   <span>SEASON 6</span>
                   <div>
-                    <strong>🌊 바다</strong>
-                    <small>여름 분위기의 바다 테마 시즌입니다.</small>
-                    <small><b>SOCCER KICK</b> — 공을 패스하고 슛해 상대 골대에 넣는 팀 기반 축구 모드</small>
+                    <strong data-i18n="mainUi145">🌊 바다</strong>
+                    <small data-i18n="mainUi146">여름 분위기의 바다 테마 시즌입니다.</small>
+                    <small><b>SOCCER KICK</b><span data-i18n="mainUi147"> — 공을 패스하고 슛해 상대 골대에 넣는 팀 기반 축구 모드</span></small>
                   </div>
                 </li>
                 <li class="roadmap-season roadmap-season-7">
                   <span>SEASON 7</span>
                   <div>
-                    <strong>🏜️ 고대 사막 유적</strong>
-                    <small>사막 속 고대 유적과 보물을 찾아 떠나는 시즌입니다.</small>
-                    <small><b>GEM GRAB</b> — 보석을 차지하고 지켜내는 지역 장악형 팀 모드</small>
+                    <strong data-i18n="mainUi148">🏜️ 고대 사막 유적</strong>
+                    <small data-i18n="mainUi149">사막 속 고대 유적과 보물을 찾아 떠나는 시즌입니다.</small>
+                    <small><b>GEM GRAB</b><span data-i18n="mainUi150"> — 보석을 차지하고 지켜내는 지역 장악형 팀 모드</span></small>
                   </div>
                 </li>
                 <li class="roadmap-season roadmap-season-8">
                   <span>SEASON 8</span>
                   <div>
-                    <strong>🎃 할로윈</strong>
-                    <small>Project Colors에 할로윈이 찾아옵니다.</small>
-                    <small><b>KNOCKOUT</b> — 한 번 쓰러지면 해당 라운드에 돌아올 수 없는 생존 중심 라운드 전투</small>
+                    <strong data-i18n="mainUi151">🎃 할로윈</strong>
+                    <small data-i18n="mainUi152">Project Colors에 할로윈이 찾아옵니다.</small>
+                    <small><b>KNOCKOUT</b><span data-i18n="mainUi153"> — 한 번 쓰러지면 해당 라운드에 돌아올 수 없는 생존 중심 라운드 전투</span></small>
                   </div>
                 </li>
                 <li class="roadmap-season roadmap-season-9">
                   <span>SEASON 9</span>
                   <div>
                     <strong>🏆 CHAMPIONS</strong>
-                    <small><b>베타의 마지막 시즌.</b> 11월, 모든 캐릭터가 참가하는 BETA FINAL EVENT가 개최됩니다.</small>
+                    <small><b data-i18n="mainUi154">베타의 마지막 시즌.</b><span data-i18n="mainUi155"> 11월, 모든 캐릭터가 참가하는 BETA FINAL EVENT가 개최됩니다.</span></small>
                     <ul class="champions-schedule">
-                      <li><b>11/2~13</b><span>두 모드에서 진행되는 1차 생존전</span></li>
-                      <li><b>11/16</b><span>🐟 살몬 첫 참전 SHOWDOWN</span></li>
-                      <li><b>11/17~30</b><span>TOP 9 최종전 · 🍓 라즈베리 참전</span></li>
-                      <li><b>11/30</b><span>👑 최종 1~9위 발표</span></li>
+                      <li><b>11/2~13</b><span data-i18n="mainUi156">두 모드에서 진행되는 1차 생존전</span></li>
+                      <li><b>11/16</b><span data-i18n="mainUi157">🐟 살몬 첫 참전 SHOWDOWN</span></li>
+                      <li><b>11/17~30</b><span data-i18n="mainUi158">TOP 9 최종전 · 🍓 라즈베리 참전</span></li>
+                      <li><b>11/30</b><span data-i18n="mainUi159">👑 최종 1~9위 발표</span></li>
                     </ul>
                   </div>
                 </li>
               </ol>
               <div class="champion-reward-card">
                 <span>🥇 CHAMPION REWARD</span>
-                <strong>베타 최종 1위 캐릭터는 정식 시즌에서 받을 새로운 능력을 누구보다 먼저 획득합니다.</strong>
+                <strong data-i18n="mainUi160">베타 최종 1위 캐릭터는 정식 시즌에서 받을 새로운 능력을 누구보다 먼저 획득합니다.</strong>
               </div>
-              <p class="notice-timezone">한국 시간(KST) 기준</p>
+              <p class="notice-timezone" data-i18n="mainUi12">한국 시간(KST) 기준</p>
             </div>
           </section>
         </div>
@@ -776,8 +777,8 @@
 
         <div id="lobby-event-map" class="lobby-event-map hidden">
           <div class="event-map-heading">
-            <span>정규 이벤트</span>
-            <span id="event-countdown" class="event-map-live">상시 운영</span>
+            <span data-i18n="mainUi4">정규 이벤트</span>
+            <span id="event-countdown" class="event-map-live" data-i18n="mainUi5">상시 운영</span>
           </div>
           <div class="event-map-body">
             <div class="event-map-mini" aria-hidden="true">
@@ -789,22 +790,22 @@
               <span>중앙 보스를 처치하고<br>상위 4위에 도전하세요.</span>
             </div>
           </div>
-          <button id="event-takedown-btn" class="event-map-play-btn" type="button">플레이하기</button>
+          <button id="event-takedown-btn" class="event-map-play-btn" type="button" data-i18n="mainUi21">플레이하기</button>
         </div>
 
         <div id="settings-panel" class="settings-panel hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
           <div class="settings-card">
             <div class="settings-header">
-              <h2 id="settings-title">⚙️ 설정</h2>
-              <button id="settings-close" class="settings-close" type="button" aria-label="설정 닫기">×</button>
+              <h2 id="settings-title" data-i18n="mainUi22">⚙️ 설정</h2>
+              <button id="settings-close" class="settings-close" type="button" aria-label="설정 닫기" data-i18n-aria="mainUi161">×</button>
             </div>
             <div class="settings-volume-row">
-              <label for="settings-volume">🔊 볼륨</label>
+              <label for="settings-volume" data-i18n="mainUi23">🔊 볼륨</label>
               <output id="settings-volume-value" for="settings-volume">100%</output>
             </div>
             <input id="settings-volume" class="settings-volume" type="range" min="0" max="100" step="1" value="100" draggable="false">
-            <div class="settings-volume-presets" aria-label="빠른 볼륨 설정">
-              <button type="button" data-volume="0">🔇 음소거</button>
+            <div class="settings-volume-presets" aria-label="빠른 볼륨 설정" data-i18n-aria="mainUi162">
+              <button type="button" data-volume="0" data-i18n="mainUi24">🔇 음소거</button>
               <button type="button" data-volume="25">25%</button>
               <button type="button" data-volume="50">50%</button>
               <button type="button" data-volume="100">100%</button>
@@ -812,9 +813,9 @@
             <div class="settings-divider"></div>
             <button id="stats-toggle" class="settings-action-btn" type="button" data-i18n="statsBtn">👤 계정</button>
             <div id="stats-panel" class="stats-panel settings-stats-panel hidden"></div>
-            <button id="export-account-btn" class="settings-action-btn" type="button">계정 파일 내보내기</button>
-            <button data-import-account class="settings-action-btn" type="button">계정 파일 가져오기</button>
-            <button id="open-account-switch-btn" class="settings-action-btn" type="button">🔄 계정 전환</button>
+            <button id="export-account-btn" class="settings-action-btn" type="button" data-i18n="mainUi25">계정 파일 내보내기</button>
+            <button data-import-account class="settings-action-btn" type="button" data-i18n="mainUi26">계정 파일 가져오기</button>
+            <button id="open-account-switch-btn" class="settings-action-btn" type="button" data-i18n="mainUi27">🔄 계정 전환</button>
           </div>
         </div>
 
@@ -827,21 +828,21 @@
           <p class="char-select-label" data-i18n="nicknameLabel">닉네임</p>
           <input id="nickname-input" class="lobby-input" type="text" maxlength="12" data-i18n-placeholder="nickPlaceholder" placeholder="최대 12자" autocomplete="off">
           <button id="create-account-btn" class="lobby-start-btn" type="button" disabled data-i18n="enterBattle">전장 입장</button>
-          <button data-import-account class="lobby-start-btn lobby-recovery-btn" type="button">계정 파일 가져오기</button>
-          <button id="existing-account-login-btn" class="lobby-start-btn lobby-recovery-btn" type="button">기존 계정 로그인</button>
+          <button data-import-account class="lobby-start-btn lobby-recovery-btn" type="button" data-i18n="mainUi26">계정 파일 가져오기</button>
+          <button id="existing-account-login-btn" class="lobby-start-btn lobby-recovery-btn" type="button" data-i18n="mainUi29">기존 계정 로그인</button>
         </div>
 
         <div id="account-switch" class="message-card hidden">
-          <h2>계정 전환</h2>
-          <p class="lobby-intro">아이디와 닉네임을 모두 입력하세요.</p>
-          <p class="char-select-label">아이디</p>
-          <input id="switch-id-input" class="lobby-input" type="text" maxlength="16" placeholder="아이디 입력" autocomplete="off">
-          <p class="char-select-label">닉네임</p>
-          <input id="switch-nickname-input" class="lobby-input" type="text" maxlength="12" placeholder="닉네임 입력" autocomplete="off">
+          <h2 data-i18n="mainUi28">계정 전환</h2>
+          <p class="lobby-intro" data-i18n="mainUi30">아이디와 닉네임을 모두 입력하세요.</p>
+          <p class="char-select-label" data-i18n="mainUi31">아이디</p>
+          <input id="switch-id-input" class="lobby-input" type="text" maxlength="16" placeholder="아이디 입력" data-i18n-placeholder="mainUi167" autocomplete="off">
+          <p class="char-select-label" data-i18n="mainUi32">닉네임</p>
+          <input id="switch-nickname-input" class="lobby-input" type="text" maxlength="12" placeholder="닉네임 입력" data-i18n-placeholder="mainUi168" autocomplete="off">
           <div id="account-switch-error" class="daily-error hidden"></div>
-          <button id="switch-account-btn" class="lobby-start-btn" type="button">로그인</button>
-          <button id="add-account-btn" class="lobby-start-btn lobby-training-btn" type="button">새 계정 만들기</button>
-          <button id="cancel-account-switch-btn" class="lobby-start-btn lobby-recovery-btn" type="button">취소</button>
+          <button id="switch-account-btn" class="lobby-start-btn" type="button" data-i18n="mainUi33">로그인</button>
+          <button id="add-account-btn" class="lobby-start-btn lobby-training-btn" type="button" data-i18n="mainUi34">새 계정 만들기</button>
+          <button id="cancel-account-switch-btn" class="lobby-start-btn lobby-recovery-btn" type="button" data-i18n="mainUi35">취소</button>
         </div>
 
         <div id="daily-login" class="message-card hidden">
@@ -852,11 +853,11 @@
             </div>
           </div>
           <p class="lobby-intro" data-i18n="dailyLoginMsg">오늘의 아이디를 입력하세요.</p>
-          <input id="daily-id-input" class="lobby-input" type="text" maxlength="16" data-i18n-placeholder="dailyIdPlaceholder" placeholder="아이디 입력" autocomplete="off">
+          <input id="daily-id-input" class="lobby-input" type="text" maxlength="16" data-i18n-placeholder="dailyIdPlaceholder" placeholder="아이디 입력" data-i18n-placeholder="mainUi167" autocomplete="off">
           <div id="daily-login-error" class="daily-error hidden"></div>
           <button id="daily-login-btn" class="lobby-start-btn" type="button" data-i18n="confirm">확인</button>
-          <button data-import-account class="lobby-start-btn lobby-recovery-btn" type="button">계정 파일 가져오기</button>
-          <button id="account-recovery-btn" class="lobby-start-btn lobby-recovery-btn" type="button">내 ID 확인</button>
+          <button data-import-account class="lobby-start-btn lobby-recovery-btn" type="button" data-i18n="mainUi26">계정 파일 가져오기</button>
+          <button id="account-recovery-btn" class="lobby-start-btn lobby-recovery-btn" type="button" data-i18n="mainUi36">내 ID 확인</button>
           <div id="account-recovery-info" class="daily-recovery-info hidden"></div>
         </div>
 
@@ -903,127 +904,127 @@
           <p class="char-select-label" data-i18n="charSelect">캐릭터 선택</p>
           <div class="char-select-row">
             <button id="select-red" class="char-btn" type="button" data-char="red">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-red">R</span>
-              <span class="char-name">Red</span>
+              <span class="char-name">레드</span>
               <span class="char-trophy" id="trophy-red"></span>
               <span class="char-winrate" id="winrate-red"></span>
-              <span class="char-skin-toggle disabled" data-char="red">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="red" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-green" class="char-btn" type="button" data-char="green">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-green">G</span>
-              <span class="char-name">Green</span>
+              <span class="char-name">그린</span>
               <span class="char-trophy" id="trophy-green"></span>
               <span class="char-winrate" id="winrate-green"></span>
-              <span class="char-skin-toggle disabled" data-char="green">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="green" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-blue" class="char-btn" type="button" data-char="blue">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-blue">B</span>
-              <span class="char-name">Blue</span>
+              <span class="char-name">블루</span>
               <span class="char-trophy" id="trophy-blue"></span>
               <span class="char-winrate" id="winrate-blue"></span>
-              <span class="char-skin-toggle disabled" data-char="blue">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="blue" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-orange" class="char-btn" type="button" data-char="orange">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-orange">O</span>
-              <span class="char-name">Orange</span>
+              <span class="char-name">오렌지</span>
               <span class="char-trophy" id="trophy-orange"></span>
               <span class="char-winrate" id="winrate-orange"></span>
-              <span class="char-skin-toggle disabled" data-char="orange">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="orange" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-yellow" class="char-btn" type="button" data-char="yellow">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-yellow">Y</span>
-              <span class="char-name">Yellow</span>
+              <span class="char-name">옐로우</span>
               <span class="char-trophy" id="trophy-yellow"></span>
               <span class="char-winrate" id="winrate-yellow"></span>
-              <span class="char-skin-toggle disabled" data-char="yellow">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="yellow" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-cyan" class="char-btn" type="button" data-char="cyan">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-cyan">C</span>
-              <span class="char-name">Cyan</span>
+              <span class="char-name">시안</span>
               <span class="char-trophy" id="trophy-cyan"></span>
               <span class="char-winrate" id="winrate-cyan"></span>
-              <span class="char-skin-toggle disabled" data-char="cyan">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="cyan" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-purple" class="char-btn" type="button" data-char="purple">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-purple">P</span>
-              <span class="char-name">Purple</span>
+              <span class="char-name">퍼플</span>
               <span class="char-trophy" id="trophy-purple"></span>
               <span class="char-winrate" id="winrate-purple"></span>
-              <span class="char-skin-toggle disabled" data-char="purple">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="purple" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-pink" class="char-btn" type="button" data-char="pink">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-pink">Pi</span>
-              <span class="char-name">Pink</span>
+              <span class="char-name">핑크</span>
               <span class="char-trophy" id="trophy-pink"></span>
               <span class="char-winrate" id="winrate-pink"></span>
-              <span class="char-skin-toggle disabled" data-char="pink">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="pink" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-crimson" class="char-btn" type="button" data-char="crimson">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-crimson">Cr</span>
-              <span class="char-name">Crimson</span>
+              <span class="char-name">크림슨</span>
               <span class="char-trophy" id="trophy-crimson"></span>
               <span class="char-winrate" id="winrate-crimson"></span>
-              <span class="char-skin-toggle disabled" data-char="crimson">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="crimson" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-gold" class="char-btn" type="button" data-char="gold" data-beta2-only>
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-gold">G</span>
-              <span class="char-name">Gold</span>
+              <span class="char-name">골드</span>
               <span class="char-trophy" id="trophy-gold"></span>
               <span class="char-winrate" id="winrate-gold"></span>
-              <span class="char-skin-toggle disabled" data-char="gold">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="gold" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-ivory" class="char-btn" type="button" data-char="ivory" data-beta2-only>
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon char-icon-ivory">I</span>
-              <span class="char-name">Ivory</span>
+              <span class="char-name">아이보리</span>
               <span class="char-trophy" id="trophy-ivory"></span>
               <span class="char-winrate" id="winrate-ivory"></span>
-              <span class="char-skin-toggle disabled" data-char="ivory">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="ivory" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-chartreuse" class="char-btn" type="button" data-char="chartreuse">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon" style="background:#7fff00;color:#172000">Ch</span>
-              <span class="char-name">Chartreuse</span>
+              <span class="char-name">샤르트뢰즈</span>
               <span class="char-trophy" id="trophy-chartreuse"></span>
               <span class="char-winrate" id="winrate-chartreuse"></span>
-              <span class="char-skin-toggle disabled" data-char="chartreuse">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="chartreuse" data-i18n="mainUi38">스킨 없음</span>
             </button>
             <button id="select-mint" class="char-btn" type="button" data-char="mint">
-              <span class="selected-badge">선택됨</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span>
               <span class="char-icon" style="background:#98ffdc;color:#12382f">M</span>
-              <span class="char-name">Mint</span>
+              <span class="char-name">민트</span>
               <span class="char-trophy" id="trophy-mint"></span>
               <span class="char-winrate" id="winrate-mint"></span>
-              <span class="char-skin-toggle disabled" data-char="mint">스킨 없음</span>
+              <span class="char-skin-toggle disabled" data-char="mint" data-i18n="mainUi38">스킨 없음</span>
             </button>
-            <button id="select-crystal" class="char-btn" type="button" data-char="crystal"><span class="selected-badge">선택됨</span><span class="char-icon" style="background:#6ee7ff">💎</span><span class="char-name">크리스탈</span><span class="char-trophy" id="trophy-crystal"></span><span class="char-winrate" id="winrate-crystal"></span><span class="char-skin-toggle disabled" data-char="crystal">스킨 없음</span></button>
+            <button id="select-crystal" class="char-btn" type="button" data-char="crystal"><span class="selected-badge" data-i18n="mainUi37">선택됨</span><span class="char-icon" style="background:#6ee7ff">💎</span><span class="char-name" data-i18n="mainUi118">크리스탈</span><span class="char-trophy" id="trophy-crystal"></span><span class="char-winrate" id="winrate-crystal"></span><span class="char-skin-toggle disabled" data-char="crystal" data-i18n="mainUi38">스킨 없음</span></button>
             <button id="select-azure" class="char-btn" type="button" data-char="azure">
-              <span class="selected-badge">선택됨</span><span class="char-icon" style="background:#007fff;color:white">Az</span>
-              <span class="char-name">Azure</span><span class="char-trophy" id="trophy-azure"></span>
-              <span class="char-winrate" id="winrate-azure"></span><span class="char-skin-toggle disabled" data-char="azure">스킨 없음</span>
+              <span class="selected-badge" data-i18n="mainUi37">선택됨</span><span class="char-icon" style="background:#007fff;color:white">Az</span>
+              <span class="char-name">애저</span><span class="char-trophy" id="trophy-azure"></span>
+              <span class="char-winrate" id="winrate-azure"></span><span class="char-skin-toggle disabled" data-char="azure" data-i18n="mainUi38">스킨 없음</span>
             </button>
           </div>
 
           <p class="lobby-controls" data-i18n="controls">WASD 이동 · 마우스 조준 · 클릭 공격 · 자동 장전</p>
           <div id="character-actions" class="character-actions hidden">
-            <button id="try-character-btn" type="button">🎯 훈련장</button>
-            <button id="confirm-character-btn" type="button">✓ 선택</button>
+            <button id="try-character-btn" type="button" data-i18n="mainUi41">🎯 훈련장</button>
+            <button id="confirm-character-btn" type="button" data-i18n="mainUi42">✓ 선택</button>
           </div>
           </div>
           <div id="mode-selector" class="mode-selector hidden">
-            <div class="map-select-title">정규 이벤트 선택</div>
-            <div>맵은 매 경기 3개 중 무작위로 선택됩니다.</div>
-            <button id="mode-showdown-plus" class="mode-btn" type="button"><span class="mode-icon-text">🔥</span><span>SHOWDOWN+</span><small class="mode-current-map">생존 순위 · 처치당 트로피 +2</small></button>
+            <div class="map-select-title" data-i18n="mainUi6">정규 이벤트 선택</div>
+            <div data-i18n="mainUi43">맵은 매 경기 3개 중 무작위로 선택됩니다.</div>
+            <button id="mode-showdown-plus" class="mode-btn" type="button"><span class="mode-icon-text">🔥</span><span>SHOWDOWN+</span><small class="mode-current-map" data-i18n="mainUi44">생존 순위 · 처치당 트로피 +2</small></button>
             <button id="mode-showdown" class="mode-btn mode-showdown" type="button">
               <img src="./assets/showdown.webp" class="mode-icon" alt="Showdown">
               <span data-i18n="modeShowdown">쇼다운</span>
@@ -1033,19 +1034,19 @@
               <span class="mode-icon-text">🪓</span>
               <span data-i18n="modeChopWood">찹 우드</span>
             </button>
-            <button id="mode-gemgrab" class="mode-btn" type="button"><span class="mode-icon-text">💎</span><span>GEM GRAB</span><small class="mode-current-map">3대3 · 젬 10개 · 유적 탈출 15초</small></button>
+            <button id="mode-gemgrab" class="mode-btn" type="button"><span class="mode-icon-text">💎</span><span>GEM GRAB</span><small class="mode-current-map" data-i18n="mainUi45">3대3 · 젬 10개 · 유적 탈출 15초</small></button>
             <button id="mode-goldrush" class="mode-btn mode-goldrush" type="button">
               <span class="mode-icon-text">🪙</span>
               <span>Gold Rush</span>
-              <small class="mode-current-map">금 10개를 10초간 지키세요 · AI 9명</small>
+              <small class="mode-current-map" data-i18n="mainUi46">금 10개를 10초간 지키세요 · AI 9명</small>
             </button>
             <button id="mode-soccer" class="mode-btn mode-soccer" type="button">
               <span class="mode-icon-text">⚽</span><span>SOCCER KICK</span>
-              <small class="mode-current-map">3대3 · 3분 · 2골 선승</small>
+              <small class="mode-current-map" data-i18n="mainUi47">3대3 · 3분 · 2골 선승</small>
             </button>
             <button id="mode-takedown" class="mode-btn" type="button">
               <span class="mode-icon-text">👑</span><span>Take Down</span>
-              <small class="mode-current-map">중앙 보스를 처치하고 상위 4위에 도전</small>
+              <small class="mode-current-map" data-i18n="mainUi48">중앙 보스를 처치하고 상위 4위에 도전</small>
             </button>
             <button id="mode-back" class="mode-back-btn" type="button" data-i18n="modeBack">뒤로</button>
           </div>
@@ -1054,7 +1055,7 @@
 
       <div id="result-overlay" style="display:none">
         <div class="message-card">
-          <h2 id="result-title">전투 종료</h2>
+          <h2 id="result-title" data-i18n="mainUi171">전투 종료</h2>
           <p id="result-body"></p>
           <p id="result-stats"></p>
           <p id="result-streak"></p>
@@ -1075,30 +1076,30 @@
   </div>
 
   <div id="daily-reward-reveal" class="daily-reward-reveal hidden" aria-live="polite">
-    <button id="daily-reward-help" class="daily-reward-help" type="button" aria-label="일일 보상 확률 보기">?</button>
+    <button id="daily-reward-help" class="daily-reward-help" type="button" aria-label="일일 보상 확률 보기" data-i18n-aria="mainUi164">?</button>
     <div id="daily-reward-fx" class="daily-reward-fx" aria-hidden="true"></div>
     <span class="reward-kicker">DAILY REWARD</span>
-    <strong id="daily-reward-grade">일반</strong>
-    <button id="daily-reward-star" class="daily-reward-star" type="button" aria-label="일일 보상 별 열기">★</button>
+    <strong id="daily-reward-grade" data-i18n="mainUi57">일반</strong>
+    <button id="daily-reward-star" class="daily-reward-star" type="button" aria-label="일일 보상 별 열기" data-i18n-aria="mainUi165">★</button>
     <span id="daily-reward-attempts" class="daily-reward-attempts">업그레이드 기회 4 / 4</span>
-    <button id="daily-reward-upgrade-all" class="daily-reward-upgrade-all" type="button">남은 기회 한 번에 사용</button>
-    <p id="daily-reward-message">별을 클릭해 보상을 확인하세요</p>
-    <button id="daily-reward-return" class="daily-reward-return hidden" type="button">로비로 돌아가기</button>
+    <button id="daily-reward-upgrade-all" class="daily-reward-upgrade-all" type="button" data-i18n="mainUi52">남은 기회 한 번에 사용</button>
+    <p id="daily-reward-message" data-i18n="mainUi97">별을 클릭해 보상을 확인하세요</p>
+    <button id="daily-reward-return" class="daily-reward-return hidden" type="button" data-i18n="mainUi53">로비로 돌아가기</button>
     <div id="daily-reward-odds" class="daily-reward-odds hidden" role="dialog" aria-modal="true" aria-labelledby="daily-reward-odds-title">
       <section class="daily-reward-odds-card">
-        <button id="daily-reward-odds-close" class="daily-reward-odds-close" type="button" aria-label="확률표 닫기">×</button>
-        <h3 id="daily-reward-odds-title">일일 보상 확률</h3>
-        <h4>업그레이드 성공 확률</h4>
+        <button id="daily-reward-odds-close" class="daily-reward-odds-close" type="button" aria-label="확률표 닫기" data-i18n-aria="mainUi166">×</button>
+        <h3 id="daily-reward-odds-title" data-i18n="mainUi54">일일 보상 확률</h3>
+        <h4 data-i18n="mainUi55">업그레이드 성공 확률</h4>
         <table>
-          <thead><tr><th>사용 방식</th><th>일반</th><th>희귀 이상</th></tr></thead>
+          <thead><tr><th data-i18n="mainUi56">사용 방식</th><th data-i18n="mainUi57">일반</th><th data-i18n="mainUi58">희귀 이상</th></tr></thead>
           <tbody id="daily-reward-upgrade-odds-body"></tbody>
         </table>
-        <h4>성공 시 상승 단계</h4>
+        <h4 data-i18n="mainUi59">성공 시 상승 단계</h4>
         <table>
-          <thead><tr><th>상승</th><th>확률</th><th>상승</th><th>확률</th></tr></thead>
+          <thead><tr><th data-i18n="mainUi60">상승</th><th data-i18n="mainUi61">확률</th><th data-i18n="mainUi60">상승</th><th data-i18n="mainUi61">확률</th></tr></thead>
           <tbody id="daily-reward-jump-odds-body"></tbody>
         </table>
-        <p>업그레이드 성공 시 기회는 줄어들지 않습니다.</p>
+        <p data-i18n="mainUi62">업그레이드 성공 시 기회는 줄어들지 않습니다.</p>
       </section>
     </div>
   </div>
@@ -1128,15 +1129,15 @@
   <div id="shop-overlay" class="hidden">
     <div class="shop-screen">
       <div class="shop-header">
-        <h2>🪙 상점</h2>
+        <h2 data-i18n="mainUi49">🪙 상점</h2>
         <div class="shop-coins">🪙 <span id="shop-coins">0</span></div>
         <div class="shop-credits">β <span id="shop-credits">0</span></div>
         <button id="shop-close-btn" class="shop-close-btn" type="button">✕</button>
       </div>
       <div class="shop-category-tabs">
-        <button class="shop-tab active" data-tab="levelup" type="button">캐릭터 레벨업</button>
+        <button class="shop-tab active" data-tab="levelup" type="button" data-i18n="mainUi50">캐릭터 레벨업</button>
         <button class="shop-tab" data-tab="chars" type="button" data-i18n="shopTabChars">캐릭터 구매</button>
-        <button class="shop-tab" data-tab="skins" type="button">스킨</button>
+        <button class="shop-tab" data-tab="skins" type="button" data-i18n="mainUi51">스킨</button>
         <button class="shop-tab" data-tab="cosmetics" type="button" data-i18n="shopTabCosmetics">꾸미기</button>
       </div>
       <div id="shop-content" class="shop-content">
@@ -1156,6 +1157,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.7.0.5"></script>
+  <script type="module" src="./src/main.js?v=1.7.0.6"></script>
 </body>
 </html>

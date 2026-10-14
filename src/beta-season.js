@@ -11,7 +11,7 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=23";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.5.9";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.3";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
@@ -466,6 +466,13 @@ function loadBetaState() {
       if (!state.seasonProps.owned.includes(propId)) state.seasonProps.owned.push(propId);
     }
   }
+  if (IS_BETA8_TEST && !saved.beta8HalloweenSkinsGranted) {
+    for (const skin of BETA_SKINS.filter(skin => skin.season === "beta8")) {
+      if (!state.ownedSkins.includes(skin.id)) state.ownedSkins.push(skin.id);
+      if (!state.selectedSkins[skin.character]) state.selectedSkins[skin.character]=skin.id;
+    }
+  }
+  if (IS_BETA8_TEST) state.beta8HalloweenSkinsGranted=true;
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
   return state;
 }
@@ -1150,7 +1157,7 @@ function recolorSkinTintTexture(texture, targetHex) {
 function applySkinPaletteToModel(model, characterId, skinId = betaState.selectedSkins[characterId] || "") {
   // 시즌 6 모델 교체형 스킨은 자체 텍스처를 쓰는 완전히 다른 모델이므로
   // 시안 공유 리그 재색칠(baseCharacterTint) 로직을 건너뛴다.
-  if (SEASON6_MODEL_SKINS[characterId]?.skinId === skinId || SEASON7_MODEL_SKINS[characterId]?.skinId === skinId) return;
+  if (SEASON6_MODEL_SKINS[characterId]?.skinId === skinId || SEASON7_MODEL_SKINS[characterId]?.skinId === skinId || SEASON8_MODEL_SKINS[characterId]?.skinId === skinId) return;
   const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd700 : characterId === "chartreuse" ? 0xc1f80a : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
@@ -1319,7 +1326,7 @@ function clearCharacterModel() {
 function prepareCharacterScene(model, characterId, skinId = betaState.selectedSkins[characterId] || "") {
   const wearsSeason6ModelSkin = SEASON6_MODEL_SKINS[characterId]?.skinId === skinId;
   const wearsSeason7ModelSkin = SEASON7_MODEL_SKINS[characterId]?.skinId === skinId;
-  const wearsCustomModelSkin = wearsSeason6ModelSkin || wearsSeason7ModelSkin;
+  const wearsCustomModelSkin = wearsSeason6ModelSkin || wearsSeason7ModelSkin || SEASON8_MODEL_SKINS[characterId]?.skinId === skinId;
   const usesFbxRig = characterId === "mint" || characterId === "azure" || characterId === "crystal" || characterId === "lavender"
     || (characterId === "pink" && skinId === "beta5_pink_cotton_candy")
     || wearsCustomModelSkin;
@@ -1389,6 +1396,11 @@ const SEASON6_MODEL_SKINS = {
   orange: { skinId: "beta6_orange_citrus_luau_buddy", folder: "orange/skins/citrus-luau-buddy" },
   azure: { skinId: "beta6_azure_blue_wave_buddy", folder: "azure/skins/blue-wave-buddy" },
 };
+const SEASON8_MODEL_SKINS = {
+  orange:{skinId:"beta8_orange_jack_o_lantern",folder:"orange/skins/jack-o-lantern"},
+  purple:{skinId:"beta8_purple_potion_witch",folder:"purple/skins/potion-witch"},
+  lavender:{skinId:"beta8_lavender_ghost_bride",folder:"lavender/skins/ghost-bride"},
+};
 const SEASON7_MODEL_SKINS = {
   crystal: { skinId: "beta7_crystal_ruin_explorer", folder: "crystal/skins/gem-princess" },
   green: { skinId: "beta7_green_mummy", folder: "green/skins/emerald-mummy" },
@@ -1398,7 +1410,7 @@ const SEASON7_MODEL_SKINS = {
 
 function getCharacterMotionSource(characterId, selectedSkinId = betaState.selectedSkins[characterId] || "") {
   const cottonCandyPink = characterId === "pink" && selectedSkinId === "beta5_pink_cotton_candy";
-  const customModelSkin = [SEASON6_MODEL_SKINS, SEASON7_MODEL_SKINS]
+  const customModelSkin = [SEASON8_MODEL_SKINS, SEASON6_MODEL_SKINS, SEASON7_MODEL_SKINS]
     .map((skins) => skins[characterId])
     .find((skin) => skin?.skinId === selectedSkinId);
   const modelCharacterId = characterId === "ivory" && selectedSkinId === "beta2_ivory_shopkeeper"
@@ -1413,7 +1425,7 @@ function getCharacterMotionSource(characterId, selectedSkinId = betaState.select
   // 시즌 6·7 모델 교체 스킨도 다운로드한 Meshy FBX와 걷기 동작을 그대로 쓴다.
   const usesFbxMotion = characterId === "mint" || characterId === "azure" || characterId === "crystal" || characterId === "lavender" || cottonCandyPink || Boolean(customModelSkin);
   const extension = usesFbxMotion ? "fbx" : "glb";
-  const paths = characterId === "lavender" ? {
+  const paths = characterId === "lavender" && !customModelSkin ? {
     start: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
@@ -1421,7 +1433,7 @@ function getCharacterMotionSource(characterId, selectedSkinId = betaState.select
     start: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/crystal/normal/crystal-walk.fbx?v=${CHARACTER_MODEL_VERSION}`,
-  } : customModelSkin?.skinId.startsWith("beta7_") ? {
+  } : customModelSkin && /^(beta7_|beta8_)/.test(customModelSkin.skinId) ? {
     start: `./assets/3d/${customModelSkin.folder}/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/${customModelSkin.folder}/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/${customModelSkin.folder}/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
@@ -1869,7 +1881,7 @@ function updateHeadAttachedSkinAccessory() {
 function rebuildRedThemeAccessory(skinId) {
   disposeSkinAccessory();
   if (skinId.startsWith("beta7_")) {
-    if (SEASON7_MODEL_SKINS[betaState.selectedCharacter]?.skinId === skinId) return;
+    if (SEASON7_MODEL_SKINS[betaState.selectedCharacter]?.skinId === skinId || SEASON8_MODEL_SKINS[betaState.selectedCharacter]?.skinId === skinId) return;
     const gold = new THREE.MeshStandardMaterial({ color: 0xffd65a, emissive: 0x5b3500, emissiveIntensity: .3, metalness: .8, roughness: .22 });
     const stone = new THREE.MeshStandardMaterial({ color: skinId === "beta7_green_mummy" ? 0xe2d9b9 : 0x28567a, roughness: .72 });
     if (skinId === "beta7_gold_pharaoh") {
@@ -1995,7 +2007,7 @@ function rebuildRedThemeAccessory(skinId) {
   });
 }
 
-const MODEL_RELOAD_ON_SKIN_CHANGE = ["ivory", "pink", ...Object.keys(SEASON6_MODEL_SKINS), ...Object.keys(SEASON7_MODEL_SKINS)];
+const MODEL_RELOAD_ON_SKIN_CHANGE = ["ivory", "pink", ...Object.keys(SEASON6_MODEL_SKINS), ...Object.keys(SEASON7_MODEL_SKINS), ...Object.keys(SEASON8_MODEL_SKINS)];
 
 function equipSkin(characterId, skinId) {
   const skin = SKINS[skinId];
