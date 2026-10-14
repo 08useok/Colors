@@ -568,3 +568,10 @@ body.beta-season-7-theme.temple-countdown-final::after{content:"";position:fixed
 
 .beta-nav label { display:flex; align-items:center; gap:6px; color:#fff1b5; white-space:nowrap; }
 .beta-nav select { max-width:180px; padding:8px; border:1px solid #a68452; border-radius:8px; background:#57391f; color:#fff1b5; }
+
+/* Season 8 preview header/loading, without inventing season-specific assets. */
+.beta8-loading .beta6-loading-screen { background: radial-gradient(circle at 50% 30%,#9c8ce2,#312454 75%); }
+.beta8-loading .beta6-loading-bg,.beta8-loading .beta6-badge,.beta8-loading .beta6-loading-banner { display:none; }
+.beta8-loading .beta6-loading-status { color:#f3eaff; }
+.beta-season-8-theme .beta-header { background:linear-gradient(100deg,#2c2045,#695194); }
+.beta-season-8-theme .rank-chip { background:#6b559b; color:#fff; }

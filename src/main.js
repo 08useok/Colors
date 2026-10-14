@@ -358,7 +358,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.2" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.3" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -929,8 +929,18 @@ const EMOTES = {
   emote_cool:   { emoji: "😎", name: "선글라스", price: 300 },
   emote_fire:   { emoji: "🔥", name: "불꽃",   price: 300 },
   emote_skull:  { emoji: "💀", name: "해골",   price: 300 },
+  beta6_pin_shark: { emoji: "🦈", name: "상어 핀", price: 300, image: "./assets/beta6-loading-badge-shark.png" },
+  beta6_pin_pufferfish: { emoji: "🐡", name: "복어 핀", price: 300, image: "./assets/beta6-loading-badge-pufferfish.png" },
+  beta7_pin_scarab: { emoji: "🪲", name: "스카라베 핀", price: 300 },
+  beta7_pin_pharaoh: { emoji: "👑", name: "파라오 왕관 핀", price: 300 },
 };
 
+const emoteImages = new Map();
+for (const [id, emote] of Object.entries(EMOTES)) {
+  if (!emote.image) continue;
+  const image = new Image(); image.src = emote.image;
+  emoteImages.set(id, image);
+}
 const PROFILE_BGS = {
   bg_default: { name: "기본",   css: "linear-gradient(160deg,#1a1a2e,#16213e,#0f3460)",   price: 0 },
   bg_flame:   { name: "불꽃",   css: "linear-gradient(135deg,#ff6b00,#cc0000)",          price: 200 },
@@ -11533,19 +11543,22 @@ function updateEmoteBtns(account) {
     if (!btn) return;
     const id = slots[i];
     if (!id) { btn.classList.add("hidden"); return; }
-    btn.textContent = EMOTES[id]?.emoji ?? "";
+    const emote = EMOTES[id];
+    if (!emote) { btn.classList.add("hidden"); return; }
+    btn.innerHTML = emote.image ? '<img src="'+emote.image+'" alt="'+emote.name+'" style="width:34px;height:34px;object-fit:contain;pointer-events:none">' : emote.emoji;
+    btn.setAttribute("aria-label", emote.name + " · " + (i + 1));
     btn.classList.remove("hidden");
   });
 }
 
 function triggerEmote(slot = 0) {
-  if (!state.running || state.gameOver) return;
+  if (!state.running || state.gameOver || !Number.isInteger(slot) || slot < 0 || slot > 2) return;
   if (state.gameTime < emoteCooldownUntil[slot]) return;
   const player = getPlayer();
-  if (!player) return;
+  if (!player || player.dead) return;
   const acc = loadAccount();
   const eq = acc?.cosmetics?.equippedEmotes?.[slot];
-  if (!eq) return;
+  if (!EMOTES[eq] || !acc.cosmetics.ownedEmotes.includes(eq)) return;
   const emoji = EMOTES[eq]?.emoji ?? "😊";
   emoteCooldownUntil.fill(state.gameTime + 5);
 
@@ -11559,7 +11572,9 @@ function triggerEmote(slot = 0) {
   ctx.font = "72px serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(emoji, 64, 66);
+  const image = emoteImages.get(eq);
+  if (image?.complete && image.naturalWidth > 0) ctx.drawImage(image, 14, 14, 100, 100);
+  else ctx.fillText(emoji, 64, 66);
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   const sprite = new THREE.Sprite(mat);
@@ -11571,7 +11586,7 @@ function triggerEmote(slot = 0) {
     player.mesh.position.z,
   );
   scene.add(sprite);
-  state.effects.push({ mesh: sprite, life: 2.5, maxLife: 2.5, type: "emote" });
+  state.effects.push({ mesh: sprite, life: 2.5, maxLife: 2.5, type: "emote", emoteId: eq });
 }
 
 emoteBtns.forEach((btn, i) => {
@@ -13146,6 +13161,7 @@ function triggerShowdownAnnounce() {
 }
 
 function updateHud() {
+  document.getElementById("emote-btns")?.classList.toggle("hidden", !state.running || state.gameOver);
   const player = getPlayer();
   if (!player) {
     return;
@@ -15006,7 +15022,7 @@ if (window.location.hash === "#chop-wood") {
       const slots = c.equippedEmotes ?? [null, null, null];
       const equippedSlot = slots.indexOf(id);
       const equipped = equippedSlot !== -1;
-      emoteGrid.appendChild(makeCard(em.emoji, em.name, em.price, owned, equipped,
+      emoteGrid.appendChild(makeCard(em.image ? `<img src="${em.image}" alt="${em.name}" style="width:64px;height:64px;object-fit:contain">` : em.emoji, em.name, em.price, owned, equipped,
         () => {
           const a = loadAccount();
           if ((a.coins ?? 0) < em.price) { audio.play("purchaseFail"); return toast("코인이 부족합니다"); }

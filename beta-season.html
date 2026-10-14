@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Colors - Beta Season 7 Test</title>
+  <title>Colors - Beta Season 8 Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.5.24">
+  <link rel="stylesheet" href="./beta-season.css?v=0.5.25">
   <script>
-    const loadingSeason = new URLSearchParams(location.search).get("test");
+    const loadingSeason = new URLSearchParams(location.search).get("test") || "beta8";
+    if (loadingSeason === "beta8") document.documentElement.classList.add("beta8-loading");
     if (loadingSeason === "beta5") {
       document.documentElement.classList.add("beta5-loading");
     } else {
       document.documentElement.classList.add("beta6-loading");
-      if (loadingSeason === "beta7" || !loadingSeason) document.documentElement.classList.add("beta7-loading");
+      if (loadingSeason === "beta7") document.documentElement.classList.add("beta7-loading");
     }
   </script>
   <script type="importmap">
@@ -49,7 +50,7 @@
   </style>
 </head>
 <body>
-  <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="베타 시즌 6 불러오는 중">
+  <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="베타 시즌 8 테스트 불러오는 중">
     <img class="beta6-loading-bg" src="./assets/beta6-loading-bg.jpg?v=1" alt="애저 해변의 여름 바다 풍경">
     <div class="beta7-loading-art" aria-hidden="true">
       <i class="beta7-sun"></i><i class="beta7-dune beta7-dune-back"></i><i class="beta7-dune beta7-dune-front"></i>
@@ -63,7 +64,7 @@
     <img class="beta6-badge beta6-badge-pufferfish" src="./assets/beta6-loading-badge-pufferfish.png?v=1" alt="">
     <div class="beta6-loading-status">
       <img class="beta6-loading-banner" src="./assets/beta6-loading-banner.png?v=1" alt="">
-      <strong>BETA SEASON 6</strong><b>HIGH NOON TIDE</b><span>애저 해변으로 이동 중…</span>
+      <strong>BETA SEASON 8</strong><b>LAVENDER · 16 CHARACTERS</b><span>라벤더와 16종 캐릭터 전투를 준비하는 중…</span>
     </div>
   </div>
   <div id="beta5-loading-screen" class="beta5-loading-screen" role="status" aria-live="polite" aria-label="베타 시즌 5 불러오는 중">
@@ -92,7 +93,7 @@
   <header class="beta-header">
     <div>
       <span class="test-chip">TEST ONLY</span>
-      <h1>베타 시즌 7 테스트</h1>
+      <h1>베타 시즌 8 테스트</h1>
       <p>잃어버린 황금 유적 · 보물을 훔치자 유적이 깨어난다</p>
       <img id="sea-prop-banner" class="sea-prop-banner hidden" alt="장착한 시즌 소품 배너">
     </div>
@@ -119,7 +120,7 @@
     <img id="sea-prop-icon" class="sea-prop-icon hidden" alt="장착한 시즌 소품 아이콘">
     <span>β 크레딧</span>
     <strong id="credit-value">1,500</strong>
-    <span class="rank-chip">베타 시즌 7 테스트</span>
+    <span class="rank-chip">베타 시즌 8 테스트</span>
   </div>
 
   <aside class="test-panel">
@@ -240,6 +241,6 @@
     <label>벌목 진행 <progress id="chop-progress" max="2" value="0"></progress></label>
     <button id="chop-wood-close" type="button">로비로 돌아가기</button>
   </aside>
-  <script type="module" src="./src/beta-season.js?v=0.7.143"></script>
+  <script type="module" src="./src/beta-season.js?v=0.8.1"></script>
 </body>
 </html>

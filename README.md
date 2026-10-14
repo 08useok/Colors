@@ -42,7 +42,7 @@ CMD 창을 닫지 않은 상태에서 브라우저 주소창에 원하는 주소
 
 ```text
 기본 게임: http://localhost:4173/
-베타 기본 테스트(시즌 6): http://localhost:4173/beta-season.html
+베타 기본 테스트(시즌 8): http://localhost:4173/beta-season.html
 베타 시즌 5: http://localhost:4173/beta-season.html?test=beta5
 베타 시즌 6: http://localhost:4173/beta-season.html?test=beta6
 베타 시즌 7: http://localhost:4173/beta-season.html?test=beta7

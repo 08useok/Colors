@@ -1,0 +1,77 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "id": "beta6_pin_shark",
+      "owned": true,
+      "price": 300,
+      "used": true,
+      "cooldown": true,
+      "deathBlocked": true
+    },
+    {
+      "id": "beta6_pin_pufferfish",
+      "owned": true,
+      "price": 300,
+      "used": true,
+      "cooldown": true,
+      "deathBlocked": true
+    },
+    {
+      "id": "beta7_pin_scarab",
+      "owned": true,
+      "price": 300,
+      "used": true,
+      "cooldown": true,
+      "deathBlocked": true
+    },
+    {
+      "id": "beta7_pin_pharaoh",
+      "owned": true,
+      "price": 300,
+      "used": true,
+      "cooldown": true,
+      "deathBlocked": true
+    },
+    {
+      "season": "beta8",
+      "roster": [
+        "red",
+        "green",
+        "blue",
+        "orange",
+        "yellow",
+        "cyan",
+        "purple",
+        "pink",
+        "crimson",
+        "gold",
+        "ivory",
+        "chartreuse",
+        "mint",
+        "azure",
+        "crystal",
+        "lavender"
+      ],
+      "skinCount": 4,
+      "storage": "colorsBetaSeason8Test",
+      "heading": "베타 시즌 8 테스트",
+      "title": "Colors - Beta Season 8 Test"
+    },
+    {
+      "season": "beta5",
+      "title": "Colors - Beta Season 5 Test",
+      "heading": "베타 시즌 5 테스트"
+    },
+    {
+      "season": "beta6",
+      "title": "Colors - Beta Season 6 Test",
+      "heading": "베타 시즌 6 테스트"
+    },
+    {
+      "season": "beta7",
+      "title": "Colors - Beta Season 7 Test",
+      "heading": "베타 시즌 7 테스트"
+    }
+  ]
+}

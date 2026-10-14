@@ -25,7 +25,7 @@ const canvas = document.getElementById("beta-canvas");
 let azureWaveState = null;
 const betaSearchParams = new URLSearchParams(location.search);
 const requestedBetaSeason = betaSearchParams.get("test");
-const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta7";
+const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta8";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
 const BETA_CHARACTERS = ["beta7", "beta8"].includes(BETA_SEASON_ID) ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
 if (BETA_SEASON_ID === "beta8") {
@@ -258,7 +258,7 @@ if (!IS_BETA5_TEST && beta6LoadingScreen) {
     beta6LoadingScreen.classList.add("is-complete");
     setTimeout(() => {
       beta6LoadingScreen.remove();
-      document.documentElement.classList.remove("beta6-loading", "beta7-loading");
+      document.documentElement.classList.remove("beta6-loading", "beta7-loading", "beta8-loading");
     }, 700);
   }, 850);
   if (document.readyState === "complete") finishBeta6Loading();
@@ -295,7 +295,17 @@ const CHARACTERS = [
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
 const BETA_SEASON_ACTIVE = true;
-const BETA_SKINS = BETA_SEASON_ACTIVE ? getSkinsForSeason(BETA_SEASON_ID) : [];
+const BETA_SKINS = BETA_SEASON_ACTIVE ? [...getSkinsForSeason(BETA_SEASON_ID), ...(IS_BETA8_TEST ? getSkinsForSeason("beta7") : [])] : [];
+if (IS_BETA6_TEST) {
+  document.title = "Colors - Beta Season 6 Test";
+  document.querySelector(".beta-header h1").textContent = "베타 시즌 6 테스트";
+  document.querySelector(".rank-chip").textContent = "베타 시즌 6 테스트";
+  const status = document.querySelector(".beta6-loading-status");
+  status.querySelector("strong").textContent = "BETA SEASON 6";
+  status.querySelector("b").textContent = "HIGH NOON TIDE";
+  status.querySelector("span").textContent = "애저 해변으로 이동 중…";
+  beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 6 불러오는 중");
+}
 if (IS_BETA5_TEST) {
   document.body.classList.add("beta-season-5-theme");
   document.title = "Colors - Beta Season 5 Test";
@@ -331,21 +341,22 @@ if (IS_BETA7_TEST) {
   beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 7 불러오는 중");
 }
 if (IS_BETA8_TEST) {
-  document.title = "Colors - Beta Season 8 Preview";
+  document.body.classList.add("beta-season-8-theme");
+  document.title = "Colors - Beta Season 8 Test";
   const heading = document.querySelector(".beta-header h1");
   const rankChip = document.querySelector(".rank-chip");
   const tagline = document.querySelector(".beta-header p");
-  if (heading) heading.textContent = "베타 시즌 8 미리보기";
-  if (rankChip) rankChip.textContent = "베타 시즌 8 미리보기";
-  if (tagline) tagline.textContent = "오렌지·퍼플 신규 궁극기 미리보기";
+  if (heading) heading.textContent = "베타 시즌 8 테스트";
+  if (rankChip) rankChip.textContent = "베타 시즌 8 테스트";
+  if (tagline) tagline.textContent = "라벤더 신규 캐릭터 · 16종 전투와 궁극기 테스트";
   if (locationName) locationName.textContent = "시즌 8 테스트 구역";
   const loading = document.querySelector(".beta6-loading-status");
   if (loading) {
     loading.querySelector("strong").textContent = "BETA SEASON 8";
-    loading.querySelector("b").textContent = "ULTIMATE PREVIEW";
-    loading.querySelector("span").textContent = "오렌지와 퍼플의 신규 궁극기를 시험하는 중…";
+    loading.querySelector("b").textContent = "LAVENDER · 16 CHARACTERS";
+    loading.querySelector("span").textContent = "라벤더와 16종 캐릭터 전투를 준비하는 중…";
   }
-  beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 8 미리보기 불러오는 중");
+  beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 8 테스트 불러오는 중");
 }
 
 // 시즌 한정 꾸미기 소품: 캐릭터 성능과 무관, 이번 시즌 참여를 보여주는 장식물.
