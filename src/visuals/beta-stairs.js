@@ -17,7 +17,7 @@ export function createBetaStairs(stair,canvas){
   const middle=(stair.start+stair.end)/2;
   root.position.set(stair.dx*middle,stair.low,stair.dz*middle);
   root.rotation.y=Math.atan2(-stair.dx,-stair.dz);
-  const fallback=new THREE.Group(),material=new THREE.MeshStandardMaterial({color:0xba9567,roughness:.9});
+  const fallback=new THREE.Group(),material=new THREE.MeshStandardMaterial({color:canvas.dataset.seasonTheme==='halloween-knockout'?0x5c486e:0xba9567,roughness:.9});
   for(let i=0;i<8;i++){
     const height=(stair.high-stair.low)*(i+1)/8,depth=stair.length/8;
     const mesh=new THREE.Mesh(new THREE.BoxGeometry(stair.width,height,depth),material);
@@ -28,7 +28,9 @@ export function createBetaStairs(stair,canvas){
     const model=new THREE.Group();model.name='scarab-temple-stairs';
     // Fit the usable tread rise. Decorative pillars are higher than the landing.
     model.scale.set(stair.width/size.x,(stair.high-stair.low)/(BETA_STAIRS_PROFILE.high-BETA_STAIRS_PROFILE.low),stair.length/size.z);
-    for(const part of parts){const mesh=new THREE.Mesh(part.geometry,part.material);mesh.castShadow=true;mesh.receiveShadow=true;model.add(mesh);}
+    for(const part of parts){const mat=canvas.dataset.seasonTheme==='halloween-knockout'?(Array.isArray(part.material)?part.material.map(m=>m.clone()):part.material.clone()):part.material;
+      if(canvas.dataset.seasonTheme==='halloween-knockout')for(const m of [].concat(mat)){m.color.setHex(0x5c486e);m.map=null;}
+      const mesh=new THREE.Mesh(part.geometry,mat);mesh.castShadow=true;mesh.receiveShadow=true;model.add(mesh);}
     root.remove(fallback);fallback.traverse(p=>p.geometry?.dispose());material.dispose();root.add(model);
     canvas.dataset.betaStairsModel='ready';canvas.dataset.betaStairsCount=String(Number(canvas.dataset.betaStairsCount||0)+1);
     canvas.dataset.betaStairsSourceSize=`${size.x.toFixed(3)},${size.y.toFixed(3)},${size.z.toFixed(3)}`;

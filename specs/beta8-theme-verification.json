@@ -1,0 +1,24 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "season": "beta8",
+      "background": "171321",
+      "ground": "514062",
+      "waterOpacity": 1,
+      "waterTransparent": false,
+      "pumpkins": 14,
+      "graves": 6,
+      "bats": 7,
+      "moon": true,
+      "location": "저주받은 훈련장",
+      "roster": 16,
+      "colliders": 60
+    },
+    {
+      "season": "beta7",
+      "sky": "d59a52",
+      "hasHalloween": false
+    }
+  ]
+}

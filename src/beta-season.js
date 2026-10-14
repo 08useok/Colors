@@ -1,3 +1,4 @@
+import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js";
@@ -15,10 +16,10 @@ import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
 
-import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
-import { applyBetaWallModel } from "./visuals/beta-wall.js?v=1";
+import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=2";
+import { applyBetaWallModel } from "./visuals/beta-wall.js?v=2";
 
-import { createBetaStairs } from "./visuals/beta-stairs.js";
+import { createBetaStairs } from "./visuals/beta-stairs.js?v=2";
 import { BETA_LOBBY_FLOORS, BETA_LOBBY_STAIRS, lobbyStairAt, lobbyFloorHeight, betaLobbyWallSegments, canStandInBetaLobby } from "./config/beta-lobby-layout.js?v=1";
 
 const canvas = document.getElementById("beta-canvas");
@@ -227,6 +228,10 @@ const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 const IS_BETA7_TEST = BETA_SEASON_ID === "beta7";
 const IS_BETA8_TEST = BETA_SEASON_ID === "beta8";
+if (IS_BETA8_TEST) {
+  canvas.dataset.seasonTheme = "halloween-knockout";
+  document.querySelector(".beta8-loading-bg").src = "./assets/art/beta8-halloween-loading.png";
+}
 if (IS_BETA5_TEST) {
   for (const [characterId, override] of Object.entries(BETA5_BALANCE_OVERRIDES)) {
     const definition = BETA_CHARACTERS[characterId];
@@ -348,13 +353,13 @@ if (IS_BETA8_TEST) {
   const tagline = document.querySelector(".beta-header p");
   if (heading) heading.textContent = "베타 시즌 8 테스트";
   if (rankChip) rankChip.textContent = "베타 시즌 8 테스트";
-  if (tagline) tagline.textContent = "라벤더 신규 캐릭터 · 16종 전투와 궁극기 테스트";
-  if (locationName) locationName.textContent = "시즌 8 테스트 구역";
+  if (tagline) tagline.textContent = "🎃 할로윈 · 라벤더 포함 16종 전투 테스트";
+  if (locationName) locationName.textContent = "할로윈 유령 광장";
   const loading = document.querySelector(".beta6-loading-status");
   if (loading) {
     loading.querySelector("strong").textContent = "BETA SEASON 8";
-    loading.querySelector("b").textContent = "LAVENDER · 16 CHARACTERS";
-    loading.querySelector("span").textContent = "라벤더와 16종 캐릭터 전투를 준비하는 중…";
+    loading.querySelector("b").textContent = "HALLOWEEN · KNOCKOUT";
+    loading.querySelector("span").textContent = "호박 조명이 켜지는 유령 광장으로 이동 중…";
   }
   beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 8 테스트 불러오는 중");
 }
@@ -484,12 +489,12 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-const seasonSkyColor = IS_BETA7_TEST ? 0xd59a52 : IS_BETA6_TEST ? 0x54bfe8 : IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
+const seasonSkyColor = IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0xd59a52 : IS_BETA6_TEST ? 0x54bfe8 : IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
 scene.background = new THREE.Color(seasonSkyColor);
-scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA5_TEST ? 0.009 : 0.012);
+scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA8_TEST ? 0.006 : IS_BETA5_TEST ? 0.009 : 0.012);
 
 const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 300);
-const hemi = new THREE.HemisphereLight(IS_BETA7_TEST ? 0xffe2a1 : 0xe8fbff, IS_BETA7_TEST ? 0x48241c : 0x38515b, 2.2);
+const hemi = new THREE.HemisphereLight(IS_BETA8_TEST ? 0xd5baf4 : IS_BETA7_TEST ? 0xffe2a1 : 0xe8fbff, IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0x48241c : 0x38515b, 2.2);
 scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff1ce, 3.4);
 sun.position.set(-35, 48, 20);
@@ -514,9 +519,9 @@ function getArenaSolids() {
   if (currentArenaMode === "gemGrab") return gemGrabSolids;
   return currentArenaMode === "showdown" ? showdownSolids : solids;
 }
-const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0xc59a5c : IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
-const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0xe0b84d : IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
-const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0x5b3c2a : IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
+const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x514062 : IS_BETA7_TEST ? 0xc59a5c : IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
+const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0xff7a18 : IS_BETA7_TEST ? 0xe0b84d : IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
+const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x40324e : IS_BETA7_TEST ? 0x5b3c2a : IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
 
 function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false, wall = false) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
@@ -532,11 +537,11 @@ function box(x, y, z, width, height, depth, material = platformMaterial, solid =
 const water = new THREE.Mesh(
   new THREE.PlaneGeometry(240, 240),
   new THREE.MeshPhysicalMaterial({
-    color: IS_BETA7_TEST ? 0xb97b3f : 0x167c99,
-    roughness: IS_BETA7_TEST ? 1 : 0.18,
-    metalness: IS_BETA7_TEST ? 0 : 0.1,
-    transparent: !IS_BETA7_TEST,
-    opacity: IS_BETA7_TEST ? 1 : 0.88,
+    color: IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0xb97b3f : 0x167c99,
+    roughness: (IS_BETA7_TEST || IS_BETA8_TEST) ? 1 : 0.18,
+    metalness: (IS_BETA7_TEST || IS_BETA8_TEST) ? 0 : 0.1,
+    transparent: !IS_BETA7_TEST && !IS_BETA8_TEST,
+    opacity: (IS_BETA7_TEST || IS_BETA8_TEST) ? 1 : 0.88,
   }),
 );
 water.rotation.x = -Math.PI / 2;
@@ -696,13 +701,14 @@ function createBeta7AncientRuinDecor() {
 }
 
 createBeta7AncientRuinDecor();
+const halloweenDecor = IS_BETA8_TEST ? createHalloweenLobby(scene,map) : null;
 
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
 scene.add(iceCreamShowdownMap);
-const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0xc89c62 : IS_BETA6_TEST ? 0xe9d79e : IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
-const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0x9c7445 : IS_BETA6_TEST ? 0x55cfd0 : IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
-const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA7_TEST ? 0x4d3225 : IS_BETA6_TEST ? 0x176b8f : IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
+const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x40324e : IS_BETA7_TEST ? 0xc89c62 : IS_BETA6_TEST ? 0xe9d79e : IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
+const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x69517b : IS_BETA7_TEST ? 0x9c7445 : IS_BETA6_TEST ? 0x55cfd0 : IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
+const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x31233e : IS_BETA7_TEST ? 0x4d3225 : IS_BETA6_TEST ? 0x176b8f : IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
 function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial, solid = true) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
@@ -8303,6 +8309,10 @@ function updateLocation() {
     return;
   }
   const { x, z } = player.position;
+  if (IS_BETA8_TEST) {
+    locationName.textContent = z < -28 ? "유령 성 관문" : z > 28 ? "달빛 묘지" : x < -28 ? "저주받은 훈련장" : x > 28 ? "호박 작업장" : "할로윈 유령 광장";
+    return;
+  }
   if (z < -28) locationName.textContent = "포털 관문";
   else if (z > 28) locationName.textContent = "상층 정원";
   else if (x < -28) locationName.textContent = "서쪽 유적 훈련장";
@@ -8330,6 +8340,7 @@ function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   updateLavenderPractice(dt);
+  halloweenDecor?.update(clock.elapsedTime);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
   if (ivoryUltimateAiming || directionalUltimateAiming) {
@@ -9116,7 +9127,7 @@ function animate() {
       target.scale.setScalar(baseScale);
     }
   }
-  if (!IS_BETA7_TEST) water.material.opacity = 0.84 + Math.sin(clock.elapsedTime * 0.7) * 0.04;
+  if (!IS_BETA7_TEST && !IS_BETA8_TEST) water.material.opacity = 0.84 + Math.sin(clock.elapsedTime * 0.7) * 0.04;
   for (let index = 0; index < beta7AnimatedArtifacts.length; index += 1) {
     const artifact = beta7AnimatedArtifacts[index];
     artifact.mesh.rotation.y += dt * artifact.spin;

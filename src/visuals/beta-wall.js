@@ -42,7 +42,10 @@ export function applyBetaWallModel(mesh, width, height, depth, canvas) {
     group.name = 'beta-wall-model';
     const transform = new THREE.Object3D();
     for (const part of parts) {
-      const instances = new THREE.InstancedMesh(part.geometry, part.material, layout.count);
+      const themeMaterial = canvas.dataset.seasonTheme === 'halloween-knockout'
+        ? (Array.isArray(part.material) ? part.material.map(m=>m.clone()) : part.material.clone()) : part.material;
+      if (canvas.dataset.seasonTheme === 'halloween-knockout') for (const m of [].concat(themeMaterial)) { m.color.setHex(0x78658f); m.map=null; }
+      const instances = new THREE.InstancedMesh(part.geometry, themeMaterial, layout.count);
       instances.castShadow = true;
       instances.receiveShadow = true;
       for (let index = 0; index < layout.count; index++) {

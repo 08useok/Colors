@@ -31,7 +31,9 @@ export function applyBetaObeliskModel(root, width, height, depth, canvas) {
     model.position.y = -height / 2;
     model.scale.set(width / size.x, height / size.y, depth / size.z);
     for (const part of parts) {
-      const mesh = new THREE.Mesh(part.geometry, part.material);
+      const mat = canvas.dataset.seasonTheme === 'halloween-knockout' ? (Array.isArray(part.material) ? part.material.map(m=>m.clone()) : part.material.clone()) : part.material;
+      if (canvas.dataset.seasonTheme === 'halloween-knockout') for (const m of [].concat(mat)) { m.color.setHex(0x5c486e); m.map=null; }
+      const mesh = new THREE.Mesh(part.geometry, mat);
       mesh.castShadow = true; mesh.receiveShadow = true;
       model.add(mesh);
     }
