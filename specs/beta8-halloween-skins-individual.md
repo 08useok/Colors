@@ -7,6 +7,8 @@
 - [유령 신부 라벤더](../assets/art/beta8-skins/lavender-ghost-bride.png)
 - [해골 아이보리](../assets/art/beta8-skins/ivory-skeleton.png)
 
+[PNG 4개 ZIP 다운로드](../assets/art/beta8-halloween-skins.zip)
+
 ## 개별 이미지 제작 프롬프트
 
 ### 잭오랜턴 오렌지
