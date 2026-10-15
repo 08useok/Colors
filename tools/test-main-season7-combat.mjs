@@ -16,7 +16,7 @@ function testWorld(fighters){let t=0;const hits=[];const bridge=createMainSeason
 {const a=fighter('crystal',0,'a'),b=fighter('red',6,'a');const{bridge,hits,step}=testWorld([a,b]);bridge.fire(a);step(1);assert.equal(hits.length,0);b.dead=true;b.health=0;step(.1);b.dead=false;b.health=b.maxHealth;step(.1);assert.equal(bridge.actor(b).hp,b.maxHealth);assert.equal(bridge.actor(b).analysisOwner,undefined);}
 for(const id of Object.keys(config)){const a=fighter(id,0),b=fighter('red',8);const{bridge,step}=testWorld([a,b]);assert(bridge.fire(a),id);step(.3);assert([a.health,b.health,a.mesh.position.x,a.mesh.position.z].every(Number.isFinite));bridge.clear();}
 {const a=fighter('crystal',0),b=fighter('red',10);const{bridge,step}=testWorld([a,b]);step(.1);b.mesh.position.z=1;bridge.fire(a);step(1/60);assert(Math.abs(bridge.actor(b).vz)>50,'manual target velocity survives input firing synchronization');}
-for(const id of ['gold','mint','ivory','green']) {
+for(const id of ['gold']) {
   const a=fighter(id,0),b=fighter('red',2);b.health=b.maxHealth=1e8;
   const {bridge,step}=testWorld([a,b]);
   const actor=bridge.actor(a);actor.charge=actor.u.chargeRequired;

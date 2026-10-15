@@ -11,7 +11,7 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=25";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=26";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -5109,10 +5109,6 @@ function betaUltimateFieldActive() {
   if (beta6Combat && beta6PlayerActor) return beta6Combat.ultimateFieldActive(beta6PlayerActor);
   if (id === "lavender" && lavenderPractice) return lavenderPractice.world.ultimateFieldActive(lavenderPractice.actor);
   if (id === "gold") return goldUltimatePending !== null || malfunctionZones.some(zone => zone.expiresAt > clock.elapsedTime);
-  if (id === "green") return greenBushes.some(zone => zone.expiresAt > clock.elapsedTime);
-  if (id === "mint") return mintIceZones.some(zone => zone.expiresAt > clock.elapsedTime) || betaProjectiles.some(p => p.type === "mintSpecial");
-  if (id === "ivory") return ivoryIceCreamZones.some(zone => zone.fromUltimate && zone.expiresAt > clock.elapsedTime)
-    || betaProjectiles.some(p => p.type === "ivoryIceCream" && p.fromUltimate);
   return false;
 }
 

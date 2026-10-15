@@ -3,7 +3,7 @@ import {BETA_CHARACTERS} from '../src/config/beta-characters.js';
 import {applyBeta7Balance} from '../src/config/beta7-balance.js';
 import {createBeta6Combat} from '../src/combat/beta6-combat.js';
 const defs = applyBeta7Balance(BETA_CHARACTERS);
-for (const id of ['lavender', 'gold', 'mint', 'ivory', 'green']) {
+for (const id of ['lavender', 'gold']) {
   const world = createBeta6Combat(defs, {bounds:100, aimError:0});
   const a = world.add(id, {automatic:false, team:1, next:0});
   const b = world.add('red', {automatic:false, team:2, x:2, hp:1e8});
@@ -28,6 +28,20 @@ for (const id of ['lavender', 'gold', 'mint', 'ivory', 'green']) {
   world.remove(a);
   assert.equal(world.zones.some(z=>z.owner===a), false, id + ' removal clears field');
   console.log('PASS field lock:', id);
+}
+// Stationary fields and bushes keep their original recast rules.
+for (const id of ['mint','ivory','green']) {
+ const world=createBeta6Combat(defs,{bounds:100});
+ const a=world.add(id,{automatic:false,team:1});
+ const b=world.add('red',{automatic:false,team:2,x:2,hp:1e8});
+ a.charge=a.u.chargeRequired;assert(world.cast(a,b));
+ a.charge=a.u.chargeRequired;
+ assert.equal(world.ultimateFieldActive(a),false,id+' excluded even during flight');
+ assert(world.cast(a,b),id+' may recast immediately when recharged');
+ for(let i=0;i<120;i++)world.update(1/60);
+ a.charge=a.u.chargeRequired;
+ assert(world.cast(a,b),id+' may recast while field exists');
+ console.log('PASS excluded field:',id);
 }
 // Ordinary Ivory puddles and Lavender's basic spray do not block an ultimate.
 for (const id of ['ivory', 'lavender']) {

@@ -83,11 +83,9 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function after(delay, owner, run, ultimateField = false) { scheduled.push({ at: time + delay, owner, run, ultimateField }); }
   function ultimateFieldActive(a) {
-    if (a.id === 'green' && time < a.hiddenUntil) return true;
     return scheduled.some(event => event.owner === a && event.ultimateField)
-      || projectiles.some(p => p.owner === a && p.kind === 'ivory' && p.ultimate)
       || zones.some(zone => zone.owner === a && time + 1e-9 < zone.until
-        && (['fragrance', 'lock', 'mint'].includes(zone.kind) || zone.kind === 'ivory' && zone.ultimate));
+        && ['fragrance', 'lock'].includes(zone.kind));
   }
   function area(a, center, radius, damage, basic = false, award = 1) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic, award); }
   function strike(a, b, yaw, reach, halfAngle, damage) {
@@ -262,7 +260,7 @@ export function createBeta6Combat(definitions, options = {}) {
       }
       else if (a.id === 'mint') {
         const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
-        after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }), true);
+        after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }));
       } else if (a.id === 'azure') wave(a, yaw, true);
       else if (a.id === 'crystal') {
         move(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1);

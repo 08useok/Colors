@@ -29,6 +29,15 @@ try {
  await page.waitForFunction(()=>window.__fieldQA,null,{timeout:90000});
  for(const id of ['lavender','gold','mint','ivory','green']){
   await page.evaluate(id=>{const q=__fieldQA;if(!q.betaState.ownedCharacters.includes(id))q.betaState.ownedCharacters.push(id);q.selectCharacter(id);q.fill();q.ultimateButton.click();},id);
+  if(['mint','ivory','green'].includes(id)){
+   assert.equal(await page.evaluate(()=>__fieldQA.betaUltimateFieldActive()),false,id);
+   await page.evaluate(()=>__fieldQA.fill());
+   assert.equal(await page.evaluate(()=>__fieldQA.snapshot().ready),true,id);
+   await page.evaluate(()=>__fieldQA.ultimateButton.click());
+   assert.equal(await page.evaluate(()=>__fieldQA.snapshot().value),'0',id+' recast spends charge');
+   await page.evaluate(()=>__fieldQA.expire());
+   report.push({id,recastBlocked:false,recastAllowed:true});console.log('PASS browser excluded:',id);continue;
+  }
   await page.waitForFunction(()=>__fieldQA.betaUltimateFieldActive());
   const before=await page.evaluate(()=>{__fieldQA.fill();return __fieldQA.snapshot();});
   assert.equal(before.label,'사용 중',id);assert.equal(before.ready,false,id);

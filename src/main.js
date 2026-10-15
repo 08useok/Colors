@@ -1,6 +1,6 @@
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
-import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=10";
+import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=11";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
@@ -14,7 +14,7 @@ import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=3";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=4";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=1";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";

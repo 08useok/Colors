@@ -17,24 +17,18 @@
     },
     {
       "id": "mint",
-      "activeLabel": "사용 중",
-      "recastBlocked": true,
-      "chargePreserved": true,
-      "expiryUnlocks": true
+      "recastBlocked": false,
+      "recastAllowed": true
     },
     {
       "id": "ivory",
-      "activeLabel": "사용 중",
-      "recastBlocked": true,
-      "chargePreserved": true,
-      "expiryUnlocks": true
+      "recastBlocked": false,
+      "recastAllowed": true
     },
     {
       "id": "green",
-      "activeLabel": "사용 중",
-      "recastBlocked": true,
-      "chargePreserved": true,
-      "expiryUnlocks": true
+      "recastBlocked": false,
+      "recastAllowed": true
     }
   ],
   "pageErrors": []
