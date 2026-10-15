@@ -45,11 +45,23 @@ const betaSeasonBgm = new Audio(BETA_SEASON_BGM[BETA_SEASON_ID] ?? BETA_SEASON_B
 betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
-// 다른 정규 이벤트는 기존 전투 음악을 유지한다.
+// 시즌 8에 전용곡이 없는 이벤트는 기존 전투 음악을 사용한다.
 const betaBattleBgm = BETA_SEASON_ID === "beta8" ? new Audio(BETA_SEASON_BGM.beta6) : null;
 if (betaBattleBgm) { betaBattleBgm.loop = true; betaBattleBgm.volume = 0.45; betaBattleBgm.preload = "metadata"; }
-const knockoutBgm = BETA_SEASON_ID === "beta8" ? new Audio("./assets/beta8-the-midnight-gambit.mp3?v=1") : null;
-if (knockoutBgm) { knockoutBgm.loop = true; knockoutBgm.volume = 0.45; knockoutBgm.preload = "metadata"; }
+const beta8MatchBgm = BETA_SEASON_ID === "beta8" ? Object.fromEntries(Object.entries({
+  knockout: "the-midnight-gambit",
+  soccer: "trick-or-goal",
+  gemGrab: "the-midnight-gem-heist",
+  showdown: "graveyard-gambit",
+  goldRush: "vault-of-the-greedy-phantom",
+  chopWood: "the-crooked-grove",
+}).map(([mode, name]) => {
+  const track = new Audio(`./assets/beta8-${name}.mp3?v=1`);
+  track.loop = true;
+  track.volume = 0.45;
+  track.preload = "metadata";
+  return [mode, track];
+})) : {};
 let betaSeasonMusicStarted = false;
 // 젬 그랩 경기 동안만 흐르는 전용 음악. 경기가 끝나면 로비 음악으로 돌아간다.
 const gemGrabBgm = new Audio("./assets/beta7-before-the-vault-closes.mp3?v=1");
@@ -7989,7 +8001,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   }
   resetAllUltimateCharges();
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
-  setBetaMatchMusic(mode === "gemGrab" ? gemGrabBgm : mode === "knockout" ? knockoutBgm : betaBattleBgm);
+  setBetaMatchMusic(beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
   goldRushState.mode = mode;
   goldRushState.showdownPlus = mode === "showdown" && showdownPlus;
   const arenaMode = true;

@@ -2,8 +2,8 @@
   "date": "2026-10-15",
   "report": [
     {
-      "label": "beta8 lobby",
-      "src": "http://127.0.0.1:56172/assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
+      "label": "lobby",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
       "duration": 121.991792,
       "loop": true,
       "volume": 0.45,
@@ -11,7 +11,7 @@
     },
     {
       "label": "knockout",
-      "src": "http://127.0.0.1:56172/assets/beta8-the-midnight-gambit.mp3?v=1",
+      "source": "/assets/beta8-the-midnight-gambit.mp3",
       "duration": 90.540333,
       "loop": true,
       "volume": 0.45,
@@ -19,23 +19,23 @@
     },
     {
       "label": "knockout return",
-      "src": "http://127.0.0.1:56172/assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
       "duration": 121.991792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
     },
     {
-      "label": "goldRush",
-      "src": "http://127.0.0.1:56172/assets/beta6-high-noon-tide.mp3?v=1",
-      "duration": 126.432583,
+      "label": "soccer",
+      "source": "/assets/beta8-trick-or-goal.mp3",
+      "duration": 119.196667,
       "loop": true,
       "volume": 0.45,
       "playing": 1
     },
     {
-      "label": "goldRush return",
-      "src": "http://127.0.0.1:56172/assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
+      "label": "soccer return",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
       "duration": 121.991792,
       "loop": true,
       "volume": 0.45,
@@ -43,21 +43,85 @@
     },
     {
       "label": "gemGrab",
-      "src": "http://127.0.0.1:56172/assets/beta7-before-the-vault-closes.mp3?v=1",
-      "duration": 62.066875,
+      "source": "/assets/beta8-the-midnight-gem-heist.mp3",
+      "duration": 122.801583,
       "loop": true,
       "volume": 0.45,
       "playing": 1
     },
     {
       "label": "gemGrab return",
-      "src": "http://127.0.0.1:56172/assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
       "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "showdown",
+      "source": "/assets/beta8-graveyard-gambit.mp3",
+      "duration": 120.137083,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "showdown return",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
+      "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "goldRush",
+      "source": "/assets/beta8-vault-of-the-greedy-phantom.mp3",
+      "duration": 119.562375,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "goldRush return",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
+      "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "chopWood",
+      "source": "/assets/beta8-the-crooked-grove.mp3",
+      "duration": 119.666875,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "chopWood return",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
+      "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "showdown+",
+      "source": "/assets/beta8-graveyard-gambit.mp3",
+      "duration": 120.137083,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "showdown+ to soccer",
+      "source": "/assets/beta8-trick-or-goal.mp3",
+      "duration": 119.196667,
       "loop": true,
       "volume": 0.45,
       "playing": 1
     }
   ],
-  "beta7Unchanged": true,
+  "previousSeasonsUnchanged": true,
   "pageErrors": []
 }

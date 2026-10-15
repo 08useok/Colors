@@ -1,5 +1,16 @@
 # Colors 패치노트
 
+## 베타 0.8.8 — 모드별 할로윈 음악 5곡
+
+2026년 10월 15일
+
+- 쇼다운·쇼다운+: 「Graveyard Gambit」
+- 젬 그랩: 「The Midnight Gem Heist」
+- 사커 킥: 「Trick or Goal」
+- 골드 러시: 「Vault of the Greedy Phantom」
+- 찹 우드: 「The Crooked Grove」
+- 모드에 맞는 곡을 반복 재생하고, 종료 시 시즌 8 로비 음악으로 돌아갑니다. 로비·녹아웃 전용곡과 이전 시즌·메인 음악은 유지합니다.
+
 ## 베타 0.8.7 — KNOCKOUT 전용 음악
 
 2026년 10월 15일
