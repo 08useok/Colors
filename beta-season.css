@@ -610,3 +610,7 @@ body.beta-season-8-theme #aim-mode-btn { background:#31233e; border-color:#80639
  body.beta-season-8-theme .gold-rush-player-panel { bottom:145px; width:180px; padding:10px; }
  body.beta-season-8-theme .crimson-controls { bottom:145px; right:18px; width:102px; }
 }
+.beta-boss-health { position: fixed; z-index: 8; top: calc(var(--beta-header-bottom, 190px) + 12px); left: 50%; transform: translateX(-50%); width: min(360px, calc(100vw - 32px)); box-sizing: border-box; padding: 10px 14px; border: 1px solid #ff8455; border-radius: 12px; background: rgba(37, 16, 31, .94); color: #fff; pointer-events: none; }
+.beta-boss-health > span { float: right; font-variant-numeric: tabular-nums; }
+.beta-boss-health-meter { margin-top: 8px; height: 12px; border-radius: 6px; background: #392322; overflow: hidden; }
+#beta-boss-health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #bf343b, #ff8455); }

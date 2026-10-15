@@ -1,0 +1,30 @@
+{
+  "initial": {
+    "health": 120000,
+    "maxHealth": 120000,
+    "visible": true,
+    "barVisible": true,
+    "fill": 1,
+    "text": "120000/120000",
+    "width": 256
+  },
+  "half": {
+    "health": 60000,
+    "maxHealth": 120000,
+    "visible": true,
+    "barVisible": true,
+    "fill": 0.5,
+    "text": "60000/120000",
+    "width": 256
+  },
+  "respawn": {
+    "health": 120000,
+    "maxHealth": 120000,
+    "visible": true,
+    "barVisible": true,
+    "fill": 1,
+    "text": "120000/120000",
+    "width": 256
+  },
+  "pageErrors": []
+}

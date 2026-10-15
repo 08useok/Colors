@@ -190,6 +190,10 @@ galeStrikeTexture.repeat.set(1, 55 / 887);
 galeStrikeTexture.offset.set(0, 416 / 887);
 galeStrikeTexture.needsUpdate = true;
 const locationName = document.getElementById("location-name");
+const bossHealthHud = document.getElementById("beta-boss-health");
+const bossHealthText = document.getElementById("beta-boss-health-text");
+const bossHealthMeter = document.getElementById("beta-boss-health-meter");
+const bossHealthFill = document.getElementById("beta-boss-health-fill");
 const creditValue = document.getElementById("credit-value");
 const modal = document.getElementById("beta-modal");
 const modalTitle = document.getElementById("modal-title");
@@ -899,9 +903,15 @@ function createAlphaBoss() {
   boss.position.set(0, 4.8, -40);
   boss.scale.setScalar(0.72);
   boss.userData.health = 120000;
+  boss.userData.maxHealth = 120000;
+  boss.userData.healthBar = createGoldRushHealthBar(9.7, 256);
+  boss.userData.healthBar.scale.set(3, 1.5, 1);
+  boss.add(boss.userData.healthBar);
+  updateGoldRushHealthBar(boss.userData.healthBar, boss.userData.health, boss.userData.maxHealth);
   boss.userData.mesh = torso;
   boss.userData.kind = "alphaBoss";
   boss.userData.baseScale = 0.72;
+  boss.userData.deadPosition = boss.position.clone();
   scene.add(boss);
   testTargets.push(boss);
   return boss;
@@ -6421,9 +6431,9 @@ function updateGemGrab(dt) {
 }
 
 // 체력바 위에 얹는 숫자 라벨 — 값이 바뀔 때만 캔버스를 다시 그려서 매 프레임 갱신 비용을 피한다
-function createHealthNumberLabel() {
+function createHealthNumberLabel(width = 128) {
   const canvas = document.createElement("canvas");
-  canvas.width = 128;
+  canvas.width = width;
   canvas.height = 32;
   const ctx = canvas.getContext("2d");
   const texture = new THREE.CanvasTexture(canvas);
@@ -6509,7 +6519,7 @@ function updateTargetMintIceIndicator(target) {
   updateMintIceIndicator(bar.userData.mintIceIndicator, target.userData.mintIce || 0, BETA_CHARACTERS.mint.freezeThreshold, frozen);
 }
 
-function createGoldRushHealthBar(height = 3.15) {
+function createGoldRushHealthBar(height = 3.15, numberWidth = 128) {
   const group = new THREE.Group();
   group.position.y = height;
   const backgroundMaterial = new THREE.MeshBasicMaterial({ color: 0x2d1a11, transparent: true, opacity: 0.88 });
@@ -6519,7 +6529,7 @@ function createGoldRushHealthBar(height = 3.15) {
   background.renderOrder = 30;
   fill.position.z = 0.001;
   fill.renderOrder = 31;
-  const label = createHealthNumberLabel();
+  const label = createHealthNumberLabel(numberWidth);
   const mintIceIndicator = createMintIceIndicator();
   group.add(background, fill, label, mintIceIndicator);
   group.userData.fill = fill;
@@ -8526,6 +8536,18 @@ function updateBetaLobbyMusic() {
   setBetaMatchMusic(inTraining ? beta8MatchBgm.training : null);
 }
 
+function updateBossHealthHud() {
+  const visible = currentArenaMode === "lobby" && alphaBoss.visible
+    && Math.hypot(player.position.x - alphaBoss.position.x, player.position.z - alphaBoss.position.z) <= 28;
+  bossHealthHud.classList.toggle("hidden", !visible);
+  if (!visible) return;
+  const maximum = alphaBoss.userData.maxHealth;
+  const health = THREE.MathUtils.clamp(alphaBoss.userData.health, 0, maximum);
+  bossHealthText.textContent = `${Math.ceil(health)} / ${maximum}`;
+  bossHealthMeter.setAttribute("aria-valuenow", String(Math.ceil(health)));
+  bossHealthFill.style.width = `${health / maximum * 100}%`;
+}
+
 function updateLocation() {
   updateBetaLobbyMusic();
   if(currentArenaMode!=="lobby" && activeEventLayout){locationName.textContent=activeEventLayout.name;return;}
@@ -9180,7 +9202,7 @@ function animate() {
       continue;
     }
     if (!target.userData.goldRushBot && !target.visible && target.userData.health <= 0) {
-      target.userData.respawnAt ??= clock.elapsedTime + 4;
+      target.userData.respawnAt ||= clock.elapsedTime + 4;
       if (clock.elapsedTime >= target.userData.respawnAt) {
         target.userData.health = target.userData.maxHealth;
         target.userData.respawnAt = 0;
@@ -9402,6 +9424,7 @@ function animate() {
     camera.lookAt(cameraLookTarget);
   }
   updateLocation();
+  updateBossHealthHud();
   renderer.render(scene, camera);
 }
 

@@ -1,6 +1,6 @@
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
-import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=9";
+import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=10";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
