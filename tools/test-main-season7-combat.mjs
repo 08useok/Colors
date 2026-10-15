@@ -16,4 +16,19 @@ function testWorld(fighters){let t=0;const hits=[];const bridge=createMainSeason
 {const a=fighter('crystal',0,'a'),b=fighter('red',6,'a');const{bridge,hits,step}=testWorld([a,b]);bridge.fire(a);step(1);assert.equal(hits.length,0);b.dead=true;b.health=0;step(.1);b.dead=false;b.health=b.maxHealth;step(.1);assert.equal(bridge.actor(b).hp,b.maxHealth);assert.equal(bridge.actor(b).analysisOwner,undefined);}
 for(const id of Object.keys(config)){const a=fighter(id,0),b=fighter('red',8);const{bridge,step}=testWorld([a,b]);assert(bridge.fire(a),id);step(.3);assert([a.health,b.health,a.mesh.position.x,a.mesh.position.z].every(Number.isFinite));bridge.clear();}
 {const a=fighter('crystal',0),b=fighter('red',10);const{bridge,step}=testWorld([a,b]);step(.1);b.mesh.position.z=1;bridge.fire(a);step(1/60);assert(Math.abs(bridge.actor(b).vz)>50,'manual target velocity survives input firing synchronization');}
-console.log('PASS: 16 main attacks, level scaling once, axis conversion, charge reset, following field, analysis locks, teams, respawn and cleanup');
+for(const id of ['gold','mint','ivory','green']) {
+  const a=fighter(id,0),b=fighter('red',2);b.health=b.maxHealth=1e8;
+  const {bridge,step}=testWorld([a,b]);
+  const actor=bridge.actor(a);actor.charge=actor.u.chargeRequired;
+  assert(bridge.cast(a),id+' main cast');
+  assert(a.seasonUltimateFieldActive,id+' main active HUD state');
+  actor.charge=actor.u.chargeRequired;
+  assert.equal(bridge.cast(a),false,id+' main recast blocked');
+  assert.equal(a.seasonUltimateCharge,actor.u.chargeRequired,id+' main rejected cast preserves charge');
+  step(16);
+  assert.equal(a.seasonUltimateFieldActive,false,id+' main expiry clears HUD state');
+  actor.charge=actor.u.chargeRequired;
+  assert(bridge.cast(a),id+' main can recast after expiry');
+  bridge.clear();
+}
+console.log('PASS: 16 main attacks, level scaling once, axis conversion, charge reset, following field, analysis locks, teams, respawn, cleanup and ultimate field recast locks');

@@ -81,7 +81,14 @@ export function createBeta6Combat(definitions, options = {}) {
       b.dodgeYaw = yaw + (random() < .5 ? -Math.PI / 2 : Math.PI / 2);
     }
   }
-  function after(delay, owner, run) { scheduled.push({ at: time + delay, owner, run }); }
+  function after(delay, owner, run, ultimateField = false) { scheduled.push({ at: time + delay, owner, run, ultimateField }); }
+  function ultimateFieldActive(a) {
+    if (a.id === 'green' && time < a.hiddenUntil) return true;
+    return scheduled.some(event => event.owner === a && event.ultimateField)
+      || projectiles.some(p => p.owner === a && p.kind === 'ivory' && p.ultimate)
+      || zones.some(zone => zone.owner === a && time + 1e-9 < zone.until
+        && (['fragrance', 'lock', 'mint'].includes(zone.kind) || zone.kind === 'ivory' && zone.ultimate));
+  }
   function area(a, center, radius, damage, basic = false, award = 1) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic, award); }
   function strike(a, b, yaw, reach, halfAngle, damage) {
     const dx = b.x - a.x, dz = b.z - a.z;
@@ -186,7 +193,7 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function cast(a, target, aim = {}) {
     const u = a.u;
-    if (!u || !alive(a) || a.charge < u.chargeRequired || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
+    if (!u || !alive(a) || a.charge < u.chargeRequired || ultimateFieldActive(a) || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     if (a.id === 'pink') {
       if (options.allowRevives === false) return false;
       const allies = actors.filter(b => b !== a && !enemies(a, b) && distance(a, b) <= u.radius);
@@ -226,7 +233,7 @@ export function createBeta6Combat(definitions, options = {}) {
           if (front >= 0 && front <= u.range && Math.abs(-dx * Math.sin(yaw) + dz * Math.cos(yaw)) <= u.width / 2) { hit(a, b, u.damage, true); knock(b, yaw, u.knockback); }
         }
       } else if (a.id === 'cyan') shot(a, yaw, a.d.spreadLineSpeed * u.speedMultiplier, u.range, u.damage, { kind: 'gale', ultimate: true, radius: u.projectileRadius });
-      else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }));
+      else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }), true);
       else if (a.id === 'ivory') {
         const x = a.x + Math.cos(yaw) * Math.min(dist, u.castRange), z = a.z + Math.sin(yaw) * Math.min(dist, u.castRange), offset = u.patternRadius / Math.sqrt(2);
         for (const [ox, oz] of [[0, 0], [-offset, -offset], [-offset, offset], [offset, -offset], [offset, offset]]) {
@@ -255,7 +262,7 @@ export function createBeta6Combat(definitions, options = {}) {
       }
       else if (a.id === 'mint') {
         const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
-        after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }));
+        after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }), true);
       } else if (a.id === 'azure') wave(a, yaw, true);
       else if (a.id === 'crystal') {
         move(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1);
@@ -506,7 +513,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (time + 1e-9 >= zone.next) zone.next += zone.tickInterval ?? (zone.kind === 'ivory' ? a.d.iceCreamZoneTickInterval : 1);
     }
   }
-  return { actors, projectiles, zones, add, fire, cast, hit, hidden, range, get time() { return time; },
+  return { actors, projectiles, zones, add, fire, cast, hit, hidden, range, ultimateFieldActive, get time() { return time; },
     update(dt) { let remaining = Math.min(.25, Math.max(0, dt)); while (remaining > 1e-9) { const step = Math.min(1 / 60, remaining); tick(step); remaining -= step; } },
     remove(actor) {
       // 사라지는 액터가 걸어 둔 속박도 함께 푼다

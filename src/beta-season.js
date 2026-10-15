@@ -10,8 +10,8 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
-import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=24";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=25";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -2949,6 +2949,7 @@ function createDamagePopup(position, amount, color = "#ffd27a", prefixOverride =
 }
 let purpleAttackIndex = 0;
 let goldUltimateCharge = 0;
+let goldUltimatePending = null;
 let redUltimateCharge = 0;
 let redGuardUntil = 0;
 let redGuardMesh = null;
@@ -2958,6 +2959,7 @@ let crystalUltimateCharge = 0;
 let yellowUltimateCharge = 0;
 let orangeUltimateCharge = 0;
 let purpleUltimateCharge = 0;
+let beta6Combat = null;
 let beta6PlayerActor = null;
 let lavenderSpecialCharge = 0;
 let lavenderPractice = null;
@@ -4862,6 +4864,8 @@ let greenUltimateCharge = 0;
 let chartreuseUltimateCharge = 0;
 
 function resetAllUltimateCharges() {
+  if (goldUltimatePending !== null) clearTimeout(goldUltimatePending);
+  goldUltimatePending = null;
   clearLavenderPractice();
   redUltimateCharge = 0;
   greenUltimateCharge = 0;
@@ -5074,7 +5078,8 @@ function updateCrimsonUltimateGauge() {
   }
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
-  const ready = charge >= required;
+  const fieldActive = betaUltimateFieldActive();
+  const ready = charge >= required && !fieldActive;
   const chargeRatio = Math.min(1, charge / required);
   ultimateButton.style.setProperty("--ultimate-color", config.color);
   ultimateButton.style.setProperty("--charge-angle", `${chargeRatio * 360}deg`);
@@ -5085,8 +5090,20 @@ function updateCrimsonUltimateGauge() {
   ultimateButton.querySelector("strong").textContent = isSpecial ? "특수 공격" : "궁극기";
   ultimateButton.setAttribute("aria-label", `${id} ${isSpecial ? "특수 공격" : "궁극기"} ${config.name}`);
   const remainingUnit = "회";
-  ultimateButton.title = ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
-  ultimateState.textContent = ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
+  ultimateButton.title = fieldActive ? "궁극기 사용 중 · 장판 종료 후 재사용 가능" : ready ? `Space 또는 Q · ${config.name} 사용 가능` : `${isSpecial ? "특수 공격" : "궁극기"} ${Math.ceil(required - charge)}${remainingUnit}`;
+  ultimateState.textContent = fieldActive ? "사용 중" : ready ? "READY" : `${Math.round(chargeRatio * 100)}%`;
+}
+
+function betaUltimateFieldActive() {
+  const id = betaState.selectedCharacter;
+  if (beta6Combat && beta6PlayerActor) return beta6Combat.ultimateFieldActive(beta6PlayerActor);
+  if (id === "lavender" && lavenderPractice) return lavenderPractice.world.ultimateFieldActive(lavenderPractice.actor);
+  if (id === "gold") return goldUltimatePending !== null || malfunctionZones.some(zone => zone.expiresAt > clock.elapsedTime);
+  if (id === "green") return greenBushes.some(zone => zone.expiresAt > clock.elapsedTime);
+  if (id === "mint") return mintIceZones.some(zone => zone.expiresAt > clock.elapsedTime) || betaProjectiles.some(p => p.type === "mintSpecial");
+  if (id === "ivory") return ivoryIceCreamZones.some(zone => zone.fromUltimate && zone.expiresAt > clock.elapsedTime)
+    || betaProjectiles.some(p => p.type === "ivoryIceCream" && p.fromUltimate);
+  return false;
 }
 
 function performPinkEncore() {
@@ -5120,7 +5137,8 @@ function performPinkEncore() {
 
 function performGoldUltimate() {
   const def = BETA_CHARACTERS.gold.ultimate;
-  setTimeout(() => {
+  goldUltimatePending = setTimeout(() => {
+    goldUltimatePending = null;
     const centerX = player.position.x;
     const centerZ = player.position.z;
     const centerGround = groundHeightAt(centerX, centerZ);
@@ -5341,7 +5359,7 @@ function performOrangeUltimate() {
 }
 
 ultimateButton.addEventListener("click", () => {
-  if (goldRushState.dead || beta6PlayerAttackBlocked()) return;
+  if (goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
   if (beta6Combat) { useBeta6PlayerSkill(true, true); return; }
   if (betaState.selectedCharacter === "lavender") {
     useLavenderPracticeSkill(true);
@@ -5632,7 +5650,7 @@ const initialSpawnPoint = new THREE.Vector3(
 );
 const goldPickups = [];
 const goldRushBots = [];
-let beta6Combat = null;
+
 const beta6CombatVisuals = new Map();
 const beta6PendingEvents = [];
 let beta6BotRotation = 0;
@@ -9284,8 +9302,7 @@ function animate() {
   updateGoldRush(dt);
   updatePracticeRespawn();
   updateTestCombatHud(dt);
-  if ((betaState.selectedCharacter === "blue" && (IS_BETA5_TEST || HAS_BETA6_CONTENT))
-    || (betaState.selectedCharacter === "mint" && (IS_BETA5_TEST || HAS_BETA6_CONTENT))) updateCrimsonUltimateGauge();
+  updateCrimsonUltimateGauge();
   updatePinkDeadAllyMarkers();
   // 골드 러쉬 밖에서도 체력바가 캐릭터 머리 위에 항상 고정되어 보이도록 매 프레임 갱신한다
   playerGoldRushHealthBar.visible = player.visible;

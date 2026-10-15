@@ -13,7 +13,7 @@ export const BETA7_BALANCE = {
   green: { boomerangDamage: 1710 },
   gold: { maxHealth: 8200, stage1Damage: 1190, stage2Damage: 495, stage3Damage: 250, ultimate: { tickDamage: 100, tickInterval: 1, delay: 0.2 } },
   ivory: { maxHealth: 6600, iceCreamDamage: 2400, iceCreamRange: 9, iceCreamZoneDamage: 2600, iceCreamZoneRadius: 5, iceCreamZoneTickInterval: 1, iceCreamSpeed: 28, ultimate: { rechargePerHit: 0.1 } },
-  lavender: { attackRange: 9, sprayDuration: 1.5, sprayTickInterval: 0.5, sprayDamage: 1100, sprayDistanceDamageBonus: 0.5, special: { chargeRequired: 2, rechargePerHit: 0.05, slowPercent: 0.7 } },
+  lavender: { attackRange: 9, sprayDuration: 1.5, sprayTickInterval: 0.5, sprayDamage: 1100, sprayDistanceDamageBonus: 0.5, special: { chargeRequired: 2, rechargePerHit: 0.025, damagePerSecond: 780, slowPercent: 0.7 } },
   mint: { iceBulletDamage: 1000, special: { rechargePerHit: 0.33 } },
   pink: { maxHealth: 9900, healCircleDamage: 2200 },
   chartreuse: { maxHealth: 8200, chartreuseDamage: 1320, chartreuseEnhancedDamage: 2640, projectileDodgeDuration: 0.12, projectileDodgeSpeedMultiplier: 3, projectileDodgeDetectionRange: 20, projectileDodgeKinds: ['bullet','electric','enhanced','cc','plague'] },

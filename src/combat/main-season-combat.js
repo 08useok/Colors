@@ -1,4 +1,4 @@
-import {createBeta6Combat} from './beta6-combat.js?v=23';
+import {createBeta6Combat} from './beta6-combat.js?v=25';
 import {beta6Ultimate} from '../config/beta6-balance.js';
 
 // Main fighters use Three.js positions and wall-clock status fields; the shared
@@ -36,7 +36,7 @@ export function createMainSeasonCombat(definitions,hooks) {
   }
   function synchronize(dt=0){const fighters=hooks.fighters();for(const[f,a]of units)if(!fighters.includes(f)){world.remove(a);units.delete(f);}for(const f of fighters)syncIn(f,add(f),dt);}
   function target(a){return world.actors.filter(b=>b!==a&&b.hp>0&&(a.team==null||a.team!==b.team)).sort((b,c)=>Math.hypot(a.x-b.x,a.z-b.z)-Math.hypot(a.x-c.x,a.z-c.z))[0];}
-  function out(a){const f=a.fighter;f.ammo=a.ammo;f[`${f.characterType}UltimateCharge`]=a.charge;f.seasonUltimateCharge=a.charge;f.mintIce=a.ice;f.seasonActionLocked=world.time<a.lockUntil||world.time<a.frozenUntil||!!a.dash||!!a.leap||!!a.wave;f.seasonHidden=world.hidden(a);f.seasonSlow=world.time<a.slowUntil?1-a.slow:1;f.nextAttackAt=hooks.time()+Math.max(0,a.next-world.time);f.attackIndex=a.index;f.redGuardUntil=hooks.time()+Math.max(0,a.guardUntil-world.time);f.invulnerableUntil=hooks.time()+Math.max(0,a.invulnerableUntil-world.time);f.revealedUntil=hooks.time()+Math.max(0,a.revealedUntil-world.time);
+  function out(a){const f=a.fighter;f.ammo=a.ammo;f[`${f.characterType}UltimateCharge`]=a.charge;f.seasonUltimateCharge=a.charge;f.seasonUltimateFieldActive=world.ultimateFieldActive(a);f.mintIce=a.ice;f.seasonActionLocked=world.time<a.lockUntil||world.time<a.frozenUntil||!!a.dash||!!a.leap||!!a.wave;f.seasonHidden=world.hidden(a);f.seasonSlow=world.time<a.slowUntil?1-a.slow:1;f.nextAttackAt=hooks.time()+Math.max(0,a.next-world.time);f.attackIndex=a.index;f.redGuardUntil=hooks.time()+Math.max(0,a.guardUntil-world.time);f.invulnerableUntil=hooks.time()+Math.max(0,a.invulnerableUntil-world.time);f.revealedUntil=hooks.time()+Math.max(0,a.revealedUntil-world.time);
     if(!f.dead&&!f.isNetworkPlayer){f.mesh.position.x=a.x;f.mesh.position.z=a.z;f.shadow.position.set(a.x,.04,a.z);if(a.automatic)f.yaw=Math.PI/2-a.angle;}
     if(f.dead)f.seasonActionLocked=false;
   }

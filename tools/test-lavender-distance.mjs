@@ -34,7 +34,7 @@ const target = field.add('red',{automatic:false,team:2,x:2,hp:100000});
 field.cast(caster,target,{angle:0});
 field.update(1/60);
 close(target.slow,.7);
-close(caster.charge,.05);
+close(caster.charge,.025);
 target.x=10;
 run(field,.1);
 assert(target.slowUntil<field.time,'slow expires outside the field');

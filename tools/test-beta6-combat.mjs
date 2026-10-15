@@ -251,7 +251,7 @@ assert.deepEqual(beta6Duel(config, 'mint', 'azure', { distance: 10, aimError: .1
 const runtime = readFileSync(new URL('../src/beta-season.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 assert(runtime.includes('const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);'));
 assert(runtime.includes('BETA_CHARACTERS.purple.purpleUltimateEnabled = true;'));
-assert(runtime.includes('document.title = "Colors - Beta Season 8 Preview";'));
+assert(runtime.includes('document.title = "Colors - Beta Season 8 Test";'));
 assert(runtime.includes('if (betaState.selectedCharacter === "orange" && (IS_BETA7_TEST || IS_BETA8_TEST))'));
 assert(runtime.includes('HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS)'));
 assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (beta6Combat) { updateBeta6BotCombat(dt); return; }'));

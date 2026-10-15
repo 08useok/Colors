@@ -8,7 +8,7 @@ import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 
 const original = structuredClone(BETA_CHARACTERS);
 const config = applyBeta7Balance(BETA_CHARACTERS);
-const amounts = { orange: .33, lavender: .05, ivory: .1, mint: .33, blue: .33 };
+const amounts = { orange: .33, lavender: .025, ivory: .1, mint: .33, blue: .33 };
 const close = (actual, expected, message) => assert.ok(Math.abs(actual - expected) < 1e-8, `${message}: ${actual} vs ${expected}`);
 for (const [id, amount] of Object.entries(amounts)) {
   close(beta6Ultimate(config[id], id).rechargePerHit, amount, `${id} config`);
@@ -35,9 +35,9 @@ for (const id of ['orange', 'lavender', 'ivory', 'mint']) {
   probe(id, 1, false, .8);
 }
 const firstTick = probe('lavender', 6, true, 1 / 60);
-close(firstTick.owner.charge, .3, 'six enemies cannot instantly refill');
+close(firstTick.owner.charge, .15, 'six enemies cannot instantly refill');
 const fullField = probe('lavender', 6, true, 12);
-close(fullField.owner.charge, 1.8, 'six enemies for full duration stay below full gauge');
+close(fullField.owner.charge, .9, 'six enemies for full duration stay below full gauge');
 
 const immune = createBeta6Combat(config, { bounds: 40 });
 const caster = immune.add('lavender', { automatic: false, team: 1, charge: 6 });

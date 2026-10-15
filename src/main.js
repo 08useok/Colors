@@ -1,6 +1,6 @@
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
-import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=8";
+import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=9";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
@@ -13,8 +13,8 @@ import { LANGS } from "./LANGS/langs.js?v=1.5.153";
 import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
-import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=2";
+import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=3";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=1";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
@@ -13257,9 +13257,10 @@ function updateHud() {
       : player.cyanUltimateCharge;
     const ratio = Math.min(1, charge / ultimate.chargeRequired);
     ultimateButton.style.setProperty("--charge", `${ratio * 360}deg`);
-    ultimateButton.classList.toggle("ready", ratio >= 1);
-    ultimateStateEl.textContent = ratio >= 1 ? "READY" : `${Math.round(ratio * 100)}%`;
-    ultimateButton.title = ratio >= 1
+    const fieldActive = Boolean(player.seasonUltimateFieldActive);
+    ultimateButton.classList.toggle("ready", ratio >= 1 && !fieldActive);
+    ultimateStateEl.textContent = fieldActive ? (currentLang === "en" ? "ACTIVE" : "사용 중") : ratio >= 1 ? "READY" : `${Math.round(ratio * 100)}%`;
+    ultimateButton.title = fieldActive ? (currentLang === "en" ? "Ultimate field active" : "궁극기 사용 중 · 장판 종료 후 재사용 가능") : ratio >= 1
       ? `Space / Q · ${currentLang === "en" ? (BETA_CHARACTERS[player.characterType]?.ultimate?.nameEn ?? ultimate.name) : ultimate.name}`
       : `${t("loreUltimate")} ${charge}/${ultimate.chargeRequired}`;
   }

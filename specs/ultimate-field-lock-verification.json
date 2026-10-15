@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-15",
+  "report": [
+    {
+      "id": "lavender",
+      "activeLabel": "사용 중",
+      "recastBlocked": true,
+      "chargePreserved": true,
+      "expiryUnlocks": true
+    },
+    {
+      "id": "gold",
+      "activeLabel": "사용 중",
+      "recastBlocked": true,
+      "chargePreserved": true,
+      "expiryUnlocks": true
+    },
+    {
+      "id": "mint",
+      "activeLabel": "사용 중",
+      "recastBlocked": true,
+      "chargePreserved": true,
+      "expiryUnlocks": true
+    },
+    {
+      "id": "ivory",
+      "activeLabel": "사용 중",
+      "recastBlocked": true,
+      "chargePreserved": true,
+      "expiryUnlocks": true
+    },
+    {
+      "id": "green",
+      "activeLabel": "사용 중",
+      "recastBlocked": true,
+      "chargePreserved": true,
+      "expiryUnlocks": true
+    }
+  ],
+  "pageErrors": []
+}
