@@ -1,0 +1,16 @@
+{
+  "basic": {
+    "charge": 1.5,
+    "health": 996149.9999999999,
+    "damage": 975,
+    "field": false
+  },
+  "ultimate": {
+    "charge": 0.025,
+    "health": 995174.9999999999,
+    "damage": 975,
+    "field": true
+  },
+  "beta7Unchanged": true,
+  "pageErrors": []
+}

@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-15",
+  "mainUnchanged": true,
+  "report": [
+    {
+      "id": "lavender",
+      "basicChargeBefore": 3,
+      "basicChargeAfter": 1.5,
+      "ultimateDamageBefore": 4680,
+      "ultimateDamageAfter": 5850,
+      "ultimateRechargeBefore": 0.15,
+      "ultimateRechargeAfter": 0.15
+    },
+    {
+      "id": "red",
+      "basicChargeBefore": 2,
+      "basicChargeAfter": 1,
+      "ultimateDamageBefore": 0,
+      "ultimateDamageAfter": 0,
+      "ultimateRechargeBefore": 0,
+      "ultimateRechargeAfter": 0
+    },
+    {
+      "id": "green",
+      "basicChargeBefore": 8,
+      "basicChargeAfter": 4,
+      "ultimateDamageBefore": 0,
+      "ultimateDamageAfter": 0,
+      "ultimateRechargeBefore": 0,
+      "ultimateRechargeAfter": 0
+    },
+    {
+      "id": "blue",
+      "basicChargeBefore": 1,
+      "basicChargeAfter": 0.5,
+      "ultimateDamageBefore": 1600,
+      "ultimateDamageAfter": 2000,
+      "ultimateRechargeBefore": 0.33,
+      "ultimateRechargeAfter": 0.33
+    },
+    {
+      "id": "orange",
+      "basicChargeBefore": 1,
+      "basicChargeAfter": 0.5,
+      "ultimateDamageBefore": 8400,
+      "ultimateDamageAfter": 10500,
+      "ultimateRechargeBefore": 1.9800000000000002,
+      "ultimateRechargeAfter": 1.9800000000000002
+    },
+    {
+      "id": "yellow",
+      "basicChargeBefore": 1,
+      "basicChargeAfter": 0.5,
+      "ultimateDamageBefore": 1200,
+      "ultimateDamageAfter": 1500,
+      "ultimateRechargeBefore": 1,
+      "ultimateRechargeAfter": 1
+    },
+    {
+      "id": "cyan",
+      "basicChargeBefore": 2,
+      "basicChargeAfter": 1,
+      "ultimateDamageBefore": 3120,
+      "ultimateDamageAfter": 3900,
+      "ultimateRechargeBefore": 1,
+      "ultimateRechargeAfter": 1
+    },
+    {
+      "id": "purple",
+      "basicChargeBefore": 3,
+      "basicChargeAfter": 1.5,
+      "ultimateDamageBefore": 10000,
+      "ultimateDamageAfter": 12500,
+      "ultimateRechargeBefore": 2,
+      "ultimateRechargeAfter": 2
+    },
+    {
+      "id": "pink",
+      "basicChargeBefore": 1,
+      "basicChargeAfter": 0.5,
+      "ultimateDamageBefore": 0,
+      "ultimateDamageAfter": 0,
+      "ultimateRechargeBefore": 0,
+      "ultimateRechargeAfter": 0
+    },
+    {
+      "id": "crimson",
+      "basicChargeBefore": 3,
+      "basicChargeAfter": 1.5,
+      "ultimateDamageBefore": 5400,
+      "ultimateDamageAfter": 6750,
+      "ultimateRechargeBefore": 1,
+      "ultimateRechargeAfter": 1
+    },
+    {
+      "id": "gold",
+      "basicChargeBefore": 3,
+      "basicChargeAfter": 1.5,
+      "ultimateDamageBefore": 400,
+      "ultimateDamageAfter": 500,
+      "ultimateRechargeBefore": 0,
+      "ultimateRechargeAfter": 0
+    },
+    {
+      "id": "ivory",
+      "basicChargeBefore": 4,
+      "basicChargeAfter": 2,
+      "ultimateDamageBefore": 19800,
+      "ultimateDamageAfter": 24750,
+      "ultimateRechargeBefore": 0.7999999999999999,
+      "ultimateRechargeAfter": 0.7999999999999999
+    },
+    {
+      "id": "chartreuse",
+      "basicChargeBefore": 1,
+      "basicChargeAfter": 0.5,
+      "ultimateDamageBefore": 2640,
+      "ultimateDamageAfter": 3300,
+      "ultimateRechargeBefore": 1,
+      "ultimateRechargeAfter": 0.5
+    },
+    {
+      "id": "mint",
+      "basicChargeBefore": 3,
+      "basicChargeAfter": 1.5,
+      "ultimateDamageBefore": 900,
+      "ultimateDamageAfter": 1126,
+      "ultimateRechargeBefore": 0.66,
+      "ultimateRechargeAfter": 0.66
+    },
+    {
+      "id": "azure",
+      "basicChargeBefore": 1,
+      "basicChargeAfter": 0.5,
+      "ultimateDamageBefore": 4800,
+      "ultimateDamageAfter": 6000,
+      "ultimateRechargeBefore": 1,
+      "ultimateRechargeAfter": 1
+    },
+    {
+      "id": "crystal",
+      "basicChargeBefore": 3,
+      "basicChargeAfter": 1.5,
+      "ultimateDamageBefore": 1000000000,
+      "ultimateDamageAfter": 1000000000,
+      "ultimateRechargeBefore": 0,
+      "ultimateRechargeAfter": 0
+    }
+  ]
+}

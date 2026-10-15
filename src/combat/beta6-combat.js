@@ -36,13 +36,13 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function rollRound(focus) { const r = random(); return focus ? (r < 1 / 3 ? 'enhanced' : r < 2 / 3 ? 'cc' : 'plague') : r < .45 ? 'enhanced' : r < .9 ? 'cc' : r < .95 ? 'plague' : 'blank'; }
   function charge(a, amount = 1) { if (a.u && alive(a)) a.charge = Math.min(a.u.chargeRequired, a.charge + amount); }
-  function hit(a, b, damage, basic = false, award = 1) {
+  function hit(a, b, damage, basic = false, award = 1, ultimate = false) {
     if (!alive(b) || damage <= 0 || time < b.invulnerableUntil || !enemies(a, b)) return 0;
     const dealt = Math.min(b.hp, damage * (time < b.guardUntil ? 1 - b.d.ultimate.damageReduction : 1));
     b.hp -= dealt; a.combatAt = b.combatAt = time;
     b.revealedUntil = a.revealedUntil = time + 3;
     emit('damage', { owner: a, target: b, amount: dealt });
-    if (basic && dealt > 0) charge(a, award);
+    if (basic && dealt > 0) charge(a, award * (ultimate ? 1 : (a.d.basicUltimateChargeMultiplier ?? 1)));
     if (dealt > 0 && b.d.ultimateChargeOnHit) charge(b, b.d.ultimateChargeOnHit);
     if (!alive(b) && time < b.encoreUntil) revive(b, b.encoreOwner);
     return dealt;
@@ -87,7 +87,7 @@ export function createBeta6Combat(definitions, options = {}) {
       || zones.some(zone => zone.owner === a && time + 1e-9 < zone.until
         && ['fragrance', 'lock'].includes(zone.kind));
   }
-  function area(a, center, radius, damage, basic = false, award = 1) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic, award); }
+  function area(a, center, radius, damage, basic = false, award = 1, ultimate = false) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic, award, ultimate); }
   function strike(a, b, yaw, reach, halfAngle, damage) {
     const dx = b.x - a.x, dz = b.z - a.z;
     const delta = Math.atan2(Math.sin(Math.atan2(dz, dx) - yaw), Math.cos(Math.atan2(dz, dx) - yaw));
@@ -175,7 +175,7 @@ export function createBeta6Combat(definitions, options = {}) {
     else if (id === 'chartreuse') {
       const kind = a.rounds.shift() ?? rollRound(time < a.focusUntil);
       a.rounds.push(rollRound(time < a.focusUntil));
-      if (kind !== 'blank') launch(d.chartreuseSpeed, d.chartreuseRange, kind === 'enhanced' ? d.chartreuseEnhancedDamage : d.chartreuseDamage, { kind });
+      if (kind !== 'blank') launch(d.chartreuseSpeed, d.chartreuseRange, (kind === 'enhanced' ? d.chartreuseEnhancedDamage : d.chartreuseDamage) * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind });
     } else if (id === 'mint') for (let i = 0; i < d.burstCount; i++) after(i * d.burstIntervalMs / 1000, a, () => {
       if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint' });
     });
@@ -228,7 +228,7 @@ export function createBeta6Combat(definitions, options = {}) {
       else if (a.id === 'crimson') {
         for (const b of actors.filter(b => enemies(a, b))) {
           const dx = b.x - a.x, dz = b.z - a.z, front = dx * Math.cos(yaw) + dz * Math.sin(yaw);
-          if (front >= 0 && front <= u.range && Math.abs(-dx * Math.sin(yaw) + dz * Math.cos(yaw)) <= u.width / 2) { hit(a, b, u.damage, true); knock(b, yaw, u.knockback); }
+          if (front >= 0 && front <= u.range && Math.abs(-dx * Math.sin(yaw) + dz * Math.cos(yaw)) <= u.width / 2) { hit(a, b, u.damage, true, 1, true); knock(b, yaw, u.knockback); }
         }
       } else if (a.id === 'cyan') shot(a, yaw, a.d.spreadLineSpeed * u.speedMultiplier, u.range, u.damage, { kind: 'gale', ultimate: true, radius: u.projectileRadius });
       else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }), true);
@@ -236,7 +236,7 @@ export function createBeta6Combat(definitions, options = {}) {
         const x = a.x + Math.cos(yaw) * Math.min(dist, u.castRange), z = a.z + Math.sin(yaw) * Math.min(dist, u.castRange), offset = u.patternRadius / Math.sqrt(2);
         for (const [ox, oz] of [[0, 0], [-offset, -offset], [-offset, offset], [offset, -offset], [offset, offset]]) {
           const dx = x + ox - a.x, dz = z + oz - a.z;
-          shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage, { kind: 'ivory', ultimate: true, spawn: 0 });
+          shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage * (u.damageMultiplier ?? 1), { kind: 'ivory', ultimate: true, spawn: 0 });
         }
       } else if (a.id === 'chartreuse') a.focusUntil = time + u.duration;
       else if (a.id === 'orange') {
@@ -255,7 +255,7 @@ export function createBeta6Combat(definitions, options = {}) {
         };
         a.leap = { from, to, startedAt: time, duration: u.duration, jumpHeight: u.jumpHeight };
         a.lockUntil = time + u.duration;
-        area(a, from, u.radius, u.damage, true);
+        area(a, from, u.radius, u.damage, true, 1, true);
         emit('purpleLeap', { owner: a, phase: 'takeoff', position: from });
       }
       else if (a.id === 'mint') {
@@ -287,7 +287,7 @@ export function createBeta6Combat(definitions, options = {}) {
   function finish(p) {
     const a = p.owner, d = a.d;
     if (p.kind === 'vial') area(a, p, d.vialSplashRadius, p.damage, true);
-    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
+    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1, p.ultimate); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
     if (p.kind === 'bomb') for (let i = 0; i < d.bombSplashCount - (p.hits.size ? d.bombDirectHitJuiceCount : 0); i++) shot(a, i * Math.PI * 2 / d.bombSplashCount, d.bombSplashSpeed, d.bombSplashRange, d.bombSplashDamage, { x: p.x, z: p.z, radius: d.bombSplashHitRadius, kind: 'juice', hits: new Set(p.hits) });
     if (p.kind === 'gold' && p.stage < 3) {
       const stage = p.stage + 1;
@@ -339,7 +339,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (progress >= 1) {
           a.leap = null;
           a.lockUntil = time;
-          area(a, leap.to, a.u.radius, a.u.damage, true);
+          area(a, leap.to, a.u.radius, a.u.damage, true, 1, true);
           emit('purpleLeap', { owner: a, phase: 'landing', position: leap.to });
         }
         a.vx = (a.x - previousX) / dt;
@@ -404,7 +404,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const x = a.x + Math.cos(dash.yaw) * a.u.speed * dt, z = a.z + Math.sin(dash.yaw) * a.u.speed * dt;
       if (blocked(x, z) || Math.abs(x) > (options.bounds ?? 24) || Math.abs(z) > (options.bounds ?? 24)) dash.yaw += Math.PI;
       else move(a, x, z);
-      for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit); knock(b, dash.yaw, .65); }
+      for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit, true); knock(b, dash.yaw, .65); }
     }
     for (let i = scheduled.length - 1; i >= 0; i--) if (scheduled[i].at <= time) { const event = scheduled.splice(i, 1)[0]; if (alive(event.owner)) event.run(); }
     for (let i = projectiles.length - 1; i >= 0; i--) {
@@ -425,7 +425,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (p.kind === 'wave') move(a, p.origin.x + Math.cos(p.yaw) * Math.min(p.traveled, p.ride), p.origin.z + Math.sin(p.yaw) * Math.min(p.traveled, p.ride));
       if (p.kind === 'electric' && a.devices.some(v => segmentDistance(v, before, p) <= .8 + p.radius)) {
         for (let j = 0; j < a.devices.length - 1; j++) { const from = { ...a.devices[j] }, to = { ...a.devices[j + 1] }; after(j * .18, a, () => {
-          for (const b of actors) if (enemies(a, b) && segmentDistance(b, from, to) <= a.u.connectionRadius + .85) { hit(a, b, a.u.connectionDamage, true); b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; }
+          for (const b of actors) if (enemies(a, b) && segmentDistance(b, from, to) <= a.u.connectionRadius + .85) { hit(a, b, a.u.connectionDamage, true, 1, true); b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; }
           emit('circuit', { owner: a, from, to });
         }); }
         projectiles.splice(i, 1); continue;
@@ -442,7 +442,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (p.kind === 'gold') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); award = Math.min([0, 3, 2, 1][p.stage], d.maxChargePerAttack - p.token.charge); p.token.charge += award; }
         if (p.kind === 'crystal') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); }
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
-        const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) : award);
+        const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) : award, p.ultimate);
         if (dealt > 0) {
           b.lastDamageKind = p.kind;
           if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
@@ -465,6 +465,7 @@ export function createBeta6Combat(definitions, options = {}) {
       }
       if (ended) { finish(p); projectiles.splice(i, 1); }
     }
+    const ivoryHits = new Map();
     for (let i = zones.length - 1; i >= 0; i--) {
       const zone = zones[i], a = zone.owner;
       if (time + 1e-9 >= zone.until) { zones.splice(i, 1); continue; }
@@ -497,18 +498,32 @@ export function createBeta6Combat(definitions, options = {}) {
           const previousSlow = time < b.slowUntil ? b.slow : 0;
           b.slowUntil = Math.max(b.slowUntil, time + .05);
           b.slow = Math.max(previousSlow, a.u.slowPercent);
-          if (time + 1e-9 >= zone.next) hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1);
+          if (time + 1e-9 >= zone.next) hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true);
         }
         if (zone.kind === 'lock' && alive(a)) {
           b.lockUntil = time + .05; b.slowUntil = time + .05; b.slow = .5;
           if (time + 1e-9 >= zone.next) hit(a, b, a.u.tickDamage ?? 0);
         }
-        if (zone.kind === 'mint') { if (time >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
+        if (zone.kind === 'mint') { if (time >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
         if (zone.kind === 'ivory') {
-          if (time + 1e-9 >= zone.next && time + 1e-9 >= b.zoneNext) { hit(a, b, a.d.iceCreamZoneDamage ?? a.d.iceCreamDamage, true, zone.ultimate ? (a.u.rechargePerHit ?? 1) : 1); b.zoneNext = time + a.d.iceCreamZoneTickInterval; }
+          if (time + 1e-9 >= zone.next && time + 1e-9 >= b.zoneNext) {
+            if (a.d.basicUltimateChargeMultiplier == null) {
+              hit(a, b, a.d.iceCreamZoneDamage ?? a.d.iceCreamDamage, true, zone.ultimate ? (a.u.rechargePerHit ?? 1) : 1, zone.ultimate);
+              b.zoneNext = time + a.d.iceCreamZoneTickInterval;
+              continue;
+            }
+            const damage = (a.d.iceCreamZoneDamage ?? a.d.iceCreamDamage) * (zone.ultimate ? a.u.damageMultiplier ?? 1 : 1);
+            const award = zone.ultimate ? a.u.rechargePerHit ?? 1 : a.d.basicUltimateChargeMultiplier ?? 1;
+            const previous = ivoryHits.get(b);
+            if (!previous || previous.owner === a) ivoryHits.set(b, { owner: a, damage: Math.max(previous?.damage ?? 0, damage), award: Math.max(previous?.award ?? 0, award) });
+          }
         }
       }
       if (time + 1e-9 >= zone.next) zone.next += zone.tickInterval ?? (zone.kind === 'ivory' ? a.d.iceCreamZoneTickInterval : 1);
+    }
+    for (const [target, { owner, damage, award }] of ivoryHits) {
+      hit(owner, target, damage, true, award, true);
+      target.zoneNext = time + owner.d.iceCreamZoneTickInterval;
     }
   }
   return { actors, projectiles, zones, add, fire, cast, hit, hidden, range, ultimateFieldActive, get time() { return time; },

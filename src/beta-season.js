@@ -11,7 +11,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=26";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=1";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=27";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -29,7 +30,8 @@ const betaSearchParams = new URLSearchParams(location.search);
 const requestedBetaSeason = betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta8";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
-const BETA_CHARACTERS = ["beta7", "beta8"].includes(BETA_SEASON_ID) ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
+const seasonCharacters = ["beta7", "beta8"].includes(BETA_SEASON_ID) ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
+const BETA_CHARACTERS = BETA_SEASON_ID === "beta8" ? applyBeta8Balance(seasonCharacters) : seasonCharacters;
 if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
@@ -3453,6 +3455,10 @@ function chargeIvoryUltimate(amount = 1) {
   if (betaState.selectedCharacter === "ivory") updateCrimsonUltimateGauge();
 }
 
+function basicUltimateCharge(id, amount = 1) {
+  return amount * (BETA_CHARACTERS[id].basicUltimateChargeMultiplier ?? 1);
+}
+
 function createIvoryIceCreamZone(x, z, fromUltimate = false) {
   const def = BETA_CHARACTERS.ivory;
   const group = new THREE.Group();
@@ -3481,8 +3487,8 @@ function createIvoryIceCreamZone(x, z, fromUltimate = false) {
     if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
     if (Math.hypot(target.position.x - x, target.position.z - z) <= def.iceCreamZoneRadius) {
       const healthBefore = target.userData.health;
-      damageTarget(target, def.iceCreamDamage);
-      if (target.userData.health < healthBefore) chargeIvoryUltimate(fromUltimate ? (def.ultimate.rechargePerHit ?? 1) : 1);
+      damageTarget(target, def.iceCreamDamage * (fromUltimate ? def.ultimate.damageMultiplier ?? 1 : 1));
+      if (target.userData.health < healthBefore) chargeIvoryUltimate(fromUltimate ? (def.ultimate.rechargePerHit ?? 1) : basicUltimateCharge("ivory"));
     }
   }
   canvas.dataset.lastIvoryLanding = `${x.toFixed(2)},${z.toFixed(2)}`;
@@ -3666,7 +3672,7 @@ function applyGoldProjectileHit(projectile, target) {
     const awarded = Math.min(chargeValue, BETA_CHARACTERS.gold.maxChargePerAttack - gained);
     if (awarded > 0) {
       goldAttackCharge.set(attackId, gained + awarded);
-      goldUltimateCharge = Math.min(BETA_CHARACTERS.gold.ultimateChargeRequired, goldUltimateCharge + awarded);
+      goldUltimateCharge = Math.min(BETA_CHARACTERS.gold.ultimateChargeRequired, goldUltimateCharge + basicUltimateCharge("gold", awarded));
       updateCrimsonUltimateGauge();
     }
   };
@@ -3713,7 +3719,7 @@ function hitSlashes(length, halfWidth, angles, damage) {
   for (const target of found) {
     damageTarget(target, damage);
     if (betaState.selectedCharacter === "red") {
-      redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + 1);
+      redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + basicUltimateCharge("red"));
     }
   }
   if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
@@ -4322,7 +4328,7 @@ function breakVial(projectile) {
     if (distance <= projectile.splash) {
       damageTarget(target, projectile.damage);
       if ((IS_BETA7_TEST || IS_BETA8_TEST) && projectile.characterId === "purple") {
-        purpleUltimateCharge = Math.min(BETA_CHARACTERS.purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
+        purpleUltimateCharge = Math.min(BETA_CHARACTERS.purple.ultimate.chargeRequired, purpleUltimateCharge + basicUltimateCharge("purple"));
         if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
       }
     }
@@ -4637,7 +4643,7 @@ function updateAzureWave(dt) {
         target.userData.knockbackX = wave.dx * wave.knockback;
         target.userData.knockbackZ = wave.dz * wave.knockback;
       } else {
-        azureUltimateCharge = Math.min(BETA_CHARACTERS.azure.ultimate.chargeRequired, azureUltimateCharge + 1);
+        azureUltimateCharge = Math.min(BETA_CHARACTERS.azure.ultimate.chargeRequired, azureUltimateCharge + (wave.ultimate ? 1 : basicUltimateCharge("azure")));
         updateCrimsonUltimateGauge();
       }
     }
@@ -4742,7 +4748,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
           target.userData.health = Math.min(target.userData.maxHealth, target.userData.health + def.healCircleHeal);
         } else {
           damageTarget(target, def.healCircleDamage);
-          pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + 1);
+          pinkUltimateCharge = Math.min(def.ultimate.chargeRequired, pinkUltimateCharge + basicUltimateCharge("pink"));
           if (betaState.selectedCharacter === "pink") updateCrimsonUltimateGauge();
         }
       }
@@ -4769,7 +4775,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
   } else if (id === "chartreuse") {
     const focused = clock.elapsedTime < chartreuseFocusUntil;
     const roundType = chartreuseAmmoTypes.shift() || randomChartreuseRound(focused);
-    const damage = roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage;
+    const damage = (roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage) * (focused ? def.ultimate.damageMultiplier ?? 1 : 1);
     const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
     fireBetaProjectile({ speed: def.chartreuseSpeed, range: def.chartreuseRange, damage, color, radius: 0.24, type: `chartreuse_${roundType}` });
     attackComboState.textContent = roundType;
@@ -4822,7 +4828,7 @@ function hitTargetsInFan(angleOffset, damage) {
     if (distanceToTarget > CRIMSON.attackRange || distanceToTarget < 0.01) continue;
     if (forward.dot(delta.normalize()) < Math.cos(CRIMSON.attackHalfAngle)) continue;
     target.userData.health -= damage;
-    crimsonUltimateCharge = Math.min(CRIMSON.ultimateChargeRequired, crimsonUltimateCharge + 1);
+    crimsonUltimateCharge = Math.min(CRIMSON.ultimateChargeRequired, crimsonUltimateCharge + basicUltimateCharge("crimson"));
     updateCrimsonUltimateGauge();
     createHitImpact(target.position);
     createRedThemeHitEffect(target.position);
@@ -8797,17 +8803,17 @@ function animate() {
             : projectile.damage;
           damageTarget(target, damage, projectile.causesKnockback);
           if (projectile.characterId === "red") {
-            redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + 1);
+            redUltimateCharge = Math.min(BETA_CHARACTERS.red.ultimate.chargeRequired, redUltimateCharge + basicUltimateCharge("red"));
             if (betaState.selectedCharacter === "red") updateCrimsonUltimateGauge();
           }
           if (projectile.characterId === "blue") {
-            blueSpecialCharge = Math.min(BETA_CHARACTERS.blue.special.chargeRequired, blueSpecialCharge + 1);
+            blueSpecialCharge = Math.min(BETA_CHARACTERS.blue.special.chargeRequired, blueSpecialCharge + basicUltimateCharge("blue"));
             if (betaState.selectedCharacter === "blue") updateCrimsonUltimateGauge();
           }
         }
         if (projectile.type === "orangeFruit") {
           if (IS_BETA7_TEST || IS_BETA8_TEST) {
-            orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + 1);
+            orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + basicUltimateCharge("orange"));
             if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
           }
           shouldSplitOrange = true;
@@ -8819,7 +8825,7 @@ function animate() {
         }
         if (projectile.type === "electric") {
           const yellow = BETA_CHARACTERS.yellow;
-          yellowUltimateCharge = Math.min(yellow.ultimate.chargeRequired, yellowUltimateCharge + 1);
+          yellowUltimateCharge = Math.min(yellow.ultimate.chargeRequired, yellowUltimateCharge + basicUltimateCharge("yellow"));
           if (betaState.selectedCharacter === "yellow") updateCrimsonUltimateGauge();
           target.userData.slowUntil = clock.elapsedTime + yellow.shockDuration;
           target.userData.slowMultiplier = 1 - yellow.shockSlowPercent;
@@ -8828,7 +8834,7 @@ function animate() {
         if (projectile.characterId === "purple" && ["needle", "vial"].includes(projectile.type)) {
           const purple = BETA_CHARACTERS.purple;
           if (IS_BETA7_TEST || IS_BETA8_TEST) {
-            purpleUltimateCharge = Math.min(purple.ultimate.chargeRequired, purpleUltimateCharge + 1);
+            purpleUltimateCharge = Math.min(purple.ultimate.chargeRequired, purpleUltimateCharge + basicUltimateCharge("purple"));
             if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
           }
           const poisonWasInactive = !target.userData.poisonUntil || target.userData.poisonUntil <= clock.elapsedTime;
@@ -8842,19 +8848,19 @@ function animate() {
         }
         if (projectile.characterId === "mint" && projectile.type === "mintIceCream") {
           applyMintIce(target, BETA_CHARACTERS.mint.icePerHit);
-          mintUltimateCharge = Math.min(BETA_CHARACTERS.mint.special.chargeRequired, mintUltimateCharge + 1);
+          mintUltimateCharge = Math.min(BETA_CHARACTERS.mint.special.chargeRequired, mintUltimateCharge + basicUltimateCharge("mint"));
           if (betaState.selectedCharacter === "mint") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "crystal") {
-          crystalUltimateCharge = Math.min(BETA_CHARACTERS.crystal.ultimate.chargeRequired, crystalUltimateCharge + 1);
+          crystalUltimateCharge = Math.min(BETA_CHARACTERS.crystal.ultimate.chargeRequired, crystalUltimateCharge + basicUltimateCharge("crystal"));
           if (betaState.selectedCharacter === "crystal") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
-          cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + 1);
+          cyanUltimateCharge = Math.min(BETA_CHARACTERS.cyan.ultimate.chargeRequired, cyanUltimateCharge + basicUltimateCharge("cyan"));
           if (betaState.selectedCharacter === "cyan") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "green" && projectile.type === "boomerang") {
-          greenUltimateCharge = Math.min(BETA_CHARACTERS.green.ultimate.chargeRequired, greenUltimateCharge + 1);
+          greenUltimateCharge = Math.min(BETA_CHARACTERS.green.ultimate.chargeRequired, greenUltimateCharge + basicUltimateCharge("green"));
           if (betaState.selectedCharacter === "green") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "chartreuse") {
@@ -8885,7 +8891,7 @@ function animate() {
             target.userData.health = 0;
             target.visible = false;
           }
-          chartreuseUltimateCharge = Math.min(BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, chartreuseUltimateCharge + 1);
+          chartreuseUltimateCharge = Math.min(BETA_CHARACTERS.chartreuse.ultimate.chargeRequired, chartreuseUltimateCharge + basicUltimateCharge("chartreuse"));
           if (betaState.selectedCharacter === "chartreuse") updateCrimsonUltimateGauge();
         }
         if (projectile.splash > 0) {
@@ -9059,8 +9065,11 @@ function animate() {
       for (const target of testTargets) {
         if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
         if (Math.hypot(target.position.x - zone.x, target.position.z - zone.z) <= zone.radius) {
-          const award = zone.fromUltimate ? (BETA_CHARACTERS.ivory.ultimate.rechargePerHit ?? 1) : 1;
-          dueIvoryZoneTargets.set(target, Math.max(dueIvoryZoneTargets.get(target) ?? 0, award));
+          const def = BETA_CHARACTERS.ivory;
+          const award = zone.fromUltimate ? (def.ultimate.rechargePerHit ?? 1) : (def.basicUltimateChargeMultiplier ?? 1);
+          const damage = (def.iceCreamZoneDamage ?? def.iceCreamDamage) * (zone.fromUltimate ? def.ultimate.damageMultiplier ?? 1 : 1);
+          const previous = dueIvoryZoneTargets.get(target);
+          dueIvoryZoneTargets.set(target, { award: Math.max(previous?.award ?? 0, award), damage: Math.max(previous?.damage ?? 0, damage) });
         }
       }
     }
@@ -9070,9 +9079,9 @@ function animate() {
       ivoryIceCreamZones.splice(i, 1);
     }
   }
-  for (const [target, award] of dueIvoryZoneTargets) {
+  for (const [target, { award, damage }] of dueIvoryZoneTargets) {
     const healthBefore = target.userData.health;
-    damageTarget(target, BETA_CHARACTERS.ivory.iceCreamZoneDamage ?? BETA_CHARACTERS.ivory.iceCreamDamage);
+    damageTarget(target, damage);
     if (target.userData.health < healthBefore) chargeIvoryUltimate(award);
   }
   canvas.dataset.ivoryZones = String(ivoryIceCreamZones.length);
