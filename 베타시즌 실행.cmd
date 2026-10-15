@@ -12,7 +12,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command ^
   "  Start-Process py -ArgumentList '-m','http.server','4173','--bind','127.0.0.1' -WorkingDirectory $root -WindowStyle Hidden;" ^
   "  foreach ($i in 1..20) { Start-Sleep -Milliseconds 300; if (Test-Server) { break } }" ^
   "};" ^
-  "if (Test-Server) { Start-Process ($url + '/beta-season.html?test=beta7') }" ^
+  "if (Test-Server) { Start-Process ($url + '/beta-season.html?test=beta8') }" ^
   "else { Write-Host '서버를 띄우지 못했습니다. 4173 포트를 쓰는 프로그램을 끄고 다시 실행해 주세요.'; Start-Sleep -Seconds 5 }"
 
 endlocal
