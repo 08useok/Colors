@@ -1,5 +1,6 @@
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
-import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=1";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
+import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=2";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
@@ -31,8 +32,11 @@ import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYello
 Object.assign(LANGS.ko,{crystal:"크리스탈",lavender:"라벤더",crystalDesc:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",lavenderDesc:"향수 스프레이와 둔화 장판을 사용하는 캐릭터",azureDesc:"파도를 타고 돌진하는 다이버"});
 Object.assign(LANGS.en,{crystal:"Crystal",lavender:"Lavender",crystalDesc:"Cascading crystals and crystal analysis",lavenderDesc:"Perfume spray and a slowing fragrance field",azureDesc:"A diver who dashes forward on a wave"});
 MAIN_UI.forEach(([ko, en], i) => { LANGS.ko["mainUi" + i] = ko; LANGS.en["mainUi" + i] = en; });
-LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다. 최종 검증은 추후 진행합니다.";
-LANGS.en.mainLanguagePatch = "v1.7.0.4 — Updated Korean/English character names and menu translations. Three Halloween skin models are connected in beta. Final verification is deferred.";
+Object.entries(ARCHIVE_TEXT).forEach(([key, value]) => { LANGS.ko[key] = value.ko; LANGS.en[key] = value.en; });
+LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다.";
+LANGS.en.mainLanguagePatch = "v1.7.0.4 — Updated Korean/English character names and menu translations. Three Halloween skin models are connected in beta.";
+LANGS.ko.mainVerificationPatch = "v1.7.0.5 — 과거 패치노트 121개 항목과 결과 화면의 번역을 보완했습니다. 한·영 전환, 스킨 3종의 걷기·쇼다운·장착 해제 저장 검사를 완료했습니다.";
+LANGS.en.mainVerificationPatch = "v1.7.0.5 — Translated 121 historical patch note entries and completed missing result text. Verified language switching and all three skins' walking, Showdown models and saved unequipping.";
 let currentLang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
 const displayName = (id) => characterDisplayName(id, currentLang);
 const ui = (text) => mainUiText(text, currentLang);
@@ -372,7 +376,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.4" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.5" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -1388,14 +1392,14 @@ function updateLobbyUI(account) {
   if (lobbyCoins) lobbyCoins.textContent = account.coins ?? 0;
   if (lobbyCredits) lobbyCredits.textContent = account.credits ?? 0;
   const orderEventProgress = document.getElementById("order-event-progress");
-  if (orderEventProgress) orderEventProgress.textContent = `${account.orderEvent?.progress ?? 0} / 100승`;
+  if (orderEventProgress) orderEventProgress.textContent = `${account.orderEvent?.progress ?? 0} / 100${currentLang === "en" ? " wins" : "승"}`;
   const orderEventClaim = document.getElementById("order-event-claim");
   if (orderEventClaim) {
     const milestones = [1, 3, 5, 10, 25, 40, 50, 75, 90, 100];
     const claimed = account.orderEvent?.claimed ?? [];
     const next = milestones.find((milestone) => (account.orderEvent?.progress ?? 0) >= milestone && !claimed.includes(milestone));
     orderEventClaim.disabled = !next;
-    orderEventClaim.textContent = next ? `${next}승 보상 받기` : "보상 없음";
+    orderEventClaim.textContent = next ? (currentLang === "en" ? `Claim ${next}-Win Reward` : `${next}승 보상 받기`) : ui("보상 없음");
     orderEventClaim.onclick = () => {
       if (!next) return;
       account.orderEvent ??= { progress: 0, claimed: [], cosmetics: {} };
@@ -8328,9 +8332,13 @@ function finishGoldRush(winner) {
   const player = getPlayer();
   const rank = state.gemGrabMode ? (winner?.team===state.playerTeam?1:10) : winner?.isPlayer ? 1 : Math.max(2, state.players.filter((fighter) => (fighter.goldCount ?? 0) > (player?.goldCount ?? 0)).length + 2);
   const { coinsEarned, betaCreditsEarned } = recordGameResult(rank);
-  resultTitle.textContent = winner?.isPlayer ? "GOLD RUSH 승리!" : "GOLD RUSH 종료";
-  resultBody.textContent = winner?.isPlayer ? "금 10개를 10초간 지켰습니다." : `${winner?.name ?? "AI"}가 금을 지켰습니다.`;
-  resultStats.textContent = `보유 금 ${player?.goldCount ?? 0}/10 · 코인 +${coinsEarned}${betaCreditsEarned ? ` · ★ 대기 ${betaCreditsEarned}` : ""}`;
+  resultTitle.textContent = winner?.isPlayer ? (currentLang === "en" ? "GOLD RUSH Victory!" : "GOLD RUSH 승리!") : (currentLang === "en" ? "GOLD RUSH Finished" : "GOLD RUSH 종료");
+  resultBody.textContent = winner?.isPlayer
+    ? (currentLang === "en" ? "You held 10 gold for 10 seconds." : "금 10개를 10초간 지켰습니다.")
+    : (currentLang === "en" ? `${winner?.name ?? "AI"} held the gold.` : `${winner?.name ?? "AI"}가 금을 지켰습니다.`);
+  resultStats.textContent = currentLang === "en"
+    ? `Gold ${player?.goldCount ?? 0}/10 · Coins +${coinsEarned}${betaCreditsEarned ? ` · ★ Pending ${betaCreditsEarned}` : ""}`
+    : `보유 금 ${player?.goldCount ?? 0}/10 · 코인 +${coinsEarned}${betaCreditsEarned ? ` · ★ 대기 ${betaCreditsEarned}` : ""}`;
   resultStreak.style.display = "none";
   resultOverlay.style.display = "flex";
   document.exitPointerLock?.();
@@ -13535,8 +13543,8 @@ function checkEndState() {
         resultTitle.textContent = t("cwLose");
       }
       const coinText = coinsEarned > 0 ? `  🪙 +${coinsEarned}` : "";
-      const chopRecord = account ? `${account.chopWoodWins || 0}승 ${account.chopWoodLosses || 0}패` : "";
-      resultBody.textContent = `찹 우드 전적 ${chopRecord}${coinText}`;
+      const chopRecord = account ? t("record", account.chopWoodWins || 0, account.chopWoodLosses || 0) : "";
+      resultBody.textContent = `${t("statsChopWood")} ${chopRecord}${coinText}`;
       const statsLines = [];
       if (player) {
         statsLines.push(t("cwKills", player.cwKills));
@@ -13866,10 +13874,10 @@ function setupInput() {
     });
   });
 
-  document.getElementById("stats-toggle").addEventListener("click", () => {
+  function renderAccountStats(refresh = false) {
     const panel = document.getElementById("stats-panel");
     const btn = document.getElementById("stats-toggle");
-    panel.classList.toggle("hidden");
+    if (!refresh) panel.classList.toggle("hidden");
     btn.textContent = panel.classList.contains("hidden") ? t("statsBtn") : t("statsBtnClose");
     if (!panel.classList.contains("hidden")) {
       const account = loadAccount();
@@ -13964,7 +13972,7 @@ function setupInput() {
             acc.credits = (acc.credits ?? 0) + 1000;
             saveAccount(acc);
             updateLobbyUI(acc);
-            panel.querySelector("#test-grant-credits").textContent = "크레딧 지급 완료";
+            panel.querySelector("#test-grant-credits").textContent = ui("크레딧 지급 완료");
           });
         }
         panel.querySelectorAll(".season-toggle").forEach((row) => {
@@ -13979,7 +13987,8 @@ function setupInput() {
         });
       }
     }
-  });
+  }
+  document.getElementById("stats-toggle").addEventListener("click", () => renderAccountStats());
 
   document.getElementById("leaderboard-toggle").addEventListener("click", async () => {
     const panel = document.getElementById("leaderboard-panel");
@@ -14162,7 +14171,7 @@ function setupInput() {
     aimModeButton.classList.toggle("active", state.manualAimActive);
     aimModeButton.setAttribute("aria-pressed", String(state.manualAimActive));
     aimModeButton.textContent = state.manualAimActive
-      ? "수동 에임 고정"
+      ? ui("수동 에임 고정")
       : ui("좌클릭 공격 · 드래그해 조준");
   });
   window.addEventListener("mousedown", startAiming);
@@ -14297,7 +14306,7 @@ function setupInput() {
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60000);
-      showToast("계정 파일을 내보냈습니다. 새 브라우저에서 가져오기를 선택하세요.");
+      showToast(ui("계정 파일을 내보냈습니다. 새 브라우저에서 가져오기를 선택하세요."));
     } catch (error) { showToast(error.message); }
   });
   accountImportFile.addEventListener("change", async () => {
@@ -14866,6 +14875,7 @@ if (window.location.hash === "#chop-wood") {
     patchnotesToggle.textContent = t(patchnotesPanel.classList.contains("hidden") ? "patchnotesBtn" : "patchnotesBtnClose");
     noticeToggle.textContent = ui(noticePanel.classList.contains("hidden") ? "📢 공지" : "닫기");
     updateRegularEventStatus();
+    if (!document.getElementById("stats-panel").classList.contains("hidden")) renderAccountStats(true);
     renderDailyRewardOdds();
     updateEmoteBtns(loadAccount() ?? {});
     if (state.running) { state.lastHudUpdateAt = -1; updateHud(); }
@@ -15344,7 +15354,7 @@ function updateMainGemGrab(dt){
  const a=gemTeamCount('a'),b=gemTeamCount('b');let escaped=gemEscapeResult(state.gemEscape,{a,b},state.gameTime);const leader=state.gemEscape.a!=null?'a':state.gemEscape.b!=null?'b':null;state.gemEscapeTeam=leader;state.gemEscapeAt=leader?state.gemEscape[leader]:0;
  const timedOut=state.gameTime-state.gemStartedAt>=GEM_GRAB_RULES.matchSeconds;if(timedOut)escaped=a>b?'a':b>a?'b':null;
  document.body.classList.toggle('temple-countdown-final',!!leader&&state.gameTime-state.gemEscapeAt>=12);
- if(escaped||timedOut){const won=escaped===state.playerTeam;const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?'시간 종료 · 무승부':won?'유적 탈출 성공!':'유적 탈출 실패';resultBody.textContent=timedOut?'경기 시간이 종료됐습니다.':'팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.';resultStats.textContent+=' · 아군 젬 '+gemTeamCount(state.playerTeam)+' · 적 젬 '+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
+ if(escaped||timedOut){const won=escaped===state.playerTeam;const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?ui("시간 종료 · 무승부"):won?ui("유적 탈출 성공!"):ui("유적 탈출 실패");resultBody.textContent=timedOut?ui("경기 시간이 종료됐습니다."):ui("팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.");resultStats.textContent+=(currentLang==='en'?' · Allied gems ':' · 아군 젬 ')+gemTeamCount(state.playerTeam)+(currentLang==='en'?' · Enemy gems ':' · 적 젬 ')+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
 }
 const supplementalAttackAim=createAimGuide(THREE,scene);
 const seasonUltimateAim=createAimGuide(THREE,scene,0xffdf65);

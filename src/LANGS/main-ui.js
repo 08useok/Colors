@@ -94,6 +94,12 @@ export const MAIN_UI = [
   ["해골 협곡", "Skull Canyon"], ["마른 호수", "Dry Lake"], ["뼈의 미로", "Bone Maze"],
   ["이미 사용 중인 아이디입니다.", "This ID is already in use."],
   ["이 브라우저에 저장된 계정과 아이디·닉네임이 일치하지 않습니다. 다른 브라우저나 기기에서 만든 계정은 자동으로 불러올 수 없습니다.", "The ID and nickname do not match an account saved in this browser. Accounts from another browser or device must be imported."],
+  ["수동 에임 고정", "Manual Aim Locked"], ["나가기", "Exit"], ["플레이어", "Player"],
+  ["계정 파일을 내보냈습니다. 새 브라우저에서 가져오기를 선택하세요.", "Account exported. Choose Import in the new browser."],
+  ["보상 없음", "No Reward Available"], ["크레딧 지급 완료", "Credits Granted"],
+  ["시간 종료 · 무승부", "Time Up · Draw"], ["유적 탈출 성공!", "Temple Escape Successful!"],
+  ["유적 탈출 실패", "Temple Escape Failed"], ["경기 시간이 종료됐습니다.", "The match time has expired."],
+  ["팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.", "The team held at least 10 gems for 15 seconds."],
 ];
 export function mainUiText(text, lang) {
   return lang === "en" ? MAIN_UI.find(([ko]) => ko === text)?.[1] ?? text : text;
