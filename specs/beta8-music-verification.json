@@ -2,9 +2,41 @@
   "date": "2026-10-15",
   "report": [
     {
+      "label": "initial training spawn",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
       "label": "lobby",
       "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
       "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "walk into training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "walk out of training",
+      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
+      "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "playing": 1
+    },
+    {
+      "label": "teleport into training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
@@ -18,9 +50,9 @@
       "playing": 1
     },
     {
-      "label": "knockout return",
-      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
-      "duration": 121.991792,
+      "label": "knockout return to training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
@@ -34,9 +66,9 @@
       "playing": 1
     },
     {
-      "label": "soccer return",
-      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
-      "duration": 121.991792,
+      "label": "soccer return to training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
@@ -50,9 +82,9 @@
       "playing": 1
     },
     {
-      "label": "gemGrab return",
-      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
-      "duration": 121.991792,
+      "label": "gemGrab return to training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
@@ -66,9 +98,9 @@
       "playing": 1
     },
     {
-      "label": "showdown return",
-      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
-      "duration": 121.991792,
+      "label": "showdown return to training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
@@ -82,9 +114,9 @@
       "playing": 1
     },
     {
-      "label": "goldRush return",
-      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
-      "duration": 121.991792,
+      "label": "goldRush return to training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1
@@ -98,9 +130,9 @@
       "playing": 1
     },
     {
-      "label": "chopWood return",
-      "source": "/assets/beta8-midnight-at-the-manor-gates.mp3",
-      "duration": 121.991792,
+      "label": "chopWood return to training",
+      "source": "/assets/beta8-violet-courtyard-study.mp3",
+      "duration": 117.942792,
       "loop": true,
       "volume": 0.45,
       "playing": 1

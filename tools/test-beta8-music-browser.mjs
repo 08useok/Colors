@@ -13,7 +13,7 @@ const server = createServer((req, res) => {
   }
   res.setHeader('Content-Type', ({'.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.json':'application/json', '.png':'image/png', '.mp3':'audio/mpeg'})[extname(file)] ?? 'application/octet-stream');
   if (path === '/src/beta-season.js') {
-    res.end(readFileSync(file, 'utf8') + '\nwindow.__musicQA={lobby:betaSeasonBgm, fallback:betaBattleBgm, oldGem:gemGrabBgm, tracks:beta8MatchBgm, active:()=>activeBetaBgm, startGoldRush, endGoldRush};');
+    res.end(readFileSync(file, 'utf8') + '\nwindow.__musicQA={lobby:betaSeasonBgm, fallback:betaBattleBgm, oldGem:gemGrabBgm, tracks:beta8MatchBgm, active:()=>activeBetaBgm, player, resetPlayer, startGoldRush, endGoldRush};');
   } else {
     res.setHeader('Content-Length', statSync(file).size);
     createReadStream(file).pipe(res);
@@ -49,7 +49,15 @@ try {
   };
   await load();
   await page.keyboard.press('Shift');
+  await capture('initial training spawn', 'training', 'beta8-violet-courtyard-study');
+  await page.evaluate(() => __musicQA.player.position.set(0, 6.25, 0));
   await capture('lobby', null, 'beta8-midnight-at-the-manor-gates');
+  await page.evaluate(() => __musicQA.player.position.set(-40, 6.25, 10));
+  await capture('walk into training', 'training', 'beta8-violet-courtyard-study');
+  await page.evaluate(() => __musicQA.player.position.set(0, 6.25, 0));
+  await capture('walk out of training', null, 'beta8-midnight-at-the-manor-gates');
+  await page.evaluate(() => __musicQA.resetPlayer());
+  await capture('teleport into training', 'training', 'beta8-violet-courtyard-study');
   const cases = [
     ['knockout', 'beta8-the-midnight-gambit'],
     ['soccer', 'beta8-trick-or-goal'],
@@ -62,7 +70,7 @@ try {
     await page.evaluate(mode => __musicQA.startGoldRush(mode), mode);
     await capture(mode, mode, filename);
     await page.evaluate(() => __musicQA.endGoldRush('QA', false, null, true));
-    await capture(mode + ' return', null, 'beta8-midnight-at-the-manor-gates');
+    await capture(mode + ' return to training', 'training', 'beta8-violet-courtyard-study');
   }
   await page.evaluate(() => __musicQA.startGoldRush('showdown', true));
   await capture('showdown+', 'showdown', 'beta8-graveyard-gambit');

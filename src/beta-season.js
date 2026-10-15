@@ -55,6 +55,7 @@ const beta8MatchBgm = BETA_SEASON_ID === "beta8" ? Object.fromEntries(Object.ent
   showdown: "graveyard-gambit",
   goldRush: "vault-of-the-greedy-phantom",
   chopWood: "the-crooked-grove",
+  training: "violet-courtyard-study",
 }).map(([mode, name]) => {
   const track = new Audio(`./assets/beta8-${name}.mp3?v=1`);
   track.loop = true;
@@ -7716,7 +7717,6 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   goldRushState.reloadTimer = 0;
   goldRushState.invulnerableUntil = clock.elapsedTime + 2;
   canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
-  setBetaMatchMusic(null);
   document.body.classList.remove("temple-countdown-final");
   goldRushState.winCountdownStartedAt = null;
   playerGoldRushHealthBar.visible = false;
@@ -8443,7 +8443,7 @@ canvas.addEventListener("wheel", (event) => {
   distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 3.5, 24);
 }, { passive: true });
 
-function resetPlayer() { clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
+function resetPlayer() { clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; updateBetaLobbyMusic(); }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", () => {
   if (goldRushState.active && goldRushState.mode === "knockout") { showToast("KNOCKOUT 경기 중에는 훈련장으로 이동할 수 없습니다."); return; }
@@ -8501,7 +8501,15 @@ function groundHeightAt(x, z) {
   return best;
 }
 
+function updateBetaLobbyMusic() {
+  if (currentArenaMode !== "lobby") return;
+  const { x, z } = player.position;
+  const inTraining = x < -28 && z >= -28 && z <= 28;
+  setBetaMatchMusic(inTraining ? beta8MatchBgm.training : null);
+}
+
 function updateLocation() {
+  updateBetaLobbyMusic();
   if(currentArenaMode!=="lobby" && activeEventLayout){locationName.textContent=activeEventLayout.name;return;}
   if (currentArenaMode === "chopWood") { locationName.textContent = "찹 우드 · 톱밥 숲"; return; }
   if (currentArenaMode === "soccer") {
