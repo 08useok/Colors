@@ -34,16 +34,20 @@ if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
 }
-// 시즌 8 전용 음원은 아직 없어 시즌 6 음악을 공유한다.
+// 시즌별 로비 음악. 시즌 8은 사용자가 제공한 할로윈 음원을 사용한다.
 const BETA_SEASON_BGM = {
   beta5: "./assets/beta5-clockwork-midway.mp3?v=1",
   beta6: "./assets/beta6-high-noon-tide.mp3?v=1",
   beta7: "./assets/beta7-beneath-sun-bleached-stone.mp3?v=1",
+  beta8: "./assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
 };
 const betaSeasonBgm = new Audio(BETA_SEASON_BGM[BETA_SEASON_ID] ?? BETA_SEASON_BGM.beta6);
 betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
+// 시즌 8 전투곡을 받기 전에는 기존 전투 배경을 유지한다.
+const betaBattleBgm = BETA_SEASON_ID === "beta8" ? new Audio(BETA_SEASON_BGM.beta6) : null;
+if (betaBattleBgm) { betaBattleBgm.loop = true; betaBattleBgm.volume = 0.45; betaBattleBgm.preload = "metadata"; }
 let betaSeasonMusicStarted = false;
 // 젬 그랩 경기 동안만 흐르는 전용 음악. 경기가 끝나면 로비 음악으로 돌아간다.
 const gemGrabBgm = new Audio("./assets/beta7-before-the-vault-closes.mp3?v=1");
@@ -7983,7 +7987,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   }
   resetAllUltimateCharges();
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
-  setBetaMatchMusic(mode === "gemGrab" ? gemGrabBgm : null);
+  setBetaMatchMusic(mode === "gemGrab" ? gemGrabBgm : betaBattleBgm);
   goldRushState.mode = mode;
   goldRushState.showdownPlus = mode === "showdown" && showdownPlus;
   const arenaMode = true;

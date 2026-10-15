@@ -1,0 +1,24 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "source": "http://127.0.0.1:61221/assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
+      "duration": 121.991792,
+      "loop": true,
+      "volume": 0.45,
+      "paused": false
+    },
+    {
+      "kind": "battle",
+      "source": "http://127.0.0.1:61221/assets/beta6-high-noon-tide.mp3?v=1",
+      "playing": 1
+    },
+    {
+      "kind": "gem",
+      "source": "http://127.0.0.1:61221/assets/beta7-before-the-vault-closes.mp3?v=1",
+      "playing": 1
+    }
+  ],
+  "lobbyReturn": true,
+  "beta7Unchanged": true
+}
