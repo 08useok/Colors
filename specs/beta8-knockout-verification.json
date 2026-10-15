@@ -1,0 +1,181 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "death": {
+        "friendlyBlocked": true,
+        "dead": true,
+        "visible": false,
+        "phase": "fighting",
+        "overlay": true
+      }
+    },
+    {
+      "reset": {
+        "round": 2,
+        "phase": "countdown",
+        "allAlive": true,
+        "fullAmmo": true,
+        "charges": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "oldActors": 0,
+        "projectiles": 0
+      }
+    },
+    {
+      "result": {
+        "active": false,
+        "dead": false,
+        "visible": true,
+        "arena": false,
+        "bots": 0,
+        "combat": null,
+        "score": {
+          "a": 2,
+          "b": 0
+        },
+        "stats": {
+          "games": 1,
+          "wins": 1,
+          "losses": 0
+        }
+      }
+    },
+    {
+      "id": "knockout-0",
+      "arena": "knockout-halloween-arena",
+      "solids": true,
+      "actors": [
+        {
+          "x": 0,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": -6,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": 6,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": -6,
+          "z": 15,
+          "team": "b"
+        },
+        {
+          "x": 0,
+          "z": 15,
+          "team": "b"
+        },
+        {
+          "x": 6,
+          "z": 15,
+          "team": "b"
+        }
+      ],
+      "walls": 4
+    },
+    {
+      "id": "knockout-1",
+      "arena": "knockout-halloween-arena",
+      "solids": true,
+      "actors": [
+        {
+          "x": 0,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": -6,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": 6,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": -6,
+          "z": 15,
+          "team": "b"
+        },
+        {
+          "x": 0,
+          "z": 15,
+          "team": "b"
+        },
+        {
+          "x": 6,
+          "z": 15,
+          "team": "b"
+        }
+      ],
+      "walls": 20
+    },
+    {
+      "id": "knockout-2",
+      "arena": "knockout-halloween-arena",
+      "solids": true,
+      "actors": [
+        {
+          "x": 0,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": -6,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": 6,
+          "z": -15,
+          "team": "a"
+        },
+        {
+          "x": -6,
+          "z": 15,
+          "team": "b"
+        },
+        {
+          "x": 0,
+          "z": 15,
+          "team": "b"
+        },
+        {
+          "x": 6,
+          "z": 15,
+          "team": "b"
+        }
+      ],
+      "walls": 4
+    },
+    {
+      "autonomous": {
+        "attacks": 13,
+        "moved": true
+      }
+    },
+    {
+      "poison": {
+        "hpBefore": 9000,
+        "hpAfter": 8910
+      }
+    },
+    {
+      "defeat": "0:2",
+      "lobbyMovement": true
+    }
+  ]
+}

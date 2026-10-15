@@ -48,6 +48,7 @@ export function createBeta6Combat(definitions, options = {}) {
     return dealt;
   }
   function revive(a, owner) {
+    if (options.allowRevives === false) return;
     a.hp = a.d.maxHealth * owner.u.reviveHealthRatio; a.encoreUntil = 0;
     a.invulnerableUntil = time + owner.u.invulnerabilityDuration;
     emit('revive', { owner, target: a });
@@ -187,6 +188,7 @@ export function createBeta6Combat(definitions, options = {}) {
     const u = a.u;
     if (!u || !alive(a) || a.charge < u.chargeRequired || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     if (a.id === 'pink') {
+      if (options.allowRevives === false) return false;
       const allies = actors.filter(b => b !== a && !enemies(a, b) && distance(a, b) <= u.radius);
       if (!allies.length) return false;
       a.charge = 0;

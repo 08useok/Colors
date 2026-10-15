@@ -1,7 +1,8 @@
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
+import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
-import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js";
+import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=3";
 import * as THREE from "three";
 import { AXES, resetAxe, upgradeAxe, chopTree, CHOP_WOOD_COVER, chopWoodDestination } from "./config/beta-chop-wood.js?v=2";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -10,7 +11,7 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=23";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=24";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -228,6 +229,8 @@ const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 const IS_BETA7_TEST = BETA_SEASON_ID === "beta7";
 const IS_BETA8_TEST = BETA_SEASON_ID === "beta8";
+let knockoutMatch = null;
+document.getElementById("knockout-toggle").classList.toggle("hidden", !IS_BETA8_TEST);
 if (IS_BETA8_TEST) {
   canvas.dataset.seasonTheme = "halloween-knockout";
   document.querySelector(".beta8-loading-bg").src = "./assets/art/beta8-halloween-loading.png";
@@ -419,6 +422,7 @@ function loadBetaState() {
     characterTrophies[selectedCharacter] += existingShowdownWins * 4;
   }
   const state = {
+    knockout: Object.fromEntries(["games","wins","losses"].map(key => [key, Math.max(0,Math.floor(Number(saved.knockout?.[key])||0))])),
     credits: Number.isFinite(saved.credits) ? saved.credits : 1500,
     coins: Number.isFinite(saved.coins) ? saved.coins : 3000,
     selectedCharacter,
@@ -530,6 +534,7 @@ const showdownSolids = [];
 let currentArenaMode = "lobby";
 // 경기장 모드에 맞는 충돌·지면 판정 목록. 사커는 쇼다운 맵의 벽을 쓰면 안 된다.
 function getArenaSolids() {
+  if (currentArenaMode === "knockout") return knockoutSolids;
   if (currentArenaMode === "goldRush") return goldArenaSolids;
   if (currentArenaMode === "chopWood") return chopWoodSolids;
   if (currentArenaMode === "soccer") return soccerSolids;
@@ -2832,7 +2837,7 @@ function renderBeta7Quests() {
 function renderBeta8Overview() {
   modalTitle.textContent = "시즌 8 · 할로윈 업데이트";
   const skins = BETA_SKINS.filter(skin => skin.season === "beta8");
-  modalContent.innerHTML = `<section class="storybook-intro"><span>HALLOWEEN · BETA SEASON 8</span><h2>라벤더와 할로윈 스킨 4종</h2><p>16종 캐릭터 전투 · 할로윈 로비·로딩 화면·UI · 오렌지·퍼플 궁극기 포함</p><p>KNOCKOUT 라운드 모드는 아직 준비 중입니다. 현재 플레이 가능한 정규 이벤트는 위 메뉴에서 선택하세요.</p></section><div class="beta-grid">${skins.map(skin => `<article class="beta-card"><span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span><h3>${getSkinName(skin)}</h3><p>${skin.desc}</p><p>무료 시험 · 캐릭터 메뉴에서 장착·해제</p><button data-open-beta8-character="${skin.character}">캐릭터에서 보기</button></article>`).join("")}</div>`;
+  modalContent.innerHTML = `<section class="storybook-intro"><span>HALLOWEEN · BETA SEASON 8</span><h2>라벤더와 할로윈 스킨 4종</h2><p>16종 캐릭터 전투 · 할로윈 로비·로딩 화면·UI · 오렌지·퍼플 궁극기 포함</p><p>KNOCKOUT 출시 · 플레이어와 아군 AI 2명 대 적 AI 3명 · 2라운드 선승 · 라운드 중 부활 없음 · 45초부터 독안개</p></section><div class="beta-grid">${skins.map(skin => `<article class="beta-card"><span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span><h3>${getSkinName(skin)}</h3><p>${skin.desc}</p><p>무료 시험 · 캐릭터 메뉴에서 장착·해제</p><button data-open-beta8-character="${skin.character}">캐릭터에서 보기</button></article>`).join("")}</div>`;
   modalContent.querySelectorAll("[data-open-beta8-character]").forEach(button => button.addEventListener("click", () => {
     const id = button.dataset.openBeta8Character;
     renderCharacters();
@@ -4610,7 +4615,7 @@ function updateAzureWave(dt) {
   return true;
 }
 function performCharacterAttack({ manualAim = false } = {}) {
-  if (goldRushState.dead || crystalUltimateBusy()) return;
+  if (goldRushState.dead || isKnockoutFrozen() || crystalUltimateBusy()) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
   if (goldRushState.active && goldRushState.mode === "soccer") {
@@ -6545,7 +6550,7 @@ if (IS_BETA7_TEST) {
   }
 }
 
-function clearGoldRushBots() {
+function clearBeta6RoundCombat() {
   clearLavenderPractice();
   if (beta6PlayerActor?.id === "green") setPlayerConcealedVisual(false);
   beta6PendingEvents.length = 0;
@@ -6563,6 +6568,10 @@ function clearGoldRushBots() {
   }
   beta6CombatVisuals.clear();
   clearBeta6AnalysisVisuals();
+}
+
+function clearGoldRushBots() {
+  clearBeta6RoundCombat();
   for (const bot of goldRushBots) {
     scene.remove(bot.mesh);
     scene.remove(bot.healthBar);
@@ -6729,7 +6738,7 @@ function createGoldRushBotAvatar(index, character = null) {
 }
 
 function beta6PlayerAttackBlocked() {
-  return Boolean(beta6Combat && beta6PlayerActor &&
+  return isKnockoutFrozen() || Boolean(beta6Combat && beta6PlayerActor &&
     (beta6Combat.time < beta6PlayerActor.frozenUntil || beta6Combat.time < beta6PlayerActor.lockUntil));
 }
 
@@ -6761,7 +6770,8 @@ function syncBeta6PlayerHud() {
 
 function useBeta6PlayerSkill(ultimate, manualAim = false) {
   const world = beta6Combat, actor = beta6PlayerActor;
-  if (!world || !actor || goldRushState.dead) return;
+  if (!world || !actor || goldRushState.dead || isKnockoutFrozen()) return;
+  if (ultimate && actor.id === "pink" && goldRushState.mode === "knockout") { showToast("KNOCKOUT에서는 부활 궁극기를 사용할 수 없습니다."); return; }
   actor.x = player.position.x; actor.z = player.position.z; actor.hp = goldRushState.health;
   const facing = Math.PI / 2 - player.rotation.y;
   let target = world.actors.filter(a => a !== actor && a.hp > 0 && (!actor.team || a.team !== actor.team) && !world.hidden(a,actor))
@@ -6834,12 +6844,13 @@ function processBeta6CombatEvent(event) {
 
 // 팀전(젬 그랩)에서만 편을 가른다. 나머지 모드는 예전처럼 전원 적이다.
 function beta6PlayerTeam() {
-  return ["gemGrab", "chopWood"].includes(goldRushState.mode) ? "a" : null;
+  return ["gemGrab", "chopWood", "knockout"].includes(goldRushState.mode) ? "a" : null;
 }
 
 function startBeta6BotCombat() {
   if (goldRushState.mode === "soccer") return;
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
+    allowRevives: goldRushState.mode !== "knockout",
     seed: Math.floor(Math.random() * 0x7fffffff),
     bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? 19 : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
     retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
@@ -6999,7 +7010,7 @@ function updateBeta6BotCombat(dt) {
   hero.invulnerableUntil = deadline(goldRushState.invulnerableUntil);
   for (const bot of goldRushBots) {
     let actor = bot.combatActor;
-    if (bot.dead && goldRushState.mode !== "showdown" && clock.elapsedTime >= bot.respawnAt) {
+    if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
       world.remove(actor);
       actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
@@ -7115,7 +7126,7 @@ function updateBeta6BotCombat(dt) {
 function createGoldRushBots() {
   clearGoldRushBots();
   let playerModelCount = 0;
-  const teamMode = ["soccer", "gemGrab", "chopWood"].includes(goldRushState.mode);
+  const teamMode = ["soccer", "gemGrab", "chopWood", "knockout"].includes(goldRushState.mode);
   const botCount = teamMode ? 5 : 9;
   for (let i = 0; i < botCount; i += 1) {
     const opponents = CHARACTERS.filter(c => c.id !== betaState.selectedCharacter);
@@ -7205,7 +7216,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
   updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
   bot.marker.material.color.setHex(0xffffff);
   setTimeout(() => {
-    if (!bot.dead) bot.marker.material.color.setHex(CHARACTERS.find(c => c.id === bot.characterId)?.color ?? GOLD_RUSH_BOT_COLORS[bot.id - 1]);
+    if (!bot.dead) bot.marker.material.color.setHex(goldRushState.mode === "knockout" ? (bot.team === "a" ? 0x369aff : 0xff674d) : CHARACTERS.find(c => c.id === bot.characterId)?.color ?? GOLD_RUSH_BOT_COLORS[bot.id - 1]);
   }, 90);
   if (bot.health > 0) return;
   if (["goldRush", "gemGrab"].includes(goldRushState.mode)) dropGoldRushGold(bot, bot.mesh.position);
@@ -7288,7 +7299,7 @@ function updateGoldRushBots(dt) {
   if (beta6Combat) { updateBeta6BotCombat(dt); return; }
   for (const bot of goldRushBots) {
     if (bot.dead) {
-      if (goldRushState.mode === "showdown") continue;
+      if (["showdown", "knockout"].includes(goldRushState.mode)) continue;
       if (clock.elapsedTime < bot.respawnAt) continue;
       bot.dead = false;
       bot.health = bot.maxHealth;
@@ -7586,6 +7597,7 @@ function updateTestCombatHud(dt) {
 }
 
 function updateGoldRushHud() {
+  if (goldRushState.mode === "knockout") { updateKnockoutHud(); return; }
   if (goldRushState.mode === "chopWood") { updateGoldRushCombatHud(); return; }
   const gemGrab = goldRushState.mode === "gemGrab";
   if (goldRushState.mode === "gemGrab") { updateGemGrabHud(); return; }
@@ -7631,6 +7643,13 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   if (goldRushState.ended) return;
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
+  const wasKnockout = goldRushState.mode === "knockout";
+  if (wasKnockout) { cancelUltimateAim(); blueDashState = null; }
+  if (wasKnockout && !abandoned) {
+    betaState.knockout ??= { games: 0, wins: 0, losses: 0 };
+    betaState.knockout.games++;
+    betaState.knockout[playerWon ? "wins" : "losses"]++;
+  }
   let trophyDelta = abandoned ? 0 : playerWon ? 8 : -2;
   if (goldRushState.mode === "soccer") {
     betaState.soccerKick.games += 1;
@@ -7690,6 +7709,8 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   showToast(`${message} · 🏆 ${trophyDeltaLabel}`);
   clearGoldRushBots();
   goldMine.visible = false;
+  knockoutArena.visible = false;
+  document.getElementById("knockout-exit").classList.add("hidden");
   gemArena.visible = false;
   chopWoodArena.visible = false;
   goldArena.visible = false; activeEventLayout=null;
@@ -7710,7 +7731,8 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
     TRAINING_TELEPORT_POINT.z,
   );
   resetPlayer();
-  if (playerWon) showDailyRewardReveal();
+  if (wasKnockout && !abandoned) showKnockoutResult(message);
+  else if (playerWon) showDailyRewardReveal();
 }
 
 // 베타 자체 경기장: 메인 페이지나 계정에 의존하지 않는다.
@@ -7794,10 +7816,112 @@ function betaEventBushHidden(mesh,observer) {
     && clock.elapsedTime >= (mesh.userData.eventRevealedUntil ?? 0)
     && Math.hypot(mesh.position.x-observer.x,mesh.position.z-observer.z)>3;
 }
+// Dedicated Halloween arena; no lobby, altar, gold or soccer objects are shared.
+const knockoutArena = new THREE.Group();
+knockoutArena.name = "knockout-halloween-arena";
+knockoutArena.visible = false;
+scene.add(knockoutArena);
+const knockoutSolids = [];
+const knockoutPoison = [];
+if (IS_BETA8_TEST) {
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(42, 3, 42), new THREE.MeshStandardMaterial({ color: 0x514062, roughness: .92 }));
+  floor.receiveShadow = true; knockoutArena.add(floor);
+  knockoutSolids.push({ x: 0, z: 0, halfW: 21, halfD: 21, top: 1.5, walkable: true, mesh: floor });
+  for (const [x,z,w,d] of [[-20.3,0,.6,40.6],[20.3,0,.6,40.6],[0,-20.3,40.6,.6],[0,20.3,40.6,.6]]) {
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(w, 2.6, d), new THREE.MeshStandardMaterial({color:0x40324e,roughness:.9}));
+    wall.position.set(x,2.8,z); wall.castShadow = true; knockoutArena.add(wall);
+    knockoutSolids.push({ x,z,halfW:w/2,halfD:d/2,top:4.1,walkable:false,mesh:wall });
+    applyBetaWallModel(wall,w,2.6,d,canvas);
+  }
+  for (let i=0;i<4;i++) {
+    const fog = new THREE.Mesh(new THREE.BoxGeometry(1,.04,1),new THREE.MeshBasicMaterial({color:0x98d84d,transparent:true,opacity:.23,depthWrite:false}));
+    fog.visible=false; knockoutArena.add(fog); knockoutPoison.push(fog);
+  }
+  for (const team of ["a","b"]) {
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(18,.04,3),new THREE.MeshBasicMaterial({color:team==="a"?0x369aff:0xff674d,transparent:true,opacity:.32}));
+    pad.position.set(0,1.53,team==="a"?-15:15); knockoutArena.add(pad);
+  }
+}
+
+function isKnockoutFrozen() {
+  return goldRushState.active && goldRushState.mode === "knockout" && knockoutMatch?.phase !== "fighting";
+}
+
+function resetKnockoutRound() {
+  cancelUltimateAim(); clearAzureWave(); clearYellowCircuit(); clearCrystalUltimate(); blueDashState=null;
+  clearBeta6RoundCombat(); resetAllUltimateCharges();
+  for (const projectile of betaProjectiles.splice(0)) {
+    scene.remove(projectile.mesh);
+    projectile.mesh.traverse(part => { part.geometry?.dispose(); for(const material of Array.isArray(part.material)?part.material:[part.material]) material?.dispose(); });
+  }
+  updateGoldRushAttackEffects(Infinity);
+  Object.assign(goldRushState,{dead:false,health:goldRushState.maxHealth,ammo:goldRushState.maxAmmo,reloadTimer:0,respawnAt:Infinity,invulnerableUntil:clock.elapsedTime+KNOCKOUT_RULES.countdown,lastDamageAt:clock.elapsedTime});
+  initialSpawnPoint.set(0,1.55,-15); resetPlayer(); player.visible=true;
+  Object.assign(player.userData,{mintIce:0,mintFrozenUntil:0,slowUntil:0,poisonUntil:0,inMalfunctionZone:false});
+  const positions=[[-6,-15],[6,-15],[-6,15],[0,15],[6,15]];
+  goldRushBots.forEach((bot,i)=>{
+    const [x,z]=positions[i];
+    bot.spawn.set(x,1.55,z);bot.mesh.position.copy(bot.spawn);
+    Object.assign(bot,{dead:false,health:bot.maxHealth,ammo:bot.maxAmmo,reloadTimer:0,respawnAt:Infinity,invulnerableUntil:clock.elapsedTime+KNOCKOUT_RULES.countdown});
+    Object.assign(bot.mesh.userData,{health:bot.maxHealth,mintIce:0,mintFrozenUntil:0,slowUntil:0,poisonUntil:0,inMalfunctionZone:false,eventRevealedUntil:0});
+    bot.mesh.visible=true;bot.marker.material.color.setHex(bot.team==="a"?0x369aff:0xff674d);
+    updateGoldRushHealthBar(bot.healthBar,bot.health,bot.maxHealth);
+    bot.healthBar.userData.fill.material.color.setHex(bot.team==="a"?0x369aff:0xff674d);
+  });
+  knockoutPoison.forEach(mesh=>mesh.visible=false);
+  respawnOverlay.classList.add("hidden");
+  startBeta6BotCombat();
+  updateGoldRushHealthBar(playerGoldRushHealthBar,goldRushState.health,goldRushState.maxHealth);
+}
+
+function updateKnockoutHud() {
+  if (!knockoutMatch) return;
+  const m=knockoutMatch, aliveA=goldRushBots.filter(b=>b.team==="a"&&!b.dead).length+(goldRushState.dead?0:1),aliveB=goldRushBots.filter(b=>b.team==="b"&&!b.dead).length;
+  goldRushRivalsEl.textContent=`BLUE ${m.wins.a} : ${m.wins.b} RED · 생존 ${aliveA} : ${aliveB}`;
+  goldRushTimerEl.textContent=m.phase==="fighting"?`${Math.ceil(Math.max(0,KNOCKOUT_RULES.roundSeconds-clock.elapsedTime+m.startedAt))}초`:`${Math.ceil(Math.max(0,m.until-clock.elapsedTime))}`;
+  goldRushStatusEl.textContent=m.phase==="countdown"?`${m.round}라운드 준비 · ${Math.ceil(Math.max(0,m.until-clock.elapsedTime))}`:m.phase==="intermission"?`${m.lastWinner===null?(m.lastReason==="timeout"?"시간 종료·무승부":"동시 전멸·무승부"):m.lastWinner==="a"?"BLUE 라운드 승리":"RED 라운드 승리"} · 다음 라운드 준비`:goldRushState.dead?"탈락 · 살아 있는 아군을 관전합니다":clock.elapsedTime-m.startedAt>=KNOCKOUT_RULES.poisonStarts?"독안개가 좁혀옵니다 · 중앙으로 이동하세요":"상대 팀을 모두 쓰러뜨리세요 · 라운드 중 부활 없음";
+  Object.assign(canvas.dataset,{knockoutRound:String(m.round),knockoutPhase:m.phase,knockoutScore:`${m.wins.a}:${m.wins.b}`,knockoutAlive:`${aliveA}:${aliveB}`});
+  updateGoldRushCombatHud();
+}
+
+function updateKnockout(dt) {
+  const m=knockoutMatch;if(!m)return;
+  const now=clock.elapsedTime;
+  if(m.phase==="fighting") {
+    updateGoldRushBots(dt);
+    const elapsed=now-m.startedAt,half=knockoutSafeHalf(elapsed);
+    if(elapsed>=KNOCKOUT_RULES.poisonStarts) {
+      const strips=[[-(20+half)/2,0,20-half,40],[(20+half)/2,0,20-half,40],[0,-(20+half)/2,half*2,20-half],[0,(20+half)/2,half*2,20-half]];
+      knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(w,1,d);});
+      const outside=p=>Math.max(Math.abs(p.x),Math.abs(p.z))>half;
+      if(!goldRushState.dead&&outside(player.position))damageGoldRushPlayer(goldRushState.maxHealth*.1*dt);
+      for(const bot of goldRushBots)if(!bot.dead&&outside(bot.mesh.position))damageGoldRushBot(bot,bot.maxHealth*.1*dt,false,true);
+    }
+  }
+  const fighters=[{team:"a",dead:goldRushState.dead,health:goldRushState.health,maxHealth:goldRushState.maxHealth},...goldRushBots];
+  const event=advanceKnockout(m,fighters,now);
+  if(event==="next-round")resetKnockoutRound();
+  if(event==="round-end")cancelUltimateAim();
+  if(event==="match-end") {
+    updateKnockoutHud();
+    endGoldRush(`KNOCKOUT ${m.winner==="a"?"승리!":"패배"} · ${m.wins.a}:${m.wins.b}`,m.winner==="a");
+    return;
+  }
+  if(!goldRushState.dead)faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
+  updateKnockoutHud();
+}
+
+function showKnockoutResult(message) {
+  modal.classList.remove("hidden");modalTitle.textContent=message;
+  modalContent.innerHTML=`<section class="storybook-intro"><span>KNOCKOUT · MATCH COMPLETE</span><h2>BLUE ${knockoutMatch.wins.a} : ${knockoutMatch.wins.b} RED</h2><p>2라운드 선승 · 라운드 중 부활 없음</p><button data-knockout-again>다시 플레이</button><button data-knockout-lobby>로비로</button></section>`;
+  modalContent.querySelector("[data-knockout-again]").onclick=()=>{closeBetaModal();startGoldRush("knockout");};
+  modalContent.querySelector("[data-knockout-lobby]").onclick=closeBetaModal;
+}
+
 const eventArenaRecords=new Map();
 function prepareBetaEventMap(mode,plus) {
   const key=plus ? "showdownPlus" : mode;
-  const group=({showdown:iceCreamShowdownMap,soccer:soccerArena,gemGrab:gemArena,chopWood:chopWoodArena,goldRush:goldArena})[mode];
+  const group=({knockout:knockoutArena,showdown:iceCreamShowdownMap,soccer:soccerArena,gemGrab:gemArena,chopWood:chopWoodArena,goldRush:goldArena})[mode];
   const geometry=getArenaSolids();
   let record=eventArenaRecords.get(group);
   if(!record){
@@ -7814,6 +7938,7 @@ function prepareBetaEventMap(mode,plus) {
   record.bushes.forEach(m=>m.visible=index===0);
   const reserved=mode==="chopWood" ? [[0,-25,4],[0,25,4],...[-8,0,8].flatMap(x=>[[x,-28,2],[x,28,2]])]
     : mode==="soccer" ? [[0,0,3],[-6,-12,2],[6,-12,2],[-7,12,2],[0,12,2],[7,12,2],[0,-14,2]]
+    : mode==="knockout" ? [[0,-15,2],[-6,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]
     : mode==="gemGrab" ? [[0,0,3],[-5,15,2],[5,15,2],[-6,-15,2],[0,-15,2],[6,-15,2],[0,15,2]]
     : [[0,15,2],[0,0,3],...Array.from({length:9},(_,i)=>[Math.sin(i*Math.PI*2/9)*9,Math.cos(i*Math.PI*2/9)*9,1.4])];
   activeEventLayout=eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:20,reserved);
@@ -7835,12 +7960,16 @@ function prepareBetaEventMap(mode,plus) {
     let i=0;for(let x=0;x<cols;x++)for(let z=0;z<rows;z++){matrix.makeTranslation(r.x-r.width/2+(x+.5)*r.width/cols,2,r.z-r.depth/2+(z+.5)*r.depth/rows);m.setMatrixAt(i++,matrix);}m.castShadow=true;record.overlay.add(m);
   }
   // Include the original map walls in navigation without replacing their visuals.
-  if(index===0)activeEventLayout.walls=record.walls.map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2}));
+  if(index===0 && mode!=="knockout")activeEventLayout.walls=record.walls.map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2}));
   if(index===0 && mode==="chopWood")activeEventLayout.bushes=[[-10,0],[10,0],[0,-10],[0,10]].map(([x,z])=>({x,z,width:2.4,depth:2.4}));
   canvas.dataset.eventMap=activeEventLayout.id;canvas.dataset.eventMapWalls=String(activeEventLayout.walls.length);canvas.dataset.eventMapBushes=String(activeEventLayout.bushes.length);
 }
 
 function startGoldRush(mode = "goldRush", showdownPlus = false) {
+  if (mode === "knockout" && !IS_BETA8_TEST) return;
+  knockoutMatch = mode === "knockout" ? createKnockoutMatch(clock.elapsedTime) : null;
+  knockoutArena.visible = mode === "knockout";
+  document.getElementById("knockout-exit").classList.toggle("hidden", mode !== "knockout");
   clearAzureWave();
   clearYellowCircuit();
   // 이전 경기의 공격이 새 경기에서 피해를 주거나 궁극기를 충전하지 않도록 정리한다.
@@ -7908,7 +8037,13 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   soccerToggle.textContent = mode === "soccer" ? "SOCCER KICK 재시작" : "SOCCER KICK 시작";
   for (let i = goldPickups.length - 1; i >= 0; i -= 1) removeGoldPickup(i);
   createGoldRushBots();
-  if (mode === "chopWood") {
+  if (mode === "knockout") {
+    resetKnockoutRound();
+    goldRushHud.querySelector("strong").textContent = "KNOCKOUT · 3v3 · 2라운드 선승";
+    goldCountEl.parentElement.style.display = "none";
+    canvas.dataset.betaMode = "knockout";
+    updateKnockoutHud();
+  } else if (mode === "chopWood") {
     for (const tree of Object.values(chopWoodTrees)) { tree.health = 100; tree.mesh.scale.setScalar(1); }
     [goldRushState, ...goldRushBots].forEach(fighter => { resetAxe(fighter); fighter.chopDamage = 0; fighter.chopKills = 0; fighter.maxAxeLevel = 0; });
     const spawns = [[-8,-28],[8,-28],[-8,28],[0,28],[8,28]];
@@ -7967,6 +8102,15 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
 function killGoldRushPlayer() {
   clearAzureWave();
   if (!goldRushState.active || goldRushState.dead || goldRushState.ended) return;
+  if (goldRushState.mode === "knockout") {
+    goldRushState.health = 0; goldRushState.dead = true;
+    goldRushState.respawnAt = Infinity;
+    if (beta6PlayerActor) beta6PlayerActor.hp = 0;
+    player.visible = false; playerGoldRushHealthBar.visible = false;
+    respawnOverlay.classList.add("hidden");
+    updateKnockoutHud();
+    return;
+  }
   if (goldRushState.mode === "showdown") {
     goldRushState.health = 0;
     goldRushState.dead = true;
@@ -8020,6 +8164,7 @@ function updatePracticeRespawn() {
 
 function updateGoldRush(dt) {
   if (!goldRushState.active || goldRushState.ended) return;
+  if (goldRushState.mode === "knockout") { updateKnockout(dt); return; }
   faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
   if (goldRushState.dead) {
     const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
@@ -8282,8 +8427,13 @@ canvas.addEventListener("wheel", (event) => {
 
 function resetPlayer() { clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; }
 resetPlayer();
-document.getElementById("reset-btn").addEventListener("click", resetPlayer);
+document.getElementById("reset-btn").addEventListener("click", () => {
+  if (goldRushState.active && goldRushState.mode === "knockout") { showToast("KNOCKOUT 경기 중에는 훈련장으로 이동할 수 없습니다."); return; }
+  resetPlayer();
+});
 goldRushToggle.addEventListener("click", () => startGoldRush("goldRush"));
+document.getElementById("knockout-toggle").addEventListener("click", () => startGoldRush("knockout"));
+document.getElementById("knockout-exit").addEventListener("click", () => { if(goldRushState.active && goldRushState.mode === "knockout")endGoldRush("KNOCKOUT 중단",false,null,true); });
 gemGrabToggle.addEventListener("click", () => startGoldRush("gemGrab"));
 showdownPlusToggle.addEventListener("click", () => startGoldRush("showdown", true));
 showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
@@ -9190,7 +9340,8 @@ function animate() {
     camera.lookAt(cameraLookTarget);
   } else {
     // 수동 에임 중이면 카메라가 조준 방향 뒤로 부드럽게 돌아간다
-    cameraTarget.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
+    const spectator = goldRushState.active && goldRushState.mode === "knockout" && goldRushState.dead ? goldRushBots.find(bot=>bot.team==="a"&&!bot.dead) : null;
+    cameraTarget.copy(spectator?.mesh.position ?? player.position).add(new THREE.Vector3(0, 1.2, 0));
     const horizontal = Math.cos(pitch) * distance;
     const desired = new THREE.Vector3(
       cameraTarget.x - Math.sin(yaw) * horizontal,

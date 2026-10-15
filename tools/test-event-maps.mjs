@@ -28,7 +28,7 @@ for(const [mode,maps] of Object.entries(EVENT_MAPS)){
  }
 }
 const wall={x:0,z:0,width:2,depth:6},p={x:-1.4,z:0},v={x:4,z:0};bounceMapBall(p,v,[wall]);assert.ok(v.x<0);assert.ok(p.x<=-1.55);
-console.log('21 maps: terrain density, spawn/objective clearance, navigation and soccer wall bounce passed');
+console.log(Object.values(EVENT_MAPS).flat().length+' maps: terrain density, spawn/objective clearance, navigation and soccer wall bounce passed');
 
 
 const fastBall={x:4,z:0},fastVelocity={x:100,z:0};bounceMapBall(fastBall,fastVelocity,[wall],.55,{x:-4,z:0});assert.ok(fastVelocity.x<0);assert.ok(fastBall.x<-1.5);

@@ -1,5 +1,6 @@
 // Coordinates are fractions of each mode's half-width / half-length.
 const TITLES = {
+  knockout: ["유령 결투장", "저주받은 성벽", "안개 묘지"],
   showdown: ["마지막 광장", "철벽 골목", "안개 호수"],
   showdownPlus: ["승부의 거리", "포위된 구역", "그림자 수풀"],
   chopWood: ["톱밥 숲", "목재 미로", "깊은 숲 벌목지"],
@@ -28,6 +29,8 @@ export const EVENT_MAPS = Object.fromEntries(Object.entries(TITLES).map(([mode,n
   lakes:index===2 && ["showdown","showdownPlus","goldRush","takedown"].includes(mode)
     ? [[-.76,.36,.1,.16],[.76,-.36,.1,.16]]:[],
 }))]));
+EVENT_MAPS.knockout[0].walls = [[-.5,0,.12,.45],[.5,0,.12,.45],[-.2,-.3,.2,.07],[.2,.3,.2,.07]];
+EVENT_MAPS.knockout[0].bushes = [[-.7,.5,.15,.15],[.7,-.5,.15,.15]];
 // Keep the boss's open arena intact on both added Take Down layouts.
 EVENT_MAPS.takedown[1].walls=[.38,.5,.62,.74].flatMap(r=>Array.from({length:16},(_,i)=>[Math.cos(i*Math.PI/8)*r,Math.sin(i*Math.PI/8)*r,.065,.05]));
 EVENT_MAPS.takedown[1].bushes=[[-.4,-.5,.12,.12],[.4,-.5,.12,.12],[-.4,.5,.12,.12],[.4,.5,.12,.12]];
