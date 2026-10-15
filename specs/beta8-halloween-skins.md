@@ -1,6 +1,6 @@
 # 시즌 8 할로윈 스킨 — T포즈 콘셉트
 
-2026-10-14 · 할로윈 / KNOCKOUT 로드맵과 [기념 팔레트](beta8-color-palette.md)를 따른 디자인 시안이다. FBX 제작·상점 출시·게임 장착은 아직 적용하지 않았다.
+2026-10-14 디자인 시안 · 할로윈 / KNOCKOUT 로드맵과 [기념 팔레트](beta8-color-palette.md)를 따른다. **2026-10-15 현재 사용자 제공 FBX 4종을 베타 상점·캐릭터 장착·에셋 쇼룸에 연결했다.** 실제 적용 현황은 [시즌 8 스펙](beta-season-8.md#할로윈-스킨-4종--베타-적용)을 따른다.
 
 ![할로윈 스킨 4종 T포즈](../assets/art/beta8-halloween-skins-tpose.png)
 

@@ -59,10 +59,14 @@ try{
  await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__qa,{timeout:90000});assert.equal(await page.locator('html').getAttribute('lang'),'en');
  if(process.argv.includes('--main-only')) { assert.deepEqual(errors,[]);console.log('PASS: main UI, archives, open account panel and language persistence');process.exitCode=0; }
  else {
+ await page.evaluate(()=>localStorage.setItem('colorsBetaSeason8Test',JSON.stringify({beta8HalloweenSkinsGranted:true,coins:4321,credits:1234,ownedSkins:['beta8_orange_jack_o_lantern','beta8_purple_potion_witch','beta8_lavender_ghost_bride'],selectedSkins:{orange:'beta8_orange_jack_o_lantern'}})));
  await page.goto(base+'/beta-season.html',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__qa,{timeout:90000});
- assert.equal(await page.evaluate(()=>__qa.BETA_SKINS.length),7);
- for(const id of ['orange','purple','lavender']){
-  await page.evaluate(id=>{if(!__qa.betaState.ownedCharacters.includes(id))__qa.betaState.ownedCharacters.push(id);__qa.selectCharacter(id);},id);
+ assert.equal(await page.evaluate(()=>__qa.BETA_SKINS.length),8);
+ assert(await page.evaluate(()=>__qa.betaState.ownedSkins.includes('beta8_ivory_skeleton')));
+ assert.equal(await page.evaluate(()=>__qa.betaState.coins),4321);
+ assert.equal(await page.evaluate(()=>__qa.betaState.selectedSkins.orange),'beta8_orange_jack_o_lantern');
+ for(const id of ['orange','purple','lavender','ivory']){
+  await page.evaluate(id=>{if(!__qa.betaState.ownedCharacters.includes(id))__qa.betaState.ownedCharacters.push(id);const skin=__qa.BETA_SKINS.find(s=>s.season==='beta8'&&s.character===id);__qa.equipSkin(id,skin.id);__qa.selectCharacter(id);},id);
   await page.waitForFunction(id=>__qa.motion()?.characterId===id,id,{timeout:120000});
   const stats=await page.evaluate(()=>{const q=__qa,model=q.model(),motion=q.motion();model.updateMatrixWorld(true);const box=new q.THREE.Box3().setFromObject(model,true);let tris=0,textured=0,skinned=0,meshes=[],bones=[];model.traverse(o=>{if(o.isBone)bones.push(o);if(!o.isMesh)return;tris+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;skinned+=!!o.isSkinnedMesh;textured+=(Array.isArray(o.material)?o.material:[o.material]).filter(m=>m.map).length;meshes.push(o.name);});const pose=()=>bones.map(b=>b.quaternion.toArray().join(',')).join(';'),before=pose();const action=motion.actions.stop;q.updateCharacterMotion(true,.2);const time=action.time,poseChanged=before!==pose();q.updateCharacterMotion(false,.1);return{id:q.betaState.selectedCharacter,source:q.getCharacterMotionSource(q.betaState.selectedCharacter).paths.stop,box:box.getSize(new q.THREE.Vector3()).toArray(),min:box.min.toArray(),tris,textured,skinned,meshes,time,poseChanged,idleTime:action.time};});
   assert(stats.source.includes('/skins/'));assert(stats.skinned>0);assert(stats.textured>0);assert(stats.time>0);assert(stats.poseChanged);assert.equal(stats.idleTime,0);assert(stats.box[1]>2&&stats.box[1]<5);report.push(stats);

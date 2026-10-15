@@ -1,4 +1,5 @@
 export const SKINS = {
+  beta8_ivory_skeleton: { id:"beta8_ivory_skeleton",name:"해골 아이보리",nameEn:"Skeleton Ivory",character:"ivory",season:"beta8",rarity:"epic",cost:0,previewOnly:true,desc:"뼈 장식과 유령빛 의상의 할로윈 아이보리 · 베타 무료 시험" },
   beta8_orange_jack_o_lantern: { id:"beta8_orange_jack_o_lantern",name:"잭오랜턴 오렌지",character:"orange",season:"beta8",rarity:"epic",cost:0,previewOnly:true,desc:"호박등과 망토를 두른 할로윈 오렌지 · 베타 무료 시험" },
   beta8_purple_potion_witch: { id:"beta8_purple_potion_witch",name:"마녀 퍼플",character:"purple",season:"beta8",rarity:"epic",cost:0,previewOnly:true,desc:"초록 물약을 만드는 보라색 마녀 · 베타 무료 시험" },
   beta8_lavender_ghost_bride: { id:"beta8_lavender_ghost_bride",name:"유령 신부 라벤더",character:"lavender",season:"beta8",rarity:"epic",cost:0,previewOnly:true,desc:"보라색 향기와 베일을 두른 유령 신부 · 베타 무료 시험" },

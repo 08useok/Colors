@@ -1,0 +1,165 @@
+{
+  "errors": [],
+  "report": [
+    {
+      "lang": "ko",
+      "names": [
+        "레드",
+        "그린",
+        "블루",
+        "오렌지",
+        "옐로우",
+        "시안",
+        "퍼플",
+        "핑크",
+        "크림슨",
+        "골드",
+        "아이보리",
+        "샤르트뢰즈",
+        "민트",
+        "크리스탈",
+        "애저"
+      ]
+    },
+    {
+      "lang": "en",
+      "names": [
+        "Red",
+        "Green",
+        "Blue",
+        "Orange",
+        "Yellow",
+        "Cyan",
+        "Purple",
+        "Pink",
+        "Crimson",
+        "Gold",
+        "Ivory",
+        "Chartreuse",
+        "Mint",
+        "Crystal",
+        "Azure"
+      ]
+    },
+    {
+      "lang": "ko",
+      "names": [
+        "레드",
+        "그린",
+        "블루",
+        "오렌지",
+        "옐로우",
+        "시안",
+        "퍼플",
+        "핑크",
+        "크림슨",
+        "골드",
+        "아이보리",
+        "샤르트뢰즈",
+        "민트",
+        "크리스탈",
+        "애저"
+      ]
+    },
+    {
+      "id": "orange",
+      "source": "./assets/3d/orange/skins/jack-o-lantern/walk-m1s.fbx?v=86",
+      "box": [
+        1.3817479828099906,
+        2.70000007183729,
+        1.3004332538107821
+      ],
+      "min": [
+        -40.69087372306768,
+        6.2499998493876765,
+        9.34978354124199
+      ],
+      "tris": 57856,
+      "textured": 1,
+      "skinned": 2,
+      "meshes": [
+        "output_unwrapped",
+        ""
+      ],
+      "time": 0.2,
+      "poseChanged": true,
+      "idleTime": 0,
+      "showdownModelRetained": true
+    },
+    {
+      "id": "purple",
+      "source": "./assets/3d/purple/skins/potion-witch/walk-m1s.fbx?v=86",
+      "box": [
+        1.6718893726673372,
+        2.6999999588100154,
+        1.548252494516456
+      ],
+      "min": [
+        -40.83594387142641,
+        6.250000126601662,
+        9.225873752741773
+      ],
+      "tris": 59440,
+      "textured": 1,
+      "skinned": 2,
+      "meshes": [
+        "Mesh_0",
+        ""
+      ],
+      "time": 0.2,
+      "poseChanged": true,
+      "idleTime": 0,
+      "showdownModelRetained": true
+    },
+    {
+      "id": "lavender",
+      "source": "./assets/3d/lavender/skins/ghost-bride/walk-m1s.fbx?v=86",
+      "box": [
+        2.053941244278711,
+        2.6999999820908354,
+        1.3597279624831042
+      ],
+      "min": [
+        -41.02697068966025,
+        6.2500000931322575,
+        9.320136195709738
+      ],
+      "tris": 116504,
+      "textured": 1,
+      "skinned": 2,
+      "meshes": [
+        "Mesh_0",
+        ""
+      ],
+      "time": 0.2,
+      "poseChanged": true,
+      "idleTime": 0,
+      "showdownModelRetained": true
+    },
+    {
+      "id": "ivory",
+      "source": "./assets/3d/ivory/skins/skeleton/walk-m1s.fbx?v=86",
+      "box": [
+        1.1897330010427822,
+        2.6999999821548935,
+        1.1863827509569536
+      ],
+      "min": [
+        -40.594866877707034,
+        6.249999871943147,
+        9.406808659446119
+      ],
+      "tris": 197044,
+      "textured": 1,
+      "skinned": 2,
+      "meshes": [
+        "Mesh_0",
+        ""
+      ],
+      "time": 0.2,
+      "poseChanged": true,
+      "idleTime": 0,
+      "showdownModelRetained": true
+    }
+  ]
+}

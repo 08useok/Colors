@@ -35,11 +35,11 @@ try {
  }
  const a=await page.evaluate(()=>__aimQA.loadAccount());assert.equal(a.coins,1800);assert(a.cosmetics.ownedEmotes.includes('emote_thumbs'));assert.equal(a.cosmetics.ownedEmotes.length,5);
  await page.goto(base+'/beta-season.html',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__aimQA,{timeout:60000});
- const beta=await page.evaluate(()=>({season:__aimQA.BETA_SEASON_ID,roster:__aimQA.CHARACTERS.map(c=>c.id),skinCount:__aimQA.BETA_SKINS.length,storage:__aimQA.BETA_STORAGE_KEY,heading:document.querySelector('.beta-header h1').textContent,title:document.title}));assert.equal(beta.season,'beta8');assert.equal(beta.roster.length,16);assert(beta.roster.includes('lavender'));assert.equal(beta.skinCount,7);assert.equal(beta.storage,'colorsBetaSeason8Test');assert(beta.heading.includes('8'));report.push(beta);
+ const beta=await page.evaluate(()=>({season:__aimQA.BETA_SEASON_ID,roster:__aimQA.CHARACTERS.map(c=>c.id),skinCount:__aimQA.BETA_SKINS.length,storage:__aimQA.BETA_STORAGE_KEY,heading:document.querySelector('.beta-header h1').textContent,title:document.title}));assert.equal(beta.season,'beta8');assert.equal(beta.roster.length,16);assert(beta.roster.includes('lavender'));assert.equal(beta.skinCount,8);assert.equal(beta.storage,'colorsBetaSeason8Test');assert(beta.heading.includes('8'));report.push(beta);
  for (const season of ['beta5','beta6','beta7']) {
   await page.goto(base+'/beta-season.html?test='+season,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__aimQA,{timeout:60000});
   const current=await page.evaluate(()=>({season:__aimQA.BETA_SEASON_ID,title:document.title,heading:document.querySelector('.beta-header h1').textContent}));
   assert.equal(current.season,season);assert(current.title.includes(season.slice(-1)));assert(current.heading.includes(season.slice(-1)));report.push(current);
  }
- assert.deepEqual(errors,[]);writeFileSync('specs/emote-beta8-verification.json',JSON.stringify({errors,report},null,2)+'\n');console.log('PASS: 9 shop emotes, 4 actual purchases/equips/key uses, image pins, cooldown/death/lobby guards, preserved ownership, beta8 default16 and 7 skins');
+ assert.deepEqual(errors,[]);writeFileSync('specs/emote-beta8-verification.json',JSON.stringify({errors,report},null,2)+'\n');console.log('PASS: 9 shop emotes, 4 actual purchases/equips/key uses, image pins, cooldown/death/lobby guards, preserved ownership, beta8 default16 and 8 skins');
 }finally{await browser?.close();server.closeAllConnections();await new Promise(done=>server.close(done));}

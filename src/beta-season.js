@@ -11,7 +11,7 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=19";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=23";
-import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.3";
+import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
@@ -353,7 +353,11 @@ if (IS_BETA8_TEST) {
   const tagline = document.querySelector(".beta-header p");
   if (heading) heading.textContent = "베타 시즌 8 테스트";
   if (rankChip) rankChip.textContent = "베타 시즌 8 테스트";
-  if (tagline) tagline.textContent = "🎃 할로윈 · 라벤더 포함 16종 전투 테스트";
+  if (tagline) tagline.textContent = "🎃 할로윈 · 라벤더 출시 · 스킨 4종 · 16종 전투";
+  const seasonOverview = document.querySelector('[data-panel="quests"]');
+  if (seasonOverview) seasonOverview.textContent = "시즌 8 업데이트";
+  const archivedProps = document.querySelector('[data-panel="seaprops"]');
+  if (archivedProps) archivedProps.textContent = "이전 시즌 소품";
   if (locationName) locationName.textContent = "할로윈 유령 광장";
   const loading = document.querySelector(".beta6-loading-status");
   if (loading) {
@@ -466,13 +470,19 @@ function loadBetaState() {
       if (!state.seasonProps.owned.includes(propId)) state.seasonProps.owned.push(propId);
     }
   }
-  if (IS_BETA8_TEST && !saved.beta8HalloweenSkinsGranted) {
+  if (IS_BETA8_TEST) {
+    const granted = new Set(Array.isArray(saved.beta8HalloweenGrantedSkinIds)
+      ? saved.beta8HalloweenGrantedSkinIds
+      : saved.beta8HalloweenSkinsGranted ? ["beta8_orange_jack_o_lantern", "beta8_purple_potion_witch", "beta8_lavender_ghost_bride"] : []);
     for (const skin of BETA_SKINS.filter(skin => skin.season === "beta8")) {
+      if (granted.has(skin.id)) continue;
       if (!state.ownedSkins.includes(skin.id)) state.ownedSkins.push(skin.id);
       if (!state.selectedSkins[skin.character]) state.selectedSkins[skin.character]=skin.id;
+      granted.add(skin.id);
     }
+    state.beta8HalloweenGrantedSkinIds = [...granted];
+    state.beta8HalloweenSkinsGranted = true;
   }
-  if (IS_BETA8_TEST) state.beta8HalloweenSkinsGranted=true;
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
   return state;
 }
@@ -482,7 +492,7 @@ function updateWallet() { creditValue.textContent = betaState.credits.toLocaleSt
 function rarityName(rarity) { return ({ common: "일반", rare: "희귀", epic: "초희귀", hero: "영웅", legendary: "영웅" })[rarity]; }
 function getSkinName(skin) {
   const lang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
-  return LANGS[lang]?.[skin.nameKey] || skin.name;
+  return (lang === "en" ? skin.nameEn : null) || LANGS[lang]?.[skin.nameKey] || skin.name;
 }
 function getBetaText(key) {
   const lang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
@@ -1358,8 +1368,8 @@ function prepareCharacterScene(model, characterId, skinId = betaState.selectedSk
   // rigs. Keep its visual footprint close to the actual player hit area.
   const targetHeight = 2.7;
   const scale = targetHeight / Math.max(size.y, 0.001);
-  const horizontalScale = characterId === "ivory" ? 1.3 : 1;
-  const verticalScale = characterId === "ivory" ? 1.3 : 1;
+  const horizontalScale = characterId === "ivory" && !wearsCustomModelSkin ? 1.3 : 1;
+  const verticalScale = characterId === "ivory" && !wearsCustomModelSkin ? 1.3 : 1;
   // FBX animation tracks may write to Mint's root position. Keep alignment
   // on a parent pivot so the model remains centered on its aim origin and
   // grounded even while a clip updates the source root.
@@ -1397,6 +1407,7 @@ const SEASON6_MODEL_SKINS = {
   azure: { skinId: "beta6_azure_blue_wave_buddy", folder: "azure/skins/blue-wave-buddy" },
 };
 const SEASON8_MODEL_SKINS = {
+  ivory:{skinId:"beta8_ivory_skeleton",folder:"ivory/skins/skeleton"},
   orange:{skinId:"beta8_orange_jack_o_lantern",folder:"orange/skins/jack-o-lantern"},
   purple:{skinId:"beta8_purple_potion_witch",folder:"purple/skins/potion-witch"},
   lavender:{skinId:"beta8_lavender_ghost_bride",folder:"lavender/skins/ghost-bride"},
@@ -2192,12 +2203,12 @@ function renderCharacters() {
 }
 
 function renderShop() {
-  modalTitle.textContent = "베타 시즌 상점";
+  modalTitle.textContent = IS_BETA8_TEST ? "시즌 8 · 할로윈 상점" : "베타 시즌 상점";
   modalContent.innerHTML = `<p>보유 코인: <strong>${betaState.coins.toLocaleString("ko-KR")}</strong></p><div class="beta-grid">${BETA_SKINS.map((skin) => {
     const owned = betaState.ownedSkins.includes(skin.id);
     return `<article class="beta-card">
       <span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span>
-      <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 베타 시즌 ${BETA_SEASON_ID.replace("beta", "")} 테스트</p>
+      <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 시즌 ${skin.season.replace("beta", "")} ${skin.season === BETA_SEASON_ID ? "신규" : "보관"} 스킨</p>
       <button data-skin="${skin.id}" ${owned ? "disabled" : ""}>${owned ? "보유 중" : skin.cost === 0 ? getBetaText("shopFree") : `${skin.cost.toLocaleString("ko-KR")} 코인`}</button>
     </article>`;
   }).join("")}</div>`;
@@ -2394,12 +2405,18 @@ function renderAssetShowroom() {
     return `<article class="beta-card">
       <span class="rarity ${character.rarity}">${usesFbx ? "NEW · FBX PREVIEW" : usesGlb ? "GLB MODEL" : "PROCEDURAL"}</span>
       <h3>${character.name}</h3>
-      <p>${character.id === "lavender" ? "라벤더 · Violet Bloom 모델링" : character.id === "crystal" ? "크리스탈 · 시즌 미정 개발 중 걷기 프리뷰" : usesFbx ? "베타 시즌 6 신규 캐릭터 애저 · 개발 중 걷기 프리뷰" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
-      <p>${character.id === "lavender" ? "시즌 8 출시 · 달리기 애니메이션 · 시즌 8에서 전투 테스트" : character.id === "crystal" ? "단일 걷기 애니메이션 · 프리뷰 전용" : usesFbx ? "베타 시즌 6 프리뷰 전용 · 아직 전투 선택 불가" : `시즌 4 이식 대상 스킨 에셋 ${skinCount}개`}</p>
+      <p>${character.id === "lavender" ? "라벤더 · Violet Bloom 모델링" : character.id === "crystal" ? "크리스탈 · 시즌 7 출시" : usesFbx ? "애저 · 시즌 6 출시" : usesGlb ? "걷기 시작·반복·정지 모션 에셋" : "코드로 생성되는 테스트 외형"}</p>
+      <p>${character.id === "lavender" ? "시즌 8 출시 · 향수 스프레이와 향기 장판" : CHARACTERS.some(c => c.id === character.id) ? `캐릭터 선택에서 전투 가능 · 이번 시즌 스킨 ${skinCount}개` : "이전 시즌 외형 미리보기"}</p>
       <code>${modelPath}</code>
       ${usesModel ? `<button type="button" data-view-glb="${modelPath}" data-view-glb-name="${character.name}">${character.id === "lavender" ? "라벤더 프리뷰" : character.id === "crystal" ? "크리스탈 프리뷰" : usesFbx ? "애저 프리뷰" : "GLB 보기"}</button>` : ""}
     </article>`;
   }).join("")}</div>`;
+  if (IS_BETA8_TEST) {
+    modalContent.insertAdjacentHTML("beforeend", `<h2>시즌 8 할로윈 스킨 · 실제 FBX 4종</h2><div class="beta-grid">${Object.entries(SEASON8_MODEL_SKINS).map(([id, model]) => {
+      const skin = SKINS[model.skinId];
+      return `<article class="beta-card"><span class="rarity epic">HALLOWEEN · FBX</span><h3>${getSkinName(skin)}</h3><p>상점 보유 · 캐릭터에서 장착 · 실제 걷기 애니메이션</p><button data-view-glb="assets/3d/${model.folder}/walk-m1s.fbx" data-view-glb-name="${getSkinName(skin)}">스킨 모델 보기</button></article>`;
+    }).join("")}</div>`);
+  }
 }
 
 function buySkin(id) {
@@ -2812,6 +2829,17 @@ function renderBeta7Quests() {
   modalContent.innerHTML = `<div class="storybook-intro"><span>LOST GOLDEN RUINS</span><h2>발굴 → 젬 획득 → 봉인 해제 → 탈출</h2><p>보물을 훔치기 시작하자 잠들어 있던 유적이 깨어난다.</p></div><div class="beta-grid">${quests.map(([name, condition]) => `<article><span class="rarity rare">유적 조사</span><h3>${name}</h3><p>${condition}</p><button disabled>준비 중</button></article>`).join("")}</div>`;
 }
 
+function renderBeta8Overview() {
+  modalTitle.textContent = "시즌 8 · 할로윈 업데이트";
+  const skins = BETA_SKINS.filter(skin => skin.season === "beta8");
+  modalContent.innerHTML = `<section class="storybook-intro"><span>HALLOWEEN · BETA SEASON 8</span><h2>라벤더와 할로윈 스킨 4종</h2><p>16종 캐릭터 전투 · 할로윈 로비·로딩 화면·UI · 오렌지·퍼플 궁극기 포함</p><p>KNOCKOUT 라운드 모드는 아직 준비 중입니다. 현재 플레이 가능한 정규 이벤트는 위 메뉴에서 선택하세요.</p></section><div class="beta-grid">${skins.map(skin => `<article class="beta-card"><span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span><h3>${getSkinName(skin)}</h3><p>${skin.desc}</p><p>무료 시험 · 캐릭터 메뉴에서 장착·해제</p><button data-open-beta8-character="${skin.character}">캐릭터에서 보기</button></article>`).join("")}</div>`;
+  modalContent.querySelectorAll("[data-open-beta8-character]").forEach(button => button.addEventListener("click", () => {
+    const id = button.dataset.openBeta8Character;
+    renderCharacters();
+    modalContent.querySelector(`[data-character="${id}"]`)?.closest("article")?.scrollIntoView({ block: "center" });
+  }));
+}
+
 function openPanel(panel) {
   closeAssetShowroomViewer();
   modal.classList.remove("hidden");
@@ -2822,7 +2850,7 @@ function openPanel(panel) {
   if (panel === "storybook") renderStorybook();
   if (panel === "orders") renderOrderEvent();
   if (panel === "seaprops") renderSeasonProps();
-  if (panel === "quests") IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
+  if (panel === "quests") IS_BETA8_TEST ? renderBeta8Overview() : IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
 function closeBetaModal() {
