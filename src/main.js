@@ -14,8 +14,8 @@ import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=4";
-import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=1";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=5";
+import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=2";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
 import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
@@ -35,8 +35,8 @@ MAIN_UI.forEach(([ko, en], i) => { LANGS.ko["mainUi" + i] = ko; LANGS.en["mainUi
 Object.entries(ARCHIVE_TEXT).forEach(([key, value]) => { LANGS.ko[key] = value.ko; LANGS.en[key] = value.en; });
 LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다.";
 LANGS.en.mainLanguagePatch = "v1.7.0.4 — Updated Korean/English character names and menu translations. Three Halloween skin models are connected in beta.";
-LANGS.ko.mainVerificationPatch = "v1.7.0.5 — 과거 패치노트 121개 항목과 결과 화면의 번역을 보완했습니다. 한·영 전환, 스킨 3종의 걷기·쇼다운·장착 해제 저장 검사를 완료했습니다.";
-LANGS.en.mainVerificationPatch = "v1.7.0.5 — Translated 121 historical patch note entries and completed missing result text. Verified language switching and all three skins' walking, Showdown models and saved unequipping.";
+LANGS.ko.mainVerificationPatch = "v1.7.0.6 — 아이보리 자동 조준의 투척 방향·거리를 같은 목표에 맞췄습니다. 수동 조준과 궁극기도 지정한 착탄점을 사용하며, 아이스크림 포물선과 바닥 조준 표시를 수정했습니다.";
+LANGS.en.mainVerificationPatch = "v1.7.0.6 — Ivory now uses the same target for throw direction and distance. Manual attacks and ultimates land at the aimed point. Fixed the ice cream arc and ground-level aiming guides.";
 let currentLang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
 const displayName = (id) => characterDisplayName(id, currentLang);
 const ui = (text) => mainUiText(text, currentLang);
@@ -376,7 +376,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.5" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.6" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -10437,6 +10437,7 @@ function tryUseUltimate(fighter = getPlayer()) {
   if (!fighter) return false;
   if (CURRENT_SEASON === "beta7") {
     if(fighter.dead||state.gameTime<state.freezeUntil)return false;
+    if(fighter.isPlayer)updatePointerAim(fighter);
     const used = getSeasonCombat().cast(fighter);
     if (used && fighter.isPlayer && mpConfig) mp.relay("S7_ULTIMATE", {yaw:fighter.yaw,aimX:mouseAimWorld.x,aimZ:mouseAimWorld.z});
     return used;
@@ -11859,6 +11860,15 @@ function updateEffects(dt) {
   }
 }
 
+function updatePointerAim(player = getPlayer()) {
+  if (!player || state.mobileMove.active) return;
+  const rect = canvas.getBoundingClientRect();
+  aimRaycaster.setFromCamera({x:((state.mouse.screenX-rect.left)/Math.max(rect.width,1))*2-1,y:-((state.mouse.screenY-rect.top)/Math.max(rect.height,1))*2+1},camera);
+  if (!aimRaycaster.ray.intersectPlane(groundPlane,mouseAimWorld)) return;
+  const dx=mouseAimWorld.x-player.mesh.position.x,dz=mouseAimWorld.z-player.mesh.position.z;
+  if (Math.hypot(dx,dz)>.3) player.yaw=Math.atan2(dx,dz);
+}
+
 function updatePlayerControls(dt) {
   const player = getPlayer();
   if (!player || player.dead || player.blueDash || player.seasonActionLocked) {
@@ -12929,7 +12939,8 @@ function updateAttackAimIndicator() {
   if (!state.running || !player || player.dead) state.ultimateAiming = false;
   if (state.mintUltimateAim) state.mintUltimateAim.visible = false;
   if (player && !player.dead && state.running && state.ultimateAiming) {
-    seasonUltimateAim.show(ultimateGuide(player.characterType, CHARACTERS[player.characterType], { distance: Math.hypot(mouseAimWorld.x-player.mesh.position.x, mouseAimWorld.z-player.mesh.position.z), yaw: player.yaw }), player.mesh.position, player.yaw);
+    const position = {x:player.mesh.position.x,y:showdownMapGroup.visible ? .16 : trainingMapGroup.visible ? .08 : 0,z:player.mesh.position.z};
+    seasonUltimateAim.show(ultimateGuide(player.characterType, CHARACTERS[player.characterType], { distance: Math.hypot(mouseAimWorld.x-position.x, mouseAimWorld.z-position.z), yaw: player.yaw }), position, player.yaw);
   }
   const charType = player?.characterType;
 
@@ -12970,7 +12981,7 @@ function updateAttackAimIndicator() {
   const alpha = unavailable ? 0.06 : 0.2;
   if (["gold", "mint", "azure", "ivory", "crystal"].includes(charType)) {
     const distance = Math.hypot(mouseAimWorld.x-pos.x, mouseAimWorld.z-pos.z);
-    supplementalAttackAim.show(attackGuide(charType, CHARACTERS[charType], { distance }), pos, yaw, unavailable ? .07 : .35);
+    supplementalAttackAim.show(attackGuide(charType, CHARACTERS[charType], { distance }), {x:pos.x,y:aimGroundY,z:pos.z}, yaw, unavailable ? .07 : .35);
     return;
   }
   if (["crystal","lavender"].includes(charType)) {
@@ -14150,12 +14161,15 @@ function setupInput() {
     const dz = target.mesh.position.z - player.mesh.position.z;
     player.yaw = Math.atan2(dx, dz);
     player.mesh.rotation.y = player.yaw;
+    // A tap chooses the enemy's position as well as its direction for throws.
+    mouseAimWorld.copy(target.mesh.position);
   }
 
   function attackOnRelease() {
     if (state.mouseHeld && state.running) {
       state.mouseHeld = false;
       const player = getPlayer();
+      updatePointerAim(player);
       applyTapAutoAim(player);
       beginAttack(player);
     } else {

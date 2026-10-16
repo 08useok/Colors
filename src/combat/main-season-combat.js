@@ -42,8 +42,20 @@ export function createMainSeasonCombat(definitions,hooks) {
   }
   return {
     world,actor:add,
-    fire(f,visualOnly=false){synchronize();const a=add(f),point=f.characterType==="ivory"?hooks.aim?.(f):null,b=point?{...point,vx:0,vz:0}:target(a)??{x:a.x+Math.sin(f.yaw)*20,z:a.z+Math.cos(f.yaw)*20,vx:0,vz:0};const old=a.next;if(visualOnly)a.next=0;const fired=world.fire(a,b,Math.PI/2-f.yaw);if(visualOnly)a.next=old;for(const unit of world.actors)out(unit);return fired;},
-    cast(f,remote=false){synchronize();const a=add(f),b=target(a);if(remote)a.charge=a.u?.chargeRequired??0;const aim=hooks.aim?.(f);const cast=world.cast(a,b,{angle:Math.PI/2-f.yaw,...(aim?{point:aim}:{})});for(const unit of world.actors)out(unit);return cast;},
+    fire(f,visualOnly=false){
+      synchronize();const a=add(f),enemy=target(a);
+      const point=f.characterType==="ivory"?(hooks.aim?.(f)??enemy):null;
+      const b=point?{x:point.x,z:point.z,vx:0,vz:0}:enemy??{x:a.x+Math.sin(f.yaw)*20,z:a.z+Math.cos(f.yaw)*20,vx:0,vz:0};
+      const angle=point?Math.atan2(point.z-a.z,point.x-a.x):Math.PI/2-f.yaw;
+      const old=a.next;if(visualOnly)a.next=0;const fired=world.fire(a,b,angle);if(visualOnly)a.next=old;
+      for(const unit of world.actors)out(unit);return fired;
+    },
+    cast(f,remote=false){
+      synchronize();const a=add(f),point=hooks.aim?.(f),b=target(a)??(point?{...point,hp:1}:null);
+      if(remote)a.charge=a.u?.chargeRequired??0;
+      const angle=point?Math.atan2(point.z-a.z,point.x-a.x):Math.PI/2-f.yaw;
+      const cast=world.cast(a,b,{angle,...(point?{point}:{})});for(const unit of world.actors)out(unit);return cast;
+    },
     update(dt){synchronize(dt);const locked=world.actors.filter(a=>a.automatic&&world.time<a.lockUntil);for(const a of locked)a.automatic=false;world.update(dt);for(const a of locked)a.automatic=true;for(const a of world.actors)out(a);hooks.render?.(world);},
     remove(f){const a=units.get(f);if(a)world.remove(a);units.delete(f);},
     clear(){world.clear();units.clear();hooks.clear?.();},
