@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-16",
+  "report": [
+    {
+      "distance": 0,
+      "interval": 0.25,
+      "duration": 0.75,
+      "totalDamage": 3300,
+      "charge": 1.5,
+      "hits": [
+        {
+          "time": 0.004166666666666667,
+          "damage": 1100
+        },
+        {
+          "time": 0.254166666666667,
+          "damage": 1100
+        },
+        {
+          "time": 0.5041666666666661,
+          "damage": 1100
+        }
+      ]
+    },
+    {
+      "distance": 4.5,
+      "interval": 0.375,
+      "duration": 1.125,
+      "totalDamage": 4125,
+      "charge": 1.5,
+      "hits": [
+        {
+          "time": 0.22500000000000028,
+          "damage": 1375
+        },
+        {
+          "time": 0.5999999999999991,
+          "damage": 1375
+        },
+        {
+          "time": 0.9749999999999978,
+          "damage": 1375
+        }
+      ]
+    },
+    {
+      "distance": 9,
+      "interval": 0.5,
+      "duration": 1.5,
+      "totalDamage": 4950,
+      "charge": 1.5,
+      "hits": [
+        {
+          "time": 0.4499999999999996,
+          "damage": 1650
+        },
+        {
+          "time": 0.9499999999999978,
+          "damage": 1650
+        },
+        {
+          "time": 1.4499999999999962,
+          "damage": 1650
+        }
+      ]
+    }
+  ],
+  "lateEntryBlocked": true,
+  "reentryDoesNotReset": true,
+  "ultimateAndMainUnchanged": true
+}

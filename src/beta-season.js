@@ -11,8 +11,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { applyBeta8Balance } from "./config/beta8-balance.js?v=1";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=27";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=2";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=28";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -7548,7 +7548,14 @@ function updateLavenderMist(mesh, zone, time) {
     mist.position.set(Math.cos(angle) * reach, .35 + phase * 1.1, Math.sin(angle) * reach);
     const size = (spray ? .6 : .8) + phase * .8;
     mist.scale.set(size, size, 1);
-    mist.material.opacity = (spray ? .38 : .24) * Math.sin(Math.PI * (.1 + phase * .8)) * Math.max(0, fade);
+    let localFade = fade;
+    const def = BETA_CHARACTERS.lavender;
+    if (spray && def.sprayCloseTickInterval != null) {
+      const interval = def.sprayCloseTickInterval + (def.sprayTickInterval - def.sprayCloseTickInterval) * reach / zone.radius;
+      const expiresAt = reach / (zone.spraySpeed ?? def.spraySpeed) + def.sprayDuration * interval / def.sprayTickInterval;
+      localFade = Math.min(fade, (expiresAt - age) / .2);
+    }
+    mist.material.opacity = (spray ? .38 : .24) * Math.sin(Math.PI * (.1 + phase * .8)) * Math.max(0, localFade);
   }
 }
 
