@@ -392,6 +392,15 @@ const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
 document.body.dataset.season=CURRENT_SEASON;
 if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
   const releaseStats = CURRENT_SEASON === "beta7" ? applyBeta7Balance(BETA_CHARACTERS) : applyBeta6Balance(BETA_CHARACTERS);
+  // Main-only Azure tuning: extend the rider's travel and shorten its duration by 30%.
+  if (CURRENT_SEASON === "beta7") {
+    const azure = releaseStats.azure;
+    const oldRideDuration = azure.surfDashDistance / azure.surfSpeed;
+    azure.surfDashDistance += 2;
+    azure.surfSpeed = azure.surfDashDistance / (oldRideDuration * 0.7);
+    azure.basicAttack.description = `파도를 타고 전방 ${azure.surfDashDistance}타일 이동하며, 앞쪽 ${azure.surfLength}×${azure.surfWidth}타일 범위의 적에게 ${azure.surfDamage} 피해를 줍니다. 이동 시간이 30% 짧아집니다.`;
+    azure.basicAttack.descriptionEn = `Rides a wave ${azure.surfDashDistance} tiles forward and deals ${azure.surfDamage} damage in a ${azure.surfLength}-by-${azure.surfWidth}-tile area ahead. Ride time is reduced by 30%.`;
+  }
   for (const [id, stats] of Object.entries(releaseStats)) {
     // 라벤더는 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.
     if (id === "lavender") continue;

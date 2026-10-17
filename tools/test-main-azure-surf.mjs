@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+import {CHARACTERS as baseline} from '../src/config/characters.js';
+import {BETA_CHARACTERS} from '../src/config/beta-characters.js';
+import {applyBeta7Balance} from '../src/config/beta7-balance.js';
+import {applyBeta6Balance} from '../src/config/beta6-balance.js';
+import {createMainSeasonCombat} from '../src/combat/main-season-combat.js';
+const main=readFileSync(new URL('../src/main.js',import.meta.url),'utf8').replace(/\r\n/g,'\n');
+const start=main.indexOf('if (["beta6", "beta7"].includes(CURRENT_SEASON)) {');
+const context=vm.createContext({CURRENT_SEASON:'beta7',CHARACTERS:structuredClone(baseline),BETA_CHARACTERS,applyBeta7Balance,applyBeta6Balance});
+vm.runInContext(main.slice(start,main.indexOf('\nconst ALPHA_SEASONS',start)),context);
+const config=context.CHARACTERS,beta=applyBeta7Balance(BETA_CHARACTERS);
+assert.equal(config.azure.surfLength,4);assert.equal(beta.azure.surfLength,4);
+assert.equal(config.azure.surfDashDistance,4);assert.equal(beta.azure.surfDashDistance,2);
+assert(Math.abs((4/config.azure.surfSpeed)/(2/beta.azure.surfSpeed)-.7)<1e-10);
+assert.deepEqual(JSON.parse(JSON.stringify(config.azure.ultimate)),JSON.parse(JSON.stringify(beta.azure.ultimate)));
+const position=x=>({x,z:0,set(x,y,z){this.x=x;this.z=z;}});
+const fighter=(id,x)=>({characterType:id,isPlayer:true,health:1e6,maxHealth:1e6,ammo:3,yaw:Math.PI/2,mesh:{position:position(x)},shadow:{position:position(x)}});
+const a=fighter('azure',0),b=fighter('red',3.5);let time=0,rideTime=null;const hits=[];
+const bridge=createMainSeasonCombat(config,{fighters:()=>[a,b],time:()=>time,blocked:()=>false,damage:(f,amount)=>{hits.push(amount);f.health-=amount;}});
+assert(bridge.fire(a));const wave=bridge.world.projectiles[0];assert.equal(wave.reach,4);
+for(let i=0;i<1000&&bridge.world.projectiles.length;i++){time+=.001;bridge.update(.001);if(rideTime===null&&a.mesh.position.x>=4-1e-8)rideTime=time;}
+assert(Math.abs(a.mesh.position.x-4)<1e-8);assert(Math.abs(rideTime-4/config.azure.surfSpeed)<.0011);
+assert.deepEqual(hits,[3000]);assert(!bridge.actor(a).wave);
+console.log('PASS main Azure: 4-tile ride in '+rideTime.toFixed(3)+'s, 4-tile wave range, no duplicate hit, ultimate and beta unchanged');
