@@ -25,16 +25,20 @@ export function createModelLoadingScreen(manager) {
       document.documentElement.classList.remove('model-loading');
     }));
   }
-  manager.onStart = () => { pending = true; show(); };
+  function setProgress(percent) {
+    progress.max = 100; progress.value = percent;
+    if (!failed) detail.textContent = `${percent}%`;
+  }
+  manager.onStart = () => { pending = true; show(); setProgress(0); };
   manager.onProgress = (_url, loaded, total) => {
-    progress.max = Math.max(1, total); progress.value = loaded;
+    // Only the manager's completion callback can declare all assets ready.
+    setProgress(Math.max(0, Math.min(99, Math.floor(loaded / Math.max(1, total) * 100))));
     if (!failed) {
       label.textContent = preparing();
       progress.setAttribute('aria-label', english() ? 'Model loading progress' : '모델 준비 진행률');
-      detail.textContent = english() ? `${loaded} / ${total} files ready` : `${loaded} / ${total}개 파일 준비 완료`;
     }
   };
-  manager.onLoad = () => { pending = false; finish(); };
+  manager.onLoad = () => { pending = false; if (!failed) setProgress(100); finish(); };
   manager.onError = url => {
     failed = true; show();
     label.textContent = english() ? 'Could not load the character model.' : '캐릭터 모델을 불러오지 못했습니다.';
@@ -48,6 +52,6 @@ export function createModelLoadingScreen(manager) {
     event.preventDefault(); event.stopImmediatePropagation();
   }, true);
   // Bootstrap must register its preload requests before the first reveal.
-  show();
+  show(); setProgress(0);
   return { manager, ready() { startupReady = true; finish(); }, get blocking() { return !screen.hidden; } };
 }

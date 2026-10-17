@@ -31,10 +31,12 @@ try{
   await page.waitForFunction(()=>__loadingQA.gate.blocking);assert(await page.locator('#model-loading-screen').isVisible());
   if(name==='main')await page.evaluate(()=>{const q=__loadingQA,a=q.createAccount('loading-qa','검증');a.ownedCharacters.push('ivory');a.selectedCharacter='ivory';q.saveAccount(a);q.updateLobbyUI(a);q.state.selectedCharacter='ivory';q.startTraining();});
   await page.waitForTimeout(500);assert(requests>0);assert(await page.locator('#model-loading-screen').isVisible());
+  assert.match(await page.locator('[data-model-loading-detail]').textContent(),/^\d+%$/);
   const before=await page.evaluate(()=>__loadingQA.state?.gameTime??__loadingQA.clock.elapsedTime);await page.keyboard.press('KeyW');await page.waitForTimeout(250);const after=await page.evaluate(()=>__loadingQA.state?.gameTime??__loadingQA.clock.elapsedTime);assert(Math.abs(before-after)<.001);
   await page.screenshot({path:'specs/'+name+'-model-loading.png'});release();
   try{await page.waitForFunction(()=>!__loadingQA.gate.blocking,null,{timeout:120000});}catch(error){console.log('BLOCKED',name,await page.locator('#model-loading-screen').innerText());throw error;}
   await page.waitForTimeout(1000);assert.equal(await page.evaluate(()=>window.__loadingReopens),0,'initial loading must not reopen');
+  assert.equal(await page.locator('[data-model-loading-detail]').textContent(),'100%');
   if(name==='beta')assert(await page.evaluate(()=>Boolean(__loadingQA.model())));
   else assert(await page.evaluate(()=>__loadingQA.getPlayer().mesh.userData.isGlbModel));
   report.push({page:name,delayedRequests:requests,screenHeldUntilReady:true,clockPaused:true,initialReopens:0,ready:true});console.log('PASS loading:',name);

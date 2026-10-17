@@ -14,9 +14,10 @@ assert(gate.blocking);frame();frame();assert(gate.blocking,'startup cannot revea
 manager.onStart();manager.onLoad();frame();frame();assert(gate.blocking,'early load completion cannot release bootstrap');
 gate.ready();frame();assert(gate.blocking);frame();assert(!gate.blocking);
 manager.onStart();assert(gate.blocking);
-manager.onProgress('model.fbx',1,3);assert.equal(progress.value,1);assert.equal(progress.max,3);
-manager.onLoad();frame();assert(gate.blocking);
-manager.onStart();frame();assert(gate.blocking,'new load cancels stale reveal');
+manager.onProgress('model.fbx',1,3);assert.equal(progress.value,33);assert.equal(progress.max,100);assert.equal(detail.textContent,'33%');
+manager.onProgress('model.fbx',103,103);frame();frame();assert(gate.blocking);assert.equal(detail.textContent,'99%','wait for actual manager completion');
+manager.onLoad();assert.equal(detail.textContent,'100%');frame();assert(gate.blocking);
+manager.onStart();frame();assert(gate.blocking,'new load cancels stale reveal');assert.equal(detail.textContent,'0%','new load resets progress');
 let blocked=0;listeners.keydown({key:'q',preventDefault(){blocked++;},stopImmediatePropagation(){blocked++;}});assert.equal(blocked,2);
 manager.onLoad();frame();frame();assert(!gate.blocking);
 manager.onStart();manager.onError('/assets/model.fbx?v=1');manager.onLoad();frame();frame();assert(gate.blocking);

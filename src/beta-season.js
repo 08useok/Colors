@@ -1,4 +1,4 @@
-import { createModelLoadingScreen } from "./visuals/model-loading.js?v=2";
+import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";

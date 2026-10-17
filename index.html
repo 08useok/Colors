@@ -21,7 +21,7 @@
 <body>
   <div id="model-loading-screen" class="model-loading-screen" role="status" aria-live="polite" aria-busy="true">
     <h1>COLORS</h1><p data-model-loading-label>캐릭터 모델을 준비하는 중…</p>
-    <progress aria-label="모델 준비 진행률"></progress><small data-model-loading-detail>모델과 텍스처를 불러옵니다.</small><button type="button" hidden>다시 시도</button>
+    <progress aria-label="모델 준비 진행률" max="100" value="0"></progress><small data-model-loading-detail>0%</small><button type="button" hidden>다시 시도</button>
   </div>
   <div id="game-shell">
     <canvas id="game-canvas"></canvas>
@@ -1163,6 +1163,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.7.0.23"></script>
+  <script type="module" src="./src/main.js?v=1.7.0.24"></script>
 </body>
 </html>

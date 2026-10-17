@@ -1,4 +1,4 @@
-import { createModelLoadingScreen } from "./visuals/model-loading.js?v=2";
+import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";

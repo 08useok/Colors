@@ -53,7 +53,7 @@
 <body>
   <div id="model-loading-screen" class="model-loading-screen" role="status" aria-live="polite" aria-busy="true">
     <h1>COLORS BETA</h1><p data-model-loading-label>캐릭터 모델을 준비하는 중…</p>
-    <progress aria-label="모델 준비 진행률"></progress><small data-model-loading-detail>모델과 텍스처를 불러옵니다.</small><button type="button" hidden>다시 시도</button>
+    <progress aria-label="모델 준비 진행률" max="100" value="0"></progress><small data-model-loading-detail>0%</small><button type="button" hidden>다시 시도</button>
   </div>
   <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="베타 시즌 8 테스트 불러오는 중">
     <img class="beta6-loading-bg" src="./assets/beta6-loading-bg.jpg?v=1" alt="애저 해변의 여름 바다 풍경">
@@ -254,6 +254,6 @@
     <label>벌목 진행 <progress id="chop-progress" max="2" value="0"></progress></label>
     <button id="chop-wood-close" type="button">로비로 돌아가기</button>
   </aside>
-  <script type="module" src="./src/beta-season.js?v=0.8.16"></script>
+  <script type="module" src="./src/beta-season.js?v=0.8.17"></script>
 </body>
 </html>
