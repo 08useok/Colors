@@ -406,11 +406,13 @@ if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
       projectileDodgeThreatOnly: true,
     });
     releaseStats.crystal.crystalDamage = 2200;
+    releaseStats.crystal.fragmentDamage = 1100;
+    releaseStats.crystal.shardDamage = 550;
     releaseStats.crystal.fragmentHitLimit = 3;
     releaseStats.crystal.shardHitLimit = 4;
     releaseStats.crystal.ultimate.width = 2.2;
-    releaseStats.crystal.basicAttack.description = "2200 피해의 수정탄이 6개 조각(각 1000 피해), 다시 12개 작은 조각(각 500 피해)으로 분열합니다. 같은 적에게 첫 수정탄은 1회, 2단계 조각은 최대 3회, 3단계 조각은 최대 4회 적중합니다.";
-    releaseStats.crystal.basicAttack.descriptionEn = "A 2,200-damage crystal splits into six fragments (1,000 damage each), then twelve shards (500 damage each). The same target can be hit once by the first crystal, up to three times by stage-two fragments, and up to four times by stage-three shards.";
+    releaseStats.crystal.basicAttack.description = "2200 피해의 수정탄이 6개 조각(각 1100 피해), 다시 12개 작은 조각(각 550 피해)으로 분열합니다. 같은 적에게 첫 수정탄은 1회, 2단계 조각은 최대 3회, 3단계 조각은 최대 4회 적중합니다.";
+    releaseStats.crystal.basicAttack.descriptionEn = "A 2,200-damage crystal splits into six fragments (1,100 damage each), then twelve shards (550 damage each). The same target can be hit once by the first crystal, up to three times by stage-two fragments, and up to four times by stage-three shards.";
   }
   for (const [id, stats] of Object.entries(releaseStats)) {
     // 라벤더는 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.

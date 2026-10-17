@@ -1,0 +1,20 @@
+{
+  "scope": "Main Crystal -> Crimson, level 6, ultimates enabled from zero charge; same 600 seeded matchups before/after",
+  "before": {
+    "wins": 570,
+    "losses": 30,
+    "draws": 0,
+    "timeouts": 0,
+    "games": 600,
+    "winRate": 95
+  },
+  "after": {
+    "wins": 570,
+    "losses": 30,
+    "draws": 0,
+    "timeouts": 0,
+    "games": 600,
+    "winRate": 95
+  },
+  "change": "stage-two damage 1000 -> 1100, stage-three damage 500 -> 550"
+}
