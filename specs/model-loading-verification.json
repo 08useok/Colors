@@ -6,6 +6,7 @@
       "delayedRequests": 23,
       "screenHeldUntilReady": true,
       "clockPaused": true,
+      "initialReopens": 0,
       "ready": true
     },
     {
@@ -13,6 +14,7 @@
       "delayedRequests": 6,
       "screenHeldUntilReady": true,
       "clockPaused": true,
+      "initialReopens": 0,
       "ready": true
     },
     {

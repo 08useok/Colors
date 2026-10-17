@@ -25,6 +25,7 @@ try{
  browser=await chromium.launch({channel:'msedge',headless:true,args:['--disable-gpu']});
  for(const [name,path]of [['main','/index.html'],['beta','/beta-season.html']]){
   const page=await browser.newPage({viewport:{width:1280,height:900}});page.on('pageerror',e=>{errors.push(e.message);console.error(e.message);});let release;const held=new Promise(done=>release=done);let requests=0;
+  await page.addInitScript(()=>{window.__loadingReopens=0;new MutationObserver(records=>{for(const r of records)if(r.target.id==='model-loading-screen'&&r.attributeName==='hidden'&&r.oldValue!==null)window.__loadingReopens++;}).observe(document,{subtree:true,attributes:true,attributeOldValue:true,attributeFilter:['hidden']});});
   await page.route(/\.(?:glb|fbx)(?:\?|$)/,async route=>{requests++;await held;await route.continue();});
   await page.goto('http://127.0.0.1:'+server.address().port+path,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__loadingQA,null,{timeout:90000});
   await page.waitForFunction(()=>__loadingQA.gate.blocking);assert(await page.locator('#model-loading-screen').isVisible());
@@ -33,9 +34,10 @@ try{
   const before=await page.evaluate(()=>__loadingQA.state?.gameTime??__loadingQA.clock.elapsedTime);await page.keyboard.press('KeyW');await page.waitForTimeout(250);const after=await page.evaluate(()=>__loadingQA.state?.gameTime??__loadingQA.clock.elapsedTime);assert(Math.abs(before-after)<.001);
   await page.screenshot({path:'specs/'+name+'-model-loading.png'});release();
   try{await page.waitForFunction(()=>!__loadingQA.gate.blocking,null,{timeout:120000});}catch(error){console.log('BLOCKED',name,await page.locator('#model-loading-screen').innerText());throw error;}
+  await page.waitForTimeout(1000);assert.equal(await page.evaluate(()=>window.__loadingReopens),0,'initial loading must not reopen');
   if(name==='beta')assert(await page.evaluate(()=>Boolean(__loadingQA.model())));
   else assert(await page.evaluate(()=>__loadingQA.getPlayer().mesh.userData.isGlbModel));
-  report.push({page:name,delayedRequests:requests,screenHeldUntilReady:true,clockPaused:true,ready:true});console.log('PASS loading:',name);
+  report.push({page:name,delayedRequests:requests,screenHeldUntilReady:true,clockPaused:true,initialReopens:0,ready:true});console.log('PASS loading:',name);
   if(name==='beta'){
    await page.unroute(/\.(?:glb|fbx)(?:\?|$)/);
    await page.route(/\/azure\/normal\/.*\.fbx/,route=>route.abort());

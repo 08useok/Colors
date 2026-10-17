@@ -1,4 +1,4 @@
-import { createModelLoadingScreen } from "./visuals/model-loading.js?v=1";
+import { createModelLoadingScreen } from "./visuals/model-loading.js?v=2";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
@@ -9458,4 +9458,5 @@ const betaHeader = document.querySelector(".beta-header");
 new ResizeObserver(() => {
   document.documentElement.style.setProperty("--beta-header-bottom", `${betaHeader.getBoundingClientRect().bottom + 12}px`);
 }).observe(betaHeader);
+modelLoading.ready();
 animate();

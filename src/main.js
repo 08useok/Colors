@@ -1,4 +1,4 @@
-import { createModelLoadingScreen } from "./visuals/model-loading.js?v=1";
+import { createModelLoadingScreen } from "./visuals/model-loading.js?v=2";
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
@@ -4268,11 +4268,9 @@ function ensureIvoryShopkeeperGlbLoading() {
   _glbLoader.load('./assets/3d/ivory/skin-shopkeeper/walk-m3e.glb', g => { _ivoryShopkeeperGlb.end = _stripRootMotion(g); });
 }
 
-// 지연 로딩 때문에 캐릭터 버튼을 누를 때마다 ~1초씩 GLB가 늦게 뜨는 게
-// 거슬려서, 처음 뜬 화면이 자리잡을 시간을 준 뒤 나머지 캐릭터들을
-// 백그라운드로 미리 받아둔다. 점원 스킨(17MB, 잘 안 쓰는 코스메틱)은
-// 여기 포함하지 않고 계속 완전 지연 로딩으로 둔다.
-setTimeout(() => {
+// Register preloads during bootstrap, before releasing the initial loading gate.
+// The shopkeeper skin remains on demand.
+function preloadCharacterModels() {
   ensureBlueGlbLoading();
   ensureBluePreviewGlbLoading();
   ensureCyanWalkGlbLoading();
@@ -4283,7 +4281,7 @@ setTimeout(() => {
   ensureIvoryGlbLoading();
   ensureIvoryPreviewGlbLoading();
   ensureChartreuseGlbLoading();
-}, 0);
+}
 
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
@@ -15401,3 +15399,5 @@ showLobby();
 applySeasonVisibility();
 updateRegularEventStatus();
 setInterval(updateRegularEventStatus, 1000);
+preloadCharacterModels();
+modelLoading.ready();

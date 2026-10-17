@@ -6,7 +6,7 @@ export function createModelLoadingScreen(manager) {
   const progress = screen.querySelector('progress');
   const detail = screen.querySelector('[data-model-loading-detail]');
   const retry = screen.querySelector('button');
-  let generation = 0, pending = false, failed = false;
+  let generation = 0, pending = false, failed = false, startupReady = false;
   const english = () => document.documentElement.lang === 'en';
   const preparing = () => english() ? 'Preparing character models…' : '캐릭터 모델을 준비하는 중…';
   function show() {
@@ -19,7 +19,7 @@ export function createModelLoadingScreen(manager) {
   function finish() {
     const token = ++generation;
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (token !== generation || pending || failed) return;
+      if (token !== generation || !startupReady || pending || failed) return;
       screen.hidden = true;
       screen.setAttribute('aria-busy', 'false');
       document.documentElement.classList.remove('model-loading');
@@ -47,6 +47,7 @@ export function createModelLoadingScreen(manager) {
     if (screen.hidden || event.ctrlKey || event.metaKey || event.altKey || ['Tab','Enter'].includes(event.key)) return;
     event.preventDefault(); event.stopImmediatePropagation();
   }, true);
-  show(); finish();
-  return { manager, get blocking() { return !screen.hidden; } };
+  // Bootstrap must register its preload requests before the first reveal.
+  show();
+  return { manager, ready() { startupReady = true; finish(); }, get blocking() { return !screen.hidden; } };
 }
