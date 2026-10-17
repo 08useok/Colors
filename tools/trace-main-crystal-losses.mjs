@@ -9,6 +9,8 @@ import {applyBeta6Balance} from '../src/config/beta6-balance.js';
 import {createBeta6Combat} from '../src/combat/beta6-combat.js';
 import {atCharacterLevel} from './simulate-beta6-balance.mjs';
 const variant=process.argv.includes('--before')?'before':'after';
+const tag=process.argv.find(arg=>arg.startsWith('--tag='))?.slice(6)??variant;
+assert(/^[a-z0-9-]+$/.test(tag));
 const source=(variant==='before'?execFileSync('git',['show','16ff077:src/main.js'],{encoding:'utf8'}):readFileSync('src/main.js','utf8')).replace(/\r\n/g,'\n'),start=source.indexOf('if (["beta6", "beta7"].includes(CURRENT_SEASON)) {');
 const context=vm.createContext({CURRENT_SEASON:'beta7',CHARACTERS:structuredClone(CHARACTERS),BETA_CHARACTERS,applyBeta7Balance,applyBeta6Balance});
 vm.runInContext(source.slice(start,source.indexOf('\nconst ALPHA_SEASONS',start)),context);
@@ -28,5 +30,5 @@ const summary={games:600,wins:600-losses.length,losses:losses.length,lossesWithN
 summary.finishedByCrimsonUltimate=count(r=>{const last=r.events.filter(e=>e.type==='damage'&&e.target==='crystal').at(-1);return r.events.some(e=>e.type==='ultimate'&&e.owner==='crimson'&&e.time===last?.time);});
 summary.fullChargeLosses=losses.filter(r=>r.charge===r.required).map(r=>({seed:r.seed,order:r.order,chargedAt:r.events.filter(e=>e.type==='damage'&&e.owner==='crystal').at(-1)?.time,deadAt:r.time}));
 assert(rows.every(r=>Number.isFinite(r.crystalHp)&&Number.isFinite(r.crimsonHp)));
-writeFileSync(`specs/main-crystal-loss-trace-${variant}.json`,JSON.stringify({scope:'Main level-6 Crystal vs Crimson, 600 seeded trials with ultimate/damage events',variant,firstProjectileDamage:config.crystal.crystalDamage,ultimateWidth:config.crystal.ultimate.width??null,summary,losses},null,2)+'\n');
+writeFileSync(`specs/main-crystal-loss-trace-${tag}.json`,JSON.stringify({scope:'Main level-6 Crystal vs Crimson, 600 seeded trials with ultimate/damage events',variant,firstProjectileDamage:config.crystal.crystalDamage,ultimateWidth:config.crystal.ultimate.width??null,summary,losses},null,2)+'\n');
 console.log(JSON.stringify(summary,null,2));
