@@ -13,6 +13,8 @@
 
 ## 기능별 목차
 
+- [메인 꼬리잡기 설계 변경](main-counter-cycle-revision.md) — 크리스탈→크림슨→퍼플, 기존 목표 폐기와 전체 순환 미달 사유
+
 - [베타 시즌 7 지정 상성 복구](beta7-counter-repair.md) — 적용 수치, 복구한 연결과 남은 목표
 
 - [메인 캐릭터 기능 대조](character-implementation-audit.md) — 누락 수정 및 시즌별 차이

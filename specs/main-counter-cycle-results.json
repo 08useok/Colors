@@ -1,0 +1,145 @@
+{
+  "scope": "Main 15 characters only; design targets, no stat or combat changes",
+  "source": "main-balance-regression.json",
+  "confirmedSegment": [
+    "crystal",
+    "crimson",
+    "purple"
+  ],
+  "retiredEdge": [
+    "crimson",
+    "crystal"
+  ],
+  "fullCycleAdopted": false,
+  "constraints": [
+    "Crystal -> Crimson is required",
+    "Crimson -> Crystal is forbidden"
+  ],
+  "objective": "Maximize minimum win rate, then number of 100% edges, then preserved edges, then total score",
+  "gamesPerPair": 600,
+  "minimum": 24.41666666666667,
+  "cycle": [
+    "red",
+    "blue",
+    "orange",
+    "mint",
+    "cyan",
+    "green",
+    "azure",
+    "gold",
+    "pink",
+    "ivory",
+    "crystal",
+    "crimson",
+    "purple",
+    "chartreuse",
+    "yellow"
+  ],
+  "targets": [
+    {
+      "id": "red",
+      "targetWin": "blue",
+      "targetLoss": "yellow",
+      "winRate": 100,
+      "lossRate": 33.833333333333336
+    },
+    {
+      "id": "blue",
+      "targetWin": "orange",
+      "targetLoss": "red",
+      "winRate": 100,
+      "lossRate": 0
+    },
+    {
+      "id": "orange",
+      "targetWin": "mint",
+      "targetLoss": "blue",
+      "winRate": 100,
+      "lossRate": 0
+    },
+    {
+      "id": "mint",
+      "targetWin": "cyan",
+      "targetLoss": "orange",
+      "winRate": 100,
+      "lossRate": 0
+    },
+    {
+      "id": "cyan",
+      "targetWin": "green",
+      "targetLoss": "mint",
+      "winRate": 24.41666666666667,
+      "lossRate": 0
+    },
+    {
+      "id": "green",
+      "targetWin": "azure",
+      "targetLoss": "cyan",
+      "winRate": 89.5,
+      "lossRate": 75.58333333333333
+    },
+    {
+      "id": "azure",
+      "targetWin": "gold",
+      "targetLoss": "green",
+      "winRate": 100,
+      "lossRate": 10.5
+    },
+    {
+      "id": "gold",
+      "targetWin": "pink",
+      "targetLoss": "azure",
+      "winRate": 29,
+      "lossRate": 0
+    },
+    {
+      "id": "pink",
+      "targetWin": "ivory",
+      "targetLoss": "gold",
+      "winRate": 100,
+      "lossRate": 71
+    },
+    {
+      "id": "ivory",
+      "targetWin": "crystal",
+      "targetLoss": "pink",
+      "winRate": 65.33333333333333,
+      "lossRate": 0
+    },
+    {
+      "id": "crystal",
+      "targetWin": "crimson",
+      "targetLoss": "ivory",
+      "winRate": 73.83333333333333,
+      "lossRate": 34.66666666666667
+    },
+    {
+      "id": "crimson",
+      "targetWin": "purple",
+      "targetLoss": "crystal",
+      "winRate": 100,
+      "lossRate": 26.166666666666668
+    },
+    {
+      "id": "purple",
+      "targetWin": "chartreuse",
+      "targetLoss": "crimson",
+      "winRate": 100,
+      "lossRate": 0
+    },
+    {
+      "id": "chartreuse",
+      "targetWin": "yellow",
+      "targetLoss": "purple",
+      "winRate": 100,
+      "lossRate": 0
+    },
+    {
+      "id": "yellow",
+      "targetWin": "red",
+      "targetLoss": "chartreuse",
+      "winRate": 66.16666666666666,
+      "lossRate": 0
+    }
+  ]
+}
