@@ -77,8 +77,14 @@ export function createBeta6Combat(definitions, options = {}) {
     for (const b of actors) if (!['wave', 'gale'].includes(projectile.kind) && b.automatic && b.d.projectileDodgeDuration
       && (!b.d.projectileDodgeKinds || b.d.projectileDodgeKinds.includes(projectile.kind)) && enemies(a, b)
       && distance(a, b) <= (b.d.projectileDodgeDetectionRange ?? 20)) {
+      if (time < (b.dodgeNext ?? 0)) continue;
+      if (b.d.projectileDodgeThreatOnly) {
+        const end = { x: projectile.x + Math.cos(yaw) * reach, z: projectile.z + Math.sin(yaw) * reach };
+        if (segmentDistance(b, projectile, end) > projectile.radius + .55) continue;
+      }
       b.dodgeUntil = time + b.d.projectileDodgeDuration;
       b.dodgeYaw = yaw + (random() < .5 ? -Math.PI / 2 : Math.PI / 2);
+      b.dodgeNext = time + (b.d.projectileDodgeCooldown ?? 0);
     }
   }
   function after(delay, owner, run, ultimateField = false) { scheduled.push({ at: time + delay, owner, run, ultimateField }); }

@@ -1,4 +1,4 @@
-import {createBeta6Combat} from './beta6-combat.js?v=26';
+import {createBeta6Combat} from './beta6-combat.js?v=29';
 import {beta6Ultimate} from '../config/beta6-balance.js';
 
 // Main fighters use Three.js positions and wall-clock status fields; the shared
