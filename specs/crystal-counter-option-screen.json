@@ -1,0 +1,297 @@
+{
+  "scope": "Main 6-level Crystal -> Crimson, 600 games per option; candidate-only in-memory engine changes",
+  "rows": [
+    {
+      "id": "baseline",
+      "patch": {},
+      "crystalWinRate": 95,
+      "crystalWins": 570
+    },
+    {
+      "id": "ai-speed-1",
+      "method": "ai",
+      "patch": {
+        "crimson": {
+          "projectileDodgeSpeedMultiplier": 1
+        }
+      },
+      "crystalWinRate": 96.33333333333333,
+      "crystalWins": 578
+    },
+    {
+      "id": "ai-duration-0.1",
+      "method": "ai",
+      "patch": {
+        "crimson": {
+          "projectileDodgeDuration": 0.1
+        }
+      },
+      "crystalWinRate": 95.83333333333333,
+      "crystalWins": 575
+    },
+    {
+      "id": "ai-cooldown-0.9",
+      "method": "ai",
+      "patch": {
+        "crimson": {
+          "projectileDodgeCooldown": 0.9
+        }
+      },
+      "crystalWinRate": 99.66666666666667,
+      "crystalWins": 598
+    },
+    {
+      "id": "ai-no-dodge",
+      "method": "ai",
+      "patch": {
+        "crimson": {
+          "projectileDodgeDuration": 0
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "radius-0.35",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 0.35
+        }
+      },
+      "crystalWinRate": 90.33333333333333,
+      "crystalWins": 542
+    },
+    {
+      "id": "radius-0.5",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 0.5
+        }
+      },
+      "crystalWinRate": 85.66666666666667,
+      "crystalWins": 514
+    },
+    {
+      "id": "radius-0.75",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 0.75
+        }
+      },
+      "crystalWinRate": 90.16666666666667,
+      "crystalWins": 541
+    },
+    {
+      "id": "radius-1",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1
+        }
+      },
+      "crystalWinRate": 96.5,
+      "crystalWins": 579
+    },
+    {
+      "id": "radius-1.25",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.25
+        }
+      },
+      "crystalWinRate": 99.66666666666667,
+      "crystalWins": 598
+    },
+    {
+      "id": "radius-1.3",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.3
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "radius-1.35",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.35
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "radius-1.4",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.4
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "radius-1.45",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.45
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "radius-1.5",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.5
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "radius-2",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 2
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-0.8",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 0.8
+        }
+      },
+      "crystalWinRate": 98.16666666666667,
+      "crystalWins": 589
+    },
+    {
+      "id": "homing-1.6",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 1.6
+        }
+      },
+      "crystalWinRate": 99,
+      "crystalWins": 594
+    },
+    {
+      "id": "homing-1.8",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 1.8
+        }
+      },
+      "crystalWinRate": 99.66666666666667,
+      "crystalWins": 598
+    },
+    {
+      "id": "homing-2",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 2
+        }
+      },
+      "crystalWinRate": 99.83333333333333,
+      "crystalWins": 599
+    },
+    {
+      "id": "homing-2.2",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 2.2
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-2.4",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 2.4
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-2.6",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 2.6
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-2.8",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 2.8
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-3",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 3
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-3.2",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 3.2
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    },
+    {
+      "id": "homing-6.4",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 6.4
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600
+    }
+  ]
+}

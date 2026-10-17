@@ -13,6 +13,8 @@
 
 ## 기능별 목차
 
+- [크리스탈 상성 대책 선택](crystal-counter-choice.md) — AI 억제·크기·추적 비교와 지정 연결 유지 검증
+
 - [메인 꼬리잡기 설계 변경](main-counter-cycle-revision.md) — 크리스탈→크림슨→퍼플, 기존 목표 폐기와 전체 순환 미달 사유
 
 - [베타 시즌 7 지정 상성 복구](beta7-counter-repair.md) — 적용 수치, 복구한 연결과 남은 목표

@@ -1,0 +1,120 @@
+{
+  "selected": "homing-2.2",
+  "games": 8400,
+  "allCandidateResultsMatch": true,
+  "otherCharactersUnchanged": true,
+  "matrix": {
+    "red:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "green:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "blue:crystal": {
+      "wins": 133,
+      "losses": 467,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 22.166666666666668
+    },
+    "orange:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "yellow:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "cyan:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "purple:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "pink:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "crimson:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "gold:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "ivory:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "chartreuse:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "mint:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "azure:crystal": {
+      "wins": 4,
+      "losses": 596,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0.6666666666666666
+    }
+  }
+}

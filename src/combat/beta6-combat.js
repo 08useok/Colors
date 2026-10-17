@@ -186,7 +186,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint' });
     });
     else if (id === 'azure') wave(a, yaw, false);
-    else if (id === 'crystal') launch(d.crystalSpeed, d.crystalRange, d.crystalDamage, { kind: 'crystal', stage: 1, token: { hits: new Set() } });
+    else if (id === 'crystal') launch(d.crystalSpeed, d.crystalRange, d.crystalDamage, { kind: 'crystal', stage: 1, token: { hits: new Set() }, homingTarget: target });
     return true;
   }
   function wave(a, yaw, ultimate) {
@@ -431,6 +431,11 @@ export function createBeta6Combat(definitions, options = {}) {
         p.pausedUntil = 0; p.returning = true; p.hits.clear(); p.traveled = 0;
       }
       if (p.kind === 'wave' && !alive(a)) { finish(p); projectiles.splice(i, 1); continue; }
+      if (p.kind === 'crystal' && p.stage === 1 && d.crystalHomingTurnRate && alive(p.homingTarget)) {
+        const wanted = Math.atan2(p.homingTarget.z-p.z, p.homingTarget.x-p.x);
+        const diff = Math.atan2(Math.sin(wanted-p.yaw), Math.cos(wanted-p.yaw));
+        p.yaw += clamp(diff, -d.crystalHomingTurnRate*dt, d.crystalHomingTurnRate*dt);
+      }
       if (p.returning) p.yaw = Math.atan2(a.z - p.z, a.x - p.x);
       const before = { x: p.x, z: p.z }, advance = Math.min(p.speed * dt, p.returning ? Infinity : Math.max(0, p.reach - p.traveled));
       p.x += Math.cos(p.yaw) * advance; p.z += Math.sin(p.yaw) * advance; p.traveled += advance;

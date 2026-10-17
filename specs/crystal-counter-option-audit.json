@@ -1,0 +1,4580 @@
+{
+  "scope": "Main 15-character matrix; current pre-existing goal failures remain visible; candidate changes only",
+  "gamesPerPair": 600,
+  "goals": [
+    [
+      "red",
+      "blue"
+    ],
+    [
+      "blue",
+      "orange"
+    ],
+    [
+      "orange",
+      "mint"
+    ],
+    [
+      "mint",
+      "cyan"
+    ],
+    [
+      "cyan",
+      "pink"
+    ],
+    [
+      "pink",
+      "purple"
+    ],
+    [
+      "purple",
+      "chartreuse"
+    ],
+    [
+      "chartreuse",
+      "yellow"
+    ],
+    [
+      "yellow",
+      "ivory"
+    ],
+    [
+      "ivory",
+      "gold"
+    ],
+    [
+      "gold",
+      "green"
+    ],
+    [
+      "green",
+      "azure"
+    ],
+    [
+      "azure",
+      "crimson"
+    ],
+    [
+      "crystal",
+      "crimson"
+    ],
+    [
+      "crimson",
+      "purple"
+    ]
+  ],
+  "baseline": {
+    "red:green": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.247111111111102,
+      "casts": 1462
+    },
+    "red:blue": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 6.128277777777774,
+      "casts": 1174
+    },
+    "red:orange": {
+      "wins": 36,
+      "losses": 564,
+      "draws": 0,
+      "games": 600,
+      "winRate": 6,
+      "timeouts": 0,
+      "averageSeconds": 0.7671944444444472,
+      "casts": 0
+    },
+    "red:yellow": {
+      "wins": 203,
+      "losses": 397,
+      "draws": 0,
+      "games": 600,
+      "winRate": 33.833333333333336,
+      "timeouts": 0,
+      "averageSeconds": 3.991638888888878,
+      "casts": 1686
+    },
+    "red:cyan": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.0768888888888872,
+      "casts": 600
+    },
+    "red:purple": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 2.0666666666666758,
+      "casts": 384
+    },
+    "red:pink": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.5472222222222334,
+      "casts": 600
+    },
+    "red:crimson": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.5333333333333365,
+      "casts": 0
+    },
+    "red:gold": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 4.680916666666701,
+      "casts": 1297
+    },
+    "red:ivory": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.1937500000000014,
+      "casts": 0
+    },
+    "red:chartreuse": {
+      "wins": 486,
+      "losses": 114,
+      "draws": 0,
+      "games": 600,
+      "winRate": 81,
+      "timeouts": 0,
+      "averageSeconds": 3.415722222222224,
+      "casts": 782
+    },
+    "red:mint": {
+      "wins": 493,
+      "losses": 107,
+      "draws": 0,
+      "games": 600,
+      "winRate": 82.16666666666667,
+      "timeouts": 0,
+      "averageSeconds": 7.605527777777827,
+      "casts": 2123
+    },
+    "red:azure": {
+      "wins": 392,
+      "losses": 208,
+      "draws": 0,
+      "games": 600,
+      "winRate": 65.33333333333333,
+      "timeouts": 0,
+      "averageSeconds": 1.748472222222224,
+      "casts": 822
+    },
+    "red:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "green:blue": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 12.514861111111257,
+      "casts": 0
+    },
+    "green:orange": {
+      "wins": 17,
+      "losses": 581,
+      "draws": 2,
+      "games": 600,
+      "winRate": 3,
+      "timeouts": 0,
+      "averageSeconds": 3.8023611111110682,
+      "casts": 0
+    },
+    "green:yellow": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 15.643611111111186,
+      "casts": 600
+    },
+    "green:cyan": {
+      "wins": 431,
+      "losses": 124,
+      "draws": 45,
+      "games": 600,
+      "winRate": 75.58333333333333,
+      "timeouts": 0,
+      "averageSeconds": 28.11613888888858,
+      "casts": 94
+    },
+    "green:purple": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 9.403055555555634,
+      "casts": 0
+    },
+    "green:pink": {
+      "wins": 387,
+      "losses": 213,
+      "draws": 0,
+      "games": 600,
+      "winRate": 64.5,
+      "timeouts": 0,
+      "averageSeconds": 2.0463611111111115,
+      "casts": 519
+    },
+    "green:crimson": {
+      "wins": 191,
+      "losses": 409,
+      "draws": 0,
+      "games": 600,
+      "winRate": 31.833333333333332,
+      "timeouts": 0,
+      "averageSeconds": 1.025916666666669,
+      "casts": 590
+    },
+    "green:gold": {
+      "wins": 2,
+      "losses": 598,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.3333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 30.477583333332973,
+      "casts": 2363
+    },
+    "green:ivory": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 3.309833333333295,
+      "casts": 591
+    },
+    "green:chartreuse": {
+      "wins": 9,
+      "losses": 591,
+      "draws": 0,
+      "games": 600,
+      "winRate": 1.5,
+      "timeouts": 0,
+      "averageSeconds": 10.770083333333352,
+      "casts": 246
+    },
+    "green:mint": {
+      "wins": 2,
+      "losses": 598,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.3333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 7.591499999999963,
+      "casts": 581
+    },
+    "green:azure": {
+      "wins": 537,
+      "losses": 63,
+      "draws": 0,
+      "games": 600,
+      "winRate": 89.5,
+      "timeouts": 0,
+      "averageSeconds": 2.4452777777777515,
+      "casts": 613
+    },
+    "green:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "blue:orange": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 6.8993611111111095,
+      "casts": 0
+    },
+    "blue:yellow": {
+      "wins": 535,
+      "losses": 65,
+      "draws": 0,
+      "games": 600,
+      "winRate": 89.16666666666667,
+      "timeouts": 0,
+      "averageSeconds": 11.761361111111116,
+      "casts": 130
+    },
+    "blue:cyan": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 9.191888888888947,
+      "casts": 0
+    },
+    "blue:purple": {
+      "wins": 355,
+      "losses": 245,
+      "draws": 0,
+      "games": 600,
+      "winRate": 59.166666666666664,
+      "timeouts": 0,
+      "averageSeconds": 17.446611111110943,
+      "casts": 470
+    },
+    "blue:pink": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 6.52408333333331,
+      "casts": 166
+    },
+    "blue:crimson": {
+      "wins": 81,
+      "losses": 518,
+      "draws": 1,
+      "games": 600,
+      "winRate": 13.583333333333334,
+      "timeouts": 0,
+      "averageSeconds": 8.09044444444445,
+      "casts": 519
+    },
+    "blue:gold": {
+      "wins": 598,
+      "losses": 2,
+      "draws": 0,
+      "games": 600,
+      "winRate": 99.66666666666667,
+      "timeouts": 0,
+      "averageSeconds": 24.172805555555424,
+      "casts": 9
+    },
+    "blue:ivory": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 10.497000000000092,
+      "casts": 0
+    },
+    "blue:chartreuse": {
+      "wins": 4,
+      "losses": 596,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.6666666666666666,
+      "timeouts": 0,
+      "averageSeconds": 14.28219444444461,
+      "casts": 6
+    },
+    "blue:mint": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 11.139527777777865,
+      "casts": 13
+    },
+    "blue:azure": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.5138611111111016,
+      "casts": 0
+    },
+    "blue:crystal": {
+      "wins": 154,
+      "losses": 446,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 25.666666666666668
+    },
+    "orange:yellow": {
+      "wins": 514,
+      "losses": 84,
+      "draws": 2,
+      "games": 600,
+      "winRate": 85.83333333333333,
+      "timeouts": 0,
+      "averageSeconds": 1.1680000000000006,
+      "casts": 0
+    },
+    "orange:cyan": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.0421111111111128,
+      "casts": 0
+    },
+    "orange:purple": {
+      "wins": 208,
+      "losses": 392,
+      "draws": 0,
+      "games": 600,
+      "winRate": 34.666666666666664,
+      "timeouts": 0,
+      "averageSeconds": 3.7103333333333346,
+      "casts": 0
+    },
+    "orange:pink": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 0.7903333333333319,
+      "casts": 0
+    },
+    "orange:crimson": {
+      "wins": 415,
+      "losses": 177,
+      "draws": 8,
+      "games": 600,
+      "winRate": 69.83333333333333,
+      "timeouts": 0,
+      "averageSeconds": 1.6160000000000003,
+      "casts": 185
+    },
+    "orange:gold": {
+      "wins": 599,
+      "losses": 1,
+      "draws": 0,
+      "games": 600,
+      "winRate": 99.83333333333333,
+      "timeouts": 0,
+      "averageSeconds": 1.740777777777771,
+      "casts": 0
+    },
+    "orange:ivory": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.0393333333333354,
+      "casts": 0
+    },
+    "orange:chartreuse": {
+      "wins": 407,
+      "losses": 134,
+      "draws": 59,
+      "games": 600,
+      "winRate": 72.75,
+      "timeouts": 0,
+      "averageSeconds": 10.380194444444342,
+      "casts": 0
+    },
+    "orange:mint": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.4002499999999936,
+      "casts": 0
+    },
+    "orange:azure": {
+      "wins": 551,
+      "losses": 49,
+      "draws": 0,
+      "games": 600,
+      "winRate": 91.83333333333333,
+      "timeouts": 0,
+      "averageSeconds": 0.9117777777777742,
+      "casts": 0
+    },
+    "orange:crystal": {
+      "wins": 11,
+      "losses": 589,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 1.8333333333333333
+    },
+    "yellow:cyan": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 8.990500000000065,
+      "casts": 600
+    },
+    "yellow:purple": {
+      "wins": 63,
+      "losses": 537,
+      "draws": 0,
+      "games": 600,
+      "winRate": 10.5,
+      "timeouts": 0,
+      "averageSeconds": 4.938361111111073,
+      "casts": 414
+    },
+    "yellow:pink": {
+      "wins": 517,
+      "losses": 83,
+      "draws": 0,
+      "games": 600,
+      "winRate": 86.16666666666667,
+      "timeouts": 0,
+      "averageSeconds": 4.464305555555535,
+      "casts": 1180
+    },
+    "yellow:crimson": {
+      "wins": 238,
+      "losses": 362,
+      "draws": 0,
+      "games": 600,
+      "winRate": 39.666666666666664,
+      "timeouts": 0,
+      "averageSeconds": 5.315611111111099,
+      "casts": 1294
+    },
+    "yellow:gold": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 28.86194444444408,
+      "casts": 1193
+    },
+    "yellow:ivory": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 17.86088888888902,
+      "casts": 600
+    },
+    "yellow:chartreuse": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 12.318194444444384,
+      "casts": 162
+    },
+    "yellow:mint": {
+      "wins": 475,
+      "losses": 125,
+      "draws": 0,
+      "games": 600,
+      "winRate": 79.16666666666667,
+      "timeouts": 0,
+      "averageSeconds": 25.144916666666113,
+      "casts": 588
+    },
+    "yellow:azure": {
+      "wins": 66,
+      "losses": 534,
+      "draws": 0,
+      "games": 600,
+      "winRate": 11,
+      "timeouts": 0,
+      "averageSeconds": 2.043722222222204,
+      "casts": 580
+    },
+    "yellow:crystal": {
+      "wins": 3,
+      "losses": 597,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0.5
+    },
+    "cyan:purple": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 5.9892777777777795,
+      "casts": 0
+    },
+    "cyan:pink": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.6180833333333227,
+      "casts": 0
+    },
+    "cyan:crimson": {
+      "wins": 2,
+      "losses": 598,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.3333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 2.2273611111111093,
+      "casts": 609
+    },
+    "cyan:gold": {
+      "wins": 1,
+      "losses": 599,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.16666666666666666,
+      "timeouts": 0,
+      "averageSeconds": 31.601166666666103,
+      "casts": 656
+    },
+    "cyan:ivory": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.8238055555555532,
+      "casts": 0
+    },
+    "cyan:chartreuse": {
+      "wins": 2,
+      "losses": 598,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.3333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 10.254388888888803,
+      "casts": 17
+    },
+    "cyan:mint": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 5.34991666666661,
+      "casts": 0
+    },
+    "cyan:azure": {
+      "wins": 3,
+      "losses": 597,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.5,
+      "timeouts": 0,
+      "averageSeconds": 1.6152500000000076,
+      "casts": 603
+    },
+    "cyan:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "purple:pink": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 3.043805555555553,
+      "casts": 0
+    },
+    "purple:crimson": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 3.4272222222222215,
+      "casts": 600
+    },
+    "purple:gold": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 6.544277777777771,
+      "casts": 0
+    },
+    "purple:ivory": {
+      "wins": 45,
+      "losses": 555,
+      "draws": 0,
+      "games": 600,
+      "winRate": 7.5,
+      "timeouts": 0,
+      "averageSeconds": 4.415194444444432,
+      "casts": 0
+    },
+    "purple:chartreuse": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 6.109222222222225,
+      "casts": 0
+    },
+    "purple:mint": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 18.27924999999975,
+      "casts": 0
+    },
+    "purple:azure": {
+      "wins": 1,
+      "losses": 599,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.16666666666666666,
+      "timeouts": 0,
+      "averageSeconds": 1.105972222222219,
+      "casts": 0
+    },
+    "purple:crystal": {
+      "wins": 5,
+      "losses": 595,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0.8333333333333334
+    },
+    "pink:crimson": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.37236111111111,
+      "casts": 600
+    },
+    "pink:gold": {
+      "wins": 426,
+      "losses": 174,
+      "draws": 0,
+      "games": 600,
+      "winRate": 71,
+      "timeouts": 0,
+      "averageSeconds": 10.711388888888981,
+      "casts": 1387
+    },
+    "pink:ivory": {
+      "wins": 600,
+      "losses": 0,
+      "draws": 0,
+      "games": 600,
+      "winRate": 100,
+      "timeouts": 0,
+      "averageSeconds": 1.8363611111111031,
+      "casts": 0
+    },
+    "pink:chartreuse": {
+      "wins": 306,
+      "losses": 294,
+      "draws": 0,
+      "games": 600,
+      "winRate": 51,
+      "timeouts": 0,
+      "averageSeconds": 4.188750000000003,
+      "casts": 307
+    },
+    "pink:mint": {
+      "wins": 32,
+      "losses": 568,
+      "draws": 0,
+      "games": 600,
+      "winRate": 5.333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 4.401111111111096,
+      "casts": 598
+    },
+    "pink:azure": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 0.9835277777777782,
+      "casts": 600
+    },
+    "pink:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "crimson:gold": {
+      "wins": 330,
+      "losses": 268,
+      "draws": 2,
+      "games": 600,
+      "winRate": 55.166666666666664,
+      "timeouts": 0,
+      "averageSeconds": 6.969583333333421,
+      "casts": 1291
+    },
+    "crimson:ivory": {
+      "wins": 268,
+      "losses": 330,
+      "draws": 2,
+      "games": 600,
+      "winRate": 44.833333333333336,
+      "timeouts": 0,
+      "averageSeconds": 2.2358611111111037,
+      "casts": 617
+    },
+    "crimson:chartreuse": {
+      "wins": 531,
+      "losses": 69,
+      "draws": 0,
+      "games": 600,
+      "winRate": 88.5,
+      "timeouts": 0,
+      "averageSeconds": 3.1664999999999965,
+      "casts": 589
+    },
+    "crimson:mint": {
+      "wins": 562,
+      "losses": 38,
+      "draws": 0,
+      "games": 600,
+      "winRate": 93.66666666666667,
+      "timeouts": 0,
+      "averageSeconds": 3.5031388888888797,
+      "casts": 647
+    },
+    "crimson:azure": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.0079999999999987,
+      "casts": 600
+    },
+    "crimson:crystal": {
+      "wins": 30,
+      "losses": 570,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 5
+    },
+    "gold:ivory": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.9842777777777876,
+      "casts": 600
+    },
+    "gold:chartreuse": {
+      "wins": 12,
+      "losses": 588,
+      "draws": 0,
+      "games": 600,
+      "winRate": 2,
+      "timeouts": 0,
+      "averageSeconds": 17.4962777777776,
+      "casts": 461
+    },
+    "gold:mint": {
+      "wins": 26,
+      "losses": 574,
+      "draws": 0,
+      "games": 600,
+      "winRate": 4.333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 24.735583333333157,
+      "casts": 976
+    },
+    "gold:azure": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.883805555555556,
+      "casts": 1007
+    },
+    "gold:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "ivory:chartreuse": {
+      "wins": 325,
+      "losses": 275,
+      "draws": 0,
+      "games": 600,
+      "winRate": 54.166666666666664,
+      "timeouts": 0,
+      "averageSeconds": 7.016333333333263,
+      "casts": 317
+    },
+    "ivory:mint": {
+      "wins": 597,
+      "losses": 3,
+      "draws": 0,
+      "games": 600,
+      "winRate": 99.5,
+      "timeouts": 0,
+      "averageSeconds": 1.9207222222222236,
+      "casts": 0
+    },
+    "ivory:azure": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0,
+      "timeouts": 0,
+      "averageSeconds": 1.6125555555555633,
+      "casts": 600
+    },
+    "ivory:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "chartreuse:mint": {
+      "wins": 409,
+      "losses": 191,
+      "draws": 0,
+      "games": 600,
+      "winRate": 68.16666666666667,
+      "timeouts": 0,
+      "averageSeconds": 16.984388888888653,
+      "casts": 125
+    },
+    "chartreuse:azure": {
+      "wins": 231,
+      "losses": 369,
+      "draws": 0,
+      "games": 600,
+      "winRate": 38.5,
+      "timeouts": 0,
+      "averageSeconds": 10.976833333333229,
+      "casts": 516
+    },
+    "chartreuse:crystal": {
+      "wins": 1,
+      "losses": 599,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0.16666666666666666
+    },
+    "mint:azure": {
+      "wins": 2,
+      "losses": 598,
+      "draws": 0,
+      "games": 600,
+      "winRate": 0.3333333333333333,
+      "timeouts": 0,
+      "averageSeconds": 25.832138888888693,
+      "casts": 978
+    },
+    "mint:crystal": {
+      "wins": 0,
+      "losses": 600,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0
+    },
+    "azure:crystal": {
+      "wins": 4,
+      "losses": 596,
+      "draws": 0,
+      "timeouts": 0,
+      "games": 600,
+      "winRate": 0.6666666666666666
+    }
+  },
+  "reports": [
+    {
+      "id": "homing-2.2",
+      "method": "homing",
+      "patch": {
+        "crystal": {
+          "crystalHomingTurnRate": 2.2
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600,
+      "goalRows": [
+        {
+          "id": "red",
+          "target": "blue",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "blue",
+          "target": "orange",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "orange",
+          "target": "mint",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "mint",
+          "target": "cyan",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "cyan",
+          "target": "pink",
+          "before": 0,
+          "after": 0
+        },
+        {
+          "id": "pink",
+          "target": "purple",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "purple",
+          "target": "chartreuse",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "chartreuse",
+          "target": "yellow",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "yellow",
+          "target": "ivory",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "ivory",
+          "target": "gold",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "gold",
+          "target": "green",
+          "before": 99.66666666666667,
+          "after": 99.66666666666667
+        },
+        {
+          "id": "green",
+          "target": "azure",
+          "before": 89.5,
+          "after": 89.5
+        },
+        {
+          "id": "azure",
+          "target": "crimson",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "crystal",
+          "target": "crimson",
+          "before": 95,
+          "after": 100
+        },
+        {
+          "id": "crimson",
+          "target": "purple",
+          "before": 100,
+          "after": 100
+        }
+      ],
+      "broken": [],
+      "totalShift": 11.833333333333332,
+      "differences": [
+        {
+          "pair": "blue:crystal",
+          "before": 25.666666666666668,
+          "after": 22.166666666666668
+        },
+        {
+          "pair": "orange:crystal",
+          "before": 1.8333333333333333,
+          "after": 0
+        },
+        {
+          "pair": "yellow:crystal",
+          "before": 0.5,
+          "after": 0
+        },
+        {
+          "pair": "purple:crystal",
+          "before": 0.8333333333333334,
+          "after": 0
+        },
+        {
+          "pair": "crimson:crystal",
+          "before": 5,
+          "after": 0
+        },
+        {
+          "pair": "chartreuse:crystal",
+          "before": 0.16666666666666666,
+          "after": 0
+        }
+      ],
+      "matrix": {
+        "red:green": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.247111111111102,
+          "casts": 1462
+        },
+        "red:blue": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.128277777777774,
+          "casts": 1174
+        },
+        "red:orange": {
+          "wins": 36,
+          "losses": 564,
+          "draws": 0,
+          "games": 600,
+          "winRate": 6,
+          "timeouts": 0,
+          "averageSeconds": 0.7671944444444472,
+          "casts": 0
+        },
+        "red:yellow": {
+          "wins": 203,
+          "losses": 397,
+          "draws": 0,
+          "games": 600,
+          "winRate": 33.833333333333336,
+          "timeouts": 0,
+          "averageSeconds": 3.991638888888878,
+          "casts": 1686
+        },
+        "red:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0768888888888872,
+          "casts": 600
+        },
+        "red:purple": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 2.0666666666666758,
+          "casts": 384
+        },
+        "red:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.5472222222222334,
+          "casts": 600
+        },
+        "red:crimson": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.5333333333333365,
+          "casts": 0
+        },
+        "red:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 4.680916666666701,
+          "casts": 1297
+        },
+        "red:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.1937500000000014,
+          "casts": 0
+        },
+        "red:chartreuse": {
+          "wins": 486,
+          "losses": 114,
+          "draws": 0,
+          "games": 600,
+          "winRate": 81,
+          "timeouts": 0,
+          "averageSeconds": 3.415722222222224,
+          "casts": 782
+        },
+        "red:mint": {
+          "wins": 493,
+          "losses": 107,
+          "draws": 0,
+          "games": 600,
+          "winRate": 82.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 7.605527777777827,
+          "casts": 2123
+        },
+        "red:azure": {
+          "wins": 392,
+          "losses": 208,
+          "draws": 0,
+          "games": 600,
+          "winRate": 65.33333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.748472222222224,
+          "casts": 822
+        },
+        "red:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "green:blue": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 12.514861111111257,
+          "casts": 0
+        },
+        "green:orange": {
+          "wins": 17,
+          "losses": 581,
+          "draws": 2,
+          "games": 600,
+          "winRate": 3,
+          "timeouts": 0,
+          "averageSeconds": 3.8023611111110682,
+          "casts": 0
+        },
+        "green:yellow": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 15.643611111111186,
+          "casts": 600
+        },
+        "green:cyan": {
+          "wins": 431,
+          "losses": 124,
+          "draws": 45,
+          "games": 600,
+          "winRate": 75.58333333333333,
+          "timeouts": 0,
+          "averageSeconds": 28.11613888888858,
+          "casts": 94
+        },
+        "green:purple": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 9.403055555555634,
+          "casts": 0
+        },
+        "green:pink": {
+          "wins": 387,
+          "losses": 213,
+          "draws": 0,
+          "games": 600,
+          "winRate": 64.5,
+          "timeouts": 0,
+          "averageSeconds": 2.0463611111111115,
+          "casts": 519
+        },
+        "green:crimson": {
+          "wins": 191,
+          "losses": 409,
+          "draws": 0,
+          "games": 600,
+          "winRate": 31.833333333333332,
+          "timeouts": 0,
+          "averageSeconds": 1.025916666666669,
+          "casts": 590
+        },
+        "green:gold": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 30.477583333332973,
+          "casts": 2363
+        },
+        "green:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.309833333333295,
+          "casts": 591
+        },
+        "green:chartreuse": {
+          "wins": 9,
+          "losses": 591,
+          "draws": 0,
+          "games": 600,
+          "winRate": 1.5,
+          "timeouts": 0,
+          "averageSeconds": 10.770083333333352,
+          "casts": 246
+        },
+        "green:mint": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 7.591499999999963,
+          "casts": 581
+        },
+        "green:azure": {
+          "wins": 537,
+          "losses": 63,
+          "draws": 0,
+          "games": 600,
+          "winRate": 89.5,
+          "timeouts": 0,
+          "averageSeconds": 2.4452777777777515,
+          "casts": 613
+        },
+        "green:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "blue:orange": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.8993611111111095,
+          "casts": 0
+        },
+        "blue:yellow": {
+          "wins": 535,
+          "losses": 65,
+          "draws": 0,
+          "games": 600,
+          "winRate": 89.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 11.761361111111116,
+          "casts": 130
+        },
+        "blue:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 9.191888888888947,
+          "casts": 0
+        },
+        "blue:purple": {
+          "wins": 355,
+          "losses": 245,
+          "draws": 0,
+          "games": 600,
+          "winRate": 59.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 17.446611111110943,
+          "casts": 470
+        },
+        "blue:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.52408333333331,
+          "casts": 166
+        },
+        "blue:crimson": {
+          "wins": 81,
+          "losses": 518,
+          "draws": 1,
+          "games": 600,
+          "winRate": 13.583333333333334,
+          "timeouts": 0,
+          "averageSeconds": 8.09044444444445,
+          "casts": 519
+        },
+        "blue:gold": {
+          "wins": 598,
+          "losses": 2,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.66666666666667,
+          "timeouts": 0,
+          "averageSeconds": 24.172805555555424,
+          "casts": 9
+        },
+        "blue:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 10.497000000000092,
+          "casts": 0
+        },
+        "blue:chartreuse": {
+          "wins": 4,
+          "losses": 596,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.6666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 14.28219444444461,
+          "casts": 6
+        },
+        "blue:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 11.139527777777865,
+          "casts": 13
+        },
+        "blue:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.5138611111111016,
+          "casts": 0
+        },
+        "blue:crystal": {
+          "wins": 133,
+          "losses": 467,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 22.166666666666668
+        },
+        "orange:yellow": {
+          "wins": 514,
+          "losses": 84,
+          "draws": 2,
+          "games": 600,
+          "winRate": 85.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.1680000000000006,
+          "casts": 0
+        },
+        "orange:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0421111111111128,
+          "casts": 0
+        },
+        "orange:purple": {
+          "wins": 208,
+          "losses": 392,
+          "draws": 0,
+          "games": 600,
+          "winRate": 34.666666666666664,
+          "timeouts": 0,
+          "averageSeconds": 3.7103333333333346,
+          "casts": 0
+        },
+        "orange:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 0.7903333333333319,
+          "casts": 0
+        },
+        "orange:crimson": {
+          "wins": 415,
+          "losses": 177,
+          "draws": 8,
+          "games": 600,
+          "winRate": 69.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.6160000000000003,
+          "casts": 185
+        },
+        "orange:gold": {
+          "wins": 599,
+          "losses": 1,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.740777777777771,
+          "casts": 0
+        },
+        "orange:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0393333333333354,
+          "casts": 0
+        },
+        "orange:chartreuse": {
+          "wins": 407,
+          "losses": 134,
+          "draws": 59,
+          "games": 600,
+          "winRate": 72.75,
+          "timeouts": 0,
+          "averageSeconds": 10.380194444444342,
+          "casts": 0
+        },
+        "orange:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.4002499999999936,
+          "casts": 0
+        },
+        "orange:azure": {
+          "wins": 551,
+          "losses": 49,
+          "draws": 0,
+          "games": 600,
+          "winRate": 91.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 0.9117777777777742,
+          "casts": 0
+        },
+        "orange:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "yellow:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 8.990500000000065,
+          "casts": 600
+        },
+        "yellow:purple": {
+          "wins": 63,
+          "losses": 537,
+          "draws": 0,
+          "games": 600,
+          "winRate": 10.5,
+          "timeouts": 0,
+          "averageSeconds": 4.938361111111073,
+          "casts": 414
+        },
+        "yellow:pink": {
+          "wins": 517,
+          "losses": 83,
+          "draws": 0,
+          "games": 600,
+          "winRate": 86.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 4.464305555555535,
+          "casts": 1180
+        },
+        "yellow:crimson": {
+          "wins": 238,
+          "losses": 362,
+          "draws": 0,
+          "games": 600,
+          "winRate": 39.666666666666664,
+          "timeouts": 0,
+          "averageSeconds": 5.315611111111099,
+          "casts": 1294
+        },
+        "yellow:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 28.86194444444408,
+          "casts": 1193
+        },
+        "yellow:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 17.86088888888902,
+          "casts": 600
+        },
+        "yellow:chartreuse": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 12.318194444444384,
+          "casts": 162
+        },
+        "yellow:mint": {
+          "wins": 475,
+          "losses": 125,
+          "draws": 0,
+          "games": 600,
+          "winRate": 79.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 25.144916666666113,
+          "casts": 588
+        },
+        "yellow:azure": {
+          "wins": 66,
+          "losses": 534,
+          "draws": 0,
+          "games": 600,
+          "winRate": 11,
+          "timeouts": 0,
+          "averageSeconds": 2.043722222222204,
+          "casts": 580
+        },
+        "yellow:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "cyan:purple": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 5.9892777777777795,
+          "casts": 0
+        },
+        "cyan:pink": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.6180833333333227,
+          "casts": 0
+        },
+        "cyan:crimson": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 2.2273611111111093,
+          "casts": 609
+        },
+        "cyan:gold": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 31.601166666666103,
+          "casts": 656
+        },
+        "cyan:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.8238055555555532,
+          "casts": 0
+        },
+        "cyan:chartreuse": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 10.254388888888803,
+          "casts": 17
+        },
+        "cyan:mint": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 5.34991666666661,
+          "casts": 0
+        },
+        "cyan:azure": {
+          "wins": 3,
+          "losses": 597,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.5,
+          "timeouts": 0,
+          "averageSeconds": 1.6152500000000076,
+          "casts": 603
+        },
+        "cyan:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "purple:pink": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.043805555555553,
+          "casts": 0
+        },
+        "purple:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.4272222222222215,
+          "casts": 600
+        },
+        "purple:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.544277777777771,
+          "casts": 0
+        },
+        "purple:ivory": {
+          "wins": 45,
+          "losses": 555,
+          "draws": 0,
+          "games": 600,
+          "winRate": 7.5,
+          "timeouts": 0,
+          "averageSeconds": 4.415194444444432,
+          "casts": 0
+        },
+        "purple:chartreuse": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.109222222222225,
+          "casts": 0
+        },
+        "purple:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 18.27924999999975,
+          "casts": 0
+        },
+        "purple:azure": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 1.105972222222219,
+          "casts": 0
+        },
+        "purple:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "pink:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.37236111111111,
+          "casts": 600
+        },
+        "pink:gold": {
+          "wins": 426,
+          "losses": 174,
+          "draws": 0,
+          "games": 600,
+          "winRate": 71,
+          "timeouts": 0,
+          "averageSeconds": 10.711388888888981,
+          "casts": 1387
+        },
+        "pink:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.8363611111111031,
+          "casts": 0
+        },
+        "pink:chartreuse": {
+          "wins": 306,
+          "losses": 294,
+          "draws": 0,
+          "games": 600,
+          "winRate": 51,
+          "timeouts": 0,
+          "averageSeconds": 4.188750000000003,
+          "casts": 307
+        },
+        "pink:mint": {
+          "wins": 32,
+          "losses": 568,
+          "draws": 0,
+          "games": 600,
+          "winRate": 5.333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 4.401111111111096,
+          "casts": 598
+        },
+        "pink:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 0.9835277777777782,
+          "casts": 600
+        },
+        "pink:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "crimson:gold": {
+          "wins": 330,
+          "losses": 268,
+          "draws": 2,
+          "games": 600,
+          "winRate": 55.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 6.969583333333421,
+          "casts": 1291
+        },
+        "crimson:ivory": {
+          "wins": 268,
+          "losses": 330,
+          "draws": 2,
+          "games": 600,
+          "winRate": 44.833333333333336,
+          "timeouts": 0,
+          "averageSeconds": 2.2358611111111037,
+          "casts": 617
+        },
+        "crimson:chartreuse": {
+          "wins": 531,
+          "losses": 69,
+          "draws": 0,
+          "games": 600,
+          "winRate": 88.5,
+          "timeouts": 0,
+          "averageSeconds": 3.1664999999999965,
+          "casts": 589
+        },
+        "crimson:mint": {
+          "wins": 562,
+          "losses": 38,
+          "draws": 0,
+          "games": 600,
+          "winRate": 93.66666666666667,
+          "timeouts": 0,
+          "averageSeconds": 3.5031388888888797,
+          "casts": 647
+        },
+        "crimson:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.0079999999999987,
+          "casts": 600
+        },
+        "crimson:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "gold:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.9842777777777876,
+          "casts": 600
+        },
+        "gold:chartreuse": {
+          "wins": 12,
+          "losses": 588,
+          "draws": 0,
+          "games": 600,
+          "winRate": 2,
+          "timeouts": 0,
+          "averageSeconds": 17.4962777777776,
+          "casts": 461
+        },
+        "gold:mint": {
+          "wins": 26,
+          "losses": 574,
+          "draws": 0,
+          "games": 600,
+          "winRate": 4.333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 24.735583333333157,
+          "casts": 976
+        },
+        "gold:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.883805555555556,
+          "casts": 1007
+        },
+        "gold:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "ivory:chartreuse": {
+          "wins": 325,
+          "losses": 275,
+          "draws": 0,
+          "games": 600,
+          "winRate": 54.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 7.016333333333263,
+          "casts": 317
+        },
+        "ivory:mint": {
+          "wins": 597,
+          "losses": 3,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.5,
+          "timeouts": 0,
+          "averageSeconds": 1.9207222222222236,
+          "casts": 0
+        },
+        "ivory:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.6125555555555633,
+          "casts": 600
+        },
+        "ivory:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "chartreuse:mint": {
+          "wins": 409,
+          "losses": 191,
+          "draws": 0,
+          "games": 600,
+          "winRate": 68.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 16.984388888888653,
+          "casts": 125
+        },
+        "chartreuse:azure": {
+          "wins": 231,
+          "losses": 369,
+          "draws": 0,
+          "games": 600,
+          "winRate": 38.5,
+          "timeouts": 0,
+          "averageSeconds": 10.976833333333229,
+          "casts": 516
+        },
+        "chartreuse:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "mint:azure": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 25.832138888888693,
+          "casts": 978
+        },
+        "mint:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "azure:crystal": {
+          "wins": 4,
+          "losses": 596,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0.6666666666666666
+        }
+      }
+    },
+    {
+      "id": "radius-1.3",
+      "method": "radius",
+      "patch": {
+        "crystal": {
+          "crystalRadius": 1.3
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600,
+      "goalRows": [
+        {
+          "id": "red",
+          "target": "blue",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "blue",
+          "target": "orange",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "orange",
+          "target": "mint",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "mint",
+          "target": "cyan",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "cyan",
+          "target": "pink",
+          "before": 0,
+          "after": 0
+        },
+        {
+          "id": "pink",
+          "target": "purple",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "purple",
+          "target": "chartreuse",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "chartreuse",
+          "target": "yellow",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "yellow",
+          "target": "ivory",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "ivory",
+          "target": "gold",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "gold",
+          "target": "green",
+          "before": 99.66666666666667,
+          "after": 99.66666666666667
+        },
+        {
+          "id": "green",
+          "target": "azure",
+          "before": 89.5,
+          "after": 89.5
+        },
+        {
+          "id": "azure",
+          "target": "crimson",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "crystal",
+          "target": "crimson",
+          "before": 95,
+          "after": 100
+        },
+        {
+          "id": "crimson",
+          "target": "purple",
+          "before": 100,
+          "after": 100
+        }
+      ],
+      "broken": [],
+      "totalShift": 12.833333333333332,
+      "differences": [
+        {
+          "pair": "blue:crystal",
+          "before": 25.666666666666668,
+          "after": 21.166666666666668
+        },
+        {
+          "pair": "orange:crystal",
+          "before": 1.8333333333333333,
+          "after": 2.5
+        },
+        {
+          "pair": "yellow:crystal",
+          "before": 0.5,
+          "after": 0
+        },
+        {
+          "pair": "purple:crystal",
+          "before": 0.8333333333333334,
+          "after": 0
+        },
+        {
+          "pair": "crimson:crystal",
+          "before": 5,
+          "after": 0
+        },
+        {
+          "pair": "ivory:crystal",
+          "before": 0,
+          "after": 0.5
+        },
+        {
+          "pair": "chartreuse:crystal",
+          "before": 0.16666666666666666,
+          "after": 0
+        },
+        {
+          "pair": "azure:crystal",
+          "before": 0.6666666666666666,
+          "after": 0
+        }
+      ],
+      "matrix": {
+        "red:green": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.247111111111102,
+          "casts": 1462
+        },
+        "red:blue": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.128277777777774,
+          "casts": 1174
+        },
+        "red:orange": {
+          "wins": 36,
+          "losses": 564,
+          "draws": 0,
+          "games": 600,
+          "winRate": 6,
+          "timeouts": 0,
+          "averageSeconds": 0.7671944444444472,
+          "casts": 0
+        },
+        "red:yellow": {
+          "wins": 203,
+          "losses": 397,
+          "draws": 0,
+          "games": 600,
+          "winRate": 33.833333333333336,
+          "timeouts": 0,
+          "averageSeconds": 3.991638888888878,
+          "casts": 1686
+        },
+        "red:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0768888888888872,
+          "casts": 600
+        },
+        "red:purple": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 2.0666666666666758,
+          "casts": 384
+        },
+        "red:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.5472222222222334,
+          "casts": 600
+        },
+        "red:crimson": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.5333333333333365,
+          "casts": 0
+        },
+        "red:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 4.680916666666701,
+          "casts": 1297
+        },
+        "red:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.1937500000000014,
+          "casts": 0
+        },
+        "red:chartreuse": {
+          "wins": 486,
+          "losses": 114,
+          "draws": 0,
+          "games": 600,
+          "winRate": 81,
+          "timeouts": 0,
+          "averageSeconds": 3.415722222222224,
+          "casts": 782
+        },
+        "red:mint": {
+          "wins": 493,
+          "losses": 107,
+          "draws": 0,
+          "games": 600,
+          "winRate": 82.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 7.605527777777827,
+          "casts": 2123
+        },
+        "red:azure": {
+          "wins": 392,
+          "losses": 208,
+          "draws": 0,
+          "games": 600,
+          "winRate": 65.33333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.748472222222224,
+          "casts": 822
+        },
+        "red:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "green:blue": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 12.514861111111257,
+          "casts": 0
+        },
+        "green:orange": {
+          "wins": 17,
+          "losses": 581,
+          "draws": 2,
+          "games": 600,
+          "winRate": 3,
+          "timeouts": 0,
+          "averageSeconds": 3.8023611111110682,
+          "casts": 0
+        },
+        "green:yellow": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 15.643611111111186,
+          "casts": 600
+        },
+        "green:cyan": {
+          "wins": 431,
+          "losses": 124,
+          "draws": 45,
+          "games": 600,
+          "winRate": 75.58333333333333,
+          "timeouts": 0,
+          "averageSeconds": 28.11613888888858,
+          "casts": 94
+        },
+        "green:purple": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 9.403055555555634,
+          "casts": 0
+        },
+        "green:pink": {
+          "wins": 387,
+          "losses": 213,
+          "draws": 0,
+          "games": 600,
+          "winRate": 64.5,
+          "timeouts": 0,
+          "averageSeconds": 2.0463611111111115,
+          "casts": 519
+        },
+        "green:crimson": {
+          "wins": 191,
+          "losses": 409,
+          "draws": 0,
+          "games": 600,
+          "winRate": 31.833333333333332,
+          "timeouts": 0,
+          "averageSeconds": 1.025916666666669,
+          "casts": 590
+        },
+        "green:gold": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 30.477583333332973,
+          "casts": 2363
+        },
+        "green:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.309833333333295,
+          "casts": 591
+        },
+        "green:chartreuse": {
+          "wins": 9,
+          "losses": 591,
+          "draws": 0,
+          "games": 600,
+          "winRate": 1.5,
+          "timeouts": 0,
+          "averageSeconds": 10.770083333333352,
+          "casts": 246
+        },
+        "green:mint": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 7.591499999999963,
+          "casts": 581
+        },
+        "green:azure": {
+          "wins": 537,
+          "losses": 63,
+          "draws": 0,
+          "games": 600,
+          "winRate": 89.5,
+          "timeouts": 0,
+          "averageSeconds": 2.4452777777777515,
+          "casts": 613
+        },
+        "green:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "blue:orange": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.8993611111111095,
+          "casts": 0
+        },
+        "blue:yellow": {
+          "wins": 535,
+          "losses": 65,
+          "draws": 0,
+          "games": 600,
+          "winRate": 89.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 11.761361111111116,
+          "casts": 130
+        },
+        "blue:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 9.191888888888947,
+          "casts": 0
+        },
+        "blue:purple": {
+          "wins": 355,
+          "losses": 245,
+          "draws": 0,
+          "games": 600,
+          "winRate": 59.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 17.446611111110943,
+          "casts": 470
+        },
+        "blue:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.52408333333331,
+          "casts": 166
+        },
+        "blue:crimson": {
+          "wins": 81,
+          "losses": 518,
+          "draws": 1,
+          "games": 600,
+          "winRate": 13.583333333333334,
+          "timeouts": 0,
+          "averageSeconds": 8.09044444444445,
+          "casts": 519
+        },
+        "blue:gold": {
+          "wins": 598,
+          "losses": 2,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.66666666666667,
+          "timeouts": 0,
+          "averageSeconds": 24.172805555555424,
+          "casts": 9
+        },
+        "blue:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 10.497000000000092,
+          "casts": 0
+        },
+        "blue:chartreuse": {
+          "wins": 4,
+          "losses": 596,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.6666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 14.28219444444461,
+          "casts": 6
+        },
+        "blue:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 11.139527777777865,
+          "casts": 13
+        },
+        "blue:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.5138611111111016,
+          "casts": 0
+        },
+        "blue:crystal": {
+          "wins": 127,
+          "losses": 473,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 21.166666666666668
+        },
+        "orange:yellow": {
+          "wins": 514,
+          "losses": 84,
+          "draws": 2,
+          "games": 600,
+          "winRate": 85.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.1680000000000006,
+          "casts": 0
+        },
+        "orange:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0421111111111128,
+          "casts": 0
+        },
+        "orange:purple": {
+          "wins": 208,
+          "losses": 392,
+          "draws": 0,
+          "games": 600,
+          "winRate": 34.666666666666664,
+          "timeouts": 0,
+          "averageSeconds": 3.7103333333333346,
+          "casts": 0
+        },
+        "orange:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 0.7903333333333319,
+          "casts": 0
+        },
+        "orange:crimson": {
+          "wins": 415,
+          "losses": 177,
+          "draws": 8,
+          "games": 600,
+          "winRate": 69.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.6160000000000003,
+          "casts": 185
+        },
+        "orange:gold": {
+          "wins": 599,
+          "losses": 1,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.740777777777771,
+          "casts": 0
+        },
+        "orange:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0393333333333354,
+          "casts": 0
+        },
+        "orange:chartreuse": {
+          "wins": 407,
+          "losses": 134,
+          "draws": 59,
+          "games": 600,
+          "winRate": 72.75,
+          "timeouts": 0,
+          "averageSeconds": 10.380194444444342,
+          "casts": 0
+        },
+        "orange:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.4002499999999936,
+          "casts": 0
+        },
+        "orange:azure": {
+          "wins": 551,
+          "losses": 49,
+          "draws": 0,
+          "games": 600,
+          "winRate": 91.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 0.9117777777777742,
+          "casts": 0
+        },
+        "orange:crystal": {
+          "wins": 15,
+          "losses": 585,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 2.5
+        },
+        "yellow:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 8.990500000000065,
+          "casts": 600
+        },
+        "yellow:purple": {
+          "wins": 63,
+          "losses": 537,
+          "draws": 0,
+          "games": 600,
+          "winRate": 10.5,
+          "timeouts": 0,
+          "averageSeconds": 4.938361111111073,
+          "casts": 414
+        },
+        "yellow:pink": {
+          "wins": 517,
+          "losses": 83,
+          "draws": 0,
+          "games": 600,
+          "winRate": 86.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 4.464305555555535,
+          "casts": 1180
+        },
+        "yellow:crimson": {
+          "wins": 238,
+          "losses": 362,
+          "draws": 0,
+          "games": 600,
+          "winRate": 39.666666666666664,
+          "timeouts": 0,
+          "averageSeconds": 5.315611111111099,
+          "casts": 1294
+        },
+        "yellow:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 28.86194444444408,
+          "casts": 1193
+        },
+        "yellow:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 17.86088888888902,
+          "casts": 600
+        },
+        "yellow:chartreuse": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 12.318194444444384,
+          "casts": 162
+        },
+        "yellow:mint": {
+          "wins": 475,
+          "losses": 125,
+          "draws": 0,
+          "games": 600,
+          "winRate": 79.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 25.144916666666113,
+          "casts": 588
+        },
+        "yellow:azure": {
+          "wins": 66,
+          "losses": 534,
+          "draws": 0,
+          "games": 600,
+          "winRate": 11,
+          "timeouts": 0,
+          "averageSeconds": 2.043722222222204,
+          "casts": 580
+        },
+        "yellow:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "cyan:purple": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 5.9892777777777795,
+          "casts": 0
+        },
+        "cyan:pink": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.6180833333333227,
+          "casts": 0
+        },
+        "cyan:crimson": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 2.2273611111111093,
+          "casts": 609
+        },
+        "cyan:gold": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 31.601166666666103,
+          "casts": 656
+        },
+        "cyan:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.8238055555555532,
+          "casts": 0
+        },
+        "cyan:chartreuse": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 10.254388888888803,
+          "casts": 17
+        },
+        "cyan:mint": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 5.34991666666661,
+          "casts": 0
+        },
+        "cyan:azure": {
+          "wins": 3,
+          "losses": 597,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.5,
+          "timeouts": 0,
+          "averageSeconds": 1.6152500000000076,
+          "casts": 603
+        },
+        "cyan:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "purple:pink": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.043805555555553,
+          "casts": 0
+        },
+        "purple:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.4272222222222215,
+          "casts": 600
+        },
+        "purple:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.544277777777771,
+          "casts": 0
+        },
+        "purple:ivory": {
+          "wins": 45,
+          "losses": 555,
+          "draws": 0,
+          "games": 600,
+          "winRate": 7.5,
+          "timeouts": 0,
+          "averageSeconds": 4.415194444444432,
+          "casts": 0
+        },
+        "purple:chartreuse": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.109222222222225,
+          "casts": 0
+        },
+        "purple:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 18.27924999999975,
+          "casts": 0
+        },
+        "purple:azure": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 1.105972222222219,
+          "casts": 0
+        },
+        "purple:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "pink:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.37236111111111,
+          "casts": 600
+        },
+        "pink:gold": {
+          "wins": 426,
+          "losses": 174,
+          "draws": 0,
+          "games": 600,
+          "winRate": 71,
+          "timeouts": 0,
+          "averageSeconds": 10.711388888888981,
+          "casts": 1387
+        },
+        "pink:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.8363611111111031,
+          "casts": 0
+        },
+        "pink:chartreuse": {
+          "wins": 306,
+          "losses": 294,
+          "draws": 0,
+          "games": 600,
+          "winRate": 51,
+          "timeouts": 0,
+          "averageSeconds": 4.188750000000003,
+          "casts": 307
+        },
+        "pink:mint": {
+          "wins": 32,
+          "losses": 568,
+          "draws": 0,
+          "games": 600,
+          "winRate": 5.333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 4.401111111111096,
+          "casts": 598
+        },
+        "pink:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 0.9835277777777782,
+          "casts": 600
+        },
+        "pink:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "crimson:gold": {
+          "wins": 330,
+          "losses": 268,
+          "draws": 2,
+          "games": 600,
+          "winRate": 55.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 6.969583333333421,
+          "casts": 1291
+        },
+        "crimson:ivory": {
+          "wins": 268,
+          "losses": 330,
+          "draws": 2,
+          "games": 600,
+          "winRate": 44.833333333333336,
+          "timeouts": 0,
+          "averageSeconds": 2.2358611111111037,
+          "casts": 617
+        },
+        "crimson:chartreuse": {
+          "wins": 531,
+          "losses": 69,
+          "draws": 0,
+          "games": 600,
+          "winRate": 88.5,
+          "timeouts": 0,
+          "averageSeconds": 3.1664999999999965,
+          "casts": 589
+        },
+        "crimson:mint": {
+          "wins": 562,
+          "losses": 38,
+          "draws": 0,
+          "games": 600,
+          "winRate": 93.66666666666667,
+          "timeouts": 0,
+          "averageSeconds": 3.5031388888888797,
+          "casts": 647
+        },
+        "crimson:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.0079999999999987,
+          "casts": 600
+        },
+        "crimson:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "gold:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.9842777777777876,
+          "casts": 600
+        },
+        "gold:chartreuse": {
+          "wins": 12,
+          "losses": 588,
+          "draws": 0,
+          "games": 600,
+          "winRate": 2,
+          "timeouts": 0,
+          "averageSeconds": 17.4962777777776,
+          "casts": 461
+        },
+        "gold:mint": {
+          "wins": 26,
+          "losses": 574,
+          "draws": 0,
+          "games": 600,
+          "winRate": 4.333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 24.735583333333157,
+          "casts": 976
+        },
+        "gold:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.883805555555556,
+          "casts": 1007
+        },
+        "gold:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "ivory:chartreuse": {
+          "wins": 325,
+          "losses": 275,
+          "draws": 0,
+          "games": 600,
+          "winRate": 54.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 7.016333333333263,
+          "casts": 317
+        },
+        "ivory:mint": {
+          "wins": 597,
+          "losses": 3,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.5,
+          "timeouts": 0,
+          "averageSeconds": 1.9207222222222236,
+          "casts": 0
+        },
+        "ivory:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.6125555555555633,
+          "casts": 600
+        },
+        "ivory:crystal": {
+          "wins": 3,
+          "losses": 597,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0.5
+        },
+        "chartreuse:mint": {
+          "wins": 409,
+          "losses": 191,
+          "draws": 0,
+          "games": 600,
+          "winRate": 68.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 16.984388888888653,
+          "casts": 125
+        },
+        "chartreuse:azure": {
+          "wins": 231,
+          "losses": 369,
+          "draws": 0,
+          "games": 600,
+          "winRate": 38.5,
+          "timeouts": 0,
+          "averageSeconds": 10.976833333333229,
+          "casts": 516
+        },
+        "chartreuse:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "mint:azure": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 25.832138888888693,
+          "casts": 978
+        },
+        "mint:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "azure:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        }
+      }
+    },
+    {
+      "id": "ai-no-dodge",
+      "method": "ai",
+      "patch": {
+        "crimson": {
+          "projectileDodgeDuration": 0
+        }
+      },
+      "crystalWinRate": 100,
+      "crystalWins": 600,
+      "goalRows": [
+        {
+          "id": "red",
+          "target": "blue",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "blue",
+          "target": "orange",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "orange",
+          "target": "mint",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "mint",
+          "target": "cyan",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "cyan",
+          "target": "pink",
+          "before": 0,
+          "after": 0
+        },
+        {
+          "id": "pink",
+          "target": "purple",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "purple",
+          "target": "chartreuse",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "chartreuse",
+          "target": "yellow",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "yellow",
+          "target": "ivory",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "ivory",
+          "target": "gold",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "gold",
+          "target": "green",
+          "before": 99.66666666666667,
+          "after": 99.66666666666667
+        },
+        {
+          "id": "green",
+          "target": "azure",
+          "before": 89.5,
+          "after": 89.5
+        },
+        {
+          "id": "azure",
+          "target": "crimson",
+          "before": 100,
+          "after": 100
+        },
+        {
+          "id": "crystal",
+          "target": "crimson",
+          "before": 95,
+          "after": 100
+        },
+        {
+          "id": "crimson",
+          "target": "purple",
+          "before": 100,
+          "after": 100
+        }
+      ],
+      "broken": [],
+      "totalShift": 308.4166666666667,
+      "differences": [
+        {
+          "pair": "green:crimson",
+          "before": 31.833333333333332,
+          "after": 24.666666666666668
+        },
+        {
+          "pair": "blue:crimson",
+          "before": 13.583333333333334,
+          "after": 64
+        },
+        {
+          "pair": "orange:crimson",
+          "before": 69.83333333333333,
+          "after": 100
+        },
+        {
+          "pair": "yellow:crimson",
+          "before": 39.666666666666664,
+          "after": 72.83333333333333
+        },
+        {
+          "pair": "cyan:crimson",
+          "before": 0.3333333333333333,
+          "after": 0
+        },
+        {
+          "pair": "crimson:gold",
+          "before": 55.166666666666664,
+          "after": 92.66666666666667
+        },
+        {
+          "pair": "crimson:ivory",
+          "before": 44.833333333333336,
+          "after": 89.16666666666667
+        },
+        {
+          "pair": "crimson:chartreuse",
+          "before": 88.5,
+          "after": 63.666666666666664
+        },
+        {
+          "pair": "crimson:mint",
+          "before": 93.66666666666667,
+          "after": 18.166666666666668
+        },
+        {
+          "pair": "crimson:crystal",
+          "before": 5,
+          "after": 0
+        }
+      ],
+      "matrix": {
+        "red:green": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.247111111111102,
+          "casts": 1462
+        },
+        "red:blue": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.128277777777774,
+          "casts": 1174
+        },
+        "red:orange": {
+          "wins": 36,
+          "losses": 564,
+          "draws": 0,
+          "games": 600,
+          "winRate": 6,
+          "timeouts": 0,
+          "averageSeconds": 0.7671944444444472,
+          "casts": 0
+        },
+        "red:yellow": {
+          "wins": 203,
+          "losses": 397,
+          "draws": 0,
+          "games": 600,
+          "winRate": 33.833333333333336,
+          "timeouts": 0,
+          "averageSeconds": 3.991638888888878,
+          "casts": 1686
+        },
+        "red:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0768888888888872,
+          "casts": 600
+        },
+        "red:purple": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 2.0666666666666758,
+          "casts": 384
+        },
+        "red:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.5472222222222334,
+          "casts": 600
+        },
+        "red:crimson": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 100
+        },
+        "red:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 4.680916666666701,
+          "casts": 1297
+        },
+        "red:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.1937500000000014,
+          "casts": 0
+        },
+        "red:chartreuse": {
+          "wins": 486,
+          "losses": 114,
+          "draws": 0,
+          "games": 600,
+          "winRate": 81,
+          "timeouts": 0,
+          "averageSeconds": 3.415722222222224,
+          "casts": 782
+        },
+        "red:mint": {
+          "wins": 493,
+          "losses": 107,
+          "draws": 0,
+          "games": 600,
+          "winRate": 82.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 7.605527777777827,
+          "casts": 2123
+        },
+        "red:azure": {
+          "wins": 392,
+          "losses": 208,
+          "draws": 0,
+          "games": 600,
+          "winRate": 65.33333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.748472222222224,
+          "casts": 822
+        },
+        "red:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "green:blue": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 12.514861111111257,
+          "casts": 0
+        },
+        "green:orange": {
+          "wins": 17,
+          "losses": 581,
+          "draws": 2,
+          "games": 600,
+          "winRate": 3,
+          "timeouts": 0,
+          "averageSeconds": 3.8023611111110682,
+          "casts": 0
+        },
+        "green:yellow": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 15.643611111111186,
+          "casts": 600
+        },
+        "green:cyan": {
+          "wins": 431,
+          "losses": 124,
+          "draws": 45,
+          "games": 600,
+          "winRate": 75.58333333333333,
+          "timeouts": 0,
+          "averageSeconds": 28.11613888888858,
+          "casts": 94
+        },
+        "green:purple": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 9.403055555555634,
+          "casts": 0
+        },
+        "green:pink": {
+          "wins": 387,
+          "losses": 213,
+          "draws": 0,
+          "games": 600,
+          "winRate": 64.5,
+          "timeouts": 0,
+          "averageSeconds": 2.0463611111111115,
+          "casts": 519
+        },
+        "green:crimson": {
+          "wins": 148,
+          "losses": 452,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 24.666666666666668
+        },
+        "green:gold": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 30.477583333332973,
+          "casts": 2363
+        },
+        "green:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.309833333333295,
+          "casts": 591
+        },
+        "green:chartreuse": {
+          "wins": 9,
+          "losses": 591,
+          "draws": 0,
+          "games": 600,
+          "winRate": 1.5,
+          "timeouts": 0,
+          "averageSeconds": 10.770083333333352,
+          "casts": 246
+        },
+        "green:mint": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 7.591499999999963,
+          "casts": 581
+        },
+        "green:azure": {
+          "wins": 537,
+          "losses": 63,
+          "draws": 0,
+          "games": 600,
+          "winRate": 89.5,
+          "timeouts": 0,
+          "averageSeconds": 2.4452777777777515,
+          "casts": 613
+        },
+        "green:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "blue:orange": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.8993611111111095,
+          "casts": 0
+        },
+        "blue:yellow": {
+          "wins": 535,
+          "losses": 65,
+          "draws": 0,
+          "games": 600,
+          "winRate": 89.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 11.761361111111116,
+          "casts": 130
+        },
+        "blue:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 9.191888888888947,
+          "casts": 0
+        },
+        "blue:purple": {
+          "wins": 355,
+          "losses": 245,
+          "draws": 0,
+          "games": 600,
+          "winRate": 59.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 17.446611111110943,
+          "casts": 470
+        },
+        "blue:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.52408333333331,
+          "casts": 166
+        },
+        "blue:crimson": {
+          "wins": 384,
+          "losses": 216,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 64
+        },
+        "blue:gold": {
+          "wins": 598,
+          "losses": 2,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.66666666666667,
+          "timeouts": 0,
+          "averageSeconds": 24.172805555555424,
+          "casts": 9
+        },
+        "blue:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 10.497000000000092,
+          "casts": 0
+        },
+        "blue:chartreuse": {
+          "wins": 4,
+          "losses": 596,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.6666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 14.28219444444461,
+          "casts": 6
+        },
+        "blue:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 11.139527777777865,
+          "casts": 13
+        },
+        "blue:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.5138611111111016,
+          "casts": 0
+        },
+        "blue:crystal": {
+          "wins": 154,
+          "losses": 446,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 25.666666666666668
+        },
+        "orange:yellow": {
+          "wins": 514,
+          "losses": 84,
+          "draws": 2,
+          "games": 600,
+          "winRate": 85.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.1680000000000006,
+          "casts": 0
+        },
+        "orange:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0421111111111128,
+          "casts": 0
+        },
+        "orange:purple": {
+          "wins": 208,
+          "losses": 392,
+          "draws": 0,
+          "games": 600,
+          "winRate": 34.666666666666664,
+          "timeouts": 0,
+          "averageSeconds": 3.7103333333333346,
+          "casts": 0
+        },
+        "orange:pink": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 0.7903333333333319,
+          "casts": 0
+        },
+        "orange:crimson": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 100
+        },
+        "orange:gold": {
+          "wins": 599,
+          "losses": 1,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 1.740777777777771,
+          "casts": 0
+        },
+        "orange:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.0393333333333354,
+          "casts": 0
+        },
+        "orange:chartreuse": {
+          "wins": 407,
+          "losses": 134,
+          "draws": 59,
+          "games": 600,
+          "winRate": 72.75,
+          "timeouts": 0,
+          "averageSeconds": 10.380194444444342,
+          "casts": 0
+        },
+        "orange:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.4002499999999936,
+          "casts": 0
+        },
+        "orange:azure": {
+          "wins": 551,
+          "losses": 49,
+          "draws": 0,
+          "games": 600,
+          "winRate": 91.83333333333333,
+          "timeouts": 0,
+          "averageSeconds": 0.9117777777777742,
+          "casts": 0
+        },
+        "orange:crystal": {
+          "wins": 11,
+          "losses": 589,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 1.8333333333333333
+        },
+        "yellow:cyan": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 8.990500000000065,
+          "casts": 600
+        },
+        "yellow:purple": {
+          "wins": 63,
+          "losses": 537,
+          "draws": 0,
+          "games": 600,
+          "winRate": 10.5,
+          "timeouts": 0,
+          "averageSeconds": 4.938361111111073,
+          "casts": 414
+        },
+        "yellow:pink": {
+          "wins": 517,
+          "losses": 83,
+          "draws": 0,
+          "games": 600,
+          "winRate": 86.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 4.464305555555535,
+          "casts": 1180
+        },
+        "yellow:crimson": {
+          "wins": 437,
+          "losses": 163,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 72.83333333333333
+        },
+        "yellow:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 28.86194444444408,
+          "casts": 1193
+        },
+        "yellow:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 17.86088888888902,
+          "casts": 600
+        },
+        "yellow:chartreuse": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 12.318194444444384,
+          "casts": 162
+        },
+        "yellow:mint": {
+          "wins": 475,
+          "losses": 125,
+          "draws": 0,
+          "games": 600,
+          "winRate": 79.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 25.144916666666113,
+          "casts": 588
+        },
+        "yellow:azure": {
+          "wins": 66,
+          "losses": 534,
+          "draws": 0,
+          "games": 600,
+          "winRate": 11,
+          "timeouts": 0,
+          "averageSeconds": 2.043722222222204,
+          "casts": 580
+        },
+        "yellow:crystal": {
+          "wins": 3,
+          "losses": 597,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0.5
+        },
+        "cyan:purple": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 5.9892777777777795,
+          "casts": 0
+        },
+        "cyan:pink": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.6180833333333227,
+          "casts": 0
+        },
+        "cyan:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "cyan:gold": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 31.601166666666103,
+          "casts": 656
+        },
+        "cyan:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.8238055555555532,
+          "casts": 0
+        },
+        "cyan:chartreuse": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 10.254388888888803,
+          "casts": 17
+        },
+        "cyan:mint": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 5.34991666666661,
+          "casts": 0
+        },
+        "cyan:azure": {
+          "wins": 3,
+          "losses": 597,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.5,
+          "timeouts": 0,
+          "averageSeconds": 1.6152500000000076,
+          "casts": 603
+        },
+        "cyan:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "purple:pink": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 3.043805555555553,
+          "casts": 0
+        },
+        "purple:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "purple:gold": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.544277777777771,
+          "casts": 0
+        },
+        "purple:ivory": {
+          "wins": 45,
+          "losses": 555,
+          "draws": 0,
+          "games": 600,
+          "winRate": 7.5,
+          "timeouts": 0,
+          "averageSeconds": 4.415194444444432,
+          "casts": 0
+        },
+        "purple:chartreuse": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 6.109222222222225,
+          "casts": 0
+        },
+        "purple:mint": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 18.27924999999975,
+          "casts": 0
+        },
+        "purple:azure": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666,
+          "timeouts": 0,
+          "averageSeconds": 1.105972222222219,
+          "casts": 0
+        },
+        "purple:crystal": {
+          "wins": 5,
+          "losses": 595,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0.8333333333333334
+        },
+        "pink:crimson": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "pink:gold": {
+          "wins": 426,
+          "losses": 174,
+          "draws": 0,
+          "games": 600,
+          "winRate": 71,
+          "timeouts": 0,
+          "averageSeconds": 10.711388888888981,
+          "casts": 1387
+        },
+        "pink:ivory": {
+          "wins": 600,
+          "losses": 0,
+          "draws": 0,
+          "games": 600,
+          "winRate": 100,
+          "timeouts": 0,
+          "averageSeconds": 1.8363611111111031,
+          "casts": 0
+        },
+        "pink:chartreuse": {
+          "wins": 306,
+          "losses": 294,
+          "draws": 0,
+          "games": 600,
+          "winRate": 51,
+          "timeouts": 0,
+          "averageSeconds": 4.188750000000003,
+          "casts": 307
+        },
+        "pink:mint": {
+          "wins": 32,
+          "losses": 568,
+          "draws": 0,
+          "games": 600,
+          "winRate": 5.333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 4.401111111111096,
+          "casts": 598
+        },
+        "pink:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 0.9835277777777782,
+          "casts": 600
+        },
+        "pink:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "crimson:gold": {
+          "wins": 556,
+          "losses": 44,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 92.66666666666667
+        },
+        "crimson:ivory": {
+          "wins": 535,
+          "losses": 65,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 89.16666666666667
+        },
+        "crimson:chartreuse": {
+          "wins": 382,
+          "losses": 218,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 63.666666666666664
+        },
+        "crimson:mint": {
+          "wins": 109,
+          "losses": 491,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 18.166666666666668
+        },
+        "crimson:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "crimson:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "gold:ivory": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.9842777777777876,
+          "casts": 600
+        },
+        "gold:chartreuse": {
+          "wins": 12,
+          "losses": 588,
+          "draws": 0,
+          "games": 600,
+          "winRate": 2,
+          "timeouts": 0,
+          "averageSeconds": 17.4962777777776,
+          "casts": 461
+        },
+        "gold:mint": {
+          "wins": 26,
+          "losses": 574,
+          "draws": 0,
+          "games": 600,
+          "winRate": 4.333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 24.735583333333157,
+          "casts": 976
+        },
+        "gold:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.883805555555556,
+          "casts": 1007
+        },
+        "gold:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "ivory:chartreuse": {
+          "wins": 325,
+          "losses": 275,
+          "draws": 0,
+          "games": 600,
+          "winRate": 54.166666666666664,
+          "timeouts": 0,
+          "averageSeconds": 7.016333333333263,
+          "casts": 317
+        },
+        "ivory:mint": {
+          "wins": 597,
+          "losses": 3,
+          "draws": 0,
+          "games": 600,
+          "winRate": 99.5,
+          "timeouts": 0,
+          "averageSeconds": 1.9207222222222236,
+          "casts": 0
+        },
+        "ivory:azure": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0,
+          "timeouts": 0,
+          "averageSeconds": 1.6125555555555633,
+          "casts": 600
+        },
+        "ivory:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "chartreuse:mint": {
+          "wins": 409,
+          "losses": 191,
+          "draws": 0,
+          "games": 600,
+          "winRate": 68.16666666666667,
+          "timeouts": 0,
+          "averageSeconds": 16.984388888888653,
+          "casts": 125
+        },
+        "chartreuse:azure": {
+          "wins": 231,
+          "losses": 369,
+          "draws": 0,
+          "games": 600,
+          "winRate": 38.5,
+          "timeouts": 0,
+          "averageSeconds": 10.976833333333229,
+          "casts": 516
+        },
+        "chartreuse:crystal": {
+          "wins": 1,
+          "losses": 599,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0.16666666666666666
+        },
+        "mint:azure": {
+          "wins": 2,
+          "losses": 598,
+          "draws": 0,
+          "games": 600,
+          "winRate": 0.3333333333333333,
+          "timeouts": 0,
+          "averageSeconds": 25.832138888888693,
+          "casts": 978
+        },
+        "mint:crystal": {
+          "wins": 0,
+          "losses": 600,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0
+        },
+        "azure:crystal": {
+          "wins": 4,
+          "losses": 596,
+          "draws": 0,
+          "timeouts": 0,
+          "games": 600,
+          "winRate": 0.6666666666666666
+        }
+      }
+    }
+  ],
+  "recommended": "homing-2.2"
+}
