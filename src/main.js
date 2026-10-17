@@ -392,7 +392,7 @@ const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
 document.body.dataset.season=CURRENT_SEASON;
 if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
   const releaseStats = CURRENT_SEASON === "beta7" ? applyBeta7Balance(BETA_CHARACTERS) : applyBeta6Balance(BETA_CHARACTERS);
-  // Main-only Azure tuning: extend the rider's travel and shorten its duration by 30%.
+  // Main-only balance adjustments; beta definitions remain separate.
   if (CURRENT_SEASON === "beta7") {
     const azure = releaseStats.azure;
     const oldRideDuration = azure.surfDashDistance / azure.surfSpeed;
@@ -405,6 +405,9 @@ if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
       projectileDodgeCooldown: 0.45,
       projectileDodgeThreatOnly: true,
     });
+    releaseStats.crystal.crystalDamage = 2200;
+    releaseStats.crystal.basicAttack.description = "2200 피해의 수정탄이 6개 조각(각 1000 피해), 다시 12개 작은 조각(각 500 피해)으로 분열합니다. 같은 단계는 한 대상에게 한 번만 적중합니다.";
+    releaseStats.crystal.basicAttack.descriptionEn = "A 2,200-damage crystal splits into six fragments (1,000 damage each), then twelve shards (500 damage each). Each stage can hit the same target only once.";
   }
   for (const [id, stats] of Object.entries(releaseStats)) {
     // 라벤더는 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.
