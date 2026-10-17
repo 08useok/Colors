@@ -1,0 +1,32 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {CHARACTERS} from '../src/config/characters.js';
+import {BETA_CHARACTERS} from '../src/config/beta-characters.js';
+import {applyBeta7Balance} from '../src/config/beta7-balance.js';
+import {applyBeta6Balance} from '../src/config/beta6-balance.js';
+import {createBeta6Combat} from '../src/combat/beta6-combat.js';
+import {atCharacterLevel} from './simulate-beta6-balance.mjs';
+const variant=process.argv.includes('--before')?'before':'after';
+const source=(variant==='before'?execFileSync('git',['show','16ff077:src/main.js'],{encoding:'utf8'}):readFileSync('src/main.js','utf8')).replace(/\r\n/g,'\n'),start=source.indexOf('if (["beta6", "beta7"].includes(CURRENT_SEASON)) {');
+const context=vm.createContext({CURRENT_SEASON:'beta7',CHARACTERS:structuredClone(CHARACTERS),BETA_CHARACTERS,applyBeta7Balance,applyBeta6Balance});
+vm.runInContext(source.slice(start,source.indexOf('\nconst ALPHA_SEASONS',start)),context);
+const config=atCharacterLevel(JSON.parse(JSON.stringify(context.CHARACTERS)),6);
+const rows=[];
+for(let s=0;s<6;s++)for(let n=0;n<50;n++)for(const order of [1,-1]){
+ const seed=20260919+s*10000+n,distance=[10,13,16][Math.floor(s/2)],events=[];
+ const world=createBeta6Combat(config,{seed,aimError:[.035,.1][s%2],bounds:40,suddenDeath:{start:30,end:45,startRadius:40,endRadius:8,damagePerSecond:.25},onEvent:e=>{if(['attack','damage','analysis','analysisExecute','ultimate'].includes(e.type))events.push({type:e.type,time:e.time,owner:e.owner?.id,target:e.target?.id,amount:e.amount});}});
+ const left=world.add(order===1?'crimson':'crystal',{x:-order*distance/2}),right=world.add(order===1?'crystal':'crimson',{x:order*distance/2});
+ const crystal=order===1?right:left,crimson=order===1?left:right;
+ for(let f=0;f<2700&&crystal.hp>0&&crimson.hp>0;f++)world.update(1/60);
+ const loss=crystal.hp<=0&&crimson.hp>0;
+ rows.push({s,n,order,seed,distance,loss,crystalHp:crystal.hp,crimsonHp:crimson.hp,charge:crystal.charge,required:crystal.u.chargeRequired,casts:crystal.castCount,attacks:crystal.attackCount,lastDamageKind:crystal.lastDamageKind??null,time:world.time,crystalHits:events.filter(e=>e.type==='damage'&&e.owner==='crystal').map(e=>e.amount),events:loss?events:undefined});
+}
+const losses=rows.filter(r=>r.loss),count=fn=>losses.filter(fn).length;
+const summary={games:600,wins:600-losses.length,losses:losses.length,lossesWithNoUltimate:count(r=>r.casts===0),lossesAfterAnalysis:count(r=>r.events.some(e=>e.type==='analysis'&&e.owner==='crystal')),lossesWithNoCrystalHit:count(r=>!r.crystalHits.length),lossChargeDistribution:Object.fromEntries([...new Set(losses.map(r=>r.charge))].sort((a,b)=>a-b).map(charge=>[charge,count(r=>r.charge===charge)])),lastDamageKinds:Object.fromEntries([...new Set(losses.map(r=>r.lastDamageKind))].map(kind=>[kind,count(r=>r.lastDamageKind===kind)])),crimsonRemainingHealth:{min:Math.min(...losses.map(r=>r.crimsonHp)),max:Math.max(...losses.map(r=>r.crimsonHp))},firstProjectileHitsInLosses:losses.reduce((sum,r)=>sum+r.crystalHits.filter(v=>v===config.crystal.crystalDamage).length,0)};
+summary.finishedByCrimsonUltimate=count(r=>{const last=r.events.filter(e=>e.type==='damage'&&e.target==='crystal').at(-1);return r.events.some(e=>e.type==='ultimate'&&e.owner==='crimson'&&e.time===last?.time);});
+summary.fullChargeLosses=losses.filter(r=>r.charge===r.required).map(r=>({seed:r.seed,order:r.order,chargedAt:r.events.filter(e=>e.type==='damage'&&e.owner==='crystal').at(-1)?.time,deadAt:r.time}));
+assert(rows.every(r=>Number.isFinite(r.crystalHp)&&Number.isFinite(r.crimsonHp)));
+writeFileSync(`specs/main-crystal-loss-trace-${variant}.json`,JSON.stringify({scope:'Main level-6 Crystal vs Crimson, 600 seeded trials with ultimate/damage events',variant,firstProjectileDamage:config.crystal.crystalDamage,ultimateWidth:config.crystal.ultimate.width??null,summary,losses},null,2)+'\n');
+console.log(JSON.stringify(summary,null,2));

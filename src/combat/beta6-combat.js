@@ -216,7 +216,17 @@ export function createBeta6Combat(definitions, options = {}) {
       }
       if (a.automatic && (a.id === 'gold' && dist > u.radius || ['azure', 'cyan', 'crimson'].includes(a.id) && dist > u.range)) return false;
       // 사거리 밖이거나 이미 분석당하는 적이면 충전을 쓰기 전에 물러난다
-      if (a.id === 'crystal' && (dist > u.range || target.analysisOwner)) return false;
+      if (a.id === 'crystal') {
+        if (Number.isFinite(u.width)) {
+          // Main's aimed analysis binds the first enemy inside its visible beam.
+          const front = b => (b.x-a.x)*Math.cos(yaw)+(b.z-a.z)*Math.sin(yaw);
+          target = actors.filter(b => alive(b) && enemies(a,b) && !hidden(b,a) && !b.analysisOwner
+            && front(b)>=0 && front(b)<=u.range
+            && Math.abs(-(b.x-a.x)*Math.sin(yaw)+(b.z-a.z)*Math.cos(yaw))<=u.width/2)
+            .sort((b,c)=>front(b)-front(c))[0];
+          if (!target) return false;
+        } else if (dist > u.range || target.analysisOwner) return false;
+      }
       if (a.automatic && a.id === 'green' && a.ammo > 0 && a.hp > a.d.maxHealth * .4) return false;
       // Spend the stored charge before resolving the skill so successful
       // ultimate hits can immediately begin charging the next ultimate.

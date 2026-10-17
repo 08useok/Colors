@@ -14,7 +14,8 @@ const after=JSON.parse(JSON.stringify(c.CHARACTERS)),before=structuredClone(afte
 const beta=applyBeta7Balance(BETA_CHARACTERS);
 assert.equal(beta.crystal.crystalDamage,2000);assert.equal(after.crystal.crystalDamage,2200);
 for(const key of ['fragmentDamage','shardDamage'])assert.equal(after.crystal[key],beta.crystal[key]);
-assert.deepEqual(after.crystal.ultimate,JSON.parse(JSON.stringify(beta.crystal.ultimate)));
+const {width,...ultimate}=after.crystal.ultimate;assert.equal(width,2.2);
+assert.deepEqual(ultimate,JSON.parse(JSON.stringify(beta.crystal.ultimate)));
 for(const level of [1,6]){
  const config=atCharacterLevel(after,level),hits=[],world=createBeta6Combat(config,{onEvent:e=>{if(e.type==='damage')hits.push(e.amount);}});
  const a=world.add('crystal',{automatic:false,next:0}),b=world.add('red',{automatic:false,x:6,hp:1e6});

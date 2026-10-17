@@ -2,7 +2,7 @@ import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
-import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
+import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=2";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
 import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
@@ -16,7 +16,7 @@ import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=6";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=7";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=2";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
@@ -406,6 +406,7 @@ if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
       projectileDodgeThreatOnly: true,
     });
     releaseStats.crystal.crystalDamage = 2200;
+    releaseStats.crystal.ultimate.width = 2.2;
     releaseStats.crystal.basicAttack.description = "2200 피해의 수정탄이 6개 조각(각 1000 피해), 다시 12개 작은 조각(각 500 피해)으로 분열합니다. 같은 단계는 한 대상에게 한 번만 적중합니다.";
     releaseStats.crystal.basicAttack.descriptionEn = "A 2,200-damage crystal splits into six fragments (1,000 damage each), then twelve shards (500 damage each). Each stage can hit the same target only once.";
   }

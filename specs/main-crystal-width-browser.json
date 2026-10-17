@@ -1,0 +1,19 @@
+{
+  "report": [
+    {
+      "side": 1.4,
+      "bound": false,
+      "charge": 6,
+      "yaw": 1.702566789972957,
+      "guideVisible": false
+    },
+    {
+      "side": 0.9,
+      "bound": true,
+      "charge": 0,
+      "yaw": 1.5722687207401675,
+      "guideVisible": false
+    }
+  ],
+  "pageErrors": []
+}
