@@ -11,9 +11,10 @@ const expected=applyBeta7Balance(BETA_CHARACTERS);delete expected.lavender;asser
 expected.azure.surfDashDistance = 4;expected.azure.surfSpeed = 4 / (2 / 17 * 0.7);
 Object.assign(expected.crimson,{projectileDodgeSpeedMultiplier:1.35,projectileDodgeCooldown:.45,projectileDodgeThreatOnly:true});
 expected.crystal.crystalDamage=2200;
+expected.crystal.fragmentHitLimit=3;
 expected.crystal.ultimate.width=2.2;
 for(const[id,d]of Object.entries(expected)){for(const[k,v]of Object.entries(d))if(typeof v==='number')assert.equal(context.CHARACTERS[id][k],v,id+':'+k);const u=beta6Ultimate(d,id);assert(u,id);assert.equal(context.CHARACTERS[id].ultimate.chargeRequired,u.chargeRequired,id+' ultimate charge');}
-const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');for(const id of Object.keys(expected))assert(html.includes(`data-char="${id}"`));for(const id of ['gemgrab','showdown-plus'])assert(html.includes(`id="mode-${id}"`));assert(html.includes('src/main.js?v=1.7.0.26'));assert(!main.includes('window.__releaseQA'));
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');for(const id of Object.keys(expected))assert(html.includes(`data-char="${id}"`));for(const id of ['gemgrab','showdown-plus'])assert(html.includes(`id="mode-${id}"`));assert(html.includes('src/main.js?v=1.7.0.27'));assert(!main.includes('window.__releaseQA'));
 const speedStart=main.indexOf('function getMoveSpeed(');vm.runInContext(main.slice(speedStart,main.indexOf('\n}',speedStart)+2),context);assert.equal(context.getMoveSpeed({characterType:'red',seasonSlow:.5}),8*expected.red.moveSpeedMultiplier*.5);
 console.log('PASS: all 15 main definitions match beta7 stats, normalized ultimate charges, selection/modes and cache entry');
 

@@ -10,9 +10,11 @@ import {atCharacterLevel,beta6Duel} from './simulate-beta6-balance.mjs';
 const source=readFileSync('src/main.js','utf8').replace(/\r\n/g,'\n'),start=source.indexOf('if (["beta6", "beta7"].includes(CURRENT_SEASON)) {');
 const c=vm.createContext({CURRENT_SEASON:'beta7',CHARACTERS:structuredClone(CHARACTERS),BETA_CHARACTERS,applyBeta7Balance,applyBeta6Balance});
 vm.runInContext(source.slice(start,source.indexOf('\nconst ALPHA_SEASONS',start)),c);
-const after=JSON.parse(JSON.stringify(c.CHARACTERS)),before=structuredClone(after);before.crystal.crystalDamage=2000;
+const after=JSON.parse(JSON.stringify(c.CHARACTERS)),before=structuredClone(after),fragmentComparison=process.argv.includes('--fragments');
+if(fragmentComparison)before.crystal.fragmentHitLimit=1;else before.crystal.crystalDamage=2000;
 const beta=applyBeta7Balance(BETA_CHARACTERS);
 assert.equal(beta.crystal.crystalDamage,2000);assert.equal(after.crystal.crystalDamage,2200);
+assert.equal(after.crystal.fragmentHitLimit,3);assert.equal(beta.crystal.fragmentHitLimit,undefined);
 for(const key of ['fragmentDamage','shardDamage'])assert.equal(after.crystal[key],beta.crystal[key]);
 const {width,...ultimate}=after.crystal.ultimate;assert.equal(width,2.2);
 assert.deepEqual(ultimate,JSON.parse(JSON.stringify(beta.crystal.ultimate)));
@@ -20,10 +22,11 @@ for(const level of [1,6]){
  const config=atCharacterLevel(after,level),hits=[],world=createBeta6Combat(config,{onEvent:e=>{if(e.type==='damage')hits.push(e.amount);}});
  const a=world.add('crystal',{automatic:false,next:0}),b=world.add('red',{automatic:false,x:6,hp:1e6});
  assert(world.fire(a,b,0));for(let i=0;i<60;i++)world.update(1/60);
- assert.deepEqual(hits,level===1?[2200,1000,500]:[2420,1100,550]);
+ assert.deepEqual(hits.toSorted((a,b)=>b-a),level===1?[2200,1000,1000,1000,500]:[2420,1100,1100,1100,550]);
+ assert.equal(a.charge,5,'three distinct stage-two hits each charge once');
 }
-console.log('PASS main Crystal: first projectile +10%, fragments hit once per stage, 3700 base / 4070 level-6 total, beta and ultimate preserved');
-if(process.argv.includes('--simulate')){
+console.log('PASS main Crystal: stage-two limit 3, other stages limit 1, 5700 base / 6270 level-6 total, 5 charge, beta preserved');
+if(process.argv.includes('--simulate')||fragmentComparison){
  const report={scope:'Main Crystal -> Crimson, level 6, ultimates enabled from zero charge; same 600 seeded matchups before/after',before:{},after:{}};
  for(const [name,config]of Object.entries({before,after})){
   let wins=0,losses=0,draws=0,timeouts=0;
@@ -33,5 +36,6 @@ if(process.argv.includes('--simulate')){
   }
   report[name]={wins,losses,draws,timeouts,games:600,winRate:100*(wins+draws/2)/600};
  }
- writeFileSync('specs/main-crystal-damage-verification.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+ report.change=fragmentComparison?'stage-two same-target limit 1 -> 3':'first projectile 2000 -> 2200';
+ writeFileSync(fragmentComparison?'specs/main-crystal-fragment-verification.json':'specs/main-crystal-damage-verification.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
 }
