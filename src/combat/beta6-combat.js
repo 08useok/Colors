@@ -457,7 +457,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (p.kind === 'boomerang') amount *= (p.traveled > d.boomerangFarThreshold ? d.boomerangFarMultiplier : 1) * (p.returning ? d.boomerangReturnDamageMultiplier : 1);
         if (p.kind === 'gold') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); award = Math.min([0, 3, 2, 1][p.stage], d.maxChargePerAttack - p.token.charge); p.token.charge += award; }
         if (p.kind === 'crystal') {
-          const key = `${b.key}:${p.stage}`, limit = p.stage === 2 ? (d.fragmentHitLimit ?? 1) : 1;
+          const key = `${b.key}:${p.stage}`, limit = p.stage === 2 ? (d.fragmentHitLimit ?? 1) : p.stage === 3 ? (d.shardHitLimit ?? 1) : 1;
           const counts = p.token.hitCounts ??= new Map(), count = counts.get(key) ?? 0;
           if (count >= limit) amount = 0;
           else { counts.set(key, count + 1); p.token.hits.add(key); }

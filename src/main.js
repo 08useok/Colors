@@ -16,7 +16,7 @@ import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=8";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=9";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=2";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
@@ -407,9 +407,10 @@ if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
     });
     releaseStats.crystal.crystalDamage = 2200;
     releaseStats.crystal.fragmentHitLimit = 3;
+    releaseStats.crystal.shardHitLimit = 4;
     releaseStats.crystal.ultimate.width = 2.2;
-    releaseStats.crystal.basicAttack.description = "2200 피해의 수정탄이 6개 조각(각 1000 피해), 다시 12개 작은 조각(각 500 피해)으로 분열합니다. 같은 적에게 2단계 조각은 최대 3회, 첫 수정탄과 3단계 조각은 각 1회 적중합니다.";
-    releaseStats.crystal.basicAttack.descriptionEn = "A 2,200-damage crystal splits into six fragments (1,000 damage each), then twelve shards (500 damage each). Stage-two fragments can hit the same target up to three times; the first crystal and stage-three shards hit once each.";
+    releaseStats.crystal.basicAttack.description = "2200 피해의 수정탄이 6개 조각(각 1000 피해), 다시 12개 작은 조각(각 500 피해)으로 분열합니다. 같은 적에게 첫 수정탄은 1회, 2단계 조각은 최대 3회, 3단계 조각은 최대 4회 적중합니다.";
+    releaseStats.crystal.basicAttack.descriptionEn = "A 2,200-damage crystal splits into six fragments (1,000 damage each), then twelve shards (500 damage each). The same target can be hit once by the first crystal, up to three times by stage-two fragments, and up to four times by stage-three shards.";
   }
   for (const [id, stats] of Object.entries(releaseStats)) {
     // 라벤더는 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.
