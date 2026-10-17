@@ -1,0 +1,8 @@
+.model-loading-screen { position: fixed; inset: 0; z-index: 2147483640; display: grid; place-content: center; gap: 18px; padding: 24px; text-align: center; color: #fff7e8; background: radial-gradient(ellipse at top, #554026, #17151c 75%); font: 600 16px/1.5 system-ui, sans-serif; }
+.model-loading-screen[hidden] { display: none; }
+.model-loading-screen h1 { margin: 0; font-size: clamp(36px, 8vw, 64px); letter-spacing: .12em; }
+.model-loading-screen p { margin: 0; overflow-wrap: anywhere; }
+.model-loading-screen progress { width: min(340px, 85vw); height: 14px; margin: auto; accent-color: #e5b764; }
+.model-loading-screen small { color: #d8cbb5; }
+.model-loading-screen button { justify-self: center; padding: 10px 24px; border: 1px solid #e5b764; border-radius: 10px; background: #463323; color: #fff; cursor: pointer; font: inherit; }
+.model-loading-screen button[hidden] { display: none; }

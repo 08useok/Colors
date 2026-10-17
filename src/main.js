@@ -1,3 +1,4 @@
+import { createModelLoadingScreen } from "./visuals/model-loading.js?v=1";
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
@@ -6,6 +7,7 @@ import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
 import { parseAccountBackup, storeImportedAccount } from "./account-transfer.js";
 import * as THREE from "three";
+const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
@@ -35,8 +37,8 @@ MAIN_UI.forEach(([ko, en], i) => { LANGS.ko["mainUi" + i] = ko; LANGS.en["mainUi
 Object.entries(ARCHIVE_TEXT).forEach(([key, value]) => { LANGS.ko[key] = value.ko; LANGS.en[key] = value.en; });
 LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다.";
 LANGS.en.mainLanguagePatch = "v1.7.0.4 — Updated Korean/English character names and menu translations. Three Halloween skin models are connected in beta.";
-LANGS.ko.mainVerificationPatch = "v1.7.0.6 — 아이보리 자동 조준의 투척 방향·거리를 같은 목표에 맞췄습니다. 수동 조준과 궁극기도 지정한 착탄점을 사용하며, 아이스크림 포물선과 바닥 조준 표시를 수정했습니다.";
-LANGS.en.mainVerificationPatch = "v1.7.0.6 — Ivory now uses the same target for throw direction and distance. Manual attacks and ultimates land at the aimed point. Fixed the ice cream arc and ground-level aiming guides.";
+LANGS.ko.mainVerificationPatch = "v1.7.0.7 — 캐릭터 모델과 텍스처가 준비될 때까지 로딩 화면을 표시합니다. 로딩 중 전투 시간과 입력을 멈추고, 실패 시 다시 시도할 수 있습니다.";
+LANGS.en.mainVerificationPatch = "v1.7.0.7 — A loading screen stays until character models and textures are ready. Gameplay pauses during loading, and failed downloads can be retried.";
 let currentLang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
 const displayName = (id) => characterDisplayName(id, currentLang);
 const ui = (text) => mainUiText(text, currentLang);
@@ -376,7 +378,7 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.6" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -3802,8 +3804,8 @@ let pendingCharacter = null;
 let previewTime = 0;
 let previewIsGlb = false;
 
-const _glbLoader = new GLTFLoader();
-const _fbxLoader = new FBXLoader();
+const _glbLoader = new GLTFLoader(modelLoading.manager);
+const _fbxLoader = new FBXLoader(modelLoading.manager);
 // Pink: start/loop/end 3개 GLB (root motion 트랙 제거 후 사용)
 function _stripRootMotion(gltf) {
   for (const clip of (gltf.animations ?? [])) {
@@ -4272,7 +4274,7 @@ setTimeout(() => {
   ensureIvoryGlbLoading();
   ensureIvoryPreviewGlbLoading();
   ensureChartreuseGlbLoading();
-}, 1500);
+}, 0);
 
 function createBluePreviewModel() {
   if (!_bluePreviewGlb) return null;
@@ -9046,6 +9048,7 @@ function tryUseYellowUltimate(fighter) {
 }
 
 function beginAttackCore(fighter) {
+  if (modelLoading.blocking) return false;
   if (CURRENT_SEASON === "beta7") return state.gameTime >= state.freezeUntil && !fighter.dead && getSeasonCombat().fire(fighter);
   if (state.gameTime < state.freezeUntil || (fighter.mintFrozenUntil ?? 0) > state.gameTime) return false;
   if (fighter.malfunctionUntil > state.gameTime) return false;
@@ -10434,6 +10437,7 @@ function updateBlueDashes(dt) {
 }
 
 function tryUseUltimate(fighter = getPlayer()) {
+  if (modelLoading.blocking) return false;
   if (!fighter) return false;
   if (CURRENT_SEASON === "beta7") {
     if(fighter.dead||state.gameTime<state.freezeUntil)return false;
@@ -13733,7 +13737,7 @@ function animate() {
   if (!inBackground) requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
 
-  if (state.running) {
+  if (state.running && !modelLoading.blocking) {
     state.gameTime += dt;
     const usesZone = !state.trainingMode && !state.chopWoodMode && !state.takedownMode && !state.goldRushMode;
     const zone = usesZone ? getCurrentZone() : null;

@@ -1,9 +1,11 @@
+import { createModelLoadingScreen } from "./visuals/model-loading.js?v=1";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=3";
 import * as THREE from "three";
+const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
 import { AXES, resetAxe, upgradeAxe, chopTree, CHOP_WOOD_COVER, chopWoodDestination } from "./config/beta-chop-wood.js?v=2";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
@@ -1082,8 +1084,8 @@ crown.visible = false;
 player.add(crown);
 const skinAccessory = new THREE.Group();
 player.add(skinAccessory);
-const characterLoader = new GLTFLoader();
-const staticCharacterLoader = new FBXLoader();
+const characterLoader = new GLTFLoader(modelLoading.manager);
+const staticCharacterLoader = new FBXLoader(modelLoading.manager);
 let activeCharacterModel = null;
 let activeCharacterMixer = null;
 let activeCharacterAction = null;
@@ -4652,6 +4654,7 @@ function updateAzureWave(dt) {
   return true;
 }
 function performCharacterAttack({ manualAim = false } = {}) {
+  if (modelLoading.blocking) return;
   if (goldRushState.dead || isKnockoutFrozen() || crystalUltimateBusy()) return;
   const id = betaState.selectedCharacter;
   canvas.dataset.lastCharacterAttack = id;
@@ -5371,7 +5374,7 @@ function performOrangeUltimate() {
 }
 
 ultimateButton.addEventListener("click", () => {
-  if (goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
+  if (modelLoading.blocking || goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
   if (beta6Combat) { useBeta6PlayerSkill(true, true); return; }
   if (betaState.selectedCharacter === "lavender") {
     useLavenderPracticeSkill(true);
@@ -8603,7 +8606,9 @@ slowmoButton.addEventListener("click", () => {
 
 function animate() {
   requestAnimationFrame(animate);
-  const dt = Math.min(clock.getDelta(), 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
+  const rawDelta = clock.getDelta();
+  if (modelLoading.blocking) { clock.elapsedTime -= rawDelta; renderer.render(scene, camera); return; }
+  const dt = Math.min(rawDelta, 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   updateLavenderPractice(dt);
   halloweenDecor?.update(clock.elapsedTime);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();

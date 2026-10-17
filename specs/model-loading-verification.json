@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-17",
+  "report": [
+    {
+      "page": "main",
+      "delayedRequests": 23,
+      "screenHeldUntilReady": true,
+      "clockPaused": true,
+      "ready": true
+    },
+    {
+      "page": "beta",
+      "delayedRequests": 6,
+      "screenHeldUntilReady": true,
+      "clockPaused": true,
+      "ready": true
+    },
+    {
+      "page": "beta error",
+      "screenStays": true,
+      "retryVisible": true
+    }
+  ],
+  "pageErrors": []
+}

@@ -23,7 +23,7 @@ const server = createServer((req, res) => {
 await new Promise(done=>server.listen(0,'127.0.0.1',done));let browser;
 try{
  browser=await chromium.launch({channel:'msedge',headless:true,args:['--disable-gpu']});const page=await browser.newPage({viewport:{width:1280,height:900}});page.on('pageerror',e=>{errors.push(e.message);console.error(e.message);});
- await page.goto('http://127.0.0.1:'+server.address().port+'/index.html',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__ivoryQA,null,{timeout:90000});await page.evaluate(()=>__ivoryQA.setup());await page.waitForTimeout(1200);
+ await page.goto('http://127.0.0.1:'+server.address().port+'/index.html',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__ivoryQA,null,{timeout:90000});await page.waitForFunction(()=>document.getElementById("model-loading-screen").hidden,null,{timeout:120000});await page.evaluate(()=>__ivoryQA.setup());await page.waitForFunction(()=>document.getElementById("model-loading-screen").hidden,null,{timeout:120000});await page.waitForTimeout(1200);
  const click=async(x,z)=>{const p=await page.evaluate(({x,z})=>__ivoryQA.screen(x,z),{x,z});await page.mouse.click(p.x,p.y);};
  await click(-5,22);const flight=await (await page.waitForFunction(()=>{const s=__ivoryQA.snapshot();return s.projectiles[0]?.y>.35?s:false;})).jsonValue();
  await page.waitForFunction(()=>__ivoryQA.snapshot().zones.length===1);const tap=await page.evaluate(()=>__ivoryQA.snapshot());assert(Math.hypot(tap.zones[0].x-3,tap.zones[0].z-24)<1e-6);
