@@ -1,0 +1,2165 @@
+{
+  "date": "2026-10-19",
+  "scope": "Main season 7, 15 characters, level 6, bot 1v1, ultimates enabled from zero charge",
+  "games": 63000,
+  "gamesPerPair": 600,
+  "distances": [
+    10,
+    13,
+    16
+  ],
+  "aimErrors": [
+    0.035,
+    0.1
+  ],
+  "seed": 20260919,
+  "bothOrders": true,
+  "drawScore": 0.5,
+  "totalTimeouts": 0,
+  "timeoutRule": "After 45s compare remaining health ratios; 30s zone starts shrinking",
+  "criteria": {
+    "manyExtraPerfectOpponents": 3,
+    "priorityExtraPerfectOpponents": 5,
+    "tiers": {
+      "S": 70,
+      "A": 60,
+      "B": 45,
+      "C": 30,
+      "D": "below 30"
+    },
+    "designRule": "Only designated 100% wins are required; extra perfect wins are a balance indicator, not a failed design constraint"
+  },
+  "hashes": {
+    "src/main.js": "81ba9e7928b6e375a312cec82ceebb8b4f620ad730e117bc141489bb73aae235",
+    "src/combat/beta6-combat.js": "dc61c3cba558034922c4ef99c9a7938b8134fa9539f9f8f8f0cc607db70c42cf",
+    "src/config/beta-characters.js": "f1ce45b72b678e368e689fa227eb202e2d3469046273b79aee1f50e7f40062d4",
+    "src/config/beta6-balance.js": "09fd1f4f7d13e39d0d73bbbd051b35fd31c9a916282dca7fd9d71c426fa06e2f",
+    "src/config/beta7-balance.js": "e9ac5bdc3d5be8a7aded776984355b9a3388469a80eb356bc8139c250937f2ec"
+  },
+  "goals": [
+    [
+      "red",
+      "blue"
+    ],
+    [
+      "blue",
+      "orange"
+    ],
+    [
+      "orange",
+      "mint"
+    ],
+    [
+      "mint",
+      "cyan"
+    ],
+    [
+      "cyan",
+      "pink"
+    ],
+    [
+      "pink",
+      "purple"
+    ],
+    [
+      "purple",
+      "chartreuse"
+    ],
+    [
+      "chartreuse",
+      "yellow"
+    ],
+    [
+      "yellow",
+      "ivory"
+    ],
+    [
+      "ivory",
+      "gold"
+    ],
+    [
+      "gold",
+      "green"
+    ],
+    [
+      "green",
+      "azure"
+    ],
+    [
+      "azure",
+      "crimson"
+    ],
+    [
+      "crystal",
+      "crimson"
+    ],
+    [
+      "crimson",
+      "purple"
+    ]
+  ],
+  "rows": [
+    {
+      "id": "crystal",
+      "average": 98.36904761904762,
+      "tier": "S",
+      "perfect": [
+        "red",
+        "green",
+        "orange",
+        "yellow",
+        "cyan",
+        "purple",
+        "pink",
+        "crimson",
+        "gold",
+        "ivory",
+        "chartreuse",
+        "mint"
+      ],
+      "extra": [
+        "red",
+        "green",
+        "orange",
+        "yellow",
+        "cyan",
+        "purple",
+        "pink",
+        "gold",
+        "ivory",
+        "chartreuse",
+        "mint"
+      ],
+      "zero": [],
+      "flag": "priority",
+      "target": "crimson",
+      "targetRate": 100
+    },
+    {
+      "id": "red",
+      "average": 76.30952380952381,
+      "tier": "S",
+      "perfect": [
+        "green",
+        "blue",
+        "cyan",
+        "purple",
+        "pink",
+        "crimson",
+        "gold",
+        "ivory"
+      ],
+      "extra": [
+        "green",
+        "cyan",
+        "purple",
+        "pink",
+        "crimson",
+        "gold",
+        "ivory"
+      ],
+      "zero": [
+        "crystal"
+      ],
+      "flag": "priority",
+      "target": "blue",
+      "targetRate": 100
+    },
+    {
+      "id": "orange",
+      "average": 74.69642857142857,
+      "tier": "S",
+      "perfect": [
+        "cyan",
+        "pink",
+        "ivory",
+        "mint"
+      ],
+      "extra": [
+        "cyan",
+        "pink",
+        "ivory"
+      ],
+      "zero": [
+        "blue",
+        "crystal"
+      ],
+      "flag": "many",
+      "target": "mint",
+      "targetRate": 100
+    },
+    {
+      "id": "azure",
+      "average": 71.67857142857143,
+      "tier": "S",
+      "perfect": [
+        "blue",
+        "pink",
+        "crimson",
+        "gold",
+        "ivory"
+      ],
+      "extra": [
+        "blue",
+        "pink",
+        "gold",
+        "ivory"
+      ],
+      "zero": [],
+      "flag": "many",
+      "target": "crimson",
+      "targetRate": 100
+    },
+    {
+      "id": "blue",
+      "average": 63.172619047619044,
+      "tier": "A",
+      "perfect": [
+        "green",
+        "orange",
+        "cyan",
+        "pink",
+        "ivory",
+        "mint"
+      ],
+      "extra": [
+        "green",
+        "cyan",
+        "pink",
+        "ivory",
+        "mint"
+      ],
+      "zero": [
+        "red",
+        "azure"
+      ],
+      "flag": "priority",
+      "target": "orange",
+      "targetRate": 100
+    },
+    {
+      "id": "crimson",
+      "average": 59.0654761904762,
+      "tier": "B",
+      "perfect": [
+        "purple",
+        "pink"
+      ],
+      "extra": [
+        "pink"
+      ],
+      "zero": [
+        "red",
+        "azure",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "purple",
+      "targetRate": 100
+    },
+    {
+      "id": "chartreuse",
+      "average": 53.910714285714285,
+      "tier": "B",
+      "perfect": [
+        "yellow"
+      ],
+      "extra": [],
+      "zero": [
+        "purple",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "yellow",
+      "targetRate": 100
+    },
+    {
+      "id": "yellow",
+      "average": 51.261904761904766,
+      "tier": "B",
+      "perfect": [
+        "green",
+        "cyan",
+        "gold",
+        "ivory"
+      ],
+      "extra": [
+        "green",
+        "cyan",
+        "gold"
+      ],
+      "zero": [
+        "chartreuse",
+        "crystal"
+      ],
+      "flag": "many",
+      "target": "ivory",
+      "targetRate": 100
+    },
+    {
+      "id": "purple",
+      "average": 50.23809523809524,
+      "tier": "B",
+      "perfect": [
+        "green",
+        "cyan",
+        "gold",
+        "chartreuse",
+        "mint"
+      ],
+      "extra": [
+        "green",
+        "cyan",
+        "gold",
+        "mint"
+      ],
+      "zero": [
+        "red",
+        "pink",
+        "crimson",
+        "crystal"
+      ],
+      "flag": "many",
+      "target": "chartreuse",
+      "targetRate": 100
+    },
+    {
+      "id": "ivory",
+      "average": 42.952380952380956,
+      "tier": "C",
+      "perfect": [
+        "green",
+        "cyan",
+        "gold"
+      ],
+      "extra": [
+        "green",
+        "cyan"
+      ],
+      "zero": [
+        "red",
+        "blue",
+        "orange",
+        "yellow",
+        "pink",
+        "azure",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "gold",
+      "targetRate": 100
+    },
+    {
+      "id": "pink",
+      "average": 34.04761904761905,
+      "tier": "C",
+      "perfect": [
+        "cyan",
+        "purple",
+        "ivory"
+      ],
+      "extra": [
+        "cyan",
+        "ivory"
+      ],
+      "zero": [
+        "red",
+        "blue",
+        "orange",
+        "crimson",
+        "azure",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "purple",
+      "targetRate": 100
+    },
+    {
+      "id": "mint",
+      "average": 33.404761904761905,
+      "tier": "C",
+      "perfect": [
+        "cyan"
+      ],
+      "extra": [],
+      "zero": [
+        "blue",
+        "orange",
+        "purple",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "cyan",
+      "targetRate": 100
+    },
+    {
+      "id": "gold",
+      "average": 20.011904761904763,
+      "tier": "D",
+      "perfect": [],
+      "extra": [],
+      "zero": [
+        "red",
+        "yellow",
+        "purple",
+        "ivory",
+        "azure",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "green",
+      "targetRate": 99.66666666666667
+    },
+    {
+      "id": "green",
+      "average": 19.041666666666668,
+      "tier": "D",
+      "perfect": [],
+      "extra": [],
+      "zero": [
+        "red",
+        "blue",
+        "yellow",
+        "purple",
+        "ivory",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "azure",
+      "targetRate": 89.5
+    },
+    {
+      "id": "cyan",
+      "average": 1.8392857142857142,
+      "tier": "D",
+      "perfect": [],
+      "extra": [],
+      "zero": [
+        "red",
+        "blue",
+        "orange",
+        "yellow",
+        "purple",
+        "pink",
+        "ivory",
+        "mint",
+        "crystal"
+      ],
+      "flag": "normal",
+      "target": "pink",
+      "targetRate": 0
+    }
+  ],
+  "matrix": {
+    "red": {
+      "green": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "blue": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "orange": {
+        "wins": 36,
+        "losses": 564,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.06
+      },
+      "yellow": {
+        "wins": 203,
+        "losses": 397,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.3383333333333333
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "pink": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "crimson": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "gold": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 486,
+        "losses": 114,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.81
+      },
+      "mint": {
+        "wins": 493,
+        "losses": 107,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.8216666666666667
+      },
+      "azure": {
+        "wins": 392,
+        "losses": 208,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6533333333333333
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "green": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "blue": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "orange": {
+        "wins": 17,
+        "losses": 581,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.03
+      },
+      "yellow": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "cyan": {
+        "wins": 431,
+        "losses": 124,
+        "draws": 45,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.7558333333333334
+      },
+      "purple": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "pink": {
+        "wins": 387,
+        "losses": 213,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.645
+      },
+      "crimson": {
+        "wins": 191,
+        "losses": 409,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.31833333333333336
+      },
+      "gold": {
+        "wins": 2,
+        "losses": 598,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0033333333333333335
+      },
+      "ivory": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "chartreuse": {
+        "wins": 9,
+        "losses": 591,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.015
+      },
+      "mint": {
+        "wins": 2,
+        "losses": 598,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0033333333333333335
+      },
+      "azure": {
+        "wins": 537,
+        "losses": 63,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.895
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "blue": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "orange": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "yellow": {
+        "wins": 535,
+        "losses": 65,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.8916666666666667
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 355,
+        "losses": 245,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.5916666666666667
+      },
+      "pink": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "crimson": {
+        "wins": 81,
+        "losses": 518,
+        "draws": 1,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.13583333333333333
+      },
+      "gold": {
+        "wins": 598,
+        "losses": 2,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9966666666666667
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 4,
+        "losses": 596,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.006666666666666667
+      },
+      "mint": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "azure": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crystal": {
+        "wins": 133,
+        "losses": 467,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.22166666666666668
+      }
+    },
+    "orange": {
+      "red": {
+        "wins": 564,
+        "losses": 36,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.94
+      },
+      "green": {
+        "wins": 581,
+        "losses": 17,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.97
+      },
+      "blue": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "yellow": {
+        "wins": 514,
+        "losses": 84,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.8583333333333333
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 208,
+        "losses": 392,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.3466666666666667
+      },
+      "pink": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "crimson": {
+        "wins": 415,
+        "losses": 177,
+        "draws": 8,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6983333333333334
+      },
+      "gold": {
+        "wins": 599,
+        "losses": 1,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9983333333333333
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 407,
+        "losses": 134,
+        "draws": 59,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.7275
+      },
+      "mint": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "azure": {
+        "wins": 551,
+        "losses": 49,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9183333333333333
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "yellow": {
+      "red": {
+        "wins": 397,
+        "losses": 203,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6616666666666666
+      },
+      "green": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "blue": {
+        "wins": 65,
+        "losses": 535,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.10833333333333334
+      },
+      "orange": {
+        "wins": 84,
+        "losses": 514,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.14166666666666666
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 63,
+        "losses": 537,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.105
+      },
+      "pink": {
+        "wins": 517,
+        "losses": 83,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.8616666666666667
+      },
+      "crimson": {
+        "wins": 238,
+        "losses": 362,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.39666666666666667
+      },
+      "gold": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "mint": {
+        "wins": 475,
+        "losses": 125,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.7916666666666666
+      },
+      "azure": {
+        "wins": 66,
+        "losses": 534,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.11
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "cyan": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 124,
+        "losses": 431,
+        "draws": 45,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.24416666666666667
+      },
+      "blue": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "orange": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "yellow": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "purple": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "pink": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crimson": {
+        "wins": 2,
+        "losses": 598,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0033333333333333335
+      },
+      "gold": {
+        "wins": 1,
+        "losses": 599,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0016666666666666668
+      },
+      "ivory": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "chartreuse": {
+        "wins": 2,
+        "losses": 598,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0033333333333333335
+      },
+      "mint": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "azure": {
+        "wins": 3,
+        "losses": 597,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.005
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "purple": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "blue": {
+        "wins": 245,
+        "losses": 355,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.4083333333333333
+      },
+      "orange": {
+        "wins": 392,
+        "losses": 208,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6533333333333333
+      },
+      "yellow": {
+        "wins": 537,
+        "losses": 63,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.895
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "pink": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crimson": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "gold": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "ivory": {
+        "wins": 45,
+        "losses": 555,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.075
+      },
+      "chartreuse": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "mint": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "azure": {
+        "wins": 1,
+        "losses": 599,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0016666666666666668
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "pink": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 213,
+        "losses": 387,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.355
+      },
+      "blue": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "orange": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "yellow": {
+        "wins": 83,
+        "losses": 517,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.13833333333333334
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "crimson": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "gold": {
+        "wins": 426,
+        "losses": 174,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.71
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 306,
+        "losses": 294,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.51
+      },
+      "mint": {
+        "wins": 32,
+        "losses": 568,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.05333333333333334
+      },
+      "azure": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "crimson": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 409,
+        "losses": 191,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6816666666666666
+      },
+      "blue": {
+        "wins": 518,
+        "losses": 81,
+        "draws": 1,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.8641666666666666
+      },
+      "orange": {
+        "wins": 177,
+        "losses": 415,
+        "draws": 8,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.3016666666666667
+      },
+      "yellow": {
+        "wins": 362,
+        "losses": 238,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6033333333333334
+      },
+      "cyan": {
+        "wins": 598,
+        "losses": 2,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9966666666666667
+      },
+      "purple": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "pink": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "gold": {
+        "wins": 330,
+        "losses": 268,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.5516666666666666
+      },
+      "ivory": {
+        "wins": 268,
+        "losses": 330,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.4483333333333333
+      },
+      "chartreuse": {
+        "wins": 531,
+        "losses": 69,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.885
+      },
+      "mint": {
+        "wins": 562,
+        "losses": 38,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9366666666666666
+      },
+      "azure": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "gold": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 598,
+        "losses": 2,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9966666666666667
+      },
+      "blue": {
+        "wins": 2,
+        "losses": 598,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0033333333333333335
+      },
+      "orange": {
+        "wins": 1,
+        "losses": 599,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0016666666666666668
+      },
+      "yellow": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "cyan": {
+        "wins": 599,
+        "losses": 1,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9983333333333333
+      },
+      "purple": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "pink": {
+        "wins": 174,
+        "losses": 426,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.29
+      },
+      "crimson": {
+        "wins": 268,
+        "losses": 330,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.4483333333333333
+      },
+      "ivory": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "chartreuse": {
+        "wins": 12,
+        "losses": 588,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.02
+      },
+      "mint": {
+        "wins": 26,
+        "losses": 574,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.043333333333333335
+      },
+      "azure": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "ivory": {
+      "red": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "green": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "blue": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "orange": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "yellow": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 555,
+        "losses": 45,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.925
+      },
+      "pink": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crimson": {
+        "wins": 330,
+        "losses": 268,
+        "draws": 2,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.5516666666666666
+      },
+      "gold": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 325,
+        "losses": 275,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.5416666666666666
+      },
+      "mint": {
+        "wins": 597,
+        "losses": 3,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.995
+      },
+      "azure": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "chartreuse": {
+      "red": {
+        "wins": 114,
+        "losses": 486,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.19
+      },
+      "green": {
+        "wins": 591,
+        "losses": 9,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.985
+      },
+      "blue": {
+        "wins": 596,
+        "losses": 4,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9933333333333333
+      },
+      "orange": {
+        "wins": 134,
+        "losses": 407,
+        "draws": 59,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.2725
+      },
+      "yellow": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "cyan": {
+        "wins": 598,
+        "losses": 2,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9966666666666667
+      },
+      "purple": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "pink": {
+        "wins": 294,
+        "losses": 306,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.49
+      },
+      "crimson": {
+        "wins": 69,
+        "losses": 531,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.115
+      },
+      "gold": {
+        "wins": 588,
+        "losses": 12,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.98
+      },
+      "ivory": {
+        "wins": 275,
+        "losses": 325,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.4583333333333333
+      },
+      "mint": {
+        "wins": 409,
+        "losses": 191,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.6816666666666666
+      },
+      "azure": {
+        "wins": 231,
+        "losses": 369,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.385
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "mint": {
+      "red": {
+        "wins": 107,
+        "losses": 493,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.17833333333333334
+      },
+      "green": {
+        "wins": 598,
+        "losses": 2,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9966666666666667
+      },
+      "blue": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "orange": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "yellow": {
+        "wins": 125,
+        "losses": 475,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.20833333333333334
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      },
+      "pink": {
+        "wins": 568,
+        "losses": 32,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9466666666666667
+      },
+      "crimson": {
+        "wins": 38,
+        "losses": 562,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.06333333333333334
+      },
+      "gold": {
+        "wins": 574,
+        "losses": 26,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9566666666666667
+      },
+      "ivory": {
+        "wins": 3,
+        "losses": 597,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.005
+      },
+      "chartreuse": {
+        "wins": 191,
+        "losses": 409,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.31833333333333336
+      },
+      "azure": {
+        "wins": 2,
+        "losses": 598,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.0033333333333333335
+      },
+      "crystal": {
+        "wins": 0,
+        "losses": 600,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0
+      }
+    },
+    "azure": {
+      "red": {
+        "wins": 208,
+        "losses": 392,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.3466666666666667
+      },
+      "green": {
+        "wins": 63,
+        "losses": 537,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.105
+      },
+      "blue": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "orange": {
+        "wins": 49,
+        "losses": 551,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.08166666666666667
+      },
+      "yellow": {
+        "wins": 534,
+        "losses": 66,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.89
+      },
+      "cyan": {
+        "wins": 597,
+        "losses": 3,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.995
+      },
+      "purple": {
+        "wins": 599,
+        "losses": 1,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9983333333333333
+      },
+      "pink": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "crimson": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "gold": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 369,
+        "losses": 231,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.615
+      },
+      "mint": {
+        "wins": 598,
+        "losses": 2,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9966666666666667
+      },
+      "crystal": {
+        "wins": 4,
+        "losses": 596,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.006666666666666667
+      }
+    },
+    "crystal": {
+      "red": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "green": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "blue": {
+        "wins": 467,
+        "losses": 133,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.7783333333333333
+      },
+      "orange": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "yellow": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "cyan": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "purple": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "pink": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "crimson": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "gold": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "ivory": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "chartreuse": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "mint": {
+        "wins": 600,
+        "losses": 0,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 1
+      },
+      "azure": {
+        "wins": 596,
+        "losses": 4,
+        "draws": 0,
+        "games": 600,
+        "timeouts": 0,
+        "score": 0.9933333333333333
+      }
+    }
+  }
+}
