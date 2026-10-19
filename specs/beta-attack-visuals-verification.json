@@ -1,0 +1,828 @@
+{
+  "pairs": [
+    {
+      "id": "orange",
+      "kind": "bomb",
+      "stage": 1,
+      "lobby": {
+        "geometry": "SphereGeometry",
+        "color": 15895329,
+        "emissive": 0,
+        "children": [
+          {
+            "geometry": "CylinderGeometry",
+            "color": 6109974,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "SphereGeometry",
+            "color": 4164405,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      },
+      "battle": {
+        "geometry": "SphereGeometry",
+        "color": 15895329,
+        "emissive": 0,
+        "children": [
+          {
+            "geometry": "CylinderGeometry",
+            "color": 6109974,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "SphereGeometry",
+            "color": 4164405,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "ivory",
+      "kind": "ivory",
+      "stage": 1,
+      "lobby": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 16777192,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "ConeGeometry",
+            "color": 14132315,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16736109,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5032432,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16762967,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 10182117,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5625451,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16736109,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5032432,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16762967,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 10182117,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5625451,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16736109,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5032432,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      },
+      "battle": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 16777192,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "ConeGeometry",
+            "color": 14132315,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16736109,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5032432,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16762967,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 10182117,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5625451,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16736109,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5032432,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16762967,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 10182117,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5625451,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 16736109,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 5032432,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "gold",
+      "kind": "gold",
+      "stage": 1,
+      "lobby": {
+        "geometry": "DodecahedronGeometry",
+        "color": 16765767,
+        "emissive": 16765767,
+        "children": []
+      },
+      "battle": {
+        "geometry": "DodecahedronGeometry",
+        "color": 16765767,
+        "emissive": 16765767,
+        "children": []
+      }
+    },
+    {
+      "id": "gold",
+      "kind": "gold",
+      "stage": 2,
+      "lobby": {
+        "geometry": "OctahedronGeometry",
+        "color": 16169247,
+        "emissive": 16169247,
+        "children": []
+      },
+      "battle": {
+        "geometry": "OctahedronGeometry",
+        "color": 16169247,
+        "emissive": 16169247,
+        "children": []
+      }
+    },
+    {
+      "id": "gold",
+      "kind": "gold",
+      "stage": 3,
+      "lobby": {
+        "geometry": "BufferGeometry",
+        "color": 16772490,
+        "emissive": 16772490,
+        "children": []
+      },
+      "battle": {
+        "geometry": "BufferGeometry",
+        "color": 16772490,
+        "emissive": 16772490,
+        "children": []
+      }
+    },
+    {
+      "id": "crystal",
+      "kind": "crystal",
+      "stage": 1,
+      "lobby": {
+        "geometry": "OctahedronGeometry",
+        "color": 10416895,
+        "emissive": 2795208,
+        "children": []
+      },
+      "battle": {
+        "geometry": "OctahedronGeometry",
+        "color": 10416895,
+        "emissive": 2795208,
+        "children": []
+      }
+    },
+    {
+      "id": "crystal",
+      "kind": "crystal",
+      "stage": 2,
+      "lobby": {
+        "geometry": "OctahedronGeometry",
+        "color": 10416895,
+        "emissive": 2795208,
+        "children": []
+      },
+      "battle": {
+        "geometry": "OctahedronGeometry",
+        "color": 10416895,
+        "emissive": 2795208,
+        "children": []
+      }
+    },
+    {
+      "id": "crystal",
+      "kind": "crystal",
+      "stage": 3,
+      "lobby": {
+        "geometry": "OctahedronGeometry",
+        "color": 10416895,
+        "emissive": 2795208,
+        "children": []
+      },
+      "battle": {
+        "geometry": "OctahedronGeometry",
+        "color": 10416895,
+        "emissive": 2795208,
+        "children": []
+      }
+    },
+    {
+      "id": "green",
+      "kind": "boomerang",
+      "stage": 1,
+      "lobby": {
+        "geometry": "ShapeGeometry",
+        "color": 7663128,
+        "emissive": 2791944,
+        "children": []
+      },
+      "battle": {
+        "geometry": "ShapeGeometry",
+        "color": 7663128,
+        "emissive": 2791944,
+        "children": []
+      }
+    },
+    {
+      "id": "blue",
+      "kind": "bullet",
+      "stage": 1,
+      "lobby": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 5211135,
+            "emissive": 1851327,
+            "children": []
+          },
+          {
+            "geometry": "ConeGeometry",
+            "color": 10471167,
+            "children": []
+          }
+        ]
+      },
+      "battle": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 5211135,
+            "emissive": 1851327,
+            "children": []
+          },
+          {
+            "geometry": "ConeGeometry",
+            "color": 10471167,
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "cyan",
+      "kind": "bullet",
+      "stage": 1,
+      "lobby": {
+        "geometry": "CapsuleGeometry",
+        "color": 3339519,
+        "emissive": 697528,
+        "children": []
+      },
+      "battle": {
+        "geometry": "CapsuleGeometry",
+        "color": 3339519,
+        "emissive": 697528,
+        "children": []
+      }
+    },
+    {
+      "id": "purple",
+      "kind": "needle",
+      "stage": 1,
+      "lobby": {
+        "geometry": "ConeGeometry",
+        "color": 12602623,
+        "emissive": 6953113,
+        "children": []
+      },
+      "battle": {
+        "geometry": "ConeGeometry",
+        "color": 12602623,
+        "emissive": 6953113,
+        "children": []
+      }
+    },
+    {
+      "id": "purple",
+      "kind": "vial",
+      "stage": 1,
+      "lobby": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 10174422,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 10174422,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 6109974,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      },
+      "battle": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 10174422,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 10174422,
+            "emissive": 0,
+            "children": []
+          },
+          {
+            "geometry": "CylinderGeometry",
+            "color": 6109974,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "yellow",
+      "kind": "electric",
+      "stage": 1,
+      "lobby": {
+        "geometry": "ShapeGeometry",
+        "color": 16774234,
+        "children": []
+      },
+      "battle": {
+        "geometry": "ShapeGeometry",
+        "color": 16774234,
+        "children": []
+      }
+    },
+    {
+      "id": "mint",
+      "kind": "mint",
+      "stage": 1,
+      "lobby": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 10026989,
+            "emissive": 3124879,
+            "children": []
+          },
+          {
+            "geometry": "ConeGeometry",
+            "color": 14262861,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      },
+      "battle": {
+        "children": [
+          {
+            "geometry": "SphereGeometry",
+            "color": 10026989,
+            "emissive": 3124879,
+            "children": []
+          },
+          {
+            "geometry": "ConeGeometry",
+            "color": 14262861,
+            "emissive": 0,
+            "children": []
+          }
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "id": "lavender",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 996333.3333333333,
+        "charge": 1.5
+      },
+      "reference": {
+        "hp": 996333.3333333333,
+        "charge": 1.5
+      }
+    },
+    {
+      "id": "red",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 2,
+      "gloves": 2,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 995200,
+        "charge": 1
+      },
+      "reference": {
+        "hp": 995200,
+        "charge": 1
+      }
+    },
+    {
+      "id": "green",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 990766,
+        "charge": 4
+      },
+      "reference": {
+        "hp": 990766,
+        "charge": 4
+      }
+    },
+    {
+      "id": "blue",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 998920,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 998920,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "orange",
+      "fired": true,
+      "seen": [
+        "orangeFruit"
+      ],
+      "maxArc": 0,
+      "effects": 1,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 994570,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 994570,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "yellow",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 997800,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 997800,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "cyan",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 998600,
+        "charge": 1
+      },
+      "reference": {
+        "hp": 998600,
+        "charge": 1
+      }
+    },
+    {
+      "id": "purple",
+      "fired": true,
+      "seen": [],
+      "maxArc": 5.007813381617973,
+      "effects": 1,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 1000000,
+        "charge": 0
+      },
+      "reference": {
+        "hp": 1000000,
+        "charge": 0
+      }
+    },
+    {
+      "id": "pink",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 9,
+      "gloves": 0,
+      "fans": 8,
+      "notes": 8,
+      "actual": {
+        "hp": 997800,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 997800,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "crimson",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 3,
+      "gloves": 0,
+      "fans": 3,
+      "notes": 0,
+      "actual": {
+        "hp": 996000,
+        "charge": 1.5
+      },
+      "reference": {
+        "hp": 996000,
+        "charge": 1.5
+      }
+    },
+    {
+      "id": "gold",
+      "fired": true,
+      "seen": [
+        "goldStage1",
+        "goldStage2",
+        "goldStage3"
+      ],
+      "maxArc": 0,
+      "effects": 1,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 998810,
+        "charge": 1.5
+      },
+      "reference": {
+        "hp": 998810,
+        "charge": 1.5
+      }
+    },
+    {
+      "id": "ivory",
+      "fired": true,
+      "seen": [
+        "ivoryZone"
+      ],
+      "maxArc": 3.62704927674025,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 997600,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 997600,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "chartreuse",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 997360,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 997360,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "mint",
+      "fired": true,
+      "seen": [],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 997000,
+        "charge": 1.5
+      },
+      "reference": {
+        "hp": 997000,
+        "charge": 1.5
+      }
+    },
+    {
+      "id": "azure",
+      "fired": true,
+      "seen": [
+        "azureWave"
+      ],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 997000,
+        "charge": 0.5
+      },
+      "reference": {
+        "hp": 997000,
+        "charge": 0.5
+      }
+    },
+    {
+      "id": "crystal",
+      "fired": true,
+      "seen": [
+        "crystalStage1",
+        "crystalStage2",
+        "crystalStage3"
+      ],
+      "maxArc": 0,
+      "effects": 0,
+      "gloves": 0,
+      "fans": 0,
+      "notes": 0,
+      "actual": {
+        "hp": 996500,
+        "charge": 1.5
+      },
+      "reference": {
+        "hp": 996500,
+        "charge": 1.5
+      }
+    }
+  ],
+  "cleanup": {
+    "visuals": 0,
+    "queue": 0,
+    "projectiles": 0,
+    "effects": 0
+  },
+  "pageErrors": []
+}

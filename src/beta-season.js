@@ -3317,6 +3317,16 @@ function createChartreuseRoundMesh(roundType) {
   return mesh;
 }
 
+function createOrangeFruitMesh(radius = 0.32) {
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(radius, 10, 8), new THREE.MeshStandardMaterial({ color: 0xf28b21, roughness: 0.78, metalness: 0 }));
+  const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.045, 0.16, 8), new THREE.MeshStandardMaterial({ color: 0x5d3b16, roughness: 0.9 }));
+  stem.position.y = radius * 0.92;
+  const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 5), new THREE.MeshStandardMaterial({ color: 0x3f8b35, roughness: 0.86 }));
+  leaf.scale.set(1.35, 0.24, 0.58); leaf.position.set(0.09, radius * 1.08, 0); leaf.rotation.z = -0.35;
+  mesh.add(stem, leaf); mesh.userData.attackVisual = "orangeFruit";
+  return mesh;
+}
+
 function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false, pierces = false, maxBounces = 0 }) {
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
@@ -3337,11 +3347,10 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
   };
   const mesh = CUSTOM_PROJECTILE_MESHES[type]
     ? CUSTOM_PROJECTILE_MESHES[type]()
+    : isOrangeFruit ? createOrangeFruitMesh(radius)
     : new THREE.Mesh(
     new THREE.SphereGeometry(radius, 10, 8),
-    isOrangeFruit
-      ? new THREE.MeshStandardMaterial({ color: 0xf28b21, roughness: 0.78, metalness: 0 })
-      : redThemeSkin
+    redThemeSkin
       ? new THREE.MeshStandardMaterial({
         color: redThemeColor,
         emissive: redThemeColor,
@@ -3353,21 +3362,6 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
       })
       : new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.92 }),
   );
-  if (isOrangeFruit) {
-    const stem = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.035, 0.045, 0.16, 8),
-      new THREE.MeshStandardMaterial({ color: 0x5d3b16, roughness: 0.9 }),
-    );
-    stem.position.y = radius * 0.92;
-    const leaf = new THREE.Mesh(
-      new THREE.SphereGeometry(0.11, 8, 5),
-      new THREE.MeshStandardMaterial({ color: 0x3f8b35, roughness: 0.86 }),
-    );
-    leaf.scale.set(1.35, 0.24, 0.58);
-    leaf.position.set(0.09, radius * 1.08, 0);
-    leaf.rotation.z = -0.35;
-    mesh.add(stem, leaf);
-  }
   if (redThemeSkin) mesh.scale.setScalar(redThemeSkin === "beta_red_red" ? 1.25 : 1.12);
   if (type === "marble" || type === "needle" || type === "mintIceCream") {
     // 콘 모양은 로컬 +Z를 향하도록 rotation.x를 먼저 눕혔으므로,
@@ -3461,15 +3455,14 @@ function basicUltimateCharge(id, amount = 1) {
   return amount * (BETA_CHARACTERS[id].basicUltimateChargeMultiplier ?? 1);
 }
 
-function createIvoryIceCreamZone(x, z, fromUltimate = false) {
-  const def = BETA_CHARACTERS.ivory;
+function createIvoryIceCreamZoneMesh(radius) {
   const group = new THREE.Group();
   const puddle = new THREE.Mesh(
-    new THREE.CircleGeometry(def.iceCreamZoneRadius, 36),
+    new THREE.CircleGeometry(radius, 36),
     new THREE.MeshStandardMaterial({ color: 0xffffe8, emissive: 0x91dff2, emissiveIntensity: 0.16, transparent: true, opacity: 0.82, side: THREE.DoubleSide, depthWrite: false }),
   );
   puddle.rotation.x = -Math.PI / 2;
-  addIvoryGroundSprinkles(group, def.iceCreamZoneRadius);
+  addIvoryGroundSprinkles(group, radius);
   const overturnedScoop = new THREE.Mesh(new THREE.SphereGeometry(0.58, 14, 9, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xfffff2, roughness: 0.7 }));
   overturnedScoop.scale.y = 0.45;
   overturnedScoop.position.y = 0.12;
@@ -3480,6 +3473,14 @@ function createIvoryIceCreamZone(x, z, fromUltimate = false) {
   );
   uprightCone.position.y = 0.55;
   group.add(puddle, overturnedScoop, uprightCone);
+  group.userData.attackVisual = "ivoryZone";
+  return group;
+}
+
+function createIvoryIceCreamZone(x, z, fromUltimate = false) {
+  const def = BETA_CHARACTERS.ivory;
+  const group = createIvoryIceCreamZoneMesh(def.iceCreamZoneRadius);
+  const puddle = group.children.find(child => child.geometry?.type === "CircleGeometry");
   group.position.set(x, Math.max(0.09, groundHeightAt(x, z) + 0.09), z);
   scene.add(group);
   const now = clock.elapsedTime;
@@ -3539,13 +3540,8 @@ function spawnOrangeJuice(position, directHitTarget = null) {
   }
 }
 
-function spawnGoldProjectile(position, yaw, stage, attackId) {
-  canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
-  canvas.dataset.lastGoldStage = String(stage);
+function createGoldProjectileMesh(stage) {
   const def = BETA_CHARACTERS.gold;
-  const speed = def[`stage${stage}Speed`];
-  const range = def[`stage${stage}Range`];
-  const damage = def[`stage${stage}Damage`];
   const colors = [0, 0xffd347, 0xf6b91f, 0xffed8a];
   const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
   const geometry = stage === 1
@@ -3565,6 +3561,17 @@ function spawnGoldProjectile(position, yaw, stage, attackId) {
       side: THREE.FrontSide,
     }),
   );
+  mesh.userData.attackVisual = `goldStage${stage}`;
+  return mesh;
+}
+
+function spawnGoldProjectile(position, yaw, stage, attackId) {
+  canvas.dataset.projectilesFired = String(Number(canvas.dataset.projectilesFired || 0) + 1);
+  canvas.dataset.lastGoldStage = String(stage);
+  const def = BETA_CHARACTERS.gold;
+  const speed = def[`stage${stage}Speed`], range = def[`stage${stage}Range`], damage = def[`stage${stage}Damage`];
+  const radii = [0, def.stage1Size / 2, 0.26, def.projectileRadius];
+  const mesh = createGoldProjectileMesh(stage);
   if (stage === 3) mesh.rotation.y = yaw;
   mesh.position.copy(position);
   mesh.position.y = player.position.y + 1.25;
@@ -3591,6 +3598,16 @@ function splitGoldProjectile(projectile) {
   }
 }
 
+function createCrystalProjectileMesh(stage) {
+  const size = [0, 0.34, 0.24, 0.16][stage];
+  const mesh = new THREE.Mesh(
+    new THREE.OctahedronGeometry(size, 0),
+    new THREE.MeshStandardMaterial({ color: 0x9ef2ff, emissive: 0x2aa6c8, emissiveIntensity: 0.9, metalness: 0.4, roughness: 0.2 }),
+  );
+  mesh.userData.attackVisual = `crystalStage${stage}`;
+  return mesh;
+}
+
 // stage 1 수정탄 → 2 조각 → 3 작은 조각
 function spawnCrystalProjectile(position, yaw, stage, attackId) {
   const def = BETA_CHARACTERS.crystal;
@@ -3598,10 +3615,7 @@ function spawnCrystalProjectile(position, yaw, stage, attackId) {
   const speed = [0, def.crystalSpeed, def.fragmentSpeed, def.shardSpeed][stage];
   const range = [0, def.crystalRange, def.fragmentRange, def.shardRange][stage];
   const size = [0, 0.34, 0.24, 0.16][stage];
-  const mesh = new THREE.Mesh(
-    new THREE.OctahedronGeometry(size, 0),
-    new THREE.MeshStandardMaterial({ color: 0x9ef2ff, emissive: 0x2aa6c8, emissiveIntensity: 0.9, metalness: 0.4, roughness: 0.2 }),
-  );
+  const mesh = createCrystalProjectileMesh(stage);
   mesh.position.copy(position);
   mesh.position.y = player.position.y + 1.1;
   scene.add(mesh);
@@ -4289,7 +4303,7 @@ function updatePinkDeadAllyMarkers() {
   }
 }
 
-function createRedGloveEffect(angle = 0) {
+function createRedGloveEffect(angle = 0, position = player.position, yaw = player.rotation.y) {
   const glove = new THREE.Group();
   const red = new THREE.MeshBasicMaterial({ color: 0xf01824, transparent: true, opacity: 0.96, depthWrite: false });
   const highlight = new THREE.MeshBasicMaterial({ color: 0xff5b55, transparent: true, opacity: 0.78, depthWrite: false });
@@ -4304,11 +4318,11 @@ function createRedGloveEffect(angle = 0) {
   cuff.position.set(-0.28, -0.42, 0);
   glove.add(palm, thumb, cuff);
   glove.position.set(
-    player.position.x + Math.sin(player.rotation.y + angle) * 1.45,
-    player.position.y + 1.18,
-    player.position.z + Math.cos(player.rotation.y + angle) * 1.45,
+    position.x + Math.sin(yaw + angle) * 1.45,
+    position.y + 1.18,
+    position.z + Math.cos(yaw + angle) * 1.45,
   );
-  glove.rotation.y = player.rotation.y + angle;
+  glove.rotation.y = yaw + angle;
   scene.add(glove);
   crimsonSlashes.push({ group: glove, mesh: palm, materials: [red, highlight, cuffMat], life: 0.22, maxLife: 0.22, grow: 1.5, type: "redGlove" });
 }
@@ -4567,11 +4581,7 @@ function clearAzureWave() {
   azureWaveState = null;
 }
 
-function startAzureWave(ultimate = false) {
-  if (azureWaveState || goldRushState.dead) return;
-  const def = BETA_CHARACTERS.azure;
-  const range = ultimate ? def.ultimate.range : def.surfLength;
-  const width = ultimate ? def.ultimate.width : def.surfWidth;
+function createAzureWaveMesh(width, ultimate = false) {
   const mesh = new THREE.Group();
   const water = new THREE.Mesh(
     new THREE.CylinderGeometry(ultimate ? 0.8 : 0.4, ultimate ? 0.8 : 0.4, width, 16, 1, true, 0, Math.PI),
@@ -4586,6 +4596,16 @@ function startAzureWave(ultimate = false) {
   foam.rotation.z = Math.PI / 2;
   foam.position.y = ultimate ? 0.8 : 0.4;
   mesh.add(foam);
+  mesh.userData.attackVisual = "azureWave";
+  return mesh;
+}
+
+function startAzureWave(ultimate = false) {
+  if (azureWaveState || goldRushState.dead) return;
+  const def = BETA_CHARACTERS.azure;
+  const range = ultimate ? def.ultimate.range : def.surfLength;
+  const width = ultimate ? def.ultimate.width : def.surfWidth;
+  const mesh = createAzureWaveMesh(width, ultimate);
   mesh.rotation.y = player.rotation.y;
   mesh.position.copy(player.position);
   scene.add(mesh);
@@ -4840,17 +4860,17 @@ function hitTargetsInFan(angleOffset, damage) {
   }
 }
 
-function createCrimsonSlash(hitIndex) {
-  const hitDamage = CRIMSON.attackDamages?.[hitIndex] ?? CRIMSON.attackDamage;
-  const halfAngle = CRIMSON.attackHalfAngle;
+function createCrimsonSlash(hitIndex, { position = player.position, yaw = player.rotation.y, def = CRIMSON, visualOnly = false, skin = getActiveRedThemeSkin() } = {}) {
+  const hitDamage = def.attackDamages?.[hitIndex] ?? def.attackDamage;
+  const halfAngle = def.attackHalfAngle;
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
   for (let i = 0; i <= 18; i += 1) {
     const angle = -halfAngle + (i / 18) * halfAngle * 2;
-    shape.lineTo(Math.sin(angle) * CRIMSON.attackRange, Math.cos(angle) * CRIMSON.attackRange);
+    shape.lineTo(Math.sin(angle) * def.attackRange, Math.cos(angle) * def.attackRange);
   }
   shape.lineTo(0, 0);
-  const activeSkin = getActiveRedThemeSkin();
+  const activeSkin = skin;
   const material = new THREE.MeshBasicMaterial({
     color: activeSkin === "beta_red_crimson" ? [0x7d0018, 0xb30024, 0xff274c][hitIndex] : [0xff5d68, 0xff7a67, 0xffb15f][hitIndex],
     transparent: true,
@@ -4861,17 +4881,19 @@ function createCrimsonSlash(hitIndex) {
   });
   const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), material);
   mesh.rotation.x = Math.PI / 2;
-  mesh.rotation.z = CRIMSON.attackAngles[hitIndex];
+  mesh.rotation.z = def.attackAngles[hitIndex];
   const group = new THREE.Group();
-  group.position.copy(player.position);
+  group.position.copy(position);
   group.position.y += 0.22;
-  group.rotation.y = player.rotation.y;
+  group.rotation.y = yaw;
   group.add(mesh);
   scene.add(group);
   mesh.renderOrder = 20;
   crimsonSlashes.push({ group, mesh, life: 0.65, maxLife: 0.65 });
-  hitTargetsInFan(CRIMSON.attackAngles[hitIndex], hitDamage);
-  attackComboState.textContent = `${hitIndex + 1}/${CRIMSON.attackCount} · ${hitDamage} 피해`;
+  if (!visualOnly) {
+    hitTargetsInFan(def.attackAngles[hitIndex], hitDamage);
+    attackComboState.textContent = `${hitIndex + 1}/${def.attackCount} · ${hitDamage} 피해`;
+  }
 }
 
 crimsonAttackButton.addEventListener("click", performCharacterAttack);
@@ -5667,7 +5689,9 @@ const goldPickups = [];
 const goldRushBots = [];
 
 const beta6CombatVisuals = new Map();
+const beta6VisualProjectiles = new Map();
 const beta6PendingEvents = [];
+const beta6AttackVisualQueue = [];
 let beta6BotRotation = 0;
 const goldRushAttackEffects = [];
 const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
@@ -6606,6 +6630,12 @@ function clearBeta6RoundCombat() {
   clearLavenderPractice();
   if (beta6PlayerActor?.id === "green") setPlayerConcealedVisual(false);
   beta6PendingEvents.length = 0;
+  beta6AttackVisualQueue.length = 0;
+  beta6VisualProjectiles.clear();
+  for (let i = crimsonSlashes.length - 1; i >= 0; i--) if (crimsonSlashes[i].beta6CombatEffect) {
+    const effect = crimsonSlashes.splice(i, 1)[0]; scene.remove(effect.group);
+    effect.group.traverse(part => { part.geometry?.dispose(); for (const m of Array.isArray(part.material) ? part.material : [part.material]) m?.dispose(); });
+  }
   beta6Combat?.clear();
   beta6Combat = null;
   beta6PlayerActor = null;
@@ -6847,6 +6877,35 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
   syncBeta6PlayerHud();
 }
 
+function withBeta6AttackVisuals(make) {
+  const start = crimsonSlashes.length;
+  make();
+  for (let i = start; i < crimsonSlashes.length; i++) crimsonSlashes[i].beta6CombatEffect = true;
+}
+
+function updateBeta6AttackVisuals(world) {
+  for (let i = beta6AttackVisualQueue.length - 1; i >= 0; i--) {
+    const effect = beta6AttackVisualQueue[i], a = effect.owner;
+    if (effect.at > world.time + 1e-9) continue;
+    beta6AttackVisualQueue.splice(i, 1);
+    if (a.hp <= 0 || world.time < a.lockUntil || world.time < a.frozenUntil) continue;
+    const position = new THREE.Vector3(a.x, groundHeightAt(a.x, a.z) + .05, a.z);
+    withBeta6AttackVisuals(() => {
+      if (a.id === "red") createRedGloveEffect(RED_SLASH_ANGLES[effect.index % RED_SLASH_ANGLES.length], position, effect.yaw);
+      else createCrimsonSlash(effect.index, { position, yaw: effect.yaw, def: a.d, visualOnly: true, skin: a === beta6PlayerActor ? getActiveRedThemeSkin() : null });
+    });
+  }
+}
+
+function createBeta6ProjectileImpact(p) {
+  const position = new THREE.Vector3(p.x, groundHeightAt(p.x, p.z), p.z), d = p.owner.d;
+  withBeta6AttackVisuals(() => {
+    if (p.kind === "vial") createGroundPulse(d.vialSplashRadius, 0xb13cff, position);
+    if (p.kind === "bomb") createGroundPulse(d.bombSplashRange, 0xffb12b, position);
+    if (p.kind === "gold" && p.stage === 1) createGroundPulse(d.stage1SplashRadius, 0xffd347, position);
+  });
+}
+
 function processBeta6CombatEvent(event) {
       if (event.type === "damage") {
         const victim = event.target === beta6PlayerActor ? goldRushState : event.target.bot;
@@ -6864,7 +6923,15 @@ function processBeta6CombatEvent(event) {
         const bot = event.target.bot;
         if (bot) { bot.health = event.target.hp; bot.mesh.userData.health = bot.health; bot.dead = false; bot.mesh.visible = true; if (event.type === "revive") bot.invulnerableUntil = clock.elapsedTime + 2; }
       }
-      if (event.type === "attack" || event.type === "ultimate") {
+      if (event.type === "attack") {
+        const a = event.owner;
+        if (["red", "crimson"].includes(a.id)) for (let i = 0; i < a.d.attackCount; i++) beta6AttackVisualQueue.push({ at: event.time + i * a.d.attackIntervalMs / 1000, owner: a, index: i, yaw: Math.PI / 2 - a.angle });
+        if (a.id === "pink") withBeta6AttackVisuals(() => {
+          const position = new THREE.Vector3(a.x, groundHeightAt(a.x, a.z) + .05, a.z);
+          createGroundPulse(a.d.healCircleRange, 0xff9fcf, position); createPinkNoteBurst(a.d.healCircleRange, position);
+        });
+      }
+      if (event.type === "ultimate") {
         const from = event.owner.bot?.mesh.position ?? (event.owner === beta6PlayerActor ? player.position : null);
         const to = event.target?.bot?.mesh.position ?? player.position;
         if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
@@ -6961,27 +7028,11 @@ function createBeta6ProjectileMesh(projectile, color) {
   }
   if (["enhanced", "cc", "plague", "blank"].includes(kind)) return createChartreuseRoundMesh(kind);
   if (kind === "bullet") return orient(ownerId === "cyan" ? createCyanPillMesh() : createBlueMarbleMesh());
-  if (kind === "crystal" || kind === "gold") {
-    const sizes = kind === "crystal" ? [0, 0.34, 0.24, 0.16] : [0, 0.5, 0.34, 0.22];
-    const size = sizes[projectile.stage] ?? 0.24;
-    const tint = kind === "crystal" ? 0x9ef2ff : 0xffd347;
-    return new THREE.Mesh(
-      new THREE.OctahedronGeometry(size, 0),
-      new THREE.MeshStandardMaterial({ color: tint, emissive: tint, emissiveIntensity: 0.8, metalness: 0.5, roughness: 0.2 }),
-    );
-  }
-  if (kind === "bomb" || kind === "juice") {
-    return new THREE.Mesh(
-      new THREE.SphereGeometry(kind === "bomb" ? 0.28 : 0.16, 10, 8),
-      new THREE.MeshStandardMaterial({ color: kind === "bomb" ? 0xf28b21 : 0xffb457, roughness: 0.78 }),
-    );
-  }
-  if (kind === "ivory") {
-    return new THREE.Mesh(
-      new THREE.SphereGeometry(0.26, 10, 8),
-      new THREE.MeshStandardMaterial({ color: 0xfff3dd, emissive: 0xd9c39a, emissiveIntensity: 0.5, roughness: 0.4 }),
-    );
-  }
+  if (kind === "crystal") return createCrystalProjectileMesh(projectile.stage);
+  if (kind === "gold") return orient(createGoldProjectileMesh(projectile.stage));
+  if (kind === "bomb") return createOrangeFruitMesh();
+  if (kind === "juice") return new THREE.Mesh(new THREE.SphereGeometry(.14, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffcc44, transparent: true, opacity: .92 }));
+  if (kind === "ivory") return createIvoryScoopMesh();
   return new THREE.Mesh(
     new THREE.SphereGeometry(Math.max(0.12, projectile.radius ?? 0.2), 8, 6),
     new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9, depthWrite: false }),
@@ -7103,6 +7154,7 @@ function updateBeta6BotCombat(dt) {
     faceGoldRushHealthBarToCamera(bot.healthBar);
   }
   const visible = new Set();
+  updateBeta6AttackVisuals(world);
   const draw = (key, object, radius, kind) => {
     visible.add(key);
     let mesh = beta6CombatVisuals.get(key);
@@ -7112,6 +7164,8 @@ function updateBeta6BotCombat(dt) {
         mesh = createBeta6ProjectileMesh(object, color);
       } else {
         if (["perfumeSpray", "fragrance"].includes(object.kind)) mesh = createLavenderMist(object);
+        else if (kind === "wave") mesh = createAzureWaveMesh(object.width, object.ultimate);
+        else if (object.kind === "ivory") mesh = createIvoryIceCreamZoneMesh(radius);
         else {
           const geometry = kind === "zone" ? new THREE.CircleGeometry(radius, 32) : new THREE.BoxGeometry(object.width, .5, .25);
           mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color, transparent: true, opacity: kind === "zone" ? .25 : .9, depthWrite: false, side: THREE.DoubleSide }));
@@ -7121,8 +7175,20 @@ function updateBeta6BotCombat(dt) {
       scene.add(mesh); beta6CombatVisuals.set(key, mesh);
     }
     const location = object.kind === "lock" ? object.owner : object;
-    const lift = object.kind === "yellowDevice" ? .02 : kind === "zone" ? .08 : .8;
+    const lift = object.kind === "yellowDevice" ? .02 : kind === "zone" ? .09 : kind === "wave" ? .05 : .8;
     mesh.position.set(location.x, groundHeightAt(location.x, location.z) + lift, location.z);
+    if (kind === "projectile" && object.kind !== "yellowDevice") {
+      beta6VisualProjectiles.set(key, object);
+      const launchLift = object.kind === "vial" ? VIAL_LAUNCH_HEIGHT : object.kind === "ivory" ? 1.35 : object.kind === "crystal" ? 1.1 : 1.25;
+      mesh.userData.launchY ??= groundHeightAt(object.owner.x, object.owner.z) + .05 + launchLift;
+      mesh.position.y = mesh.userData.launchY;
+      if (["ivory", "vial"].includes(object.kind)) {
+        const progress = Math.min(1, object.traveled / Math.max(.01, object.reach));
+        mesh.userData.landingY ??= groundHeightAt(object.origin.x + Math.cos(object.yaw) * object.reach, object.origin.z + Math.sin(object.yaw) * object.reach) + .35;
+        mesh.position.y += Math.sin(progress * Math.PI) * (object.kind === "vial" ? VIAL_ARC_HEIGHT : 4.2) - progress * (mesh.userData.launchY - mesh.userData.landingY);
+        mesh.rotation.x += dt * 6;
+      }
+    }
     if (["perfumeSpray", "fragrance"].includes(object.kind)) updateLavenderMist(mesh, object, world.time);
     if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
     // 전투의 각도는 (cos, sin) 기준이라 로비 모양이 쓰는 회전값으로 바꿔 준다
@@ -7161,6 +7227,8 @@ function updateBeta6BotCombat(dt) {
   updateBeta6AnalysisVisuals(world, dt);
   if (hero.id === "green") setPlayerConcealedVisual(world.hidden(hero));
   for (const [key, mesh] of beta6CombatVisuals) if (!visible.has(key)) {
+    const projectile = beta6VisualProjectiles.get(key);
+    if (projectile) { createBeta6ProjectileImpact(projectile); beta6VisualProjectiles.delete(key); }
     scene.remove(mesh);
     // 종류별 모양은 여러 조각을 묶은 그룹일 수 있어 통째로 훑어서 정리한다
     mesh.traverse((part) => {
