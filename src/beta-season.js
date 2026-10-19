@@ -3327,6 +3327,27 @@ function createOrangeFruitMesh(radius = 0.32) {
   return mesh;
 }
 
+// 로비와 대전 모두 같은 회전 속도와 카메라 기준을 사용한다.
+function updateBetaProjectileSpin(mesh, type, dt) {
+  if (type === "boomerang") {
+    mesh.userData.visualSpin = ((mesh.userData.visualSpin ?? 0) + dt * 8) % (Math.PI * 2);
+    mesh.quaternion.copy(camera.quaternion);
+    mesh.rotateZ(mesh.userData.visualSpin);
+  } else if (!["cyanUltimate", "marble", "needle", "mintIceCream"].includes(type)) {
+    mesh.userData.spinBaseYaw ??= mesh.rotation.y;
+    mesh.userData.visualSpin = ((mesh.userData.visualSpin ?? 0) + dt * 9) % (Math.PI * 2);
+    mesh.rotation.y = mesh.userData.spinBaseYaw + mesh.userData.visualSpin;
+  }
+}
+
+function updateIvoryZoneVisual(group, expiresAt, time) {
+  const puddle = group.children.find(child => child.geometry?.type === "CircleGeometry");
+  if (!puddle) return;
+  const remaining = Math.max(0, expiresAt - time);
+  puddle.material.opacity = 0.5 + Math.min(0.32, remaining * 0.08);
+  puddle.scale.setScalar(1 + Math.sin(time * 4) * 0.025);
+}
+
 function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, speed, range, damage, color, radius = 0.18, splash = 0, type = "shot", returnSpeedMultiplier = 1, returnDamageMultiplier = 1, causesKnockback = false, pierces = false, maxBounces = 0 }) {
   const yaw = yawOverride ?? player.rotation.y + angle;
   const redThemeSkin = getActiveRedThemeSkin();
@@ -4173,7 +4194,9 @@ function createChartreuseStatusEffect(kind, target, durationOverride = null) {
   group.position.y += 0.18;
   scene.add(group);
   const duration = durationOverride ?? durations[kind] ?? 0.8;
-  crimsonSlashes.push({ group, mesh: ring, life: duration, maxLife: duration, type: "chartreuseStatus", ring, halo, kind });
+  const effect = { group, mesh: ring, life: duration, maxLife: duration, type: "chartreuseStatus", ring, halo, kind, target };
+  crimsonSlashes.push(effect);
+  return effect;
 }
 
 // 핑크 전용 — 8자 모양 동그란 음표 실루엣 하나
@@ -5692,6 +5715,7 @@ const beta6CombatVisuals = new Map();
 const beta6VisualProjectiles = new Map();
 const beta6PendingEvents = [];
 const beta6AttackVisualQueue = [];
+const beta6StatusVisuals = new Map();
 let beta6BotRotation = 0;
 const goldRushAttackEffects = [];
 const GOLD_RUSH_BOT_COLORS = [0xef4d5b, 0x4c78ff, 0x45d66e, 0xf39b35, 0xf4de42, 0x43d9e7, 0x9658dc, 0xf28fbd, 0xa33131];
@@ -6632,6 +6656,7 @@ function clearBeta6RoundCombat() {
   beta6PendingEvents.length = 0;
   beta6AttackVisualQueue.length = 0;
   beta6VisualProjectiles.clear();
+  beta6StatusVisuals.clear();
   for (let i = crimsonSlashes.length - 1; i >= 0; i--) if (crimsonSlashes[i].beta6CombatEffect) {
     const effect = crimsonSlashes.splice(i, 1)[0]; scene.remove(effect.group);
     effect.group.traverse(part => { part.geometry?.dispose(); for (const m of Array.isArray(part.material) ? part.material : [part.material]) m?.dispose(); });
@@ -6879,8 +6904,38 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
 
 function withBeta6AttackVisuals(make) {
   const start = crimsonSlashes.length;
-  make();
+  const result = make();
   for (let i = start; i < crimsonSlashes.length; i++) crimsonSlashes[i].beta6CombatEffect = true;
+  return result;
+}
+
+function updateBeta6StatusVisuals(world) {
+  const active = new Set();
+  for (const actor of world.actors) {
+    if (actor.hp <= 0) continue;
+    const allied = actor === beta6PlayerActor || (actor.team != null && actor.team === beta6PlayerActor?.team);
+    if (!allied && world.hidden(actor, beta6PlayerActor)) continue;
+    for (const [kind, until] of [["poison", actor.poisonUntil], ["slow", actor.slowUntil], ["malfunction", actor.analysisOwner || actor.analysisTarget ? 0 : actor.lockUntil]]) {
+      if (until <= world.time) continue;
+      const key = `${actor.key}:${kind}`;
+      active.add(key);
+      let visual = beta6StatusVisuals.get(key);
+      const position = new THREE.Vector3(actor.x, groundHeightAt(actor.x, actor.z) + .05, actor.z);
+      if (!visual || !crimsonSlashes.includes(visual)) {
+        visual = withBeta6AttackVisuals(() => createChartreuseStatusEffect(kind, { position }, until - world.time));
+        beta6StatusVisuals.set(key, visual);
+      }
+      visual.target.position.copy(position);
+      visual.group.position.copy(position); visual.group.position.y += .18;
+      // 재적중은 기존 연출을 갱신해 매 프레임 새 링을 만들지 않는다.
+      visual.life = until - world.time;
+      visual.maxLife = Math.max(visual.maxLife, visual.life);
+    }
+  }
+  for (const [key, visual] of beta6StatusVisuals) if (!active.has(key)) {
+    visual.life = 0;
+    beta6StatusVisuals.delete(key);
+  }
 }
 
 function updateBeta6AttackVisuals(world) {
@@ -6912,8 +6967,10 @@ function processBeta6CombatEvent(event) {
         const attacker = event.owner === beta6PlayerActor ? goldRushState : event.owner?.bot;
         const wasAlive = victim && !victim.dead;
         const victimRank = victim?.axeLevel || 0;
-        if (event.target === beta6PlayerActor) damageGoldRushPlayer(event.amount);
-        else if (event.target.bot) damageGoldRushBot(event.target.bot, event.amount, event.owner === beta6PlayerActor, true);
+        withBeta6AttackVisuals(() => {
+          if (event.target === beta6PlayerActor) damageGoldRushPlayer(event.amount);
+          else if (event.target.bot) damageGoldRushBot(event.target.bot, event.amount, event.owner === beta6PlayerActor, true);
+        });
         if (goldRushState.mode === "chopWood" && wasAlive && victim.dead) {
           if (attacker && attacker !== victim && event.owner.team !== event.target.team) upgradeAxe(attacker, victimRank);
           resetAxe(victim);
@@ -7029,7 +7086,11 @@ function createBeta6ProjectileMesh(projectile, color) {
   if (["enhanced", "cc", "plague", "blank"].includes(kind)) return createChartreuseRoundMesh(kind);
   if (kind === "bullet") return orient(ownerId === "cyan" ? createCyanPillMesh() : createBlueMarbleMesh());
   if (kind === "crystal") return createCrystalProjectileMesh(projectile.stage);
-  if (kind === "gold") return orient(createGoldProjectileMesh(projectile.stage));
+  if (kind === "gold") {
+    const mesh = createGoldProjectileMesh(projectile.stage);
+    if (projectile.stage === 3) mesh.rotation.y = Math.PI / 2 - (projectile.yaw ?? 0);
+    return mesh;
+  }
   if (kind === "bomb") return createOrangeFruitMesh();
   if (kind === "juice") return new THREE.Mesh(new THREE.SphereGeometry(.14, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffcc44, transparent: true, opacity: .92 }));
   if (kind === "ivory") return createIvoryScoopMesh();
@@ -7155,6 +7216,7 @@ function updateBeta6BotCombat(dt) {
   }
   const visible = new Set();
   updateBeta6AttackVisuals(world);
+  updateBeta6StatusVisuals(world);
   const draw = (key, object, radius, kind) => {
     visible.add(key);
     let mesh = beta6CombatVisuals.get(key);
@@ -7180,7 +7242,7 @@ function updateBeta6BotCombat(dt) {
     if (kind === "projectile" && object.kind !== "yellowDevice") {
       beta6VisualProjectiles.set(key, object);
       const launchLift = object.kind === "vial" ? VIAL_LAUNCH_HEIGHT : object.kind === "ivory" ? 1.35 : object.kind === "crystal" ? 1.1 : 1.25;
-      mesh.userData.launchY ??= groundHeightAt(object.owner.x, object.owner.z) + .05 + launchLift;
+      mesh.userData.launchY ??= groundHeightAt(object.origin.x, object.origin.z) + .05 + launchLift;
       mesh.position.y = mesh.userData.launchY;
       if (["ivory", "vial"].includes(object.kind)) {
         const progress = Math.min(1, object.traveled / Math.max(.01, object.reach));
@@ -7190,10 +7252,14 @@ function updateBeta6BotCombat(dt) {
       }
     }
     if (["perfumeSpray", "fragrance"].includes(object.kind)) updateLavenderMist(mesh, object, world.time);
+    if (kind === "zone" && object.kind === "ivory") updateIvoryZoneVisual(mesh, object.until, world.time);
     if (kind === "wave") mesh.rotation.y = Math.PI / 2 - object.yaw;
     // 전투의 각도는 (cos, sin) 기준이라 로비 모양이 쓰는 회전값으로 바꿔 준다
     if (mesh.userData.beta6Oriented) { mesh.rotation.order = "YXZ"; mesh.rotation.y = Math.PI / 2 - (object.yaw ?? 0); }
-    if (mesh.userData.beta6Spin) mesh.rotation.y = world.time * 12;
+    if (kind === "projectile" && object.kind !== "yellowDevice") {
+      const type = object.kind === "bullet" ? object.owner.id === "cyan" ? "cyanShot" : "marble" : object.kind === "mint" ? "mintIceCream" : object.kind;
+      updateBetaProjectileSpin(mesh, type, dt);
+    }
   };
   const drawCircuitWire = (key, from, to) => {
     visible.add(key);
@@ -8810,15 +8876,7 @@ function animate() {
       remove = true;
       shouldSplitOrange = projectile.type === "orangeFruit";
     }
-    if (projectile.type === "boomerang") {
-      // Rotate in the camera-facing plane, using the viewer's up-axis as the reference.
-      projectile.mesh.quaternion.copy(camera.quaternion);
-      projectile.mesh.rotateZ(dt * 8);
-    } else if (projectile.type !== "cyanUltimate" && projectile.type !== "marble" && projectile.type !== "needle" && projectile.type !== "mintIceCream") {
-      // marble/needle/mintIceCream은 발사 방향에 맞춰 뾰족한 끝(콘)을 고정해
-      // 두었으므로 범용 스핀을 적용하면 방향이 계속 흐트러진다.
-      projectile.mesh.rotation.y += dt * 9;
-    }
+    updateBetaProjectileSpin(projectile.mesh, projectile.type, dt);
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
     }
@@ -9056,8 +9114,8 @@ function animate() {
         slash.halo.material.opacity = 0.35 + Math.sin(clock.elapsedTime * 6) * 0.12;
       }
     } else if (slash.type === "chartreuseStatus") {
-      slash.group.position.x = slash.group.position.x;
-      slash.group.position.z = slash.group.position.z;
+      slash.group.position.copy(slash.target.position);
+      slash.group.position.y += .18;
       slash.ring.scale.setScalar(0.8 + progress * 2.2);
       slash.halo.rotation.z += dt * (slash.kind === "malfunction" ? 8 : 3.5);
       slash.halo.scale.setScalar(1 + progress * 0.8);
@@ -9137,9 +9195,7 @@ function animate() {
   const dueIvoryZoneTargets = new Map();
   for (let i = ivoryIceCreamZones.length - 1; i >= 0; i -= 1) {
     const zone = ivoryIceCreamZones[i];
-    const remaining = Math.max(0, zone.expiresAt - clock.elapsedTime);
-    zone.puddle.material.opacity = 0.5 + Math.min(0.32, remaining * 0.08);
-    zone.puddle.scale.setScalar(1 + Math.sin(clock.elapsedTime * 4 + i) * 0.025);
+    updateIvoryZoneVisual(zone.group, zone.expiresAt, clock.elapsedTime);
     if (clock.elapsedTime >= zone.nextTickAt && zone.nextTickAt <= zone.expiresAt) {
       zone.nextTickAt += BETA_CHARACTERS.ivory.iceCreamZoneTickInterval;
       for (const target of testTargets) {

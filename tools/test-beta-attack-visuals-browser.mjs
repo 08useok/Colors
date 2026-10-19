@@ -50,8 +50,29 @@ window.__visualQA = {
         notes:effects.filter(e=>e.noteOrigin).length,
         actual:{hp:target.hp,charge:beta6PlayerActor.charge},reference:{hp:other.hp,charge:mirror.charge}});
     }
+    const spin=[];
+    for(const [type,make] of [['boomerang',createGreenBoomerangMesh],['orangeFruit',createOrangeFruitMesh],['marble',createBlueMarbleMesh],['needle',createPurpleNeedleMesh],['gold',()=>createGoldProjectileMesh(3)]]) {
+      const mesh=make();
+      updateBetaProjectileSpin(mesh,type,.1);const first=mesh.quaternion.toArray();
+      updateBetaProjectileSpin(mesh,type,.1);const second=mesh.quaternion.toArray();
+      spin.push({type,first,second,angle:mesh.userData.visualSpin??0});
+    }
+    const hero=beta6PlayerActor,w=beta6Combat;
+    hero.poisonUntil=hero.slowUntil=hero.lockUntil=w.time+2;
+    updateBeta6StatusVisuals(w);
+    const statusCount=beta6StatusVisuals.size, original=beta6StatusVisuals.get(hero.key+':poison');
+    hero.x+=3;hero.z+=4;hero.poisonUntil+=1;
+    updateBeta6StatusVisuals(w);
+    const status={count:statusCount,reused:original===beta6StatusVisuals.get(hero.key+':poison'),follows:original.group.position.x===hero.x&&original.group.position.z===hero.z,extended:original.life===3};
+    hero.poisonUntil=hero.slowUntil=hero.lockUntil=0;updateBeta6StatusVisuals(w);
+    status.expired=beta6StatusVisuals.size===0&&original.life===0;
+    const hidden=w.actors[1];hidden.poisonUntil=hidden.hiddenUntil=w.time+2;hidden.revealedUntil=0;hidden.bush={x:hidden.x,z:hidden.z};
+    updateBeta6StatusVisuals(w);status.hiddenEnemy=!beta6StatusVisuals.has(hidden.key+':poison');
+    const zone=createIvoryIceCreamZoneMesh(2),puddle=zone.children.find(c=>c.geometry?.type==='CircleGeometry');
+    updateIvoryZoneVisual(zone,5,0);const initialOpacity=puddle.material.opacity;
+    updateIvoryZoneVisual(zone,5,4.8);const ivoryFade={initial:initialOpacity,ending:puddle.material.opacity};
     clearBeta6RoundCombat();
-    return {pairs,results,cleanup:{visuals:beta6CombatVisuals.size,queue:beta6AttackVisualQueue.length,projectiles:beta6VisualProjectiles.size,effects:crimsonSlashes.filter(e=>e.beta6CombatEffect).length}};
+    return {pairs,results,spin,status,ivoryFade,cleanup:{visuals:beta6CombatVisuals.size,queue:beta6AttackVisualQueue.length,projectiles:beta6VisualProjectiles.size,status:beta6StatusVisuals.size,effects:crimsonSlashes.filter(e=>e.beta6CombatEffect).length}};
   },
   scene(){
     betaState.selectedCharacter='ivory';startGoldRush('gemGrab');
@@ -106,7 +127,13 @@ try {
   assert(result('orange').seen.includes('orangeFruit'));
   assert(result('ivory').seen.includes('ivoryZone'));assert(result('ivory').maxArc>1);
   assert(result('purple').maxArc>1);assert(result('azure').seen.includes('azureWave'));
-  assert.deepEqual(report.cleanup,{visuals:0,queue:0,projectiles:0,effects:0});
+  for(const s of report.spin) {
+    if(['marble','needle'].includes(s.type))assert.deepEqual(s.first,s.second,s.type+' fixed heading');
+    else {assert.notDeepEqual(s.first,s.second,s.type+' accumulated spin');assert(Math.abs(s.angle-(s.type==='boomerang'?1.6:1.8))<1e-8);}
+  }
+  assert.deepEqual(report.status,{count:3,reused:true,follows:true,extended:true,expired:true,hiddenEnemy:true});
+  assert(report.ivoryFade.ending<report.ivoryFade.initial);
+  assert.deepEqual(report.cleanup,{visuals:0,queue:0,projectiles:0,status:0,effects:0});
   await page.evaluate(()=>__visualQA.scene());
   await page.waitForFunction(()=>document.querySelector('#model-loading-screen')?.hidden,null,{timeout:120000});
   writeFileSync('specs/beta-attack-visuals.png',Buffer.from(await page.evaluate(()=>__visualQA.gallery()),'base64'));

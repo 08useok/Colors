@@ -266,12 +266,12 @@ assert(runtime.includes('if (beta6Combat !== world) return;'));
   };
   const hero = { hp: 100, x: 0, z: 0 };
   const context = vm.createContext({ Math, THREE: {}, IS_BETA6_TEST: true,
-    beta6PlayerActor: hero, beta6PendingEvents: [], goldRushBots: [],
+    beta6PlayerActor: hero, beta6PendingEvents: [], goldRushBots: [], crimsonSlashes: [],
     goldRushState: { health: 100, dead: false }, clock: { elapsedTime: 10 },
     player: { position: { x: 0, z: 0 } }, damageCalls: 0 });
   context.beta6Combat = { time: 0, update() { context.beta6PendingEvents.push({ type: 'damage', target: hero, amount: 100 }); } };
   context.damageGoldRushPlayer = () => { context.damageCalls++; context.beta6Combat = null; context.beta6PlayerActor = null; };
-  vm.runInContext(extract('processBeta6CombatEvent') + '\n' + extract('updateBeta6BotCombat') + '\nupdateBeta6BotCombat(1 / 60);', context);
+  vm.runInContext(extract('withBeta6AttackVisuals') + '\n' + extract('processBeta6CombatEvent') + '\n' + extract('updateBeta6BotCombat') + '\nupdateBeta6BotCombat(1 / 60);', context);
   assert.equal(context.damageCalls, 1); assert.equal(context.beta6Combat, null);
 }
 {
