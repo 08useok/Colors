@@ -1,0 +1,51 @@
+{
+  "report": [
+    {
+      "mode": "lobby",
+      "position": [
+        0,
+        8.25,
+        40
+      ],
+      "room": "달빛 묘지",
+      "children": [
+        {
+          "name": "beta8-graveyard",
+          "objects": 58
+        },
+        {
+          "name": "beta8-workshop",
+          "objects": 41
+        }
+      ],
+      "prompt": true
+    },
+    {
+      "mode": "lobby",
+      "position": [
+        40,
+        3.05,
+        0
+      ],
+      "room": "호박 작업장",
+      "children": [
+        {
+          "name": "beta8-graveyard",
+          "objects": 58
+        },
+        {
+          "name": "beta8-workshop",
+          "objects": 41
+        }
+      ],
+      "prompt": true
+    },
+    {
+      "clearPaths": 42,
+      "knockoutActors": 6,
+      "shopCurrencyUnchanged": true
+    }
+  ],
+  "pageErrors": [],
+  "beta7Unchanged": true
+}

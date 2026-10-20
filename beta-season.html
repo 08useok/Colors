@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Colors - Beta Season 8 Test</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
-  <link rel="stylesheet" href="./beta-season.css?v=0.8.3">
+  <link rel="stylesheet" href="./beta-season.css?v=0.8.4">
   <script>
     const loadingSeason = new URLSearchParams(location.search).get("test") || "beta8";
     if (loadingSeason === "beta8") document.documentElement.classList.add("beta8-loading");
@@ -142,6 +142,8 @@
     <div class="test-actions">
       <button id="overview-btn" type="button">전체 보기</button>
       <button id="reset-btn" type="button">훈련장 텔레포트</button>
+      <button type="button" data-lobby-room="graveyard" hidden>달빛 묘지</button>
+      <button type="button" data-lobby-room="workshop" hidden>호박 작업장</button>
       <button id="test-death-btn" type="button">테스트 사망</button>
       <button id="test-ally-death-btn" type="button">아군 사망</button>
       <button id="slowmo-btn" type="button" aria-pressed="false">슬로우 모드</button>
@@ -153,6 +155,7 @@
     <span>현재 구역</span>
     <strong id="location-name">베타 광장</strong>
   </div>
+  <button id="beta-room-interact" class="beta-room-interact" type="button" hidden></button>
 
   <div class="beta-watermark">BETA MAP 0.1</div>
 
@@ -254,6 +257,6 @@
     <label>벌목 진행 <progress id="chop-progress" max="2" value="0"></progress></label>
     <button id="chop-wood-close" type="button">로비로 돌아가기</button>
   </aside>
-  <script type="module" src="./src/beta-season.js?v=0.8.19"></script>
+  <script type="module" src="./src/beta-season.js?v=0.8.20"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
+import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./visuals/beta8-lobby-rooms.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -751,6 +752,7 @@ function createBeta7AncientRuinDecor() {
 
 createBeta7AncientRuinDecor();
 const halloweenDecor = IS_BETA8_TEST ? createHalloweenLobby(scene,map) : null;
+const beta8LobbyRooms = IS_BETA8_TEST ? createBeta8LobbyRooms(map, solids) : null;
 
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
@@ -8518,9 +8520,45 @@ aimModeButton.textContent = "좌클릭 공격 · 드래그해 조준";
 
 let ivoryUltimateKeyboardAiming = false;
 let directionalUltimateKeyboardAiming = false;
+const roomInteractButton = document.getElementById("beta-room-interact");
+function availableBetaLobbyRoom() {
+  if (!IS_BETA8_TEST || currentArenaMode !== "lobby" || goldRushState.active || goldRushState.dead || modelLoading.blocking || !modal.classList.contains("hidden")) return null;
+  return beta8LobbyRoomAt(player.position.x, player.position.z);
+}
+function interactBetaLobbyRoom() {
+  const room = availableBetaLobbyRoom();
+  if (!room) return;
+  keys.clear();
+  roomInteractButton.hidden = true;
+  if (room.id === "graveyard") startGoldRush("knockout");
+  else openPanel("shop");
+}
+roomInteractButton.addEventListener("click", interactBetaLobbyRoom);
+document.querySelectorAll("[data-lobby-room]").forEach(button => {
+  button.hidden = !IS_BETA8_TEST;
+  button.addEventListener("click", () => {
+    if (!IS_BETA8_TEST || currentArenaMode !== "lobby" || goldRushState.active || modelLoading.blocking || goldRushState.dead) return;
+    const room = BETA8_LOBBY_ROOMS.find(item => item.id === button.dataset.lobbyRoom);
+    if (!room) return;
+    clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); keys.clear();
+    player.position.set(room.x, room.y + .05, room.z);
+    lastSafeLobbyPosition = { x: room.x, z: room.z };
+    player.rotation.y = room.id === "graveyard" ? 0 : Math.PI / 2;
+    updateLocation();
+  });
+});
+function updateBetaLobbyRoomUI() {
+  const room = availableBetaLobbyRoom();
+  roomInteractButton.hidden = !room;
+  if (room) roomInteractButton.textContent = `${room.name} · ${room.action} [E]`;
+  for (const button of document.querySelectorAll("[data-lobby-room]")) button.disabled = currentArenaMode !== "lobby" || goldRushState.active || modelLoading.blocking || goldRushState.dead;
+}
 addEventListener("keydown", (event) => {
   keys.add(event.code);
   if (event.repeat || modal.classList.contains("hidden") === false) return;
+  if (event.code === "KeyE" && availableBetaLobbyRoom()) {
+    event.preventDefault(); interactBetaLobbyRoom(); return;
+  }
   if ((event.code === "KeyQ" || event.code === "Space") && betaState.selectedCharacter === "ivory") {
     event.preventDefault();
     ivoryUltimateKeyboardAiming = true;
@@ -8695,6 +8733,7 @@ function updateBossHealthHud() {
 }
 
 function updateLocation() {
+  updateBetaLobbyRoomUI();
   updateBetaLobbyMusic();
   if(currentArenaMode!=="lobby" && activeEventLayout){locationName.textContent=activeEventLayout.name;return;}
   if (currentArenaMode === "chopWood") { locationName.textContent = "찹 우드 · 톱밥 숲"; return; }
@@ -8745,6 +8784,7 @@ function animate() {
   const dt = Math.min(rawDelta, 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   updateLavenderPractice(dt);
   halloweenDecor?.update(clock.elapsedTime);
+  beta8LobbyRooms?.update(clock.elapsedTime);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
   if (ivoryUltimateAiming || directionalUltimateAiming) {
