@@ -38,6 +38,11 @@
 
 Azure는 [베타 시즌 6](beta-season-6.md)에서 확인한다.
 
+## 미구현 전투 계획안
+
+- [살몬 (Salmon)](characters/salmon.md) — 자동 재장전 없는 5발 탄약·포획 회복·원형 테두리 장치.
+- [라즈베리 (Raspberry)](characters/raspberry.md) — 덩굴 저격·원형 내부 속박. 확정 수치와 제안을 구분하며 출시 시즌은 미정이다.
+
 ## 시즌별 변경
 
 - [베타 궁극기 밸런스](beta-ultimate-balance.md)
