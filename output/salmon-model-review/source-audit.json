@@ -1,0 +1,126 @@
+{
+  "meshes": [
+    {
+      "name": "Mesh_0",
+      "vertices": 15489,
+      "faces": 30810,
+      "triangles": 30810,
+      "smooth_faces": 30810,
+      "custom_normals": true,
+      "bounds": [
+        [
+          -0.34350600838661194,
+          -0.1662600189447403,
+          -0.4748539924621582
+        ],
+        [
+          0.34350600838661194,
+          0.16821300983428955,
+          0.4753420054912567
+        ]
+      ],
+      "modifiers": []
+    }
+  ],
+  "materials": [
+    {
+      "name": "Material.001",
+      "nodes": [
+        {
+          "name": "Principled BSDF",
+          "type": "BSDF_PRINCIPLED",
+          "image": null
+        },
+        {
+          "name": "Material Output",
+          "type": "OUTPUT_MATERIAL",
+          "image": null
+        },
+        {
+          "name": "Normal Map",
+          "type": "NORMAL_MAP",
+          "image": null
+        },
+        {
+          "name": "Image Texture",
+          "type": "TEX_IMAGE",
+          "image": "C:\\Users\\useok\\OneDrive\\\ubb38\uc11c\\New project\\output\\salmon-model-review\\source\\Meshy_AI_Coral_Bobble_Buddy_1020123948_texture.fbm\\Image_0.jpg"
+        },
+        {
+          "name": "Image Texture.001",
+          "type": "TEX_IMAGE",
+          "image": "C:\\Users\\useok\\OneDrive\\\ubb38\uc11c\\New project\\output\\salmon-model-review\\source\\Meshy_AI_Coral_Bobble_Buddy_1020123948_texture.fbm\\Image_2.jpg"
+        },
+        {
+          "name": "Image Texture.002",
+          "type": "TEX_IMAGE",
+          "image": "C:\\Users\\useok\\OneDrive\\\ubb38\uc11c\\New project\\output\\salmon-model-review\\source\\Meshy_AI_Coral_Bobble_Buddy_1020123948_texture.fbm\\texture_0_roughness.png"
+        },
+        {
+          "name": "Image Texture.003",
+          "type": "TEX_IMAGE",
+          "image": "C:\\Users\\useok\\OneDrive\\\ubb38\uc11c\\New project\\output\\salmon-model-review\\source\\Meshy_AI_Coral_Bobble_Buddy_1020123948_texture.fbm\\texture_0_metallic.png"
+        }
+      ],
+      "links": [
+        {
+          "from": "Principled BSDF:BSDF",
+          "to": "Material Output:Surface"
+        },
+        {
+          "from": "Normal Map:Normal",
+          "to": "Principled BSDF:Normal"
+        },
+        {
+          "from": "Image Texture:Color",
+          "to": "Principled BSDF:Base Color"
+        },
+        {
+          "from": "Image Texture.001:Color",
+          "to": "Normal Map:Color"
+        },
+        {
+          "from": "Image Texture.002:Color",
+          "to": "Principled BSDF:Roughness"
+        },
+        {
+          "from": "Image Texture.003:Color",
+          "to": "Principled BSDF:Metallic"
+        }
+      ]
+    }
+  ],
+  "armatures": [],
+  "textures": [
+    {
+      "name": "Meshy_AI_Coral_Bobble_Buddy_1020123948_texture.png",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "Meshy_AI_Coral_Bobble_Buddy_1020123948_texture_metallic.png",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "Meshy_AI_Coral_Bobble_Buddy_1020123948_texture_normal.png",
+      "size": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "Meshy_AI_Coral_Bobble_Buddy_1020123948_texture_roughness.png",
+      "size": [
+        2048,
+        2048
+      ]
+    }
+  ],
+  "total_triangles": 30810,
+  "total_faces": 30810
+}

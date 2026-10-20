@@ -1,0 +1,20 @@
+[
+  {
+    "format": "fbx",
+    "meshes": 23,
+    "triangles": 31499,
+    "materials": 7,
+    "rigged": false,
+    "bytes": 867708,
+    "passed": true
+  },
+  {
+    "format": "glb",
+    "meshes": 23,
+    "triangles": 31498,
+    "materials": 7,
+    "rigged": false,
+    "bytes": 841288,
+    "passed": true
+  }
+]

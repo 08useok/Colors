@@ -1,0 +1,43 @@
+{
+  "source_triangles": 30810,
+  "fixed_triangles": 31499,
+  "rigged": false,
+  "head_fit": {
+    "center": [
+      -0.0001815820165636171,
+      7.124419331872023e-06,
+      0.24900458206793233
+    ],
+    "radius": 0.16807843530252006
+  },
+  "source_bounds": [
+    [
+      -0.34350600838661194,
+      -0.1662600040435791,
+      -0.4748539924621582
+    ],
+    [
+      0.34350600838661194,
+      0.16821299493312836,
+      0.4753420054912567
+    ]
+  ],
+  "fixed_bounds": [
+    [
+      -0.3422987759113312,
+      -0.17985351383686066,
+      -0.4744998514652252
+    ],
+    [
+      0.3424268960952759,
+      0.1680854856967926,
+      0.46253061294555664
+    ]
+  ],
+  "changes": [
+    "Source body retained and gently smoothed",
+    "Head and face rebuilt as clean geometry",
+    "Single float ornament rebuilt",
+    "Procedural flat colors; noisy generated normal/metallic/roughness maps excluded"
+  ]
+}
