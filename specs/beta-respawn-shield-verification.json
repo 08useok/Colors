@@ -1,0 +1,35 @@
+{
+  "practice": {
+    "duration": 5,
+    "visible": true,
+    "healthProtected": true,
+    "protectedAt4999": true,
+    "expiredAt5": true
+  },
+  "match": {
+    "duration": 5,
+    "alive": true,
+    "visible": true
+  },
+  "ai": {
+    "duration": 5,
+    "visible": true,
+    "blocked": true,
+    "expires": true
+  },
+  "pink": {
+    "duration": 5,
+    "visible": true,
+    "engineProtected": true
+  },
+  "cleaned": true,
+  "practiceTarget": {
+    "blocked": true,
+    "visible": true
+  },
+  "knockout": {
+    "dead": true,
+    "noShield": true
+  },
+  "pageErrors": []
+}

@@ -1,4 +1,5 @@
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
+import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
 import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./visuals/beta8-lobby-rooms.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
@@ -7,6 +8,13 @@ import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=3";
 import * as THREE from "three";
 const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
+const respawnShields = createRespawnShields();
+
+function grantBetaRespawnProtection(owner, mesh) {
+  owner.invulnerableUntil = Math.max(owner.invulnerableUntil ?? 0, clock.elapsedTime + RESPAWN_PROTECTION_SECONDS);
+  const boss = mesh.userData.kind === "alphaBoss";
+  respawnShields.show(mesh, owner.invulnerableUntil, boss ? { radius: 5, height: 4 } : undefined);
+}
 import { AXES, resetAxe, upgradeAxe, chopTree, CHOP_WOOD_COVER, chopWoodDestination } from "./config/beta-chop-wood.js?v=2";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
@@ -3033,6 +3041,7 @@ function ensureMalfunctionIndicator(target) {
 
 function damageTarget(target, damage, causesKnockback = false) {
   if (!target.visible) return;
+  if (clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) return;
   if (target.userData.goldRushBot) {
     damageGoldRushBot(target.userData.goldRushBot, damage, true);
     return;
@@ -4870,7 +4879,7 @@ function hitTargetsInFan(angleOffset, damage) {
   const facing = player.rotation.y + angleOffset;
   const forward = new THREE.Vector2(Math.sin(facing), Math.cos(facing));
   for (const target of testTargets) {
-    if (!target.visible) continue;
+    if (!target.visible || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
     const delta = new THREE.Vector2(target.position.x - player.position.x, target.position.z - player.position.z);
     const distanceToTarget = delta.length();
     if (distanceToTarget > CRIMSON.attackRange || distanceToTarget < 0.01) continue;
@@ -5183,7 +5192,7 @@ function performPinkEncore() {
     }
     target.visible = true;
     target.userData.health = target.userData.maxHealth * def.reviveHealthRatio;
-    target.userData.invulnerableUntil = clock.elapsedTime + def.invulnerabilityDuration;
+    grantBetaRespawnProtection(target.userData, target);
     target.userData.revivePendingUntil = 0;
     createGroundPulse(1.1, 0xffb3d7, target.position);
     createPinkNoteBurst(1.8, target.position);
@@ -5919,12 +5928,14 @@ function resetSoccerBall() {
 
 // 득점 후 양 팀을 시작 위치로 돌려 공정하게 다시 시작한다
 function reviveSoccerBot(bot) {
+  const wasDead = bot.dead;
   bot.dead = false;
   bot.health = bot.maxHealth;
   bot.mesh.userData.health = bot.health;
   bot.mesh.position.copy(bot.spawn);
   bot.mesh.visible = true;
-  bot.invulnerableUntil = clock.elapsedTime + 2;
+  if (wasDead) grantBetaRespawnProtection(bot, bot.mesh);
+  else bot.invulnerableUntil = Math.max(bot.invulnerableUntil ?? 0, clock.elapsedTime + 2);
   bot.ammo = bot.maxAmmo;
   bot.reloadTimer = 0;
   updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
@@ -5932,6 +5943,7 @@ function reviveSoccerBot(bot) {
 
 function resetSoccerPositions() {
   if (goldRushState.dead) {
+    grantBetaRespawnProtection(goldRushState, player);
     goldRushState.dead = false;
     player.visible = true;
     playerGoldRushHealthBar.visible = true;
@@ -6682,6 +6694,7 @@ function clearBeta6RoundCombat() {
 function clearGoldRushBots() {
   clearBeta6RoundCombat();
   for (const bot of goldRushBots) {
+    respawnShields.remove(bot.mesh);
     scene.remove(bot.mesh);
     scene.remove(bot.healthBar);
     const targetIndex = testTargets.indexOf(bot.mesh);
@@ -6980,7 +6993,17 @@ function processBeta6CombatEvent(event) {
       }
       if (event.type === "heal" || event.type === "revive") {
         const bot = event.target.bot;
-        if (bot) { bot.health = event.target.hp; bot.mesh.userData.health = bot.health; bot.dead = false; bot.mesh.visible = true; if (event.type === "revive") bot.invulnerableUntil = clock.elapsedTime + 2; }
+        if (bot) {
+          bot.health = event.target.hp; bot.mesh.userData.health = bot.health; bot.dead = false; bot.mesh.visible = true;
+          if (event.type === "revive") grantBetaRespawnProtection(bot, bot.mesh);
+        } else if (event.target === beta6PlayerActor) {
+          goldRushState.health = event.target.hp;
+          if (event.type === "revive") {
+            goldRushState.dead = false; player.visible = true; playerGoldRushHealthBar.visible = true;
+            respawnOverlay.classList.add("hidden"); grantBetaRespawnProtection(goldRushState, player);
+          }
+        }
+        if (event.type === "revive") event.target.invulnerableUntil = Math.max(event.target.invulnerableUntil, beta6Combat.time + RESPAWN_PROTECTION_SECONDS);
       }
       if (event.type === "attack") {
         const a = event.owner;
@@ -7180,7 +7203,7 @@ function updateBeta6BotCombat(dt) {
       world.remove(actor);
       actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
-      bot.mesh.userData.health = bot.health; bot.invulnerableUntil = clock.elapsedTime + 2;
+      bot.mesh.userData.health = bot.health; grantBetaRespawnProtection(bot, bot.mesh);
       Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
     }
     actor.hp = bot.dead ? 0 : bot.health;
@@ -7495,7 +7518,7 @@ function updateGoldRushBots(dt) {
       bot.mesh.userData.maxHealth = bot.maxHealth;
       bot.mesh.position.copy(bot.spawn);
       bot.mesh.visible = true;
-      bot.invulnerableUntil = clock.elapsedTime + 2;
+      grantBetaRespawnProtection(bot, bot.mesh);
       bot.nextAttackAt = clock.elapsedTime + 0.8;
       bot.ammo = bot.maxAmmo;
       bot.reloadTimer = 0;
@@ -7836,6 +7859,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   clearAzureWave();
   clearYellowCircuit();
   if (goldRushState.ended) return;
+  respawnShields.clear();
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
   const wasKnockout = goldRushState.mode === "knockout";
@@ -8161,6 +8185,7 @@ function prepareBetaEventMap(mode,plus) {
 
 function startGoldRush(mode = "goldRush", showdownPlus = false) {
   if (mode === "knockout" && !IS_BETA8_TEST) return;
+  respawnShields.clear();
   knockoutMatch = mode === "knockout" ? createKnockoutMatch(clock.elapsedTime) : null;
   knockoutArena.visible = mode === "knockout";
   document.getElementById("knockout-exit").classList.toggle("hidden", mode !== "knockout");
@@ -8344,7 +8369,7 @@ function updatePracticeRespawn() {
   respawnCountdownEl.textContent = String(Math.ceil(remaining));
   if (remaining > 0) return;
   goldRushState.dead = false;
-  goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+  grantBetaRespawnProtection(goldRushState, player);
   goldRushState.health = goldRushState.maxHealth;
   goldRushState.ammo = goldRushState.maxAmmo;
   goldRushState.reloadTimer = 0;
@@ -8365,7 +8390,7 @@ function updateGoldRush(dt) {
     respawnCountdownEl.textContent = String(Math.ceil(remaining));
     if (remaining <= 0) {
       goldRushState.dead = false;
-      goldRushState.invulnerableUntil = clock.elapsedTime + 2;
+      grantBetaRespawnProtection(goldRushState, player);
       goldRushState.health = goldRushState.maxHealth;
       goldRushState.ammo = goldRushState.maxAmmo;
       goldRushState.reloadTimer = 0;
@@ -8785,6 +8810,7 @@ function animate() {
   updateLavenderPractice(dt);
   halloweenDecor?.update(clock.elapsedTime);
   beta8LobbyRooms?.update(clock.elapsedTime);
+  respawnShields.update(clock.elapsedTime);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
   if (ivoryUltimateAiming || directionalUltimateAiming) {
@@ -8932,7 +8958,7 @@ function animate() {
     // 독병/아이스크림 투척류는 공중 경로에서 직접 충돌하지 않고 착지 시점에만 효과를 낸다.
     if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial" && projectile.type !== "mintSpecial") {
       for (const target of testTargets) {
-        if (!target.visible || target.userData.isAlly || projectile.hit.has(target)) continue;
+        if (!target.visible || target.userData.isAlly || projectile.hit.has(target) || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
         const targetDz = target.position.z - projectile.mesh.position.z;
         if (projectile.goldStage) {
@@ -9373,7 +9399,7 @@ function animate() {
       if (clock.elapsedTime < target.userData.reviveAt) continue;
       target.visible = true;
       target.userData.health = target.userData.maxHealth * (target.userData.reviveHealthRatio || 0.4);
-      target.userData.invulnerableUntil = clock.elapsedTime + 2;
+      grantBetaRespawnProtection(target.userData, target);
       target.userData.revivePendingUntil = 0;
       target.userData.reviveAt = 0;
       createGroundPulse(1.1, 0xffb3d7, target.position);
@@ -9389,12 +9415,13 @@ function animate() {
         target.userData.respawnAt = 0;
         target.position.copy(target.userData.deadPosition);
         target.visible = true;
+        grantBetaRespawnProtection(target.userData, target);
         if (target.userData.healthBar) updateGoldRushHealthBar(target.userData.healthBar, target.userData.health, target.userData.maxHealth);
       }
       continue;
     }
     if (target.visible && target.userData.health > 0) target.userData.respawnAt = 0;
-    if (target.visible && target.userData.poisonUntil > clock.elapsedTime && clock.elapsedTime >= (target.userData.poisonNextTick ?? 0)) {
+    if (target.visible && clock.elapsedTime >= (target.userData.invulnerableUntil ?? 0) && target.userData.poisonUntil > clock.elapsedTime && clock.elapsedTime >= (target.userData.poisonNextTick ?? 0)) {
       const poisonDamage = target.userData.poisonDamage ?? 180;
       target.userData.health = Math.max(0, target.userData.health - poisonDamage);
       target.userData.poisonNextTick = clock.elapsedTime + 1;
