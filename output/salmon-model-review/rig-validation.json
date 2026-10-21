@@ -1,0 +1,113 @@
+{
+  "bones": 17,
+  "mesh_objects": 23,
+  "weight_sum_min": 0.9999999999999998,
+  "weight_sum_max": 1.0000000000000002,
+  "walk": "Salmon_Walk_InPlace",
+  "frames": [
+    1,
+    25
+  ],
+  "fps": 24,
+  "source_color": "#FE7974",
+  "binding": "body: spatial two-bone weights; face/ornament: rigid head; neck: rigid neck",
+  "objects": {
+    "Salmon body (source repaired)": {
+      "vertices": 5141,
+      "rigid_bone": null
+    },
+    "Smooth neck join": {
+      "vertices": 610,
+      "rigid_bone": "neck"
+    },
+    "Salmon smooth round head": {
+      "vertices": 2498,
+      "rigid_bone": "head"
+    },
+    "Eye white": {
+      "vertices": 1082,
+      "rigid_bone": "head"
+    },
+    "Pupil": {
+      "vertices": 738,
+      "rigid_bone": "head"
+    },
+    "Eye highlight": {
+      "vertices": 178,
+      "rigid_bone": "head"
+    },
+    "Eyelash": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Eyelash.001": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Eyebrow": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Cheek dot": {
+      "vertices": 222,
+      "rigid_bone": "head"
+    },
+    "Cheek dot.001": {
+      "vertices": 222,
+      "rigid_bone": "head"
+    },
+    "Eye white.001": {
+      "vertices": 1082,
+      "rigid_bone": "head"
+    },
+    "Pupil.001": {
+      "vertices": 738,
+      "rigid_bone": "head"
+    },
+    "Eye highlight.001": {
+      "vertices": 178,
+      "rigid_bone": "head"
+    },
+    "Eyelash.002": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Eyelash.003": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Eyebrow.001": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Cheek dot.002": {
+      "vertices": 222,
+      "rigid_bone": "head"
+    },
+    "Cheek dot.003": {
+      "vertices": 222,
+      "rigid_bone": "head"
+    },
+    "Smile": {
+      "vertices": 250,
+      "rigid_bone": "head"
+    },
+    "Bobber upper": {
+      "vertices": 385,
+      "rigid_bone": "head"
+    },
+    "Bobber lower": {
+      "vertices": 385,
+      "rigid_bone": "head"
+    },
+    "Bobber blunt stem": {
+      "vertices": 222,
+      "rigid_bone": "head"
+    }
+  },
+  "limitations": [
+    "Custom simple rig, not Meshy auto-rig",
+    "Walk-in-place demonstration only; foot contact and complex combat poses not production validated",
+    "No playable Salmon combat implementation"
+  ]
+}

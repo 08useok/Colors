@@ -1,12 +1,20 @@
 {
   "result": {
-    "height": 2.6999999999999997,
+    "height": 2.7,
     "bottom": 1.85,
+    "animatedHeight": 2.704544308054729,
+    "skinned": 23,
+    "walkClip": "Salmon_Walk_InPlace",
     "meshes": 23,
     "bodyColor": "fe7974",
     "lobbyParent": true,
     "playable": false
   },
+  "animation": {
+    "vertexMoves": true,
+    "normalized": true
+  },
+  "boneMoves": true,
   "matchHidden": true,
   "returnVisible": true,
   "beta7Unchanged": true,

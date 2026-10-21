@@ -1,4 +1,4 @@
-import { createSalmonPreview } from "./visuals/salmon-preview.js?v=1";
+import { createSalmonPreview } from "./visuals/salmon-preview.js?v=2";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
@@ -8812,6 +8812,7 @@ function animate() {
   updateLavenderPractice(dt);
   halloweenDecor?.update(clock.elapsedTime);
   beta8LobbyRooms?.update(clock.elapsedTime);
+  salmonPreview?.update(dt);
   respawnShields.update(clock.elapsedTime);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];

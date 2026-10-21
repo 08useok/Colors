@@ -1,0 +1,22 @@
+[
+  {
+    "format": "fbx",
+    "bones": 17,
+    "skinned_meshes": 23,
+    "actions": [
+      "SalmonRig|Scene"
+    ],
+    "normalized_weights": true,
+    "animated_thigh": true
+  },
+  {
+    "format": "glb",
+    "bones": 17,
+    "skinned_meshes": 23,
+    "actions": [
+      "Salmon_Walk_InPlace"
+    ],
+    "normalized_weights": true,
+    "animated_thigh": true
+  }
+]
