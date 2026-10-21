@@ -1,3 +1,4 @@
+import { betaShowdownProfile, safeShowdownSpawn } from "./config/beta-showdown.js?v=1";
 import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
@@ -6,7 +7,7 @@ import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./vi
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
-import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=3";
+import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=4";
 import * as THREE from "three";
 const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
 const respawnShields = createRespawnShields();
@@ -266,6 +267,7 @@ const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 const IS_BETA7_TEST = BETA_SEASON_ID === "beta7";
 const IS_BETA8_TEST = BETA_SEASON_ID === "beta8";
+const showdownProfile = betaShowdownProfile(IS_BETA8_TEST);
 let knockoutMatch = null;
 document.getElementById("knockout-toggle").classList.toggle("hidden", !IS_BETA8_TEST);
 if (IS_BETA8_TEST) {
@@ -771,11 +773,15 @@ const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TES
 const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x69517b : IS_BETA7_TEST ? 0x9c7445 : IS_BETA6_TEST ? 0x55cfd0 : IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
 const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x31233e : IS_BETA7_TEST ? 0x4d3225 : IS_BETA6_TEST ? 0x176b8f : IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
 function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial, solid = true) {
+  const boundary = solid && (Math.abs(x) === 20 || Math.abs(z) === 20);
+  x *= showdownProfile.scale; z *= showdownProfile.scale;
+  width *= showdownProfile.scale; depth *= showdownProfile.scale;
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
   mesh.position.set(x, y, z);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   iceCreamShowdownMap.add(mesh);
+  mesh.userData.showdownBoundary = boundary;
   if (solid) applyBetaWallModel(mesh, width, height, depth, canvas);
   if (solid) showdownSolids.push({ x, z, halfW: width / 2, halfD: depth / 2, top: y + height / 2, mesh });
   return mesh;
@@ -785,7 +791,7 @@ for (let x = -4; x < 4; x += 1) {
     showdownBox(x * 5 + 2.5, 1.5, z * 5 + 2.5, 5, 0.12, 5, (x + z) % 2 ? asphaltTileMaterial : concreteTileMaterial, false);
   }
 }
-showdownSolids.push({ x: 0, z: 0, halfW: 20, halfD: 20, top: 1.56, mesh: iceCreamShowdownMap });
+showdownSolids.push({ x: 0, z: 0, halfW: showdownProfile.halfSize, halfD: showdownProfile.halfSize, top: 1.56, mesh: iceCreamShowdownMap });
 for (const [x, z, w, d] of [[0,-20,40,1], [0,20,40,1], [-20,0,1,40], [20,0,1,40], [-8,-7,7,2], [8,7,7,2], [-8,8,2,7], [8,-8,2,7], [0,0,5,2]]) {
   showdownBox(x, 2.55, z, w, 2, d);
 }
@@ -7082,7 +7088,7 @@ function startBeta6BotCombat() {
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
     allowRevives: goldRushState.mode !== "knockout",
     seed: Math.floor(Math.random() * 0x7fffffff),
-    bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? 19 : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
+    bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
     retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
     destination(actor, target) {
       if (goldRushState.mode === "chopWood") {
@@ -7377,7 +7383,12 @@ function createGoldRushBots() {
     const mesh = avatar.group;
     if (avatar.usesPlayerModel) playerModelCount += 1;
     const angle = (i / 9) * Math.PI * 2;
-    const spawn = new THREE.Vector3(Math.sin(angle) * 9, 0, Math.cos(angle) * 9);
+    const spawnRadius = goldRushState.mode === "showdown" ? showdownProfile.botSpawnRadius : 9;
+    const spawn = new THREE.Vector3(Math.sin(angle) * spawnRadius, 0, Math.cos(angle) * spawnRadius);
+    if (IS_BETA8_TEST && goldRushState.mode === "showdown") {
+      const point = safeShowdownSpawn(activeEventLayout, { x: spawn.x, z: spawn.z });
+      spawn.x = point.x; spawn.z = point.z;
+    }
     const ground = groundHeightAt(spawn.x, spawn.z);
     spawn.y = ground > -5 ? ground + 0.05 : 1.55;
     mesh.position.copy(spawn);
@@ -8173,7 +8184,7 @@ function prepareBetaEventMap(mode,plus) {
   const geometry=getArenaSolids();
   let record=eventArenaRecords.get(group);
   if(!record){
-    const half=mode==="chopWood" ? [15,30] : [20,20];
+    const half=mode==="chopWood" ? [15,30] : mode==="showdown" ? [showdownProfile.halfSize,showdownProfile.halfSize] : [20,20];
     const walls=geometry.filter(s=>s.top>2 && Math.abs(s.x)<half[0]-1 && Math.abs(s.z)<half[1]-1);
     geometry.filter(s=>s.top>2).forEach(s=>s.walkable=false);
     record={walls,bushes:group.children.filter(m=>m.userData.eventBaseBush),overlay:new THREE.Group()};
@@ -8189,7 +8200,9 @@ function prepareBetaEventMap(mode,plus) {
     : mode==="knockout" ? [[0,-15,2],[-6,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]
     : mode==="gemGrab" ? [[0,0,3],[-5,15,2],[5,15,2],[-6,-15,2],[0,-15,2],[6,-15,2],[0,15,2]]
     : [[0,15,2],[0,0,3],...Array.from({length:9},(_,i)=>[Math.sin(i*Math.PI*2/9)*9,Math.cos(i*Math.PI*2/9)*9,1.4])];
-  activeEventLayout=eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:20,reserved);
+  if(mode==="showdown")for(const point of reserved){point[0]*=showdownProfile.scale;point[1]*=showdownProfile.scale;}
+  activeEventLayout=eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
+  if(mode==="showdown")activeEventLayout.navigationStep=showdownProfile.navigationStep;
   const addWall=r=>{
     const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));
     m.userData.eventTerrain=true;m.position.set(r.x,2.86,r.z);m.castShadow=true;m.receiveShadow=true;record.overlay.add(m);
@@ -8210,6 +8223,7 @@ function prepareBetaEventMap(mode,plus) {
   // Include the original map walls in navigation without replacing their visuals.
   if(index===0 && mode!=="knockout")activeEventLayout.walls=record.walls.map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2}));
   if(index===0 && mode==="chopWood")activeEventLayout.bushes=[[-10,0],[10,0],[0,-10],[0,10]].map(([x,z])=>({x,z,width:2.4,depth:2.4}));
+  if(mode==="showdown" && IS_BETA8_TEST)activeEventLayout.walls.push(...geometry.filter(s=>s.mesh.userData.showdownBoundary).map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2})));
   canvas.dataset.eventMap=activeEventLayout.id;canvas.dataset.eventMapWalls=String(activeEventLayout.walls.length);canvas.dataset.eventMapBushes=String(activeEventLayout.bushes.length);
 }
 
@@ -8266,7 +8280,10 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   goldRushState.reloadTimer = 0;
   goldRushState.reloadDuration = BETA_CHARACTERS[betaState.selectedCharacter]?.reloadDuration || 0.5;
   canvas.dataset.goldRushDroppedGoldTotal = "0";
-  initialSpawnPoint.set(0, 1.7, mode === "chopWood" ? -28 : 15);
+  const playerSpawn = mode === "showdown" && IS_BETA8_TEST
+    ? safeShowdownSpawn(activeEventLayout, { x: 0, z: showdownProfile.playerSpawnZ })
+    : { x: 0, z: mode === "chopWood" ? -28 : 15 };
+  initialSpawnPoint.set(playerSpawn.x, 1.7, playerSpawn.z);
   resetPlayer();
   player.visible = true;
   playerGoldRushHealthBar.visible = true;

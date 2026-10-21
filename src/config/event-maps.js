@@ -74,7 +74,7 @@ const fields=new WeakMap();
 // Small navigation grid, cached per destination; objectives remain reachable around cover.
 export function navigateEventMap(layout,actor,target,radius=.65) {
   if(!target || clearSegment(layout,actor,target,radius))return target;
-  const step=1.5,cols=Math.floor(layout.halfWidth*2/step),rows=Math.floor(layout.halfDepth*2/step);
+  const step=layout.navigationStep ?? 1.5,cols=Math.floor(layout.halfWidth*2/step),rows=Math.floor(layout.halfDepth*2/step);
   const point=(c,r)=>({x:-layout.halfWidth+step/2+c*step,z:-layout.halfDepth+step/2+r*step});
   const cell=p=>[Math.max(0,Math.min(cols-1,Math.round((p.x+layout.halfWidth-step/2)/step))),Math.max(0,Math.min(rows-1,Math.round((p.z+layout.halfDepth-step/2)/step)))];
   const [tc,tr]=cell(target),key=`${tc}:${tr}:${radius}`;
