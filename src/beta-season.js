@@ -23,8 +23,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { applyBeta8Balance } from "./config/beta8-balance.js?v=6";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=32";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=7";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=33";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -5386,7 +5386,6 @@ function damagePurpleLeapArea(position, phase) {
       const before = target.userData.health;
       damageTarget(target, def.damage);
       if (target.userData.health < before && (IS_BETA7_TEST || IS_BETA8_TEST)) {
-        burstChargeHits.add(target);
         purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + 1);
       }
     }

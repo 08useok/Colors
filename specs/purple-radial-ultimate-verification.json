@@ -7,7 +7,8 @@
   "centerSpawn": true,
   "centralInstantDamage": true,
   "independentThornHits": true,
-  "chargePerTargetPerPhase": 1,
+  "centralChargePerTargetPerPhase": 1,
+  "firstThornChargePerTargetPerPhase": 1,
   "wallBlocking": true,
   "alliesSafe": true,
   "oldSeasonsUnchanged": true

@@ -92,7 +92,7 @@ export function createBeta6Combat(definitions, options = {}) {
     if (u.projectileCount) {
       const burstChargeHits = new Set();
       for (const b of actors) if (enemies(a, b) && distance(position, b) <= u.radius) {
-        if (hit(a, b, u.damage, true, 1, true) > 0) burstChargeHits.add(b.key);
+        hit(a, b, u.damage, true, 1, true);
       }
       for (let i = 0; i < u.projectileCount; i++) {
         shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.projectileRange ?? u.radius, u.projectileDamage,

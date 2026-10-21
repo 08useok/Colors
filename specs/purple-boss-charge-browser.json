@@ -1,0 +1,41 @@
+{
+  "report": [
+    {
+      "distance": 2,
+      "initial": {
+        "start": 0.46739999997615816,
+        "time": 0.46739999997615816,
+        "health": 113750,
+        "charge": 1,
+        "jumping": true,
+        "projectiles": 16
+      },
+      "afterThorns": {
+        "time": 1.3010000000000002,
+        "health": 112650,
+        "charge": 2,
+        "jumping": true,
+        "projectiles": 15
+      }
+    },
+    {
+      "distance": 6,
+      "initial": {
+        "start": 16.243600000023843,
+        "time": 16.243600000023843,
+        "health": 120000,
+        "charge": 0,
+        "jumping": true,
+        "projectiles": 16
+      },
+      "afterThorns": {
+        "time": 20.17329999995232,
+        "health": 118900,
+        "charge": 1,
+        "jumping": true,
+        "projectiles": 12
+      }
+    }
+  ],
+  "pageErrors": []
+}

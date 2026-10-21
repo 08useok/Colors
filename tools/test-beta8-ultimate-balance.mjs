@@ -35,7 +35,8 @@ for(const id of Object.keys(after)) {
   if(id==='lavender')close(basicAfter.damage,3300,'Lavender near-band damage');
   else close(basicAfter.damage,basicBefore.damage,id+' ordinary damage unchanged');
   const ultBefore=probe(before,id,true),ultAfter=probe(after,id,true);
-  if(id!=='chartreuse')close(ultAfter.charge,ultBefore.charge,id+' ultimate recharge unchanged');
+  if(id==='purple')close(ultAfter.charge,4,'Purple central and first-thorn charging are separate');
+  else if(id!=='chartreuse')close(ultAfter.charge,ultBefore.charge,id+' ultimate recharge unchanged');
   else close(ultAfter.charge,ultBefore.charge*.5,id+' focused basic still uses basic charging');
   assert.equal(ultAfter.required,ultBefore.required,id+' capacity unchanged');
   if(ultBefore.damage>0&&id!=='crystal'){

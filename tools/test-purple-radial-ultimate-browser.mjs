@@ -48,7 +48,7 @@ try{
  const visual=await page.evaluate(()=>__purpleQA.snapshot());assert.equal(visual.emitted,32);assert.equal(visual.phase,'landing');
  const second=await page.evaluate(()=>__purpleQA.practice(true));assert.equal(second.count,16);assert.deepEqual(second.health,[993750,1000000]);
  await page.waitForFunction(()=>!__purpleQA.snapshot().jumping&&__purpleQA.snapshot().count===0);
- const hits=await page.evaluate(()=>__purpleQA.snapshot());assert.deepEqual(hits.health,[992650,975050]);assert.equal(hits.charge,3);
+ const hits=await page.evaluate(()=>__purpleQA.snapshot());assert.deepEqual(hits.health,[992650,975050]);assert.equal(hits.charge,5);
  await page.locator('[data-lobby-room="graveyard"]').click();await page.keyboard.press('e');
  await page.waitForFunction(()=>document.getElementById('beta-canvas').dataset.beta6BotCharacters);
  await page.waitForFunction(()=>document.querySelector('#model-loading-screen').hidden,null,{timeout:120000});
