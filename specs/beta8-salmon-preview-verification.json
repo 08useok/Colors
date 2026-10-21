@@ -1,0 +1,14 @@
+{
+  "result": {
+    "height": 2.6999999999999997,
+    "bottom": 1.85,
+    "meshes": 23,
+    "bodyColor": "fe7974",
+    "lobbyParent": true,
+    "playable": false
+  },
+  "matchHidden": true,
+  "returnVisible": true,
+  "beta7Unchanged": true,
+  "pageErrors": []
+}

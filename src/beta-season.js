@@ -1,3 +1,4 @@
+import { createSalmonPreview } from "./visuals/salmon-preview.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
@@ -761,6 +762,7 @@ function createBeta7AncientRuinDecor() {
 createBeta7AncientRuinDecor();
 const halloweenDecor = IS_BETA8_TEST ? createHalloweenLobby(scene,map) : null;
 const beta8LobbyRooms = IS_BETA8_TEST ? createBeta8LobbyRooms(map, solids) : null;
+const salmonPreview = IS_BETA8_TEST ? createSalmonPreview(map, solids, modelLoading.manager, canvas) : null;
 
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
