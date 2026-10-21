@@ -87,6 +87,18 @@ export function createBeta6Combat(definitions, options = {}) {
       b.dodgeNext = time + (b.d.projectileDodgeCooldown ?? 0);
     }
   }
+  function purpleLeapBurst(a, position, phase) {
+    const u = a.u;
+    if (u.projectileCount) {
+      const burstHits = new Set();
+      for (let i = 0; i < u.projectileCount; i++) {
+        shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.radius, u.damage,
+          { kind: 'purpleThorn', ultimate: true, radius: u.projectileRadius, spawn: 0,
+            x: position.x, z: position.z, origin: { ...position }, burstHits });
+      }
+    } else area(a, position, u.radius, u.damage, true, 1, true);
+    emit('purpleLeap', { owner: a, phase, position });
+  }
   function after(delay, owner, run, ultimateField = false) { scheduled.push({ at: time + delay, owner, run, ultimateField }); }
   function ultimateFieldActive(a) {
     return scheduled.some(event => event.owner === a && event.ultimateField)
@@ -271,8 +283,7 @@ export function createBeta6Combat(definitions, options = {}) {
         };
         a.leap = { from, to, startedAt: time, duration: u.duration, jumpHeight: u.jumpHeight };
         a.lockUntil = time + u.duration;
-        area(a, from, u.radius, u.damage, true, 1, true);
-        emit('purpleLeap', { owner: a, phase: 'takeoff', position: from });
+        purpleLeapBurst(a, from, 'takeoff');
       }
       else if (a.id === 'mint') {
         const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
@@ -355,8 +366,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (progress >= 1) {
           a.leap = null;
           a.lockUntil = time;
-          area(a, leap.to, a.u.radius, a.u.damage, true, 1, true);
-          emit('purpleLeap', { owner: a, phase: 'landing', position: leap.to });
+          purpleLeapBurst(a, leap.to, 'landing');
         }
         a.vx = (a.x - previousX) / dt;
         a.vz = (a.z - previousZ) / dt;
@@ -452,7 +462,7 @@ export function createBeta6Combat(definitions, options = {}) {
         projectiles.splice(i, 1); continue;
       }
       if (!air && !hitWall) for (const b of actors) {
-        if (!alive(b) || !enemies(a, b) || p.hits.has(b.key)) continue;
+        if (!alive(b) || !enemies(a, b) || p.hits.has(b.key) || p.burstHits?.has(b.key)) continue;
         const touches = p.kind === 'wave' ? segmentDistance(b, before, p) <= .2 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2 : segmentDistance(b, before, p) <= .55 + p.radius;
         // A wave is a moving line segment, not a circular bullet.
         const waveTouches = p.kind === 'wave' && Math.abs((b.x - p.x) * Math.cos(p.yaw) + (b.z - p.z) * Math.sin(p.yaw)) <= advance + .15 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2;
@@ -470,6 +480,7 @@ export function createBeta6Combat(definitions, options = {}) {
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
         const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) : award, p.ultimate);
         if (dealt > 0) {
+          p.burstHits?.add(b.key);
           b.lastDamageKind = p.kind;
           if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
           if (p.kind === 'mint') ice(b, d.icePerHit);

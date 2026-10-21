@@ -1,0 +1,12 @@
+{
+  "countPerBurst": 16,
+  "totalPerLeap": 32,
+  "damagePerPhase": 6250,
+  "range": 3.5,
+  "noInstantAreaDamage": true,
+  "oneHitPerTargetPerPhase": true,
+  "chargePerTargetPerPhase": 1,
+  "wallBlocking": true,
+  "alliesSafe": true,
+  "oldSeasonsUnchanged": true
+}

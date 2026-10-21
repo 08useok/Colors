@@ -23,8 +23,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { applyBeta8Balance } from "./config/beta8-balance.js?v=3";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=29";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=4";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=30";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -5367,9 +5367,26 @@ function performCyanUltimate() {
   });
 }
 
-function damagePurpleLeapArea(position) {
+function damagePurpleLeapArea(position, phase) {
   const def = BETA_CHARACTERS.purple.ultimate;
   createGroundPulse(def.radius, 0xb13cff, position);
+  if (def.projectileCount) {
+    const burstHits = new Set();
+    for (let i = 0; i < def.projectileCount; i++) {
+      const yaw = player.rotation.y + i * Math.PI * 2 / def.projectileCount;
+      const mesh = createPurpleNeedleMesh();
+      mesh.rotation.order = "YXZ"; mesh.rotation.y = yaw;
+      mesh.position.copy(position); mesh.position.y += 1.25; scene.add(mesh);
+      betaProjectiles.push({ mesh, characterId: "purple", type: "purpleThorn",
+        vx: Math.sin(yaw) * def.projectileSpeed, vz: Math.cos(yaw) * def.projectileSpeed,
+        speed: def.projectileSpeed, range: def.radius, traveled: 0, damage: def.damage,
+        hitRadius: def.projectileRadius, hit: new Set(), burstHits, splash: 0, burstPhase: phase });
+    }
+    canvas.dataset.lastPurpleBurstCount = String(def.projectileCount);
+    canvas.dataset.purpleThornsFired = String(Number(canvas.dataset.purpleThornsFired || 0) + def.projectileCount);
+    canvas.dataset.lastPurpleLeap = phase;
+    return;
+  }
   createPinkNoteBurst(def.radius * 0.8, position);
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
@@ -5397,7 +5414,7 @@ function startPurpleLeap() {
     target.z = start.z + dz / distance * def.range;
   }
   target.y = Math.max(0, groundHeightAt(target.x, target.z)) + 0.05;
-  damagePurpleLeapArea(start);
+  damagePurpleLeapArea(start, "takeoff");
   purpleJumpState = { start, target, elapsed: 0, duration: def.duration, jumpHeight: def.jumpHeight };
   attackComboState.textContent = "독성 대도약";
 }
@@ -5412,7 +5429,7 @@ function updatePurpleLeap(dt) {
   player.position.y = THREE.MathUtils.lerp(jump.start.y, jump.target.y, t) + Math.sin(t * Math.PI) * jump.jumpHeight;
   if (t >= 1) {
     player.position.copy(jump.target);
-    damagePurpleLeapArea(jump.target);
+    damagePurpleLeapArea(jump.target, "landing");
     purpleJumpState = null;
   }
   return true;
@@ -7098,7 +7115,7 @@ function createBeta6ProjectileMesh(projectile, color) {
     return mesh;
   }
   if (kind === "electric") return orient(createYellowBoltMesh());
-  if (kind === "needle") return orient(createPurpleNeedleMesh());
+  if (kind === "needle" || kind === "purpleThorn") return orient(createPurpleNeedleMesh());
   if (kind === "vial") return createPurpleVialMesh();
   if (kind === "mint") return orient(createMintIceCreamMesh());
   if (kind === "orangePeel") {
@@ -8945,6 +8962,10 @@ function animate() {
       remove = true;
       shouldSplitOrange = projectile.type === "orangeFruit";
     }
+    if (projectile.type === "purpleThorn" && getArenaSolids().some(solid =>
+      solid.top >= projectile.mesh.position.y - projectile.hitRadius
+      && Math.abs(projectile.mesh.position.x - solid.x) <= solid.halfW + projectile.hitRadius
+      && Math.abs(projectile.mesh.position.z - solid.z) <= solid.halfD + projectile.hitRadius)) remove = true;
     updateBetaProjectileSpin(projectile.mesh, projectile.type, dt);
     if (projectile.type === "cyanUltimate") {
       projectile.mesh.material.opacity = 0.94 + Math.sin(projectile.traveled * 3) * 0.06;
@@ -8961,7 +8982,7 @@ function animate() {
     // 독병/아이스크림 투척류는 공중 경로에서 직접 충돌하지 않고 착지 시점에만 효과를 낸다.
     if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial" && projectile.type !== "mintSpecial") {
       for (const target of testTargets) {
-        if (!target.visible || target.userData.isAlly || projectile.hit.has(target) || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
+        if (!target.visible || target.userData.isAlly || projectile.hit.has(target) || projectile.burstHits?.has(target) || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
         const targetDz = target.position.z - projectile.mesh.position.z;
         if (projectile.goldStage) {
@@ -8995,6 +9016,7 @@ function animate() {
           continue;
         }
         projectile.hit.add(target);
+        projectile.burstHits?.add(target);
         if (projectile.type === "cyanUltimate") {
           target.userData.health -= projectile.damage;
           const directionLength = Math.hypot(projectile.vx, projectile.vz) || 1;
@@ -9025,6 +9047,11 @@ function animate() {
           }
           shouldSplitOrange = true;
           orangeDirectHitTarget = target;
+        }
+        if (projectile.type === "purpleThorn") {
+          const def = BETA_CHARACTERS.purple.ultimate;
+          purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + (def.rechargePerHit ?? 1));
+          if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
         }
         if (projectile.type === "orangePeel" && (IS_BETA7_TEST || IS_BETA8_TEST)) {
           orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + (BETA_CHARACTERS.orange.ultimate.rechargePerHit ?? 1));

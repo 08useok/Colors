@@ -1,0 +1,19 @@
+{
+  "practice": {
+    "count": 16,
+    "total": 32,
+    "health": [
+      993750,
+      993750
+    ],
+    "charge": 2
+  },
+  "battle": {
+    "cast": true,
+    "count": 16,
+    "cones": 16
+  },
+  "cleanupVisuals": 0,
+  "beta7Unchanged": true,
+  "pageErrors": []
+}
