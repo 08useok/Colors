@@ -17,7 +17,7 @@ practice(targets){
 },
 snapshot(){return{time:clock.elapsedTime,count:betaProjectiles.filter(p=>p.type==='purpleThorn').length,emitted:Number(canvas.dataset.purpleThornsFired||0),phase:canvas.dataset.lastPurpleLeap,charge:purpleUltimateCharge,jumping:!!purpleJumpState,health:testTargets.slice(0,2).map(t=>t.userData.health)};},
 capture(){const c=camera.clone();c.position.set(-34,16,7);c.lookAt(-40,6.5,0);renderer.render(scene,c);return renderer.domElement.toDataURL('image/png').split(',')[1];},
-battle(){const w=beta6Combat,a=beta6PlayerActor;a.charge=a.u.chargeRequired;const cast=w.cast(a,{x:a.x,z:a.z,hp:1},{point:{x:a.x,z:a.z}});updateBeta6BotCombat(0);const thorns=w.projectiles.filter(p=>p.kind==='purpleThorn');const centered=thorns.every(p=>p.x===p.origin.x&&p.z===p.origin.z);const tailAtCenter=thorns.every(p=>{const g=beta6CombatVisuals.get('p'+p.key)?.geometry;g?.computeBoundingBox();return Math.abs(g?.boundingBox?.min.y??1)<.00001;});return{cast,count:thorns.length,cones:thorns.filter(p=>beta6CombatVisuals.get('p'+p.key)?.geometry?.type==='ConeGeometry').length,centered,tailAtCenter,range:thorns[0]?.reach};},
+battle(){const w=beta6Combat,a=beta6PlayerActor;a.charge=a.u.chargeRequired;const cast=w.cast(a,{x:a.x,z:a.z,hp:1},{point:{x:a.x,z:a.z}});updateBeta6BotCombat(0);const thorns=w.projectiles.filter(p=>p.kind==='purpleThorn');const centered=thorns.every(p=>p.x===p.origin.x&&p.z===p.origin.z);const tailAtCenter=thorns.every(p=>{const g=beta6CombatVisuals.get('p'+p.key)?.geometry;g?.computeBoundingBox();return Math.abs(g?.boundingBox?.min.y??1)<.00001;});return{cast,count:thorns.length,cones:thorns.filter(p=>beta6CombatVisuals.get('p'+p.key)?.geometry?.type==='ConeGeometry').length,centered,tailAtCenter,range:thorns[0]?.reach,thornDamage:thorns[0]?.damage,centralDamage:a.u.damage};},
 finish(){endGoldRush('QA',false,null,true);return beta6CombatVisuals.size;},
 defs:BETA_CHARACTERS};`;
 const server=createServer((req,res)=>{
@@ -39,13 +39,13 @@ try{
  writeFileSync('specs/purple-radial-ultimate.png',Buffer.from(await page.evaluate(()=>__purpleQA.capture()),'base64'));
  await page.waitForFunction(()=>!__purpleQA.snapshot().jumping&&__purpleQA.snapshot().count===0);
  const visual=await page.evaluate(()=>__purpleQA.snapshot());assert.equal(visual.emitted,32);assert.equal(visual.phase,'landing');
- const second=await page.evaluate(()=>__purpleQA.practice(true));assert.equal(second.count,16);assert.deepEqual(second.health,[1000000,1000000]);
+ const second=await page.evaluate(()=>__purpleQA.practice(true));assert.equal(second.count,16);assert.deepEqual(second.health,[993750,1000000]);
  await page.waitForFunction(()=>!__purpleQA.snapshot().jumping&&__purpleQA.snapshot().count===0);
- const hits=await page.evaluate(()=>__purpleQA.snapshot());assert.deepEqual(hits.health,[993750,987500]);assert.equal(hits.charge,3);
+ const hits=await page.evaluate(()=>__purpleQA.snapshot());assert.deepEqual(hits.health,[992650,975050]);assert.equal(hits.charge,3);
  await page.locator('[data-lobby-room="graveyard"]').click();await page.keyboard.press('e');
  await page.waitForFunction(()=>document.getElementById('beta-canvas').dataset.beta6BotCharacters);
  await page.waitForFunction(()=>document.querySelector('#model-loading-screen').hidden,null,{timeout:120000});
- const battle=await page.evaluate(()=>__purpleQA.battle());assert(battle.cast);assert.equal(battle.count,16);assert.equal(battle.cones,16);assert(battle.centered);assert(battle.tailAtCenter);assert.equal(battle.range,10);
+ const battle=await page.evaluate(()=>__purpleQA.battle());assert(battle.cast);assert.equal(battle.count,16);assert.equal(battle.cones,16);assert(battle.centered);assert(battle.tailAtCenter);assert.equal(battle.range,10);assert.equal(battle.thornDamage,1100);assert.equal(battle.centralDamage,6250);
  const remaining=await page.evaluate(()=>__purpleQA.finish());assert.equal(remaining,0);
  await page.goto(base+'/beta-season.html?test=beta7',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__purpleQA,null,{timeout:90000});assert.equal(await page.evaluate(()=>__purpleQA.defs.purple.ultimate.projectileCount),undefined);
  assert.deepEqual(errors,[]);

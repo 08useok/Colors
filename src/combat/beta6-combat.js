@@ -90,11 +90,14 @@ export function createBeta6Combat(definitions, options = {}) {
   function purpleLeapBurst(a, position, phase) {
     const u = a.u;
     if (u.projectileCount) {
-      const burstHits = new Set();
+      const burstChargeHits = new Set();
+      for (const b of actors) if (enemies(a, b) && distance(position, b) <= u.radius) {
+        if (hit(a, b, u.damage, true, 1, true) > 0) burstChargeHits.add(b.key);
+      }
       for (let i = 0; i < u.projectileCount; i++) {
-        shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.projectileRange ?? u.radius, u.damage,
+        shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.projectileRange ?? u.radius, u.projectileDamage,
           { kind: 'purpleThorn', ultimate: true, radius: u.projectileRadius, spawn: 0,
-            x: position.x, z: position.z, origin: { ...position }, burstHits });
+            x: position.x, z: position.z, origin: { ...position }, burstChargeHits });
       }
     } else area(a, position, u.radius, u.damage, true, 1, true);
     emit('purpleLeap', { owner: a, phase, position });
@@ -462,7 +465,7 @@ export function createBeta6Combat(definitions, options = {}) {
         projectiles.splice(i, 1); continue;
       }
       if (!air && !hitWall) for (const b of actors) {
-        if (!alive(b) || !enemies(a, b) || p.hits.has(b.key) || p.burstHits?.has(b.key)) continue;
+        if (!alive(b) || !enemies(a, b) || p.hits.has(b.key)) continue;
         const touches = p.kind === 'wave' ? segmentDistance(b, before, p) <= .2 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2 : segmentDistance(b, before, p) <= .55 + p.radius;
         // A wave is a moving line segment, not a circular bullet.
         const waveTouches = p.kind === 'wave' && Math.abs((b.x - p.x) * Math.cos(p.yaw) + (b.z - p.z) * Math.sin(p.yaw)) <= advance + .15 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2;
@@ -478,9 +481,10 @@ export function createBeta6Combat(definitions, options = {}) {
           else { counts.set(key, count + 1); p.token.hits.add(key); }
         }
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
+        if (p.burstChargeHits?.has(b.key)) award = 0;
         const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) : award, p.ultimate);
         if (dealt > 0) {
-          p.burstHits?.add(b.key);
+          p.burstChargeHits?.add(b.key);
           b.lastDamageKind = p.kind;
           if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
           if (p.kind === 'mint') ice(b, d.icePerHit);

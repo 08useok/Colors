@@ -23,8 +23,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { applyBeta8Balance } from "./config/beta8-balance.js?v=5";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=31";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=6";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=32";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -5377,8 +5377,22 @@ function performCyanUltimate() {
 function damagePurpleLeapArea(position, phase) {
   const def = BETA_CHARACTERS.purple.ultimate;
   createGroundPulse(def.projectileCount ? 0.55 : def.radius, 0xb13cff, position);
+  const burstChargeHits = new Set();
+  // Central instant damage is separate from every travelling thorn.
+  for (const target of testTargets) {
+    if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)
+      || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
+    if (Math.hypot(target.position.x - position.x, target.position.z - position.z) <= def.radius) {
+      const before = target.userData.health;
+      damageTarget(target, def.damage);
+      if (target.userData.health < before && (IS_BETA7_TEST || IS_BETA8_TEST)) {
+        burstChargeHits.add(target);
+        purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + 1);
+      }
+    }
+  }
+  if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
   if (def.projectileCount) {
-    const burstHits = new Set();
     for (let i = 0; i < def.projectileCount; i++) {
       const yaw = player.rotation.y + i * Math.PI * 2 / def.projectileCount;
       const mesh = createPurpleThornMesh();
@@ -5386,8 +5400,8 @@ function damagePurpleLeapArea(position, phase) {
       mesh.position.copy(position); mesh.position.y += 1.25; scene.add(mesh);
       betaProjectiles.push({ mesh, characterId: "purple", type: "purpleThorn",
         vx: Math.sin(yaw) * def.projectileSpeed, vz: Math.cos(yaw) * def.projectileSpeed,
-        speed: def.projectileSpeed, range: def.projectileRange ?? def.radius, traveled: 0, damage: def.damage,
-        hitRadius: def.projectileRadius, hit: new Set(), burstHits, splash: 0, burstPhase: phase });
+        speed: def.projectileSpeed, range: def.projectileRange ?? def.radius, traveled: 0, damage: def.projectileDamage,
+        hitRadius: def.projectileRadius, hit: new Set(), burstChargeHits, splash: 0, burstPhase: phase });
     }
     canvas.dataset.lastPurpleBurstCount = String(def.projectileCount);
     canvas.dataset.purpleThornsFired = String(Number(canvas.dataset.purpleThornsFired || 0) + def.projectileCount);
@@ -5395,16 +5409,6 @@ function damagePurpleLeapArea(position, phase) {
     return;
   }
   createPinkNoteBurst(def.radius * 0.8, position);
-  for (const target of testTargets) {
-    if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
-    if (Math.hypot(target.position.x - position.x, target.position.z - position.z) <= def.radius) {
-      damageTarget(target, def.damage);
-      if (IS_BETA7_TEST || IS_BETA8_TEST) {
-        purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + 1);
-        if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
-      }
-    }
-  }
 }
 
 function startPurpleLeap() {
@@ -8992,7 +8996,7 @@ function animate() {
     // 독병/아이스크림 투척류는 공중 경로에서 직접 충돌하지 않고 착지 시점에만 효과를 낸다.
     if (!remove && projectile.type !== "ivoryIceCream" && projectile.type !== "vial" && projectile.type !== "mintSpecial") {
       for (const target of testTargets) {
-        if (!target.visible || target.userData.isAlly || projectile.hit.has(target) || projectile.burstHits?.has(target) || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
+        if (!target.visible || target.userData.isAlly || projectile.hit.has(target) || clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) continue;
         const targetDx = target.position.x - projectile.mesh.position.x;
         const targetDz = target.position.z - projectile.mesh.position.z;
         if (projectile.goldStage) {
@@ -9026,7 +9030,6 @@ function animate() {
           continue;
         }
         projectile.hit.add(target);
-        projectile.burstHits?.add(target);
         if (projectile.type === "cyanUltimate") {
           target.userData.health -= projectile.damage;
           const directionLength = Math.hypot(projectile.vx, projectile.vz) || 1;
@@ -9058,7 +9061,8 @@ function animate() {
           shouldSplitOrange = true;
           orangeDirectHitTarget = target;
         }
-        if (projectile.type === "purpleThorn") {
+        if (projectile.type === "purpleThorn" && !projectile.burstChargeHits.has(target)) {
+          projectile.burstChargeHits.add(target);
           const def = BETA_CHARACTERS.purple.ultimate;
           purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + (def.rechargePerHit ?? 1));
           if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();

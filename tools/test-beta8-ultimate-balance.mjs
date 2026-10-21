@@ -40,7 +40,7 @@ for(const id of Object.keys(after)) {
   assert.equal(ultAfter.required,ultBefore.required,id+' capacity unchanged');
   if(ultBefore.damage>0&&id!=='crystal'){
     // Mint's 450 per tick rounds to 563; all other authored damage stays exact.
-    const expected=id==='mint'?ultBefore.damage/450*563:ultBefore.damage*1.25;
+    const expected=id==='purple'?after.purple.ultimate.damage*2+after.purple.ultimate.projectileDamage*17:id==='mint'?ultBefore.damage/450*563:ultBefore.damage*1.25;
     close(ultAfter.damage,expected,id+' ultimate damage increased');
   }else close(ultAfter.damage,ultBefore.damage,id+' nondamage/execute unchanged');
   report.push({id,basicChargeBefore:basicBefore.charge,basicChargeAfter:basicAfter.charge,ultimateDamageBefore:ultBefore.damage,ultimateDamageAfter:ultAfter.damage,ultimateRechargeBefore:ultBefore.charge,ultimateRechargeAfter:ultAfter.charge});

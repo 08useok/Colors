@@ -40,9 +40,9 @@ export function applyBeta8Balance(source) {
   ];
   result.lavender.basicAttack.description = '전방 9타일·60도 범위에 향수를 분사합니다. 가까울수록 틱 간격이 0.25초, 지속시간이 0.75초까지 짧아지고, 최대 사거리에서는 0.5초 간격·1.5초 지속입니다. 첫 적중 거리로 간격과 지속시간을 정하며 최대 3회 적중합니다. 틱 피해는 근거리 0~3타일 1100, 중거리 3타일 초과~6타일 1375, 원거리 6타일 초과~9타일 1650으로 고정되며, 적중당 궁극기를 0.5칸 충전합니다.';
   result.lavender.basicAttack.descriptionEn = 'Sprays perfume in a 9-tile, 60-degree fan. Nearby mist lasts 0.75 seconds and ticks every 0.25 seconds; at maximum range it lasts 1.5 seconds and ticks every 0.5 seconds. Timing is fixed at first contact, with up to three hits. Each hit deals fixed damage by current distance band: 1100 at 0–3 tiles, 1375 at over 3–6 tiles, and 1650 at over 6–9 tiles and grants 0.5 ultimate charge.';
-  Object.assign(result.purple.ultimate, { projectileCount: 16, projectileSpeed: 14, projectileRadius: 0.14, projectileRange: 10 });
+  Object.assign(result.purple.ultimate, { projectileCount: 16, projectileSpeed: 14, projectileRadius: 0.14, projectileRange: 10, projectileDamage: 1100 });
   const purple = result.purple.ultimate;
-  purple.description = `도약 이륙·착지 시 각각 가시 ${purple.projectileCount}발을 사방으로 발사합니다. 중앙에서 시작해 사거리 ${purple.projectileRange}타일, 같은 적은 각 발사에서 한 번만 ${purple.damage} 피해를 받습니다. 기존 원형 즉시 피해를 가시 명중으로 대체합니다.`;
-  purple.descriptionEn = `Fires ${purple.projectileCount} radial thorns on takeoff and landing. Starts at the center. Range: ${purple.projectileRange} tiles. Each enemy can take ${purple.damage} damage once per burst. Thorns replace the instant area hit.`;
+  purple.description = `도약 이륙·착지 때 반경 ${purple.radius}타일에 즉시 ${purple.damage} 피해를 주고, 중앙에서 가시 ${purple.projectileCount}발을 사방으로 발사합니다. 가시는 사거리 ${purple.projectileRange}타일, 한 발당 ${purple.projectileDamage} 피해이며 여러 발이 각각 적중할 수 있습니다. 궁 충전은 같은 적에게 발사 단계당 1회입니다.`;
+  purple.descriptionEn = `On takeoff and landing, instantly deals ${purple.damage} damage within ${purple.radius} tiles and fires ${purple.projectileCount} thorns from the center. Each thorn deals ${purple.projectileDamage} damage with ${purple.projectileRange}-tile range; multiple thorns can hit. Ultimate charge is awarded once per enemy per phase.`;
   return result;
 }

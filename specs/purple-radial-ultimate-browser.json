@@ -5,8 +5,8 @@
     "range": 10,
     "centerSpawn": true,
     "health": [
-      993750,
-      987500
+      992650,
+      975050
     ],
     "charge": 3
   },
@@ -16,7 +16,9 @@
     "cones": 16,
     "centered": true,
     "tailAtCenter": true,
-    "range": 10
+    "range": 10,
+    "thornDamage": 1100,
+    "centralDamage": 6250
   },
   "cleanupVisuals": 0,
   "beta7Unchanged": true,
