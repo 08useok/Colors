@@ -9,5 +9,5 @@
   "bones": 17,
   "feet_static": true,
   "loop_seam_equal": true,
-  "changes": "Small spine/head sway and relaxed arm movement; no locomotion or translation"
+  "changes": "Visible breathing, head turns and relaxed arm sway; feet remain stationary"
 }

@@ -1,8 +1,9 @@
 {
+  "realtimePlayback": true,
   "result": {
     "height": 2.7,
     "bottom": 1.85,
-    "animatedHeight": 2.7002005532978313,
+    "animatedHeight": 2.714444494677309,
     "skinned": 23,
     "idleClip": "Salmon_Idle",
     "meshes": 23,

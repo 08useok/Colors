@@ -21,7 +21,7 @@ export function createSalmonPreview(map, solids, manager, canvas) {
   sign.position.set(0, 3.9, 0); root.add(sign);
   caption('살몬 · 모델 준비 중'); canvas.dataset.salmonModel = 'loading';
   let motion = null;
-  const ready = new GLTFLoader(manager).loadAsync('./assets/3d/salmon/normal/salmon-preview.glb?v=3').then(({ scene: model, animations }) => {
+  const ready = new GLTFLoader(manager).loadAsync('./assets/3d/salmon/normal/salmon-preview.glb?v=4').then(({ scene: model, animations }) => {
     // GLB already supplies Y-up coordinates and its original-color materials.
     const bounds = new THREE.Box3().setFromObject(model, true);
     const size = bounds.getSize(new THREE.Vector3()), center = bounds.getCenter(new THREE.Vector3());

@@ -21,6 +21,10 @@ try{
  const load=async suffix=>{await page.goto(base+'/beta-season.html'+suffix,{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__salmonQA,null,{timeout:90000});await page.waitForFunction(()=>document.querySelector('#model-loading-screen').hidden,null,{timeout:120000});};
  await load('');
  await page.waitForFunction(()=>document.querySelector('#beta-canvas').dataset.salmonModel==='ready');
+ // Verify automatic frame-loop playback before any manual mixer manipulation.
+ const initialPose=await page.evaluate(async()=>{const q=__salmonQA,m=await q.salmonPreview.ready;let head;m.traverse(o=>{if(o.isBone&&o.name==='head')head=o;});return {time:q.salmonPreview.mixer.time,rotation:head.quaternion.toArray()};});
+ await page.waitForFunction(initial=>{const q=__salmonQA;let head;q.salmonPreview.root.traverse(o=>{if(o.isBone&&o.name==='head')head=o;});return q.salmonPreview.mixer.time>initial.time+.15&&head.quaternion.toArray().some((v,i)=>Math.abs(v-initial.rotation[i])>.004);},initialPose,{timeout:30000});
+ const realtimePlayback=true;
  const result=await page.evaluate(async()=>{
    const q=__salmonQA,model=await q.salmonPreview.ready;
    // Import the same Three module as the game for precise world bounds.
@@ -55,6 +59,6 @@ try{
  assert(await page.evaluate(()=>__salmonQA.salmonPreview.root.parent.visible));
  await load('?test=beta7');assert.equal(await page.evaluate(()=>__salmonQA.salmonPreview),null);
  assert.deepEqual(errors,[]);
- writeFileSync('specs/beta8-salmon-preview-verification.json',JSON.stringify({result,animation,boneMoves:moves,transitions,matchHidden:true,returnVisible:true,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
+ writeFileSync('specs/beta8-salmon-preview-verification.json',JSON.stringify({realtimePlayback,result,animation,boneMoves:moves,transitions,matchHidden:true,returnVisible:true,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
  console.log('PASS: Salmon GLB, bounds, original color, rigged preview and vertex animation, match hide/return, beta7 unchanged');
 }finally{await browser?.close();server.closeAllConnections();await new Promise(done=>server.close(done));}

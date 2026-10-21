@@ -1,4 +1,4 @@
-import { createSalmonPreview } from "./visuals/salmon-preview.js?v=3";
+import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
