@@ -32,7 +32,8 @@ const report=[];
 for(const id of Object.keys(after)) {
   const basicBefore=probe(before,id),basicAfter=probe(after,id);
   close(basicAfter.charge,basicBefore.charge*.5,id+' basic charge halved');
-  close(basicAfter.damage,basicBefore.damage,id+' ordinary damage unchanged');
+  if(id==='lavender')close(basicAfter.damage,3300,'Lavender near-band damage');
+  else close(basicAfter.damage,basicBefore.damage,id+' ordinary damage unchanged');
   const ultBefore=probe(before,id,true),ultAfter=probe(after,id,true);
   if(id!=='chartreuse')close(ultAfter.charge,ultBefore.charge,id+' ultimate recharge unchanged');
   else close(ultAfter.charge,ultBefore.charge*.5,id+' focused basic still uses basic charging');

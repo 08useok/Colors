@@ -1,0 +1,68 @@
+{
+  "report": [
+    {
+      "distance": 0,
+      "perTick": 1100,
+      "total": 3300,
+      "hits": 3
+    },
+    {
+      "distance": 1.5,
+      "perTick": 1100,
+      "total": 3300,
+      "hits": 3
+    },
+    {
+      "distance": 2.999,
+      "perTick": 1100,
+      "total": 3300,
+      "hits": 3
+    },
+    {
+      "distance": 3,
+      "perTick": 1100,
+      "total": 3300,
+      "hits": 3
+    },
+    {
+      "distance": 3.001,
+      "perTick": 1375,
+      "total": 4125,
+      "hits": 3
+    },
+    {
+      "distance": 4.5,
+      "perTick": 1375,
+      "total": 4125,
+      "hits": 3
+    },
+    {
+      "distance": 6,
+      "perTick": 1375,
+      "total": 4125,
+      "hits": 3
+    },
+    {
+      "distance": 6.001,
+      "perTick": 1650,
+      "total": 4950,
+      "hits": 3
+    },
+    {
+      "distance": 7.5,
+      "perTick": 1650,
+      "total": 4950,
+      "hits": 3
+    },
+    {
+      "distance": 9,
+      "perTick": 1650,
+      "total": 4950,
+      "hits": 3
+    }
+  ],
+  "outsideBlocked": true,
+  "perTickBandAndFixedOrigin": true,
+  "levelScaling": true,
+  "olderSeasonsUnchanged": true
+}

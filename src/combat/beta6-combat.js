@@ -516,7 +516,9 @@ export function createBeta6Combat(definitions, options = {}) {
           if (a.d.sprayCloseTickInterval != null && time + 1e-9 >= record.until) continue;
           const maxHits = Math.round(a.d.sprayDuration / zone.tickInterval);
           if (record.count < maxHits && time + 1e-9 >= record.nextAt) {
-            const damage = zone.damage * (1 + (a.d.sprayDistanceDamageBonus ?? 0) * clamp(length / zone.radius, 0, 1));
+            const band = a.d.sprayDamageBands?.find(entry => length <= entry.maxRange);
+            const multiplier = band?.multiplier ?? (1 + (a.d.sprayDistanceDamageBonus ?? 0) * clamp(length / zone.radius, 0, 1));
+            const damage = zone.damage * multiplier;
             if (hit(a, b, damage, true) > 0) {
               record.count++;
               record.nextAt = time + record.interval;
