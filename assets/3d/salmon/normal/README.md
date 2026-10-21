@@ -6,3 +6,5 @@ Salmon_Walk_InPlace is an original 1-second looping walk demonstration.
 The previous T-pose GLB was replaced with the rigged GLB. No combat implementation is included.
 Source FBX, GLB and Blender scene: output/salmon-model-review/salmon-rigged.zip.
 Basic rig trial; foot planting and combat poses are not production validated.
+
+Current model also contains Salmon_Idle, a three-second gentle loop. The beta exhibit plays idle by default; a separate movement-state controller can select the existing walk. Source files: output/salmon-model-review/salmon-idle.zip.

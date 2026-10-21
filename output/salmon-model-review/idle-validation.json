@@ -1,0 +1,13 @@
+{
+  "clip": "Salmon_Idle",
+  "duration_seconds": 3,
+  "fps": 24,
+  "frames": [
+    1,
+    73
+  ],
+  "bones": 17,
+  "feet_static": true,
+  "loop_seam_equal": true,
+  "changes": "Small spine/head sway and relaxed arm movement; no locomotion or translation"
+}

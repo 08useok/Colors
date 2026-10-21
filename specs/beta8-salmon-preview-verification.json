@@ -2,9 +2,9 @@
   "result": {
     "height": 2.7,
     "bottom": 1.85,
-    "animatedHeight": 2.704544308054729,
+    "animatedHeight": 2.7002005532978313,
     "skinned": 23,
-    "walkClip": "Salmon_Walk_InPlace",
+    "idleClip": "Salmon_Idle",
     "meshes": 23,
     "bodyColor": "fe7974",
     "lobbyParent": true,
@@ -15,6 +15,11 @@
     "normalized": true
   },
   "boneMoves": true,
+  "transitions": [
+    "idle",
+    "walk",
+    "idle"
+  ],
   "matchHidden": true,
   "returnVisible": true,
   "beta7Unchanged": true,

@@ -27,10 +27,10 @@ try{
    const THREE=await import('three');
    const b=new THREE.Box3().setFromObject(model,true),meshes=[];
    model.traverse(o=>{if(o.isMesh)meshes.push(o);});
-   return {height:model.userData.bindHeight,bottom:model.userData.bindBottom,animatedHeight:b.max.y-b.min.y,skinned:meshes.filter(m=>m.isSkinnedMesh).length,walkClip:model.userData.walkClip,meshes:meshes.length,bodyColor:meshes.find(m=>m.material.name==='Salmon coral').material.color.getHexString(),lobbyParent:q.salmonPreview.root.parent===q.map,playable:q.CHARACTERS.some(c=>c.id==='salmon')};
+   return {height:model.userData.bindHeight,bottom:model.userData.bindBottom,animatedHeight:b.max.y-b.min.y,skinned:meshes.filter(m=>m.isSkinnedMesh).length,idleClip:model.userData.idleClip,meshes:meshes.length,bodyColor:meshes.find(m=>m.material.name==='Salmon coral').material.color.getHexString(),lobbyParent:q.salmonPreview.root.parent===q.map,playable:q.CHARACTERS.some(c=>c.id==='salmon')};
  });
  assert(Math.abs(result.height-2.7)<.001);assert(Math.abs(result.bottom-1.85)<.001);
- assert.equal(result.meshes,23);assert.equal(result.skinned,23);assert(result.walkClip.includes('Salmon_Walk_InPlace'));assert(result.animatedHeight<3.5);assert.equal(result.bodyColor,'fe7974');assert(result.lobbyParent);assert(!result.playable);
+ assert.equal(result.meshes,23);assert.equal(result.skinned,23);assert(result.idleClip.includes('Salmon_Idle'));assert(result.animatedHeight<3.5);assert.equal(result.bodyColor,'fe7974');assert(result.lobbyParent);assert(!result.playable);
  const animation=await page.evaluate(async()=>{
    const q=__salmonQA,model=await q.salmonPreview.ready,mesh=model.getObjectByName('Salmon_body_source_repaired') || (()=>{let best=null;model.traverse(o=>{if(o.isSkinnedMesh&&(!best||o.geometry.attributes.position.count>best.geometry.attributes.position.count))best=o;});return best;})();
    const THREE=await import('three');const positions=[];
@@ -41,8 +41,10 @@ try{
  });
  assert(animation.normalized);assert(animation.vertexMoves);
  // Probe a moving body bone as the first mesh can be a rigid head detail.
- const moves=await page.evaluate(async()=>{const q=__salmonQA,m=await q.salmonPreview.ready,b=m.getObjectByName('thighL')||m.getObjectByName('thigh_L');const bones=[];m.traverse(o=>{if(o.isBone)bones.push(o);});const thigh=b||bones.find(o=>o.name.toLowerCase().includes('thigh'));q.salmonPreview.mixer.setTime(.1);const a=thigh.quaternion.toArray();q.salmonPreview.mixer.setTime(.4);return a.some((v,i)=>Math.abs(v-thigh.quaternion.toArray()[i])>.00001);});
+ const moves=await page.evaluate(async()=>{const q=__salmonQA,m=await q.salmonPreview.ready,b=m.getObjectByName('spine');const bones=[];m.traverse(o=>{if(o.isBone)bones.push(o);});const thigh=b||bones.find(o=>o.name.toLowerCase().includes('spine'));q.salmonPreview.mixer.setTime(.1);const a=thigh.quaternion.toArray();q.salmonPreview.mixer.setTime(.4);return a.some((v,i)=>Math.abs(v-thigh.quaternion.toArray()[i])>.00001);});
  assert(moves);
+ const transitions=await page.evaluate(()=>{const m=__salmonQA.salmonPreview.motion;const states=[];for(const moving of [false,true,false]){m.update(.2,moving);states.push(m.current);}return states;});
+ assert.deepEqual(transitions,['idle','walk','idle']);
  // Capture a close view without fighting the game's camera update loop.
  const image=await page.evaluate(()=>{const q=__salmonQA,c=q.camera.clone();c.position.set(-4,4.2,6);c.lookAt(-4,3.5,-2);q.renderer.render(q.scene,c);return q.renderer.domElement.toDataURL('image/png').split(',')[1];});
  writeFileSync('specs/beta8-salmon-preview.png',Buffer.from(image,'base64'));
@@ -53,6 +55,6 @@ try{
  assert(await page.evaluate(()=>__salmonQA.salmonPreview.root.parent.visible));
  await load('?test=beta7');assert.equal(await page.evaluate(()=>__salmonQA.salmonPreview),null);
  assert.deepEqual(errors,[]);
- writeFileSync('specs/beta8-salmon-preview-verification.json',JSON.stringify({result,animation,boneMoves:moves,matchHidden:true,returnVisible:true,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
+ writeFileSync('specs/beta8-salmon-preview-verification.json',JSON.stringify({result,animation,boneMoves:moves,transitions,matchHidden:true,returnVisible:true,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
  console.log('PASS: Salmon GLB, bounds, original color, rigged preview and vertex animation, match hide/return, beta7 unchanged');
 }finally{await browser?.close();server.closeAllConnections();await new Promise(done=>server.close(done));}
