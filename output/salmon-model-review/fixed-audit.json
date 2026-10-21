@@ -2,6 +2,8 @@
   "source_triangles": 30810,
   "fixed_triangles": 31499,
   "rigged": false,
+  "body_color_srgb_hex": "#FE7974",
+  "body_color_source": "Most frequent original base-color texture pixel; converted from sRGB to linear",
   "head_fit": {
     "center": [
       -0.0001815820165636171,

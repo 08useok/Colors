@@ -5,7 +5,9 @@
     "triangles": 31499,
     "materials": 7,
     "rigged": false,
-    "bytes": 867708,
+    "body_color_srgb_hex": "#FE7974",
+    "body_color_verified": true,
+    "bytes": 867884,
     "passed": true
   },
   {
@@ -14,7 +16,9 @@
     "triangles": 31498,
     "materials": 7,
     "rigged": false,
-    "bytes": 841288,
+    "body_color_srgb_hex": "#FE7974",
+    "body_color_verified": true,
+    "bytes": 841292,
     "passed": true
   }
 ]

@@ -19,3 +19,7 @@
 [수정본 ZIP](../output/salmon-model-review/salmon-fixed.zip) · [정면](../output/salmon-model-review/fixed-front.png) · [측면](../output/salmon-model-review/fixed-angle.png) · [재수입 검증](../output/salmon-model-review/export-validation.json)
 
 재현 도구는 tools/inspect-salmon-model.py, repair-salmon-model.py, build-salmon-repair.py, validate-salmon-repair.py입니다. 원본 ZIP을 output/salmon-model-review/source/에 풀어 Blender 5.1.2에서 실행합니다. 원본·중간 비교 파일은 커밋하지 않습니다.
+
+## 2026-10-21 색감 수정
+
+원본 텍스처의 최빈 살몬색 sRGB #FE7974를 몸체·머리·목의 단색 재질에 적용했습니다. Blender의 선형 색 공간으로 변환한 값을 FBX·GLB 재수입 후 검증했습니다. 형상은 유지하며 원본 텍스처의 세부 색 변화까지 복원한 것은 아닙니다. 동일한 조명으로 미리보기를 갱신했습니다.

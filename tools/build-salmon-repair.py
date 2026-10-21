@@ -26,7 +26,11 @@ def material(name,color,roughness=.65):
     p.inputs['Roughness'].default_value=roughness;p.inputs['Metallic'].default_value=0
     return m
 
-coral=material('Salmon coral',(.96,.28,.23))
+# Source base-color texture dominant salmon pixel: sRGB #FE7974.
+# Blender node colors are linear, so convert rather than entering sRGB directly.
+source_coral_srgb=(254/255,121/255,116/255)
+def srgb_to_linear(v):return v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4
+coral=material('Salmon coral',tuple(srgb_to_linear(v) for v in source_coral_srgb))
 white=material('Eye white',(.96,.96,.93),.4)
 black=material('Eye pupil',(.012,.009,.012),.25)
 line=material('Face features',(.055,.018,.018),.6)
@@ -121,7 +125,7 @@ fixed=out/'fixed';fixed.mkdir(exist_ok=True)
 before=(xyz.min(axis=0).tolist(),xyz.max(axis=0).tolist())
 afterxyz=[o.matrix_world@v.co for o in meshes for v in o.data.vertices]
 after=([min(p[i] for p in afterxyz) for i in range(3)],[max(p[i] for p in afterxyz) for i in range(3)])
-(out/'fixed-audit.json').write_text(json.dumps({'source_triangles':30810,'fixed_triangles':triangles,'rigged':False,'head_fit':{'center':center.tolist(),'radius':radius},'source_bounds':before,'fixed_bounds':after,'changes':['Source body retained and gently smoothed','Head and face rebuilt as clean geometry','Single float ornament rebuilt','Procedural flat colors; noisy generated normal/metallic/roughness maps excluded']},indent=2),encoding='utf-8')
+(out/'fixed-audit.json').write_text(json.dumps({'source_triangles':30810,'fixed_triangles':triangles,'rigged':False,'body_color_srgb_hex':'#FE7974','body_color_source':'Most frequent original base-color texture pixel; converted from sRGB to linear','head_fit':{'center':center.tolist(),'radius':radius},'source_bounds':before,'fixed_bounds':after,'changes':['Source body retained and gently smoothed','Head and face rebuilt as clean geometry','Single float ornament rebuilt','Procedural flat colors; noisy generated normal/metallic/roughness maps excluded']},indent=2),encoding='utf-8')
 bpy.ops.export_scene.fbx(filepath=str(fixed/'salmon-fixed.fbx'),use_selection=True,object_types={'MESH'},add_leaf_bones=False,bake_anim=False,path_mode='AUTO')
 bpy.ops.export_scene.gltf(filepath=str(fixed/'salmon-fixed.glb'),export_format='GLB',use_selection=True,export_animations=False)
 
