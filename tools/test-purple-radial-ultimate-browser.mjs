@@ -16,6 +16,7 @@ practice(targets){
  updateCrimsonUltimateGauge();const start=clock.elapsedTime;ultimateButton.click();const thorns=betaProjectiles.filter(p=>p.type==='purpleThorn');return{start,centerSpawn:thorns.every(p=>p.mesh.position.x===player.position.x&&p.mesh.position.z===player.position.z),range:thorns[0]?.range,...this.snapshot()};
 },
 snapshot(){return{time:clock.elapsedTime,count:betaProjectiles.filter(p=>p.type==='purpleThorn').length,emitted:Number(canvas.dataset.purpleThornsFired||0),phase:canvas.dataset.lastPurpleLeap,charge:purpleUltimateCharge,jumping:!!purpleJumpState,health:testTargets.slice(0,2).map(t=>t.userData.health)};},
+orientation(){return betaProjectiles.filter(p=>p.type==='purpleThorn').map(p=>{const forward=new THREE.Vector3(0,1,0).applyQuaternion(p.mesh.quaternion);const direction=new THREE.Vector3(p.vx,0,p.vz).normalize();return {rotation:p.mesh.quaternion.toArray(),alignmentError:1-forward.dot(direction)};});},
 capture(){const c=camera.clone();c.position.set(-34,16,7);c.lookAt(-40,6.5,0);renderer.render(scene,c);return renderer.domElement.toDataURL('image/png').split(',')[1];},
 battle(){const w=beta6Combat,a=beta6PlayerActor;a.charge=a.u.chargeRequired;const cast=w.cast(a,{x:a.x,z:a.z,hp:1},{point:{x:a.x,z:a.z}});updateBeta6BotCombat(0);const thorns=w.projectiles.filter(p=>p.kind==='purpleThorn');const centered=thorns.every(p=>p.x===p.origin.x&&p.z===p.origin.z);const tailAtCenter=thorns.every(p=>{const g=beta6CombatVisuals.get('p'+p.key)?.geometry;g?.computeBoundingBox();return Math.abs(g?.boundingBox?.min.y??1)<.00001;});return{cast,count:thorns.length,cones:thorns.filter(p=>beta6CombatVisuals.get('p'+p.key)?.geometry?.type==='ConeGeometry').length,centered,tailAtCenter,range:thorns[0]?.reach,thornDamage:thorns[0]?.damage,centralDamage:a.u.damage};},
 finish(){endGoldRush('QA',false,null,true);return beta6CombatVisuals.size;},
@@ -35,7 +36,13 @@ try{
  await page.evaluate(()=>__purpleQA.prepare());
  await page.waitForFunction(()=>document.querySelector('#model-loading-screen').hidden,null,{timeout:120000});
  const first=await page.evaluate(()=>__purpleQA.practice(false));assert.equal(first.count,16);assert(first.centerSpawn);assert.equal(first.range,10);
+ const startOrientation=await page.evaluate(()=>__purpleQA.orientation());
  await page.waitForFunction(t=>__purpleQA.snapshot().time>t+.08,first.start);
+ const endOrientation=await page.evaluate(()=>__purpleQA.orientation());
+ assert.equal(startOrientation.length,16);assert.equal(endOrientation.length,16);
+ assert.deepEqual(endOrientation.map(p=>p.rotation),startOrientation.map(p=>p.rotation),'Thorns must not spin in flight');
+ assert(endOrientation.every(p=>Math.abs(p.alignmentError)<1e-6),'Thorn tips point along their flight direction');
+ const noSpin=true;
  writeFileSync('specs/purple-radial-ultimate.png',Buffer.from(await page.evaluate(()=>__purpleQA.capture()),'base64'));
  await page.waitForFunction(()=>!__purpleQA.snapshot().jumping&&__purpleQA.snapshot().count===0);
  const visual=await page.evaluate(()=>__purpleQA.snapshot());assert.equal(visual.emitted,32);assert.equal(visual.phase,'landing');
@@ -49,6 +56,6 @@ try{
  const remaining=await page.evaluate(()=>__purpleQA.finish());assert.equal(remaining,0);
  await page.goto(base+'/beta-season.html?test=beta7',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__purpleQA,null,{timeout:90000});assert.equal(await page.evaluate(()=>__purpleQA.defs.purple.ultimate.projectileCount),undefined);
  assert.deepEqual(errors,[]);
- writeFileSync('specs/purple-radial-ultimate-browser.json',JSON.stringify({practice:{count:first.count,total:visual.emitted,range:first.range,centerSpawn:first.centerSpawn,health:hits.health,charge:hits.charge},battle,cleanupVisuals:remaining,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
+ writeFileSync('specs/purple-radial-ultimate-browser.json',JSON.stringify({noSpin,alignedWithFlight:true,practice:{count:first.count,total:visual.emitted,range:first.range,centerSpawn:first.centerSpawn,health:hits.health,charge:hits.charge},battle,cleanupVisuals:remaining,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
  console.log('PASS browser: 16+16 practice thorns, real hit/cap/recharge, 16 battle cone visuals, cleanup and beta7 isolation');
 }finally{await browser?.close();server.closeAllConnections();await new Promise(done=>server.close(done));}

@@ -1,4 +1,6 @@
 {
+  "noSpin": true,
+  "alignedWithFlight": true,
   "practice": {
     "count": 16,
     "total": 32,

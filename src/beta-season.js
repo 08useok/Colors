@@ -3353,7 +3353,7 @@ function updateBetaProjectileSpin(mesh, type, dt) {
     mesh.userData.visualSpin = ((mesh.userData.visualSpin ?? 0) + dt * 8) % (Math.PI * 2);
     mesh.quaternion.copy(camera.quaternion);
     mesh.rotateZ(mesh.userData.visualSpin);
-  } else if (!["cyanUltimate", "marble", "needle", "mintIceCream"].includes(type)) {
+  } else if (!["cyanUltimate", "marble", "needle", "purpleThorn", "mintIceCream"].includes(type)) {
     mesh.userData.spinBaseYaw ??= mesh.rotation.y;
     mesh.userData.visualSpin = ((mesh.userData.visualSpin ?? 0) + dt * 9) % (Math.PI * 2);
     mesh.rotation.y = mesh.userData.spinBaseYaw + mesh.userData.visualSpin;
