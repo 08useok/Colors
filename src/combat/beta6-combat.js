@@ -92,7 +92,7 @@ export function createBeta6Combat(definitions, options = {}) {
     if (u.projectileCount) {
       const burstHits = new Set();
       for (let i = 0; i < u.projectileCount; i++) {
-        shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.radius, u.damage,
+        shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.projectileRange ?? u.radius, u.damage,
           { kind: 'purpleThorn', ultimate: true, radius: u.projectileRadius, spawn: 0,
             x: position.x, z: position.z, origin: { ...position }, burstHits });
       }

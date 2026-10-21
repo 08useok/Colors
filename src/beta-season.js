@@ -23,8 +23,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { applyBeta8Balance } from "./config/beta8-balance.js?v=4";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=30";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=5";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=31";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -3275,6 +3275,13 @@ function createPurpleNeedleMesh() {
   return mesh;
 }
 
+// Ultimate thorns anchor their tail at the burst center, rather than straddling it.
+function createPurpleThornMesh() {
+  const mesh = createPurpleNeedleMesh();
+  mesh.geometry.translate(0, 0.39, 0);
+  return mesh;
+}
+
 // 퍼플 — 독병(플라스크) 실루엣: 몸통 + 목 + 마개
 function createPurpleVialMesh() {
   const group = new THREE.Group();
@@ -5369,17 +5376,17 @@ function performCyanUltimate() {
 
 function damagePurpleLeapArea(position, phase) {
   const def = BETA_CHARACTERS.purple.ultimate;
-  createGroundPulse(def.radius, 0xb13cff, position);
+  createGroundPulse(def.projectileCount ? 0.55 : def.radius, 0xb13cff, position);
   if (def.projectileCount) {
     const burstHits = new Set();
     for (let i = 0; i < def.projectileCount; i++) {
       const yaw = player.rotation.y + i * Math.PI * 2 / def.projectileCount;
-      const mesh = createPurpleNeedleMesh();
+      const mesh = createPurpleThornMesh();
       mesh.rotation.order = "YXZ"; mesh.rotation.y = yaw;
       mesh.position.copy(position); mesh.position.y += 1.25; scene.add(mesh);
       betaProjectiles.push({ mesh, characterId: "purple", type: "purpleThorn",
         vx: Math.sin(yaw) * def.projectileSpeed, vz: Math.cos(yaw) * def.projectileSpeed,
-        speed: def.projectileSpeed, range: def.radius, traveled: 0, damage: def.damage,
+        speed: def.projectileSpeed, range: def.projectileRange ?? def.radius, traveled: 0, damage: def.damage,
         hitRadius: def.projectileRadius, hit: new Set(), burstHits, splash: 0, burstPhase: phase });
     }
     canvas.dataset.lastPurpleBurstCount = String(def.projectileCount);
@@ -7048,7 +7055,7 @@ function processBeta6CombatEvent(event) {
       }
       if (event.type === "purpleLeap") {
         const position = new THREE.Vector3(event.position.x, groundHeightAt(event.position.x, event.position.z), event.position.z);
-        createGroundPulse(BETA_CHARACTERS.purple.ultimate.radius, 0xb13cff, position);
+        createGroundPulse(BETA_CHARACTERS.purple.ultimate.projectileCount ? 0.55 : BETA_CHARACTERS.purple.ultimate.radius, 0xb13cff, position);
         canvas.dataset.lastPurpleLeap = event.phase;
       }
       if (event.type === "circuit") {
@@ -7115,7 +7122,8 @@ function createBeta6ProjectileMesh(projectile, color) {
     return mesh;
   }
   if (kind === "electric") return orient(createYellowBoltMesh());
-  if (kind === "needle" || kind === "purpleThorn") return orient(createPurpleNeedleMesh());
+  if (kind === "needle") return orient(createPurpleNeedleMesh());
+  if (kind === "purpleThorn") return orient(createPurpleThornMesh());
   if (kind === "vial") return createPurpleVialMesh();
   if (kind === "mint") return orient(createMintIceCreamMesh());
   if (kind === "orangePeel") {
@@ -8925,10 +8933,12 @@ function animate() {
         projectile.vz = (returnZ / returnDistance) * returnSpeed;
       }
     }
-    const step = Math.hypot(projectile.vx, projectile.vz) * dt;
+    const travelDt = projectile.type === "purpleThorn"
+      ? Math.min(dt, Math.max(0, projectile.range - projectile.traveled) / Math.max(projectile.speed, 0.001)) : dt;
+    const step = Math.hypot(projectile.vx, projectile.vz) * travelDt;
     if (!remove && !projectile.ivoryLandedAt) {
-      projectile.mesh.position.x += projectile.vx * dt;
-      projectile.mesh.position.z += projectile.vz * dt;
+      projectile.mesh.position.x += projectile.vx * travelDt;
+      projectile.mesh.position.z += projectile.vz * travelDt;
       if (projectile.returned) projectile.returnTraveled += step;
       else projectile.traveled += step;
       // 독병/아이스크림 투척류는 던지는 무기 — 사거리 중간이 가장 높은 포물선을 그린다

@@ -11,13 +11,13 @@ prepare(){if(!betaState.ownedCharacters.includes('purple'))betaState.ownedCharac
 practice(targets){
  player.position.set(-40,6.25,0);player.rotation.y=0;
  for(const t of testTargets)t.visible=false;
- for(let i=0;i<2;i++){const t=testTargets[i];t.visible=targets;t.userData.isAlly=false;t.position.set(-40,6.25,i?8:1);t.userData.health=t.userData.maxHealth=1000000;}
+ for(let i=0;i<2;i++){const t=testTargets[i];t.visible=targets;t.userData.isAlly=false;t.position.set(-40,6.25,i?8:-3);t.userData.health=t.userData.maxHealth=1000000;}
  purpleUltimateAimPoint.set(-40,6.25,8);purpleUltimateAimPointValid=true;purpleUltimateCharge=BETA_CHARACTERS.purple.ultimate.chargeRequired;
- updateCrimsonUltimateGauge();const start=clock.elapsedTime;ultimateButton.click();return{start,...this.snapshot()};
+ updateCrimsonUltimateGauge();const start=clock.elapsedTime;ultimateButton.click();const thorns=betaProjectiles.filter(p=>p.type==='purpleThorn');return{start,centerSpawn:thorns.every(p=>p.mesh.position.x===player.position.x&&p.mesh.position.z===player.position.z),range:thorns[0]?.range,...this.snapshot()};
 },
 snapshot(){return{time:clock.elapsedTime,count:betaProjectiles.filter(p=>p.type==='purpleThorn').length,emitted:Number(canvas.dataset.purpleThornsFired||0),phase:canvas.dataset.lastPurpleLeap,charge:purpleUltimateCharge,jumping:!!purpleJumpState,health:testTargets.slice(0,2).map(t=>t.userData.health)};},
 capture(){const c=camera.clone();c.position.set(-34,16,7);c.lookAt(-40,6.5,0);renderer.render(scene,c);return renderer.domElement.toDataURL('image/png').split(',')[1];},
-battle(){const w=beta6Combat,a=beta6PlayerActor;a.charge=a.u.chargeRequired;const cast=w.cast(a,{x:a.x,z:a.z,hp:1},{point:{x:a.x,z:a.z}});updateBeta6BotCombat(0);const thorns=w.projectiles.filter(p=>p.kind==='purpleThorn');return{cast,count:thorns.length,cones:thorns.filter(p=>beta6CombatVisuals.get('p'+p.key)?.geometry?.type==='ConeGeometry').length};},
+battle(){const w=beta6Combat,a=beta6PlayerActor;a.charge=a.u.chargeRequired;const cast=w.cast(a,{x:a.x,z:a.z,hp:1},{point:{x:a.x,z:a.z}});updateBeta6BotCombat(0);const thorns=w.projectiles.filter(p=>p.kind==='purpleThorn');const centered=thorns.every(p=>p.x===p.origin.x&&p.z===p.origin.z);const tailAtCenter=thorns.every(p=>{const g=beta6CombatVisuals.get('p'+p.key)?.geometry;g?.computeBoundingBox();return Math.abs(g?.boundingBox?.min.y??1)<.00001;});return{cast,count:thorns.length,cones:thorns.filter(p=>beta6CombatVisuals.get('p'+p.key)?.geometry?.type==='ConeGeometry').length,centered,tailAtCenter,range:thorns[0]?.reach};},
 finish(){endGoldRush('QA',false,null,true);return beta6CombatVisuals.size;},
 defs:BETA_CHARACTERS};`;
 const server=createServer((req,res)=>{
@@ -34,21 +34,21 @@ try{
  await page.goto(base+'/beta-season.html',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__purpleQA,null,{timeout:90000});
  await page.evaluate(()=>__purpleQA.prepare());
  await page.waitForFunction(()=>document.querySelector('#model-loading-screen').hidden,null,{timeout:120000});
- const first=await page.evaluate(()=>__purpleQA.practice(false));assert.equal(first.count,16);
+ const first=await page.evaluate(()=>__purpleQA.practice(false));assert.equal(first.count,16);assert(first.centerSpawn);assert.equal(first.range,10);
  await page.waitForFunction(t=>__purpleQA.snapshot().time>t+.08,first.start);
  writeFileSync('specs/purple-radial-ultimate.png',Buffer.from(await page.evaluate(()=>__purpleQA.capture()),'base64'));
  await page.waitForFunction(()=>!__purpleQA.snapshot().jumping&&__purpleQA.snapshot().count===0);
  const visual=await page.evaluate(()=>__purpleQA.snapshot());assert.equal(visual.emitted,32);assert.equal(visual.phase,'landing');
  const second=await page.evaluate(()=>__purpleQA.practice(true));assert.equal(second.count,16);assert.deepEqual(second.health,[1000000,1000000]);
  await page.waitForFunction(()=>!__purpleQA.snapshot().jumping&&__purpleQA.snapshot().count===0);
- const hits=await page.evaluate(()=>__purpleQA.snapshot());assert.deepEqual(hits.health,[993750,993750]);assert.equal(hits.charge,2);
+ const hits=await page.evaluate(()=>__purpleQA.snapshot());assert.deepEqual(hits.health,[993750,987500]);assert.equal(hits.charge,3);
  await page.locator('[data-lobby-room="graveyard"]').click();await page.keyboard.press('e');
  await page.waitForFunction(()=>document.getElementById('beta-canvas').dataset.beta6BotCharacters);
  await page.waitForFunction(()=>document.querySelector('#model-loading-screen').hidden,null,{timeout:120000});
- const battle=await page.evaluate(()=>__purpleQA.battle());assert(battle.cast);assert.equal(battle.count,16);assert.equal(battle.cones,16);
+ const battle=await page.evaluate(()=>__purpleQA.battle());assert(battle.cast);assert.equal(battle.count,16);assert.equal(battle.cones,16);assert(battle.centered);assert(battle.tailAtCenter);assert.equal(battle.range,10);
  const remaining=await page.evaluate(()=>__purpleQA.finish());assert.equal(remaining,0);
  await page.goto(base+'/beta-season.html?test=beta7',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.__purpleQA,null,{timeout:90000});assert.equal(await page.evaluate(()=>__purpleQA.defs.purple.ultimate.projectileCount),undefined);
  assert.deepEqual(errors,[]);
- writeFileSync('specs/purple-radial-ultimate-browser.json',JSON.stringify({practice:{count:first.count,total:visual.emitted,health:hits.health,charge:hits.charge},battle,cleanupVisuals:remaining,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
+ writeFileSync('specs/purple-radial-ultimate-browser.json',JSON.stringify({practice:{count:first.count,total:visual.emitted,range:first.range,centerSpawn:first.centerSpawn,health:hits.health,charge:hits.charge},battle,cleanupVisuals:remaining,beta7Unchanged:true,pageErrors:errors},null,2)+'\n');
  console.log('PASS browser: 16+16 practice thorns, real hit/cap/recharge, 16 battle cone visuals, cleanup and beta7 isolation');
 }finally{await browser?.close();server.closeAllConnections();await new Promise(done=>server.close(done));}
