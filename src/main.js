@@ -1,3 +1,4 @@
+import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=1";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
@@ -4179,7 +4180,7 @@ function prepareSeason6SkinFbx(asset) {
     clip.tracks = clip.tracks.filter((track) => !/^(?:RL_BoneRoot|RootNodeL|output_unwrapped|target_character|walk[_-]m(?:1s|2l|3e))\.(?:position|quaternion|scale)$/i.test(track.name));
   }
   asset.updateMatrixWorld(true);
-  return { scene: asset, animations: asset.animations ?? [] };
+  return { scene: asset, animations: (asset.animations ?? []).map(crystalWalkInPlace) };
 }
 
 function refreshLoadedSeason6SkinModels(characterId) {

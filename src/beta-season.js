@@ -1,3 +1,4 @@
+import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { betaShowdownProfile, safeShowdownSpawn } from "./config/beta-showdown.js?v=1";
 import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
@@ -1539,7 +1540,7 @@ function loadCharacterMotionSet(characterId, token) {
         sceneModel.visible = key === "stop";
         scenes[key] = sceneModel;
         group.add(sceneModel);
-        const clip = animations[0];
+        const clip = crystalWalkInPlace(animations[0]);
         if (!clip) continue;
         // Keep the hip and limb position tracks that form the walk, but never
         // animate the FBX root or the rendered mesh object itself.
@@ -2414,7 +2415,7 @@ function openAssetShowroomViewer(modelPath, modelName) {
     updateCamera();
     if (animations.length) {
       mixer = new THREE.AnimationMixer(model);
-      const clip = animations[0];
+      const clip = crystalWalkInPlace(animations[0]);
       clip.tracks = clip.tracks.filter((track) => {
         if (/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name)) return false;
         if (!isMeshyPreview || !/\.position$/i.test(track.name)) return true;
@@ -6778,7 +6779,7 @@ function loadBetaBotModel(bot) {
       for (const material of Array.isArray(part.material) ? part.material : [part.material]) initialMaterials.add(material);
     });
     const model = prepareCharacterScene(avatar, bot.characterId, "");
-    const clip = asset.animations[0]?.clone();
+    const clip = crystalWalkInPlace(asset.animations[0]?.clone());
     if (clip) {
       clip.tracks = usesFbxMotion
         ? clip.tracks.filter(track => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name))
