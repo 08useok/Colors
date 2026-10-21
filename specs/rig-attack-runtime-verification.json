@@ -1,0 +1,78 @@
+{
+  "report": [
+    {
+      "page": "main",
+      "id": "red",
+      "skin": "",
+      "accepted": true,
+      "changed": 2,
+      "walkingChanged": 2,
+      "returned": true,
+      "rootUnchanged": true,
+      "walkingReturned": true
+    },
+    {
+      "page": "main",
+      "id": "blue",
+      "skin": "",
+      "accepted": true,
+      "changed": 4,
+      "walkingChanged": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "walkingReturned": true
+    },
+    {
+      "page": "main",
+      "id": "purple",
+      "skin": "",
+      "accepted": true,
+      "changed": 4,
+      "walkingChanged": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "walkingReturned": true
+    },
+    {
+      "page": "main",
+      "id": "crystal",
+      "skin": "",
+      "accepted": true,
+      "changed": 4,
+      "walkingChanged": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "walkingReturned": true
+    },
+    {
+      "page": "main",
+      "id": "crystal",
+      "skin": "beta7_crystal_ruin_explorer",
+      "accepted": true,
+      "changed": 4,
+      "walkingChanged": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "walkingReturned": true
+    },
+    {
+      "page": "main",
+      "id": "azure",
+      "skin": "beta6_azure_blue_wave_buddy",
+      "accepted": true,
+      "changed": 4,
+      "walkingChanged": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "walkingReturned": true
+    },
+    {
+      "page": "beta",
+      "changed": 4,
+      "returned": true,
+      "botChanged": 4,
+      "botReturned": true
+    }
+  ],
+  "pageErrors": []
+}

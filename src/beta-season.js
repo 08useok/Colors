@@ -1,3 +1,4 @@
+import { RIG_ATTACK_PROFILES, applyRigAttackPose, restoreRigAttackPose } from "./visuals/rig-attack-motion.js?v=1";
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { betaShowdownProfile, safeShowdownSpawn } from "./config/beta-showdown.js?v=1";
 import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
@@ -1673,65 +1674,6 @@ function updateCharacterMotion(isMoving, dt) {
 }
 
 const MODEL_ATTACK_POSES = {
-  red: { duration: 0.44, peak: 0.22, bones: [
-    ["CC_Base_R_Upperarm", 1.22, 0, 0.34], ["CC_Base_R_Forearm", 0.52, 0, 0.08],
-    ["CC_Base_L_Upperarm", 0.88, 0, -0.32], ["CC_Base_L_Forearm", 0.38, 0, -0.06],
-    ["CC_Base_Spine02", 0.18, -0.12, 0],
-  ] },
-  green: { duration: 0.5, peak: 0.34, bones: [
-    ["CC_Base_R_Upperarm", 1.08, -0.28, 0.48], ["CC_Base_R_Forearm", 0.7, 0, 0.12],
-    ["CC_Base_L_Upperarm", 0.72, 0.2, -0.32], ["CC_Base_Spine02", 0.12, -0.22, 0],
-  ] },
-  blue: { duration: 0.34, peak: 0.2, bones: [
-    ["CC_Base_R_Upperarm", 1.35, 0, 0.12], ["CC_Base_R_Forearm", 0.22, 0, 0],
-    ["CC_Base_L_Upperarm", 0.35, 0, -0.18], ["CC_Base_Spine02", 0.14, -0.08, 0],
-  ] },
-  orange: { duration: 0.56, peak: 0.42, bones: [
-    ["CC_Base_R_Upperarm", 1.5, -0.18, 0.42], ["CC_Base_R_Forearm", 0.88, 0, 0.08],
-    ["CC_Base_L_Upperarm", 0.58, 0.14, -0.26], ["CC_Base_Spine02", -0.1, -0.28, 0],
-  ] },
-  yellow: { duration: 0.42, peak: 0.28, bones: [
-    ["CC_Base_R_Upperarm", 1.12, 0, 0.18], ["CC_Base_R_Forearm", 0.3, 0, 0],
-    ["CC_Base_L_Upperarm", 1.12, 0, -0.18], ["CC_Base_L_Forearm", 0.3, 0, 0],
-    ["CC_Base_Spine02", 0.16, 0, 0],
-  ] },
-  cyan: { duration: 0.4, peak: 0.24, bones: [
-    ["CC_Base_R_Upperarm", 1.1, 0, 0.24], ["CC_Base_R_Forearm", 0.4, 0, 0],
-    ["CC_Base_L_Upperarm", 0.82, 0, -0.2], ["CC_Base_L_Forearm", 0.28, 0, 0],
-    ["CC_Base_Spine02", 0.12, 0, 0],
-  ] },
-  pink: { duration: 0.58, peak: 0.38, bones: [
-    ["CC_Base_R_Upperarm", 0.56, 0, 0.78], ["CC_Base_R_Forearm", 0.18, 0, 0.22],
-    ["CC_Base_L_Upperarm", 0.56, 0, -0.78], ["CC_Base_L_Forearm", 0.18, 0, -0.22],
-    ["CC_Base_Spine02", -0.08, 0, 0],
-  ] },
-  purple: { duration: 0.46, peak: 0.24, bones: [
-    ["CC_Base_R_Upperarm", 1.05, 0, 0.3], ["CC_Base_R_Forearm", 0.42, 0, 0.1],
-    ["CC_Base_L_Upperarm", 0.3, 0, -0.12],
-    ["CC_Base_Spine02", 0.1, -0.1, 0],
-  ] },
-  // Mint uses the same AccuRig CC_Base skeleton as the GLB characters.
-  // Give every ice-cream bullet a short two-handed firing pulse so its
-  // three-round burst remains visible while standing or walking.
-  mint: { duration: 0.24, peak: 0.34, bones: [
-    ["CC_Base_R_Upperarm", 1.08, -0.08, 0.28], ["CC_Base_R_Forearm", 0.52, 0, 0.08],
-    ["CC_Base_L_Upperarm", 0.82, 0.08, -0.24], ["CC_Base_L_Forearm", 0.38, 0, -0.06],
-    ["CC_Base_Spine02", 0.14, -0.12, 0], ["CC_Base_Head", -0.05, 0, 0],
-  ] },
-  // Chartreuse uses the custom walk rig rather than the CC_Base skeleton.
-  // The firing arm follows the opposing walking arm smoothly, instead of
-  // freezing while the projectile is spawned.
-  chartreuse: { duration: 0.42, peak: 0.32, bones: [
-    ["upper_arm.R", -0.88, 0, 0.16], ["forearm.R", -0.42, 0, 0.06],
-    ["upper_arm.L", 0.18, 0, -0.06], ["spine", 0, -0.14, 0],
-    ["head", 0, 0.05, 0],
-  ] },
-  // 크리스탈은 Mixamo식 뼈 이름(RightArm 등)을 쓰는 별도 리그다.
-  // 수정탄을 내밀어 쏘는 짧은 동작.
-  crystal: { duration: 0.4, peak: 0.28, bones: [
-    ["RightArm", 0, 0, -1.15], ["RightForeArm", 0, 0, -0.55],
-    ["LeftArm", 0, 0, 0.35], ["Spine02", 0, -0.18, 0],
-  ] },
   // 궁극기 돌진 — 몸을 앞으로 숙이고 두 팔을 앞으로 뻗는다.
   crystalCast: { duration: 0.75, peak: 0.3, bones: [
     ["RightArm", 0, 0, -1.35], ["RightForeArm", 0, 0, -0.35],
@@ -1748,7 +1690,7 @@ const MODEL_ATTACK_POSES = {
 let modelHeldPoseId = null;
 
 function startModelAttackMotion(characterId = betaState.selectedCharacter) {
-  if (!MODEL_ATTACK_POSES[characterId]) return;
+  if (!MODEL_ATTACK_POSES[characterId] && !RIG_ATTACK_PROFILES[characterId]) return;
   modelAttackMotionTime = 0;
   modelAttackCharacter = characterId;
   canvas.dataset.attackMotion = "firing";
@@ -1776,6 +1718,19 @@ function applyModelPose(profile, strength) {
 }
 
 function updateModelAttackMotion(dt) {
+  const rigProfile = RIG_ATTACK_PROFILES[modelAttackCharacter];
+  if (rigProfile && modelAttackMotionTime >= 0) {
+    modelAttackMotionTime += dt;
+    const model = activeCharacterMotion ? activeCharacterMotion.scenes[activeCharacterMotion.current] : activeCharacterModel;
+    modelAttackPoseRestore.push(...applyRigAttackPose(model, modelAttackCharacter, modelAttackMotionTime));
+    if (modelAttackMotionTime >= rigProfile.duration) {
+      modelAttackMotionTime = -1;
+      modelAttackCharacter = null;
+      canvas.dataset.attackMotion = "idle";
+    }
+    return;
+  }
+
   const profile = MODEL_ATTACK_POSES[modelAttackCharacter];
   if ((!activeCharacterMotion && !activeCharacterModel) || modelAttackMotionTime < 0 || !profile) {
     const held = MODEL_ATTACK_POSES[modelHeldPoseId];
@@ -6287,6 +6242,7 @@ function updateSoccerBotAttack(bot, dt) {
   bot.mesh.rotation.y = Math.atan2(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
   createGoldRushAttackEffect(bot.mesh.position, player.position, CHARACTERS.find((c) => c.id === bot.characterId)?.color ?? 0xff5a5a);
   damageGoldRushPlayer(bot.attackDamage);
+  bot.modelAttackTime = 0;
   bot.ammo -= 1;
   bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
   bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;
@@ -6820,12 +6776,19 @@ function loadBetaBotModel(bot) {
 }
 
 function updateBetaBotModel(bot, dt, concealed = false) {
+  restoreRigAttackPose(bot.rigAttackPose);
+  bot.rigAttackPose = [];
   if (!bot.model) { bot.mixer?.update(dt); return; }
   const moving = !bot.dead && bot.mesh.position.distanceToSquared(bot.previousModelPosition) > 1e-6;
   if (bot.walkAction) {
     bot.walkAction.paused = !moving;
     if (!moving && bot.modelMoving) bot.mixer.setTime(0);
     bot.mixer.update(dt);
+  }
+  if (bot.modelAttackTime >= 0 && !bot.dead) {
+    bot.modelAttackTime += dt;
+    bot.rigAttackPose = applyRigAttackPose(bot.model, bot.characterId, bot.modelAttackTime);
+    if (bot.modelAttackTime >= (RIG_ATTACK_PROFILES[bot.characterId]?.duration ?? 0)) bot.modelAttackTime = -1;
   }
   bot.modelMoving = moving;
   bot.previousModelPosition.copy(bot.mesh.position);
@@ -7043,6 +7006,7 @@ function processBeta6CombatEvent(event) {
       }
       if (event.type === "attack") {
         const a = event.owner;
+        if (a.bot) a.bot.modelAttackTime = 0;
         if (["red", "crimson"].includes(a.id)) for (let i = 0; i < a.d.attackCount; i++) beta6AttackVisualQueue.push({ at: event.time + i * a.d.attackIntervalMs / 1000, owner: a, index: i, yaw: Math.PI / 2 - a.angle });
         if (a.id === "pink") withBeta6AttackVisuals(() => {
           const position = new THREE.Vector3(a.x, groundHeightAt(a.x, a.z) + .05, a.z);
@@ -7626,6 +7590,7 @@ function updateGoldRushBots(dt) {
       createGoldRushAttackEffect(bot.mesh.position, targetPosition, GOLD_RUSH_BOT_COLORS[bot.id - 1]);
       if (combatTarget === goldRushState) damageGoldRushPlayer(bot.attackDamage);
       else damageGoldRushBot(combatTarget, bot.attackDamage);
+      bot.modelAttackTime = 0;
       bot.ammo -= 1;
       bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
   bot.nextAttackAt = clock.elapsedTime + 0.85 + Math.random() * 0.55;

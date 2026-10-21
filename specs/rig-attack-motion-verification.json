@@ -1,0 +1,486 @@
+{
+  "report": [
+    {
+      "id": "red",
+      "skin": "",
+      "path": "./assets/3d/red/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 2,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "green",
+      "skin": "",
+      "path": "./assets/3d/green/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "blue",
+      "skin": "",
+      "path": "./assets/3d/blue/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "orange",
+      "skin": "",
+      "path": "./assets/3d/orange/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "yellow",
+      "skin": "",
+      "path": "./assets/3d/yellow/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "cyan",
+      "skin": "",
+      "path": "./assets/3d/cyan/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "purple",
+      "skin": "",
+      "path": "./assets/3d/purple/walk-m2l.glb?v=86",
+      "boneCount": 70,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "pink",
+      "skin": "",
+      "path": "./assets/3d/pink/walk-m2l.glb?v=86",
+      "boneCount": 70,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "crimson",
+      "skin": "",
+      "path": "./assets/3d/cyan/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 2,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "gold",
+      "skin": "",
+      "path": "./assets/3d/cyan/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "ivory",
+      "skin": "",
+      "path": "./assets/3d/ivory/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "chartreuse",
+      "skin": "",
+      "path": "./assets/3d/chartreuse/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "mint",
+      "skin": "",
+      "path": "./assets/3d/mint/normal/walk-m2l.fbx?v=86",
+      "boneCount": 101,
+      "maxChanged": 2,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "azure",
+      "skin": "",
+      "path": "./assets/3d/azure/normal/walk-m2l.fbx?v=86",
+      "boneCount": 83,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "crystal",
+      "skin": "",
+      "path": "./assets/3d/crystal/normal/crystal-walk.fbx?v=86",
+      "boneCount": 24,
+      "maxChanged": 4,
+      "matched": [
+        "RightArm",
+        "RightForeArm",
+        "LeftArm",
+        "LeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "lavender",
+      "skin": "",
+      "path": "./assets/3d/lavender/normal/walk-m1s.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "cyan",
+      "skin": "beta6_cyan_aqua_scout",
+      "path": "./assets/3d/cyan/skins/aqua-scout/walk-m2l.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "chartreuse",
+      "skin": "beta6_chartreuse_pufferfish_boy",
+      "path": "./assets/3d/chartreuse/skins/pufferfish-boy/walk-m2l.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "orange",
+      "skin": "beta6_orange_citrus_luau_buddy",
+      "path": "./assets/3d/orange/skins/citrus-luau-buddy/walk-m2l.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "azure",
+      "skin": "beta6_azure_blue_wave_buddy",
+      "path": "./assets/3d/azure/skins/blue-wave-buddy/walk-m2l.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "crystal",
+      "skin": "beta7_crystal_ruin_explorer",
+      "path": "./assets/3d/crystal/skins/gem-princess/walk-m1s.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "green",
+      "skin": "beta7_green_mummy",
+      "path": "./assets/3d/green/skins/emerald-mummy/walk-m1s.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "gold",
+      "skin": "beta7_gold_pharaoh",
+      "path": "./assets/3d/gold/skins/pharaoh-guardian/walk-m1s.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "blue",
+      "skin": "beta7_blue_scarab",
+      "path": "./assets/3d/blue/skins/scarab-blue/walk-m1s.fbx?v=86",
+      "boneCount": 34,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "ivory",
+      "skin": "beta8_ivory_skeleton",
+      "path": "./assets/3d/ivory/skins/skeleton/walk-m1s.fbx?v=86",
+      "boneCount": 44,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "orange",
+      "skin": "beta8_orange_jack_o_lantern",
+      "path": "./assets/3d/orange/skins/jack-o-lantern/walk-m1s.fbx?v=86",
+      "boneCount": 54,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "purple",
+      "skin": "beta8_purple_potion_witch",
+      "path": "./assets/3d/purple/skins/potion-witch/walk-m1s.fbx?v=86",
+      "boneCount": 50,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "lavender",
+      "skin": "beta8_lavender_ghost_bride",
+      "path": "./assets/3d/lavender/skins/ghost-bride/walk-m1s.fbx?v=86",
+      "boneCount": 40,
+      "maxChanged": 4,
+      "matched": [
+        "mixamorigRightArm",
+        "mixamorigRightForeArm",
+        "mixamorigLeftArm",
+        "mixamorigLeftForeArm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "pink",
+      "skin": "beta5_pink_cotton_candy",
+      "path": "./assets/3d/pink/skins/cotton-candy/walk-m2l.fbx?v=86",
+      "boneCount": 83,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    },
+    {
+      "id": "ivory",
+      "skin": "beta2_ivory_shopkeeper",
+      "path": "./assets/3d/ivory/skin-shopkeeper/walk-m2l.glb?v=86",
+      "boneCount": 71,
+      "maxChanged": 4,
+      "matched": [
+        "CC_Base_R_Upperarm",
+        "CC_Base_R_Forearm",
+        "CC_Base_L_Upperarm",
+        "CC_Base_L_Forearm"
+      ],
+      "restored": true,
+      "repeatedRestored": true,
+      "rootUnchanged": true
+    }
+  ],
+  "playerChanged": 4,
+  "pageErrors": []
+}
