@@ -1,5 +1,11 @@
 // Historical values are preserved; only the displayed language changes.
 export const ARCHIVE_TEXT = {
+  "mainSeason7ReleaseTitle": {"ko": "v1.7.0.1 — 2026.10.13 · 베타 시즌 7 메인 업데이트", "en": "v1.7.0.1 — 2026.10.13 · Beta Season 7 Main Update"},
+  "mainSeason7Characters": {"ko": "캐릭터·기술: 크리스탈과 오렌지 궁극기 「껍질 회수」·퍼플 궁극기 「독성 대도약」을 메인에 추가했습니다. 시즌 7 캐릭터 15종의 전투 수치를 반영했으며 라벤더는 시즌 8 출시 예정입니다.", "en": "Characters and skills: added Crystal, Orange’s Peel Recovery ultimate and Purple’s Toxic Leap ultimate to the main game. Applied Season 7 combat stats for 15 characters; Lavender is planned for Season 8."},
+  "mainSeason7Skins": {"ko": "시즌 스킨: 파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈을 추가하고 모델·걷기 모션을 연결했습니다.", "en": "Season skins: added Pharaoh Gold, Mummy Green, Scarab Blue and Jewel Princess Crystal with their models and walking animations."},
+  "mainSeason7Modes": {"ko": "정규 이벤트: 젬 그랩 3대3과 SHOWDOWN+를 메인에 추가했습니다. 젬 그랩은 젬 10개 이상을 15초 유지하면 승리하며, SHOWDOWN+는 플레이어 처치당 트로피 +2를 제공합니다. 각 모드의 맵 3종을 지원합니다.", "en": "Events: added 3v3 Gem Grab and SHOWDOWN+ to the main game, each with three maps. Hold at least 10 gems for 15 seconds to win Gem Grab; SHOWDOWN+ awards +2 trophies per player elimination."},
+  "mainSeason7Theme": {"ko": "테마: 잃어버린 황금 유적의 사막·석벽·오벨리스크와 시즌 7 로비·젬 그랩 음악을 적용했습니다.", "en": "Theme: added the Lost Golden Ruins desert, stone walls and obelisks, plus Season 7 lobby and Gem Grab music."},
+
   "mainSeason8BalanceTitle": {"ko": "시즌 8 메인 업데이트 예정 · 캐릭터 변경", "en": "Upcoming Season 8 Main Update · Character Changes"},
   "mainSeason8NewCharacters": {"ko": "신규 — 라벤더·살몬이 합류합니다. 살몬은 낚시찌를 꺼내 던져 적을 포획하고, 궁극기로 포획 장치를 설치합니다.", "en": "New — Lavender and Salmon join the roster. Salmon draws and throws a fishing float to capture enemies, and places capture devices with the ultimate."},
   "mainSeason8RedNerf": {"ko": "너프 — 레드: 이동 속도 배율 1.4 → 1.15.", "en": "Nerf — Red: movement-speed multiplier 1.4 → 1.15."},
@@ -442,8 +448,8 @@ export const ARCHIVE_TEXT = {
     "en": "Beta Season Patch Notes"
   },
   "archiveHeading107": {
-    "ko": "v1.6.0 · 추가 업데이트 — 2026.10.06 · 정규 이벤트 맵 3종",
-    "en": "v1.6.0 · Additional Update — 2026.10.06 · Three Maps per Regular Event"
+    "ko": "시즌 6 후속 업데이트 — 2026.10.06 · 정규 이벤트 맵 3종",
+    "en": "Season 6 Follow-up — 2026.10.06 · Three Maps per Regular Event"
   },
   "archiveHeading108": {
     "ko": "v1.6.0 — 2026.09.21 · 베타 시즌 6 업데이트",
