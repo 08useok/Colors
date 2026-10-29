@@ -1,5 +1,18 @@
 // Historical values are preserved; only the displayed language changes.
 export const ARCHIVE_TEXT = {
+  "mainSeason8BalanceTitle": {"ko": "시즌 8 메인 업데이트 예정 · 캐릭터 변경", "en": "Upcoming Season 8 Main Update · Character Changes"},
+  "mainSeason8NewCharacters": {"ko": "신규 — 라벤더·살몬이 합류합니다. 살몬은 낚시찌를 꺼내 던져 적을 포획하고, 궁극기로 포획 장치를 설치합니다.", "en": "New — Lavender and Salmon join the roster. Salmon draws and throws a fishing float to capture enemies, and places capture devices with the ultimate."},
+  "mainSeason8RedNerf": {"ko": "너프 — 레드: 이동 속도 배율 1.4 → 1.15.", "en": "Nerf — Red: movement-speed multiplier 1.4 → 1.15."},
+  "mainSeason8CyanBuff": {"ko": "버프 — 시안: 궁극기 피해 5,200, 충전 요구량 10 → 1.5칸으로 변경합니다. 일반 공격 유효 명중 10회 → 3회로 충전되며, 알약 6발을 평행 발사합니다.", "en": "Buff — Cyan: ultimate damage becomes 5,200 and charge requirement changes from 10 to 1.5 units (10 → 3 basic hits). Fires six parallel pills."},
+  "mainSeason8GoldBalance": {"ko": "조정 — 골드: 체력 7,380, 일반 공격 단계별 피해 1,300 / 600 / 300, 받는 투사체 피해 감소 1,650, 궁극기 틱 피해 138로 조정합니다.", "en": "Adjustment — Gold: health 7,380; basic stage damage 1,300 / 600 / 300; incoming projectile damage reduced by 1,650; ultimate damage per tick 138."},
+  "mainSeason8BlueBalance": {"ko": "조정 — 블루: 일반 공격 넉백을 삭제하고 사거리를 20타일, 투사체 판정을 10% 확대합니다. 일반 공격 5회 또는 궁극기 5회 유효 명중으로 궁을 충전합니다. 궁 준비·구르기 중 피해를 70% 감소시키고 종료·중단 시 해제합니다.", "en": "Adjustment — Blue: removes basic knockback, increases basic range to 20 tiles and projectile hitboxes by 10%. Five basic hits or five ultimate hits charge the ultimate. Takes 70% less damage during preparation and rolling; the shield ends on completion or interruption."},
+  "mainSeason8AzureBalance": {"ko": "조정 — 애저: 일반 파도 크기 4×3타일·피해 3,000, 일반 공격 이동 거리 2타일로 조정합니다.", "en": "Adjustment — Azure: basic wave size 4×3 tiles, damage 3,000 and basic ride distance 2 tiles."},
+  "mainSeason8PurpleBalance": {"ko": "조정 — 퍼플: 독 피해 초당 1,250·5초, 일반 공격 2회 유효 명중으로 궁을 충전합니다. 궁 이륙·착지 중심 피해 1,000, 가시 피해 550이며 중심·첫 가시 명중으로 단계별 제한 재충전합니다.", "en": "Adjustment — Purple: poison deals 1,250 per second for five seconds; two basic hits charge the ultimate. Takeoff and landing deal 1,000 central damage and 550 per thorn, with limited recharge from central and first-thorn hits per phase."},
+  "mainSeason8CrystalBalance": {"ko": "개편 — 크리스탈: 일반 공격 단계별 피해 2,000 / 1,000 / 500. 궁은 사용 표시와 돌진 경로를 보여주고 1.5초 후 돌진합니다. 붙잡은 적을 8초 분석한 뒤 피해 감소 보호막을 무시하는 고정 28,000 피해를 줍니다.", "en": "Rework — Crystal: basic stage damage 2,000 / 1,000 / 500. The ultimate displays a warning and dash path, then dashes after 1.5 seconds. After binding and analyzing for eight seconds, deals a fixed 28,000 damage that ignores damage-reduction guards."},
+  "mainSeason8SalmonSkills": {"ko": "살몬 상세 — 일반 포획 피해 3,000+착지 600, 공중 지속 1.2초. 탄약 5발·자동 재장전 없음. 궁 장치는 땅에 닿으면 즉시 설치되며 접촉 피해 3,000+착지 600을 주고 한 번 포획하면 소모됩니다.", "en": "Salmon — basic capture deals 3,000 plus 600 landing damage and suspends enemies for 1.2 seconds. Five ammo, no automatic reload. Ultimate devices deploy on landing, deal 3,000 plus 600 landing damage and are consumed after one capture."},
+  "mainSeason8MotionChanges": {"ko": "모션·스킨 효과 — 캐릭터별 일반 공격·궁극기 모션을 정비합니다. 스킨 등급별로 희귀는 외형, 초희귀는 일반 공격까지, 영웅은 궁극기까지, 전설은 주변 효과까지 변경합니다.", "en": "Animations and skin effects — updates character basic and ultimate animations. Rare skins change appearance; super rare adds basic effects, epic adds ultimate effects, and legendary adds ambient effects."},
+
+
   "archivePatch0": {
     "ko": "메인: 쇼다운·찹 우드·골드 러쉬·사커 킥·테이크다운을 상시 운영하며, 모드별 기본·벽 중심·부쉬 중심 맵 3종과 새로운 맵 이름을 적용했습니다.",
     "en": "Main: Showdown, Chop Wood, Gold Rush, Soccer Kick and Take Down are permanent events. Each mode has three named maps: standard, wall-heavy and bush-heavy."
