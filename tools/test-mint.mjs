@@ -19,7 +19,7 @@ class Mesh {
 }
 const state = { gameTime: 0, running: true, players: [], projectiles: [], mintZones: [], chopWoodMode: true };
 let moved = 0, disposed = 0;
-const ctx = vm.createContext({ CURRENT_SEASON: "beta6", CHARACTERS, state, baseMoveSpeed: 10.4,
+const ctx = vm.createContext({ CURRENT_SEASON: "beta6", SEASON_ENGINE: false, modelLoading: { blocking: false }, CHARACTERS, state, baseMoveSpeed: 10.4,
   THREE: { Mesh, CircleGeometry: class {}, SphereGeometry: class {}, MeshStandardMaterial: class {}, MeshBasicMaterial: class {}, DoubleSide: 2 },
   createMintIceHitEffect() {}, areSameTeam:(a,b)=>a.team!=null&&a.team===b.team,
   scene: { add() {} }, audio: { play() {} },

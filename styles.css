@@ -3812,7 +3812,27 @@ body.lobby-active #takedown-hud {
 body[data-season="beta7"] #message-overlay { background: radial-gradient(ellipse at 50% 20%, rgba(202,162,103,.36), rgba(57,37,22,.9)); }
 body[data-season="beta7"] .lobby-season-tag { color: #f5d47d; border-color: #b48d4c; }
 body[data-season="beta7"] .temple-countdown-final { color: #f5d47d; }
+/* Season 8 — Halloween: pumpkin orange on midnight violet, matching the beta theme. */
+body[data-season="beta8"] #message-overlay { background: radial-gradient(ellipse at 50% 20%, rgba(255,122,24,.30), rgba(23,19,33,.92)); }
+body[data-season="beta8"] .lobby-season-tag { color: #ffb25e; border-color: #ff7a18; }
+body[data-season="beta8"] .temple-countdown-final { color: #ffb25e; }
+body[data-season="beta8"].temple-countdown-final::after { content:""; position:fixed; inset:0; z-index:2; pointer-events:none; box-shadow:inset 0 0 100px 28px rgba(255,122,24,.42); animation:main-temple-warning .45s ease-in-out infinite alternate; }
 body[data-season="beta7"].temple-countdown-final::after { content:""; position:fixed; inset:0; z-index:2; pointer-events:none; box-shadow:inset 0 0 100px 28px rgba(255,183,47,.42); animation:main-temple-warning .45s ease-in-out infinite alternate; }
 @keyframes main-temple-warning { from { opacity:.4; } to { opacity:1; } }
 .event-scoreboard { max-width:min(420px,calc(100vw - 32px)); }
 .event-scoreboard .stat-value { font-size:16px; line-height:1.5; white-space:normal; }
+
+/* Season 8 quest track (sidebar panel) */
+.season-quest-panel { display: grid; gap: 8px; padding: 10px; margin: 4px 0 8px; border: 1px solid rgba(255,122,24,.45); border-radius: 10px; background: rgba(23,19,33,.82); color: #f6ecff; font-size: 12px; }
+.season-quest-panel.hidden { display: none; }
+.season-quest-summary { display: grid; gap: 4px; }
+.season-quest-summary progress { width: 100%; height: 8px; accent-color: #ff7a18; }
+.season-quest-summary small { color: #cdb9e6; }
+.season-quest-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.season-quest-list li { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 6px; background: rgba(255,255,255,.05); }
+.season-quest-list li.is-ready { background: rgba(255,122,24,.18); }
+.season-quest-list li.is-claimed { opacity: .55; }
+.season-quest-list em { font-style: normal; color: #9fe6b0; }
+.season-quest-panel button { border: 0; border-radius: 6px; padding: 3px 8px; background: #ff7a18; color: #1b1225; font-weight: 700; cursor: pointer; }
+.season-quest-panel button:disabled { background: #4a3d5c; color: #9d8fb3; cursor: default; }
+.season-quest-nav { display: flex; justify-content: center; align-items: center; gap: 10px; }

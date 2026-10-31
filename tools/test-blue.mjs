@@ -6,7 +6,7 @@ import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
 const source = readFileSync(new URL('../src/main.js', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 for (const key of ['damage', 'speed', 'duration', 'hitRadius', 'chargeRequired', 'rechargePerHit']) assert.equal(CHARACTERS.blue.ultimate[key], BETA_CHARACTERS.blue.special[key]);
 const state = { running: true, gameTime: 0, players: [], solids: [], chopWoodMode: true };
-const ctx = vm.createContext({ CURRENT_SEASON: "beta6", state, CHARACTERS, audio: { play() {} },
+const ctx = vm.createContext({ CURRENT_SEASON: "beta6", SEASON_ENGINE: false, modelLoading: { blocking: false }, state, CHARACTERS, audio: { play() {} },
   THREE: { MathUtils: { clamp: (n, a, b) => Math.max(a, Math.min(b, n)) } },
   tempVec3: { set(x, y, z) { Object.assign(this, { x, y, z }); } },
   moveFighter(f, v, dt) { f.mesh.position.x += v.x * dt; f.mesh.position.z += v.z * dt; },

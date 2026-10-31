@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=2";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=2";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -20,11 +20,14 @@ import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=9";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=11";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=12";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=2";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
+import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
+import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
+import { BETA8_QUEST_REWARDS, questClaims, claimQuestReward, questStats, questPoints, addQuestStats } from "./config/beta8-quests.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
 import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
 import { applyBetaWallModel } from "./visuals/beta-wall.js?v=1";
@@ -40,6 +43,9 @@ import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYello
 Object.assign(LANGS.ko,{salmon:"살몬",salmonDesc:"낚시찌로 적을 포획하고 포획 장치를 설치하는 캐릭터",crystal:"크리스탈",lavender:"라벤더",crystalDesc:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",lavenderDesc:"향수 스프레이와 둔화 장판을 사용하는 캐릭터",azureDesc:"파도를 타고 돌진하는 다이버"});
 Object.assign(LANGS.en,{salmon:"Salmon",salmonDesc:"Captures enemies with fishing floats and sets capture devices",crystal:"Crystal",lavender:"Lavender",crystalDesc:"Cascading crystals and crystal analysis",lavenderDesc:"Perfume spray and a slowing fragrance field",azureDesc:"A diver who dashes forward on a wave"});
 MAIN_UI.forEach(([ko, en], i) => { LANGS.ko["mainUi" + i] = ko; LANGS.en["mainUi" + i] = en; });
+Object.assign(LANGS.ko,{"mainS8Title": "베타 시즌 8 · 할로윈 KNOCKOUT", "mainS8Summary": "자정의 묘지에 호박등이 켜졌습니다. 라벤더·살몬과 새 모드 KNOCKOUT, 할로윈 스킨과 시즌 퀘스트를 메인에서 만나 보세요.", "mainS8Characters": "신규 캐릭터 — 라벤더(향수 스프레이·둔화 장판)와 살몬(낚시찌 포획·포획 장치)이 합류해 17종이 됩니다.", "mainS8Knockout": "KNOCKOUT — 3대3, 2라운드 선승, 라운드 중 부활 없음, 45초부터 독안개.", "mainS8Skins": "할로윈 스킨 — 해골 아이보리·잭오랜턴 오렌지·마녀 퍼플·유령 신부 라벤더(각 2,500코인).", "mainS8Quests": "시즌 퀘스트 — 킬·회복·피해로 포인트를 모아 103단계 보상을 받으세요(사이드바 🎃 시즌 퀘스트).", "mainS8Balance": "밸런스·모션 — 베타 시즌 8 최종 수치와 17종 일반 공격·궁극기 모션, 스킨 등급별 효과, 부활 후 5초 보호막."});Object.assign(LANGS.en,{"mainS8Title": "Beta Season 8 · Halloween Knockout", "mainS8Summary": "Jack-o'-lanterns light up the midnight graveyard. Meet Lavender, Salmon, the new KNOCKOUT mode, Halloween skins and season quests in the main game.", "mainS8Characters": "New characters — Lavender (perfume spray, slowing field) and Salmon (fishing-float captures, capture devices) bring the roster to 17.", "mainS8Knockout": "KNOCKOUT — 3v3, first to two rounds, no in-round respawns, poison from 45 seconds.", "mainS8Skins": "Halloween skins — Skeleton Ivory, Jack-o'-Lantern Orange, Potion Witch Purple, Ghost Bride Lavender (2,500 coins each).", "mainS8Quests": "Season quests — earn points from kills, healing and damage for 103 reward steps (sidebar 🎃 Season Quests).", "mainS8Balance": "Balance and animation — final Beta Season 8 values, basic and ultimate animations for all 17, skin-tier effects and a five-second respawn shield."});
+Object.assign(LANGS.ko,{mainS8MatchupDesc:"시즌 8 · 17종 · 6레벨 · 궁 충전 0에서 시작 · 총 32,640경기(상대별 240경기). 무승부는 0.5승입니다. 굵은 숫자는 지정 상성 연결, 이탤릭은 지정 외 100%·0%입니다. 장애물·팀 효과를 제외한 봇 시뮬레이션이며 실전 승률은 아닙니다."});Object.assign(LANGS.en,{mainS8MatchupDesc:"Season 8 · 17 characters · level 6 · ultimates start uncharged · 32,640 games (240 per pairing). Draws count as half a win. Bold marks designated counter links; italics mark other 100%/0% results. Bot simulation without obstacles or team effects, not live win rates."});
+Object.assign(LANGS.ko,{mainUiKnockoutMode:"3대3 · 2라운드 선승 · 부활 없음",mainUiSeasonQuest:"🎃 시즌 퀘스트"});Object.assign(LANGS.en,{mainUiKnockoutMode:"3v3 · First to 2 rounds · No respawns",mainUiSeasonQuest:"🎃 Season Quests"});
 Object.entries(ARCHIVE_TEXT).forEach(([key, value]) => { LANGS.ko[key] = value.ko; LANGS.en[key] = value.en; });
 LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다.";
 LANGS.en.mainLanguagePatch = "v1.7.0.4 — Updated Korean/English character names and menu translations. Three Halloween skin models are connected in beta.";
@@ -244,7 +250,7 @@ function pauseLobbyBgm() {
   beta2LobbyBgm.pause();
   beta4LobbyBgm.pause();
   beta5LobbyBgm.pause();
-  beta6LobbyBgm.pause(); beta8LobbyBgm.pause(); beta7LobbyBgm.pause(); gemGrabBgm.pause();
+  beta6LobbyBgm.pause(); beta8LobbyBgm.pause(); beta7LobbyBgm.pause(); gemGrabBgm.pause(); knockoutBgm.pause();
 }
 
 function stopAllBgm() {
@@ -2249,6 +2255,11 @@ function recordGameResult(rank, mode = "showdown") {
 
   if (CURRENT_SEASON.startsWith("alpha")) account.alphaSeasonParticipated = true;
 
+  if (CURRENT_SEASON === "beta8" && state.questMatch && !state.trainingMode) {
+    account.beta8Quests = addQuestStats(account.beta8Quests, state.questMatch);
+    state.lastQuestPoints = questPoints(state.questMatch);
+    state.questMatch = questStats();
+  }
   const char = account.selectedCharacter;
   const killBonus=state.showdownPlus?(state.seasonKills??0)*2:0;
   account.trophies+=killBonus;account.charTrophies[char]=(account.charTrophies[char]??0)+killBonus;
@@ -5000,7 +5011,7 @@ function createWall(x, z, width, depth, height = 2.8, group = scene, solidsArr =
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   group.add(mesh);
-  if(CURRENT_SEASON==="beta7")applyBetaWallModel(mesh,width,height,depth,canvas);
+  if(SEASON_ENGINE)applyBetaWallModel(mesh,width,height,depth,canvas);
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   const aabbHalfX = Math.abs(cos) * width * 0.5 + Math.abs(sin) * depth * 0.5;
@@ -5477,7 +5488,9 @@ function createSoccerKickMap() {
 function createMap(mapData) {
   clearBattleMap();
 
-  const season3Theme = CURRENT_SEASON === "beta7"
+  const season3Theme = CURRENT_SEASON === "beta8"
+    ? {ground:0x40324e,gridMajor:0xff7a18,gridMinor:0x69517b}
+    : CURRENT_SEASON === "beta7"
     ? {ground:0xcaa267,gridMajor:0xb48d4c,gridMinor:0x9f8055}
     : CURRENT_SEASON === "beta6"
     ? { ground: 0xe8d19b, gridMajor: 0x39d5d0, gridMinor: 0x8fc9c4 }
@@ -5485,7 +5498,7 @@ function createMap(mapData) {
     ? { ground: [0xffe8c7, 0xdff6ef, 0xffd6e7][mapData.id % 3], gridMajor: 0xfff7df, gridMinor: 0xb7e7dd }
     : null;
   if (season3Theme) {
-    const sky = CURRENT_SEASON === "beta7" ? 0xd4ac71 : CURRENT_SEASON === "beta6" ? 0x54bfe8 : [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
+    const sky = CURRENT_SEASON === "beta8" ? 0x171321 : CURRENT_SEASON === "beta7" ? 0xd4ac71 : CURRENT_SEASON === "beta6" ? 0x54bfe8 : [0xffc9a8, 0xbdebe5, 0xf2c2dc][mapData.id % 3];
     scene.background = new THREE.Color(sky);
     scene.fog.color.set(sky);
   } else {
@@ -5531,10 +5544,10 @@ function createShowdownThemeMap(mode="showdown") {
   disposeMainMapChildren(showdownMapGroup);
   state.showdownLakeRects=[];state.showdownBushes=[];
   state.showdownSolids = [];
-  const ivory = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xcaa267:0x252b30, roughness: 0.94 });
-  const sky = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xb99660:0x444d54, roughness: 0.9 });
-  const iceWall = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xbd975f:0x65717a, emissive: 0x26323a, emissiveIntensity: 0.08, roughness: 0.82 });
-  const iceWallTop = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta7"?0xdbb77f:0x8b969e, emissive: 0x39464f, emissiveIntensity: 0.06, roughness: 0.72 });
+  const ivory = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta8"?0x40324e:CURRENT_SEASON==="beta7"?0xcaa267:0x252b30, roughness: 0.94 });
+  const sky = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta8"?0x69517b:CURRENT_SEASON==="beta7"?0xb99660:0x444d54, roughness: 0.9 });
+  const iceWall = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta8"?0x31233e:CURRENT_SEASON==="beta7"?0xbd975f:0x65717a, emissive: 0x26323a, emissiveIntensity: 0.08, roughness: 0.82 });
+  const iceWallTop = new THREE.MeshStandardMaterial({ color: CURRENT_SEASON==="beta8"?0x514062:CURRENT_SEASON==="beta7"?0xdbb77f:0x8b969e, emissive: 0x39464f, emissiveIntensity: 0.06, roughness: 0.72 });
   const tile = (x, z, material) => {
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), material);
     mesh.position.set(x, 0.06, z);
@@ -5551,7 +5564,7 @@ function createShowdownThemeMap(mode="showdown") {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     showdownMapGroup.add(mesh);
-    if(CURRENT_SEASON==="beta7")applyBetaWallModel(mesh,width,2,depth,canvas);
+    if(SEASON_ENGINE)applyBetaWallModel(mesh,width,2,depth,canvas);
     const cap = new THREE.Mesh(new THREE.BoxGeometry(width + 0.08, 0.14, depth + 0.08), iceWallTop);
     cap.position.set(x, 2.07, z);
     cap.castShadow = true;
@@ -5572,14 +5585,18 @@ function createShowdownThemeMap(mode="showdown") {
       mesh,
     });
   };
-  const half=mode==="gemGrab"?20:40;
+  const teamArena=mode==="gemGrab"||mode==="knockout";
+  const half=teamArena?20:40;
   [[0,-half,half*2,1],[0,half,half*2,1],[-half,0,1,half*2],[half,0,1,half*2]].forEach(spec=>wall(...spec));
   if(CURRENT_SEASON==="beta7")for(const x of [-half-1.5,half+1.5])for(const z of [-half-1.5,half+1.5]){const pillar=new THREE.Mesh(new THREE.BoxGeometry(1.8,6,1.8),new THREE.MeshStandardMaterial({color:0xd9b876}));pillar.position.set(x,3,z);showdownMapGroup.add(pillar);applyBetaObeliskModel(pillar,1.8,6,1.8,canvas);}
   const reserved=[[-30,-37],[0,-37],[30,-37],[37,0],[30,37],[0,37],[-30,37],[-37,0],[-8,0],[8,0],[0,0,3]];
-  const layout=mainEventLayout(mode,half,half,mode==="gemGrab"?[[0,0,3],[-6,-15,2],[0,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]:reserved);
+  const layout=mainEventLayout(mode,half,half,mode==="knockout"?[[0,-15,2],[-6,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]:mode==="gemGrab"?[[0,0,3],[-6,-15,2],[0,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]:reserved);
   if(layout.index===0&&mode==="gemGrab")for(const side of [-1,1])for(const end of [-1,1])[[side*16,end*8,.8,8],[side*12,end*8,.8,8],[side*14,end*12,4.8,.8],[side*8.5,end*4,7.8,.8]].forEach(spec=>wall(...spec));
-  if(layout.index===0&&mode!=="gemGrab")[[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach(spec=>wall(...spec));
+  if(layout.index===0&&!teamArena)[[-17,-14,11,2],[17,14,11,2],[-17,17,2,11],[17,-17,2,11],[0,0,8,2]].forEach(spec=>wall(...spec));
   addMainEventTerrain(layout,showdownMapGroup,state.showdownSolids,state.showdownLakeRects,state.showdownBushes);
+  // Knockout poison: four green strips that close in from the edges after 45 s.
+  state.knockoutPoison=[];
+  if(mode==="knockout")for(let i=0;i<4;i++){const fog=new THREE.Mesh(new THREE.BoxGeometry(1,1.2,1),new THREE.MeshBasicMaterial({color:0x58d26b,transparent:true,opacity:.28,depthWrite:false}));fog.visible=false;showdownMapGroup.add(fog);state.knockoutPoison.push(fog);}
 }
 
 function createTrainingMap() {
@@ -6013,7 +6030,7 @@ function initTakeDownPlayers() {
 
 function startTakeDown() {
   selectMainEventMap();
-  seasonCombat?.clear(); state.gemGrabMode=false;
+  seasonCombat?.clear(); state.gemGrabMode=false; state.knockoutMode=false; state.knockoutMatch=null; knockoutBgm.pause();
 
   document.body.classList.remove("lobby-active");
   messageOverlay.style.display = "none";
@@ -6980,7 +6997,7 @@ async function enterMatchmaking(mode = "takedown") {
 
 function startChopWood() {
   selectMainEventMap();
-  seasonCombat?.clear(); state.gemGrabMode=false;
+  seasonCombat?.clear(); state.gemGrabMode=false; state.knockoutMode=false; state.knockoutMatch=null; knockoutBgm.pause();
 
   document.body.classList.remove("lobby-active");
   messageOverlay.style.display = "none";
@@ -8146,7 +8163,7 @@ function initTrainingPlayers() {
 }
 
 function startTraining() {
-  seasonCombat?.clear(); state.gemGrabMode=false;
+  seasonCombat?.clear(); state.gemGrabMode=false; state.knockoutMode=false; state.knockoutMatch=null; knockoutBgm.pause();
   // 로비에서 바로 진입할 때 남아 있는 로비 상태가 캔버스와 HUD를 숨기지 않게 한다.
   document.body.classList.remove("lobby-active");
   messageOverlay.style.display = "none";
@@ -8228,9 +8245,11 @@ function exitTraining() {
 }
 
 function resetGame(mode="showdown") {
+  respawnShields.clear();
   selectMainEventMap();
   state.showdownPlus=mode==="showdownPlus";state.mode=mode;state.seasonKills=0;
-  seasonCombat?.clear(); state.gemGrabMode=false;
+  state.questMatch = questStats();
+  seasonCombat?.clear(); state.gemGrabMode=false; state.knockoutMode=false; state.knockoutMatch=null; knockoutBgm.pause();
 
   createShowdownThemeMap(mode);
   document.body.classList.remove("lobby-active");
@@ -8251,7 +8270,7 @@ function resetGame(mode="showdown") {
   // 쇼다운 진입 때 맵 그룹의 자식(벽 포함)이 이전 모드 상태로 숨겨지지 않도록 보장한다.
   if (useIceCreamShowdown) showdownMapGroup.traverse((node) => { node.visible = true; });
   if (useIceCreamShowdown) {
-    const sky=CURRENT_SEASON==="beta7"?0xd4ac71:0x8ac9dc;
+    const sky=CURRENT_SEASON==="beta8"?0x171321:CURRENT_SEASON==="beta7"?0xd4ac71:0x8ac9dc;
     scene.background = new THREE.Color(sky);
     scene.fog.color.set(sky);
   }
@@ -8416,6 +8435,7 @@ function finishGoldRush(winner) {
 function updateGoldRush(dt) {
   if (!state.goldRushMode || state.gameOver) return;
   if (state.soccerMode) return;
+  if (state.knockoutMode) { updateMainKnockout(dt); return; }
   if (state.gemGrabMode) { updateMainGemGrab(dt); return; }
   if (state.gameTime >= state.goldRushEndsAt) {
     const winner = [...state.players].filter((fighter) => !fighter.dead).sort((a, b) => (b.goldCount ?? 0) - (a.goldCount ?? 0))[0];
@@ -8759,6 +8779,64 @@ function seasonAttackMotionId(fighter) {
 function seasonAttackMotionDuration(fighter) {
   if (CURRENT_SEASON !== "beta8") return 0.6;
   return Math.max(0.6, BETA_ATTACK_PROFILES[seasonAttackMotionId(fighter)]?.duration ?? 0.6);
+}
+
+// ── Season 8 quest track: kills + healing/2,000 + damage/1,000 in real matches ──
+// Rules and the 103 rewards are shared with the beta (config/beta8-quests.js); progress lives on the main account.
+function recordSeasonQuestStat(kind, amount) {
+  if (CURRENT_SEASON !== "beta8" || state.trainingMode || !state.running || state.gameOver || !state.questMatch) return;
+  if (!Number.isFinite(amount) || amount <= 0) return;
+  state.questMatch[kind] += amount;
+}
+function recordSeasonQuestDamage(target, attacker, dealt) {
+  if (!attacker?.isPlayer || target === attacker || dealt <= 0) return;
+  if (target.team != null && target.team === attacker.team) return;
+  recordSeasonQuestStat("damage", dealt);
+  if (target.health <= 0) recordSeasonQuestStat("kills", 1);
+}
+let questPanelPage = 0;
+function renderSeasonQuestPanel(page = questPanelPage) {
+  const panel = document.getElementById("season-quest-panel");
+  const account = loadAccount();
+  if (!panel) return;
+  if (!account) { panel.innerHTML = `<p>${currentLang === "en" ? "Log in to track season quests." : "로그인하면 시즌 퀘스트가 기록됩니다."}</p>`; return; }
+  const en = currentLang === "en";
+  const points = questPoints(account.beta8Quests);
+  const claimed = new Set(questClaims(account.beta8QuestClaimed));
+  const number = n => n.toLocaleString(en ? "en-US" : "ko-KR", { maximumFractionDigits: 2 });
+  const size = 10, lastPage = Math.ceil(BETA8_QUEST_REWARDS.length / size) - 1;
+  questPanelPage = page = Math.max(0, Math.min(lastPage, Math.floor(Number(page) || 0)));
+  const available = BETA8_QUEST_REWARDS.filter(r => points >= r.goal && !claimed.has(r.goal)).length;
+  const rewardText = r => [r.coins ? `🪙 ${number(r.coins)}` : "", r.credits ? `★ ${number(r.credits)}` : ""].filter(Boolean).join(" + ");
+  panel.innerHTML = `<div class="season-quest-summary"><strong>${en ? "Season points" : "시즌 누적"} ${number(points)}</strong><progress max="10000" value="${Math.min(10000, points)}"></progress>`
+    + `<small>${en ? "Kill = 1 · Healing 2,000 = 1 · Damage 1,000 = 1 · Training excluded" : "킬 1 = 1점 · 회복 2,000 = 1점 · 피해 1,000 = 1점 · 훈련장 제외"}</small>`
+    + `<small>${en ? "Claimed" : "수령"} ${claimed.size} / ${BETA8_QUEST_REWARDS.length}</small>`
+    + `<button type="button" data-quest-claim-all ${available ? "" : "disabled"}>${en ? "Claim all" : "모두 받기"} (${available})</button></div>`
+    + `<ol class="season-quest-list">` + BETA8_QUEST_REWARDS.slice(page * size, page * size + size).map(r => {
+      const done = claimed.has(r.goal), ready = points >= r.goal;
+      return `<li class="${done ? "is-claimed" : ready ? "is-ready" : ""}"><span>${number(r.goal)}${en ? " pts" : "점"}</span><span>${rewardText(r)}</span>`
+        + (done ? `<em>${en ? "Claimed" : "수령 완료"}</em>` : `<button type="button" data-quest-claim="${r.goal}" ${ready ? "" : "disabled"}>${en ? "Claim" : "받기"}</button>`) + `</li>`;
+    }).join("") + `</ol>`
+    + `<nav class="season-quest-nav"><button type="button" data-quest-page="${page - 1}" ${page === 0 ? "disabled" : ""}>‹</button><span>${page + 1} / ${lastPage + 1}</span><button type="button" data-quest-page="${page + 1}" ${page === lastPage ? "disabled" : ""}>›</button></nav>`;
+  panel.querySelectorAll("[data-quest-page]").forEach(b => b.addEventListener("click", () => renderSeasonQuestPanel(Number(b.dataset.questPage))));
+  const claim = goals => {
+    const acc = loadAccount(); if (!acc) return;
+    const earned = { coins: 0, credits: 0 }; let count = 0;
+    for (const goal of goals) { const reward = claimQuestReward(acc, goal); if (reward) { earned.coins += reward.coins; earned.credits += reward.credits; count++; } }
+    if (!count) return;
+    saveAccount(acc); audio.play("purchase"); renderSeasonQuestPanel(); updateLobbyUI(acc);
+    showToast(`${count}${en ? " rewards · " : "단계 · "}${rewardText(earned)}`);
+  };
+  panel.querySelectorAll("[data-quest-claim]").forEach(b => b.addEventListener("click", () => claim([Number(b.dataset.questClaim)])));
+  panel.querySelector("[data-quest-claim-all]")?.addEventListener("click", () => claim(BETA8_QUEST_REWARDS.map(r => r.goal)));
+}
+{
+  const toggle = document.getElementById("season-quest-toggle");
+  const panel = document.getElementById("season-quest-panel");
+  if (toggle && panel) {
+    toggle.hidden = CURRENT_SEASON !== "beta8";
+    toggle.addEventListener("click", () => { panel.classList.toggle("hidden"); if (!panel.classList.contains("hidden")) renderSeasonQuestPanel(); });
+  }
 }
 
 function getReloadInterval(fighter) {
@@ -11520,6 +11598,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
   if (isInBush(target)) target.revealedUntil = state.gameTime + 3;
   if (attacker && isInBush(attacker)) attacker.revealedUntil = state.gameTime + 3;
   const dealt = healthBefore - target.health;
+  recordSeasonQuestDamage(target, attacker, dealt);
   if (attacker) {
     attacker.lastCombatTime = state.gameTime;
     attacker.damageDealt += dealt;
@@ -11594,6 +11673,10 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
         addKillFeed(`<span style="color:${ac}">${attacker.name}</span> 처치 → <span style="color:${tc}">${target.name}</span>`, ac, tc, getPersonalKillTone(attacker, target));
         if (attacker.isPlayer || target.isPlayer) audio.play("kill");
       }
+    } else if (state.knockoutMode) {
+      // Knockout has no in-round respawns; the round ends when a team is wiped out.
+      target.respawnAt = 0;
+      if (attacker) addKillFeed(t("killFeed", attacker.name, target.name), null, null, getPersonalKillTone(attacker, target));
     } else if (state.goldRushMode) {
       target.respawnAt = state.gameTime + (state.gemGrabMode?GEM_GRAB_RULES.respawnDelay:3);
       if(state.gemGrabMode){for(let i=0;i<(target.goldCount??0);i++)spawnGoldRushPickup(target.mesh.position.x+Math.cos(i)*.7,target.mesh.position.z+Math.sin(i)*.7);target.goldCount=0;}
@@ -13289,7 +13372,7 @@ function updateHud() {
     const escape = state.gemEscapeTeam
       ? (currentLang === "en" ? "Escape in " : "유적 탈출까지 ") + Math.max(0, 15 - (state.gameTime - state.gemEscapeAt)).toFixed(1) + (currentLang === "en" ? "s" : "초")
       : (currentLang === "en" ? "Collect gems" : "젬을 모으세요");
-    survivorsLabel.textContent = state.gemGrabMode
+    survivorsLabel.textContent = state.knockoutMode ? knockoutHudText() : state.gemGrabMode
       ? `GEM GRAB · ${currentLang === "en" ? "Allies" : "아군"} ${gemTeamCount(state.playerTeam)}/10 · ${currentLang === "en" ? "Enemies" : "적"} ${gemTeamCount(state.playerTeam === "a" ? "b" : "a")}/10 · ${escape}`
       : `GOLD RUSH · ${currentLang === "en" ? "Gold" : "금"} ${player.goldCount ?? 0}/10 · ${formatTime(Math.max(0, state.goldRushEndsAt - state.gameTime))}`;
   }
@@ -13410,7 +13493,7 @@ function updateHud() {
       }
     }
    } else if (state.goldRushMode) {
-    survivorsPanel.style.display="";survivorsPanel.classList.add("event-scoreboard");survivorsPanel.querySelector('.stat-label').textContent=state.gemGrabMode?'젬 그랩':state.soccerMode?'사커 킥':'골드 러쉬';
+    survivorsPanel.style.display="";survivorsPanel.classList.add("event-scoreboard");survivorsPanel.querySelector('.stat-label').textContent=state.knockoutMode?'KNOCKOUT':state.gemGrabMode?'젬 그랩':state.soccerMode?'사커 킥':'골드 러쉬';
     if(state.soccerMode)survivorsLabel.textContent='BLUE '+state.soccerScore[0]+' : '+state.soccerScore[1]+' RED';
     zonePanel.classList.add('is-hidden-panel');warning.classList.add('hidden');zoneRing.ring.visible=false;zoneRing.wall.visible=false;exitTrainingBtn.classList.add('hidden');cwHud.classList.add('hidden');
   } else if (state.trainingMode) {
@@ -13459,6 +13542,23 @@ function updateNaturalRegen() {
   }
 }
 
+// Season 8: every genuine respawn grants 5 s of invulnerability, shown as a light-blue shield.
+// Knockout has no in-round respawns, so it never reaches these paths.
+const respawnShields = createRespawnShields();
+function grantRespawnProtection(fighter) {
+  if (CURRENT_SEASON !== "beta8") return;
+  fighter.invulnerableUntil = Math.max(fighter.invulnerableUntil ?? 0, state.gameTime + RESPAWN_PROTECTION_SECONDS);
+}
+function updateRespawnShields() {
+  if (CURRENT_SEASON !== "beta8") return;
+  for (const fighter of state.players) {
+    // Models load late and swap fighter.mesh; re-attach to whichever mesh is current.
+    if (!fighter.dead && (fighter.invulnerableUntil ?? 0) > state.gameTime) respawnShields.show(fighter.mesh, fighter.invulnerableUntil, { radius: 2, height: 0 });
+    else respawnShields.remove(fighter.mesh);
+  }
+  respawnShields.update(state.gameTime);
+}
+
 function updateTrainingRespawn() {
   if (!state.trainingMode) return;
   for (const fighter of state.players) {
@@ -13474,6 +13574,7 @@ function updateTrainingRespawn() {
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;
       fighter.respawnAt = 0;
+      grantRespawnProtection(fighter);
     }
   }
 }
@@ -13539,6 +13640,7 @@ function updateChopWoodRespawn() {
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;
       fighter.respawnAt = 0;
+      grantRespawnProtection(fighter);
       fighter.shockUntil = 0;
       fighter.axeLevel = 0;
       fighter.chopTimer = 0;
@@ -13800,6 +13902,7 @@ function animate() {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
       }
       if (SEASON_ENGINE) getSeasonCombat().update(dt);
+      updateRespawnShields();
       updateAmmoRegen(dt);
       updatePinkRevives();
       if (!mpConfig || mpConfig.isHost) updateNaturalRegen();
@@ -14706,6 +14809,8 @@ if (window.location.hash === "#chop-wood") {
 }
 
   document.getElementById("mode-showdown-plus")?.addEventListener("click",async()=>{await initAudio();modeSelector.classList.add("hidden");startBattleBtn.classList.remove("active");resetGame("showdownPlus");});
+  const modeKnockoutBtn=document.getElementById("mode-knockout");
+  if(modeKnockoutBtn){modeKnockoutBtn.hidden=CURRENT_SEASON!=="beta8";modeKnockoutBtn.addEventListener("click",async()=>{await initAudio();modeSelector.classList.add("hidden");startBattleBtn.classList.remove("active");startMainKnockout();});}
   document.getElementById("mode-gemgrab")?.addEventListener("click",async()=>{await initAudio();modeSelector.classList.add("hidden");startBattleBtn.classList.remove("active");startMainGemGrab();});
   document.getElementById("mode-goldrush")?.addEventListener("click", async () => {
     await initAudio();
@@ -15226,6 +15331,9 @@ if (window.location.hash === "#chop-wood") {
   });
 
   playAgainButton.addEventListener("click", () => {
+    // Local 3v3 event modes restart themselves instead of queueing for Showdown.
+    if (!mpConfig && state.knockoutMode) { resultOverlay.style.display = "none"; startMainKnockout(); return; }
+    if (!mpConfig && state.gemGrabMode) { resultOverlay.style.display = "none"; startMainGemGrab(); return; }
     if (state.soccerMode || mpConfig?.mode === "soccer") {
       mp.disconnect();
       mpConfig = null;
@@ -15261,7 +15369,7 @@ if (window.location.hash === "#chop-wood") {
 
   // 재시작 → 로비
   restartButton.addEventListener("click", () => {
-    seasonCombat?.clear(); state.gemGrabMode=false;
+    seasonCombat?.clear(); state.gemGrabMode=false; state.knockoutMode=false; state.knockoutMatch=null; knockoutBgm.pause(); state.knockoutPoison?.forEach(m=>m.visible=false);
     if (state.soccerMode || mpConfig?.mode === "soccer") {
       mp.disconnect();
       mpConfig = null;
@@ -15392,9 +15500,10 @@ function getSeasonCombat(){
   },
   aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple","salmon"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
   automatic:f=>!state.chopWoodMode&&!state.takedownMode&&(!mpConfig||mpConfig.isHost),
+  allowRevives:()=>!state.knockoutMode,
   damage:(target,amount,source)=>{if(!mpConfig||mpConfig.isHost)applyDamage(target,amount,source,true,false,true);},
   heal:(f,hp,revive)=>{if(mpConfig&&!mpConfig.isHost)return;f.health=hp;if(revive){f.dead=false;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;f.respawnAt=0;}},
-  event:e=>{const f=e.owner?.fighter;if(seasonSkinEffects&&f?.skinId&&['attack','ultimate'].includes(e.type)&&!e.miss)seasonSkinEffects.burst(f.characterType,f.skinId,e.type==='attack'?'basic':'ultimate',fighterGround(f));if(e.type==='attack'&&f&&['red','crimson'].includes(f.characterType))createAttackEffect(f,0);if(e.type==='ultimate'&&f?.isPlayer)audio.play('attack');if(mpConfig?.isHost&&f&&!f.isPlayer&&!f.isNetworkPlayer&&['attack','ultimate'].includes(e.type))mp.relay(e.type==='attack'?'S7_ATTACK':'S7_ULTIMATE',{id:f.syncId??f.id,yaw:Math.PI/2-e.owner.angle});},
+  event:e=>{const f=e.owner?.fighter;if(e.type==='heal'&&f?.isPlayer&&e.target?.fighter!==f)recordSeasonQuestStat('healing',e.amount);if(seasonSkinEffects&&f?.skinId&&['attack','ultimate'].includes(e.type)&&!e.miss)seasonSkinEffects.burst(f.characterType,f.skinId,e.type==='attack'?'basic':'ultimate',fighterGround(f));if(e.type==='attack'&&f&&['red','crimson'].includes(f.characterType))createAttackEffect(f,0);if(e.type==='ultimate'&&f?.isPlayer)audio.play('attack');if(mpConfig?.isHost&&f&&!f.isPlayer&&!f.isNetworkPlayer&&['attack','ultimate'].includes(e.type))mp.relay(e.type==='attack'?'S7_ATTACK':'S7_ULTIMATE',{id:f.syncId??f.id,yaw:Math.PI/2-e.owner.angle});},
   render:world=>{seasonCombatVisuals.sync(world);salmonCombatVisuals.update(world);if(seasonSkinEffects){const dt=Math.max(0,Math.min(.1,world.time-seasonSkinEffectsTime));seasonSkinEffectsTime=world.time;seasonSkinEffects.update(dt,state.players.filter(f=>f.skinId).map(f=>({key:f,characterId:f.characterType,skinId:f.skinId,position:fighterGround(f),visible:!f.dead&&f.mesh.visible})));}},clear:()=>{seasonCombatVisuals.clear();salmonCombatVisuals.clear();seasonSkinEffects?.clear();seasonSkinEffectsTime=0;},
  });return seasonCombat;
 }
@@ -15418,6 +15527,70 @@ function ensureSeason7NormalLoading(id){
 }
 
 function gemTeamCount(team){return state.players.filter(f=>f.team===team&&!f.dead).reduce((sum,f)=>sum+(f.goldCount??0),0);}
+// ── KNOCKOUT (Season 8): local 3v3, best of three rounds, no in-round respawns ──
+const KNOCKOUT_SPAWNS={a:[[-6,-15],[0,-15],[6,-15]],b:[[-6,15],[0,15],[6,15]]};
+const knockoutBgm=new Audio("./assets/beta8-the-midnight-gambit.mp3?v=1");knockoutBgm.loop=true;
+function knockoutText(ko,en){return currentLang==="en"?en:ko;}
+function placeKnockoutTeams(){
+ const fighters=state.players.slice(0,6);
+ fighters.forEach((f,i)=>{const team=i<3?'a':'b',[x,z]=KNOCKOUT_SPAWNS[team][i%3];
+  Object.assign(f,{dead:false,health:f.maxHealth,ammo:f.maxAmmo,respawnAt:0,invulnerableUntil:0,mintIce:0,mintFrozenUntil:0,blueDash:null,blueKnockback:null,shockUntil:0,seasonUltimateCharge:0,[`${f.characterType}UltimateCharge`]:0});
+  f.mesh.position.set(x,1.85,z);f.shadow.position.set(x,.04,z);f.yaw=team==='a'?0:Math.PI;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;});
+ // Recreate engine actors so charge, statuses, projectiles, fields and Salmon devices reset.
+ seasonCombat?.clear();
+ state.projectiles.forEach(p=>disposeSceneObject(p.mesh));state.projectiles=[];state.scheduledHits=[];
+}
+function startMainKnockout(){
+ resetGame('knockout');state.knockoutMode=true;state.goldRushMode=true;
+ state.players.slice(6).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
+ state.players.slice(0,6).forEach((f,i)=>{f.team=i<3?'a':'b';addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
+ placeKnockoutTeams();
+ state.knockoutMatch=createKnockoutMatch(state.gameTime);state.freezeUntil=state.knockoutMatch.until;
+ stopAllBgm();if(state.audioEnabled){knockoutBgm.currentTime=0;applyMasterVolume();knockoutBgm.volume=.45*masterVolume;knockoutBgm.play().catch(()=>{});}
+ mapNameEl.textContent='KNOCKOUT · '+ui(showdownMapGroup.userData.eventMapName);
+}
+function updateKnockoutPoison(elapsed,dt){
+ const fog=state.knockoutPoison??[];
+ if(elapsed<KNOCKOUT_RULES.poisonStarts){fog.forEach(m=>m.visible=false);return;}
+ const half=knockoutSafeHalf(elapsed),outer=20,band=Math.max(.01,outer-half),mid=(outer+half)/2;
+ [[0,-mid,outer*2,band],[0,mid,outer*2,band],[-mid,0,band,half*2],[mid,0,band,half*2]].forEach(([x,z,w,d],i)=>{const m=fog[i];if(!m)return;m.visible=band>.05;m.position.set(x,.6,z);m.scale.set(w,1,Math.max(.01,d));});
+ if(mpConfig&&!mpConfig.isHost)return;
+ for(const f of state.players.slice(0,6)){if(f.dead)continue;const p=f.mesh.position;if(Math.abs(p.x)>half||Math.abs(p.z)>half)applyDamage(f,f.maxHealth*.1*dt,null,true,false,true);}
+}
+function updateMainKnockout(dt){
+ const m=state.knockoutMatch;if(!m)return;
+ const event=advanceKnockout(m,state.players.slice(0,6),state.gameTime);
+ if(event==='round-end'){
+  state.freezeUntil=m.until+KNOCKOUT_RULES.countdown;
+  showKnockoutAnnounce(m.lastWinner?(m.lastWinner===state.playerTeam?knockoutText('라운드 승리!','Round won!'):knockoutText('라운드 패배','Round lost')):knockoutText('무승부 · 점수 없음','Draw · no point'));
+ }
+ if(event==='next-round'){placeKnockoutTeams();state.freezeUntil=m.until;showKnockoutAnnounce(knockoutText(`라운드 ${m.round}`,`Round ${m.round}`));}
+ if(event==='match-end'){finishMainKnockout();return;}
+ const fighting=m.phase==='fighting';
+ updateKnockoutPoison(fighting?state.gameTime-m.startedAt:0,dt);
+ survivorsLabel.textContent=knockoutHudText();
+}
+function knockoutHudText(){
+ const m=state.knockoutMatch;if(!m)return 'KNOCKOUT';
+ const alive=team=>state.players.slice(0,6).filter(f=>f.team===team&&!f.dead).length;
+ const mine=state.playerTeam,theirs=mine==='a'?'b':'a';
+ const clockText=m.phase==='fighting'?formatTime(Math.max(0,KNOCKOUT_RULES.roundSeconds-(state.gameTime-m.startedAt))):String(Math.ceil(Math.max(0,m.until-state.gameTime)));
+ return `R${m.round} · ${knockoutText('아군','ALLY')} ${m.wins[mine]} : ${m.wins[theirs]} ${knockoutText('적','ENEMY')} · ${alive(mine)}v${alive(theirs)} · ${clockText}`;
+}
+function showKnockoutAnnounce(text){
+ showdownAnnounceEl.textContent=text;showdownAnnounceEl.classList.remove('hidden','showdown-pop');void showdownAnnounceEl.offsetWidth;showdownAnnounceEl.classList.add('showdown-pop');
+ setTimeout(()=>showdownAnnounceEl.classList.add('hidden'),1800);
+}
+function finishMainKnockout(){
+ if(state.gameOver)return;state.gameOver=true;state.running=false;knockoutBgm.pause();
+ state.knockoutPoison?.forEach(m=>m.visible=false);
+ const m=state.knockoutMatch,won=m.winner===state.playerTeam,mine=state.playerTeam,theirs=mine==='a'?'b':'a';
+ const {coinsEarned,betaCreditsEarned}=recordGameResult(won?1:10);
+ resultTitle.textContent=won?knockoutText('KNOCKOUT 승리!','KNOCKOUT Victory!'):knockoutText('KNOCKOUT 패배','KNOCKOUT Defeat');
+ resultBody.textContent=knockoutText(`2라운드 선승 · 최종 ${m.wins[mine]} : ${m.wins[theirs]}`,`First to two rounds · Final ${m.wins[mine]} : ${m.wins[theirs]}`);
+ resultStats.textContent=knockoutText(`코인 +${coinsEarned}`,`Coins +${coinsEarned}`)+(betaCreditsEarned?` · ★ ${betaCreditsEarned}`:'');
+ resultStreak.style.display='none';resultOverlay.style.display='flex';document.exitPointerLock?.();
+}
 function startMainGemGrab(){
  resetGame('gemGrab');state.gemGrabMode=true;state.goldRushMode=true;state.freezeUntil=3;state.gemEscapeTeam=null;state.gemEscapeAt=0;state.gemEscape={a:null,b:null};state.gemStartedAt=3;state.gemNextSpawnAt=3+GEM_GRAB_RULES.firstSpawnDelay;
  state.players.slice(6).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
@@ -15452,3 +15625,4 @@ updateRegularEventStatus();
 setInterval(updateRegularEventStatus, 1000);
 preloadCharacterModels();
 modelLoading.ready();
+

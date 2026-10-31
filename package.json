@@ -14,7 +14,8 @@
     "deploy": "wrangler deploy",
     "check": "node --check src/main.js && node --check src/beta-season.js && node --check src/multiplayer.js && node --check src/config/characters.js && node --check src/config/beta-characters.js && node --check src/config/beta6-balance.js && node --check src/combat/beta6-combat.js && node --check src/config/skins.js && node --check src/visuals/crown.js",
     "check:maps": "node tools/test-event-maps.mjs && node tools/test-event-map-matching.mjs && node tools/test-beta-chop-wood.mjs",
-    "check:main7": "node --check src/combat/main-season-combat.js && node --check src/visuals/season-combat.js && node tools/test-main-season7-release.mjs && node tools/test-main-season7-combat.mjs && node tools/test-main-gem-grab.mjs"
+    "check:main7": "node --check src/combat/main-season-combat.js && node --check src/visuals/season-combat.js && node tools/test-main-season7-release.mjs && node tools/test-main-season7-combat.mjs && node tools/test-main-gem-grab.mjs",
+    "check:main8": "node --check src/main.js && node --check src/combat/main-season-combat.js && node tools/test-main-season8-release.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.100.0",

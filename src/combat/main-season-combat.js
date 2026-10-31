@@ -7,7 +7,9 @@ export function createMainSeasonCombat(definitions,hooks) {
   const units=new Map();
   const scaled=(source,mult)=>{const result=structuredClone(source);function walk(o){for(const[k,v]of Object.entries(o)){if(typeof v==='number'&&(k==='maxHealth'||k.endsWith('Damage')||['damage','damagePerSecond','poisonDPS'].includes(k)))o[k]=Math.round(v*mult);else if(v&&typeof v==='object')walk(v);}}walk(result);return result;};
   const world=createBeta6Combat(definitions,{
-    bounds:100,aimError:.08,blocked:(x,z,r)=>hooks.blocked(x,z,r),
+    bounds:100,aimError:.08,
+    // Knockout disables Pink's revive; read live because one world serves every mode.
+    get allowRevives(){return hooks.allowRevives?.()??true;},blocked:(x,z,r)=>hooks.blocked(x,z,r),
     bushAt:(x,z)=>hooks.bushAt?.(x,z)??false,
     destination:(a,b)=>hooks.destination?.(a.fighter,b)??b,
     onEvent(e){
