@@ -13,39 +13,43 @@
 | 환경 | 설정 파일 |
 |---|---|
 | 메인 게임 | `src/config/characters.js` |
-| 베타 테스트 | `src/config/beta-characters.js` |
+| 베타 기본값 | `src/config/beta-characters.js` |
+| 베타 시즌8 최종값 | 위 기본값 → `beta7-balance.js` → `beta8-balance.js` |
 
 ## 캐릭터별 스펙
 
 캐릭터별 스펙은 `characters/`의 문서 하나로 관리한다. 기본 스탯·공격·궁극기·고유 동작을 같은 문서에 기록하며, 시즌별 변경은 해당 시즌 문서에 연결한다. 현재 수치는 위 설정 파일과 실행 코드를 함께 확인한다.
 
+[시즌8 전체 수치·기능·검증](beta-season-8.md). 각 캐릭터 문서의 **베타 시즌8 현재 확정 수치** 절에서0.8.65를 확인한다. 앞부분의 메인/과거 수치와 구분한다.
+
 | 캐릭터 | 스펙 문서 |
 |---|---|
-| Red | [Red](characters/red.md) |
-| Green | [Green](characters/green.md) |
-| Blue | [Blue](characters/blue.md) |
-| Orange | [Orange](characters/orange.md) |
-| Yellow | [Yellow](characters/yellow.md) |
-| Cyan | [Cyan](characters/cyan.md) |
-| Purple | [Purple](characters/purple.md) |
-| Pink | [Pink](characters/pink.md) |
-| Crimson | [Crimson](characters/crimson.md) |
-| Gold | [Gold](characters/gold.md) |
-| Ivory | [Ivory](characters/ivory.md) |
-| Chartreuse | [Chartreuse](characters/chartreuse.md) |
-| Mint | [Mint](characters/mint.md) |
-| Lavender (베타 전투 테스트) | [Lavender](characters/lavender.md) |
-
-Azure는 [베타 시즌 6](beta-season-6.md)에서 확인한다.
+| 레드 (red) | [레드](characters/red.md) |
+| 샤르트뢰즈 (chartreuse) | [샤르트뢰즈](characters/chartreuse.md) |
+| 옐로 (yellow) | [옐로](characters/yellow.md) |
+| 아이보리 (ivory) | [아이보리](characters/ivory.md) |
+| 살몬 (salmon) | [살몬](characters/salmon.md) |
+| 골드 (gold) | [골드](characters/gold.md) |
+| 그린 (green) | [그린](characters/green.md) |
+| 애저 (azure) | [애저](characters/azure.md) |
+| 라벤더 (lavender) | [라벤더](characters/lavender.md) |
+| 크림슨 (crimson) | [크림슨](characters/crimson.md) |
+| 블루 (blue) | [블루](characters/blue.md) |
+| 오렌지 (orange) | [오렌지](characters/orange.md) |
+| 민트 (mint) | [민트](characters/mint.md) |
+| 시안 (cyan) | [시안](characters/cyan.md) |
+| 핑크 (pink) | [핑크](characters/pink.md) |
+| 퍼플 (purple) | [퍼플](characters/purple.md) |
+| 크리스탈 (crystal) | [크리스탈](characters/crystal.md) |
 
 ## 미구현 전투 계획안
 
-- [살몬 (Salmon)](characters/salmon.md) — 자동 재장전 없는 5발 탄약·포획 회복·원형 테두리 장치.
 - [라즈베리 (Raspberry)](characters/raspberry.md) — 덩굴 저격·원형 내부 속박. 확정 수치와 제안을 구분하며 출시 시즌은 미정이다.
 
 ## 시즌별 변경
 
 - [베타 궁극기 밸런스](beta-ultimate-balance.md)
+- [베타 8 캐릭터 밸런스 분석](beta8-character-balance-analysis.md)
 - [전체 시즌 목차](README.md#시즌-기획)
 
 ## 3D 모델 모션
