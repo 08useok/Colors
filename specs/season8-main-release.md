@@ -1,6 +1,6 @@
 # 베타 시즌 8 메인 이식 — v1.8.0
 
-2026-10-31 기준 베타 0.8.65의 활성 시즌 8 콘텐츠를 메인 `index.html` → `src/main.js`에 연결했다. 메인은 2026-10-31 00:00 KST부터 `beta8` 시즌으로 전환된다. 로컬 커밋 상태이며 공개(푸시)와 서버 배포는 아직이다.
+2026-10-31 기준 베타 0.8.65의 활성 시즌 8 콘텐츠를 메인 `index.html` → `src/main.js`에 연결했다. 메인은 2026-10-31 00:00 KST부터 `beta8` 시즌으로 전환된다. 2026-10-31 master 푸시(`2d6e770`)로 GitHub Pages에 공개했다. 멀티플레이 서버(살몬 허용) 배포는 아직이다.
 
 ## 이식 범위
 
@@ -31,7 +31,9 @@
 - `check:matchups`는 이번 변경 전부터 실패한다(구 시뮬레이터가 옐로 궁극기를 지원하지 않음).
 - 브라우저(로컬 시험 계정): 시즌 표시, 17종 선택·잠금, 살몬 로비/전투 모델, 살몬 투척·포획(공중 높이 약 4.9), 할로윈 스킨 4종 모델 로드, 부활 보호막(약 5초), KNOCKOUT 라운드 진행·독안개 피해·결과, 퀘스트 포인트 누적(20.24점)·보상 수령(코인 +50)·중복 방지, 공지·패치노트·17행 상성표. 페이지 오류는 로컬 리더보드 서버(8787) 미실행 연결 실패뿐이다.
 
-## 공개 전 확인 사항
+## 공개
 
-- 메인이 불러오는 베타 8 모듈 일부가 커밋되지 않았다: `beta6-combat.js`·`beta8-balance.js`·`aim-guides.js`·`rig-attack-motion.js`(수정), `salmon-combat.js`·`salmon.js`·`salmon-animation.js`·`beta-attack-motion.js`(config/visuals)·`beta-ultimate-motion.js`·`beta-attack-props.js`·`salmon-attack.js`·`salmon-combat.js`(visuals)·`skin-effects.js`(config/visuals)·`beta8-quests.js`(미추적). 이 파일들을 함께 커밋하지 않고 푸시하면 공개 메인이 깨진다.
-- master 푸시는 GitHub Pages로 즉시 공개된다. 서버는 `npm run deploy`로 별도 배포한다.
+- 메인·베타 페이지가 불러오던 미커밋 베타 8 실행 파일 25개를 함께 커밋했다(`2d6e770`).
+- HEAD를 깨끗한 체크아웃으로 띄워 메인(17종·KNOCKOUT 진행)과 베타 페이지(계정 서버 없이 게스트 동작)를 확인한 뒤 푸시했다.
+- 공개 주소 https://08useok.github.io/Colors/ 에서 `beta8` 시즌, 17종, 시즌 8 공지, KNOCKOUT 경기 진행을 콘솔 오류 없이 확인했다.
+- 남은 일: `npm run deploy`로 서버를 배포해야 온라인 대전에서 살몬을 고를 수 있다.
