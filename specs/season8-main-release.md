@@ -1,6 +1,6 @@
 # 베타 시즌 8 메인 이식 — v1.8.0
 
-2026-10-31 기준 베타 0.8.65의 활성 시즌 8 콘텐츠를 메인 `index.html` → `src/main.js`에 연결했다. 메인은 2026-10-31 00:00 KST부터 `beta8` 시즌으로 전환된다. 2026-10-31 master 푸시(`2d6e770`)로 GitHub Pages에 공개했다. 멀티플레이 서버(살몬 허용) 배포는 아직이다.
+2026-10-31 기준 베타 0.8.65의 활성 시즌 8 콘텐츠를 메인 `index.html` → `src/main.js`에 연결했다. 메인은 2026-10-31 00:00 KST부터 `beta8` 시즌으로 전환된다. 2026-10-31 master 푸시(`2d6e770`)로 GitHub Pages에 공개했다. 멀티플레이 서버도 같은 날 배포했다.
 
 ## 이식 범위
 
@@ -36,4 +36,5 @@
 - 메인·베타 페이지가 불러오던 미커밋 베타 8 실행 파일 25개를 함께 커밋했다(`2d6e770`).
 - HEAD를 깨끗한 체크아웃으로 띄워 메인(17종·KNOCKOUT 진행)과 베타 페이지(계정 서버 없이 게스트 동작)를 확인한 뒤 푸시했다.
 - 공개 주소 https://08useok.github.io/Colors/ 에서 `beta8` 시즌, 17종, 시즌 8 공지, KNOCKOUT 경기 진행을 콘솔 오류 없이 확인했다.
-- 남은 일: `npm run deploy`로 서버를 배포해야 온라인 대전에서 살몬을 고를 수 있다.
+- 서버 배포: https://colors-multiplayer.useok-jeju.workers.dev 버전 `a6b994d9-103e-4e4a-a7c5-3260e30cb4ec`. 임시 방의 두 WebSocket 연결(살몬·라벤더)이 캐릭터를 유지한 채 같은 맵으로 GAME_START를 받았다. [배포 검증 원본](main-season8-server-deployment.json)
+- 실제 온라인 전투 화면 검증은 별도다.

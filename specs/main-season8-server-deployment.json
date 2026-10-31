@@ -1,0 +1,13 @@
+{
+  "verifiedAt": "2026-10-31T13:44:28.902Z",
+  "host": "colors-multiplayer.useok-jeju.workers.dev",
+  "version": "a6b994d9-103e-4e4a-a7c5-3260e30cb4ec",
+  "httpStatus": 200,
+  "characters": [
+    "lavender",
+    "salmon"
+  ],
+  "mapId": 2,
+  "sharedMap": true,
+  "isolatedRoom": true
+}
