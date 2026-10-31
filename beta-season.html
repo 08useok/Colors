@@ -49,6 +49,8 @@
     .storybook-chapter { scroll-margin-top: 24px; }
   </style>
   <link rel="stylesheet" href="./model-loading.css?v=1">
+  <link rel="stylesheet" href="./beta-account.css?v=2">
+  <link rel="stylesheet" href="./beta-records.css?v=1">
 </head>
 <body>
   <div id="model-loading-screen" class="model-loading-screen" role="status" aria-live="polite" aria-busy="true">
@@ -112,6 +114,7 @@
       <button type="button" data-panel="storybook">컬러스 스토리북</button>
       <button type="button" data-panel="seaprops">시즌 소품</button>
       <button type="button" data-panel="quests">시즌 퀘스트</button>
+      <button type="button" data-panel="records">기록</button>
       <button id="chop-wood-open" type="button">찹 우드</button>
       <button id="gold-rush-toggle" type="button">골드 러쉬 시작</button>
       <button id="gem-grab-toggle" type="button">젬 그랩 시작</button>
@@ -148,7 +151,7 @@
       <button id="test-ally-death-btn" type="button">아군 사망</button>
       <button id="slowmo-btn" type="button" aria-pressed="false">슬로우 모드</button>
     </div>
-    <small>이 페이지의 플레이는 계정, 전적, 이벤트에 저장되지 않습니다.</small>
+    <small>로그인하면 베타 시험 기록을 계정별로 저장합니다. 정식 전적과는 별도입니다.</small>
   </aside>
 
   <div class="location-card">
@@ -257,6 +260,6 @@
     <label>벌목 진행 <progress id="chop-progress" max="2" value="0"></progress></label>
     <button id="chop-wood-close" type="button">로비로 돌아가기</button>
   </aside>
-  <script type="module" src="./src/beta-season.js?v=0.8.34"></script>
+  <script type="module" src="./src/beta-season.js?v=0.8.65"></script>
 </body>
 </html>

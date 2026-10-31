@@ -1,0 +1,6 @@
+.record-header {padding:16px;border-radius:14px;background:#211c35;margin-bottom:16px}
+.record-header strong {color:#f6c65e}.record-header nav{display:flex;gap:8px;flex-wrap:wrap}
+.record-header button[aria-pressed=true]{background:#7052a4;color:white}
+.record-row{display:flex;flex-direction:column;gap:7px;width:100%;text-align:left;padding:16px;margin:8px 0;background:#252037;color:#f8f4ff;border:1px solid #635377;border-radius:12px;overflow-wrap:anywhere}
+.record-row span{font-size:14px}.record-card{padding:16px;border:1px solid #635377;border-radius:12px;margin:12px 0;overflow-wrap:anywhere}
+.record-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}.record-metrics div{display:flex;flex-direction:column;padding:12px;background:#252037;border-radius:10px}.record-metrics strong{font-size:22px}.record-metrics small{color:#cbbfdc}

@@ -618,3 +618,5 @@ body.beta-season-8-theme #aim-mode-btn { background:#31233e; border-color:#80639
 .beta-boss-health > span { float: right; font-variant-numeric: tabular-nums; }
 .beta-boss-health-meter { margin-top: 8px; height: 12px; border-radius: 6px; background: #392322; overflow: hidden; }
 #beta-boss-health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #bf343b, #ff8455); }
+.crystal-ultimate-warning { position:fixed; z-index:18; left:50%; top:calc(var(--beta-header-bottom, 130px) + 12px); transform:translateX(-50%); max-width:calc(100vw - 24px); padding:10px 16px; border:2px solid #8aefff; border-radius:12px; background:rgba(8,30,48,.94); color:#fff; font-weight:800; text-align:center; pointer-events:none; box-shadow:0 0 24px #56c9ff70; }
+.crystal-ultimate-warning[hidden] { display:none; }

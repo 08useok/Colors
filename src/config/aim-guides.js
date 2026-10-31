@@ -23,6 +23,7 @@ export function ultimateGuide(id, d, { distance = Infinity, yaw = 0 } = {}) {
   if (id === 'crystal') return [beam(u.range, u.width ?? 1.1)];
   if (id === 'orange') return [{ type: 'fan', range: u.range, angle: u.spreadAngle }];
   if (id === 'yellow') { const range = Math.min(distance, u.throwRange ?? (Number.isFinite(distance) ? distance : 8)); return [beam(range), ring(.7, range)]; }
+  if (id === 'salmon') { const range = Math.min(distance, u.castRange); return [beam(range), ring(u.radius, range)]; }
   if (id === 'mint') { const range = Math.min(distance, u.castRange); return [beam(range), ring(u.radius, range)]; }
   if (id === 'purple') { const range = Math.min(distance, u.range); return [beam(range), ring(u.radius), ring(u.radius, range)]; }
   if (id === 'ivory') {

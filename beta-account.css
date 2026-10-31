@@ -1,0 +1,16 @@
+.beta-account-dialog { width:min(420px,calc(100vw - 40px)); max-height:90vh; overflow:auto; padding:26px; border:1px solid #b786ef; border-radius:20px; background:#20152f; color:#fff5e8; box-shadow:0 24px 90px #0009; font-family:inherit; }
+.beta-account-dialog::backdrop { background:#0e0816bb; }
+.beta-account-title { display:flex; justify-content:space-between; align-items:center; gap:20px; }
+.beta-account-title h2 { margin:0; }
+.beta-account-dialog label { display:grid; gap:7px; margin:16px 0; font-weight:700; }
+.beta-account-dialog input { box-sizing:border-box; width:100%; padding:12px; border:1px solid #81629e; border-radius:9px; background:#100b19; color:white; font:inherit; }
+.beta-account-dialog button { padding:10px 14px; margin:5px 4px 5px 0; border:1px solid #9a77bb; border-radius:9px; color:#fff; background:#533275; cursor:pointer; font:inherit; }
+.beta-account-dialog button[type=submit] { background:#8d4bb3; font-weight:800; }
+.beta-account-dialog button:disabled { opacity:.5; cursor:wait; }
+.beta-account-note { color:#d3bbdf; line-height:1.6; font-size:.85rem; }
+.beta-account-dialog [hidden] { display:none!important; }
+.beta-account-dialog [data-account-status] { min-height:2.5em; line-height:1.6; color:#ffdcaa; overflow-wrap:anywhere; }
+#beta-account-button[data-save=error] { border-color:#ff8d88; color:#ffb9b1; }
+.beta-account-dialog details { margin:18px 0; padding:14px; border:1px solid #644b7b; border-radius:10px; }
+.beta-account-dialog summary { cursor:pointer; font-weight:700; }
+.beta-account-dialog output { display:block; padding:12px; background:#100b19; border-radius:8px; color:#ffe3a5; font-family:monospace; line-height:1.7; overflow-wrap:anywhere; user-select:all; }

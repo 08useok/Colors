@@ -1,8 +1,11 @@
 import * as THREE from 'three';
+import { SALMON_THROW, salmonThrowPose } from '../config/salmon-animation.js';
+import { updateSalmonHandBobber } from './salmon-attack.js';
 
 // Additive poses run after the walk mixer, then are restored before its next
 // update. They never move the fighter root or change combat timing/hitboxes.
 export const RIG_ATTACK_PROFILES = {
+  salmon: {duration:SALMON_THROW.duration, kind:'salmonThrow'},
   red: {duration:.48, kind:'combo', hits:2},
   crimson: {duration:.42, kind:'combo', hits:3},
   mint: {duration:.54, kind:'combo', hits:3},
@@ -44,6 +47,7 @@ export function restoreRigAttackPose(saved = []) {
 function pulse(t) {return t<=0||t>=1 ? 0 : Math.sin(Math.PI*t);}
 export function applyRigAttackPose(root, characterId, time) {
   const profile=RIG_ATTACK_PROFILES[characterId];
+  if(characterId==='salmon')updateSalmonHandBobber(root,time);
   if (!root || !profile || time<0 || time>=profile.duration) return [];
   const t=time/profile.duration, bones=rigBones(root), saved=[];
   root.updateWorldMatrix(true,true);
@@ -59,19 +63,26 @@ export function applyRigAttackPose(root, characterId, time) {
     if(t<.32) {right=pulse(t/.64)*.55;forward=-.65;up=.6;}
     else {right=pulse((t-.32)/.68);up=.3;}
   }
-  function aim(bone,side,strength,forearm=false) {
+  function aim(bone,side,strength,forearm=false,direction=null) {
     const child=bone?.children.find(node=>node.isBone&&node.position.lengthSq()>1e-8);
     if(!bone || !child || strength<=0) return;
     const origin=bone.getWorldPosition(new THREE.Vector3());
     const current=child.getWorldPosition(new THREE.Vector3()).sub(origin).normalize();
-    const target=new THREE.Vector3(side*(forearm ? .08 : .25),up,forward).normalize().applyQuaternion(basis);
+    const target=(direction?new THREE.Vector3(...direction):new THREE.Vector3(side*(forearm ? .08 : .25),up,forward)).normalize().applyQuaternion(basis);
     const world=bone.getWorldQuaternion(new THREE.Quaternion());
     const delta=new THREE.Quaternion().setFromUnitVectors(current,target);
     const desired=delta.multiply(world);
     const parent=bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
     saved.push({bone,quaternion:bone.quaternion.clone()});
-    bone.quaternion.slerp(parent.multiply(desired),Math.min(1,strength*(forearm ? .6 : .9)));
+    bone.quaternion.slerp(parent.multiply(desired),Math.min(1,strength*(direction?1:forearm ? .6 : .9)));
     bone.updateWorldMatrix(false,true);
+  }
+  if(profile.kind==='salmonThrow'){
+    const pose=salmonThrowPose(time);
+    aim(bones.rightArm,-1,pose.strength,false,pose.arm);
+    aim(bones.rightForearm,-1,pose.strength,true,pose.forearm);
+    aim(bones.leftArm,1,pose.strength*.25);
+    return saved;
   }
   aim(bones.rightArm,-1,right);aim(bones.rightForearm,-1,right,true);
   aim(bones.leftArm,1,left);aim(bones.leftForearm,1,left,true);

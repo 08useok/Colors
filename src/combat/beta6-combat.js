@@ -1,3 +1,4 @@
+import { createSalmonCombat } from "./salmon-combat.js?v=1";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -12,15 +13,15 @@ export function createBeta6Combat(definitions, options = {}) {
   const random = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x ^= x + Math.imul(x ^ x >>> 7, 61 | x); return ((x ^ x >>> 14) >>> 0) / 4294967296; };
   const actors = [], projectiles = [], zones = [], scheduled = [];
   const emit = (type, data) => options.onEvent?.({ type, time, ...data });
-  const enemies = (a, b) => a !== b && (a.team == null || b.team !== a.team);
+  const enemies = (a, b) => a !== b && a.owner !== b && b.owner !== a && !(a.owner && a.owner === b.owner) && (a.team == null || b.team !== a.team);
   const alive = a => a.hp > 0;
   const hidden = (a,observer) => time >= a.revealedUntil && ((time < a.hiddenUntil && distance(a, a.bush || a) <= (a.u?.radius ?? 0)) || (observer && options.bushAt?.(a.x,a.z) && distance(a,observer)>3));
   const blocked = (x, z, radius = .55) => options.blocked?.(x, z, radius) ?? false;
   function move(a, x, z) {
     const bounds = options.bounds ?? 24;
     x = clamp(x, -bounds, bounds); z = clamp(z, -bounds, bounds);
-    if (!blocked(x, a.z)) a.x = x;
-    if (!blocked(a.x, z)) a.z = z;
+    if (!blocked(x, a.z) && !salmon.moveBlocked(a, x, a.z)) a.x = x;
+    if (!blocked(a.x, z) && !salmon.moveBlocked(a, a.x, z)) a.z = z;
   }
   function add(id, data = {}) {
     const d = definitions[id];
@@ -36,13 +37,19 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function rollRound(focus) { const r = random(); return focus ? (r < 1 / 3 ? 'enhanced' : r < 2 / 3 ? 'cc' : 'plague') : r < .45 ? 'enhanced' : r < .9 ? 'cc' : r < .95 ? 'plague' : 'blank'; }
   function charge(a, amount = 1) { if (a.u && alive(a)) a.charge = Math.min(a.u.chargeRequired, a.charge + amount); }
-  function hit(a, b, damage, basic = false, award = 1, ultimate = false) {
+  function damageReductionFor(a) {
+    const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;
+    const rolling=(a.dash&&time<a.dash.until)||(a.ultimatePreparing&&a.u?.guardDuringPreparation);
+    const dash=alive(a)&&!a.salmonAirborne&&time>=a.lockUntil&&time>=a.frozenUntil&&rolling?(a.u?.damageReduction??0):0;
+    return clamp(Math.max(guard,dash),0,1);
+  }
+  function hit(a, b, damage, basic = false, award = 1, ultimate = false, bypassGuard = false) {
     if (!alive(b) || damage <= 0 || time < b.invulnerableUntil || !enemies(a, b)) return 0;
-    const dealt = Math.min(b.hp, damage * (time < b.guardUntil ? 1 - b.d.ultimate.damageReduction : 1));
+    const dealt = Math.min(b.hp, damage * (bypassGuard?1:1-damageReductionFor(b)));
     b.hp -= dealt; a.combatAt = b.combatAt = time;
     b.revealedUntil = a.revealedUntil = time + 3;
     emit('damage', { owner: a, target: b, amount: dealt });
-    if (basic && dealt > 0) charge(a, award * (ultimate ? 1 : (a.d.basicUltimateChargeMultiplier ?? 1)));
+    if (basic && dealt > 0 && !b.isSalmonDevice) charge(a, award * (ultimate ? 1 : (a.d.basicUltimateChargeMultiplier ?? 1)));
     if (dealt > 0 && b.d.ultimateChargeOnHit) charge(b, b.d.ultimateChargeOnHit);
     if (!alive(b) && time < b.encoreUntil) revive(b, b.encoreOwner);
     return dealt;
@@ -73,6 +80,7 @@ export function createBeta6Combat(definitions, options = {}) {
     if (a.d.projectileSize != null && ['bullet', 'enhanced', 'cc', 'plague'].includes(projectile.kind)) {
       projectile.radius = a.d.projectileSize / 2;
     }
+    if(a.id==='blue'&&!projectile.ultimate&&projectile.kind==='bullet')projectile.radius*=a.d.bulletHitboxMultiplier??1;
     projectiles.push(projectile);
     for (const b of actors) if (!['wave', 'gale'].includes(projectile.kind) && b.automatic && b.d.projectileDodgeDuration
       && (!b.d.projectileDodgeKinds || b.d.projectileDodgeKinds.includes(projectile.kind)) && enemies(a, b)
@@ -82,9 +90,12 @@ export function createBeta6Combat(definitions, options = {}) {
         const end = { x: projectile.x + Math.cos(yaw) * reach, z: projectile.z + Math.sin(yaw) * reach };
         if (segmentDistance(b, projectile, end) > projectile.radius + .55) continue;
       }
+      // Consume this reaction opportunity even on failure: a multi-shot volley
+      // must not roll repeatedly until the nominal 50% chance becomes certain.
+      b.dodgeNext = time + (b.d.projectileDodgeCooldown ?? 0);
+      if (b.d.projectileDodgeChance != null && random() >= b.d.projectileDodgeChance) continue;
       b.dodgeUntil = time + b.d.projectileDodgeDuration;
       b.dodgeYaw = yaw + (random() < .5 ? -Math.PI / 2 : Math.PI / 2);
-      b.dodgeNext = time + (b.d.projectileDodgeCooldown ?? 0);
     }
   }
   function purpleLeapBurst(a, position, phase) {
@@ -92,14 +103,14 @@ export function createBeta6Combat(definitions, options = {}) {
     if (u.projectileCount) {
       const burstChargeHits = new Set();
       for (const b of actors) if (enemies(a, b) && distance(position, b) <= u.radius) {
-        hit(a, b, u.damage, true, 1, true);
+        hit(a, b, u.damage, true, u.rechargePerHit ?? 1, true);
       }
       for (let i = 0; i < u.projectileCount; i++) {
         shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.projectileRange ?? u.radius, u.projectileDamage,
           { kind: 'purpleThorn', ultimate: true, radius: u.projectileRadius, spawn: 0,
             x: position.x, z: position.z, origin: { ...position }, burstChargeHits });
       }
-    } else area(a, position, u.radius, u.damage, true, 1, true);
+    } else area(a, position, u.radius, u.damage, true, u.rechargePerHit ?? 1, true);
     emit('purpleLeap', { owner: a, phase, position });
   }
   function after(delay, owner, run, ultimateField = false) { scheduled.push({ at: time + delay, owner, run, ultimateField }); }
@@ -113,6 +124,37 @@ export function createBeta6Combat(definitions, options = {}) {
     const dx = b.x - a.x, dz = b.z - a.z;
     const delta = Math.atan2(Math.sin(Math.atan2(dz, dx) - yaw), Math.cos(Math.atan2(dz, dx) - yaw));
     if (distance(a, b) <= reach && Math.abs(delta) <= halfAngle) hit(a, b, damage, true);
+  }
+  // Tactical walking around visible burst/control trajectories; this does not reroll
+  // the separate common projectile-dodge chance or grant movement speed.
+  function burstEvasion(a,speed) {
+    if((!a.d.botAvoidBurstProjectiles&&!a.d.botAvoidControlProjectiles&&!a.d.botAvoidVolleyProjectiles) || time<a.lockUntil || time<a.frozenUntil)return null;
+    const lookAhead=a.d.botPathLookAhead??.9,safety=a.d.botPathSafetyMargin??.3,directions=a.d.botPathDirections??16;
+    const visible=p=>{
+      if(!options.blocked)return true;
+      const gap=distance(a,p);for(let step=.25;step<gap;step+=.25){const t=step/gap;if(blocked(a.x+(p.x-a.x)*t,a.z+(p.z-a.z)*t,.05))return false;}return true;
+    };
+    const threats=projectiles.filter(p=>((a.d.botAvoidBurstProjectiles&&['bomb','juice'].includes(p.kind))||(a.d.botAvoidControlProjectiles&&p.control)||(a.d.botAvoidVolleyProjectiles&&p.formation==='parallel'))&&enemies(a,p.owner)&&time>=p.start
+      && distance(a,p)<(p.speed+speed)*lookAhead+p.radius+.55&&visible(p));
+    for(const p of [...threats])if(p.kind==='bomb'){
+      const remaining=Math.max(0,p.reach-p.traveled),delay=remaining/p.speed;
+      if(delay>lookAhead)continue;
+      for(let i=0;i<p.owner.d.bombSplashCount;i++)threats.push({x:p.x+Math.cos(p.yaw)*remaining,z:p.z+Math.sin(p.yaw)*remaining,
+        yaw:i*Math.PI*2/p.owner.d.bombSplashCount,speed:p.owner.d.bombSplashSpeed,reach:p.owner.d.bombSplashRange,traveled:0,radius:p.owner.d.bombSplashHitRadius,predictDelay:delay});
+    }
+    const clearance=(p,vx,vz)=>{const delay=p.predictDelay??0,dx=p.x-a.x-Math.cos(p.yaw)*p.speed*delay,dz=p.z-a.z-Math.sin(p.yaw)*p.speed*delay,rx=Math.cos(p.yaw)*p.speed-vx,rz=Math.sin(p.yaw)*p.speed-vz;
+      const horizon=Math.min(lookAhead,delay+Math.max(0,p.reach-p.traveled)/p.speed);
+      const t=clamp(-(dx*rx+dz*rz)/(rx*rx+rz*rz||1),delay,horizon);
+      return Math.hypot(dx+rx*t,dz+rz*t)-p.radius-.55;};
+    if(!threats.some(p=>clearance(p,a.vx,a.vz)<safety))return null;
+    let best=null,bestScore=-Infinity;
+    for(let i=0;i<directions;i++){const yaw=i*Math.PI*2/directions,x=Math.cos(yaw),z=Math.sin(yaw);let clear=true;
+      for(let t=.05;t<=lookAhead;t+=.05){const nx=a.x+x*speed*t,nz=a.z+z*speed*t;
+        if(Math.abs(nx)>(options.bounds??24)||Math.abs(nz)>(options.bounds??24)||blocked(nx,nz)){clear=false;break;}}
+      if(!clear)continue;
+      const score=Math.min(...threats.map(p=>clearance(p,x*speed,z*speed)));
+      if(score>bestScore){bestScore=score;best={x,z};}
+    }return best;
   }
   function landingEvasion(a, speed) {
     if (!a.d.botAvoidLandingZones || time < a.lockUntil || time < a.frozenUntil) return null;
@@ -155,18 +197,57 @@ export function createBeta6Combat(definitions, options = {}) {
     }
     return best;
   }
+  function ultimateEvasion(a) {
+    if(time<a.lockUntil||time<a.frozenUntil)return null;
+    const caster=actors.find(b=>alive(b)&&enemies(a,b)&&b.ultimatePreparing&&b.ultimateTelegraph&&!hidden(b,a)
+      &&time>=b.ultimateTelegraph.startedAt+(b.u.telegraphReaction??.15)&&time<b.ultimateTelegraph.endsAt
+      &&(b.ultimateTelegraph.targetKey===a.key||a.telegraphAvoid?.key===b.key||(()=>{const t=b.ultimateTelegraph,dx=a.x-t.x,dz=a.z-t.z;return dx*Math.cos(t.yaw)+dz*Math.sin(t.yaw)>=-1&&dx*Math.cos(t.yaw)+dz*Math.sin(t.yaw)<=t.range+1&&Math.abs(-dx*Math.sin(t.yaw)+dz*Math.cos(t.yaw))<=t.width/2+.85;})()));
+    if(!caster){
+      if(a.telegraphAvoid&&time<a.telegraphAvoid.until){const owner=actors.find(b=>b.key===a.telegraphAvoid.key);if(owner&&alive(owner)){const dx=a.x-owner.x,dz=a.z-owner.z,length=Math.hypot(dx,dz)||1;return{x:dx/length,z:dz/length};}}
+      a.telegraphAvoid=null;return null;
+    }
+    const t=caster.ultimateTelegraph,dx=a.x-t.x,dz=a.z-t.z,cross=-dx*Math.sin(t.yaw)+dz*Math.cos(t.yaw);
+    if(a.telegraphAvoid?.key!==caster.key||a.telegraphAvoid.startedAt!==t.startedAt){a.telegraphAvoid={key:caster.key,startedAt:t.startedAt,until:t.endsAt+(caster.u.telegraphEscapeDuration??3),side:Math.abs(cross)>.1?Math.sign(cross):(Math.cos(a.phase)>=0?1:-1)};emit('ultimateEvade',{owner:a,target:caster});}
+    const away=t.yaw+a.telegraphAvoid.side*(caster.u.telegraphEscapeAngle??Math.PI/2),speed=8*a.d.moveSpeedMultiplier,horizon=Math.min(.4,t.endsAt-time);
+    for(const angle of [away,away+Math.PI/4,away-Math.PI/4,away+Math.PI/2,away-Math.PI/2]){const x=Math.cos(angle),z=Math.sin(angle);let clear=true;for(let step=.05;step<horizon+.05;step+=.05){const nx=a.x+x*speed*step,nz=a.z+z*speed*step;if(Math.abs(nx)>(options.bounds??24)||Math.abs(nz)>(options.bounds??24)||blocked(nx,nz)){clear=false;break;}}if(clear)return{x,z};}
+
+    for(const side of [a.telegraphAvoid.side,-a.telegraphAvoid.side]){
+      const x=-Math.sin(t.yaw)*side,z=Math.cos(t.yaw)*side,horizon=Math.min(.4,t.endsAt-time),speed=8*a.d.moveSpeedMultiplier;
+      let clear=true;for(let step=.05;step<horizon+.05;step+=.05){const nx=a.x+x*speed*step,nz=a.z+z*speed*step;if(Math.abs(nx)>(options.bounds??24)||Math.abs(nz)>(options.bounds??24)||blocked(nx,nz)){clear=false;break;}}
+      if(clear){a.telegraphAvoid.side=side;return{x,z};}
+    }
+    return {x:-Math.cos(t.yaw),z:-Math.sin(t.yaw)};
+  }
+  function interceptTime(a,target,speed){
+    const x=target.x-a.x,z=target.z-a.z,vx=target.vx??0,vz=target.vz??0,A=vx*vx+vz*vz-speed*speed,B=2*(x*vx+z*vz),C=x*x+z*z;
+    const discriminant=B*B-4*A*C;if(discriminant<0)return Math.sqrt(C)/speed;
+    if(Math.abs(A)<1e-8)return B<0?-C/B:Math.sqrt(C)/speed;
+    const roots=[(-B-Math.sqrt(discriminant))/(2*A),(-B+Math.sqrt(discriminant))/(2*A)].filter(t=>t>=0);
+    return roots.length?Math.min(...roots):Math.sqrt(C)/speed;
+  }
   function fire(a, target, manualAngle) {
-    if (!alive(a) || a.ammo <= 0 || time < a.next || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
+    if (a.id === 'salmon' && !a.isSalmonDevice) return salmon.fire(a, target);
+    if (a.ultimatePreparing || !alive(a) || a.ammo <= 0 || time < a.next || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     const d = a.d, id = a.id;
-    const speed = d.bulletSpeed ?? d.boomerangSpeed ?? d.bombSpeed ?? d.electricSpeed ?? d.needleSpeed ?? d.iceBulletSpeed ?? d.chartreuseSpeed ?? (id === 'azure' ? 10 : 20);
-    const lead = distance(a, target) / speed * (a.automatic ? d.botAimLeadFactor ?? .65 : .65);
-    let yaw = manualAngle ?? Math.atan2(target.z + target.vz * lead - a.z, target.x + target.vx * lead - a.x) + (random() * 2 - 1) * (options.aimError ?? .08);
+    const speed = id === 'purple' && a.index % 2 ? d.vialSpeed : (d.bulletSpeed ?? d.boomerangSpeed ?? d.bombSpeed ?? d.electricSpeed ?? d.needleSpeed ?? d.iceBulletSpeed ?? d.chartreuseSpeed ?? (id === 'azure' ? 10 : 20));
+    const windupLead = a.automatic ? (d.attackWindup ?? 0) * (d.botAimWindupLeadFactor ?? 0) : 0;
+    const lead = distance(a, target) / speed * (a.automatic ? d.botAimLeadFactor ?? .65 : .65) + windupLead;
+    const initialAimYaw=Math.atan2(target.z + target.vz * lead - a.z - a.vz * windupLead, target.x + target.vx * lead - a.x - a.vx * windupLead);
+    let yaw = manualAngle ?? initialAimYaw + (random() * 2 - 1) * (options.aimError ?? .08);
+    const yawError=yaw-initialAimYaw;
     if (id === 'yellow' && a.automatic && manualAngle == null && a.devices.length >= 2) {
       const device = a.devices.filter(p => distance(a, p) <= range(a)).sort((b,c)=>distance(a,b)-distance(a,c))[0];
       if (device) yaw = Math.atan2(device.z - a.z, device.x - a.x);
     }
     a.angle = yaw; a.ammo--; a.next = time + d.attackCooldown; a.combatAt = time; a.revealedUntil = time + 3; a.attackCount++;
     emit('attack', { owner: a, target, kind: id });
+    const resolveAttack = () => {
+    if (!alive(a) || time < a.lockUntil || time < a.frozenUntil || a.salmonAirborne) return;
+    if(a.automatic&&d.botTrackTargetDuringWindup&&manualAngle==null&&alive(target)&&!hidden(target,a)){
+      const releaseLead=(d.botAimIntercept?interceptTime(a,target,speed):distance(a,target)/speed)*(d.botAimLeadFactor??.65);
+      yaw=Math.atan2(target.z+target.vz*releaseLead-a.z,target.x+target.vx*releaseLead-a.x)+yawError;
+      a.angle=yaw;
+    }
     const launch = (v, reach, amount, extra = {}, angle = yaw) => shot(a, angle, v, reach, amount, extra);
     if (id === 'lavender') {
       zones.push({ key: ++serial, owner: a, kind: 'perfumeSpray', x: a.x, z: a.z, yaw, radius: d.attackRange,
@@ -179,29 +260,31 @@ export function createBeta6Combat(definitions, options = {}) {
     });
     else if (id === 'pink') {
       area(a, a, d.healCircleRange, d.healCircleDamage, true);
-      for (const b of actors) if (b !== a && !enemies(a, b) && alive(b) && distance(a, b) <= d.healCircleRange) { b.hp = Math.min(b.d.maxHealth, b.hp + d.healCircleHeal); emit('heal', { owner: a, target: b }); }
+      for (const b of actors) if (b !== a && !enemies(a, b) && alive(b) && distance(a, b) <= d.healCircleRange) { const before = b.hp; b.hp = Math.min(b.d.maxHealth, b.hp + d.healCircleHeal); emit('heal', { owner: a, target: b, amount: b.hp - before }); }
     } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage);
     else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
-    else if (id === 'yellow') launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', start: time + d.attackDelay });
+    else if (id === 'yellow') launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', control:'shock', start: time + (d.attackWindup ? 0 : d.attackDelay) });
     else if (id === 'cyan') for (let i = 0; i < d.spreadLineCount; i++) {
       const offset = (i - (d.spreadLineCount - 1) / 2) * (d.spreadLineSpacing ?? .75);
-      launch(d.spreadLineSpeed, d.spreadLineRange, d.spreadLineDamage, { x: a.x + Math.cos(yaw) * .6 - Math.sin(yaw) * offset, z: a.z + Math.sin(yaw) * .6 + Math.cos(yaw) * offset });
+      launch(d.spreadLineSpeed, d.spreadLineRange, d.spreadLineDamage, { x: a.x + Math.cos(yaw) * .6 - Math.sin(yaw) * offset, z: a.z + Math.sin(yaw) * .6 + Math.cos(yaw) * offset, formation:'parallel' });
     }
     else if (id === 'purple') {
       if (a.index++ % 2) launch(d.vialSpeed, d.vialRange, d.vialDamage, { kind: 'vial' });
       else for (let i = 0; i < d.needleCount; i++) launch(d.needleSpeed, d.needleRange, d.needleDamage, { kind: 'needle' }, yaw + (i / (d.needleCount - 1) - .5) * d.needleSpreadAngle);
     } else if (id === 'gold') launch(d.stage1Speed, d.stage1Range, d.stage1Damage, { kind: 'gold', stage: 1, radius: d.stage1Size / 2, token: { hits: new Set(), charge: 0 }, spawn: 0 });
-    else if (id === 'ivory') launch(d.iceCreamSpeed, Math.min(d.iceCreamRange, distance(a, target)), d.iceCreamDamage, { kind: 'ivory', start: time + .2, spawn: 0 });
+    else if (id === 'ivory') launch(d.iceCreamSpeed, Math.min(d.iceCreamRange, distance(a, target)), d.iceCreamDamage, { kind: 'ivory', start: time + (d.attackWindup ? 0 : .2), spawn: 0 });
     else if (id === 'chartreuse') {
       const kind = a.rounds.shift() ?? rollRound(time < a.focusUntil);
       a.rounds.push(rollRound(time < a.focusUntil));
-      if (kind !== 'blank') launch(d.chartreuseSpeed, d.chartreuseRange, (kind === 'enhanced' ? d.chartreuseEnhancedDamage : d.chartreuseDamage) * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind });
+      if (kind !== 'blank') launch(d.chartreuseSpeed, d.chartreuseRange, (kind === 'enhanced' ? d.chartreuseEnhancedDamage : d.chartreuseDamage) * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind, control:kind==='cc'?'crowdControl':kind==='plague'?'execute':undefined });
     } else if (id === 'mint') for (let i = 0; i < d.burstCount; i++) after(i * d.burstIntervalMs / 1000, a, () => {
-      if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint' });
+      if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint', control: 'ice' });
     });
     else if (id === 'azure') wave(a, yaw, false);
     else if (id === 'crystal') launch(d.crystalSpeed, d.crystalRange, d.crystalDamage, { kind: 'crystal', stage: 1, token: { hits: new Set() }, homingTarget: target });
+    };
+    if (d.attackWindup > 0) after(d.attackWindup, a, resolveAttack); else resolveAttack();
     return true;
   }
   function wave(a, yaw, ultimate) {
@@ -210,21 +293,67 @@ export function createBeta6Combat(definitions, options = {}) {
       { kind: 'wave', ultimate, width: ultimate ? u.width : d.surfWidth, ride: ultimate ? 0 : d.surfDashDistance, spawn: 0 });
     a.wave = true;
   }
+  function beginUltimate(a, target, resolve) {
+    a.charge = 0; a.castCount++;
+    const delay = a.u.motionWindup ?? 0;
+    if (delay > 0) {
+      a.ultimatePreparing = true;
+      if (a.id === 'crystal' && a.u.telegraphWidth) {
+        a.ultimateTelegraph = {x:a.x,z:a.z,yaw:a.angle,range:Math.min(a.u.range,distance(a,target)),width:a.u.telegraphWidth,startedAt:time,endsAt:time+delay,targetKey:target.key};
+        a.revealedUntil=Math.max(a.revealedUntil,time+delay+.3);
+      }
+      emit('ultimatePrepare', { owner: a, target });
+      after(delay, a, () => {
+        const telegraph=a.ultimateTelegraph;
+        a.ultimatePreparing = false; a.ultimateTelegraph=null;
+        if (!alive(a) || time < a.lockUntil || time < a.frozenUntil || time < (a.airborneUntil ?? 0)) return;
+        if (a.id === 'crystal' && (!alive(target) || target.analysisOwner)) return;
+        if (telegraph) {
+          const dx=target.x-telegraph.x,dz=target.z-telegraph.z;
+          const front=dx*Math.cos(telegraph.yaw)+dz*Math.sin(telegraph.yaw),cross=-dx*Math.sin(telegraph.yaw)+dz*Math.cos(telegraph.yaw);
+          if(front<-.55||front>telegraph.range+.55||Math.abs(cross)>telegraph.width/2+.55){
+            move(a,telegraph.x+Math.cos(telegraph.yaw)*telegraph.range,telegraph.z+Math.sin(telegraph.yaw)*telegraph.range);
+            emit('ultimateMiss',{owner:a,target});emit('ultimate',{owner:a,target,miss:true});return;
+          }
+        }
+        resolve(); emit('ultimate', { owner: a, target });
+      });
+    } else { resolve(); emit('ultimate', { owner: a, target }); }
+    return true;
+  }
   function cast(a, target, aim = {}) {
     const u = a.u;
-    if (!u || !alive(a) || a.charge < u.chargeRequired || ultimateFieldActive(a) || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
+    if (a.id === 'salmon' && !a.isSalmonDevice) return salmon.cast(a, aim.point ?? target);
+    if (a.ultimatePreparing || !u || !alive(a) || a.charge < u.chargeRequired || ultimateFieldActive(a) || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
+    if (a.automatic && u.knockback > 0 && Number.isFinite(a.d.botKnockbackUltimateTankRange)) {
+      target = actors.filter(b=>alive(b)&&enemies(a,b)&&!b.isSalmonDevice&&b.d.botTankTarget&&!hidden(b,a)
+        &&distance(a,b)<=Math.min(a.d.botKnockbackUltimateTankRange,u.range??Infinity))
+        .sort((b,c)=>distance(a,b)-distance(a,c)||b.key-c.key)[0];
+      if (!target) return false;
+      aim = {};
+    }
     if (a.id === 'pink') {
       if (options.allowRevives === false) return false;
       const allies = actors.filter(b => b !== a && !enemies(a, b) && distance(a, b) <= u.radius);
       if (!allies.length) return false;
-      a.charge = 0;
+      return beginUltimate(a, target, () => {
       for (const b of allies) { if (!alive(b)) revive(b, a); else { b.encoreUntil = time + 12; b.encoreOwner = a; } }
+      });
     } else {
       if (!target || !alive(target) || hidden(target,a)) return false;
       const point = aim.point ?? target;
       const dist = distance(a, point);
       let yaw = aim.angle ?? Math.atan2(point.z - a.z, point.x - a.x);
       if (a.id === 'purple' && aim.point) yaw = Math.atan2(point.z - a.z, point.x - a.x);
+      if(a.automatic&&a.id==='purple'&&a.d.botSmartUltimate){
+        const lowHealth=a.hp/a.d.maxHealth<=.35;
+        const poisonTicks=target.poisonOwner===a&&target.poisonUntil>time?Math.max(0,Math.ceil(target.poisonUntil-Math.max(time,target.poisonNext)-1e-9)):0;
+        if(lowHealth&&poisonTicks*(a.d.poisonDPS??0)>=target.hp)return false;
+        if(target.hp<=a.d.needleDamage&&dist<=a.d.needleRange)return false;
+        const eta=(u.motionWindup??0)+u.duration;
+        const predicted=Math.hypot(target.x+target.vx*eta-a.x,target.z+target.vz*eta-a.z);
+        if(predicted>u.range+u.radius&&dist>u.radius)return false;
+      }
       if (a.automatic && a.id === 'blue') {
         const healthRatio = a.hp / a.d.maxHealth;
         if (healthRatio < a.d.ultimateUseHealthMin || healthRatio > a.d.ultimateUseHealthMax) return false;
@@ -245,16 +374,16 @@ export function createBeta6Combat(definitions, options = {}) {
       if (a.automatic && a.id === 'green' && a.ammo > 0 && a.hp > a.d.maxHealth * .4) return false;
       // Spend the stored charge before resolving the skill so successful
       // ultimate hits can immediately begin charging the next ultimate.
-      a.charge = 0;
       if (a.id === 'blue' && a.automatic && a.d.dashAwayFromTarget) yaw += Math.PI;
       a.angle = yaw;
+      return beginUltimate(a, target, () => {
       if (a.id === 'lavender') zones.push({ key: ++serial, owner: a, kind: 'fragrance', x: a.x, z: a.z,
         radius: u.radius, until: time + u.duration, next: time, tickInterval: u.tickInterval });
       else if (a.id === 'red') a.guardUntil = time + u.duration;
       else if (a.id === 'green') { a.hiddenUntil = time + u.duration; a.revealedUntil = 0; a.bush = { x: a.x, z: a.z }; }
       else if (a.id === 'blue') {
         a.dash = { yaw, until: time + u.duration, hits: new Set() };
-        a.invulnerableUntil = Math.max(a.invulnerableUntil, time + u.duration);
+        if(u.invulnerableDuringDash!==false)a.invulnerableUntil = Math.max(a.invulnerableUntil, time + u.duration);
       }
       else if (a.id === 'crimson') {
         for (const b of actors.filter(b => enemies(a, b))) {
@@ -298,6 +427,9 @@ export function createBeta6Combat(definitions, options = {}) {
         // 붙잡힌 쪽이 걸어 둔 분석은 풀린다 — 먼저 잡는 쪽이 이긴다
         if (target.analysisTarget) releaseAnalysis(target);
         a.lockUntil = target.lockUntil = until;
+        if (u.bindStopsMovement) {
+          for (const bound of [a,target]) { bound.leap=null; bound.dash=null; bound.wave=null; bound.vx=0; bound.vz=0; }
+        }
         a.analysisTarget = target; target.analysisOwner = a; target.analysisExpires = until;
         emit('analysis', { owner: a, target, expiresAt: until });
       }
@@ -311,8 +443,8 @@ export function createBeta6Combat(definitions, options = {}) {
           emit('devicePlaced', { owner: a, device });
         });
       }
+      });
     }
-    a.castCount++; emit('ultimate', { owner: a, target }); return true;
   }
   function finish(p) {
     const a = p.owner, d = a.d;
@@ -343,13 +475,14 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function tick(dt) {
     time += dt;
+    salmon.tick();
     for (const a of actors) {
       // 시전자가 쓰러져도 대상이 영원히 묶이지 않도록 죽음 검사보다 먼저 푼다
       if (a.analysisTarget && (!alive(a) || !alive(a.analysisTarget))) releaseAnalysis(a);
-      if (!alive(a)) continue;
+      if (!alive(a) || a.isSalmonDevice || a.salmonAirborne) continue;
       if (a.analysisTarget) {
         const target = a.analysisTarget;
-        if (time >= target.analysisExpires) { hit(a, target, target.hp); target.analysisOwner = null; a.analysisTarget = null; a.lockUntil = time; emit('analysisExecute', { owner: a, target }); }
+        if (time >= target.analysisExpires) { hit(a, target, a.u.executionFixedAmount ?? target.hp, false, 0, true, a.u.executeBypassesGuard === true); target.analysisOwner = null; a.analysisTarget = null; a.lockUntil = time; emit('analysisExecute', { owner: a, target }); }
       }
       if (options.suddenDeath && time >= options.suddenDeath.start) {
         const progress = clamp((time - options.suddenDeath.start) / Math.max(.001, options.suddenDeath.end - options.suddenDeath.start), 0, 1);
@@ -370,6 +503,8 @@ export function createBeta6Combat(definitions, options = {}) {
           a.leap = null;
           a.lockUntil = time;
           purpleLeapBurst(a, leap.to, 'landing');
+
+
         }
         a.vx = (a.x - previousX) / dt;
         a.vz = (a.z - previousZ) / dt;
@@ -381,13 +516,15 @@ export function createBeta6Combat(definitions, options = {}) {
       if (a.automatic) cast(a, target);
       if (a.leap) continue;
       if (time < a.poisonUntil && time >= a.poisonNext) { hit(a.poisonOwner, a, a.poisonOwner.d.poisonDPS ?? definitions.purple.poisonDPS); a.poisonNext = time + 1; }
-      if (a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
+      if (!a.d.noAutomaticReload && a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
       else if (a.ammo >= (a.d.maxAmmo ?? 3)) a.reload = 0;
       if (!a.automatic || !target) continue;
       const circuitDevice = a.id === 'yellow' && a.d.botTargetCircuitDevices && a.devices.length >= 2
         ? [...a.devices].sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;
       const approachingDevice = circuitDevice && distance(a,circuitDevice)>range(a);
-      const moveTarget = approachingDevice ? circuitDevice : target;
+      const recoverTarget = a.id === 'salmon' && a.ammo < a.d.maxAmmo ? salmon.floats.filter(f=>f.owner===a).sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;
+      if (recoverTarget && distance(a,recoverTarget)<=4) salmon.fire(a,target);
+      const moveTarget = recoverTarget ?? (approachingDevice ? circuitDevice : target);
       const destination = options.destination?.(a, moveTarget) ?? moveTarget;
       const previousX = a.x, previousZ = a.z;
       let dist = distance(a, destination), yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
@@ -405,21 +542,26 @@ export function createBeta6Combat(definitions, options = {}) {
         dist = distance(a, destination);
         yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
       }
-      const ideal = destination !== moveTarget ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
-      const retreatsAtLowHealth = !approachingDevice && (options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth));
-      const usesRangeBand = destination === target && Number.isFinite(a.d.attackPerceptionMinRange);
+      const ideal = recoverTarget ? 0 : destination !== moveTarget ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
+      const groundStandoff=destination===target&&a.d.botGroundAttackSpacing&&Number.isFinite(target.d.groundAttackRange)
+        ? Math.min(perceivedRange(a)-1,target.d.groundAttackRange+a.d.botGroundAttackSpacing):null;
+      const retreatsAtLowHealth = !approachingDevice && (options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth && groundStandoff==null));
+      const bandMin = groundStandoff ?? a.d.attackPerceptionMinRange;
+      const usesRangeBand = destination === target && Number.isFinite(bandMin);
       const radial = retreatsAtLowHealth ? -.85 : usesRangeBand
-        ? (dist > perceivedRange(a) ? .85 : dist < a.d.attackPerceptionMinRange ? -.85 : 0)
+        ? (dist > perceivedRange(a) ? .85 : dist < bandMin ? -.85 : 0)
         : dist > ideal + .5 ? .85 : dist < ideal - .5 ? -.85 : 0;
       const strafe = Math.sin(time * 2.4 + a.phase) * .4;
       const dodging = time < a.dodgeUntil;
       let speed = 8 * a.d.moveSpeedMultiplier * (dodging ? a.d.projectileDodgeSpeedMultiplier ?? 1 : 1) * (time < a.slowUntil ? 1 - a.slow : 1) * (time < a.frozenUntil ? 0 : 1);
       const landingSpeed=speed*(a.d.botLandingDodgeSpeedMultiplier??1);
-      const evasion=landingEvasion(a,landingSpeed);
-      if(evasion)speed=landingSpeed;
+      const landing=landingEvasion(a,landingSpeed);
+      const evasion=landing??burstEvasion(a,speed)??(dodging?null:ultimateEvasion(a));
+      if(landing)speed=landingSpeed;
       const dodgeForward = a.d.projectileDodgeForwardFactor ?? 0;
       const dodgeScale = 1 / Math.hypot(1, dodgeForward);
-      if (!a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
+      const analysisBound = (a.analysisOwner?.u.bindStopsMovement || (a.analysisTarget && a.u?.bindStopsMovement));
+      if (!(a.ultimatePreparing && a.ultimateTelegraph) && !analysisBound && !a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
         a.x + (evasion ? evasion.x : dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(yaw) * radial - Math.sin(yaw) * strafe) * speed * dt,
         a.z + (evasion ? evasion.z : dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;
@@ -435,7 +577,7 @@ export function createBeta6Combat(definitions, options = {}) {
       else move(a, x, z);
       for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit, true); knock(b, dash.yaw, .65); }
     }
-    for (let i = scheduled.length - 1; i >= 0; i--) if (scheduled[i].at <= time) { const event = scheduled.splice(i, 1)[0]; if (alive(event.owner)) event.run(); }
+    for (let i = scheduled.length - 1; i >= 0; i--) if (scheduled[i].at <= time) { const event = scheduled.splice(i, 1)[0]; if (alive(event.owner)) event.run(); else { event.owner.ultimatePreparing = false; event.owner.ultimateTelegraph=null; } }
     for (let i = projectiles.length - 1; i >= 0; i--) {
       const p = projectiles[i], a = p.owner, d = a.d;
       if (time < p.start) continue;
@@ -475,6 +617,7 @@ export function createBeta6Combat(definitions, options = {}) {
         if (p.kind === 'boomerang') amount *= (p.traveled > d.boomerangFarThreshold ? d.boomerangFarMultiplier : 1) * (p.returning ? d.boomerangReturnDamageMultiplier : 1);
         if (p.kind === 'gold') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); award = Math.min([0, 3, 2, 1][p.stage], d.maxChargePerAttack - p.token.charge); p.token.charge += award; }
         if (p.kind === 'crystal') {
+          if (p.stage === 3) award = d.shardUltimateCharge ?? 1;
           const key = `${b.key}:${p.stage}`, limit = p.stage === 2 ? (d.fragmentHitLimit ?? 1) : p.stage === 3 ? (d.shardHitLimit ?? 1) : 1;
           const counts = p.token.hitCounts ??= new Map(), count = counts.get(key) ?? 0;
           if (count >= limit) amount = 0;
@@ -490,7 +633,7 @@ export function createBeta6Combat(definitions, options = {}) {
           if (p.kind === 'mint') ice(b, d.icePerHit);
           if (a.id === 'blue' && !p.ultimate && d.bulletKnockback) knock(b, p.yaw, d.bulletKnockback);
           if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; }
-          if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback / 9);
+          if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9));
           if (p.kind === 'cc') { const effect = Math.floor(random() * 6); if (effect === 0 || effect === 5) { b.slowUntil = time + 2; b.slow = effect === 5 ? 1 : .35; } if (effect === 1 || effect === 5) b.lockUntil = time + 2; if (effect === 2) b.frozenUntil = time + 2; if (effect === 3) { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; } if (effect === 4) knock(b, p.yaw, 3.5); }
           if (p.kind === 'bomb') hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount);
         }
@@ -551,7 +694,7 @@ export function createBeta6Combat(definitions, options = {}) {
           b.lockUntil = time + .05; b.slowUntil = time + .05; b.slow = .5;
           if (time + 1e-9 >= zone.next) hit(a, b, a.u.tickDamage ?? 0);
         }
-        if (zone.kind === 'mint') { if (time >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
+        if (zone.kind === 'mint') { if (time + 1e-9 >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
         if (zone.kind === 'ivory') {
           if (time + 1e-9 >= zone.next && time + 1e-9 >= b.zoneNext) {
             if (a.d.basicUltimateChargeMultiplier == null) {
@@ -573,15 +716,20 @@ export function createBeta6Combat(definitions, options = {}) {
       target.zoneNext = time + owner.d.iceCreamZoneTickInterval;
     }
   }
-  return { actors, projectiles, zones, add, fire, cast, hit, hidden, range, ultimateFieldActive, get time() { return time; },
+  const salmon = createSalmonCombat({actors, time:()=>time, key:()=>++serial, bounds:options.bounds??24, blocked, walkable:options.walkable, hit, emit,
+    cancelRide(a){for(let i=projectiles.length-1;i>=0;i--)if(projectiles[i].owner===a&&projectiles[i].kind==='wave')projectiles.splice(i,1);},
+    addDevice(owner,p){return add('salmon',{...p,owner,isSalmonDevice:true,automatic:false,team:owner.team,hp:owner.u.deviceHealth,ammo:0,charge:0,u:null,d:{maxHealth:owner.u.deviceHealth,maxAmmo:0,noAutomaticReload:true,moveSpeedMultiplier:0},next:Infinity});}});
+  return { actors, projectiles, zones, salmon, add, fire, cast, hit, hidden, range, damageReductionFor, ultimateFieldActive, get time() { return time; },
     update(dt) { let remaining = Math.min(.25, Math.max(0, dt)); while (remaining > 1e-9) { const step = Math.min(1 / 60, remaining); tick(step); remaining -= step; } },
     remove(actor) {
+      actor.ultimatePreparing=false;actor.ultimateTelegraph=null;
+      salmon.remove(actor);
       // 사라지는 액터가 걸어 둔 속박도 함께 푼다
       if (actor.analysisTarget) releaseAnalysis(actor);
       if (actor.analysisOwner) releaseAnalysis(actor.analysisOwner);
       const index = actors.indexOf(actor); if (index >= 0) actors.splice(index, 1);
       for (const list of [projectiles, zones, scheduled]) for (let i = list.length - 1; i >= 0; i--) if (list[i].owner === actor) list.splice(i, 1);
     },
-    clear() { actors.length = projectiles.length = zones.length = scheduled.length = 0; },
+    clear() { salmon.clear(); actors.length = projectiles.length = zones.length = scheduled.length = 0; },
   };
 }

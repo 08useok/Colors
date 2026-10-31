@@ -1,4 +1,14 @@
-import { RIG_ATTACK_PROFILES, applyRigAttackPose, restoreRigAttackPose } from "./visuals/rig-attack-motion.js?v=1";
+import { createCrystalTelegraphEffects } from './visuals/crystal-telegraph.js';
+import { BETA8_QUEST_GOALS, BETA8_QUEST_REWARDS, questClaims, claimQuestReward, questStats, questPoints, addQuestStats } from './config/beta8-quests.js';
+import { createBetaRecords } from './beta-records.js';
+import { BETA_ULTIMATE_MOTIONS } from './config/beta-ultimate-motion.js';
+import { initBetaAccount } from "./beta-account.js?v=2";
+import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
+import { skinEffectProfile } from "./config/skin-effects.js?v=1";
+import { createSalmonMotion } from "./visuals/salmon-motion.js?v=1";
+import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
+import { RIG_ATTACK_PROFILES as LEGACY_ATTACK_PROFILES, applyRigAttackPose as applyLegacyAttackPose, restoreRigAttackPose as restoreLegacyAttackPose } from "./visuals/rig-attack-motion.js?v=2";
+import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from "./visuals/beta-attack-motion.js?v=1";
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { betaShowdownProfile, safeShowdownSpawn } from "./config/beta-showdown.js?v=1";
 import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
@@ -26,8 +36,8 @@ import { clone as skeletonClone } from "three/addons/utils/SkeletonUtils.js";
 import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from "./config/beta-characters.js?v=0.5.27";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { applyBeta8Balance } from "./config/beta8-balance.js?v=7";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=33";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=8";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=34";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -47,6 +57,9 @@ const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBe
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
 const seasonCharacters = ["beta7", "beta8"].includes(BETA_SEASON_ID) ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
 const BETA_CHARACTERS = BETA_SEASON_ID === "beta8" ? applyBeta8Balance(seasonCharacters) : seasonCharacters;
+const RIG_ATTACK_PROFILES = BETA_SEASON_ID === "beta8" ? BETA_ATTACK_PROFILES : LEGACY_ATTACK_PROFILES;
+const applyRigAttackPose = (...args) => BETA_SEASON_ID === "beta8" ? applyBetaAttackPose(...args) : applyLegacyAttackPose(...args);
+const restoreRigAttackPose = saved => BETA_SEASON_ID === "beta8" ? restoreBetaAttackPose(saved) : restoreLegacyAttackPose(saved);
 if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
@@ -313,7 +326,7 @@ if (!IS_BETA5_TEST && beta6LoadingScreen) {
   if (document.readyState === "complete") finishBeta6Loading();
   else window.addEventListener("load", finishBeta6Loading, { once: true });
 }
-const BETA_STORAGE_KEY = IS_BETA8_TEST
+const BASE_BETA_STORAGE_KEY = IS_BETA8_TEST
   ? "colorsBetaSeason8Test"
   : IS_BETA7_TEST
     ? "colorsBetaSeason7Test"
@@ -322,6 +335,8 @@ const BETA_STORAGE_KEY = IS_BETA8_TEST
   : IS_BETA5_TEST
     ? "colorsBetaSeason5Test"
     : "colorsBetaSeasonTest";
+const betaAccount = IS_BETA8_TEST ? await initBetaAccount(BASE_BETA_STORAGE_KEY) : {storageKey:BASE_BETA_STORAGE_KEY,queueSave(){},isOpen:false};
+const BETA_STORAGE_KEY = betaAccount.storageKey;
 const CHARACTER_MODEL_VERSION = "86";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
@@ -339,7 +354,7 @@ const CHARACTERS = [
   ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
   ...(HAS_BETA6_CONTENT ? [{ id: "azure", name: "Azure", rarity: "hero", price: 0, color: 0x007fff }] : []),
   ...((IS_BETA7_TEST || IS_BETA8_TEST) ? [{ id: "crystal", name: "Crystal", rarity: "hero", price: 0, color: 0x6ee7ff }] : []),
-  ...(IS_BETA8_TEST ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }] : []),
+  ...(IS_BETA8_TEST ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }, { id:"salmon", name:"살몬", rarity:"hero", price:0, color:0xfe7974 }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
@@ -397,9 +412,9 @@ if (IS_BETA8_TEST) {
   const tagline = document.querySelector(".beta-header p");
   if (heading) heading.textContent = "베타 시즌 8 테스트";
   if (rankChip) rankChip.textContent = "베타 시즌 8 테스트";
-  if (tagline) tagline.textContent = "🎃 할로윈 · 라벤더 출시 · 스킨 4종 · 16종 전투";
+  if (tagline) tagline.textContent = `🎃 할로윈 · 라벤더·살몬 · 스킨 4종 · ${CHARACTERS.length}종 전투`;
   const seasonOverview = document.querySelector('[data-panel="quests"]');
-  if (seasonOverview) seasonOverview.textContent = "시즌 8 업데이트";
+  if (seasonOverview) seasonOverview.textContent = "시즌 퀘스트";
   const archivedProps = document.querySelector('[data-panel="seaprops"]');
   if (archivedProps) archivedProps.textContent = "이전 시즌 소품";
   if (locationName) locationName.textContent = "할로윈 유령 광장";
@@ -463,6 +478,12 @@ function loadBetaState() {
     characterTrophies[selectedCharacter] += existingShowdownWins * 4;
   }
   const state = {
+    beta8Records: saved.beta8Records || {},
+    beta8ActiveRecord: saved.beta8ActiveRecord || null,
+    beta8RecordPending: Array.isArray(saved.beta8RecordPending) ? saved.beta8RecordPending : [],
+    beta8RecordFailed: Array.isArray(saved.beta8RecordFailed) ? saved.beta8RecordFailed : [],
+    beta8Quests: questStats(saved.beta8Quests),
+    beta8QuestClaimed: questClaims(saved.beta8QuestClaimed),
     knockout: Object.fromEntries(["games","wins","losses"].map(key => [key, Math.max(0,Math.floor(Number(saved.knockout?.[key])||0))])),
     credits: Number.isFinite(saved.credits) ? saved.credits : 1500,
     coins: Number.isFinite(saved.coins) ? saved.coins : 3000,
@@ -506,7 +527,7 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []), ...(IS_BETA8_TEST ? ["lavender"] : [])]) {
+  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []), ...(IS_BETA8_TEST ? ["lavender", "salmon"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
   }
   // 시즌 6 바다 소품은 아직 정식 획득 조건이 없어 베타 테스트에서는 바로 보유시킨다.
@@ -529,10 +550,13 @@ function loadBetaState() {
     state.beta8HalloweenSkinsGranted = true;
   }
   localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
+  betaAccount.queueSave(state);
   return state;
 }
 const betaState = loadBetaState();
-function saveBetaState() { localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(betaState)); updateWallet(); }
+function saveBetaState() { localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(betaState)); betaAccount.queueSave(betaState); updateWallet(); }
+const betaRecords = IS_BETA8_TEST ? createBetaRecords({state:betaState,save:saveBetaState,storageKey:BETA_STORAGE_KEY,account:betaAccount,characters:CHARACTERS,title:modalTitle,content:modalContent,open:()=>openPanel('records')}) : null;
+document.querySelector('[data-panel="records"]').hidden = !IS_BETA8_TEST;
 function updateWallet() { creditValue.textContent = betaState.credits.toLocaleString("ko-KR"); }
 function rarityName(rarity) { return ({ common: "일반", rare: "희귀", epic: "초희귀", hero: "영웅", legendary: "영웅" })[rarity]; }
 function getSkinName(skin) {
@@ -551,6 +575,7 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
+const skinEffects = createSkinEffects(scene);
 const seasonSkyColor = IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0xd59a52 : IS_BETA6_TEST ? 0x54bfe8 : IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
 scene.background = new THREE.Color(seasonSkyColor);
 scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA8_TEST ? 0.006 : IS_BETA5_TEST ? 0.009 : 0.012);
@@ -1410,6 +1435,7 @@ function prepareCharacterScene(model, characterId, skinId = betaState.selectedSk
   // 시즌 6 모델 교체 스킨은 FBXLoader가 이미 Y-up으로 변환해 주므로
   // (원본 FBX의 up-axis 메타데이터가 다름) 추가 회전을 적용하지 않는다.
   if (usesFbxRig && !wearsCustomModelSkin && !["crystal", "lavender"].includes(characterId)) model.rotateX(-Math.PI / 2);
+  if (characterId === "salmon") model.name = "salmon-player-model";
   if (characterId === "blue" && !wearsSeason7ModelSkin) addBlueScarf(model);
   if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal", "lavender"].includes(characterId) || wearsCustomModelSkin) {
     applyBetaToonRendering(model, characterId);
@@ -1494,7 +1520,7 @@ function getCharacterMotionSource(characterId, selectedSkinId = betaState.select
   // 시즌 6·7 모델 교체 스킨도 다운로드한 Meshy FBX와 걷기 동작을 그대로 쓴다.
   const usesFbxMotion = characterId === "mint" || characterId === "azure" || characterId === "crystal" || characterId === "lavender" || cottonCandyPink || Boolean(customModelSkin);
   const extension = usesFbxMotion ? "fbx" : "glb";
-  const paths = characterId === "lavender" && !customModelSkin ? {
+  const paths = characterId === "salmon" ? { start:"./assets/3d/salmon/normal/salmon-preview.glb?v=4", loop:"./assets/3d/salmon/normal/salmon-preview.glb?v=4", stop:"./assets/3d/salmon/normal/salmon-preview.glb?v=4" } : characterId === "lavender" && !customModelSkin ? {
     start: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
@@ -1527,6 +1553,7 @@ function loadCharacterMotionSet(characterId, token) {
       const scenes = {};
       const mixers = {};
       const actions = {};
+      let salmonMotion = null;
       for (const [key, asset] of entries) {
         const scene = usesFbxMotion ? asset : asset.scene;
         const { animations } = asset;
@@ -1541,6 +1568,7 @@ function loadCharacterMotionSet(characterId, token) {
         sceneModel.visible = key === "stop";
         scenes[key] = sceneModel;
         group.add(sceneModel);
+        if (characterId === "salmon") { salmonMotion = createSalmonMotion(sceneModel, animations); continue; }
         const clip = crystalWalkInPlace(animations[0]);
         if (!clip) continue;
         // Keep the hip and limb position tracks that form the walk, but never
@@ -1590,7 +1618,7 @@ function loadCharacterMotionSet(characterId, token) {
       }
       player.add(group);
       activeCharacterModel = group;
-      activeCharacterMotion = { characterId, scenes, mixers, actions, show, state: "idle", current: "stop", singleClip };
+      activeCharacterMotion = { characterId, scenes, mixers, actions, show, state: "idle", current: "stop", singleClip, salmonMotion };
       canvas.dataset.characterModel = characterId;
     })
     .catch(() => {
@@ -1605,6 +1633,7 @@ function loadCharacterMotionSet(characterId, token) {
 function updateCharacterMotion(isMoving, dt) {
   const motion = activeCharacterMotion;
   if (!motion) return;
+  if (motion.salmonMotion) { motion.salmonMotion.update(dt,isMoving); canvas.dataset.motionState=isMoving?"looping":"idle"; return; }
   if (motion.singleClip) {
     // 걷는 동안만 돌리고, 멈추면 곧바로 선 자세(첫 프레임)로 돌아간다.
     const walk = motion.actions.stop;
@@ -1693,12 +1722,14 @@ function startModelAttackMotion(characterId = betaState.selectedCharacter) {
   if (!MODEL_ATTACK_POSES[characterId] && !RIG_ATTACK_PROFILES[characterId]) return;
   modelAttackMotionTime = 0;
   modelAttackCharacter = characterId;
+  const root = activeCharacterMotion ? activeCharacterMotion.scenes[activeCharacterMotion.current] : activeCharacterModel;
+  if (root) root.userData.betaAttackVariant = characterId === "purple" ? (beta6PlayerActor?.id === "purple" ? beta6PlayerActor.index : purpleAttackIndex) % 2 : 0;
   canvas.dataset.attackMotion = "firing";
   canvas.dataset.attackMotionProfile = characterId;
 }
 
 function restoreModelAttackPose() {
-  for (const { bone, quaternion } of modelAttackPoseRestore) bone.quaternion.copy(quaternion);
+  restoreRigAttackPose(modelAttackPoseRestore);
   modelAttackPoseRestore = [];
 }
 
@@ -1772,7 +1803,7 @@ function setPlayerModel(characterId) {
     loadCharacterMotionSet(characterId, token);
     return;
   }
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure", "crystal", "lavender"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure", "crystal", "lavender", "salmon"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -1824,6 +1855,7 @@ function selectCharacter(id) {
 }
 
 function applySelectedSkinVisual() {
+  skinEffects.clear();
   const character = CHARACTERS.find((item) => item.id === betaState.selectedCharacter);
   const skinId = betaState.selectedSkins[betaState.selectedCharacter] || "";
   const skinColors = {
@@ -2156,7 +2188,7 @@ function updateCrimsonControls() {
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []),
     ...(HAS_BETA6_CONTENT ? ["azure", "yellow"] : []),
     ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple"] : []),
-    ...(IS_BETA8_TEST ? ["lavender"] : []),
+    ...(IS_BETA8_TEST ? ["lavender", "salmon"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["orange"] : []),
   ];
@@ -2841,10 +2873,39 @@ function renderBeta7Quests() {
   modalContent.innerHTML = `<div class="storybook-intro"><span>LOST GOLDEN RUINS</span><h2>발굴 → 젬 획득 → 봉인 해제 → 탈출</h2><p>보물을 훔치기 시작하자 잠들어 있던 유적이 깨어난다.</p></div><div class="beta-grid">${quests.map(([name, condition]) => `<article><span class="rarity rare">유적 조사</span><h3>${name}</h3><p>${condition}</p><button disabled>준비 중</button></article>`).join("")}</div>`;
 }
 
+function renderBeta8Quests(page = 0) {
+  modalTitle.textContent = '시즌 8 · 할로윈 보상 트랙';
+  const total = questStats(betaState.beta8Quests), points = questPoints(total);
+  const claimed = new Set(questClaims(betaState.beta8QuestClaimed));
+  const number = n => n.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+  const size = 20, lastPage = Math.ceil(BETA8_QUEST_REWARDS.length / size) - 1;
+  page = Math.max(0, Math.min(lastPage, Math.floor(Number(page) || 0)));
+  const available = BETA8_QUEST_REWARDS.filter(r => points >= r.goal && !claimed.has(r.goal));
+  const rewardText = r => [r.coins ? `코인 ${number(r.coins)}` : '', r.credits ? `β 크레딧 ${number(r.credits)}` : ''].filter(Boolean).join(' + ');
+  const navigation = `<nav aria-label="보상 트랙 페이지"><button data-quest-page="0" ${page === 0 ? 'disabled' : ''}>처음</button> <button data-quest-page="${page - 1}" ${page === 0 ? 'disabled' : ''}>이전</button> <span>${page + 1} / ${lastPage + 1} 페이지</span> <button data-quest-page="${page + 1}" ${page === lastPage ? 'disabled' : ''}>다음</button> <button data-quest-page="${lastPage}" ${page === lastPage ? 'disabled' : ''}>10,000점 보기</button></nav>`;
+  modalContent.innerHTML = `<section class="storybook-intro"><span>HALLOWEEN · REWARD TRACK</span><h2>시즌 누적 ${number(points)} 포인트</h2><progress max="10000" value="${Math.min(10000, points)}" aria-label="시즌 보상 트랙 전체 진행도"></progress><p>최종 목표 10,000점 · 수령 ${claimed.size} / ${BETA8_QUEST_REWARDS.length}단계</p><p>킬 1회 = 1점 · 회복량 2,000 = 1점 · 피해량 1,000 = 1점</p><p>소수 점수도 누적 · 완주한 경기만 반영 · 연습·중도 퇴장·자연 회복·설치물 제외</p><p>처치 ${number(total.kills)}회 · 회복 ${number(total.healing)} · 피해 ${number(total.damage)}</p><button data-quest-claim-all ${available.length ? '' : 'disabled'}>받을 수 있는 보상 모두 받기 (${available.length})</button></section>${navigation}<div class="beta-grid">${BETA8_QUEST_REWARDS.slice(page * size, (page + 1) * size).map(r => {
+    const received = claimed.has(r.goal), ready = points >= r.goal;
+    return `<article class="beta-card" data-quest-goal="${r.goal}"><span class="rarity ${ready ? 'legendary' : 'rare'}">${received ? '수령 완료' : ready ? '달성 완료' : '진행 중'}</span><h3>누적 ${number(r.goal)} 포인트</h3><progress max="${r.goal}" value="${Math.min(r.goal, points)}" aria-label="${r.goal}포인트 달성 진행도"></progress><p>${number(Math.min(r.goal, points))} / ${number(r.goal)}</p><p>${rewardText(r)}</p><button data-quest-claim="${r.goal}" ${received || !ready ? 'disabled' : ''}>${received ? '수령 완료' : ready ? '보상 받기' : '아직 잠김'}</button></article>`;
+  }).join('')}</div>${navigation}<button type="button" data-beta8-overview>시즌 업데이트 보기</button>`;
+  modalContent.querySelectorAll('[data-quest-page]').forEach(button => button.addEventListener('click', () => renderBeta8Quests(Number(button.dataset.questPage))));
+  modalContent.querySelectorAll('[data-quest-claim]').forEach(button => button.addEventListener('click', () => {
+    const reward = claimQuestReward(betaState, Number(button.dataset.questClaim));
+    if (!reward) return;
+    saveBetaState(); renderBeta8Quests(page); showToast(rewardText(reward) + ' 획득!');
+  }));
+  modalContent.querySelector('[data-quest-claim-all]').addEventListener('click', () => {
+    const earned = {coins:0,credits:0}; let count = 0;
+    for (const r of BETA8_QUEST_REWARDS) { const reward = claimQuestReward(betaState, r.goal); if (reward) { earned.coins += reward.coins; earned.credits += reward.credits; count++; } }
+    if (!count) return;
+    saveBetaState(); renderBeta8Quests(page); showToast(count + '단계 · ' + rewardText(earned) + ' 획득!');
+  });
+  modalContent.querySelector('[data-beta8-overview]').addEventListener('click', renderBeta8Overview);
+}
+
 function renderBeta8Overview() {
   modalTitle.textContent = "시즌 8 · 할로윈 업데이트";
   const skins = BETA_SKINS.filter(skin => skin.season === "beta8");
-  modalContent.innerHTML = `<section class="storybook-intro"><span>HALLOWEEN · BETA SEASON 8</span><h2>라벤더와 할로윈 스킨 4종</h2><p>16종 캐릭터 전투 · 할로윈 로비·로딩 화면·UI · 오렌지·퍼플 궁극기 포함</p><p>KNOCKOUT 출시 · 플레이어와 아군 AI 2명 대 적 AI 3명 · 2라운드 선승 · 라운드 중 부활 없음 · 45초부터 독안개</p></section><div class="beta-grid">${skins.map(skin => `<article class="beta-card"><span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span><h3>${getSkinName(skin)}</h3><p>${skin.desc}</p><p>무료 시험 · 캐릭터 메뉴에서 장착·해제</p><button data-open-beta8-character="${skin.character}">캐릭터에서 보기</button></article>`).join("")}</div>`;
+  modalContent.innerHTML = `<section class="storybook-intro"><span>HALLOWEEN · BETA SEASON 8</span><h2>라벤더·살몬과 할로윈 스킨 4종</h2><p>${CHARACTERS.length}종 캐릭터 전투 · 할로윈 로비·로딩 화면·UI · 오렌지·퍼플 궁극기 포함</p><p>KNOCKOUT 출시 · 플레이어와 아군 AI 2명 대 적 AI 3명 · 2라운드 선승 · 라운드 중 부활 없음 · 45초부터 독안개</p></section><div class="beta-grid">${skins.map(skin => `<article class="beta-card"><span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span><h3>${getSkinName(skin)}</h3><p>${skin.desc}</p><p>무료 시험 · 캐릭터 메뉴에서 장착·해제</p><button data-open-beta8-character="${skin.character}">캐릭터에서 보기</button></article>`).join("")}</div>`;
   modalContent.querySelectorAll("[data-open-beta8-character]").forEach(button => button.addEventListener("click", () => {
     const id = button.dataset.openBeta8Character;
     renderCharacters();
@@ -2856,13 +2917,14 @@ function openPanel(panel) {
   closeAssetShowroomViewer();
   modal.classList.remove("hidden");
   if (panel === "characters") renderCharacters();
+  if (panel === "records") betaRecords?.render();
   if (panel === "shop") renderShop();
   if (panel === "assets") renderAssetShowroom();
   if (panel === "daily") renderDaily();
   if (panel === "storybook") renderStorybook();
   if (panel === "orders") renderOrderEvent();
   if (panel === "seaprops") renderSeasonProps();
-  if (panel === "quests") IS_BETA8_TEST ? renderBeta8Overview() : IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
+  if (panel === "quests") IS_BETA8_TEST ? renderBeta8Quests() : IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
 function closeBetaModal() {
@@ -2904,6 +2966,7 @@ applySeasonPropVisuals();
 const CRIMSON = BETA_CHARACTERS.crimson;
 const crimsonSlashes = [];
 const betaProjectiles = [];
+let betaAttackGeneration = 0;
 const damagePopups = [];
 let generalAttackReady = true;
 
@@ -2951,6 +3014,14 @@ let beta6Combat = null;
 let beta6PlayerActor = null;
 let lavenderSpecialCharge = 0;
 let lavenderPractice = null;
+let salmonPractice = null;
+let salmonUltimateCharge = 0;
+let salmonAimRange = 8.5;
+const salmonBattleVisuals = createSalmonVisuals(scene,groundHeightAt);
+function playPlayerSkinEffect(kind) {
+  const id = betaState.selectedCharacter;
+  return skinEffects.burst(id,betaState.selectedSkins[id],kind,player.position);
+}
 let purpleJumpState = null;
 let goldAttackSequence = 0;
 const goldAttackCharge = new Map();
@@ -3003,14 +3074,14 @@ function ensureMalfunctionIndicator(target) {
   return group;
 }
 
-function damageTarget(target, damage, causesKnockback = false) {
+function damageTarget(target, damage, causesKnockback = false, bypassGuard = false) {
   if (!target.visible) return;
   if (clock.elapsedTime < (target.userData.invulnerableUntil ?? 0)) return;
   if (target.userData.goldRushBot) {
     damageGoldRushBot(target.userData.goldRushBot, damage, true);
     return;
   }
-  const guardReduction = target.userData.redGuardUntil > clock.elapsedTime ? (target.userData.redGuardReduction ?? 0) : 0;
+  const guardReduction = !bypassGuard && target.userData.redGuardUntil > clock.elapsedTime ? (target.userData.redGuardReduction ?? 0) : 0;
   const finalDamage = damage * (1 - guardReduction);
   createDamagePopup(target.position, finalDamage);
   target.userData.health -= finalDamage;
@@ -3039,7 +3110,7 @@ function damageTarget(target, damage, causesKnockback = false) {
 
 function getActiveRedThemeSkin() {
   const skinId = betaState.selectedSkins[betaState.selectedCharacter] || "";
-  return skinId.startsWith("beta_red_") ? skinId : "";
+  return skinEffectProfile(betaState.selectedCharacter,skinId)?.basic && skinId.startsWith("beta_red_") ? skinId : "";
 }
 
 // 부드럽게 퍼지는 원형 그라디언트. 단색 평면보다 이펙트가 덜 밋밋해진다.
@@ -3164,6 +3235,7 @@ function createBlueMarbleMesh() {
   tail.rotation.x = -Math.PI / 2;
   tail.position.z = -(headRadius + tailLength / 2 - 0.05);
   group.add(tail);
+  group.scale.setScalar(BETA_CHARACTERS.blue.bulletHitboxMultiplier??1);
   return group;
 }
 
@@ -3784,7 +3856,7 @@ function getBetaAttackRange(id, def) {
   if (id === "mint") return def.iceBulletRange;
   if (id === "azure") return def.surfLength;
   if (id === "crystal") return def.crystalRange;
-  if (id === "lavender") return def.attackRange;
+  if (id === "lavender" || id === "salmon") return def.attackRange;
   return 0;
 }
 
@@ -3911,7 +3983,7 @@ function updateAttackAimIndicator() {
       ? (redReady ? 0.38 : 0.24)
       : betaState.selectedCharacter === "azure"
         ? definition.surfWidth
-        : 0.42;
+        : 0.42*(betaState.selectedCharacter==='blue'?(definition.bulletHitboxMultiplier??1):1);
     attackAimBeam.scale.set(beamWidth, range, 1);
     attackAimBeam.position.z = range / 2;
     attackAimBeam.material.color.setHex(0xffffff);
@@ -3979,6 +4051,18 @@ function applyMintIce(target, amount) {
 let mintUltimateCharge = 0;
 let blueSpecialCharge = 0;
 let blueDashState = null;
+let bluePracticeShield = null;
+function blueShieldReduction() {
+  if(betaState.selectedCharacter!=='blue'||goldRushState.dead)return 0;
+  if(beta6Combat&&beta6PlayerActor)return beta6Combat.damageReductionFor(beta6PlayerActor);
+  const preparing=betaPracticeUltimatePending?.id==='blue'&&betaPracticeUltimatePending.generation===betaAttackGeneration;
+  return blueDashState?.remaining>0||preparing?(BETA_CHARACTERS.blue.special.damageReduction??0):0;
+}
+function updateBlueShieldVisual() {
+  const active=!beta6Combat&&blueShieldReduction()>0;
+  if(active&&!bluePracticeShield){bluePracticeShield=new THREE.Mesh(new THREE.SphereGeometry(1.35,20,14),new THREE.MeshBasicMaterial({color:0x65bfff,transparent:true,opacity:.18,depthWrite:false}));bluePracticeShield.name='blue-ultimate-shield';bluePracticeShield.position.y=1.25;player.add(bluePracticeShield);}
+  if(!active&&bluePracticeShield){player.remove(bluePracticeShield);bluePracticeShield.geometry.dispose();bluePracticeShield.material.dispose();bluePracticeShield=null;}
+}
 
 function performBlueDash() {
   const def = BETA_CHARACTERS.blue.special;
@@ -4397,7 +4481,7 @@ function crystalUltimateBusy() {
 function startCrystalAnalysis() {
   if (crystalUltimateBusy() || goldRushState.dead) return;
   crystalDashState = { yaw: player.rotation.y, traveled: 0 };
-  startModelAttackMotion("crystalCast");
+  if (!IS_BETA8_TEST) startModelAttackMotion("crystalCast");
   canvas.dataset.lastUltimate = "crystal:analysis";
   attackComboState.textContent = BETA_CHARACTERS.crystal.ultimate.name;
 }
@@ -4503,11 +4587,13 @@ function bindCrystalTarget(target) {
 }
 
 function updateCrystalUltimate(dt) {
+  updateCrystalTelegraphEffects();
   if (betaState.selectedCharacter !== "crystal" || goldRushState.dead) {
     if (crystalUltimateBusy()) clearCrystalUltimate();
     return false;
   }
   const def = BETA_CHARACTERS.crystal.ultimate;
+  if(betaPracticeUltimatePending?.id==='crystal')return true;
   if (crystalAnalysisState) {
     const { target } = crystalAnalysisState;
     const remaining = Math.max(0, crystalAnalysisState.until - clock.elapsedTime);
@@ -4544,8 +4630,8 @@ function updateCrystalUltimate(dt) {
     if (remaining <= 0) {
       createHitImpact(target.position);
       createGroundPulse(1.6, 0x9ef2ff, target.position);
-      damageTarget(target, target.userData.maxHealth * 10);
-      canvas.dataset.crystalAnalysis = "eliminated";
+      damageTarget(target, def.executionFixedAmount ?? target.userData.maxHealth * 10, false, def.executeBypassesGuard === true);
+      canvas.dataset.crystalAnalysis = target.userData.health > 0 ? "survived" : "eliminated";
       clearCrystalUltimate();
       attackComboState.textContent = "분석 완료";
     }
@@ -4678,7 +4764,15 @@ function updateAzureWave(dt) {
   if (wave.distance >= wave.range - 0.0001) clearAzureWave();
   return true;
 }
-function performCharacterAttack({ manualAim = false } = {}) {
+function performCharacterAttack(options = {}) {
+  const beforeAmmo = goldRushState.ammo;
+  const beforeCount = beta6PlayerActor?.attackCount ?? salmonPractice?.actor.attackCount ?? 0;
+  performCharacterAttackCore(options);
+  const afterCount = beta6PlayerActor?.attackCount ?? salmonPractice?.actor.attackCount ?? 0;
+  if (goldRushState.ammo < beforeAmmo || afterCount > beforeCount) playPlayerSkinEffect('basic');
+}
+function performCharacterAttackCore({ manualAim = false } = {}) {
+  if (IS_BETA8_TEST && betaPracticeUltimatePending) return;
   if (modelLoading.blocking) return;
   if (goldRushState.dead || isKnockoutFrozen() || crystalUltimateBusy()) return;
   const id = betaState.selectedCharacter;
@@ -4694,6 +4788,7 @@ function performCharacterAttack({ manualAim = false } = {}) {
     }
   }
   if (beta6Combat) { useBeta6PlayerSkill(false, manualAim); return; }
+  if (id === "salmon") { useSalmonPracticeSkill(false,manualAim); return; }
   if (!generalAttackReady || azureWaveState || beta6PlayerAttackBlocked()) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
@@ -4713,6 +4808,10 @@ function performCharacterAttack({ manualAim = false } = {}) {
   crimsonAttackButton.classList.add("cooldown");
   startModelAttackMotion(id);
   attackComboState.textContent = "공격 중";
+  const generation = betaAttackGeneration;
+  const currentAttack = () => generation === betaAttackGeneration && betaState.selectedCharacter === id && !goldRushState.dead && !beta6Combat;
+  const resolveAttack = () => {
+  if (!currentAttack()) return;
   if (id === "lavender") {
     useLavenderPracticeSkill(false);
     attackComboState.textContent = "향수 스프레이";
@@ -4727,12 +4826,12 @@ function performCharacterAttack({ manualAim = false } = {}) {
     };
     strike(0);
     for (let i = 1; i < def.attackCount; i += 1) {
-      setTimeout(() => strike(i), def.attackIntervalMs * i);
+      setTimeout(() => { if (currentAttack()) strike(i); }, def.attackIntervalMs * i);
     }
   } else if (id === "green") {
     def.boomerangAngles.forEach((angle) => fireBetaProjectile({ angle, speed: def.boomerangSpeed, range: def.boomerangRange, damage: def.boomerangDamage, color: 0x58ff70, radius: 0.24, type: "boomerang", returnSpeedMultiplier: def.boomerangReturnSpeedMultiplier, returnDamageMultiplier: def.boomerangReturnDamageMultiplier }));
   } else if (id === "blue") {
-    fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14, type: "marble" });
+    fireBetaProjectile({ speed: def.bulletSpeed, range: def.bulletRange, damage: def.bulletDamage, color: 0x4f83ff, radius: 0.14*(def.bulletHitboxMultiplier??1), type: "marble" });
   } else if (id === "orange") {
     fireBetaProjectile({ speed: def.bombSpeed, range: def.bombRange, damage: def.bombDamage, color: 0xffa12c, radius: 0.32, type: "orangeFruit" });
   } else if (id === "yellow") {
@@ -4740,11 +4839,11 @@ function performCharacterAttack({ manualAim = false } = {}) {
       if (!goldRushState.dead) {
         fireBetaProjectile({ speed: def.electricSpeed, range: def.electricRange, damage: def.electricDamage, color: 0xffff45, radius: 0.25, type: "electric" });
       }
-    }, (def.attackDelay || 0) * 1000);
+    }, (def.attackWindup ? 0 : def.attackDelay || 0) * 1000);
   } else if (id === "cyan") {
     for (let i = 0; i < def.spreadLineCount; i += 1) {
-      const angle = (i - (def.spreadLineCount - 1) / 2) * def.betaAngleSpacing;
-      fireBetaProjectile({ angle, speed: def.spreadLineSpeed, range: def.spreadLineRange, damage: def.spreadLineDamage, color: 0x32f4ff, radius: 0.13, type: "cyanShot", causesKnockback: false });
+      const lateralOffset = (i - (def.spreadLineCount - 1) / 2) * (def.spreadLineSpacing ?? .75);
+      fireBetaProjectile({ lateralOffset, speed: def.spreadLineSpeed, range: def.spreadLineRange, damage: def.spreadLineDamage, color: 0x32f4ff, radius: 0.13, type: "cyanShot", causesKnockback: false });
     }
   } else if (id === "purple") {
     const vial = purpleAttackIndex++ % 2 === 1;
@@ -4811,10 +4910,10 @@ function performCharacterAttack({ manualAim = false } = {}) {
     canvas.dataset.lastMintBurst = "0";
     for (let i = 0; i < def.burstCount; i += 1) {
       setTimeout(() => {
-        if (betaState.selectedCharacter !== "mint" || goldRushState.dead) return;
+        if (!currentAttack()) return;
         // Restart the pose for each projectile instead of animating only at
         // the beginning of the complete burst.
-        startModelAttackMotion("mint");
+        if (!IS_BETA8_TEST) startModelAttackMotion("mint");
         fireBetaProjectile({ speed: def.iceBulletSpeed, range: def.iceBulletRange, damage: def.iceBulletDamage, color: 0x98ffed, radius: 0.22, type: "mintIceCream" });
         canvas.dataset.lastMintBurst = String(i + 1);
         attackComboState.textContent = `아이스크림 탄 ${i + 1}/${def.burstCount}`;
@@ -4824,9 +4923,12 @@ function performCharacterAttack({ manualAim = false } = {}) {
     startAzureWave();
     attackComboState.textContent = "서프 대시";
   } else if (id === "crimson") {
-    CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => createCrimsonSlash(hitIndex), hitIndex * CRIMSON.attackIntervalMs));
+    CRIMSON.attackAngles.forEach((_, hitIndex) => setTimeout(() => { if (currentAttack()) createCrimsonSlash(hitIndex); }, hitIndex * CRIMSON.attackIntervalMs));
   }
+  };
+  if (def.attackWindup > 0) setTimeout(resolveAttack, def.attackWindup * 1000); else resolveAttack();
   setTimeout(() => {
+    if (generation !== betaAttackGeneration) return;
     generalAttackReady = true;
     crimsonAttackButton.classList.remove("cooldown");
     attackComboState.textContent = "준비";
@@ -5122,6 +5224,7 @@ function updateCrimsonUltimateGauge() {
     const def = BETA_CHARACTERS.lavender.special;
     configs.lavender = { charge: beta6PlayerActor?.id === "lavender" ? beta6PlayerActor.charge : lavenderSpecialCharge, required: def.chargeRequired, name: def.name, color: "#b48be8" };
   }
+  if (id === "salmon") configs.salmon = {charge:beta6PlayerActor?.id === "salmon" ? beta6PlayerActor.charge : salmonUltimateCharge,required:20,name:"월척이다!",color:"#fe7974"};
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
   const fieldActive = betaUltimateFieldActive();
@@ -5143,6 +5246,7 @@ function updateCrimsonUltimateGauge() {
 function betaUltimateFieldActive() {
   const id = betaState.selectedCharacter;
   if (beta6Combat && beta6PlayerActor) return beta6Combat.ultimateFieldActive(beta6PlayerActor);
+  if (id === "salmon") return false;
   if (id === "lavender" && lavenderPractice) return lavenderPractice.world.ultimateFieldActive(lavenderPractice.actor);
   if (id === "gold") return goldUltimatePending !== null || malfunctionZones.some(zone => zone.expiresAt > clock.elapsedTime);
   return false;
@@ -5348,7 +5452,7 @@ function damagePurpleLeapArea(position, phase) {
       const before = target.userData.health;
       damageTarget(target, def.damage);
       if (target.userData.health < before && (IS_BETA7_TEST || IS_BETA8_TEST)) {
-        purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + 1);
+        purpleUltimateCharge = Math.min(def.chargeRequired, purpleUltimateCharge + (def.rechargePerHit ?? 1));
       }
     }
   }
@@ -5421,8 +5525,38 @@ function performOrangeUltimate() {
 }
 
 ultimateButton.addEventListener("click", () => {
+  updateCrimsonUltimateGauge();
+  const before = Number(ultimateButton.getAttribute('aria-valuenow'));
+  performCharacterUltimate();
+  updateCrimsonUltimateGauge();
+  if (Number(ultimateButton.getAttribute('aria-valuenow')) < before) playPlayerSkinEffect('ultimate');
+});
+let betaPracticeUltimatePending = null;
+function performCharacterUltimate() {
+  if (!IS_BETA8_TEST || beta6Combat || betaState.selectedCharacter === 'salmon') return performCharacterUltimateCore();
+  if (betaPracticeUltimatePending || modelLoading.blocking || goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
+  updateCrimsonUltimateGauge();
+  const id = betaState.selectedCharacter, profile = BETA_ULTIMATE_MOTIONS[id];
+  const charge = Number(ultimateButton.getAttribute('aria-valuenow')), required = Number(ultimateButton.getAttribute('aria-valuemax'));
+  if (!profile || !required || charge < required) return;
+  const pending = { generation: betaAttackGeneration, id };
+  if(id==='crystal')pending.telegraph={x:player.position.x,z:player.position.z,yaw:Math.PI/2-player.rotation.y,range:BETA_CHARACTERS.crystal.ultimate.range,width:BETA_CHARACTERS.crystal.ultimate.telegraphWidth,endsAt:clock.elapsedTime+profile.release};
+  betaPracticeUltimatePending = pending;
+  startModelAttackMotion(id + 'Ultimate');
+  setTimeout(() => {
+    if (betaPracticeUltimatePending !== pending) return;
+    betaPracticeUltimatePending = null;
+    if (pending.generation !== betaAttackGeneration || betaState.selectedCharacter !== id || goldRushState.dead || beta6Combat) return;
+    if(pending.telegraph)player.rotation.y=Math.PI/2-pending.telegraph.yaw;
+    performCharacterUltimateCore();
+    updateCrimsonUltimateGauge();
+    if (Number(ultimateButton.getAttribute('aria-valuenow')) < charge) playPlayerSkinEffect('ultimate');
+  }, profile.release * 1000);
+}
+function performCharacterUltimateCore() {
   if (modelLoading.blocking || goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
   if (beta6Combat) { useBeta6PlayerSkill(true, true); return; }
+  if (betaState.selectedCharacter === "salmon") { useSalmonPracticeSkill(true,true); return; }
   if (betaState.selectedCharacter === "lavender") {
     useLavenderPracticeSkill(true);
     return;
@@ -5610,7 +5744,7 @@ ultimateButton.addEventListener("click", () => {
     else { scene.remove(wave); wave.geometry.dispose(); wave.material.dispose(); }
   }
   expandWave();
-});
+}
 
 let ivoryUltimateAiming = false;
 const yellowUltimateAimPoint = new THREE.Vector3();
@@ -5619,7 +5753,7 @@ const purpleUltimateAimPoint = new THREE.Vector3();
 let purpleUltimateAimPointValid = false;
 // 아이보리를 제외한 방향성 궁극기 — 거리는 각 캐릭터의 기존 사거리를 그대로
 // 쓰고, 누르고 있는 동안 바라보는 방향만 마우스/키보드로 조준한다.
-const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure", "orange", "crystal", "gold", "green", "pink", "chartreuse", "red", "lavender"]);
+const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure", "orange", "crystal", "gold", "green", "pink", "chartreuse", "red", "lavender", "salmon"]);
 let directionalUltimateAiming = false;
 function cancelUltimateAim() {
   ivoryUltimateAiming = false; directionalUltimateAiming = false;
@@ -6657,7 +6791,17 @@ if (IS_BETA7_TEST) {
 }
 
 function clearBeta6RoundCombat() {
+  betaAttackGeneration++;
+  betaPracticeUltimatePending = null;
+  restoreModelAttackPose();
+  modelAttackMotionTime = -1;
+  modelAttackCharacter = null;
+  generalAttackReady = true;
+  crimsonAttackButton.classList.remove("cooldown");
   clearLavenderPractice();
+  clearSalmonPractice();
+  salmonBattleVisuals.clear();
+  skinEffects.clear();
   if (beta6PlayerActor?.id === "green") setPlayerConcealedVisual(false);
   beta6PendingEvents.length = 0;
   beta6AttackVisualQueue.length = 0;
@@ -6735,7 +6879,8 @@ function loadBetaBotModel(bot) {
       for (const material of Array.isArray(part.material) ? part.material : [part.material]) initialMaterials.add(material);
     });
     const model = prepareCharacterScene(avatar, bot.characterId, "");
-    const clip = crystalWalkInPlace(asset.animations[0]?.clone());
+    if (bot.characterId === "salmon") bot.salmonMotion = createSalmonMotion(model,asset.animations);
+    const clip = bot.salmonMotion ? null : crystalWalkInPlace(asset.animations[0]?.clone());
     if (clip) {
       clip.tracks = usesFbxMotion
         ? clip.tracks.filter(track => !/^(?:RL_BoneRoot|output_unwrapped)\./.test(track.name))
@@ -6780,6 +6925,7 @@ function updateBetaBotModel(bot, dt, concealed = false) {
   bot.rigAttackPose = [];
   if (!bot.model) { bot.mixer?.update(dt); return; }
   const moving = !bot.dead && bot.mesh.position.distanceToSquared(bot.previousModelPosition) > 1e-6;
+  if (bot.salmonMotion) bot.salmonMotion.update(dt,moving);
   if (bot.walkAction) {
     bot.walkAction.paused = !moving;
     if (!moving && bot.modelMoving) bot.mixer.setTime(0);
@@ -6787,8 +6933,9 @@ function updateBetaBotModel(bot, dt, concealed = false) {
   }
   if (bot.modelAttackTime >= 0 && !bot.dead) {
     bot.modelAttackTime += dt;
-    bot.rigAttackPose = applyRigAttackPose(bot.model, bot.characterId, bot.modelAttackTime);
-    if (bot.modelAttackTime >= (RIG_ATTACK_PROFILES[bot.characterId]?.duration ?? 0)) bot.modelAttackTime = -1;
+    const motionId = bot.modelUltimateMotion && IS_BETA8_TEST ? bot.characterId + 'Ultimate' : bot.characterId;
+    bot.rigAttackPose = applyRigAttackPose(bot.model, motionId, bot.modelAttackTime);
+    if (bot.modelAttackTime >= (RIG_ATTACK_PROFILES[motionId]?.duration ?? 0)) { bot.modelAttackTime = -1; bot.modelUltimateMotion = false; }
   }
   bot.modelMoving = moving;
   bot.previousModelPosition.copy(bot.mesh.position);
@@ -6860,7 +7007,7 @@ function createGoldRushBotAvatar(index, character = null) {
 
 function beta6PlayerAttackBlocked() {
   return isKnockoutFrozen() || Boolean(beta6Combat && beta6PlayerActor &&
-    (beta6Combat.time < beta6PlayerActor.frozenUntil || beta6Combat.time < beta6PlayerActor.lockUntil));
+    (beta6Combat.time < beta6PlayerActor.frozenUntil || beta6Combat.time < beta6PlayerActor.lockUntil || beta6PlayerActor.salmonAirborne));
 }
 
 function syncBeta6PlayerHud() {
@@ -6898,18 +7045,19 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
   let target = world.actors.filter(a => a !== actor && a.hp > 0 && (!actor.team || a.team !== actor.team) && !world.hidden(a,actor))
     .sort((a, b) => Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0]
     ?? { x: actor.x + Math.cos(facing) * world.range(actor), z: actor.z + Math.sin(facing) * world.range(actor), vx: 0, vz: 0, hp: 1 };
-  const throwRange = actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
+  const throwRange = actor.id === "salmon" ? salmonAimRange : actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
   const aimPoint = actor.id === "yellow" && yellowUltimateAimPointValid ? yellowUltimateAimPoint
     : actor.id === "purple" && purpleUltimateAimPointValid ? purpleUltimateAimPoint : null;
   const point = aimPoint ? { x: aimPoint.x, z: aimPoint.z }
     : { x: actor.x + Math.cos(facing) * throwRange, z: actor.z + Math.sin(facing) * throwRange };
-  if (manualAim && !ultimate && actor.id === "ivory") target = { ...point, vx: 0, vz: 0, hp: 1 };
+  if (manualAim && !ultimate && ["ivory","salmon"].includes(actor.id)) target = { ...point, vx: 0, vz: 0, hp: 1 };
   const aim = manualAim ? { angle: facing, point } : {};
+  const attackCountBefore = actor.attackCount;
   const fired = ultimate ? world.cast(actor, target, aim) : world.fire(actor, target, manualAim ? facing : undefined);
   for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
   if (beta6Combat !== world) return;
   if (fired) {
-    startModelAttackMotion(actor.id);
+    if (actor.id !== "salmon" || ultimate || actor.attackCount > attackCountBefore) startModelAttackMotion(IS_BETA8_TEST && ultimate ? actor.id + "Ultimate" : actor.id);
     player.rotation.y = Math.PI / 2 - actor.angle;
     attackComboState.textContent = ultimate ? actor.u.name : actor.d.basicAttack.name;
   }
@@ -6982,7 +7130,7 @@ function processBeta6CombatEvent(event) {
         const wasAlive = victim && !victim.dead;
         const victimRank = victim?.axeLevel || 0;
         withBeta6AttackVisuals(() => {
-          if (event.target === beta6PlayerActor) damageGoldRushPlayer(event.amount);
+          if (event.target === beta6PlayerActor) damageGoldRushPlayer(event.amount, true);
           else if (event.target.bot) damageGoldRushBot(event.target.bot, event.amount, event.owner === beta6PlayerActor, true);
         });
         if (goldRushState.mode === "chopWood" && wasAlive && victim.dead) {
@@ -6990,6 +7138,7 @@ function processBeta6CombatEvent(event) {
           resetAxe(victim);
         }
       }
+      if (event.type === 'heal' && event.owner === beta6PlayerActor && event.target.bot?.team === 'a') recordBeta8QuestStat('healing', event.amount);
       if (event.type === "heal" || event.type === "revive") {
         const bot = event.target.bot;
         if (bot) {
@@ -7006,16 +7155,21 @@ function processBeta6CombatEvent(event) {
       }
       if (event.type === "attack") {
         const a = event.owner;
-        if (a.bot) a.bot.modelAttackTime = 0;
-        if (["red", "crimson"].includes(a.id)) for (let i = 0; i < a.d.attackCount; i++) beta6AttackVisualQueue.push({ at: event.time + i * a.d.attackIntervalMs / 1000, owner: a, index: i, yaw: Math.PI / 2 - a.angle });
+        if (a.bot) { a.bot.modelAttackTime = 0; a.bot.modelUltimateMotion = false; if (a.bot.model) a.bot.model.userData.betaAttackVariant = a.index % 2; }
+        if (["red", "crimson"].includes(a.id)) for (let i = 0; i < a.d.attackCount; i++) beta6AttackVisualQueue.push({ at: event.time + (a.d.attackWindup ?? 0) + i * a.d.attackIntervalMs / 1000, owner: a, index: i, yaw: Math.PI / 2 - a.angle });
         if (a.id === "pink") withBeta6AttackVisuals(() => {
           const position = new THREE.Vector3(a.x, groundHeightAt(a.x, a.z) + .05, a.z);
           createGroundPulse(a.d.healCircleRange, 0xff9fcf, position); createPinkNoteBurst(a.d.healCircleRange, position);
         });
       }
+      if (event.type === 'ultimatePrepare') {
+        if (event.owner.bot) { event.owner.bot.modelAttackTime = 0; event.owner.bot.modelUltimateMotion = true; }
+        else if (event.owner === beta6PlayerActor) startModelAttackMotion(event.owner.id + 'Ultimate');
+      }
       if (event.type === "ultimate") {
+        if (event.owner.id === "salmon" && event.owner.bot) { event.owner.bot.modelAttackTime = 0; event.owner.bot.modelUltimateMotion = IS_BETA8_TEST; }
         const from = event.owner.bot?.mesh.position ?? (event.owner === beta6PlayerActor ? player.position : null);
-        const to = event.target?.bot?.mesh.position ?? player.position;
+        const to = event.owner.id === "crystal" ? new THREE.Vector3(event.owner.x, groundHeightAt(event.owner.x,event.owner.z)+1, event.owner.z) : event.target?.bot?.mesh.position ?? player.position;
         if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
         if (event.type === "ultimate") canvas.dataset[event.owner === beta6PlayerActor ? "lastBeta6PlayerUltimate" : "lastBeta6BotUltimate"] = event.owner.id;
       }
@@ -7054,6 +7208,7 @@ function startBeta6BotCombat() {
     allowRevives: goldRushState.mode !== "knockout",
     seed: Math.floor(Math.random() * 0x7fffffff),
     bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
+    walkable: (x, z) => groundHeightAt(x, z) > -5 && !(activeEventLayout?.lakes.some(rect => insideMapRect(x, z, rect, 1))),
     retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
     destination(actor, target) {
       if (goldRushState.mode === "chopWood") {
@@ -7128,6 +7283,15 @@ function createBeta6ProjectileMesh(projectile, color) {
 
 // 경기에서는 전투 모듈이 속박을 관리하므로, 붙잡힌 액터를 보고 연출만 붙인다.
 const beta6AnalysisVisuals = new Map();
+let crystalTelegraphEffects=null;
+function updateCrystalTelegraphEffects(){
+ if(!IS_BETA8_TEST)return;
+ const entries=[];
+ if(beta6Combat)for(const a of beta6Combat.actors){const t=a.ultimateTelegraph;if(a.hp<=0||!a.ultimatePreparing||!t)continue;const target=beta6Combat.actors.find(b=>b.key===t.targetKey);entries.push({key:a.key,origin:{x:t.x,y:groundHeightAt(t.x,t.z)+.08,z:t.z},yaw:t.yaw,length:t.range,width:t.width,remaining:t.endsAt-beta6Combat.time,target:target&&{x:target.x,y:groundHeightAt(target.x,target.z),z:target.z}});}
+ const t=betaPracticeUltimatePending?.telegraph;if(t&&!goldRushState.dead)entries.push({key:'practice',origin:{x:t.x,y:groundHeightAt(t.x,t.z)+.08,z:t.z},yaw:t.yaw,length:t.range,width:t.width,remaining:t.endsAt-clock.elapsedTime});
+ if(entries.length||crystalTelegraphEffects){crystalTelegraphEffects??=createCrystalTelegraphEffects({THREE,scene,document});crystalTelegraphEffects.update(entries);}
+}
+
 
 function beta6ActorPosition(actor) {
   if (actor === beta6PlayerActor) return player.position;
@@ -7147,6 +7311,7 @@ function disposeBeta6AnalysisVisual(visual) {
 }
 
 function clearBeta6AnalysisVisuals() {
+  crystalTelegraphEffects?.clear();
   for (const visual of beta6AnalysisVisuals.values()) disposeBeta6AnalysisVisual(visual);
   beta6AnalysisVisuals.clear();
 }
@@ -7188,12 +7353,16 @@ function updateBeta6BotCombat(dt) {
   if (!beta6Combat || !beta6PlayerActor) return;
   const world = beta6Combat;
   if (beta6PlayerActor.hp <= 0 && !goldRushState.dead && goldRushState.health > 0) {
+    const charge = beta6PlayerActor.id === "salmon" ? beta6PlayerActor.charge : 0;
     world.remove(beta6PlayerActor);
-    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z });
+    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge });
   }
   const hero = beta6PlayerActor;
   const deadline = nativeTime => world.time + Math.max(0, (nativeTime || 0) - clock.elapsedTime);
   hero.hp = goldRushState.dead ? 0 : goldRushState.health;
+  if (world.salmon.moveBlocked(hero, player.position.x, player.position.z)) {
+    player.position.x = hero.x; player.position.z = hero.z;
+  }
   hero.vx = (player.position.x - hero.x) / Math.max(dt, 1 / 120);
   hero.vz = (player.position.z - hero.z) / Math.max(dt, 1 / 120);
   hero.x = player.position.x; hero.z = player.position.z;
@@ -7201,8 +7370,9 @@ function updateBeta6BotCombat(dt) {
   for (const bot of goldRushBots) {
     let actor = bot.combatActor;
     if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
+      const charge = actor.id === "salmon" ? actor.charge : 0;
       world.remove(actor);
-      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z });
+      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
       bot.mesh.userData.health = bot.health; grantBetaRespawnProtection(bot, bot.mesh);
       Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
@@ -7214,14 +7384,17 @@ function updateBeta6BotCombat(dt) {
     if (bot.mesh.userData.slowUntil > clock.elapsedTime) { actor.slowUntil = Math.max(actor.slowUntil, deadline(bot.mesh.userData.slowUntil)); actor.slow = 1 - (bot.mesh.userData.slowMultiplier ?? 1); }
     if (bot.mesh.userData.inMalfunctionZone) actor.lockUntil = Math.max(actor.lockUntil, world.time + dt + .02);
   }
+  const wasSalmonAirborne = Boolean(hero.salmonAirborne);
   world.update(dt);
   for (const event of beta6PendingEvents.splice(0)) {
     if (beta6Combat !== world) break;
     processBeta6CombatEvent(event);
   }
   if (beta6Combat !== world) return;
+  salmonBattleVisuals.update(world);
   const wasHeroLeaping = Boolean(hero.leap);
   player.position.x = hero.x; player.position.z = hero.z;
+  if (hero.salmonAirborne || wasSalmonAirborne) player.position.y = groundHeightAt(hero.x,hero.z)+.05+(hero.salmonHeight || 0);
   const heroLeapProgress = hero.leap ? THREE.MathUtils.clamp((world.time - hero.leap.startedAt) / hero.leap.duration, 0, 1) : 0;
   if (hero.leap) player.position.y = groundHeightAt(hero.x, hero.z) + .05 + Math.sin(heroLeapProgress * Math.PI) * hero.leap.jumpHeight;
   else if (wasHeroLeaping) player.position.y = groundHeightAt(hero.x, hero.z) + .05;
@@ -7229,7 +7402,7 @@ function updateBeta6BotCombat(dt) {
     const a = bot.combatActor;
     bot.mesh.position.x = a.x; bot.mesh.position.z = a.z;
     const leapProgress = a.leap ? THREE.MathUtils.clamp((world.time - a.leap.startedAt) / a.leap.duration, 0, 1) : 0;
-    bot.mesh.position.y = groundHeightAt(a.x, a.z) + .05 + (a.leap ? Math.sin(leapProgress * Math.PI) * a.leap.jumpHeight : 0);
+    bot.mesh.position.y = groundHeightAt(a.x, a.z) + .05 + (a.salmonHeight || (a.leap ? Math.sin(leapProgress * Math.PI) * a.leap.jumpHeight : 0));
     bot.mesh.rotation.y = Math.PI / 2 - a.angle;
     bot.mesh.visible = !bot.dead && ((a.team && a.team===hero.team) || !world.hidden(a,hero));
     bot.ammo = a.ammo; bot.reloadTimer = a.reload;
@@ -7251,7 +7424,8 @@ function updateBeta6BotCombat(dt) {
       if (kind === "projectile") {
         mesh = createBeta6ProjectileMesh(object, color);
       } else {
-        if (["perfumeSpray", "fragrance"].includes(object.kind)) mesh = createLavenderMist(object);
+        if(object.kind==='blueShield')mesh=new THREE.Mesh(new THREE.SphereGeometry(radius,20,14),new THREE.MeshBasicMaterial({color:0x65bfff,transparent:true,opacity:.18,depthWrite:false}));
+        else if (["perfumeSpray", "fragrance"].includes(object.kind)) mesh = createLavenderMist(object);
         else if (kind === "wave") mesh = createAzureWaveMesh(object.width, object.ultimate);
         else if (object.kind === "ivory") mesh = createIvoryIceCreamZoneMesh(radius);
         else {
@@ -7263,7 +7437,7 @@ function updateBeta6BotCombat(dt) {
       scene.add(mesh); beta6CombatVisuals.set(key, mesh);
     }
     const location = object.kind === "lock" ? object.owner : object;
-    const lift = object.kind === "yellowDevice" ? .02 : kind === "zone" ? .09 : kind === "wave" ? .05 : .8;
+    const lift = object.kind === 'blueShield' ? 1.25 : object.kind === "yellowDevice" ? .02 : kind === "zone" ? .09 : kind === "wave" ? .05 : .8;
     mesh.position.set(location.x, groundHeightAt(location.x, location.z) + lift, location.z);
     if (kind === "projectile" && object.kind !== "yellowDevice") {
       beta6VisualProjectiles.set(key, object);
@@ -7313,7 +7487,7 @@ function updateBeta6BotCombat(dt) {
       draw(`d${a.key}-${i}`, { ...a.devices[i], owner: a, kind: "yellowDevice" }, .4, "projectile");
       if (i > 0) drawCircuitWire(`dw${a.key}-${i - 1}`, a.devices[i - 1], a.devices[i]);
     }
-    if (world.time < a.guardUntil) draw(`g${a.key}`, { x: a.x, z: a.z, owner: a }, 1.1, "zone");
+    if (world.time < a.guardUntil || a.id === 'blue' && world.damageReductionFor(a)>0) draw(`g${a.key}`, { x: a.x, z: a.z, owner: a,kind:a.id==='blue'?'blueShield':undefined }, 1.1, "zone");
     if (world.time < a.hiddenUntil && a.bush) draw(`b${a.key}`, { ...a.bush, owner: a }, a.u.radius, "zone");
   }
   updateBeta6AnalysisVisuals(world, dt);
@@ -7416,15 +7590,23 @@ function dropGoldRushGold(owner, position) {
   );
 }
 
+function recordBeta8QuestStat(kind, amount) {
+  if (!IS_BETA8_TEST || !goldRushState.active || goldRushState.ended || !goldRushState.questStats || !Number.isFinite(amount) || amount <= 0) return;
+  if (!['kills', 'healing', 'damage'].includes(kind)) return;
+  goldRushState.questStats[kind] += amount;
+}
+
 function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = false) {
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
   if (bot.team === "a" && !fromBeta6Engine) return;
   if (bot.combatActor && !fromBeta6Engine) {
     const a = bot.combatActor;
-    if (beta6Combat.time < a.guardUntil) damage *= 1 - a.d.ultimate.damageReduction;
+    damage *= 1 - beta6Combat.damageReductionFor(a);
     a.revealedUntil = beta6Combat.time + 3;
   }
   bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
+  const actualDamage = Math.min(bot.health, Math.max(0, damage));
+  if (fromPlayer && bot.team !== 'a') recordBeta8QuestStat('damage', actualDamage);
   bot.health = Math.max(0, bot.health - damage);
   if (bot.combatActor) bot.combatActor.hp = bot.health;
   bot.mesh.userData.health = bot.health;
@@ -7438,6 +7620,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
   if (bot.health > 0) return;
   if (["goldRush", "gemGrab"].includes(goldRushState.mode)) dropGoldRushGold(bot, bot.mesh.position);
   bot.dead = true;
+  if (fromPlayer && bot.team !== 'a') recordBeta8QuestStat('kills', 1);
   if (goldRushState.mode === "chopWood") resetAxe(bot);
   // SHOWDOWN+: 플레이어가 마지막 타격을 준 처치만 점수로 인정한다 (봇끼리의 처치는 제외)
   if (fromPlayer && goldRushState.mode === "showdown") goldRushState.kills += 1;
@@ -7446,8 +7629,9 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
   canvas.dataset.lastGoldRushDeath = `ai-${bot.id}`;
 }
 
-function damageGoldRushPlayer(damage) {
+function damageGoldRushPlayer(damage, alreadyReduced = false) {
   if (goldRushState.dead || clock.elapsedTime < goldRushState.invulnerableUntil) return;
+  if(!alreadyReduced && betaState.selectedCharacter==='blue') damage *= 1-blueShieldReduction();
   player.userData.eventRevealedUntil=clock.elapsedTime+3;
   goldRushState.health = Math.max(0, goldRushState.health - damage);
   goldRushState.lastDamageAt = clock.elapsedTime;
@@ -7730,7 +7914,7 @@ function updateLavenderMist(mesh, zone, time) {
 
 function syncLavenderPractice() {
   if (!lavenderPractice) {
-    const world = createBeta6Combat(BETA_CHARACTERS, {
+    const world = createBeta6Combat({ ...BETA_CHARACTERS, lavender:{ ...BETA_CHARACTERS.lavender, attackWindup:0, special:{...BETA_CHARACTERS.lavender.special,motionWindup:0} } }, {
       blocked: (x, z, radius = .1) => getArenaSolids().some(solid =>
         solid.top > groundHeightAt(x, z) + .5 && Math.abs(x - solid.x) < solid.halfW + radius && Math.abs(z - solid.z) < solid.halfD + radius),
       onEvent: event => {
@@ -7790,9 +7974,89 @@ function updateLavenderPractice(dt) {
   updateCrimsonUltimateGauge();
 }
 
+function clearSalmonPractice() {
+  salmonPractice?.world.clear();
+  salmonPractice = null;
+  if (!beta6Combat) salmonBattleVisuals.clear();
+}
+
+function syncSalmonPractice() {
+  if (!salmonPractice) {
+    const world = createBeta6Combat(BETA_CHARACTERS, {
+      bounds: 100,
+      walkable: (x, z) => groundHeightAt(x, z) > -5,
+      blocked: (x, z, radius = .1) => getArenaSolids().some(solid =>
+        solid.top > groundHeightAt(x, z) + .5 && Math.abs(x - solid.x) < solid.halfW + radius && Math.abs(z - solid.z) < solid.halfD + radius),
+      onEvent: event => {
+        if (event.type === "damage" && event.target.practiceMesh) damageTarget(event.target.practiceMesh, event.amount);
+      },
+    });
+    salmonPractice = { world, actor: world.add("salmon", { automatic: false, team: "player", next: 0 }), targets: new Map() };
+  }
+  const { world, actor, targets } = salmonPractice;
+  actor.x = player.position.x; actor.z = player.position.z;
+  actor.hp = goldRushState.health; actor.ammo = goldRushState.ammo; actor.charge = salmonUltimateCharge;
+  for (const mesh of testTargets) {
+    if (!mesh.visible || mesh.userData.isAlly || mesh.userData.health <= 0) continue;
+    if (!targets.has(mesh)) targets.set(mesh, world.add("red", { automatic: false, team: "enemy", practiceMesh: mesh }));
+  }
+  for (const [mesh, target] of targets) {
+    if (!mesh.visible || !testTargets.includes(mesh) || mesh.userData.health <= 0) {
+      world.remove(target); targets.delete(mesh); continue;
+    }
+    target.vx = (mesh.position.x - target.x) * 60;
+    target.vz = (mesh.position.z - target.z) * 60;
+    if (!target.salmonAirborne) { target.x = mesh.position.x; target.z = mesh.position.z; }
+    target.hp = mesh.userData.health;
+    target.invulnerableUntil = world.time + Math.max(0, (mesh.userData.invulnerableUntil ?? 0) - clock.elapsedTime);
+  }
+  return salmonPractice;
+}
+
+function useSalmonPracticeSkill(ultimate, manualAim = false) {
+  if (goldRushState.dead || betaState.selectedCharacter !== "salmon") return;
+  const { world, actor, targets } = syncSalmonPractice();
+  const facing = Math.PI / 2 - player.rotation.y;
+  const point = { x: actor.x + Math.cos(facing) * salmonAimRange, z: actor.z + Math.sin(facing) * salmonAimRange };
+  const target = manualAim ? point : [...targets.values()].sort((a, b) =>
+    Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0] ?? point;
+  const attackCountBefore = actor.attackCount;
+  if (!(ultimate ? world.cast(actor, target) : world.fire(actor, target))) return;
+  goldRushState.ammo = actor.ammo; salmonUltimateCharge = actor.charge;
+  if (ultimate || actor.attackCount > attackCountBefore) startModelAttackMotion(IS_BETA8_TEST && ultimate ? "salmonUltimate" : "salmon");
+  updateGoldRushCombatHud(); updateCrimsonUltimateGauge();
+}
+
+function updateSalmonPractice(dt) {
+  if (!salmonPractice) return;
+  if (betaState.selectedCharacter !== "salmon" || beta6Combat) { clearSalmonPractice(); return; }
+  const { world, actor, targets } = syncSalmonPractice();
+  world.update(dt);
+  goldRushState.ammo = actor.ammo; salmonUltimateCharge = actor.charge;
+  for (const [mesh, target] of targets) {
+    mesh.position.x = target.x; mesh.position.z = target.z;
+    mesh.position.y = groundHeightAt(target.x, target.z) + .05 + (target.salmonHeight || 0);
+    if (target.slowUntil > world.time) {
+      mesh.userData.slowUntil = clock.elapsedTime + target.slowUntil - world.time;
+      mesh.userData.slowMultiplier = 1 - target.slow;
+    }
+  }
+  salmonBattleVisuals.update(world);
+  updateGoldRushCombatHud(); updateCrimsonUltimateGauge();
+}
+
 function resetTestCombatHud() {
+  betaAttackGeneration++;
+  betaPracticeUltimatePending = null;
   clearLavenderPractice();
+  clearSalmonPractice();
+  salmonUltimateCharge=0;
   if (goldRushState.active && !goldRushState.ended) return;
+  restoreModelAttackPose();
+  modelAttackMotionTime = -1;
+  modelAttackCharacter = null;
+  generalAttackReady = true;
+  crimsonAttackButton.classList.remove("cooldown");
   const def = BETA_CHARACTERS[betaState.selectedCharacter];
   goldRushState.maxHealth = def?.maxHealth || 6000;
   goldRushState.health = goldRushState.maxHealth;
@@ -7809,7 +8073,7 @@ function resetTestCombatHud() {
 
 function updateTestCombatHud(dt) {
   if (goldRushState.active && !goldRushState.ended) return;
-  if (goldRushState.ammo < goldRushState.maxAmmo) {
+  if (!BETA_CHARACTERS[betaState.selectedCharacter]?.noAutomaticReload && goldRushState.ammo < goldRushState.maxAmmo) {
     goldRushState.reloadTimer += dt;
     while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
       goldRushState.reloadTimer -= goldRushState.reloadDuration;
@@ -7866,7 +8130,18 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   clearAzureWave();
   clearYellowCircuit();
   if (goldRushState.ended) return;
+  const completedRecord = IS_BETA8_TEST && goldRushState.active ? betaRecords.finish(goldRushState.recordMatch, {
+    ...goldRushState.questStats, deaths:goldRushState.recordDeaths || 0,
+    duration:Math.max(0,clock.elapsedTime-goldRushState.startedAt),
+    won:goldRushState.mode==='showdown' ? Number(showdownRank || (playerWon?1:10))<=4 : playerWon,
+    rank:showdownRank, abandoned, draw:message.includes('무승부'),
+  }) : null;
+  goldRushState.recordMatch = null;
   respawnShields.clear();
+  if (IS_BETA8_TEST && !abandoned && goldRushState.active && goldRushState.questStats) {
+    betaState.beta8Quests = addQuestStats(betaState.beta8Quests, goldRushState.questStats);
+    canvas.dataset.lastQuestPoints = String(questPoints(goldRushState.questStats));
+  }
   const characterId = betaState.selectedCharacter;
   const previousTrophies = betaState.characterTrophies[characterId] || 0;
   const wasKnockout = goldRushState.mode === "knockout";
@@ -7958,6 +8233,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   resetPlayer();
   if (wasKnockout && !abandoned) showKnockoutResult(message);
   else if (playerWon) showDailyRewardReveal();
+  if (completedRecord) betaRecords.result(completedRecord,wasKnockout && !abandoned);
 }
 
 // 베타 자체 경기장: 메인 페이지나 계정에 의존하지 않는다.
@@ -8119,7 +8395,7 @@ function updateKnockout(dt) {
       const strips=[[-(20+half)/2,0,20-half,40],[(20+half)/2,0,20-half,40],[0,-(20+half)/2,half*2,20-half],[0,(20+half)/2,half*2,20-half]];
       knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(w,1,d);});
       const outside=p=>Math.max(Math.abs(p.x),Math.abs(p.z))>half;
-      if(!goldRushState.dead&&outside(player.position))damageGoldRushPlayer(goldRushState.maxHealth*.1*dt);
+    if(!goldRushState.dead&&outside(player.position))damageGoldRushPlayer(goldRushState.maxHealth*.1*dt,true);
       for(const bot of goldRushBots)if(!bot.dead&&outside(bot.mesh.position))damageGoldRushBot(bot,bot.maxHealth*.1*dt,false,true);
     }
   }
@@ -8195,6 +8471,8 @@ function prepareBetaEventMap(mode,plus) {
 
 function startGoldRush(mode = "goldRush", showdownPlus = false) {
   if (mode === "knockout" && !IS_BETA8_TEST) return;
+  if (IS_BETA8_TEST && goldRushState.active && !goldRushState.ended) endGoldRush('중도 이탈',false,null,true);
+  closeBetaModal();
   respawnShields.clear();
   knockoutMatch = mode === "knockout" ? createKnockoutMatch(clock.elapsedTime) : null;
   knockoutArena.visible = mode === "knockout";
@@ -8232,6 +8510,9 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   goldRushState.ended = false;
   goldRushState.gold = 0;
   goldRushState.kills = 0;
+  goldRushState.questStats = questStats();
+  goldRushState.recordDeaths = 0;
+  goldRushState.recordMatch = betaRecords?.start(mode,betaState.selectedCharacter);
   goldRushState.startedAt = clock.elapsedTime;
   goldRushState.nextSpawnAt = clock.elapsedTime + 2.5;
   goldRushState.winCountdownStartedAt = null;
@@ -8334,6 +8615,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
 function killGoldRushPlayer() {
   clearAzureWave();
   if (!goldRushState.active || goldRushState.dead || goldRushState.ended) return;
+  if (IS_BETA8_TEST) goldRushState.recordDeaths = (goldRushState.recordDeaths || 0) + 1;
   if (goldRushState.mode === "knockout") {
     goldRushState.health = 0; goldRushState.dead = true;
     goldRushState.respawnAt = Infinity;
@@ -8373,6 +8655,13 @@ function killPracticePlayer() {
   playerGoldRushHealthBar.visible = false;
   respawnOverlay.classList.remove("hidden");
 }
+// Preserve an interrupted match before navigation; recovery records it as a zero-point loss.
+window.addEventListener('pagehide',()=>{
+  if (IS_BETA8_TEST && goldRushState.active && !goldRushState.ended) betaRecords.checkpoint({
+    ...goldRushState.questStats, deaths:goldRushState.recordDeaths || 0,
+    duration:Math.max(0,clock.elapsedTime-goldRushState.startedAt),
+  });
+},true);
 
 // updateGoldRush()는 매치가 active일 때만 도는데, 연습 사망은 매치 밖에서
 // 일어나므로 매 프레임 별도로 부활 카운트다운을 처리해야 한다.
@@ -8416,7 +8705,7 @@ function updateGoldRush(dt) {
     }
   }
   // 한 발만 써도 곧바로 채워진다. 공격 쿨다운과 무관하게 진행한다.
-  if (!goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(beta6Combat)) {
+  if (!BETA_CHARACTERS[betaState.selectedCharacter]?.noAutomaticReload && !goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(beta6Combat)) {
     goldRushState.reloadTimer += dt;
     let reloaded = false;
     while (goldRushState.reloadTimer >= goldRushState.reloadDuration && goldRushState.ammo < goldRushState.maxAmmo) {
@@ -8530,6 +8819,7 @@ function aimPlayerAtPointer(event, aimKind = "attack") {
   const aimX = manualAimPoint.x - player.position.x;
   const aimZ = manualAimPoint.z - player.position.z;
   const pointerRange = Math.hypot(aimX, aimZ);
+  if (betaState.selectedCharacter === "salmon") salmonAimRange = THREE.MathUtils.clamp(pointerRange, 0, 8.5);
   if (pointerRange < 0.25 && betaState.selectedCharacter !== "ivory") return false;
   if (pointerRange > 0.001) player.rotation.y = Math.atan2(aimX, aimZ);
   if (betaState.selectedCharacter === "ivory") {
@@ -8821,6 +9111,8 @@ function animate() {
   if (modelLoading.blocking) { clock.elapsedTime -= rawDelta; renderer.render(scene, camera); return; }
   const dt = Math.min(rawDelta, 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   updateLavenderPractice(dt);
+  updateSalmonPractice(dt);
+  skinEffects.update(dt,[{key:player,characterId:betaState.selectedCharacter,skinId:betaState.selectedSkins[betaState.selectedCharacter],position:player.position,visible:player.visible && !goldRushState.dead}]);
   halloweenDecor?.update(clock.elapsedTime);
   beta8LobbyRooms?.update(clock.elapsedTime);
   salmonPreview?.update(dt);
@@ -8829,7 +9121,7 @@ function animate() {
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
   if (ivoryUltimateAiming || directionalUltimateAiming) {
     const u = aimDef.special || aimDef.ultimate;
-    const distance = aimId === "ivory" ? ivoryUltimateAimRange : aimId === "yellow" && yellowUltimateAimPointValid ? player.position.distanceTo(yellowUltimateAimPoint) : aimId === "purple" && purpleUltimateAimPointValid ? player.position.distanceTo(purpleUltimateAimPoint) : u.castRange ?? u.range ?? Infinity;
+    const distance = aimId === "salmon" ? salmonAimRange : aimId === "ivory" ? ivoryUltimateAimRange : aimId === "yellow" && yellowUltimateAimPointValid ? player.position.distanceTo(yellowUltimateAimPoint) : aimId === "purple" && purpleUltimateAimPointValid ? player.position.distanceTo(purpleUltimateAimPoint) : u.castRange ?? u.range ?? Infinity;
     betaUltimateGuide.show(ultimateGuide(aimId, aimDef, {distance, yaw:player.rotation.y}), player.position, player.rotation.y);
     attackAimIndicator.visible=false; ivoryUltimateAimIndicator.visible=false; mintUltimateAimIndicator.visible=false; betaCyanGuide.hide();
   } else {
@@ -8860,7 +9152,7 @@ function animate() {
       scene.add(beam);
       crimsonSlashes.push({ group: beam, mesh: beam, life: 0.18, maxLife: 0.18 });
       const guardReduction = player.userData.redGuardUntil > clock.elapsedTime ? (player.userData.redGuardReduction ?? 0) : 0;
-      const robotDamage = 450 * (1 - guardReduction);
+      const robotDamage = 450 * (1 - Math.max(guardReduction,blueShieldReduction()));
       goldRushState.health = Math.max(0, goldRushState.health - robotDamage);
       goldRushState.lastDamageAt = clock.elapsedTime;
       goldRushState.nextRegenAt = clock.elapsedTime + 3;
@@ -9082,7 +9374,7 @@ function animate() {
           if (betaState.selectedCharacter === "mint") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "crystal") {
-          crystalUltimateCharge = Math.min(BETA_CHARACTERS.crystal.ultimate.chargeRequired, crystalUltimateCharge + basicUltimateCharge("crystal"));
+          crystalUltimateCharge = Math.min(BETA_CHARACTERS.crystal.ultimate.chargeRequired, crystalUltimateCharge + basicUltimateCharge("crystal", projectile.crystalStage === 3 ? (BETA_CHARACTERS.crystal.shardUltimateCharge ?? 1) : 1));
           if (betaState.selectedCharacter === "crystal") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "cyan" && projectile.type !== "cyanUltimate") {
@@ -9499,11 +9791,13 @@ function animate() {
     greenConcealedPrev = greenVisualActive;
   }
   canvas.dataset.greenConcealed = String(playerConcealed);
+  if (betaAccount.isOpen) keys.clear();
   const forward = Number(keys.has("KeyW")) - Number(keys.has("KeyS"));
   const strafe = Number(keys.has("KeyD")) - Number(keys.has("KeyA"));
   const input = new THREE.Vector2(strafe, forward);
   let isMoving = false;
   const blueDashing = updateBlueDash(dt);
+  updateBlueShieldVisual();
   const azureDashing = updateAzureWave(dt);
   const purpleJumping = Boolean(beta6Combat && beta6PlayerActor?.leap) || updatePurpleLeap(dt);
   const crystalDashing = updateCrystalUltimate(dt);
