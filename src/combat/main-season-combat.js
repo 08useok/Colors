@@ -1,4 +1,4 @@
-import {createBeta6Combat} from './beta6-combat.js?v=33';
+import {createBeta6Combat} from './beta6-combat.js?v=35';
 import {beta6Ultimate} from '../config/beta6-balance.js';
 
 // Main fighters use Three.js positions and wall-clock status fields; the shared
@@ -14,7 +14,8 @@ export function createMainSeasonCombat(definitions,hooks) {
       const source=e.owner?.fighter,target=e.target?.fighter;
       if(e.type==='damage'&&target)hooks.damage(target,e.amount,source);
       if(['heal','revive'].includes(e.type)&&target)hooks.heal?.(target,e.target.hp,e.type==='revive');
-      if(e.type==='attack'&&source){source.attackSwing=1;source.attackAnimTime=0;source.lastCombatTime=hooks.time();}
+      if(e.type==='attack'&&source){source.attackSwing=1;source.attackAnimTime=0;source.attackMotionUltimate=false;source.lastCombatTime=hooks.time();}
+      if(e.type==='ultimate'&&source){source.attackAnimTime=0;source.attackMotionUltimate=true;source.lastCombatTime=hooks.time();}
       hooks.event?.(e);
     },
   });
@@ -36,7 +37,10 @@ export function createMainSeasonCombat(definitions,hooks) {
   }
   function synchronize(dt=0){const fighters=hooks.fighters();for(const[f,a]of units)if(!fighters.includes(f)){world.remove(a);units.delete(f);}for(const f of fighters)syncIn(f,add(f),dt);}
   function target(a){return world.actors.filter(b=>b!==a&&b.hp>0&&(a.team==null||a.team!==b.team)).sort((b,c)=>Math.hypot(a.x-b.x,a.z-b.z)-Math.hypot(a.x-c.x,a.z-c.z))[0];}
-  function out(a){const f=a.fighter;f.ammo=a.ammo;f[`${f.characterType}UltimateCharge`]=a.charge;f.seasonUltimateCharge=a.charge;f.seasonUltimateFieldActive=world.ultimateFieldActive(a);f.mintIce=a.ice;f.seasonActionLocked=world.time<a.lockUntil||world.time<a.frozenUntil||!!a.dash||!!a.leap||!!a.wave;f.seasonHidden=world.hidden(a);f.seasonSlow=world.time<a.slowUntil?1-a.slow:1;f.nextAttackAt=hooks.time()+Math.max(0,a.next-world.time);f.attackIndex=a.index;f.redGuardUntil=hooks.time()+Math.max(0,a.guardUntil-world.time);f.invulnerableUntil=hooks.time()+Math.max(0,a.invulnerableUntil-world.time);f.revealedUntil=hooks.time()+Math.max(0,a.revealedUntil-world.time);
+  // Salmon capture devices are engine-only actors without a main fighter.
+  function out(a){const f=a.fighter;if(!f)return;f.ammo=a.ammo;f[`${f.characterType}UltimateCharge`]=a.charge;f.seasonUltimateCharge=a.charge;f.seasonUltimateFieldActive=world.ultimateFieldActive(a);f.mintIce=a.ice;f.seasonActionLocked=world.time<a.lockUntil||world.time<a.frozenUntil||!!a.dash||!!a.leap||!!a.wave;f.seasonHidden=world.hidden(a);f.seasonSlow=world.time<a.slowUntil?1-a.slow:1;f.nextAttackAt=hooks.time()+Math.max(0,a.next-world.time);f.attackIndex=a.index;f.redGuardUntil=hooks.time()+Math.max(0,a.guardUntil-world.time);f.invulnerableUntil=hooks.time()+Math.max(0,a.invulnerableUntil-world.time);f.revealedUntil=hooks.time()+Math.max(0,a.revealedUntil-world.time);
+    // Captured fighters ride Salmon's arc; restore the standing height once they land.
+    if(a.salmonAirborne||f.seasonLifted){f.mesh.position.y=1.85+(a.salmonAirborne?(a.salmonHeight??0):0);f.seasonLifted=!!a.salmonAirborne;}
     if(!f.dead&&!f.isNetworkPlayer){f.mesh.position.x=a.x;f.mesh.position.z=a.z;f.shadow.position.set(a.x,.04,a.z);if(a.automatic)f.yaw=Math.PI/2-a.angle;}
     if(f.dead)f.seasonActionLocked=false;
   }
@@ -44,7 +48,7 @@ export function createMainSeasonCombat(definitions,hooks) {
     world,actor:add,
     fire(f,visualOnly=false){
       synchronize();const a=add(f),enemy=target(a);
-      const point=f.characterType==="ivory"?(hooks.aim?.(f)??enemy):null;
+      const point=["ivory","salmon"].includes(f.characterType)?(hooks.aim?.(f)??enemy):null;
       const b=point?{x:point.x,z:point.z,vx:0,vz:0}:enemy??{x:a.x+Math.sin(f.yaw)*20,z:a.z+Math.cos(f.yaw)*20,vx:0,vz:0};
       const angle=point?Math.atan2(point.z-a.z,point.x-a.x):Math.PI/2-f.yaw;
       const old=a.next;if(visualOnly)a.next=0;const fired=world.fire(a,b,angle);if(visualOnly)a.next=old;

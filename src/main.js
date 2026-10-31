@@ -1,7 +1,8 @@
 import { applyRigAttackPose, restoreRigAttackPose } from "./visuals/rig-attack-motion.js?v=1";
+import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from "./visuals/beta-attack-motion.js?v=1";
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
-import { characterDisplayName } from "./LANGS/character-names.js?v=1";
+import { characterDisplayName } from "./LANGS/character-names.js?v=2";
 import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=1";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=2";
@@ -18,8 +19,11 @@ import { mp } from "./multiplayer.js?v=1.5.50";
 import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=10";
+import { applyBeta8Balance } from "./config/beta8-balance.js?v=9";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=11";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=2";
+import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
+import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
 import { GEM_GRAB_RULES, gemEscapeResult } from "./config/gem-grab.js?v=1";
 import { navigateEventMap } from "./config/event-maps.js?v=2";
 import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
@@ -33,8 +37,8 @@ import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYello
 // LANGS는 ./LANGS/langs.js에서 import
 // (LANGS 데이터는 ./LANGS/langs.js로 이동됨)
 
-Object.assign(LANGS.ko,{crystal:"크리스탈",lavender:"라벤더",crystalDesc:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",lavenderDesc:"향수 스프레이와 둔화 장판을 사용하는 캐릭터",azureDesc:"파도를 타고 돌진하는 다이버"});
-Object.assign(LANGS.en,{crystal:"Crystal",lavender:"Lavender",crystalDesc:"Cascading crystals and crystal analysis",lavenderDesc:"Perfume spray and a slowing fragrance field",azureDesc:"A diver who dashes forward on a wave"});
+Object.assign(LANGS.ko,{salmon:"살몬",salmonDesc:"낚시찌로 적을 포획하고 포획 장치를 설치하는 캐릭터",crystal:"크리스탈",lavender:"라벤더",crystalDesc:"연쇄 수정탄과 수정 분석을 사용하는 캐릭터",lavenderDesc:"향수 스프레이와 둔화 장판을 사용하는 캐릭터",azureDesc:"파도를 타고 돌진하는 다이버"});
+Object.assign(LANGS.en,{salmon:"Salmon",salmonDesc:"Captures enemies with fishing floats and sets capture devices",crystal:"Crystal",lavender:"Lavender",crystalDesc:"Cascading crystals and crystal analysis",lavenderDesc:"Perfume spray and a slowing fragrance field",azureDesc:"A diver who dashes forward on a wave"});
 MAIN_UI.forEach(([ko, en], i) => { LANGS.ko["mainUi" + i] = ko; LANGS.en["mainUi" + i] = en; });
 Object.entries(ARCHIVE_TEXT).forEach(([key, value]) => { LANGS.ko[key] = value.ko; LANGS.en[key] = value.en; });
 LANGS.ko.mainLanguagePatch = "v1.7.0.4 — 한·영 캐릭터 이름과 메뉴 번역을 정리했습니다. 베타에는 할로윈 스킨 모델 3종을 연결했습니다.";
@@ -70,7 +74,9 @@ function applyLanguage() {
 
 // 메인 로비와 사이드바의 시즌 문구를 현재 시즌에 맞춰 함께 갱신한다.
 function applySeasonLabels() {
-  const seasonLabel = CURRENT_SEASON === "beta7"
+  const seasonLabel = CURRENT_SEASON === "beta8"
+    ? (currentLang === "ko" ? "베타 시즌 8 · 할로윈 KNOCKOUT" : "Beta Season 8 · Halloween Knockout")
+    : CURRENT_SEASON === "beta7"
     ? (currentLang === "ko" ? "베타 시즌 7 · 잃어버린 황금 유적" : "Beta Season 7 · Lost Golden Ruins")
     : CURRENT_SEASON === "beta6"
     ? (currentLang === "ko" ? "베타 시즌 6" : "Beta Season 6")
@@ -209,6 +215,8 @@ const beta5LobbyBgm = new Audio("./assets/beta5-clockwork-midway.mp3?v=1");
 beta5LobbyBgm.loop = true;
 const beta7LobbyBgm = new Audio("./assets/beta7-beneath-sun-bleached-stone.mp3?v=1");
 beta7LobbyBgm.loop = true;
+const beta8LobbyBgm = new Audio("./assets/beta8-midnight-at-the-manor-gates.mp3?v=1");
+beta8LobbyBgm.loop = true;
 const gemGrabBgm = new Audio("./assets/beta7-before-the-vault-closes.mp3?v=1");
 gemGrabBgm.loop = true;
 const beta6LobbyBgm = new Audio("./assets/beta6-high-noon-tide.mp3?v=1");
@@ -219,8 +227,8 @@ let masterVolume = Number.isFinite(storedMasterVolume) ? THREE.MathUtils.clamp(s
 function applyMasterVolume() {
   // 설정에 표시되는 비율과 실제 출력 비율을 동일하게 유지한다.
   const outputVolume = masterVolume;
-  const mediaTracks = [beta7LobbyBgm, gemGrabBgm, lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm, showdownBgm, showdownMusic];
-  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
+  const mediaTracks = [beta8LobbyBgm, beta7LobbyBgm, gemGrabBgm, lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm, showdownBgm, showdownMusic];
+  const baseVolumes = [0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.45, 0.5, 0.9];
   mediaTracks.forEach((track, index) => {
     track.volume = baseVolumes[index] * outputVolume;
     track.muted = outputVolume === 0;
@@ -236,7 +244,7 @@ function pauseLobbyBgm() {
   beta2LobbyBgm.pause();
   beta4LobbyBgm.pause();
   beta5LobbyBgm.pause();
-  beta6LobbyBgm.pause(); beta7LobbyBgm.pause(); gemGrabBgm.pause();
+  beta6LobbyBgm.pause(); beta8LobbyBgm.pause(); beta7LobbyBgm.pause(); gemGrabBgm.pause();
 }
 
 function stopAllBgm() {
@@ -249,8 +257,8 @@ function playLobbyBgm() {
   if (!state.audioEnabled) return;
   showdownBgm.pause();
   showdownMusic.pause();
-  const activeLobbyBgm = CURRENT_SEASON === "beta7" ? beta7LobbyBgm : CURRENT_SEASON === "beta6" ? beta6LobbyBgm : CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
-  [beta7LobbyBgm, gemGrabBgm, lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
+  const activeLobbyBgm = CURRENT_SEASON === "beta8" ? beta8LobbyBgm : CURRENT_SEASON === "beta7" ? beta7LobbyBgm : CURRENT_SEASON === "beta6" ? beta6LobbyBgm : CURRENT_SEASON === "beta5" ? beta5LobbyBgm : CURRENT_SEASON === "beta4" ? beta4LobbyBgm : CURRENT_SEASON === "beta2" ? beta2LobbyBgm : IS_BETA_SEASON ? betaLobbyBgm : lobbyBgm;
+  [beta8LobbyBgm, beta7LobbyBgm, gemGrabBgm, lobbyBgm, betaLobbyBgm, beta2LobbyBgm, beta4LobbyBgm, beta5LobbyBgm, beta6LobbyBgm].filter((bgm) => bgm !== activeLobbyBgm).forEach((bgm) => bgm.pause());
   applyMasterVolume();
   activeLobbyBgm.play().catch(() => {});
 }
@@ -380,8 +388,9 @@ const BETA_SEASON_4_START_AT = new Date("2026-08-24T18:00:00+09:00").getTime();
 const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
-const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
+const BETA_SEASON_8_START_AT = new Date("2026-10-31T00:00:00+09:00").getTime();
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.0" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_SEASON = Date.now() >= BETA_SEASON_8_START_AT ? "beta8" : Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
   ? "beta4"
@@ -391,9 +400,21 @@ const CURRENT_SEASON = Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now
   ? "beta2"
   : Date.now() >= BETA_SEASON_START_AT ? "beta1" : "alpha4";
 const IS_BETA_SEASON = CURRENT_SEASON.startsWith("beta");
+// Season 7 moved every main fighter onto the shared season combat engine; Season 8 keeps it.
+const SEASON_ENGINE = ["beta7", "beta8"].includes(CURRENT_SEASON);
+// Season 8 battle music from the beta: graveyard theme for matches, gem-heist theme for Gem Grab.
+if (CURRENT_SEASON === "beta8") {
+  showdownBgm.src = "./assets/beta8-graveyard-gambit.mp3?v=1";
+  gemGrabBgm.src = "./assets/beta8-the-midnight-gem-heist.mp3?v=1";
+}
 document.body.dataset.season=CURRENT_SEASON;
-if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
-  const releaseStats = CURRENT_SEASON === "beta7" ? applyBeta7Balance(BETA_CHARACTERS) : applyBeta6Balance(BETA_CHARACTERS);
+if (["beta6", "beta7", "beta8"].includes(CURRENT_SEASON)) {
+  // Season 8 uses the beta8 values unchanged; the Season 7 main-only tweaks below do not apply.
+  const releaseStats = CURRENT_SEASON === "beta8" ? applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS)) : CURRENT_SEASON === "beta7" ? applyBeta7Balance(BETA_CHARACTERS) : applyBeta6Balance(BETA_CHARACTERS);
+  if (CURRENT_SEASON === "beta8") {
+    releaseStats.orange.orangeUltimateEnabled = true;
+    releaseStats.purple.purpleUltimateEnabled = true;
+  }
   // Main-only balance adjustments; beta definitions remain separate.
   if (CURRENT_SEASON === "beta7") {
     const azure = releaseStats.azure;
@@ -418,10 +439,10 @@ if (["beta6", "beta7"].includes(CURRENT_SEASON)) {
     releaseStats.crystal.basicAttack.descriptionEn = "The first 2,200-damage crystal steers toward the enemy selected at launch. It splits into six fragments (1,100 damage each), then twelve shards (550 damage each); fragments do not home. The same target can be hit once by the first crystal, up to three times by stage-two fragments, and up to four times by stage-three shards.";
   }
   for (const [id, stats] of Object.entries(releaseStats)) {
-    // 라벤더는 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.
-    if (id === "lavender") continue;
+    // 라벤더·살몬은 시즌 8 출시: 시즌 7 메인 로스터에 등록하지 않는다.
+    if (CURRENT_SEASON !== "beta8" && ["lavender", "salmon"].includes(id)) continue;
     const current = CHARACTERS[id] || {};
-    const merged = { ...current, ...stats, color: current.color ?? ({ azure: 0x007fff, crystal: 0x6ee7ff, lavender: 0xb48be8 }[id] ?? 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
+    const merged = { ...current, ...stats, color: current.color ?? ({ azure: 0x007fff, crystal: 0x6ee7ff, lavender: 0xb48be8, salmon: 0xfe7974 }[id] ?? 0xffffff), walk: current.walk ?? CHARACTERS.red.walk };
     // 베타 궁극기 객체에는 이름·설명만 있는 경우가 있어 통째로 덮으면 피해·범위·충전량이 사라진다(NaN 판정).
     for (const key of ["ultimate", "special"]) {
       if (current[key] && stats[key]) merged[key] = { ...current[key], ...stats[key] };
@@ -454,25 +475,26 @@ const SEASONS = {
   beta5: "베타 시즌 5",
   beta6: "베타 시즌 6",
   beta7: "베타 시즌 7",
+  beta8: "베타 시즌 8",
 };
 
 // 베타 시즌 1 캐릭터 등급 — 일반은 기본 보유, 희귀/영웅은 크레딧으로 구매
 // 본 게임에 실제로 구현된 궁극기만 여기에 넣는다. HUD 버튼, 발동, 캐릭터 설명이
 // 모두 이 목록을 따르므로 구현 안 된 궁극기가 설명에만 노출되는 일이 없다.
 // 레드 궁극기(레드 가드)는 아직 정식 출시 전이라 카드 노출·전투 사용 모두 비활성화한다.
-const ULTIMATE_CHARACTERS = new Set([...(CURRENT_SEASON === "beta7" ? ["orange", "purple", "crystal"] : []),"red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
+const ULTIMATE_CHARACTERS = new Set([...(SEASON_ENGINE ? ["orange", "purple", "crystal"] : []), ...(CURRENT_SEASON === "beta8" ? ["lavender", "salmon"] : []),"red", "green", "blue", "yellow", "cyan", "crimson", "gold", "ivory", "pink", "chartreuse", "mint", "azure"]);
 
 const CHARACTER_RARITY = {
   red: "common", green: "common", blue: "common",
   orange: "rare", yellow: "rare", cyan: "rare", purple: "rare", pink: "rare",
-  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero", azure: "hero", crystal: "hero", lavender: "hero",
+  crimson: "hero", gold: "legendary", ivory: "hero", chartreuse: "hero", mint: "hero", azure: "hero", crystal: "hero", lavender: "hero", salmon: "hero",
 };
 const RARITY_PRICE = { common: 0, rare: 200, hero: 900, legendary: 1200 };
 const DEFAULT_OWNED_CHARACTERS = ["red", "green", "blue"];
 // 베타 이전 계정은 이 8종을 이미 자유롭게 쓰고 있었으므로 그대로 승계한다
 const PRE_BETA_CHARACTERS = ["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink"];
 // 베타 시즌 전에는 크림슨과 등급 잠금이 아직 없다
-const ROSTER = CURRENT_SEASON === "beta7" ? Object.keys(CHARACTERS) : ["beta2", "beta3", "beta4", "beta5", "beta6"].includes(CURRENT_SEASON)
+const ROSTER = SEASON_ENGINE ? Object.keys(CHARACTERS) : ["beta2", "beta3", "beta4", "beta5", "beta6"].includes(CURRENT_SEASON)
   ? [...PRE_BETA_CHARACTERS, "crimson", "gold", "ivory", ...(["beta4", "beta5", "beta6"].includes(CURRENT_SEASON) ? ["chartreuse"] : []), ...(["beta5", "beta6"].includes(CURRENT_SEASON) ? ["mint"] : []), ...(CURRENT_SEASON === "beta6" ? ["azure"] : [])]
   : IS_BETA_SEASON ? [...PRE_BETA_CHARACTERS, "crimson"] : [...PRE_BETA_CHARACTERS];
 
@@ -1004,6 +1026,7 @@ const SEASON_LOBBY_BACKGROUNDS = {
   beta4: "radial-gradient(circle at 50% 38%, rgba(255, 214, 231, 0.38), rgba(17, 37, 40, 0.9) 78%)",
   beta5: "radial-gradient(circle at 50% 38%, rgba(255, 180, 215, 0.38), rgba(24, 18, 38, 0.9) 78%)",
   beta7: "radial-gradient(circle at 50% 30%, #d7ad64, #59412a 76%)",
+  beta8: "radial-gradient(circle at 50% 30%, rgba(255, 122, 24, 0.45), rgba(23, 19, 33, 0.94) 76%)",
   beta6: "radial-gradient(circle at 50% 30%, rgba(72, 218, 235, 0.5), rgba(7, 62, 101, 0.92) 76%)",
 };
 
@@ -1578,6 +1601,7 @@ function getPrimaryAttackDamage(charKey, charDef) {
   if (charKey === "red") return charDef.attackDamage ?? attackEvents[0]?.damage;
   if (charKey === "crystal") return charDef.crystalDamage;
   if (charKey === "lavender") return charDef.sprayDamage;
+  if (charKey === "salmon") return (charDef.directDamage ?? 0) + (charDef.splashDamage ?? 0);
   if (charKey === "crimson") return charDef.attackDamage;
   if (charKey === "green") return charDef.boomerangDamage;
   if (charKey === "blue") return charDef.bulletDamage;
@@ -3000,8 +3024,23 @@ const SEASON6_SKIN_FBX = {
   beta7_green_mummy: ["green", "green/skins/emerald-mummy"],
   beta7_blue_scarab: ["blue", "blue/skins/scarab-blue"],
   beta7_crystal_ruin_explorer: ["crystal", "crystal/skins/gem-princess"],
+  beta8_ivory_skeleton: ["ivory", "ivory/skins/skeleton"],
+  beta8_orange_jack_o_lantern: ["orange", "orange/skins/jack-o-lantern"],
+  beta8_purple_potion_witch: ["purple", "purple/skins/potion-witch"],
+  beta8_lavender_ghost_bride: ["lavender", "lavender/skins/ghost-bride"],
 };
 const SEASON6_SKIN_MODEL_VERSION = "3";
+// Beta 8 offered the Halloween skins as free trials. Main sells them at the regular epic price.
+const SEASON8_MAIN_SKIN_TEXT = {
+  beta8_ivory_skeleton: { desc: "뼈 장식과 유령빛 의상의 할로윈 아이보리", descEn: "A Halloween Ivory with bone ornaments and a ghostly outfit" },
+  beta8_orange_jack_o_lantern: { nameEn: "Jack-o'-Lantern Orange", desc: "호박등과 망토를 두른 할로윈 오렌지", descEn: "A Halloween Orange with a jack-o'-lantern and cape" },
+  beta8_purple_potion_witch: { nameEn: "Potion Witch Purple", desc: "초록 물약을 만드는 보라색 마녀", descEn: "A purple witch brewing green potions" },
+  beta8_lavender_ghost_bride: { nameEn: "Ghost Bride Lavender", desc: "보라색 향기와 베일을 두른 유령 신부", descEn: "A ghost bride wrapped in violet perfume and a veil" },
+};
+for (const [skinId, text] of Object.entries(SEASON8_MAIN_SKIN_TEXT)) {
+  if (!SKINS[skinId]) continue;
+  Object.assign(SKINS[skinId], { cost: 2500, previewOnly: false }, text);
+}
 
 function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = false, skipAssetLoading = false) {
   const season6Skin = SEASON6_SKIN_FBX[skinId];
@@ -3156,6 +3195,10 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
     if (_azureFbx.loop) return buildPinkRigModel(resolveWalkGlbSet(_azureFbx, isAiBot), skinId);
   }
 
+  if (!skipAssetLoading && CHARACTERS.salmon && color === CHARACTERS.salmon.color) {
+    const data = ensureSalmonModelLoading();
+    if (data.loop) return buildPinkRigModel({ start: null, loop: data.loop, end: null }, skinId);
+  }
   if (!skipAssetLoading && [CHARACTERS.crystal?.color, CHARACTERS.lavender?.color].includes(color)) {
     const id = color === CHARACTERS.crystal.color ? "crystal" : "lavender";
     const data = ensureSeason7NormalLoading(id);
@@ -4540,7 +4583,8 @@ function setPreviewCharacter(charType) {
   const charDef = CHARACTERS[charType];
   if (!charDef) return;
   const usesLobbyStartFbx = ["azure","crystal","lavender"].includes(charType) || Boolean(SEASON6_SKIN_FBX[skinId]);
-  const lobbyStartFbx = usesLobbyStartFbx ? createLobbyStartFbxModel(charType, skinId) : null;
+  const salmonSource = charType === "salmon" ? ensureSalmonModelLoading().loop : null;
+  const lobbyStartFbx = usesLobbyStartFbx ? createLobbyStartFbxModel(charType, skinId) : salmonSource ? buildPinkRigModel({ start: null, loop: salmonSource, end: null }, skinId) : null;
   if (charType === "blue") ensureBluePreviewGlbLoading();
   else if (charType === "cyan" || CYAN_RIG_TEMPLATE_CHARACTERS.includes(charType)) ensureCyanPreviewGlbLoading();
   else if (charType === "ivory") ensureIvoryPreviewGlbLoading();
@@ -6486,7 +6530,7 @@ function broadcastBossDefeated() {
 
 function setupMpHandlers() {
   mp.on("RELAY", (msg) => {
-    if (CURRENT_SEASON === "beta7" && ["S7_ULTIMATE","S7_ATTACK"].includes(msg.relayType)) {
+    if (SEASON_ENGINE && ["S7_ULTIMATE","S7_ATTACK"].includes(msg.relayType)) {
       const f=msg.id==null?mpNetFighters[msg.fromId]:state.players.find(f=>(f.syncId??f.id)===msg.id);
       if(!f||!Number.isFinite(msg.yaw))return; f.yaw=msg.yaw;
       f.seasonAimPoint=Number.isFinite(msg.aimX)&&Number.isFinite(msg.aimZ)?{x:msg.aimX,z:msg.aimZ}:null;
@@ -6816,7 +6860,7 @@ function updateNetworkPlayers(dt) {
 }
 
 function playNetworkAttack(fighter, msg) {
-  if (CURRENT_SEASON === "beta7") {if(Number.isFinite(msg.yaw)){fighter.yaw=msg.yaw;fighter.seasonAimPoint=Number.isFinite(msg.aimX)&&Number.isFinite(msg.aimZ)?{x:msg.aimX,z:msg.aimZ}:null;getSeasonCombat().fire(fighter,true);}return;}
+  if (SEASON_ENGINE) {if(Number.isFinite(msg.yaw)){fighter.yaw=msg.yaw;fighter.seasonAimPoint=Number.isFinite(msg.aimX)&&Number.isFinite(msg.aimZ)?{x:msg.aimX,z:msg.aimZ}:null;getSeasonCombat().fire(fighter,true);}return;}
   if (fighter.dead || !Number.isFinite(msg.yaw)) return;
   fighter.yaw = msg.yaw;
   fighter.netTargetYaw = msg.yaw;
@@ -8708,6 +8752,15 @@ function getCurrentZone() {
   };
 }
 
+// Season 8 plays per-character basic and ultimate rig motions; older seasons keep the 0.6 s swing.
+function seasonAttackMotionId(fighter) {
+  return fighter.characterType + (fighter.attackMotionUltimate ? "Ultimate" : "");
+}
+function seasonAttackMotionDuration(fighter) {
+  if (CURRENT_SEASON !== "beta8") return 0.6;
+  return Math.max(0.6, BETA_ATTACK_PROFILES[seasonAttackMotionId(fighter)]?.duration ?? 0.6);
+}
+
 function getReloadInterval(fighter) {
   const reloadDur = CHARACTERS[fighter.characterType]?.reloadDuration ?? reloadDuration;
   return reloadDur;
@@ -9072,7 +9125,7 @@ function tryUseYellowUltimate(fighter) {
 
 function beginAttackCore(fighter) {
   if (modelLoading.blocking) return false;
-  if (CURRENT_SEASON === "beta7") return state.gameTime >= state.freezeUntil && !fighter.dead && getSeasonCombat().fire(fighter);
+  if (SEASON_ENGINE) return state.gameTime >= state.freezeUntil && !fighter.dead && getSeasonCombat().fire(fighter);
   if (state.gameTime < state.freezeUntil || (fighter.mintFrozenUntil ?? 0) > state.gameTime) return false;
   if (fighter.malfunctionUntil > state.gameTime) return false;
   if (fighter.characterType === "green") {
@@ -9144,7 +9197,7 @@ function beginAttack(fighter) {
     mp.relay("ATTACK", {
       yaw: fighter.yaw,
       attackIndex: fighter.attackIndex ?? 0,
-      ...(CURRENT_SEASON === "beta7" ? {aimX:mouseAimWorld.x,aimZ:mouseAimWorld.z} : {}),
+      ...(SEASON_ENGINE ? {aimX:mouseAimWorld.x,aimZ:mouseAimWorld.z} : {}),
     });
   }
   return started;
@@ -9169,7 +9222,7 @@ function findAutoAimTarget(player) {
 }
 
 function getAttackRange(fighter) {
-  if (CURRENT_SEASON === "beta7") return getSeasonCombat().world.range(getSeasonCombat().actor(fighter));
+  if (SEASON_ENGINE) return getSeasonCombat().world.range(getSeasonCombat().actor(fighter));
   let baseRange = attackDepth;
   if (fighter.characterType === "green") baseRange = CHARACTERS.green.boomerangRange;
   else if (fighter.characterType === "blue") baseRange = CHARACTERS.blue.bulletRange;
@@ -9187,7 +9240,7 @@ function getAttackRange(fighter) {
 }
 
 function getMoveSpeed(fighter) {
-  if (CURRENT_SEASON === "beta7") return 8 * CHARACTERS[fighter.characterType].moveSpeedMultiplier * (fighter.seasonSlow ?? 1);
+  if (SEASON_ENGINE) return 8 * CHARACTERS[fighter.characterType].moveSpeedMultiplier * (fighter.seasonSlow ?? 1);
   if ((fighter.mintFrozenUntil ?? 0) > state.gameTime) return 0;
   const multiplier = CHARACTERS[fighter.characterType]?.moveSpeedMultiplier ?? 1.0;
   let speed = baseMoveSpeed * multiplier;
@@ -10462,7 +10515,7 @@ function updateBlueDashes(dt) {
 function tryUseUltimate(fighter = getPlayer()) {
   if (modelLoading.blocking) return false;
   if (!fighter) return false;
-  if (CURRENT_SEASON === "beta7") {
+  if (SEASON_ENGINE) {
     if(fighter.dead||state.gameTime<state.freezeUntil)return false;
     if(fighter.isPlayer)updatePointerAim(fighter);
     const used = getSeasonCombat().cast(fighter);
@@ -12054,7 +12107,7 @@ function tryBotAttackWithWindup(bot, target) {
 }
 
 function updateBot(bot, dt, zone) {
-  if (CURRENT_SEASON === "beta7" && !state.chopWoodMode && !state.takedownMode) return;
+  if (SEASON_ENGINE && !state.chopWoodMode && !state.takedownMode) return;
   if (bot.dead || bot.blueDash || bot.isDummy || bot.isBoss || bot.isNetworkPlayer) {
     return;
   }
@@ -12449,7 +12502,7 @@ function updateFighterAnimation(fighter, dt) {
   };
 
   const body = fighter.mesh.userData;
-  restoreRigAttackPose(body.rigAttackPose);
+  (CURRENT_SEASON === "beta8" ? restoreBetaAttackPose : restoreRigAttackPose)(body.rigAttackPose);
   body.rigAttackPose = [];
   const _mdx = fighter.mesh.position.x - (fighter.lastX ?? fighter.mesh.position.x);
   const _mdz = fighter.mesh.position.z - (fighter.lastZ ?? fighter.mesh.position.z);
@@ -12621,7 +12674,7 @@ function updateFighterAnimation(fighter, dt) {
       headX += punchOne * 0.03 + punchTwo * 0.03;
     }
 
-    if (t > 0.6) {
+    if (t > seasonAttackMotionDuration(fighter)) {
       fighter.attackAnimTime = -1;
     }
   }
@@ -12738,7 +12791,9 @@ function updateFighterAnimation(fighter, dt) {
     }
     }
     const attackModel = Object.values(body.pinkScenes ?? {}).find(model => model?.visible) ?? fighter.mesh;
-    body.rigAttackPose = applyRigAttackPose(attackModel, fighter.characterType, fighter.attackAnimTime);
+    body.rigAttackPose = CURRENT_SEASON === "beta8"
+      ? applyBetaAttackPose(attackModel, seasonAttackMotionId(fighter), fighter.attackAnimTime)
+      : applyRigAttackPose(attackModel, fighter.characterType, fighter.attackAnimTime);
     updateHeadAttachedSkin(fighter.mesh);
   } else {
     body.leftArm.rotation.x = leftArmX;
@@ -12823,7 +12878,7 @@ function updateFighterAnimation(fighter, dt) {
 }
 
 function updateAmmoRegen(dt) {
-  if (CURRENT_SEASON === "beta7") return;
+  if (SEASON_ENGINE) return;
   for (const fighter of state.players) {
     if (fighter.dead) {
       continue;
@@ -13207,6 +13262,9 @@ function updateHud() {
 
   if (player.ammo >= player.maxAmmo) {
     reloadState.textContent = t("ammoFull");
+  } else if (!Number.isFinite(reloadInterval)) {
+    // Salmon has no automatic reload; floats are recovered or restored by captures.
+    reloadState.textContent = currentLang === "en" ? "Recover floats to reload" : "찌를 회수해 장전";
   } else {
     const remain = Math.max(0, reloadInterval - player.reloadTimer);
     reloadState.textContent = t("nextAmmo", remain.toFixed(1));
@@ -13244,7 +13302,7 @@ function updateHud() {
   if (hasUltimate) {
     const isCrimson = player.characterType === "crimson";
     const ultimate = CHARACTERS[player.characterType].ultimate;
-    const charge = CURRENT_SEASON === "beta7" ? (player.seasonUltimateCharge ?? 0) : isCrimson ? (player.crimsonUltimateCharge ?? 0)
+    const charge = SEASON_ENGINE ? (player.seasonUltimateCharge ?? 0) : isCrimson ? (player.crimsonUltimateCharge ?? 0)
       : player.characterType === "red" ? (player.redUltimateCharge ?? 0)
       : player.characterType === "green" ? (player.greenUltimateCharge ?? 0)
       : player.characterType === "mint" ? (player.mintUltimateCharge ?? 0)
@@ -13741,7 +13799,7 @@ function animate() {
       for (const fighter of state.players) {
         if (!fighter.isPlayer && !fighter.isNetworkPlayer) updateBot(fighter, dt, zone);
       }
-      if (CURRENT_SEASON === "beta7") getSeasonCombat().update(dt);
+      if (SEASON_ENGINE) getSeasonCombat().update(dt);
       updateAmmoRegen(dt);
       updatePinkRevives();
       if (!mpConfig || mpConfig.isHost) updateNaturalRegen();
@@ -15318,10 +15376,12 @@ if (window.location.hash === "#chop-wood") {
 }
 
 
-let seasonCombat=null,seasonCombatVisuals=null;
+let seasonCombat=null,seasonCombatVisuals=null,salmonCombatVisuals=null,seasonSkinEffects=null,seasonSkinEffectsTime=0;
+// Skin tier effects follow the equipped skin rarity (rare look only → legendary ambient).
+const fighterGround=f=>new THREE.Vector3(f.mesh.position.x,0,f.mesh.position.z);
 function getSeasonCombat(){
  if(seasonCombat)return seasonCombat;
- seasonCombatVisuals=createSeasonCombatVisuals(scene,CHARACTERS);
+ seasonCombatVisuals=createSeasonCombatVisuals(scene,CHARACTERS);salmonCombatVisuals=createSalmonVisuals(scene,()=>0);if(CURRENT_SEASON==="beta8")seasonSkinEffects=createSkinEffects(scene);
  seasonCombat=createMainSeasonCombat(CHARACTERS,{
   fighters:()=>state.players,time:()=>state.gameTime,
   blocked:(x,z,r)=>state.solids.some(s=>Math.abs(x-s.x)<(s.halfW??s.width/2)+r&&Math.abs(z-s.z)<(s.halfD??s.depth/2)+r)||state.lakeRects.some(s=>Math.abs(x-s.x)<s.width/2+r&&Math.abs(z-s.z)<s.depth/2+r),
@@ -15330,13 +15390,25 @@ function getSeasonCombat(){
    let goal=target;if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?-15:15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
    return state.eventMapLayout?navigateEventMap(state.eventMapLayout,{x:f.mesh.position.x,z:f.mesh.position.z},goal):goal;
   },
-  aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
+  aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple","salmon"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
   automatic:f=>!state.chopWoodMode&&!state.takedownMode&&(!mpConfig||mpConfig.isHost),
   damage:(target,amount,source)=>{if(!mpConfig||mpConfig.isHost)applyDamage(target,amount,source,true,false,true);},
   heal:(f,hp,revive)=>{if(mpConfig&&!mpConfig.isHost)return;f.health=hp;if(revive){f.dead=false;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;f.respawnAt=0;}},
-  event:e=>{const f=e.owner?.fighter;if(e.type==='attack'&&f&&['red','crimson'].includes(f.characterType))createAttackEffect(f,0);if(e.type==='ultimate'&&f?.isPlayer)audio.play('attack');if(mpConfig?.isHost&&f&&!f.isPlayer&&!f.isNetworkPlayer&&['attack','ultimate'].includes(e.type))mp.relay(e.type==='attack'?'S7_ATTACK':'S7_ULTIMATE',{id:f.syncId??f.id,yaw:Math.PI/2-e.owner.angle});},
-  render:world=>seasonCombatVisuals.sync(world),clear:()=>seasonCombatVisuals.clear(),
+  event:e=>{const f=e.owner?.fighter;if(seasonSkinEffects&&f?.skinId&&['attack','ultimate'].includes(e.type)&&!e.miss)seasonSkinEffects.burst(f.characterType,f.skinId,e.type==='attack'?'basic':'ultimate',fighterGround(f));if(e.type==='attack'&&f&&['red','crimson'].includes(f.characterType))createAttackEffect(f,0);if(e.type==='ultimate'&&f?.isPlayer)audio.play('attack');if(mpConfig?.isHost&&f&&!f.isPlayer&&!f.isNetworkPlayer&&['attack','ultimate'].includes(e.type))mp.relay(e.type==='attack'?'S7_ATTACK':'S7_ULTIMATE',{id:f.syncId??f.id,yaw:Math.PI/2-e.owner.angle});},
+  render:world=>{seasonCombatVisuals.sync(world);salmonCombatVisuals.update(world);if(seasonSkinEffects){const dt=Math.max(0,Math.min(.1,world.time-seasonSkinEffectsTime));seasonSkinEffectsTime=world.time;seasonSkinEffects.update(dt,state.players.filter(f=>f.skinId).map(f=>({key:f,characterId:f.characterType,skinId:f.skinId,position:fighterGround(f),visible:!f.dead&&f.mesh.visible})));}},clear:()=>{seasonCombatVisuals.clear();salmonCombatVisuals.clear();seasonSkinEffects?.clear();seasonSkinEffectsTime=0;},
  });return seasonCombat;
+}
+// Salmon ships one GLB with idle and in-place walk clips. The shared rig builder plays the first clip,
+// so expose the walk loop first; standing still holds its first frame like the other rigs.
+const salmonModelEntry={loop:null,requested:false};
+function ensureSalmonModelLoading(){
+ if(salmonModelEntry.requested)return salmonModelEntry;salmonModelEntry.requested=true;
+ _glbLoader.load('./assets/3d/salmon/normal/salmon-preview.glb?v=4',(gltf)=>{
+  const walk=gltf.animations.find(c=>c.name==='Salmon_Walk_InPlace');
+  salmonModelEntry.loop={...gltf,animations:walk?[walk,...gltf.animations.filter(c=>c!==walk)]:gltf.animations};
+  refreshLoadedPreviewCharacter('salmon');if(frontModelCharType==='salmon')setupFrontModel('salmon');
+  for(const f of state.players){if(f.characterType!=='salmon'||f.mesh.userData.isGlbModel)continue;const old=f.mesh,replacement=createStickman(CHARACTERS.salmon.color,null,false,!f.isPlayer);replacement.position.copy(old.position);replacement.rotation.copy(old.rotation);replacement.visible=old.visible;if(f.healthBar)replacement.add(f.healthBar);if(f.nameLabel)replacement.add(f.nameLabel);if(f.teamMarker)replacement.add(f.teamMarker);scene.remove(old);scene.add(replacement);f.mesh=replacement;f.bodyMaterials=replacement.userData.bodyMaterials;}
+ });return salmonModelEntry;
 }
 const season7NormalModels=new Map();
 function ensureSeason7NormalLoading(id){
