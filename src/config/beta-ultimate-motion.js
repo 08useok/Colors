@@ -84,6 +84,11 @@ export const BETA_ULTIMATE_MOTIONS = {
     "kind": "bobber",
     "release": 0.36,
     "duration": 0.84
+  },
+  "raspberry": {
+    "kind": "seal",
+    "release": 0.2,
+    "duration": 0.7
   }
 };
 const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};

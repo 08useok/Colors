@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { BETA_ATTACK_MOTIONS } from '../config/beta-attack-motion.js';
 const cache=new WeakMap();
-const colors={glove:0xf44343,gauntlet:0xb52239,boomerang:0x53e37b,orange:0xff931b,marble:0x5eabff,electric:0xffe443,fan:0x3df7ff,poison:0xad5adb,heart:0xff8dbb,ingot:0xffcf44,iceCream:0xfff0cf,launcher:0x91b83e,iceBlaster:0x98ffe5,water:0x38d8ed,crystal:0xa5ecff,perfume:0xc693ef};
+const colors={glove:0xf44343,gauntlet:0xb52239,boomerang:0x53e37b,orange:0xff931b,marble:0x5eabff,electric:0xffe443,fan:0x3df7ff,poison:0xad5adb,heart:0xff8dbb,ingot:0xffcf44,iceCream:0xfff0cf,launcher:0x91b83e,iceBlaster:0x98ffe5,water:0x38d8ed,crystal:0xa5ecff,perfume:0xc693ef,rifle:0xd1b27c};
 function makeProp(kind,variant=0) {
   const group=new THREE.Group();group.name='BetaAttackProp:'+kind;
   const material=new THREE.MeshStandardMaterial({color:colors[kind],roughness:.4,metalness:['ingot','launcher','gauntlet'].includes(kind)?.55:.05});
@@ -12,6 +12,8 @@ function makeProp(kind,variant=0) {
   // Crimson's gauntlet is angular and spiked so it reads differently from Red's round glove.
   else if(kind==='gauntlet'){mesh(new THREE.BoxGeometry(.3,.26,.32),0,.04,.03);mesh(new THREE.BoxGeometry(.24,.14,.22),0,-.13,0);for(const x of [-.09,0,.09]){const spike=mesh(new THREE.ConeGeometry(.04,.12,4),x,.06,.22);spike.rotation.x=Math.PI/2;}}
   else if(kind==='ingot'){mesh(new THREE.BoxGeometry(.42,.2,.24));}
+  // Raspberry's cream rifle with a burgundy stock and long barrel.
+  else if(kind==='rifle'){mesh(new THREE.BoxGeometry(.18,.16,.42),0,0,.05);const stock=new THREE.Mesh(new THREE.BoxGeometry(.14,.2,.26),new THREE.MeshStandardMaterial({color:0x8a2346,roughness:.5}));stock.position.set(0,-.02,-.28);group.add(stock);const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.7,10),new THREE.MeshStandardMaterial({color:0x6e2140,metalness:.4,roughness:.4}));barrel.rotation.x=Math.PI/2;barrel.position.set(0,.03,.6);group.add(barrel);}
   else if(kind==='crystal'){mesh(new THREE.OctahedronGeometry(.24));}
   else if(kind==='launcher'){mesh(new THREE.BoxGeometry(.24,.2,.32));const barrel=mesh(new THREE.CylinderGeometry(.08,.09,.35,10),0,.02,.24);barrel.rotation.x=Math.PI/2;}
   else if(kind==='perfume'||(kind==='poison'&&variant)){mesh(new THREE.CylinderGeometry(.12,.15,.27,12));mesh(new THREE.BoxGeometry(.13,.08,.12),0,.19,0);mesh(new THREE.BoxGeometry(.08,.05,.13),0,.21,.09);}
@@ -38,7 +40,7 @@ export function updateBetaAttackProps(root,id,time,variant=0) {
     const both=['punch','charge','fan','heal','surf'].includes(p.kind);
     for(const side of both?[true,false]:[true]){const bone=hand(root,side);if(!bone)continue;const prop=makeProp(p.prop,variant);bone.add(prop);entry.props.push(prop);}
   }
-  const persistent=['glove','gauntlet','launcher','perfume','water','fan'].includes(p.prop);
+  const persistent=['glove','gauntlet','launcher','perfume','water','fan','rifle'].includes(p.prop);
   const last=p.release+((p.hits??1)-1)*(p.interval??0);
   for(const prop of entry.props){
     prop.visible=time>=0&&time<p.duration&&(persistent||time<(p.kind==='burst'?last:p.release));

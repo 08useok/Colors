@@ -7,6 +7,9 @@ import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
 import { skinEffectProfile } from "./config/skin-effects.js?v=1";
 import { createSalmonMotion } from "./visuals/salmon-motion.js?v=1";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
+import { createRaspberryVisuals } from "./visuals/raspberry-vines.js?v=1";
+import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=1";
+import { BETA_ATTACK_MOTIONS } from "./config/beta-attack-motion.js";
 import { RIG_ATTACK_PROFILES as LEGACY_ATTACK_PROFILES, applyRigAttackPose as applyLegacyAttackPose, restoreRigAttackPose as restoreLegacyAttackPose } from "./visuals/rig-attack-motion.js?v=2";
 import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from "./visuals/beta-attack-motion.js?v=1";
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
@@ -17,7 +20,7 @@ import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/resp
 import { createChampionsLobby } from "./visuals/beta9-champions.js?v=1";
 import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./visuals/beta8-lobby-rooms.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
-import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
+import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=4";
 import * as THREE from "three";
@@ -37,7 +40,7 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=36";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=37";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -61,6 +64,10 @@ const RIG_ATTACK_PROFILES = BETA_SEASON_ID === "beta8" ? BETA_ATTACK_PROFILES : 
 const applyRigAttackPose = (...args) => BETA_SEASON_ID === "beta8" ? applyBetaAttackPose(...args) : applyLegacyAttackPose(...args);
 const restoreRigAttackPose = saved => BETA_SEASON_ID === "beta8" ? restoreBetaAttackPose(saved) : restoreLegacyAttackPose(saved);
 if (BETA_SEASON_ID === "beta8") {
+  // Season 9 Champions newcomer. Kept out of applyBeta8Balance so main and the 17-character cycle stay unchanged.
+  BETA_CHARACTERS.raspberry = structuredClone(RASPBERRY_CHARACTER);
+  BETA_CHARACTERS.raspberry.attackWindup = BETA_ATTACK_MOTIONS.raspberry?.release ?? 0;
+  BETA_CHARACTERS.raspberry.ultimate.motionWindup = BETA_ULTIMATE_MOTIONS.raspberry?.release ?? 0;
   BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
 }
@@ -353,7 +360,7 @@ const CHARACTERS = [
   ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? [{ id: "mint", name: "Mint", rarity: "hero", price: 0, color: 0x98ffcc }] : []),
   ...(HAS_BETA6_CONTENT ? [{ id: "azure", name: "Azure", rarity: "hero", price: 0, color: 0x007fff }] : []),
   ...((IS_BETA7_TEST || IS_BETA8_TEST) ? [{ id: "crystal", name: "Crystal", rarity: "hero", price: 0, color: 0x6ee7ff }] : []),
-  ...(IS_BETA8_TEST ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }, { id:"salmon", name:"살몬", rarity:"hero", price:0, color:0xfe7974 }] : []),
+  ...(IS_BETA8_TEST ? [{ id: "lavender", name: "라벤더", rarity: "hero", price: 0, color: 0xb48be8 }, { id:"salmon", name:"살몬", rarity:"hero", price:0, color:0xfe7974 }, { id:"raspberry", name:"라즈베리", rarity:"hero", price:0, color:0xd6336c }] : []),
 ];
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
@@ -526,7 +533,7 @@ function loadBetaState() {
     },
   };
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
-  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []), ...(IS_BETA8_TEST ? ["lavender", "salmon"] : [])]) {
+  for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []), ...(IS_BETA8_TEST ? ["lavender", "salmon", "raspberry"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
   }
   // 시즌 6 바다 소품은 아직 정식 획득 조건이 없어 베타 테스트에서는 바로 보유시킨다.
@@ -1250,7 +1257,7 @@ function applySkinPaletteToModel(model, characterId, skinId = betaState.selected
   // 시즌 6 모델 교체형 스킨은 자체 텍스처를 쓰는 완전히 다른 모델이므로
   // 시안 공유 리그 재색칠(baseCharacterTint) 로직을 건너뛴다.
   if (SEASON6_MODEL_SKINS[characterId]?.skinId === skinId || SEASON7_MODEL_SKINS[characterId]?.skinId === skinId || SEASON8_MODEL_SKINS[characterId]?.skinId === skinId) return;
-  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd700 : characterId === "chartreuse" ? 0xc1f80a : null;
+  const baseCharacterTintHex = characterId === "crimson" ? 0xa00000 : characterId === "gold" ? 0xffd700 : characterId === "chartreuse" ? 0xc1f80a : characterId === "raspberry" ? 0xd6336c : null;
   const baseCharacterTint = baseCharacterTintHex ? new THREE.Color(baseCharacterTintHex) : null;
   // beta2_gold_* 원래 색값은 캐릭터 기본색(노랑/주황)과 거의 같아서 토큰 셰이딩에서
   // 구별이 안 됐다 — 뚜렷한 골드 톤 + emissive 글로우로 대체.
@@ -1401,6 +1408,40 @@ function addBlueScarf(model) {
   }
 }
 
+// Raspberry wears the shared Cyan rig; a ribbon bow with climbing vines and berries marks the
+// silhouette from the original design. Built in rig space, then attached to the head bone.
+function addRaspberryBow(model) {
+  model.updateWorldMatrix(true, true);
+  const box = new THREE.Box3().setFromObject(model, true);
+  const height = box.max.y - box.min.y, top = box.max.y, cx = (box.min.x + box.max.x) / 2, cz = (box.min.z + box.max.z) / 2;
+  const unit = height / 2.7;
+  const ribbon = new THREE.MeshStandardMaterial({ color: 0x8a1f45, roughness: .55 });
+  const vine = new THREE.MeshStandardMaterial({ color: 0x4caf50, roughness: .7 });
+  const berry = new THREE.MeshStandardMaterial({ color: 0xff5c8a, roughness: .45 });
+  const bow = new THREE.Group(); bow.name = "RaspberryBow";
+  const knot = new THREE.Mesh(new THREE.SphereGeometry(.09 * unit, 12, 10), ribbon);
+  bow.add(knot);
+  for (const side of [-1, 1]) {
+    const loop = new THREE.Mesh(new THREE.TorusGeometry(.16 * unit, .055 * unit, 8, 20), ribbon);
+    loop.position.set(side * .2 * unit, .04 * unit, 0); loop.scale.set(1, .75, .55);
+    bow.add(loop);
+    const stem = new THREE.Mesh(new THREE.TorusGeometry(.2 * unit, .012 * unit, 5, 18, Math.PI), vine);
+    stem.position.set(side * .22 * unit, .02 * unit, -.05 * unit); stem.rotation.z = side > 0 ? 0 : Math.PI;
+    bow.add(stem);
+    for (let i = 0; i < 3; i++) {
+      const drupelet = new THREE.Mesh(new THREE.SphereGeometry(.035 * unit, 8, 6), berry);
+      drupelet.position.set(side * (.32 + (i % 2) * .04) * unit, (.12 - i * .04) * unit, .06 * unit);
+      bow.add(drupelet);
+    }
+  }
+  bow.position.set(cx, top - .02 * unit, cz);
+  for (const part of bow.children) { part.castShadow = true; }
+  model.add(bow);
+  let headBone = null;
+  model.traverse(child => { if (child.isBone && /^(CC_Base_Head|mixamorigHead|Head)$/.test(child.name)) headBone = child; });
+  if (headBone) { model.updateWorldMatrix(true, true); headBone.attach(bow); }
+}
+
 function clearCharacterModel() {
   clearAzureWave();
   if (activeCharacterModel) player.remove(activeCharacterModel);
@@ -1436,7 +1477,8 @@ function prepareCharacterScene(model, characterId, skinId = betaState.selectedSk
   if (usesFbxRig && !wearsCustomModelSkin && !["crystal", "lavender"].includes(characterId)) model.rotateX(-Math.PI / 2);
   if (characterId === "salmon") model.name = "salmon-player-model";
   if (characterId === "blue" && !wearsSeason7ModelSkin) addBlueScarf(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal", "lavender"].includes(characterId) || wearsCustomModelSkin) {
+  if (characterId === "raspberry") addRaspberryBow(model);
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal", "lavender", "raspberry"].includes(characterId) || wearsCustomModelSkin) {
     applyBetaToonRendering(model, characterId);
   }
   applySkinPaletteToModel(model, characterId, skinId);
@@ -1513,7 +1555,7 @@ function getCharacterMotionSource(characterId, selectedSkinId = betaState.select
       ? "pink/skins/cotton-candy"
       : customModelSkin
         ? customModelSkin.folder
-        : ["crimson", "gold"].includes(characterId) ? "cyan" : ["mint", "azure"].includes(characterId) ? `${characterId}/normal` : characterId;
+        : ["crimson", "gold", "raspberry"].includes(characterId) ? "cyan" : ["mint", "azure"].includes(characterId) ? `${characterId}/normal` : characterId;
   // Mint's supplied walk set is FBX rather than GLB, but it follows the
   // same start → loop → stop structure used by the other character rigs.
   // 시즌 6·7 모델 교체 스킨도 다운로드한 Meshy FBX와 걷기 동작을 그대로 쓴다.
@@ -1802,7 +1844,7 @@ function setPlayerModel(characterId) {
     loadCharacterMotionSet(characterId, token);
     return;
   }
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure", "crystal", "lavender", "salmon"].includes(characterId)) {
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "mint", "azure", "crystal", "lavender", "salmon", "raspberry"].includes(characterId)) {
     body.visible = false;
     visor.visible = false;
     loadCharacterMotionSet(characterId, token);
@@ -2187,7 +2229,7 @@ function updateCrimsonControls() {
     ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []),
     ...(HAS_BETA6_CONTENT ? ["azure", "yellow"] : []),
     ...(IS_BETA7_TEST || IS_BETA8_TEST ? ["purple"] : []),
-    ...(IS_BETA8_TEST ? ["lavender", "salmon"] : []),
+    ...(IS_BETA8_TEST ? ["lavender", "salmon", "raspberry"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []),
     ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["orange"] : []),
   ];
@@ -3014,9 +3056,13 @@ let beta6PlayerActor = null;
 let lavenderSpecialCharge = 0;
 let lavenderPractice = null;
 let salmonPractice = null;
+let raspberryPractice = null;
+let raspberryUltimateCharge = 0;
+let raspberryAimRange = 10;
 let salmonUltimateCharge = 0;
 let salmonAimRange = 8.5;
 const salmonBattleVisuals = createSalmonVisuals(scene,groundHeightAt);
+const raspberryVisuals = createRaspberryVisuals(scene, groundHeightAt);
 function playPlayerSkinEffect(kind) {
   const id = betaState.selectedCharacter;
   return skinEffects.burst(id,betaState.selectedSkins[id],kind,player.position);
@@ -3855,7 +3901,7 @@ function getBetaAttackRange(id, def) {
   if (id === "mint") return def.iceBulletRange;
   if (id === "azure") return def.surfLength;
   if (id === "crystal") return def.crystalRange;
-  if (id === "lavender" || id === "salmon") return def.attackRange;
+  if (id === "lavender" || id === "salmon" || id === "raspberry") return def.attackRange;
   return 0;
 }
 
@@ -4788,6 +4834,7 @@ function performCharacterAttackCore({ manualAim = false } = {}) {
   }
   if (beta6Combat) { useBeta6PlayerSkill(false, manualAim); return; }
   if (id === "salmon") { useSalmonPracticeSkill(false,manualAim); return; }
+  if (id === "raspberry") { useRaspberryPracticeSkill(false,manualAim); return; }
   if (!generalAttackReady || azureWaveState || beta6PlayerAttackBlocked()) return;
   const def = BETA_CHARACTERS[id];
   if (!def) return;
@@ -5223,6 +5270,7 @@ function updateCrimsonUltimateGauge() {
     const def = BETA_CHARACTERS.lavender.special;
     configs.lavender = { charge: beta6PlayerActor?.id === "lavender" ? beta6PlayerActor.charge : lavenderSpecialCharge, required: def.chargeRequired, name: def.name, color: "#b48be8" };
   }
+  if (id === "raspberry") configs.raspberry = { charge: beta6PlayerActor?.id === "raspberry" ? beta6PlayerActor.charge : raspberryUltimateCharge, required: BETA_CHARACTERS.raspberry.ultimate.chargeRequired, name: "덩굴 감옥", color: "#d6336c" };
   if (id === "salmon") configs.salmon = {charge:beta6PlayerActor?.id === "salmon" ? beta6PlayerActor.charge : salmonUltimateCharge,required:20,name:"월척이다!",color:"#fe7974"};
   const config = configs[id] || configs.crimson;
   const { charge, required } = config;
@@ -5245,7 +5293,7 @@ function updateCrimsonUltimateGauge() {
 function betaUltimateFieldActive() {
   const id = betaState.selectedCharacter;
   if (beta6Combat && beta6PlayerActor) return beta6Combat.ultimateFieldActive(beta6PlayerActor);
-  if (id === "salmon") return false;
+  if (id === "salmon" || id === "raspberry") return false;
   if (id === "lavender" && lavenderPractice) return lavenderPractice.world.ultimateFieldActive(lavenderPractice.actor);
   if (id === "gold") return goldUltimatePending !== null || malfunctionZones.some(zone => zone.expiresAt > clock.elapsedTime);
   return false;
@@ -5572,7 +5620,7 @@ ultimateButton.addEventListener("click", () => {
 });
 let betaPracticeUltimatePending = null;
 function performCharacterUltimate() {
-  if (!IS_BETA8_TEST || beta6Combat || betaState.selectedCharacter === 'salmon') return performCharacterUltimateCore();
+  if (!IS_BETA8_TEST || beta6Combat || ['salmon', 'raspberry'].includes(betaState.selectedCharacter)) return performCharacterUltimateCore();
   if (betaPracticeUltimatePending || modelLoading.blocking || goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
   updateCrimsonUltimateGauge();
   const id = betaState.selectedCharacter, profile = BETA_ULTIMATE_MOTIONS[id];
@@ -5596,6 +5644,7 @@ function performCharacterUltimateCore() {
   if (modelLoading.blocking || goldRushState.dead || beta6PlayerAttackBlocked() || betaUltimateFieldActive()) return;
   if (beta6Combat) { useBeta6PlayerSkill(true, true); return; }
   if (betaState.selectedCharacter === "salmon") { useSalmonPracticeSkill(true,true); return; }
+  if (betaState.selectedCharacter === "raspberry") { useRaspberryPracticeSkill(true,true); return; }
   if (betaState.selectedCharacter === "lavender") {
     useLavenderPracticeSkill(true);
     return;
@@ -5792,7 +5841,7 @@ const purpleUltimateAimPoint = new THREE.Vector3();
 let purpleUltimateAimPointValid = false;
 // 아이보리를 제외한 방향성 궁극기 — 거리는 각 캐릭터의 기존 사거리를 그대로
 // 쓰고, 누르고 있는 동안 바라보는 방향만 마우스/키보드로 조준한다.
-const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure", "orange", "crystal", "gold", "green", "pink", "chartreuse", "red", "lavender", "salmon"]);
+const DIRECTIONAL_ULTIMATE_CHARACTERS = new Set(["mint", "blue", "cyan", "crimson", "yellow", "purple", "azure", "orange", "crystal", "gold", "green", "pink", "chartreuse", "red", "lavender", "salmon", "raspberry"]);
 let directionalUltimateAiming = false;
 function cancelUltimateAim() {
   ivoryUltimateAiming = false; directionalUltimateAiming = false;
@@ -6840,6 +6889,7 @@ function clearBeta6RoundCombat() {
   clearLavenderPractice();
   clearSalmonPractice();
   salmonBattleVisuals.clear();
+  raspberryVisuals.clear();
   skinEffects.clear();
   if (beta6PlayerActor?.id === "green") setPlayerConcealedVisual(false);
   beta6PendingEvents.length = 0;
@@ -7084,7 +7134,7 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
   let target = world.actors.filter(a => a !== actor && a.hp > 0 && (!actor.team || a.team !== actor.team) && !world.hidden(a,actor))
     .sort((a, b) => Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0]
     ?? { x: actor.x + Math.cos(facing) * world.range(actor), z: actor.z + Math.sin(facing) * world.range(actor), vx: 0, vz: 0, hp: 1 };
-  const throwRange = actor.id === "salmon" ? salmonAimRange : actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
+  const throwRange = actor.id === "salmon" ? salmonAimRange : actor.id === "raspberry" && ultimate ? raspberryAimRange : actor.id === "ivory" ? (ultimate ? ivoryUltimateAimRange : ivoryAttackAimRange) : (actor.u?.castRange ?? actor.u?.range ?? 8);
   const aimPoint = actor.id === "yellow" && yellowUltimateAimPointValid ? yellowUltimateAimPoint
     : actor.id === "purple" && purpleUltimateAimPointValid ? purpleUltimateAimPoint : null;
   const point = aimPoint ? { x: aimPoint.x, z: aimPoint.z }
@@ -7392,14 +7442,14 @@ function updateBeta6BotCombat(dt) {
   if (!beta6Combat || !beta6PlayerActor) return;
   const world = beta6Combat;
   if (beta6PlayerActor.hp <= 0 && !goldRushState.dead && goldRushState.health > 0) {
-    const charge = beta6PlayerActor.id === "salmon" ? beta6PlayerActor.charge : 0;
+    const charge = ["salmon", "raspberry"].includes(beta6PlayerActor.id) ? beta6PlayerActor.charge : 0;
     world.remove(beta6PlayerActor);
     beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge });
   }
   const hero = beta6PlayerActor;
   const deadline = nativeTime => world.time + Math.max(0, (nativeTime || 0) - clock.elapsedTime);
   hero.hp = goldRushState.dead ? 0 : goldRushState.health;
-  if (world.salmon.moveBlocked(hero, player.position.x, player.position.z)) {
+  if (world.salmon.moveBlocked(hero, player.position.x, player.position.z) || world.time < (hero.rootUntil ?? 0)) {
     player.position.x = hero.x; player.position.z = hero.z;
   }
   hero.vx = (player.position.x - hero.x) / Math.max(dt, 1 / 120);
@@ -7409,7 +7459,7 @@ function updateBeta6BotCombat(dt) {
   for (const bot of goldRushBots) {
     let actor = bot.combatActor;
     if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
-      const charge = actor.id === "salmon" ? actor.charge : 0;
+      const charge = ["salmon", "raspberry"].includes(actor.id) ? actor.charge : 0;
       world.remove(actor);
       actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
@@ -7431,6 +7481,7 @@ function updateBeta6BotCombat(dt) {
   }
   if (beta6Combat !== world) return;
   salmonBattleVisuals.update(world);
+  raspberryVisuals.update(world);
   const wasHeroLeaping = Boolean(hero.leap);
   player.position.x = hero.x; player.position.z = hero.z;
   if (hero.salmonAirborne || wasSalmonAirborne) player.position.y = groundHeightAt(hero.x,hero.z)+.05+(hero.salmonHeight || 0);
@@ -7518,8 +7569,8 @@ function updateBeta6BotCombat(dt) {
       beta6CombatVisuals.set(key, wire);
     }
   };
-  for (const p of world.projectiles) if (world.time >= p.start) draw(`p${p.key}`, p, p.radius, p.kind === "wave" ? "wave" : "projectile");
-  for (const z of world.zones) draw(`z${z.key}`, z, z.radius, "zone");
+  for (const p of world.projectiles) if (world.time >= p.start && p.kind !== "vine") draw(`p${p.key}`, p, p.radius, p.kind === "wave" ? "wave" : "projectile");
+  for (const z of world.zones) if (!["vinePrison", "vinePrisonWarning"].includes(z.kind)) draw(`z${z.key}`, z, z.radius, "zone");
   for (const a of world.actors) {
     if (a.hp <= 0) continue;
     for (let i = 0; i < a.devices.length; i++) {
@@ -8066,6 +8117,81 @@ function useSalmonPracticeSkill(ultimate, manualAim = false) {
   updateGoldRushCombatHud(); updateCrimsonUltimateGauge();
 }
 
+function clearRaspberryPractice() {
+  raspberryPractice?.world.clear();
+  raspberryPractice = null;
+  if (!beta6Combat) raspberryVisuals.clear();
+}
+
+function syncRaspberryPractice() {
+  if (!raspberryPractice) {
+    const world = createBeta6Combat(BETA_CHARACTERS, {
+      bounds: 100,
+      blocked: (x, z, radius = .1) => getArenaSolids().some(solid =>
+        solid.top > groundHeightAt(x, z) + .5 && Math.abs(x - solid.x) < solid.halfW + radius && Math.abs(z - solid.z) < solid.halfD + radius),
+      onEvent: event => {
+        if (event.type === "damage" && event.target.practiceMesh) damageTarget(event.target.practiceMesh, event.amount);
+      },
+    });
+    raspberryPractice = { world, actor: world.add("raspberry", { automatic: false, team: "player", next: 0 }), targets: new Map() };
+  }
+  const { world, actor, targets } = raspberryPractice;
+  actor.x = player.position.x; actor.z = player.position.z;
+  actor.hp = goldRushState.health; actor.ammo = goldRushState.ammo; actor.charge = raspberryUltimateCharge;
+  for (const mesh of testTargets) {
+    if (!mesh.visible || mesh.userData.isAlly || mesh.userData.health <= 0) continue;
+    if (!targets.has(mesh)) targets.set(mesh, world.add("red", { automatic: false, team: "enemy", practiceMesh: mesh }));
+  }
+  for (const [mesh, target] of targets) {
+    if (!mesh.visible || !testTargets.includes(mesh) || mesh.userData.health <= 0) { world.remove(target); targets.delete(mesh); continue; }
+    // A bound dummy stays where the vine caught it.
+    if (world.time >= (target.rootUntil ?? 0)) { target.x = mesh.position.x; target.z = mesh.position.z; }
+    target.hp = mesh.userData.health;
+    target.invulnerableUntil = world.time + Math.max(0, (mesh.userData.invulnerableUntil ?? 0) - clock.elapsedTime);
+  }
+  return raspberryPractice;
+}
+
+function useRaspberryPracticeSkill(ultimate, manualAim = false) {
+  if (goldRushState.dead || betaState.selectedCharacter !== "raspberry") return;
+  if (!ultimate && (!generalAttackReady || goldRushState.ammo <= 0)) return;
+  const { world, actor, targets } = syncRaspberryPractice();
+  const facing = Math.PI / 2 - player.rotation.y;
+  const reach = ultimate ? raspberryAimRange : actor.d.attackRange;
+  const point = { x: actor.x + Math.cos(facing) * reach, z: actor.z + Math.sin(facing) * reach, vx: 0, vz: 0, hp: 1 };
+  const nearest = [...targets.values()].sort((a, b) => Math.hypot(a.x - actor.x, a.z - actor.z) - Math.hypot(b.x - actor.x, b.z - actor.z))[0];
+  const target = manualAim || !nearest ? point : nearest;
+  actor.next = 0;
+  const fired = ultimate ? world.cast(actor, target, manualAim ? { angle: facing, point } : {}) : world.fire(actor, target, manualAim ? facing : undefined);
+  if (!fired) return;
+  raspberryUltimateCharge = actor.charge;
+  if (!ultimate) {
+    goldRushState.ammo -= 1;
+    generalAttackReady = false;
+    setTimeout(() => { generalAttackReady = true; }, actor.d.attackCooldown * 1000);
+  }
+  player.rotation.y = Math.PI / 2 - actor.angle;
+  startModelAttackMotion(IS_BETA8_TEST && ultimate ? "raspberryUltimate" : "raspberry");
+  updateGoldRushCombatHud(); updateCrimsonUltimateGauge();
+}
+
+function updateRaspberryPractice(dt) {
+  if (!raspberryPractice) return;
+  if (betaState.selectedCharacter !== "raspberry" || beta6Combat) { clearRaspberryPractice(); return; }
+  const { world, actor, targets } = syncRaspberryPractice();
+  world.update(dt);
+  raspberryUltimateCharge = actor.charge;
+  for (const [mesh, target] of targets) {
+    mesh.position.x = target.x; mesh.position.z = target.z;
+    if (target.slowUntil > world.time) {
+      mesh.userData.slowUntil = clock.elapsedTime + target.slowUntil - world.time;
+      mesh.userData.slowMultiplier = 1 - target.slow;
+    }
+  }
+  raspberryVisuals.update(world);
+  updateCrimsonUltimateGauge();
+}
+
 function updateSalmonPractice(dt) {
   if (!salmonPractice) return;
   if (betaState.selectedCharacter !== "salmon" || beta6Combat) { clearSalmonPractice(); return; }
@@ -8089,6 +8215,8 @@ function resetTestCombatHud() {
   betaPracticeUltimatePending = null;
   clearLavenderPractice();
   clearSalmonPractice();
+  clearRaspberryPractice();
+  raspberryUltimateCharge = 0;
   salmonUltimateCharge=0;
   if (goldRushState.active && !goldRushState.ended) return;
   restoreModelAttackPose();
@@ -8859,6 +8987,7 @@ function aimPlayerAtPointer(event, aimKind = "attack") {
   const aimZ = manualAimPoint.z - player.position.z;
   const pointerRange = Math.hypot(aimX, aimZ);
   if (betaState.selectedCharacter === "salmon") salmonAimRange = THREE.MathUtils.clamp(pointerRange, 0, 8.5);
+  if (betaState.selectedCharacter === "raspberry") raspberryAimRange = THREE.MathUtils.clamp(pointerRange, 0, BETA_CHARACTERS.raspberry.ultimate.castRange);
   if (pointerRange < 0.25 && betaState.selectedCharacter !== "ivory") return false;
   if (pointerRange > 0.001) player.rotation.y = Math.atan2(aimX, aimZ);
   if (betaState.selectedCharacter === "ivory") {
@@ -9151,6 +9280,7 @@ function animate() {
   const dt = Math.min(rawDelta, 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);
   updateLavenderPractice(dt);
   updateSalmonPractice(dt);
+  updateRaspberryPractice(dt);
   skinEffects.update(dt,[{key:player,characterId:betaState.selectedCharacter,skinId:betaState.selectedSkins[betaState.selectedCharacter],position:player.position,visible:player.visible && !goldRushState.dead}]);
   seasonLobbyDecor?.update(clock.elapsedTime);
   beta8LobbyRooms?.update(clock.elapsedTime);
@@ -9160,7 +9290,7 @@ function animate() {
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
   if (ivoryUltimateAiming || directionalUltimateAiming) {
     const u = aimDef.special || aimDef.ultimate;
-    const distance = aimId === "salmon" ? salmonAimRange : aimId === "ivory" ? ivoryUltimateAimRange : aimId === "yellow" && yellowUltimateAimPointValid ? player.position.distanceTo(yellowUltimateAimPoint) : aimId === "purple" && purpleUltimateAimPointValid ? player.position.distanceTo(purpleUltimateAimPoint) : u.castRange ?? u.range ?? Infinity;
+    const distance = aimId === "salmon" ? salmonAimRange : aimId === "raspberry" ? raspberryAimRange : aimId === "ivory" ? ivoryUltimateAimRange : aimId === "yellow" && yellowUltimateAimPointValid ? player.position.distanceTo(yellowUltimateAimPoint) : aimId === "purple" && purpleUltimateAimPointValid ? player.position.distanceTo(purpleUltimateAimPoint) : u.castRange ?? u.range ?? Infinity;
     betaUltimateGuide.show(ultimateGuide(aimId, aimDef, {distance, yaw:player.rotation.y}), player.position, player.rotation.y);
     attackAimIndicator.visible=false; ivoryUltimateAimIndicator.visible=false; mintUltimateAimIndicator.visible=false; betaCyanGuide.hide();
   } else {
@@ -10004,4 +10134,5 @@ new ResizeObserver(() => {
 }).observe(betaHeader);
 modelLoading.ready();
 animate();
+
 

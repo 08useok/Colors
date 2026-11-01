@@ -30,7 +30,8 @@ for(const season of ['beta7','beta8']) {
  const saved={selectedCharacter:'lavender',credits:1234,coins:4321,ownedCharacters:['red','lavender'],characterTrophies:{lavender:88},characterShowdownWins:{lavender:7},characterShowdownKills:{lavender:19},characterTrophyRankMigration:true};
  const c=vm.createContext({betaAccount:{queueSave:()=>{}},questStats,questClaims,IS_BETA5_TEST:false,HAS_BETA6_CONTENT:true,IS_BETA6_TEST:false,IS_BETA7_TEST:season==='beta7',IS_BETA8_TEST:season==='beta8',BETA_STORAGE_KEY:season,SKINS:{},BETA_SKINS:[],SEA_SEASON_PROPS:{},migrateSkinId:id=>id,localStorage:{getItem:()=>JSON.stringify(saved),setItem:()=>{}}});
  vm.runInContext(beta.slice(rosterStart,rosterEnd)+beta.slice(loadStart,loadEnd)+';globalThis.ids=CHARACTERS.map(c=>c.id);globalThis.account=loadBetaState();',c);
- assert.equal(c.ids.length,season==='beta7'?15:17);assert.equal(c.ids.includes('lavender'),season==='beta8');assert(c.ids.includes('crystal'));
+ // Beta Season 8 page now also carries Season 9's Raspberry (18).
+ assert.equal(c.ids.length,season==='beta7'?15:18);assert.equal(c.ids.includes('lavender'),season==='beta8');assert(c.ids.includes('crystal'));
  assert.equal(c.account.selectedCharacter,season==='beta7'?'red':'lavender');assert(c.account.ownedCharacters.includes('lavender'));
  for(const field of ['characterTrophies','characterShowdownWins','characterShowdownKills'])assert.equal(c.account[field].lavender,saved[field].lavender);
  assert.equal(c.account.credits,1234);assert.equal(c.account.coins,4321);

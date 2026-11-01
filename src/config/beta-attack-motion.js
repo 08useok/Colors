@@ -17,6 +17,8 @@ export const BETA_ATTACK_MOTIONS = {
   azure:{kind:'surf',duration:.64,release:.1,prop:'water'},
   crystal:{kind:'flick',duration:.46,release:.12,prop:'crystal'},
   lavender:{kind:'spray',duration:.68,release:.12,prop:'perfume'},
+  // Season 9: Raspberry's vine snipe shoulders the rifle and kicks back once.
+  raspberry:{kind:'recoil',duration:.56,release:.1,prop:'rifle'},
 };
 const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 const lerp=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t);

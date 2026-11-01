@@ -31,7 +31,7 @@ export function createBeta6Combat(definitions, options = {}) {
       automatic: true, team: null, phase: random() * Math.PI * 2, slowUntil: 0, slow: 0,
       frozenUntil: 0, lockUntil: 0, guardUntil: 0, invulnerableUntil: 0, hiddenUntil: 0, revealedUntil: 0,
       focusUntil: 0, ice: 0, poisonUntil: 0, poisonNext: 0, zoneNext: 0, combatAt: 0, regenNext: 0,
-      encoreUntil: 0, dodgeUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
+      encoreUntil: 0, rootUntil: 0, dodgeUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
     a.rounds = Array.from({ length: a.ammo }, () => rollRound(false, a.d));
     actors.push(a); return a;
   }
@@ -68,6 +68,21 @@ export function createBeta6Combat(definitions, options = {}) {
   function ice(a, amount) {
     a.ice += amount;
     if (a.ice >= definitions.mint.freezeThreshold) { a.ice = 0; a.frozenUntil = time + definitions.mint.freezeDuration; emit('freeze', { target: a }); }
+  }
+  // Raspberry bind: stops movement, dashes, jumps and teleports; attacks and in-place ultimates stay usable.
+  // Re-binding keeps the later end time. Knockback still moves a bound actor.
+  function root(b, duration) {
+    if (!alive(b) || time < (b.invulnerableUntil ?? 0)) return;
+    b.rootUntil = Math.max(b.rootUntil ?? 0, time + duration);
+    if (b.dash) b.dash = null;
+    emit('root', { target: b, until: b.rootUntil });
+  }
+  const rooted = a => time < (a.rootUntil ?? 0);
+  const inAir = b => !!(b.salmonAirborne || b.leap || b.airborne === true);
+  function pathClear(from, to) {
+    const length = distance(from, to), yaw = Math.atan2(to.z - from.z, to.x - from.x);
+    for (let step = .25; step < length; step += .25) if (blocked(from.x + Math.cos(yaw) * step, from.z + Math.sin(yaw) * step, .1)) return false;
+    return true;
   }
   function knock(a, yaw, amount) {
     const applied = amount * (1 - clamp(a.d.knockbackResistance ?? 0, 0, 1));
@@ -289,6 +304,7 @@ export function createBeta6Combat(definitions, options = {}) {
     });
     else if (id === 'azure') wave(a, yaw, false);
     else if (id === 'crystal') launch(d.crystalSpeed, d.crystalRange, d.crystalDamage, { kind: 'crystal', stage: 1, token: { hits: new Set() }, homingTarget: target });
+    else if (id === 'raspberry') launch(d.vineSpeed, d.vineRange, d.vineDamage, { kind: 'vine', radius: d.vineRadius, control: 'root' });
     };
     if (d.attackWindup > 0) after(d.attackWindup, a, resolveAttack); else resolveAttack();
     return true;
@@ -296,7 +312,7 @@ export function createBeta6Combat(definitions, options = {}) {
   function wave(a, yaw, ultimate) {
     const d = a.d, u = a.u;
     shot(a, yaw, ultimate ? (u.speed ?? 8) : (d.surfSpeed ?? 10), ultimate ? u.range : d.surfLength, ultimate ? u.damage : d.surfDamage,
-      { kind: 'wave', ultimate, width: ultimate ? u.width : d.surfWidth, ride: ultimate ? 0 : d.surfDashDistance, spawn: 0 });
+      { kind: 'wave', ultimate, width: ultimate ? u.width : d.surfWidth, ride: ultimate || rooted(a) ? 0 : d.surfDashDistance, spawn: 0 });
     a.wave = true;
   }
   function beginUltimate(a, target, resolve) {
@@ -331,6 +347,7 @@ export function createBeta6Combat(definitions, options = {}) {
     const u = a.u;
     if (a.id === 'salmon' && !a.isSalmonDevice) return salmon.cast(a, aim.point ?? target);
     if (a.ultimatePreparing || !u || !alive(a) || a.charge < u.chargeRequired || ultimateFieldActive(a) || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
+    if (rooted(a) && ['blue', 'crystal', 'purple', 'azure'].includes(a.id)) return false;
     if (a.automatic && u.knockback > 0 && Number.isFinite(a.d.botKnockbackUltimateTankRange)) {
       target = actors.filter(b=>alive(b)&&enemies(a,b)&&!b.isSalmonDevice&&b.d.botTankTarget&&!hidden(b,a)
         &&distance(a,b)<=Math.min(a.d.botKnockbackUltimateTankRange,u.range??Infinity))
@@ -385,6 +402,23 @@ export function createBeta6Combat(definitions, options = {}) {
       return beginUltimate(a, target, () => {
       if (a.id === 'lavender') zones.push({ key: ++serial, owner: a, kind: 'fragrance', x: a.x, z: a.z,
         radius: u.radius, until: time + u.duration, next: time, tickInterval: u.tickInterval });
+      else if (a.id === 'raspberry') {
+        const reach = Math.min(dist, u.castRange), x = a.x + Math.cos(yaw) * reach, z = a.z + Math.sin(yaw) * reach;
+        // One prison per Raspberry: a new cast replaces the old warning or field.
+        for (let i = zones.length - 1; i >= 0; i--) if (zones[i].owner === a && ['vinePrison', 'vinePrisonWarning'].includes(zones[i].kind)) zones.splice(i, 1);
+        zones.push({ key: ++serial, owner: a, kind: 'vinePrisonWarning', x, z, radius: u.radius, until: time + u.telegraph });
+        after(u.telegraph, a, () => {
+          const zone = { key: ++serial, owner: a, kind: 'vinePrison', x, z, radius: u.radius, until: time + u.duration, next: time };
+          zones.push(zone);
+          for (const b of actors) {
+            if (!alive(b) || !enemies(a, b) || distance(zone, b) > u.radius + 1e-9 || inAir(b) || !pathClear(zone, b)) continue;
+            if (time < (b.invulnerableUntil ?? 0)) continue;
+            hit(a, b, u.damage, false, 0, true);
+            root(b, u.bindDuration);
+          }
+          emit('vinePrison', { owner: a, x, z, radius: u.radius });
+        });
+      }
       else if (a.id === 'red') a.guardUntil = time + u.duration;
       else if (a.id === 'green') { a.hiddenUntil = time + u.duration; a.revealedUntil = 0; a.bush = { x: a.x, z: a.z }; }
       else if (a.id === 'blue') {
@@ -543,7 +577,7 @@ export function createBeta6Combat(definitions, options = {}) {
       // ammo, dealing damage, or charging the ultimate.
       if (a.id === 'azure' && destination === target && a.d.approachSurfRange
         && dist > (a.d.botApproachMin ?? range(a) + .5) && dist <= a.d.approachSurfRange && time >= a.approachNext
-        && time >= a.lockUntil && time >= a.frozenUntil && !a.wave && !a.dash) {
+        && time >= a.lockUntil && time >= a.frozenUntil && !a.wave && !a.dash && !rooted(a)) {
         const travel = Math.min(a.d.approachSurfDistance, dist - range(a) * .75);
         move(a, a.x + Math.cos(yaw) * travel, a.z + Math.sin(yaw) * travel);
         a.approachNext = time + a.d.approachSurfCooldown;
@@ -570,7 +604,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const dodgeForward = a.d.projectileDodgeForwardFactor ?? 0;
       const dodgeScale = 1 / Math.hypot(1, dodgeForward);
       const analysisBound = (a.analysisOwner?.u.bindStopsMovement || (a.analysisTarget && a.u?.bindStopsMovement));
-      if (!(a.ultimatePreparing && a.ultimateTelegraph) && !analysisBound && !a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
+      if (!(a.ultimatePreparing && a.ultimateTelegraph) && !analysisBound && !rooted(a) && !a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
         a.x + (evasion ? evasion.x : dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(yaw) * radial - Math.sin(yaw) * strafe) * speed * dt,
         a.z + (evasion ? evasion.z : dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;
@@ -642,6 +676,7 @@ export function createBeta6Combat(definitions, options = {}) {
           b.lastDamageKind = p.kind;
           if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
           if (p.kind === 'mint') ice(b, d.icePerHit);
+          if (p.kind === 'vine') root(b, d.vineBindDuration + (d.vineTraitBindBonus ?? 0));
           if (a.id === 'blue' && !p.ultimate && d.bulletKnockback) knock(b, p.yaw, d.bulletKnockback);
           if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; }
           if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9));
@@ -694,6 +729,11 @@ export function createBeta6Combat(definitions, options = {}) {
               zone.hits.set(b.key, record);
             }
           }
+        }
+        if (zone.kind === 'vinePrison' && !rooted(b) && !inAir(b) && pathClear(zone, b)) {
+          const previousSlow = time < b.slowUntil ? b.slow : 0;
+          b.slowUntil = Math.max(b.slowUntil, time + .05);
+          b.slow = Math.max(previousSlow, a.u.slowPercent);
         }
         if (zone.kind === 'fragrance') {
           const previousSlow = time < b.slowUntil ? b.slow : 0;

@@ -9,6 +9,7 @@ export function attackGuide(id, d, { distance = Infinity, index = 0 } = {}) {
   if (id === 'azure') return beam(d.surfLength, d.surfWidth);
   if (id === 'ivory') { const range = Math.min(distance, d.iceCreamRange); return [...beam(range), { type: 'ring', z: range, radius: d.iceCreamZoneRadius }]; }
   if (id === 'crystal') return beam(d.crystalRange);
+  if (id === 'raspberry') return beam(d.vineRange, d.vineRadius * 2 + .2);
   return [];
 }
 
@@ -24,7 +25,7 @@ export function ultimateGuide(id, d, { distance = Infinity, yaw = 0 } = {}) {
   if (id === 'orange') return [{ type: 'fan', range: u.range, angle: u.spreadAngle }];
   if (id === 'yellow') { const range = Math.min(distance, u.throwRange ?? (Number.isFinite(distance) ? distance : 8)); return [beam(range), ring(.7, range)]; }
   if (id === 'salmon') { const range = Math.min(distance, u.castRange); return [beam(range), ring(u.radius, range)]; }
-  if (id === 'mint') { const range = Math.min(distance, u.castRange); return [beam(range), ring(u.radius, range)]; }
+  if (id === 'mint' || id === 'raspberry') { const range = Math.min(distance, u.castRange); return [beam(range), ring(u.radius, range)]; }
   if (id === 'purple') { const range = Math.min(distance, u.range); return [beam(range), ring(u.radius), ring(u.radius, range)]; }
   if (id === 'ivory') {
     const range = Math.min(distance, u.castRange), offset = u.patternRadius / Math.sqrt(2);
