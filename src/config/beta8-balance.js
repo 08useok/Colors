@@ -60,6 +60,13 @@ export function applyBeta8Balance(source) {
   purple.description = `도약 이륙·착지 때 반경 ${purple.radius}타일에 즉시 ${purple.damage} 피해를 주고, 중앙에서 가시 ${purple.projectileCount}발을 사방으로 발사합니다. 가시는 사거리 ${purple.projectileRange}타일, 한 발당 ${purple.projectileDamage} 피해이며 여러 발이 각각 적중할 수 있습니다. 중앙 피해로 궁 0.25칸, 가시 첫 명중으로 별도 0.25칸을 충전하며 같은 적의 나머지 가시는 해당 단계에서 추가 충전하지 않습니다.`;
   purple.descriptionEn = `On takeoff and landing, instantly deals ${purple.damage} damage within ${purple.radius} tiles and fires ${purple.projectileCount} thorns from the center. Each thorn deals ${purple.projectileDamage} damage with ${purple.projectileRange}-tile range; multiple thorns can hit. Central damage and the first thorn hit each grant 0.25 ultimate units per enemy per phase. Further thorns in that phase grant no extra charge.`;
   result.salmon = structuredClone(SALMON_CHARACTER);
+  // Season 9: the five Group Order impacts damage each target once per cast.
+  result.ivory.ultimate.description += ' 겹친 착탄 피해는 대상당 한 번만 받습니다.';
+  result.ivory.ultimate.descriptionEn += ' Overlapping impacts damage each target only once.';
+  // Season 9: describe the field as it behaves (an outward push, not momentum sliding).
+  const mintField = result.mint.special;
+  mintField.description = `지정한 위치에 ${mintField.duration}초 동안 반경 ${mintField.radius}타일의 얼음 장판을 생성합니다. 장판 위의 적은 중심에서 바깥으로 밀려나며, 미는 속도는 초당 ${mintField.slideStrength}타일에서 시작해 매초 ${mintField.slideAcceleration}씩 빨라집니다. 매초 ${mintField.damagePerSecond} 피해와 얼음 수치 ${mintField.icePerSecond}를 받습니다. 얼어 있는 적은 밀리지 않으며 벽을 넘지 않습니다.`;
+  mintField.descriptionEn = `Creates a ${mintField.radius}-tile ice field for ${mintField.duration} seconds. Enemies on it are pushed outward from the centre, starting at ${mintField.slideStrength} tiles per second and speeding up by ${mintField.slideAcceleration} each second. They take ${mintField.damagePerSecond} damage plus ${mintField.icePerSecond} ice each second. Frozen enemies are not pushed, and walls stop the push.`;
   result.ivory.groundAttackRange = result.ivory.iceCreamRange;
   result.purple.groundAttackRange = result.purple.vialRange;
   result.yellow.botGroundAttackSpacing = 1;

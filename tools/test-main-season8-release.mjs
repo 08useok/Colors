@@ -38,7 +38,7 @@ console.log('PASS: 17 main definitions equal beta8 stats; Season 7 main-only twe
 // 2. Entry points on the page.
 for (const id of ids) assert(html.includes(`data-char="${id}"`), `select button ${id}`);
 for (const id of ['mode-knockout', 'season-quest-toggle', 'season-quest-panel', 'main-season-8-balance-preview']) assert(html.includes(`id="${id}"`), id);
-assert(html.includes('src/main.js?v=1.8.0'), 'main cache entry');
+assert(/src\/main\.js\?v=1\.8\.\d+/.test(html), 'main cache entry (v1.8.x)');
 const table = html.slice(html.indexOf('id="matchup-table"'), html.indexOf('</table>', html.indexOf('id="matchup-table"')));
 assert.equal((table.match(/<tr><th data-character-name=/g) ?? []).length, 17, 'matchup rows');
 assert(!html.includes('시즌 8 메인 업데이트 예정'), 'release notes no longer say upcoming');

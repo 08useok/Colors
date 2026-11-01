@@ -124,7 +124,8 @@ export function createBeta6Combat(definitions, options = {}) {
       || zones.some(zone => zone.owner === a && time + 1e-9 < zone.until
         && ['fragrance', 'lock'].includes(zone.kind));
   }
-  function area(a, center, radius, damage, basic = false, award = 1, ultimate = false) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius) hit(a, b, damage, basic, award, ultimate); }
+  // `once` (a Set) limits a multi-impact cast to one hit per target.
+  function area(a, center, radius, damage, basic = false, award = 1, ultimate = false, once = null) { for (const b of actors) if (enemies(a, b) && distance(center, b) <= radius && !once?.has(b.key)) { once?.add(b.key); hit(a, b, damage, basic, award, ultimate); } }
   function strike(a, b, yaw, reach, halfAngle, damage) {
     const dx = b.x - a.x, dz = b.z - a.z;
     const delta = Math.atan2(Math.sin(Math.atan2(dz, dx) - yaw), Math.cos(Math.atan2(dz, dx) - yaw));
@@ -399,9 +400,11 @@ export function createBeta6Combat(definitions, options = {}) {
       else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }), true);
       else if (a.id === 'ivory') {
         const x = a.x + Math.cos(yaw) * Math.min(dist, u.castRange), z = a.z + Math.sin(yaw) * Math.min(dist, u.castRange), offset = u.patternRadius / Math.sqrt(2);
+        // Season 9: the five overlapping impacts deal their impact damage once per target per cast.
+        const impactHits = new Set();
         for (const [ox, oz] of [[0, 0], [-offset, -offset], [-offset, offset], [offset, -offset], [offset, offset]]) {
           const dx = x + ox - a.x, dz = z + oz - a.z;
-          shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage * (u.damageMultiplier ?? 1), { kind: 'ivory', ultimate: true, spawn: 0 });
+          shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage * (u.damageMultiplier ?? 1), { kind: 'ivory', ultimate: true, spawn: 0, impactHits });
         }
       } else if (a.id === 'chartreuse') a.focusUntil = time + u.duration;
       else if (a.id === 'orange') {
@@ -454,7 +457,7 @@ export function createBeta6Combat(definitions, options = {}) {
   function finish(p) {
     const a = p.owner, d = a.d;
     if (p.kind === 'vial') area(a, p, d.vialSplashRadius, p.damage, true);
-    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1, p.ultimate); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
+    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1, p.ultimate, p.impactHits ?? null); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
     if (p.kind === 'bomb') for (let i = 0; i < d.bombSplashCount - (p.hits.size ? d.bombDirectHitJuiceCount : 0); i++) shot(a, i * Math.PI * 2 / d.bombSplashCount, d.bombSplashSpeed, d.bombSplashRange, d.bombSplashDamage, { x: p.x, z: p.z, radius: d.bombSplashHitRadius, kind: 'juice', hits: new Set(p.hits) });
     if (p.kind === 'gold' && p.stage < 3) {
       const stage = p.stage + 1;
