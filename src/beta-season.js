@@ -5345,18 +5345,58 @@ function setPlayerConcealedVisual(concealed) {
   }
 }
 
+// Green stealth feedback: green ring while hidden; orange ring with a shrinking arc and a
+// countdown label while revealed inside the bush; a pulse when stealth returns.
+const GREEN_HIDDEN_COLOR = 0x42d66b, GREEN_REVEALED_COLOR = 0xff8a3d;
 function ensureGreenStealthIndicator() {
   if (greenStealthIndicator) return greenStealthIndicator;
-  const material = new THREE.MeshBasicMaterial({ color: 0x42d66b, transparent: true, opacity: 0.85 });
+  const material = new THREE.MeshBasicMaterial({ color: GREEN_HIDDEN_COLOR, transparent: true, opacity: 0.85 });
   const group = new THREE.Group();
   const ring = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.05, 6, 20), material);
   ring.rotation.x = Math.PI / 2;
   group.add(ring);
+  const arc = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.48, 32, 1, 0, Math.PI * 2), new THREE.MeshBasicMaterial({ color: GREEN_REVEALED_COLOR, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false }));
+  arc.rotation.x = -Math.PI / 2;
+  arc.visible = false;
+  group.add(arc);
+  group.userData = { ring, arc, material, pulseUntil: 0 };
   group.position.y = 2.3;
   group.visible = false;
   player.add(group);
   greenStealthIndicator = group;
   return group;
+}
+const greenRevealLabel = document.createElement("div");
+greenRevealLabel.id = "green-reveal-label";
+greenRevealLabel.className = "green-reveal-label hidden";
+greenRevealLabel.setAttribute("role", "status");
+document.body.append(greenRevealLabel);
+let greenRevealedPrev = false;
+function updateGreenStealthFeedback(dt, inBush) {
+  const now = clock.elapsedTime;
+  const revealDuration = BETA_CHARACTERS.green.ultimate.revealDuration;
+  const revealed = inBush && now < greenRevealedUntil;
+  const concealed = inBush && !revealed;
+  const indicator = (inBush || greenStealthIndicator) ? ensureGreenStealthIndicator() : null;
+  if (indicator) {
+    const { ring, arc, material } = indicator.userData;
+    indicator.visible = inBush;
+    material.color.setHex(revealed ? GREEN_REVEALED_COLOR : GREEN_HIDDEN_COLOR);
+    arc.visible = revealed;
+    if (revealed) {
+      const left = Math.max(0, greenRevealedUntil - now);
+      arc.geometry.dispose();
+      arc.geometry = new THREE.RingGeometry(0.4, 0.48, 32, 1, Math.PI / 2, Math.PI * 2 * Math.min(1, left / revealDuration));
+    }
+    if (greenRevealedPrev && concealed) indicator.userData.pulseUntil = now + 0.45;
+    const pulse = Math.max(0, indicator.userData.pulseUntil - now) / 0.45;
+    ring.scale.setScalar(1 + pulse * 0.8);
+    indicator.rotation.y += dt * (revealed ? 0.4 : 1.5);
+  }
+  greenRevealLabel.classList.toggle("hidden", !revealed);
+  if (revealed) greenRevealLabel.textContent = `노출 ${Math.max(0, greenRevealedUntil - now).toFixed(1)}초 · 적이 볼 수 있음`;
+  greenRevealedPrev = revealed;
+  canvas.dataset.greenRevealed = String(revealed);
 }
 
 // 관찰자(x, z)를 기준으로 그린이 은신 수풀에 가려져 보이지 않는지 판정한다
@@ -9778,13 +9818,7 @@ function animate() {
   const playerConcealed = playerInGreenBush && clock.elapsedTime >= greenRevealedUntil;
   // 반투명 비주얼은 봇 회피(수풀 반경 제한)와 달리 궁극기 지속시간 내내 위치와 무관하게 유지된다
   const greenVisualActive = greenBushes.length > 0 && clock.elapsedTime >= greenRevealedUntil;
-  if (playerConcealed) {
-    const indicator = ensureGreenStealthIndicator();
-    indicator.visible = true;
-    indicator.rotation.y += dt * 1.5;
-  } else if (greenStealthIndicator) {
-    greenStealthIndicator.visible = false;
-  }
+  updateGreenStealthFeedback(dt, playerInGreenBush && betaState.selectedCharacter === "green");
   if (greenVisualActive !== greenConcealedPrev) {
     setPlayerConcealedVisual(greenVisualActive);
     greenConcealedPrev = greenVisualActive;
@@ -9970,3 +10004,4 @@ new ResizeObserver(() => {
 }).observe(betaHeader);
 modelLoading.ready();
 animate();
+

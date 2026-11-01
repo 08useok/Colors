@@ -22,7 +22,8 @@ for(const allowRevives of [true,false]) {
  pink.charge=pink.u.chargeRequired;ally.hp=0;
  assert.equal(w.cast(pink,enemy),allowRevives);assert.equal(ally.hp>0,allowRevives);
  ally.hp=1;ally.invulnerableUntil=0;ally.encoreUntil=100;ally.encoreOwner=pink;
- w.hit(enemy,ally,100000);assert.equal(ally.hp>0,allowRevives);
+ // Encore revives a fallen ally where it fell after 3 seconds (not instantly).
+ w.hit(enemy,ally,100000);assert.equal(ally.hp,0);for(let i=0;i<174;i++)w.update(1/60);assert.equal(ally.hp,0,'still down before 3 s');for(let i=0;i<12;i++)w.update(1/60);assert.equal(ally.hp>0,allowRevives);
  const hp=pink.hp;w.hit(ally,pink,100);assert.equal(pink.hp,hp,'friendly fire');
 }
 for(let i=0;i<3;i++) {const l=eventMap('knockout',i,20,20,[[0,-15,2],[-6,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]);for(const x of [-6,0,6])for(const z of [-15,15])assert(!mapBlocked(l,x,z));}

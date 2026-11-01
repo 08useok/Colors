@@ -6353,6 +6353,8 @@ function updateTakeDownRespawn() {
       fighter.blueDash = null;
       fighter.blueKnockback = null;
       fighter.health = fighter.maxHealth;
+      // Respawns refill ammo like the beta; Salmon has no auto reload and loses its floats on death.
+      fighter.ammo = fighter.maxAmmo;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;
@@ -13570,6 +13572,8 @@ function updateTrainingRespawn() {
       fighter.blueDash = null;
       fighter.blueKnockback = null;
       fighter.health = fighter.maxHealth;
+      // Respawns refill ammo like the beta; Salmon has no auto reload and loses its floats on death.
+      fighter.ammo = fighter.maxAmmo;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;
@@ -13636,6 +13640,8 @@ function updateChopWoodRespawn() {
       fighter.blueDash = null;
       fighter.blueKnockback = null;
       fighter.health = fighter.maxHealth;
+      // Respawns refill ammo like the beta; Salmon has no auto reload and loses its floats on death.
+      fighter.ammo = fighter.maxAmmo;
       fighter.mesh.visible = true;
       fighter.shadow.visible = true;
       fighter.healthBar.visible = true;

@@ -645,3 +645,7 @@ body.beta-season-9-theme .ultimate-btn { --ultimate-color: #f2c14e; border-color
 body.beta-season-9-theme .beta-watermark { color: #f2c14e; }
 body.beta-season-9-theme #aim-mode-btn { background: #1b2547; border-color: #4a64a8; color: #f4efe0; }
 body.beta-season-9-theme .beta-wallet, body.beta-season-9-theme .test-panel, body.beta-season-9-theme .location-card, body.beta-season-9-theme .gold-rush-player-panel, body.beta-season-9-theme .gold-rush-hud { background: linear-gradient(135deg, rgba(18,26,51,.96), rgba(38,58,110,.94)); border-color: rgba(242,193,78,.5); box-shadow: 0 8px 32px rgba(6,10,22,.45); }
+
+/* Green stealth: revealed countdown shown above the HUD while Green stands in its bush. */
+.green-reveal-label { position: fixed; left: 50%; bottom: 210px; transform: translateX(-50%); z-index: 30; padding: 6px 12px; border-radius: 999px; background: rgba(40,20,8,.86); border: 1px solid #ff8a3d; color: #ffd2b0; font-weight: 700; font-size: 13px; pointer-events: none; }
+.green-reveal-label.hidden { display: none; }

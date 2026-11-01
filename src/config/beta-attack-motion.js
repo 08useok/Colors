@@ -1,7 +1,8 @@
 // Season 8 only. Release times are shared by combat and the displayed pose.
 export const BETA_ATTACK_MOTIONS = {
   red:{kind:'punch',duration:.52,release:.08,interval:.24,hits:2,prop:'glove'},
-  crimson:{kind:'punch',duration:.5,release:.07,interval:.12,hits:3,prop:'gauntlet'},
+  // Same release timing as before; only the pose differs (brawler hook-hook-uppercut).
+  crimson:{kind:'hook',duration:.5,release:.07,interval:.12,hits:3,prop:'gauntlet'},
   green:{kind:'throw',duration:.48,release:.14,prop:'boomerang'},
   orange:{kind:'throw',duration:.44,release:.13,prop:'orange'},
   blue:{kind:'flick',duration:.32,release:.06,prop:'marble'},
@@ -29,7 +30,16 @@ export function betaAttackPose(id,time,variant=0) {
     let right=0,leftHit=0;
     for(let i=0;i<p.hits;i++){const hit=Math.exp(-Math.pow((time-p.release-i*p.interval)/.055,2));if(i%2===0)leftHit+=hit;else right+=hit;}
     arm=lerp([-.45,.1,.35],[.35,.1,1],Math.min(1,right));forearm=lerp([.2,.9,.3],[.2,.1,1],Math.min(1,right));
-    leftArm=lerp([.45,.1,.35],[-.35,.1,1],Math.min(1,leftHit));leftForearm=lerp([-.2,.9,.3],[-.2,.1,1],Math.min(1,leftHit));left=1;twist=(leftHit-right)*.15;
+    // Red boxes straight: jab then cross, driving the shoulders through each punch.
+    leftArm=lerp([.45,.1,.35],[-.35,.1,1],Math.min(1,leftHit));leftForearm=lerp([-.2,.9,.3],[-.2,.1,1],Math.min(1,leftHit));left=1;twist=(leftHit-right)*.3;
+  } else if(p.kind==='hook') {
+    // Crimson brawls: left hook, right hook, then a rising left uppercut. Forearms stay bent.
+    const pulse=i=>Math.min(1,Math.exp(-Math.pow((time-p.release-i*p.interval)/.06,2)));
+    const hookL=pulse(0),hookR=pulse(1),upper=p.hits>2?pulse(2):0;
+    arm=lerp([-.45,.1,.35],[.3,.15,.9],hookR);forearm=lerp([.2,.9,.3],[.95,.1,.35],hookR);
+    leftArm=lerp(lerp([.45,.1,.35],[-.3,.15,.9],hookL),[.12,.55,.75],upper);
+    leftForearm=lerp(lerp([-.2,.9,.3],[-.95,.1,.35],hookL),[0,1,.2],upper);
+    left=1;twist=(hookL-hookR)*.4+upper*.12;
   } else if(p.kind==='throw') {
     if(id==='purple'&&!variant){arm=lerp([-.6,.1,-.25],forward,smooth(time/p.release));forearm=[-.3,.05,1];}
   } else if(['push','recoil','burst','spray'].includes(p.kind)) {

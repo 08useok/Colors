@@ -32,10 +32,11 @@ export function createBeta6Combat(definitions, options = {}) {
       frozenUntil: 0, lockUntil: 0, guardUntil: 0, invulnerableUntil: 0, hiddenUntil: 0, revealedUntil: 0,
       focusUntil: 0, ice: 0, poisonUntil: 0, poisonNext: 0, zoneNext: 0, combatAt: 0, regenNext: 0,
       encoreUntil: 0, dodgeUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
-    a.rounds = Array.from({ length: a.ammo }, () => rollRound(false));
+    a.rounds = Array.from({ length: a.ammo }, () => rollRound(false, a.d));
     actors.push(a); return a;
   }
-  function rollRound(focus) { const r = random(); return focus ? (r < 1 / 3 ? 'enhanced' : r < 2 / 3 ? 'cc' : 'plague') : r < .45 ? 'enhanced' : r < .9 ? 'cc' : r < .95 ? 'plague' : 'blank'; }
+  // Plague odds are tunable per definition; the defaults reproduce the original 45/45/5/5 and 1/3 focus rolls.
+  function rollRound(focus, d = {}) { const r = random(); if (focus) { const p = d.chartreuseFocusPlagueChance ?? 1 / 3; return r < (1 - p) / 2 ? 'enhanced' : r < 1 - p ? 'cc' : 'plague'; } return r < .45 ? 'enhanced' : r < .9 ? 'cc' : r < .9 + (d.chartreusePlagueChance ?? .05) ? 'plague' : 'blank'; }
   function charge(a, amount = 1) { if (a.u && alive(a)) a.charge = Math.min(a.u.chargeRequired, a.charge + amount); }
   function damageReductionFor(a) {
     const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;
@@ -51,13 +52,17 @@ export function createBeta6Combat(definitions, options = {}) {
     emit('damage', { owner: a, target: b, amount: dealt });
     if (basic && dealt > 0 && !b.isSalmonDevice) charge(a, award * (ultimate ? 1 : (a.d.basicUltimateChargeMultiplier ?? 1)));
     if (dealt > 0 && b.d.ultimateChargeOnHit) charge(b, b.d.ultimateChargeOnHit);
-    if (!alive(b) && time < b.encoreUntil) revive(b, b.encoreOwner);
+    // Encore: an ally who falls during the effect returns where it fell after a short delay.
+    // A revive already scheduled survives the end of the 12 s effect.
+    if (!alive(b) && time < b.encoreUntil) { b.encoreReviveAt = time + (b.encoreOwner.u.reviveDelay ?? 3); b.encoreReviveOwner = b.encoreOwner; b.encoreUntil = 0; }
     return dealt;
   }
   function revive(a, owner) {
     if (options.allowRevives === false) return;
-    a.hp = a.d.maxHealth * owner.u.reviveHealthRatio; a.encoreUntil = 0;
+    a.hp = a.d.maxHealth * owner.u.reviveHealthRatio; a.encoreUntil = 0; a.encoreReviveAt = 0; a.encoreReviveOwner = null;
     a.invulnerableUntil = time + owner.u.invulnerabilityDuration;
+    // Salmon's floats vanish when it falls and it never reloads on its own; a revive refills ammo like a respawn.
+    if (a.id === 'salmon' && !a.isSalmonDevice) a.ammo = a.d.maxAmmo;
     emit('revive', { owner, target: a });
   }
   function ice(a, amount) {
@@ -275,8 +280,8 @@ export function createBeta6Combat(definitions, options = {}) {
     } else if (id === 'gold') launch(d.stage1Speed, d.stage1Range, d.stage1Damage, { kind: 'gold', stage: 1, radius: d.stage1Size / 2, token: { hits: new Set(), charge: 0 }, spawn: 0 });
     else if (id === 'ivory') launch(d.iceCreamSpeed, Math.min(d.iceCreamRange, distance(a, target)), d.iceCreamDamage, { kind: 'ivory', start: time + (d.attackWindup ? 0 : .2), spawn: 0 });
     else if (id === 'chartreuse') {
-      const kind = a.rounds.shift() ?? rollRound(time < a.focusUntil);
-      a.rounds.push(rollRound(time < a.focusUntil));
+      const kind = a.rounds.shift() ?? rollRound(time < a.focusUntil, d);
+      a.rounds.push(rollRound(time < a.focusUntil, d));
       if (kind !== 'blank') launch(d.chartreuseSpeed, d.chartreuseRange, (kind === 'enhanced' ? d.chartreuseEnhancedDamage : d.chartreuseDamage) * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind, control:kind==='cc'?'crowdControl':kind==='plague'?'execute':undefined });
     } else if (id === 'mint') for (let i = 0; i < d.burstCount; i++) after(i * d.burstIntervalMs / 1000, a, () => {
       if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint', control: 'ice' });
@@ -475,6 +480,7 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function tick(dt) {
     time += dt;
+    for (const a of actors) if (a.encoreReviveAt && time >= a.encoreReviveAt) { const owner = a.encoreReviveOwner; a.encoreReviveAt = 0; a.encoreReviveOwner = null; if (!alive(a)) revive(a, owner); }
     salmon.tick();
     for (const a of actors) {
       // 시전자가 쓰러져도 대상이 영원히 묶이지 않도록 죽음 검사보다 먼저 푼다
@@ -613,7 +619,9 @@ export function createBeta6Combat(definitions, options = {}) {
         const waveTouches = p.kind === 'wave' && Math.abs((b.x - p.x) * Math.cos(p.yaw) + (b.z - p.z) * Math.sin(p.yaw)) <= advance + .15 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2;
         if (!touches && !waveTouches) continue;
         p.hits.add(b.key);
-        let amount = p.kind === 'plague' ? b.hp : p.damage, award = 1;
+        // Plague executes; with chartreusePlagueExecuteRatio < 1 it only executes at or below that health share.
+        const executes = p.kind === 'plague' && ((d.chartreusePlagueExecuteRatio ?? 1) >= 1 || b.hp <= b.d.maxHealth * d.chartreusePlagueExecuteRatio);
+        let amount = p.kind === 'plague' ? (executes ? b.hp : d.chartreuseEnhancedDamage) : p.damage, award = 1;
         if (p.kind === 'boomerang') amount *= (p.traveled > d.boomerangFarThreshold ? d.boomerangFarMultiplier : 1) * (p.returning ? d.boomerangReturnDamageMultiplier : 1);
         if (p.kind === 'gold') { const key = `${b.key}:${p.stage}`; if (p.token.hits.has(key)) amount = 0; p.token.hits.add(key); award = Math.min([0, 3, 2, 1][p.stage], d.maxChargePerAttack - p.token.charge); p.token.charge += award; }
         if (p.kind === 'crystal') {

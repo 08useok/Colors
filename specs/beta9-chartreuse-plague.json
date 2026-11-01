@@ -1,0 +1,627 @@
+{
+  "profile": {
+    "distances": [
+      6,
+      10,
+      14,
+      20,
+      28,
+      36
+    ],
+    "aimErrors": [
+      0.035,
+      0.1
+    ],
+    "seedsPerScenario": 10,
+    "gamesPerPair": 240
+  },
+  "targetWin": "yellow",
+  "targetLoss": "red",
+  "variants": {
+    "current": {
+      "patch": {},
+      "averageScore": 0.5489583333333333,
+      "decisiveMatchups": 7,
+      "matchups": {
+        "lavender": {
+          "wins": 171,
+          "losses": 69,
+          "draws": 0,
+          "games": 240,
+          "score": 0.7125
+        },
+        "red": {
+          "wins": 0,
+          "losses": 240,
+          "draws": 0,
+          "games": 240,
+          "score": 0
+        },
+        "green": {
+          "wins": 216,
+          "losses": 24,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9
+        },
+        "blue": {
+          "wins": 225,
+          "losses": 14,
+          "draws": 1,
+          "games": 240,
+          "score": 0.9395833333333333
+        },
+        "orange": {
+          "wins": 2,
+          "losses": 206,
+          "draws": 32,
+          "games": 240,
+          "score": 0.075
+        },
+        "yellow": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "cyan": {
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9666666666666667
+        },
+        "purple": {
+          "wins": 27,
+          "losses": 213,
+          "draws": 0,
+          "games": 240,
+          "score": 0.1125
+        },
+        "pink": {
+          "wins": 58,
+          "losses": 182,
+          "draws": 0,
+          "games": 240,
+          "score": 0.24166666666666667
+        },
+        "crimson": {
+          "wins": 27,
+          "losses": 213,
+          "draws": 0,
+          "games": 240,
+          "score": 0.1125
+        },
+        "gold": {
+          "wins": 124,
+          "losses": 116,
+          "draws": 0,
+          "games": 240,
+          "score": 0.5166666666666667
+        },
+        "ivory": {
+          "wins": 55,
+          "losses": 185,
+          "draws": 0,
+          "games": 240,
+          "score": 0.22916666666666666
+        },
+        "mint": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "azure": {
+          "wins": 132,
+          "losses": 108,
+          "draws": 0,
+          "games": 240,
+          "score": 0.55
+        },
+        "crystal": {
+          "wins": 173,
+          "losses": 66,
+          "draws": 1,
+          "games": 240,
+          "score": 0.7229166666666667
+        },
+        "salmon": {
+          "wins": 169,
+          "losses": 71,
+          "draws": 0,
+          "games": 240,
+          "score": 0.7041666666666667
+        }
+      }
+    },
+    "noPlague": {
+      "patch": {
+        "chartreusePlagueChance": 0,
+        "chartreuseFocusPlagueChance": 0
+      },
+      "averageScore": 0.47825520833333335,
+      "decisiveMatchups": 9,
+      "matchups": {
+        "lavender": {
+          "wins": 153,
+          "losses": 87,
+          "draws": 0,
+          "games": 240,
+          "score": 0.6375
+        },
+        "red": {
+          "wins": 0,
+          "losses": 240,
+          "draws": 0,
+          "games": 240,
+          "score": 0
+        },
+        "green": {
+          "wins": 202,
+          "losses": 38,
+          "draws": 0,
+          "games": 240,
+          "score": 0.8416666666666667
+        },
+        "blue": {
+          "wins": 216,
+          "losses": 23,
+          "draws": 1,
+          "games": 240,
+          "score": 0.9020833333333333
+        },
+        "orange": {
+          "wins": 2,
+          "losses": 206,
+          "draws": 32,
+          "games": 240,
+          "score": 0.075
+        },
+        "yellow": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "cyan": {
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9666666666666667
+        },
+        "purple": {
+          "wins": 6,
+          "losses": 234,
+          "draws": 0,
+          "games": 240,
+          "score": 0.025
+        },
+        "pink": {
+          "wins": 24,
+          "losses": 216,
+          "draws": 0,
+          "games": 240,
+          "score": 0.1
+        },
+        "crimson": {
+          "wins": 0,
+          "losses": 240,
+          "draws": 0,
+          "games": 240,
+          "score": 0
+        },
+        "gold": {
+          "wins": 75,
+          "losses": 165,
+          "draws": 0,
+          "games": 240,
+          "score": 0.3125
+        },
+        "ivory": {
+          "wins": 36,
+          "losses": 204,
+          "draws": 0,
+          "games": 240,
+          "score": 0.15
+        },
+        "mint": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "azure": {
+          "wins": 106,
+          "losses": 134,
+          "draws": 0,
+          "games": 240,
+          "score": 0.44166666666666665
+        },
+        "crystal": {
+          "wins": 151,
+          "losses": 87,
+          "draws": 2,
+          "games": 240,
+          "score": 0.6333333333333333
+        },
+        "salmon": {
+          "wins": 136,
+          "losses": 104,
+          "draws": 0,
+          "games": 240,
+          "score": 0.5666666666666667
+        }
+      }
+    },
+    "executeAtHalf": {
+      "patch": {
+        "chartreusePlagueExecuteRatio": 0.5
+      },
+      "averageScore": 0.5093749999999999,
+      "decisiveMatchups": 8,
+      "matchups": {
+        "lavender": {
+          "wins": 166,
+          "losses": 74,
+          "draws": 0,
+          "games": 240,
+          "score": 0.6916666666666667
+        },
+        "red": {
+          "wins": 0,
+          "losses": 240,
+          "draws": 0,
+          "games": 240,
+          "score": 0
+        },
+        "green": {
+          "wins": 214,
+          "losses": 26,
+          "draws": 0,
+          "games": 240,
+          "score": 0.8916666666666667
+        },
+        "blue": {
+          "wins": 224,
+          "losses": 15,
+          "draws": 1,
+          "games": 240,
+          "score": 0.9354166666666667
+        },
+        "orange": {
+          "wins": 2,
+          "losses": 206,
+          "draws": 32,
+          "games": 240,
+          "score": 0.075
+        },
+        "yellow": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "cyan": {
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9666666666666667
+        },
+        "purple": {
+          "wins": 8,
+          "losses": 232,
+          "draws": 0,
+          "games": 240,
+          "score": 0.03333333333333333
+        },
+        "pink": {
+          "wins": 30,
+          "losses": 210,
+          "draws": 0,
+          "games": 240,
+          "score": 0.125
+        },
+        "crimson": {
+          "wins": 2,
+          "losses": 238,
+          "draws": 0,
+          "games": 240,
+          "score": 0.008333333333333333
+        },
+        "gold": {
+          "wins": 88,
+          "losses": 152,
+          "draws": 0,
+          "games": 240,
+          "score": 0.36666666666666664
+        },
+        "ivory": {
+          "wins": 43,
+          "losses": 197,
+          "draws": 0,
+          "games": 240,
+          "score": 0.17916666666666667
+        },
+        "mint": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "azure": {
+          "wins": 120,
+          "losses": 120,
+          "draws": 0,
+          "games": 240,
+          "score": 0.5
+        },
+        "crystal": {
+          "wins": 169,
+          "losses": 70,
+          "draws": 1,
+          "games": 240,
+          "score": 0.70625
+        },
+        "salmon": {
+          "wins": 161,
+          "losses": 79,
+          "draws": 0,
+          "games": 240,
+          "score": 0.6708333333333333
+        }
+      }
+    },
+    "focus15": {
+      "patch": {
+        "chartreuseFocusPlagueChance": 0.15
+      },
+      "averageScore": 0.5489583333333333,
+      "decisiveMatchups": 7,
+      "matchups": {
+        "lavender": {
+          "wins": 171,
+          "losses": 69,
+          "draws": 0,
+          "games": 240,
+          "score": 0.7125
+        },
+        "red": {
+          "wins": 0,
+          "losses": 240,
+          "draws": 0,
+          "games": 240,
+          "score": 0
+        },
+        "green": {
+          "wins": 216,
+          "losses": 24,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9
+        },
+        "blue": {
+          "wins": 225,
+          "losses": 14,
+          "draws": 1,
+          "games": 240,
+          "score": 0.9395833333333333
+        },
+        "orange": {
+          "wins": 2,
+          "losses": 206,
+          "draws": 32,
+          "games": 240,
+          "score": 0.075
+        },
+        "yellow": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "cyan": {
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9666666666666667
+        },
+        "purple": {
+          "wins": 27,
+          "losses": 213,
+          "draws": 0,
+          "games": 240,
+          "score": 0.1125
+        },
+        "pink": {
+          "wins": 58,
+          "losses": 182,
+          "draws": 0,
+          "games": 240,
+          "score": 0.24166666666666667
+        },
+        "crimson": {
+          "wins": 27,
+          "losses": 213,
+          "draws": 0,
+          "games": 240,
+          "score": 0.1125
+        },
+        "gold": {
+          "wins": 124,
+          "losses": 116,
+          "draws": 0,
+          "games": 240,
+          "score": 0.5166666666666667
+        },
+        "ivory": {
+          "wins": 55,
+          "losses": 185,
+          "draws": 0,
+          "games": 240,
+          "score": 0.22916666666666666
+        },
+        "mint": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "azure": {
+          "wins": 132,
+          "losses": 108,
+          "draws": 0,
+          "games": 240,
+          "score": 0.55
+        },
+        "crystal": {
+          "wins": 173,
+          "losses": 66,
+          "draws": 1,
+          "games": 240,
+          "score": 0.7229166666666667
+        },
+        "salmon": {
+          "wins": 169,
+          "losses": 71,
+          "draws": 0,
+          "games": 240,
+          "score": 0.7041666666666667
+        }
+      }
+    },
+    "executeAtHalfFocus15": {
+      "patch": {
+        "chartreusePlagueExecuteRatio": 0.5,
+        "chartreuseFocusPlagueChance": 0.15
+      },
+      "averageScore": 0.5093749999999999,
+      "decisiveMatchups": 8,
+      "matchups": {
+        "lavender": {
+          "wins": 166,
+          "losses": 74,
+          "draws": 0,
+          "games": 240,
+          "score": 0.6916666666666667
+        },
+        "red": {
+          "wins": 0,
+          "losses": 240,
+          "draws": 0,
+          "games": 240,
+          "score": 0
+        },
+        "green": {
+          "wins": 214,
+          "losses": 26,
+          "draws": 0,
+          "games": 240,
+          "score": 0.8916666666666667
+        },
+        "blue": {
+          "wins": 224,
+          "losses": 15,
+          "draws": 1,
+          "games": 240,
+          "score": 0.9354166666666667
+        },
+        "orange": {
+          "wins": 2,
+          "losses": 206,
+          "draws": 32,
+          "games": 240,
+          "score": 0.075
+        },
+        "yellow": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "cyan": {
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "games": 240,
+          "score": 0.9666666666666667
+        },
+        "purple": {
+          "wins": 8,
+          "losses": 232,
+          "draws": 0,
+          "games": 240,
+          "score": 0.03333333333333333
+        },
+        "pink": {
+          "wins": 30,
+          "losses": 210,
+          "draws": 0,
+          "games": 240,
+          "score": 0.125
+        },
+        "crimson": {
+          "wins": 2,
+          "losses": 238,
+          "draws": 0,
+          "games": 240,
+          "score": 0.008333333333333333
+        },
+        "gold": {
+          "wins": 88,
+          "losses": 152,
+          "draws": 0,
+          "games": 240,
+          "score": 0.36666666666666664
+        },
+        "ivory": {
+          "wins": 43,
+          "losses": 197,
+          "draws": 0,
+          "games": 240,
+          "score": 0.17916666666666667
+        },
+        "mint": {
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "games": 240,
+          "score": 1
+        },
+        "azure": {
+          "wins": 120,
+          "losses": 120,
+          "draws": 0,
+          "games": 240,
+          "score": 0.5
+        },
+        "crystal": {
+          "wins": 169,
+          "losses": 70,
+          "draws": 1,
+          "games": 240,
+          "score": 0.70625
+        },
+        "salmon": {
+          "wins": 161,
+          "losses": 79,
+          "draws": 0,
+          "games": 240,
+          "score": 0.6708333333333333
+        }
+      }
+    }
+  }
+}

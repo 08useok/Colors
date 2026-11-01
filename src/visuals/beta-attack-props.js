@@ -8,7 +8,9 @@ function makeProp(kind,variant=0) {
   const mesh=(geometry,x=0,y=0,z=0)=>{const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);group.add(m);return m;};
   if(kind==='boomerang'){const m=mesh(new THREE.TorusGeometry(.23,.045,7,20,Math.PI*1.4));m.rotation.x=Math.PI/2;}
   else if(kind==='orange'){mesh(new THREE.SphereGeometry(.21,14,10));const leaf=new THREE.Mesh(new THREE.ConeGeometry(.055,.14,5),new THREE.MeshStandardMaterial({color:0x56b34d}));leaf.position.y=.24;leaf.rotation.z=.5;group.add(leaf);}
-  else if(kind==='glove'||kind==='gauntlet'){mesh(new THREE.SphereGeometry(.19,12,10),0,.04,.03);mesh(new THREE.CylinderGeometry(.13,.13,.13,10),0,-.12,0);}
+  else if(kind==='glove'){mesh(new THREE.SphereGeometry(.19,12,10),0,.04,.03);mesh(new THREE.CylinderGeometry(.13,.13,.13,10),0,-.12,0);}
+  // Crimson's gauntlet is angular and spiked so it reads differently from Red's round glove.
+  else if(kind==='gauntlet'){mesh(new THREE.BoxGeometry(.3,.26,.32),0,.04,.03);mesh(new THREE.BoxGeometry(.24,.14,.22),0,-.13,0);for(const x of [-.09,0,.09]){const spike=mesh(new THREE.ConeGeometry(.04,.12,4),x,.06,.22);spike.rotation.x=Math.PI/2;}}
   else if(kind==='ingot'){mesh(new THREE.BoxGeometry(.42,.2,.24));}
   else if(kind==='crystal'){mesh(new THREE.OctahedronGeometry(.24));}
   else if(kind==='launcher'){mesh(new THREE.BoxGeometry(.24,.2,.32));const barrel=mesh(new THREE.CylinderGeometry(.08,.09,.35,10),0,.02,.24);barrel.rotation.x=Math.PI/2;}
