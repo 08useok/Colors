@@ -2,21 +2,38 @@
 
 게임 기획, 개발 요청, 코드에서 오디오 이름을 일관되게 사용하기 위한 기준 문서다.
 
+## 베타 시즌 9 (챔피언스) 음악 — 2026-11-01
+
+기본 베타 페이지(`beta-season.html`)의 음악. 신곡 5곡을 쓰고, 신곡이 없는 이벤트는 시즌 8 곡을 다시 재생한다.
+
+| 장면 | 음원 |
+|---|---|
+| 로비 | `assets/beta9-the-final-ascent.mp3` (신곡) |
+| 녹아웃 | `assets/beta9-one-round-remains.mp3` (신곡) |
+| 사커 킥 | `assets/beta9-the-final-kick.mp3` (신곡) |
+| 젬 그랩 | `assets/beta9-gilded-apex.mp3` (신곡) |
+| 찹 우드 | `assets/beta9-victory-at-timber-peak.mp3` (신곡) |
+| 쇼다운 | `assets/beta8-graveyard-gambit.mp3` (시즌 8 재사용) |
+| 골드 러시 | `assets/beta8-vault-of-the-greedy-phantom.mp3` (시즌 8 재사용) |
+| 훈련장 | `assets/beta8-violet-courtyard-study.mp3` (시즌 8 재사용) |
+
+현재 메인(시즌 8)과 기본 베타에서 재생되지 않는 지난 곡은 `assets/unused/`로 옮겼다. 지난 시즌 테스트 페이지(`?test=beta5~7`)와 메인의 지난 시즌 분기는 그 경로를 그대로 가리킨다.
+
 ## 시즌별 로비 BGM 연결
 
 2026-09-16 코드와 로컬 MP3 확인 기준이다. 전투 BGM은 로비 BGM과 별도로 선택한다.
 
 | 환경·시즌 | 음원 |
 |---|---|
-| 메인 베타 1·3 | `assets/beta-lobby-bgm.mp3` 공통 사용 |
-| 메인 베타 2 | `assets/beta2-lobby-bgm.mp3` |
-| 메인 베타 4 | `assets/beta4-rooftop-motion.mp3` |
-| 메인·테스트 베타 5 | `assets/beta5-clockwork-midway.mp3` |
-| 테스트 베타 6 | `assets/beta6-high-noon-tide.mp3` |
-| 테스트 베타 7 | `assets/beta7-beneath-sun-bleached-stone.mp3` |
+| 메인 베타 1·3 | `assets/unused/beta-lobby-bgm.mp3` 공통 사용 |
+| 메인 베타 2 | `assets/unused/beta2-lobby-bgm.mp3` |
+| 메인 베타 4 | `assets/unused/beta4-rooftop-motion.mp3` |
+| 메인·테스트 베타 5 | `assets/unused/beta5-clockwork-midway.mp3` |
+| 테스트 베타 6 | `assets/unused/beta6-high-noon-tide.mp3` |
+| 테스트 베타 7 | `assets/unused/beta7-beneath-sun-bleached-stone.mp3` |
 | 테스트 베타 8 | 전용 음원 미등록, 베타 6 음원 공유 |
 
-테스트 페이지의 젬 그랩 경기 중에는 전용 음악 `assets/beta7-before-the-vault-closes.mp3`가 흐르고, 경기가 끝나면 로비 음악으로 돌아간다.
+테스트 페이지의 젬 그랩 경기 중에는 전용 음악 `assets/unused/beta7-before-the-vault-closes.mp3`가 흐르고, 경기가 끝나면 로비 음악으로 돌아간다.
 
 테스트 페이지는 지원되지 않는 시즌 쿼리도 실제 활성 시즌인 베타 6과 같은 음악을 선택한다. 메인에서는 시즌 5 음악에도 전체 볼륨·음소거·전투 진입 시 일시 정지가 적용된다.
 
@@ -36,8 +53,8 @@
 
 | 권장 이름 | 코드 이름 | 파일 | 음량 | 시작 조건 | 종료 조건 |
 |---|---|---|---:|---|---|
-| 로비 BGM | `lobbyBgm` | `assets/lobby-bgm.mp3` | 30% | 오디오가 활성화된 상태에서 로비 진입 | 전투·훈련 진입 |
-| 쇼다운 전투 BGM | `showdownBgm` | `assets/showdown-bgm.mp3` | 35% | 쇼다운 경기 시작 | 생존자 2명 또는 경기 종료 |
+| 로비 BGM | `lobbyBgm` | `assets/unused/lobby-bgm.mp3` | 30% | 오디오가 활성화된 상태에서 로비 진입 | 전투·훈련 진입 |
+| 쇼다운 전투 BGM | `showdownBgm` | `assets/unused/showdown-bgm.mp3` | 35% | 쇼다운 경기 시작 | 생존자 2명 또는 경기 종료 |
 | 최후의 쇼다운 BGM | `showdownMusic` | `assets/showdown-theme.mp3` | 60% | 생존자가 정확히 2명이 되는 순간 | 경기 종료 또는 로비 이동 |
 
 ### 혼동하기 쉬운 표현

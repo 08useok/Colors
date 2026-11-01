@@ -71,30 +71,32 @@ if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.orange.orangeUltimateEnabled = true;
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
 }
-// 시즌별 로비 음악. 시즌 8은 사용자가 제공한 할로윈 음원을 사용한다.
+// 시즌별 로비 음악. 기본 베타(시즌 9 챔피언스)는 The Final Ascent를 쓴다. 지난 시즌 곡은 assets/unused/에 보관한다.
 const BETA_SEASON_BGM = {
-  beta5: "./assets/beta5-clockwork-midway.mp3?v=1",
-  beta6: "./assets/beta6-high-noon-tide.mp3?v=1",
-  beta7: "./assets/beta7-beneath-sun-bleached-stone.mp3?v=1",
-  beta8: "./assets/beta8-midnight-at-the-manor-gates.mp3?v=1",
+  beta5: "./assets/unused/beta5-clockwork-midway.mp3?v=1",
+  beta6: "./assets/unused/beta6-high-noon-tide.mp3?v=1",
+  beta7: "./assets/unused/beta7-beneath-sun-bleached-stone.mp3?v=1",
+  beta8: "./assets/beta9-the-final-ascent.mp3?v=1",
 };
 const betaSeasonBgm = new Audio(BETA_SEASON_BGM[BETA_SEASON_ID] ?? BETA_SEASON_BGM.beta6);
 betaSeasonBgm.loop = true;
 betaSeasonBgm.volume = 0.45;
 betaSeasonBgm.preload = "auto";
-// 시즌 8에 전용곡이 없는 이벤트는 기존 전투 음악을 사용한다.
+// 모든 이벤트에 전용곡이 있어 평소엔 쓰이지 않는 예비 전투 음악.
 const betaBattleBgm = BETA_SEASON_ID === "beta8" ? new Audio(BETA_SEASON_BGM.beta6) : null;
 if (betaBattleBgm) { betaBattleBgm.loop = true; betaBattleBgm.volume = 0.45; betaBattleBgm.preload = "metadata"; }
 const beta8MatchBgm = BETA_SEASON_ID === "beta8" ? Object.fromEntries(Object.entries({
-  knockout: "the-midnight-gambit",
-  soccer: "trick-or-goal",
-  gemGrab: "the-midnight-gem-heist",
-  showdown: "graveyard-gambit",
-  goldRush: "vault-of-the-greedy-phantom",
-  chopWood: "the-crooked-grove",
-  training: "violet-courtyard-study",
+  // 시즌 9 신곡
+  knockout: "beta9-one-round-remains",
+  soccer: "beta9-the-final-kick",
+  gemGrab: "beta9-gilded-apex",
+  chopWood: "beta9-victory-at-timber-peak",
+  // 이번 시즌에도 이어지는 이벤트는 시즌 8 곡을 다시 재생한다.
+  showdown: "beta8-graveyard-gambit",
+  goldRush: "beta8-vault-of-the-greedy-phantom",
+  training: "beta8-violet-courtyard-study",
 }).map(([mode, name]) => {
-  const track = new Audio(`./assets/beta8-${name}.mp3?v=1`);
+  const track = new Audio(`./assets/${name}.mp3?v=1`);
   track.loop = true;
   track.volume = 0.45;
   track.preload = "metadata";
@@ -102,7 +104,7 @@ const beta8MatchBgm = BETA_SEASON_ID === "beta8" ? Object.fromEntries(Object.ent
 })) : {};
 let betaSeasonMusicStarted = false;
 // 젬 그랩 경기 동안만 흐르는 전용 음악. 경기가 끝나면 로비 음악으로 돌아간다.
-const gemGrabBgm = new Audio("./assets/beta7-before-the-vault-closes.mp3?v=1");
+const gemGrabBgm = new Audio("./assets/unused/beta7-before-the-vault-closes.mp3?v=1");
 gemGrabBgm.loop = true;
 gemGrabBgm.volume = 0.45;
 gemGrabBgm.preload = "auto";

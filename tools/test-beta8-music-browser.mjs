@@ -51,20 +51,20 @@ try {
   await page.keyboard.press('Shift');
   await capture('initial training spawn', 'training', 'beta8-violet-courtyard-study');
   await page.evaluate(() => __musicQA.player.position.set(0, 6.25, 0));
-  await capture('lobby', null, 'beta8-midnight-at-the-manor-gates');
+  await capture('lobby', null, 'beta9-the-final-ascent');
   await page.evaluate(() => __musicQA.player.position.set(-40, 6.25, 10));
   await capture('walk into training', 'training', 'beta8-violet-courtyard-study');
   await page.evaluate(() => __musicQA.player.position.set(0, 6.25, 0));
-  await capture('walk out of training', null, 'beta8-midnight-at-the-manor-gates');
+  await capture('walk out of training', null, 'beta9-the-final-ascent');
   await page.evaluate(() => __musicQA.resetPlayer());
   await capture('teleport into training', 'training', 'beta8-violet-courtyard-study');
   const cases = [
-    ['knockout', 'beta8-the-midnight-gambit'],
-    ['soccer', 'beta8-trick-or-goal'],
-    ['gemGrab', 'beta8-the-midnight-gem-heist'],
+    ['knockout', 'beta9-one-round-remains'],
+    ['soccer', 'beta9-the-final-kick'],
+    ['gemGrab', 'beta9-gilded-apex'],
     ['showdown', 'beta8-graveyard-gambit'],
     ['goldRush', 'beta8-vault-of-the-greedy-phantom'],
-    ['chopWood', 'beta8-the-crooked-grove'],
+    ['chopWood', 'beta9-victory-at-timber-peak'],
   ];
   for (const [mode, filename] of cases) {
     await page.evaluate(mode => __musicQA.startGoldRush(mode), mode);
@@ -76,7 +76,7 @@ try {
   await capture('showdown+', 'showdown', 'beta8-graveyard-gambit');
   // Direct transitions must also stop the previous mode's track.
   await page.evaluate(() => __musicQA.startGoldRush('soccer'));
-  await capture('showdown+ to soccer', 'soccer', 'beta8-trick-or-goal');
+  await capture('showdown+ to soccer', 'soccer', 'beta9-the-final-kick');
   await page.evaluate(() => __musicQA.endGoldRush('QA', false, null, true));
   for (const season of ['beta5', 'beta6', 'beta7']) {
     await load('?test=' + season);
@@ -89,7 +89,7 @@ try {
     }
   }
   assert.deepEqual(errors, []);
-  writeFileSync('specs/beta8-music-verification.json', JSON.stringify({date:'2026-10-15', report, previousSeasonsUnchanged:true, pageErrors:errors}, null, 2) + '\n');
+  writeFileSync('specs/beta8-music-verification.json', JSON.stringify({date:'2026-11-01', report, previousSeasonsUnchanged:true, pageErrors:errors}, null, 2) + '\n');
 } finally {
   if (browser) await browser.close();
   server.closeAllConnections();
