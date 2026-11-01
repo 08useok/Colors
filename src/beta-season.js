@@ -7700,6 +7700,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
     a.revealedUntil = beta6Combat.time + 3;
   }
   bot.mesh.userData.eventRevealedUntil=clock.elapsedTime+3;
+  if (damage > 0) bot.lastDamageAt = clock.elapsedTime;
   const actualDamage = Math.min(bot.health, Math.max(0, damage));
   if (fromPlayer && bot.team !== 'a') recordBeta8QuestStat('damage', actualDamage);
   bot.health = Math.max(0, bot.health - damage);
@@ -8567,8 +8568,9 @@ function updateKnockout(dt) {
       const strips=[[-(20+half)/2,0,20-half,40],[(20+half)/2,0,20-half,40],[0,-(20+half)/2,half*2,20-half],[0,(20+half)/2,half*2,20-half]];
       knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(w,1,d);});
       const outside=p=>Math.max(Math.abs(p.x),Math.abs(p.z))>half;
-    if(!goldRushState.dead&&outside(player.position))damageGoldRushPlayer(goldRushState.maxHealth*.1*dt,true);
-      for(const bot of goldRushBots)if(!bot.dead&&outside(bot.mesh.position))damageGoldRushBot(bot,bot.maxHealth*.1*dt,false,true);
+      // Poison ticks once per second for 10% of max health; shields and damage reduction do not apply.
+      if(!goldRushState.dead&&outside(player.position)&&now>=(goldRushState.poisonCloudNext??0)){goldRushState.poisonCloudNext=now+1;damageGoldRushPlayer(goldRushState.maxHealth*.1,true);}
+      for(const bot of goldRushBots)if(!bot.dead&&outside(bot.mesh.position)&&now>=(bot.poisonCloudNext??0)){bot.poisonCloudNext=now+1;damageGoldRushBot(bot,bot.maxHealth*.1,false,true);}
     }
   }
   const fighters=[{team:"a",dead:goldRushState.dead,health:goldRushState.health,maxHealth:goldRushState.maxHealth},...goldRushBots];
@@ -9359,6 +9361,16 @@ function animate() {
     }
     attackRobot.userData.healthBar.visible = attackRobot.visible;
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
+  }
+  // AI regenerates by the player's rule: 5 s without taking damage, then 10% of max health per second.
+  if (goldRushState.active && !goldRushState.ended) for (const bot of goldRushBots) {
+    if (bot.dead || bot.health <= 0 || bot.health >= bot.maxHealth) continue;
+    if (clock.elapsedTime - (bot.lastDamageAt ?? -Infinity) < 5 || clock.elapsedTime < (bot.nextRegenAt ?? -Infinity)) continue;
+    bot.health = Math.min(bot.maxHealth, bot.health + bot.maxHealth * 0.1);
+    bot.nextRegenAt = clock.elapsedTime + 1;
+    if (bot.combatActor) bot.combatActor.hp = bot.health;
+    bot.mesh.userData.health = bot.health;
+    updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
   }
   if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 5 && clock.elapsedTime >= (goldRushState.nextRegenAt ?? -Infinity)) {
     goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.1);
@@ -10156,5 +10168,6 @@ new ResizeObserver(() => {
 }).observe(betaHeader);
 modelLoading.ready();
 animate();
+
 
 
