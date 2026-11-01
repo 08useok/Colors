@@ -9156,7 +9156,23 @@ canvas.addEventListener("wheel", (event) => {
   distance = THREE.MathUtils.clamp(distance + event.deltaY * 0.01, 3.5, 24);
 }, { passive: true });
 
-function resetPlayer() { clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; updateBetaLobbyMusic(); }
+// In matches, face the arena centre (where the enemy side is) and turn the orbit camera behind the
+// player. Team modes start on either end of the map, so a fixed south-facing camera looked away from the fight.
+let cameraSnapPending = false, cameraTurnedForMatch = false;
+function faceArenaCentre() {
+  const dx = -player.position.x, dz = -player.position.z;
+  if (currentArenaMode === "lobby") {
+    // Back in the lobby, restore the usual south-facing view once.
+    if (cameraTurnedForMatch) { yaw = Math.PI; cameraTurnedForMatch = false; cameraSnapPending = true; }
+    return;
+  }
+  if (Math.hypot(dx, dz) < 1) return;
+  player.rotation.y = Math.atan2(dx, dz);
+  yaw = player.rotation.y;
+  cameraTurnedForMatch = true;
+  cameraSnapPending = true;
+}
+function resetPlayer() { clearLavenderPractice(); clearAzureWave(); clearCrystalUltimate(); player.position.copy(initialSpawnPoint); player.rotation.y = Math.PI; faceArenaCentre(); updateBetaLobbyMusic(); }
 resetPlayer();
 document.getElementById("reset-btn").addEventListener("click", () => {
   if (goldRushState.active && goldRushState.mode === "knockout") { showToast("KNOCKOUT 경기 중에는 훈련장으로 이동할 수 없습니다."); return; }
@@ -10109,7 +10125,8 @@ function animate() {
       cameraTarget.y + Math.sin(pitch) * distance,
       cameraTarget.z - Math.cos(yaw) * horizontal,
     );
-    camera.position.lerp(desired, 1 - Math.exp(-8 * dt));
+    if (cameraSnapPending) { camera.position.copy(desired); cameraLookTarget.copy(cameraTarget); cameraSnapPending = false; }
+    else camera.position.lerp(desired, 1 - Math.exp(-8 * dt));
     // Smooth the view target at the same rate as the camera to avoid movement wobble.
     if (!cameraLookInitialized) {
       cameraLookTarget.copy(cameraTarget);
