@@ -7,7 +7,8 @@ export const RASPBERRY_CHARACTER = {
   color: 0xd6336c,
   maxHealth: 4800,
   moveSpeedMultiplier: 1,
-  attackCooldown: 2.4,
+  // 2026-11-01: 2.4 s was longer than the 2 s reload, so ammo never ran down. Three shots now fit in 1.6 s.
+  attackCooldown: .8,
   reloadDuration: 2,
   maxAmmo: 3,
   // AI range and aim guide use attackRange; the shot itself uses the vine* values.

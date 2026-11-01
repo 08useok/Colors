@@ -8,7 +8,7 @@ import { skinEffectProfile } from "./config/skin-effects.js?v=1";
 import { createSalmonMotion } from "./visuals/salmon-motion.js?v=1";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createRaspberryVisuals } from "./visuals/raspberry-vines.js?v=1";
-import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=1";
+import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=2";
 import { BETA_ATTACK_MOTIONS } from "./config/beta-attack-motion.js";
 import { RIG_ATTACK_PROFILES as LEGACY_ATTACK_PROFILES, applyRigAttackPose as applyLegacyAttackPose, restoreRigAttackPose as restoreLegacyAttackPose } from "./visuals/rig-attack-motion.js?v=2";
 import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from "./visuals/beta-attack-motion.js?v=1";
@@ -1477,8 +1477,8 @@ function prepareCharacterScene(model, characterId, skinId = betaState.selectedSk
   if (usesFbxRig && !wearsCustomModelSkin && !["crystal", "lavender"].includes(characterId)) model.rotateX(-Math.PI / 2);
   if (characterId === "salmon") model.name = "salmon-player-model";
   if (characterId === "blue" && !wearsSeason7ModelSkin) addBlueScarf(model);
-  if (characterId === "raspberry") addRaspberryBow(model);
-  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal", "lavender", "raspberry"].includes(characterId) || wearsCustomModelSkin) {
+  // Raspberry GLB already contains the Blender ribbon, vines and rifle.
+  if (["red", "orange", "yellow", "blue", "green", "cyan", "pink", "purple", "ivory", "crimson", "gold", "chartreuse", "mint", "crystal", "lavender"].includes(characterId) || wearsCustomModelSkin) {
     applyBetaToonRendering(model, characterId);
   }
   applySkinPaletteToModel(model, characterId, skinId);
@@ -1561,7 +1561,7 @@ function getCharacterMotionSource(characterId, selectedSkinId = betaState.select
   // 시즌 6·7 모델 교체 스킨도 다운로드한 Meshy FBX와 걷기 동작을 그대로 쓴다.
   const usesFbxMotion = characterId === "mint" || characterId === "azure" || characterId === "crystal" || characterId === "lavender" || cottonCandyPink || Boolean(customModelSkin);
   const extension = usesFbxMotion ? "fbx" : "glb";
-  const paths = characterId === "salmon" ? { start:"./assets/3d/salmon/normal/salmon-preview.glb?v=4", loop:"./assets/3d/salmon/normal/salmon-preview.glb?v=4", stop:"./assets/3d/salmon/normal/salmon-preview.glb?v=4" } : characterId === "lavender" && !customModelSkin ? {
+  const paths = characterId === "raspberry" ? {start:"./assets/3d/raspberry/walk.glb?v=1",loop:"./assets/3d/raspberry/walk.glb?v=1",stop:"./assets/3d/raspberry/idle.glb?v=1"} : characterId === "salmon" ? { start:"./assets/3d/salmon/normal/salmon-preview.glb?v=4", loop:"./assets/3d/salmon/normal/salmon-preview.glb?v=4", stop:"./assets/3d/salmon/normal/salmon-preview.glb?v=4" } : characterId === "lavender" && !customModelSkin ? {
     start: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     loop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
     stop: `./assets/3d/lavender/normal/walk-m1s.fbx?v=${CHARACTER_MODEL_VERSION}`,
@@ -1674,6 +1674,11 @@ function loadCharacterMotionSet(characterId, token) {
 function updateCharacterMotion(isMoving, dt) {
   const motion = activeCharacterMotion;
   if (!motion) return;
+  if (motion.characterId === "raspberry") {
+    const key=isMoving?"loop":"stop";
+    if(motion.current!==key||motion.state==="idle") {motion.show(key);motion.actions[key]?.reset().setLoop(THREE.LoopRepeat,Infinity).play();if(motion.actions[key])motion.actions[key].paused=false;motion.current=key;}
+    motion.state=isMoving?"looping":"resting";motion.mixers[key]?.update(dt);canvas.dataset.motionState=motion.state;return;
+  }
   if (motion.salmonMotion) { motion.salmonMotion.update(dt,isMoving); canvas.dataset.motionState=isMoving?"looping":"idle"; return; }
   if (motion.singleClip) {
     // 걷는 동안만 돌리고, 멈추면 곧바로 선 자세(첫 프레임)로 돌아간다.
