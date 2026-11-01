@@ -4831,8 +4831,7 @@ function performCharacterAttackCore({ manualAim = false } = {}) {
     if (isSoccerFrozen()) return;
     // 브롤볼처럼 공 가까이에서는 공을 차고, 멀리서는 평소 일반 공격을 한다.
     // 수동 조준이 아니면 킥은 공 위치에서 상대 골대 정중앙을 겨냥한다.
-    const ballDistance = Math.hypot(soccerBall.position.x - player.position.x, soccerBall.position.z - player.position.z);
-    if (ballDistance <= SOCCER_KICK_RANGE) {
+    if (soccerState.holder?.type === "player") {
       if (tryPlayerSoccerKick(manualAim)) startModelAttackMotion(id);
       return;
     }
@@ -6112,6 +6111,8 @@ const soccerState = {
   prevPlayerX: 0, prevPlayerZ: 0,
   freezeUntil: 0, goalCamUntil: 0, goalCamZ: 0, goalTeam: null, pendingReset: false,
   whistlePending: false, lastPostSoundAt: 0,
+  // Possession: { type: 'player' } or { type: 'bot', bot }, plus team and since (seconds).
+  holder: null, catchBlock: null,
 };
 
 function isSoccerFrozen() {
@@ -6141,6 +6142,7 @@ function startSoccerFreeze(scoredTeam = null) {
 function resetSoccerBall() {
   soccerBall.position.set(0, SOCCER_FIELD_Y + SOCCER_BALL_RADIUS, 0);
   soccerState.vx = 0; soccerState.vz = 0;
+  soccerState.holder = null; soccerState.catchBlock = null;
   soccerState.kickoffUntil = clock.elapsedTime + 1;
 }
 
@@ -6195,9 +6197,52 @@ function soccerYawToEnemyGoal(team) {
 }
 
 // kicker: "player" 또는 "bot". 득점 기록을 누구에게 줄지 가리는 데 쓴다.
-function kickSoccerBall(from, yaw, team = "a", kicker = "bot") {
+// Brawl-Ball style possession: touching a loose ball catches it and the holder keeps it until
+// they pass/shoot or fall. An opponent can tackle it away after the holder has had it for a second.
+const SOCCER_CATCH_REACH = SOCCER_BALL_RADIUS + 0.75;
+const SOCCER_HOLD_OFFSET = 0.95;
+const SOCCER_TACKLE_AFTER = 1;
+function soccerHolderMatches(holder, kicker, bot = null) {
+  return !!holder && (kicker === "player" ? holder.type === "player" : holder.type === "bot" && holder.bot === bot);
+}
+function soccerHolderAlive(holder) {
+  return holder.type === "player" ? !goldRushState.dead : !holder.bot.dead;
+}
+function soccerHolderTransform(holder) {
+  return holder.type === "player"
+    ? { position: player.position, yaw: player.rotation.y }
+    : { position: holder.bot.mesh.position, yaw: holder.bot.mesh.rotation.y };
+}
+function trySoccerCatch(position, team, type, bot = null) {
+  if (clock.elapsedTime < soccerState.kickoffUntil) return false;
+  const block = soccerState.catchBlock;
+  if (block && clock.elapsedTime < block.until && block.type === type && block.bot === bot) return false;
+  if (Math.hypot(soccerBall.position.x - position.x, soccerBall.position.z - position.z) > SOCCER_CATCH_REACH) return false;
+  const current = soccerState.holder;
+  if (current) {
+    if (current.team === team || clock.elapsedTime - current.since < SOCCER_TACKLE_AFTER) return false;
+    canvas.dataset.lastSoccerTackle = `${team}:${type}`;
+  }
+  soccerState.holder = { type, bot, team, since: clock.elapsedTime };
+  soccerState.vx = 0; soccerState.vz = 0;
+  soccerState.lastKick = team;
+  soccerState.lastKicker = type;
+  return true;
+}
+function updateSoccerHeldBall() {
+  const holder = soccerState.holder;
+  if (!holder) return;
+  if (!soccerHolderAlive(holder)) { soccerState.holder = null; return; }
+  const { position, yaw } = soccerHolderTransform(holder);
+  soccerBall.position.x = position.x + Math.sin(yaw) * SOCCER_HOLD_OFFSET;
+  soccerBall.position.z = position.z + Math.cos(yaw) * SOCCER_HOLD_OFFSET;
+  soccerState.vx = 0; soccerState.vz = 0;
+}
+function kickSoccerBall(from, yaw, team = "a", kicker = "bot", bot = null) {
   if (goldRushState.mode !== "soccer" || clock.elapsedTime < soccerState.kickoffUntil) return false;
-  if (Math.hypot(soccerBall.position.x - from.x, soccerBall.position.z - from.z) > SOCCER_KICK_RANGE) return false;
+  if (!soccerHolderMatches(soccerState.holder, kicker, bot)) return false;
+  soccerState.holder = null;
+  soccerState.catchBlock = { type: kicker, bot, until: clock.elapsedTime + 0.35 };
   soccerState.vx = Math.sin(yaw) * SOCCER_KICK_SPEED;
   soccerState.vz = Math.cos(yaw) * SOCCER_KICK_SPEED;
   soccerState.lastKick = team;
@@ -6209,16 +6254,20 @@ function kickSoccerBall(from, yaw, team = "a", kicker = "bot") {
 
 function tryPlayerSoccerKick(manualAim) {
   if (clock.elapsedTime < soccerState.playerKickReadyAt) return false;
+  if (goldRushState.ammo < 1) { goldRushStatusEl.textContent = "탄약이 없어 패스할 수 없습니다"; return false; }
   const yaw = manualAim ? player.rotation.y : soccerYawToEnemyGoal("a");
   if (!kickSoccerBall(player.position, yaw, "a", "player")) {
     goldRushStatusEl.textContent = clock.elapsedTime < soccerState.kickoffUntil
       ? "킥오프 준비 중…"
-      : "공 가까이 가서 차세요";
+      : "공을 잡아야 찰 수 있습니다";
     return false;
   }
+  goldRushState.ammo -= 1;
+  goldRushState.reloadTimer = Math.min(goldRushState.reloadTimer, goldRushState.reloadDuration);
+  updateGoldRushCombatHud();
   player.rotation.y = yaw;
   soccerState.playerKickReadyAt = clock.elapsedTime + SOCCER_PLAYER_KICK_COOLDOWN;
-  goldRushStatusEl.textContent = "공 근처에선 차고, 멀리선 공격하세요";
+  goldRushStatusEl.textContent = "공을 잡으면 공격 버튼으로 패스·슛 (탄약 1)";
   return true;
 }
 
@@ -6311,10 +6360,24 @@ function updateSoccerBallPhysics(dt) {
       soccerState.vz *= -0.86;
     }
   }
-  // 공 전체가 골라인을 넘어가야 득점
-  if (Math.abs(soccerBall.position.z) > SOCCER_FIELD_HALF + r && Math.abs(soccerBall.position.x) < SOCCER_GOAL_HALF_WIDTH) {
-    soccerGoal(soccerBall.position.z > 0 ? "a" : "b");
+  checkSoccerGoal();
+}
+
+// 공 전체가 골라인을 넘어가야 득점. 마지막으로 공을 다룬 팀의 자기 골대면 득점하지 않고 튕겨 낸다.
+function checkSoccerGoal() {
+  const r = SOCCER_BALL_RADIUS;
+  if (!(Math.abs(soccerBall.position.z) > SOCCER_FIELD_HALF + r && Math.abs(soccerBall.position.x) < SOCCER_GOAL_HALF_WIDTH)) return;
+  const scoringTeam = soccerBall.position.z > 0 ? "a" : "b";
+  if (soccerState.lastKick !== scoringTeam) {
+    const sign = Math.sign(soccerBall.position.z);
+    soccerState.holder = null;
+    soccerBall.position.z = sign * (SOCCER_FIELD_HALF - r - 0.05);
+    soccerState.vz = -sign * Math.max(4, Math.abs(soccerState.vz) * 0.6);
+    canvas.dataset.lastSoccerOwnGoalBlocked = scoringTeam === "a" ? "b" : "a";
+    goldRushStatusEl.textContent = "자책골은 인정되지 않습니다";
+    return;
   }
+  soccerGoal(scoringTeam);
 }
 
 function formatSoccerClock(remaining) {
@@ -6347,13 +6410,15 @@ function updateSoccer(dt) {
     betaSfx.play("soccerWhistle");
   }
   if (soccerState.freezeUntil && clock.elapsedTime - soccerState.freezeUntil < 0.1) {
-    goldRushStatusEl.textContent = "공 근처에선 차고, 멀리선 공격하세요";
+    goldRushStatusEl.textContent = "공을 잡으면 공격 버튼으로 패스·슛 (탄약 1)";
   }
   const playerSpeed = dt > 0 ? Math.hypot(player.position.x - soccerState.prevPlayerX, player.position.z - soccerState.prevPlayerZ) / dt : 0;
   soccerState.prevPlayerX = player.position.x;
   soccerState.prevPlayerZ = player.position.z;
-  if (!goldRushState.dead) pushSoccerBallWithBody(player.position, playerSpeed, "a", "player");
-  updateSoccerBallPhysics(dt);
+  if (!goldRushState.dead) trySoccerCatch(player.position, "a", "player");
+  updateSoccerHeldBall();
+  if (!soccerState.holder) updateSoccerBallPhysics(dt);
+  else checkSoccerGoal();
   if (!goldRushState.active || goldRushState.ended) return;
   const elapsed = clock.elapsedTime - goldRushState.startedAt;
   const remaining = Math.max(0, 180 - elapsed);
@@ -6405,10 +6470,15 @@ function updateSoccerBots(dt) {
     for (const bot of mates) {
       let targetX;
       let targetZ;
-      if (bot === chaser) {
-        // 공 뒤(상대 골대 반대편)로 돌아 들어가 골대 쪽으로 민다
+      const holding = soccerState.holder?.type === "bot" && soccerState.holder.bot === bot;
+      if (holding) {
+        // 공을 잡은 봇은 상대 골대 정면으로 몰고 간다
+        targetX = THREE.MathUtils.clamp(bot.mesh.position.x * 0.6, -SOCCER_GOAL_HALF_WIDTH, SOCCER_GOAL_HALF_WIDTH);
+        targetZ = attackSign * SOCCER_FIELD_HALF;
+      } else if (bot === chaser) {
+        // 공(또는 공을 잡은 상대)에게 다가간다
         targetX = ball.x;
-        targetZ = ball.z - attackSign * 0.9;
+        targetZ = ball.z - attackSign * 0.6;
       } else {
         const lane = defenderIndex % 2 === 0 ? -5 : 5;
         defenderIndex += 1;
@@ -6427,12 +6497,15 @@ function updateSoccerBots(dt) {
       }
       applyArenaWallBlock(bot.mesh.position,prevX,prevZ);
       clampSoccerActor(bot.mesh.position);
-      bot.mesh.rotation.y = Math.atan2(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
-      pushSoccerBallWithBody(bot.mesh.position, dt > 0 ? step / dt : 0, team, "bot");
-      const ballDistance = Math.hypot(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
-      if (bot === chaser && ballDistance < SOCCER_KICK_RANGE && clock.elapsedTime >= (bot.soccerKickReadyAt ?? 0)) {
-        candidates.push({ bot, distance: ballDistance, tieBreak: Math.random() });
+      bot.mesh.rotation.y = holding
+        ? Math.atan2(targetX - bot.mesh.position.x, targetZ - bot.mesh.position.z)
+        : Math.atan2(ball.x - bot.mesh.position.x, ball.z - bot.mesh.position.z);
+      if (!holding) trySoccerCatch(bot.mesh.position, team, "bot", bot);
+      const goalDistance = Math.abs(attackSign * SOCCER_FIELD_HALF - bot.mesh.position.z);
+      if (holding && goalDistance <= 9 && bot.ammo >= 1 && clock.elapsedTime >= (bot.soccerKickReadyAt ?? 0)) {
+        candidates.push({ bot, distance: goalDistance, tieBreak: Math.random() });
       }
+      reloadSoccerBot(bot, dt);
       if (team === "b") updateSoccerBotAttack(bot, dt);
       faceGoldRushHealthBarToCamera(bot.healthBar);
       bot.mesh.visible = !bot.dead && (team === "a" || !betaEventBushHidden(bot.mesh,player.position));
@@ -6443,13 +6516,15 @@ function updateSoccerBots(dt) {
   candidates.sort((p, q) => p.distance - q.distance || p.tieBreak - q.tieBreak);
   const { bot } = candidates[0];
   const yaw = soccerYawToEnemyGoal(bot.team) + (Math.random() - 0.5) * 0.35;
-  if (kickSoccerBall(bot.mesh.position, yaw, bot.team, "bot")) {
+  if (kickSoccerBall(bot.mesh.position, yaw, bot.team, "bot", bot)) {
+    bot.ammo -= 1;
     bot.soccerKickReadyAt = clock.elapsedTime + SOCCER_BOT_KICK_COOLDOWN;
   }
 }
 
 // 상대(빨강) 봇은 가까이 온 플레이어를 일반 공격으로 노린다
-function updateSoccerBotAttack(bot, dt) {
+// Every soccer bot reloads (kicks spend ammo); only red bots also attack the player.
+function reloadSoccerBot(bot, dt) {
   if (bot.ammo < bot.maxAmmo) {
     bot.reloadTimer += dt;
     while (bot.reloadTimer >= bot.reloadDuration && bot.ammo < bot.maxAmmo) {
@@ -6459,6 +6534,8 @@ function updateSoccerBotAttack(bot, dt) {
   } else {
     bot.reloadTimer = 0;
   }
+}
+function updateSoccerBotAttack(bot, dt) {
   if (goldRushState.dead || bot.ammo <= 0 || clock.elapsedTime < bot.nextAttackAt) return;
   const distance = Math.hypot(player.position.x - bot.mesh.position.x, player.position.z - bot.mesh.position.z);
   if (distance > SOCCER_BOT_ATTACK_RANGE || betaEventBushHidden(player,bot.mesh.position)) return;
