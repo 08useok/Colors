@@ -620,3 +620,28 @@ body.beta-season-8-theme #aim-mode-btn { background:#31233e; border-color:#80639
 #beta-boss-health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #bf343b, #ff8455); }
 .crystal-ultimate-warning { position:fixed; z-index:18; left:50%; top:calc(var(--beta-header-bottom, 130px) + 12px); transform:translateX(-50%); max-width:calc(100vw - 24px); padding:10px 16px; border:2px solid #8aefff; border-radius:12px; background:rgba(8,30,48,.94); color:#fff; font-weight:800; text-align:center; pointer-events:none; box-shadow:0 0 24px #56c9ff70; }
 .crystal-ultimate-warning[hidden] { display:none; }
+
+/* Season 9 Champions: navy stadium with trophy gold, layered over the Season 8 layout rules. */
+.beta9-loading .beta6-loading-screen { background: radial-gradient(circle at 50% 28%, #f2c14e 0, #6b5320 18%, #263a6e 46%, #121a33 80%); }
+.beta9-loading .beta8-loading-bg { display: none; }
+.beta9-loading .beta6-loading-shade { background: linear-gradient(transparent 35%, rgba(18,26,51,.92)); }
+.beta9-loading .beta6-loading-status strong { color: #f2c14e; }
+.beta9-loading .beta6-loading-status b { color: #cfd8e8; }
+body.beta-season-8-theme.beta-season-9-theme { background: #121a33; color: #f4efe0; }
+body.beta-season-9-theme .beta-header { background: linear-gradient(100deg, #121a33, #263a6e); }
+body.beta-season-9-theme .beta-header h1 { color: #f2c14e; text-shadow: 0 2px 12px rgba(242,193,78,.25); }
+body.beta-season-9-theme .beta-header p, body.beta-season-9-theme .test-panel p { color: #cfd8e8; }
+body.beta-season-9-theme .rank-chip, body.beta-season-9-theme .test-chip { color: #121a33; background: #f2c14e; border-color: #ffe08a; }
+body.beta-season-9-theme .beta-nav button, body.beta-season-9-theme .beta-header a, body.beta-season-9-theme .test-actions button { background: #1b2547; color: #f4efe0; border-color: #4a64a8; }
+body.beta-season-9-theme .beta-nav button:hover, body.beta-season-9-theme .test-actions button:hover { background: #263a6e; border-color: #f2c14e; }
+body.beta-season-9-theme .location-card strong, body.beta-season-9-theme .test-panel strong, body.beta-season-9-theme .gold-rush-hud strong { color: #f2c14e; }
+body.beta-season-9-theme .beta-modal-card, body.beta-season-9-theme .modal-title-row { background: #16203f; color: #f4efe0; }
+body.beta-season-9-theme .beta-card { background: #1b2547; border-color: #3a5291; }
+body.beta-season-9-theme .beta-card h3 { color: #f2c14e; }
+body.beta-season-9-theme .beta-card p { color: #cfd8e8; }
+body.beta-season-9-theme .modal-close { background: #3a5291; color: #f4efe0; }
+body.beta-season-9-theme .gold-rush-ammo-segment.filled { background: linear-gradient(#ffe8a6, #f2c14e); border-color: #ffd773; }
+body.beta-season-9-theme .ultimate-btn { --ultimate-color: #f2c14e; border-color: #cfd8e8; background: conic-gradient(var(--ultimate-color) 0 var(--charge-angle), #1b2547 var(--charge-angle) 360deg); }
+body.beta-season-9-theme .beta-watermark { color: #f2c14e; }
+body.beta-season-9-theme #aim-mode-btn { background: #1b2547; border-color: #4a64a8; color: #f4efe0; }
+body.beta-season-9-theme .beta-wallet, body.beta-season-9-theme .test-panel, body.beta-season-9-theme .location-card, body.beta-season-9-theme .gold-rush-player-panel, body.beta-season-9-theme .gold-rush-hud { background: linear-gradient(135deg, rgba(18,26,51,.96), rgba(38,58,110,.94)); border-color: rgba(242,193,78,.5); box-shadow: 0 8px 32px rgba(6,10,22,.45); }

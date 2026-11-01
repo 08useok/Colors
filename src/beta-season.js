@@ -14,7 +14,7 @@ import { betaShowdownProfile, safeShowdownSpawn } from "./config/beta-showdown.j
 import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
-import { createHalloweenLobby } from "./visuals/beta8-halloween.js?v=1";
+import { createChampionsLobby } from "./visuals/beta9-champions.js?v=1";
 import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./visuals/beta8-lobby-rooms.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=1";
@@ -282,13 +282,12 @@ const IS_BETA5_TEST = BETA_SEASON_ID === "beta5";
 const IS_BETA6_TEST = BETA_SEASON_ID === "beta6";
 const IS_BETA7_TEST = BETA_SEASON_ID === "beta7";
 const IS_BETA8_TEST = BETA_SEASON_ID === "beta8";
+// Season 9 Champions dresses the Season 8 beta: visuals change, combat rules and modes stay Season 8.
+const IS_CHAMPIONS_THEME = IS_BETA8_TEST;
 const showdownProfile = betaShowdownProfile(IS_BETA8_TEST);
 let knockoutMatch = null;
 document.getElementById("knockout-toggle").classList.toggle("hidden", !IS_BETA8_TEST);
-if (IS_BETA8_TEST) {
-  canvas.dataset.seasonTheme = "halloween-knockout";
-  document.querySelector(".beta8-loading-bg").src = "./assets/art/beta8-halloween-loading.png";
-}
+if (IS_BETA8_TEST) canvas.dataset.seasonTheme = "champions";
 if (IS_BETA5_TEST) {
   for (const [characterId, override] of Object.entries(BETA5_BALANCE_OVERRIDES)) {
     const definition = BETA_CHARACTERS[characterId];
@@ -405,26 +404,26 @@ if (IS_BETA7_TEST) {
   beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 7 불러오는 중");
 }
 if (IS_BETA8_TEST) {
-  document.body.classList.add("beta-season-8-theme");
-  document.title = "Colors - Beta Season 8 Test";
+  document.body.classList.add("beta-season-8-theme", "beta-season-9-theme");
+  document.title = "Colors - Beta Season 9 Champions";
   const heading = document.querySelector(".beta-header h1");
   const rankChip = document.querySelector(".rank-chip");
   const tagline = document.querySelector(".beta-header p");
-  if (heading) heading.textContent = "베타 시즌 8 테스트";
-  if (rankChip) rankChip.textContent = "베타 시즌 8 테스트";
-  if (tagline) tagline.textContent = `🎃 할로윈 · 라벤더·살몬 · 스킨 4종 · ${CHARACTERS.length}종 전투`;
+  if (heading) heading.textContent = "베타 시즌 9 · CHAMPIONS";
+  if (rankChip) rankChip.textContent = "BETA FINAL EVENT";
+  if (tagline) tagline.textContent = `🏆 베타의 마지막 시즌 · 11월 BETA FINAL EVENT · ${CHARACTERS.length}종 전투`;
   const seasonOverview = document.querySelector('[data-panel="quests"]');
   if (seasonOverview) seasonOverview.textContent = "시즌 퀘스트";
   const archivedProps = document.querySelector('[data-panel="seaprops"]');
   if (archivedProps) archivedProps.textContent = "이전 시즌 소품";
-  if (locationName) locationName.textContent = "할로윈 유령 광장";
+  if (locationName) locationName.textContent = "챔피언스 광장";
   const loading = document.querySelector(".beta6-loading-status");
   if (loading) {
-    loading.querySelector("strong").textContent = "BETA SEASON 8";
-    loading.querySelector("b").textContent = "HALLOWEEN · KNOCKOUT";
-    loading.querySelector("span").textContent = "호박 조명이 켜지는 유령 광장으로 이동 중…";
+    loading.querySelector("strong").textContent = "BETA SEASON 9";
+    loading.querySelector("b").textContent = "CHAMPIONS · BETA FINAL";
+    loading.querySelector("span").textContent = "챔피언스 광장으로 입장하는 중…";
   }
-  beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 8 테스트 불러오는 중");
+  beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 9 챔피언스 불러오는 중");
 }
 
 // 시즌 한정 꾸미기 소품: 캐릭터 성능과 무관, 이번 시즌 참여를 보여주는 장식물.
@@ -576,12 +575,12 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
 const skinEffects = createSkinEffects(scene);
-const seasonSkyColor = IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0xd59a52 : IS_BETA6_TEST ? 0x54bfe8 : IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
+const seasonSkyColor = IS_CHAMPIONS_THEME ? 0x121a33 : IS_BETA7_TEST ? 0xd59a52 : IS_BETA6_TEST ? 0x54bfe8 : IS_BETA5_TEST ? 0x91dfff : 0x8ac9dc;
 scene.background = new THREE.Color(seasonSkyColor);
 scene.fog = new THREE.FogExp2(seasonSkyColor, IS_BETA8_TEST ? 0.006 : IS_BETA5_TEST ? 0.009 : 0.012);
 
 const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 300);
-const hemi = new THREE.HemisphereLight(IS_BETA8_TEST ? 0xd5baf4 : IS_BETA7_TEST ? 0xffe2a1 : 0xe8fbff, IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0x48241c : 0x38515b, 2.2);
+const hemi = new THREE.HemisphereLight(IS_CHAMPIONS_THEME ? 0xfff1cf : IS_BETA7_TEST ? 0xffe2a1 : 0xe8fbff, IS_CHAMPIONS_THEME ? 0x121a33 : IS_BETA7_TEST ? 0x48241c : 0x38515b, 2.2);
 scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff1ce, 3.4);
 sun.position.set(-35, 48, 20);
@@ -607,9 +606,9 @@ function getArenaSolids() {
   if (currentArenaMode === "gemGrab") return gemGrabSolids;
   return currentArenaMode === "showdown" ? showdownSolids : solids;
 }
-const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x514062 : IS_BETA7_TEST ? 0xc59a5c : IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
-const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0xff7a18 : IS_BETA7_TEST ? 0xe0b84d : IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
-const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x40324e : IS_BETA7_TEST ? 0x5b3c2a : IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
+const platformMaterial = new THREE.MeshStandardMaterial({ color: IS_CHAMPIONS_THEME ? 0x33467a : IS_BETA7_TEST ? 0xc59a5c : IS_BETA6_TEST ? 0xe8d19b : IS_BETA5_TEST ? 0xffd4df : 0x6a7773, roughness: 0.88 });
+const trimMaterial = new THREE.MeshStandardMaterial({ color: IS_CHAMPIONS_THEME ? 0xf2c14e : IS_BETA7_TEST ? 0xe0b84d : IS_BETA6_TEST ? 0x39d5d0 : IS_BETA5_TEST ? 0x76e4d4 : 0x79d5d2, roughness: 0.42, metalness: 0.25 });
+const stoneMaterial = new THREE.MeshStandardMaterial({ color: IS_CHAMPIONS_THEME ? 0x263a6e : IS_BETA7_TEST ? 0x5b3c2a : IS_BETA6_TEST ? 0x247fa3 : IS_BETA5_TEST ? 0x7657a8 : 0x40545a, roughness: 0.92 });
 
 function box(x, y, z, width, height, depth, material = platformMaterial, solid = true, destructible = false, wall = false) {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
@@ -625,7 +624,7 @@ function box(x, y, z, width, height, depth, material = platformMaterial, solid =
 const water = new THREE.Mesh(
   new THREE.PlaneGeometry(240, 240),
   new THREE.MeshPhysicalMaterial({
-    color: IS_BETA8_TEST ? 0x171321 : IS_BETA7_TEST ? 0xb97b3f : 0x167c99,
+    color: IS_CHAMPIONS_THEME ? 0x121a33 : IS_BETA7_TEST ? 0xb97b3f : 0x167c99,
     roughness: (IS_BETA7_TEST || IS_BETA8_TEST) ? 1 : 0.18,
     metalness: (IS_BETA7_TEST || IS_BETA8_TEST) ? 0 : 0.1,
     transparent: !IS_BETA7_TEST && !IS_BETA8_TEST,
@@ -789,16 +788,16 @@ function createBeta7AncientRuinDecor() {
 }
 
 createBeta7AncientRuinDecor();
-const halloweenDecor = IS_BETA8_TEST ? createHalloweenLobby(scene,map) : null;
+const seasonLobbyDecor = IS_CHAMPIONS_THEME ? createChampionsLobby(scene,map) : null;
 const beta8LobbyRooms = IS_BETA8_TEST ? createBeta8LobbyRooms(map, solids) : null;
 const salmonPreview = IS_BETA8_TEST ? createSalmonPreview(map, solids, modelLoading.manager, canvas) : null;
 
 const iceCreamShowdownMap = new THREE.Group();
 iceCreamShowdownMap.visible = false;
 scene.add(iceCreamShowdownMap);
-const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x40324e : IS_BETA7_TEST ? 0xc89c62 : IS_BETA6_TEST ? 0xe9d79e : IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
-const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x69517b : IS_BETA7_TEST ? 0x9c7445 : IS_BETA6_TEST ? 0x55cfd0 : IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
-const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_BETA8_TEST ? 0x31233e : IS_BETA7_TEST ? 0x4d3225 : IS_BETA6_TEST ? 0x176b8f : IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
+const asphaltTileMaterial = new THREE.MeshStandardMaterial({ color: IS_CHAMPIONS_THEME ? 0x263a6e : IS_BETA7_TEST ? 0xc89c62 : IS_BETA6_TEST ? 0xe9d79e : IS_BETA5_TEST ? 0xffd8e6 : 0x252b30, roughness: 0.94 });
+const concreteTileMaterial = new THREE.MeshStandardMaterial({ color: IS_CHAMPIONS_THEME ? 0x3a5291 : IS_BETA7_TEST ? 0x9c7445 : IS_BETA6_TEST ? 0x55cfd0 : IS_BETA5_TEST ? 0x8be8d8 : 0x444d54, roughness: 0.9 });
+const cityWallMaterial = new THREE.MeshStandardMaterial({ color: IS_CHAMPIONS_THEME ? 0x1b2547 : IS_BETA7_TEST ? 0x4d3225 : IS_BETA6_TEST ? 0x176b8f : IS_BETA5_TEST ? 0x7455a6 : 0x65717a, roughness: 0.82 });
 function showdownBox(x, y, z, width, height, depth, material = cityWallMaterial, solid = true) {
   const boundary = solid && (Math.abs(x) === 20 || Math.abs(z) === 20);
   x *= showdownProfile.scale; z *= showdownProfile.scale;
@@ -9113,7 +9112,7 @@ function animate() {
   updateLavenderPractice(dt);
   updateSalmonPractice(dt);
   skinEffects.update(dt,[{key:player,characterId:betaState.selectedCharacter,skinId:betaState.selectedSkins[betaState.selectedCharacter],position:player.position,visible:player.visible && !goldRushState.dead}]);
-  halloweenDecor?.update(clock.elapsedTime);
+  seasonLobbyDecor?.update(clock.elapsedTime);
   beta8LobbyRooms?.update(clock.elapsedTime);
   salmonPreview?.update(dt);
   respawnShields.update(clock.elapsedTime);
