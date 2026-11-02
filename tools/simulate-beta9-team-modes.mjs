@@ -12,6 +12,7 @@ import { writeFileSync } from 'node:fs';
 import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
 import { applyBeta7Balance } from '../src/config/beta7-balance.js';
 import { applyBeta8Balance } from '../src/config/beta8-balance.js';
+import { applyBeta9Balance } from '../src/config/beta9-balance.js';
 import { RASPBERRY_CHARACTER } from '../src/config/raspberry.js';
 import { BETA_ATTACK_MOTIONS } from '../src/config/beta-attack-motion.js';
 import { BETA_ULTIMATE_MOTIONS } from '../src/config/beta-ultimate-motion.js';
@@ -23,7 +24,7 @@ import { atCharacterLevel } from './simulate-beta6-balance.mjs';
 
 // Same definitions the beta page builds for Season 9 (BETA_SEASON_ID "beta8").
 export function season9Definitions() {
-  const defs = applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS));
+  const defs = applyBeta9Balance(applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS)));
   defs.raspberry = structuredClone(RASPBERRY_CHARACTER);
   defs.raspberry.attackWindup = BETA_ATTACK_MOTIONS.raspberry?.release ?? 0;
   defs.raspberry.ultimate.motionWindup = BETA_ULTIMATE_MOTIONS.raspberry?.release ?? 0;

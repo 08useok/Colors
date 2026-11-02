@@ -3,11 +3,12 @@
 import {BETA_CHARACTERS} from '../src/config/beta-characters.js';
 import {applyBeta7Balance} from '../src/config/beta7-balance.js';
 import {applyBeta8Balance} from '../src/config/beta8-balance.js';
+import {applyBeta9Balance} from '../src/config/beta9-balance.js';
 import {RASPBERRY_CHARACTER} from '../src/config/raspberry.js';
 import {BETA_ATTACK_MOTIONS} from '../src/config/beta-attack-motion.js';
 import {BETA_ULTIMATE_MOTIONS} from '../src/config/beta-ultimate-motion.js';
 export function season9CycleConfig(){
-  const config=applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS));
+  const config=applyBeta9Balance(applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS)));
   config.raspberry=structuredClone(RASPBERRY_CHARACTER);
   config.raspberry.attackWindup=BETA_ATTACK_MOTIONS.raspberry?.release??0;
   config.raspberry.ultimate.motionWindup=BETA_ULTIMATE_MOTIONS.raspberry?.release??0;
