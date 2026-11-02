@@ -23,6 +23,10 @@ export const RASPBERRY_CHARACTER = {
   vineTraitBindBonus: 1,
   // Six basic hits fully charge the ultimate; the beta 50% basic-charge multiplier does not apply.
   basicUltimateChargeMultiplier: 1,
+  // Bot-only (counter cycle Chartreuse → Raspberry → Yellow): keep chasing a weakened target and
+  // sidestep Yellow's slowing ball, but not Chartreuse's CC rounds.
+  pursuesWhileLowHealth: true,
+  botAvoidControlProjectiles: ['shock'],
   basicAttack: {
     name: '덩굴 저격',
     nameEn: 'Vine Snipe',

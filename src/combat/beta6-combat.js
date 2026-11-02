@@ -155,7 +155,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if(!options.blocked)return true;
       const gap=distance(a,p);for(let step=.25;step<gap;step+=.25){const t=step/gap;if(blocked(a.x+(p.x-a.x)*t,a.z+(p.z-a.z)*t,.05))return false;}return true;
     };
-    const threats=projectiles.filter(p=>((a.d.botAvoidBurstProjectiles&&['bomb','juice'].includes(p.kind))||(a.d.botAvoidControlProjectiles&&p.control)||(a.d.botAvoidVolleyProjectiles&&p.formation==='parallel'))&&enemies(a,p.owner)&&time>=p.start
+    const threats=projectiles.filter(p=>((a.d.botAvoidBurstProjectiles&&['bomb','juice'].includes(p.kind))||(a.d.botAvoidControlProjectiles&&p.control&&(a.d.botAvoidControlProjectiles===true||a.d.botAvoidControlProjectiles.includes?.(p.control)))||(a.d.botAvoidVolleyProjectiles&&p.formation==='parallel'))&&enemies(a,p.owner)&&time>=p.start
       && distance(a,p)<(p.speed+speed)*lookAhead+p.radius+.55&&visible(p));
     for(const p of [...threats])if(p.kind==='bomb'){
       const remaining=Math.max(0,p.reach-p.traveled),delay=remaining/p.speed;
