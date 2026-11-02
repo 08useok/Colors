@@ -9,14 +9,15 @@ export const RASPBERRY_CHARACTER = {
   moveSpeedMultiplier: 1,
   // 2026-11-01: 2.4 s was longer than the 2 s reload, so ammo never ran down. Three shots now fit in 1.6 s.
   attackCooldown: .8,
-  reloadDuration: 2,
+  // 2026-11-02: 3:3 simulation buff (reload 2 → 1.2, hitbox .15 → .35, speed 24 → 36).
+  reloadDuration: 1.2,
   maxAmmo: 3,
   // AI range and aim guide use attackRange; the shot itself uses the vine* values.
   attackRange: 18,
   vineRange: 18,
-  vineSpeed: 24,
+  vineSpeed: 36,
   vineDamage: 2050,
-  vineRadius: .15,
+  vineRadius: .35,
   vineBindDuration: .6,
   // Built-in trait: +1 s on basic-attack binds only (1.6 s total). Ultimates never get it.
   vineTraitBindBonus: 1,

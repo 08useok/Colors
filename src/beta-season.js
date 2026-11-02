@@ -8,7 +8,7 @@ import { skinEffectProfile } from "./config/skin-effects.js?v=1";
 import { createSalmonMotion } from "./visuals/salmon-motion.js?v=1";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createRaspberryVisuals } from "./visuals/raspberry-vines.js?v=1";
-import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=2";
+import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=3";
 import { BETA_ATTACK_MOTIONS } from "./config/beta-attack-motion.js";
 import { RIG_ATTACK_PROFILES as LEGACY_ATTACK_PROFILES, applyRigAttackPose as applyLegacyAttackPose, restoreRigAttackPose as restoreLegacyAttackPose } from "./visuals/rig-attack-motion.js?v=2";
 import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from "./visuals/beta-attack-motion.js?v=1";

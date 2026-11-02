@@ -36,13 +36,15 @@ const HALF = 20, BOUNDS = 19.4, DT = 1 / 60, REGEN_DELAY = 5, REGEN_PER_SECOND =
 const mulberry = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x ^= x + Math.imul(x ^ x >>> 7, 61 | x); return ((x ^ x >>> 14) >>> 0) / 4294967296; };
 const spawnSpots = side => [-4, 0, 4].map(x => ({ x, z: side * 15 }));
 const sideOf = team => team === 'a' ? -1 : 1;
+// Optional event tap for probes (e.g. counting one character's shots and hits).
+export const simHooks = { onEvent: null };
 
 function createWorld(defs, mode, mapIndex, seed, aimError, extra = {}) {
   const layout = eventMap(mode, mapIndex, HALF, HALF);
   return {
     layout,
     world: createBeta6Combat(defs, {
-      seed, aimError, bounds: BOUNDS,
+      seed, aimError, bounds: BOUNDS, onEvent: e => simHooks.onEvent?.(e),
       blocked: (x, z, r = .55) => layout.walls.some(rect => insideMapRect(x, z, rect, r)),
       walkable: (x, z) => !mapBlocked(layout, x, z, .5),
       bushAt: (x, z) => layout.bushes.some(rect => insideMapRect(x, z, rect)),
@@ -204,7 +206,7 @@ export function splitRoster(ids, knockout, gemGrab) {
   return { knockout: ko.sort((x, y) => knockout[y].score - knockout[x].score), gemGrab: gg.sort((x, y) => gemGrab[y].score - gemGrab[x].score), total: best.total, edge: Object.fromEntries(ids.map(id => [id, edge(id)])), overall: Object.fromEntries(ids.map(id => [id, rel(id) / 2])) };
 }
 
-if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}` || process.argv[1]?.endsWith('simulate-beta9-team-modes.mjs')) {
+if (process.argv[1]?.endsWith('simulate-beta9-team-modes.mjs')) {
   const arg = name => { const i = process.argv.indexOf(name); return i >= 0 ? Number(process.argv[i + 1]) : null; };
   const matches = arg('--matches') ?? (process.argv.includes('--quick') ? 30 : 1200);
   const started = Date.now();

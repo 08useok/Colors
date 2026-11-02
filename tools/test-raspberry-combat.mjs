@@ -19,7 +19,7 @@ const big = (w, id, x, z = 0, extra = {}) => { const b = w.add(id, { automatic: 
   run(w, .5);
   assert.equal(1e6 - front.hp, 2050);
   assert.equal(back.hp, 1e6, 'no pierce');
-  assert(Math.abs(front.rootUntil - w.time - (1.6 - (w.time - (10 - .6) / 24))) < .1, 'bind about 1.6 s');
+  assert(Math.abs(front.rootUntil - w.time - (1.6 - (w.time - (10 - .6) / 36))) < .1, 'bind about 1.6 s');
   assert(Math.abs(r.charge - 1) < 1e-9, 'full basic charge per hit (6 hits = ultimate)');
 }
 {
