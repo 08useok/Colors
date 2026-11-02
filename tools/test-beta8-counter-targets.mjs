@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {BETA8_COUNTER_CYCLE as cycle,BETA8_COUNTER_TARGETS as targets} from '../src/config/beta8-counter-targets.js';
+import {season9CycleConfig} from './beta9-cycle-definitions.mjs';
+const defs=season9CycleConfig(),by=Object.fromEntries(targets.map(t=>[t.id,t]));
+assert.deepEqual([...cycle].sort(),Object.keys(defs).sort());assert.equal(new Set(cycle).size,18);
+const visited=new Set();let id='red';for(let i=0;i<18;i++){assert(!visited.has(id));visited.add(id);const t=by[id];assert.equal(by[t.targetWin].targetLoss,id);assert.equal(by[t.targetLoss].targetWin,id);id=t.targetWin;}assert.equal(id,'red');
+assert.equal(by.crimson.targetWin,'blue');assert.equal(by.purple.targetWin,'crystal');assert.equal(by.red.targetWin,'chartreuse');assert.equal(by.chartreuse.targetWin,'raspberry');assert.equal(by.raspberry.targetWin,'yellow');
+assert.equal(by.crystal.targetWin,'red');assert.equal(by.ivory.targetWin,'salmon');assert.equal(by.salmon.targetWin,'gold');
+assert(!defs[by.crystal.targetLoss].botTankTarget,'Crystal counter must not be a tank');
+console.log('PASS 18-character single cycle (Chartreuse → Raspberry → Yellow), reciprocal edges, non-tank Crystal counter and preserved fixed target links.');
