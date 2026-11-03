@@ -5,14 +5,20 @@
 //  - Patch 1 (2026-11-02): first pass from the 3v3 results.
 //  - Patch 2 (2026-11-03): second pass after re-running the 3v3 simulation on patch 1.
 //  - Patch 3 (2026-11-03): third pass (Salmon switched from health to throw speed/attack interval).
-//  - Cycle fix (2026-11-03): Red 8000 HP, Salmon 8200 HP, Gold 7000 HP, Crystal 6600 HP restore all 18 links.
+//  - Cycle fix (2026-11-03): Salmon 8200 HP, Gold 7000 HP, Crystal 6600 HP restore all 18 links.
+//  - Tank fix (2026-11-03): Red keeps its 9000 HP (tank identity); nerfed via punch 2000, reach 4 and a
+//    stronger but shorter guard (75% for 4 s instead of 60% for 8 s). Speed 1.15 → 1.25 and a bot spacing of
+//    3 tiles (was a fixed 3.5 tuned for the old 5.5 reach) keep Red → Chartreuse at 240-0.
+//  - Salmon (2026-11-03): enemies stay airborne twice as long (1.2 → 2.4 s), basic and ultimate. To keep
+//    Ivory → Salmon → Gold at 240-0: Salmon 7200 HP, bot keeps 7.8 tiles and chases at low health,
+//    Ivory's zone stays 4 s, Gold's ultimate field radius 6 → 4.5.
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1800 },
-  red: { maxHealth: 8000, attackDamage: 2200 },
+  red: { attackDamage: 2000, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
   orange: { maxHealth: 3400 },
   // Buffs: behind in 3v3.
-  salmon: { maxHealth: 8200, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5 },
+  salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
   green: { maxHealth: 9600 },
   mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15 },
   yellow: { electricSpeed: 22, maxHealth: 6800, electricDamage: 2500 },
@@ -20,7 +26,7 @@ export const BETA9_BALANCE = Object.freeze({
   crimson: { maxHealth: 11500 },
   azure: { maxHealth: 11500 },
   crystal: { maxHealth: 6600 },
-  gold: { maxHealth: 7000 },
+  gold: { maxHealth: 7000, ultimate: { radius: 4.5 } },
 });
 
 const replaceText = (object, key, pairs) => {
@@ -29,8 +35,17 @@ const replaceText = (object, key, pairs) => {
 };
 
 export function applyBeta9Balance(characters) {
-  for (const [id, patch] of Object.entries(BETA9_BALANCE)) if (characters[id]) Object.assign(characters[id], patch);
-  const { ivory, mint, cyan, salmon } = characters;
+  const merge = (target, patch) => { for (const [key, value] of Object.entries(patch)) { if (value && typeof value === 'object' && !Array.isArray(value)) merge(target[key] ??= {}, value); else target[key] = value; } };
+  for (const [id, patch] of Object.entries(BETA9_BALANCE)) if (characters[id]) merge(characters[id], patch);
+  const { ivory, mint, cyan, salmon, red, gold } = characters;
+  if (gold) {
+    replaceText(gold.ultimate, 'description', [['반경 6타일 장판', '반경 4.5타일 장판']]);
+    replaceText(gold.ultimate, 'descriptionEn', [['6-tile', '4.5-tile']]);
+  }
+  if (red) {
+    replaceText(red.ultimate, 'description', [['8초 동안 피해를 60% 감소', '4초 동안 피해를 75% 감소']]);
+    replaceText(red.ultimate, 'descriptionEn', [['by 60% for 8 seconds', 'by 75% for 4 seconds']]);
+  }
   if (ivory) {
     replaceText(ivory.basicAttack, 'description', [['착탄 시 2400 피해를 주고, 반경 5타일에 4초 동안 1초마다 2600 피해', '착탄 시 1800 피해를 주고, 반경 4타일에 4초 동안 1초마다 1300 피해']]);
     replaceText(ivory.basicAttack, 'descriptionEn', [['It deals 2400 impact damage and leaves a 5-tile-radius zone for 4 seconds that deals 2600 damage', 'It deals 1800 impact damage and leaves a 4-tile-radius zone for 4 seconds that deals 1300 damage']]);
@@ -45,6 +60,9 @@ export function applyBeta9Balance(characters) {
     replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해']]);
     replaceText(cyan.basicAttack, 'descriptionEn', [['Each deals 700 damage', 'Each deals 1000 damage']]);
   }
-  if (salmon) replaceText(salmon.basicAttack, 'description', [['가장 가까운 적 1명에게 3000 피해', '가장 가까운 적 1명에게 3300 피해']]);
+  if (salmon) {
+    replaceText(salmon.basicAttack, 'description', [['가장 가까운 적 1명에게 3000 피해', '가장 가까운 적 1명에게 3300 피해'], ['1.2초 포획', '2.4초 포획'], ['1.2초간 띄운', '2.4초간 띄운']]);
+    replaceText(salmon.ultimate, 'description', [['1.2초 포획', '2.4초 포획']]);
+  }
   return characters;
 }

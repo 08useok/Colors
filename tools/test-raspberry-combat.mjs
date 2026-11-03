@@ -11,13 +11,13 @@ const run = (w, s) => { for (let i = 0; i < Math.round(s * 60); i++) w.update(1 
 const big = (w, id, x, z = 0, extra = {}) => { const b = w.add(id, { automatic: false, team: 'b', x, z, ...extra }); b.hp = 1e6; b.d = { ...b.d, maxHealth: 1e6 }; return b; };
 
 {
-  // Basic: 2,050 damage, 1.6 s bind, straight shot that stops at the first enemy; one sixth of the ultimate.
+  // Basic: configured vine damage (2,250 since 2026-11-03), 1.6 s bind, straight shot that stops at the first enemy; one sixth of the ultimate.
   const w = createBeta6Combat(defs, { bounds: 40, aimError: 0 });
   const r = w.add('raspberry', { automatic: false, team: 'a', x: 0, z: 0, next: 0 });
   const front = big(w, 'red', 10), back = big(w, 'red', 14);
   assert(w.fire(r, front, 0));
   run(w, .5);
-  assert.equal(1e6 - front.hp, 2050);
+  assert.equal(1e6 - front.hp, defs.raspberry.vineDamage);
   assert.equal(back.hp, 1e6, 'no pierce');
   assert(Math.abs(front.rootUntil - w.time - (1.6 - (w.time - (10 - .6) / 36))) < .1, 'bind about 1.6 s');
   assert(Math.abs(r.charge - 1) < 1e-9, 'full basic charge per hit (6 hits = ultimate)');
@@ -97,4 +97,4 @@ const big = (w, id, x, z = 0, extra = {}) => { const b = w.add(id, { automatic: 
   for (const x of [5, -5]) { r.charge = r.u.chargeRequired; assert(w.cast(r, t, { point: { x, z: 0 } })); run(w, .5); }
   assert.equal(w.zones.filter(z => z.kind === 'vinePrison').length, 1);
 }
-console.log('PASS Raspberry: 2,050 straight vine with 1.6 s bind and no pierce, 6-hit charge, bound movement/dash rules, knockback while bound, prison warning/centre rule/boundary/air/invulnerable/wall/late entrant/slow/duration/replacement and caster-death persistence.');
+console.log(`PASS Raspberry: ${defs.raspberry.vineDamage.toLocaleString('en-US')} straight vine with 1.6 s bind and no pierce, 6-hit charge, bound movement/dash rules, knockback while bound, prison warning/centre rule/boundary/air/invulnerable/wall/late entrant/slow/duration/replacement and caster-death persistence.`);

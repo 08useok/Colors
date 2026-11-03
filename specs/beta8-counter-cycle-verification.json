@@ -176,9 +176,10 @@
         "pink",
         "gold",
         "chartreuse",
-        "raspberry"
+        "mint"
       ],
       "perfectLosses": [
+        "cyan",
         "crystal"
       ]
     },
@@ -387,11 +388,9 @@
       "edgePerfect": true,
       "winAndLossPerfect": true,
       "perfectWins": [
-        "yellow",
-        "salmon"
+        "yellow"
       ],
       "perfectLosses": [
-        "red",
         "orange",
         "chartreuse"
       ]
@@ -714,11 +713,9 @@
         "gold"
       ],
       "perfectLosses": [
-        "blue",
+        "lavender",
         "purple",
-        "ivory",
-        "azure",
-        "raspberry"
+        "ivory"
       ]
     },
     {
@@ -1040,8 +1037,7 @@
         "blue",
         "purple",
         "crimson",
-        "ivory",
-        "salmon"
+        "ivory"
       ],
       "perfectLosses": [
         "green"
@@ -1146,7 +1142,8 @@
       "edgePerfect": true,
       "winAndLossPerfect": true,
       "perfectWins": [
-        "crimson"
+        "crimson",
+        "salmon"
       ],
       "perfectLosses": [
         "azure"
@@ -1360,8 +1357,7 @@
       "edgePerfect": true,
       "winAndLossPerfect": true,
       "perfectWins": [
-        "orange",
-        "salmon"
+        "orange"
       ],
       "perfectLosses": [
         "crimson",
@@ -1578,6 +1574,7 @@
         "cyan"
       ],
       "perfectLosses": [
+        "red",
         "orange",
         "chartreuse"
       ]
@@ -1681,6 +1678,7 @@
       "edgePerfect": true,
       "winAndLossPerfect": true,
       "perfectWins": [
+        "red",
         "pink"
       ],
       "perfectLosses": [
@@ -2018,46 +2016,46 @@
   "matrix": {
     "lavender": {
       "red": {
-        "wins": 87,
-        "losses": 153,
+        "wins": 227,
+        "losses": 13,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.3625,
+        "score": 0.9458333333333333,
         "byDistance": {
           "6": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 27,
+            "losses": 13,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 14,
-            "losses": 26,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 25,
-            "losses": 15,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 20,
-            "losses": 20,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 14,
-            "losses": 26,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 14,
-            "losses": 26,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           }
@@ -2708,46 +2706,46 @@
         }
       },
       "salmon": {
-        "wins": 176,
-        "losses": 64,
+        "wins": 240,
+        "losses": 0,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.7333333333333333,
+        "score": 1,
         "byDistance": {
           "6": {
-            "wins": 35,
-            "losses": 5,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 28,
-            "losses": 12,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 25,
-            "losses": 15,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 30,
-            "losses": 10,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 30,
-            "losses": 10,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 28,
-            "losses": 12,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           }
@@ -2802,126 +2800,34 @@
     },
     "red": {
       "lavender": {
-        "wins": 153,
-        "losses": 87,
+        "wins": 13,
+        "losses": 227,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.6375,
+        "score": 0.054166666666666696,
         "byDistance": {
           "6": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 13,
+            "losses": 27,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 26,
-            "losses": 14,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 15,
-            "losses": 25,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 20,
-            "losses": 20,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
-            "wins": 26,
-            "losses": 14,
-            "draws": 0,
-            "games": 40
-          },
-          "36": {
-            "wins": 26,
-            "losses": 14,
-            "draws": 0,
-            "games": 40
-          }
-        }
-      },
-      "green": {
-        "wins": 188,
-        "losses": 48,
-        "draws": 4,
-        "games": 240,
-        "timeLimitDecisions": 0,
-        "score": 0.7916666666666666,
-        "byDistance": {
-          "6": {
-            "wins": 30,
-            "losses": 10,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 29,
-            "losses": 11,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 27,
-            "losses": 11,
-            "draws": 2,
-            "games": 40
-          },
-          "20": {
-            "wins": 33,
-            "losses": 6,
-            "draws": 1,
-            "games": 40
-          },
-          "28": {
-            "wins": 32,
-            "losses": 8,
-            "draws": 0,
-            "games": 40
-          },
-          "36": {
-            "wins": 37,
-            "losses": 2,
-            "draws": 1,
-            "games": 40
-          }
-        }
-      },
-      "blue": {
-        "wins": 40,
-        "losses": 200,
-        "draws": 0,
-        "games": 240,
-        "timeLimitDecisions": 0,
-        "score": 0.16666666666666666,
-        "byDistance": {
-          "6": {
-            "wins": 33,
-            "losses": 7,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 3,
-            "losses": 37,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 1,
-            "losses": 39,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 2,
-            "losses": 38,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
@@ -2932,54 +2838,146 @@
             "games": 40
           },
           "36": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
+            "games": 40
+          }
+        }
+      },
+      "green": {
+        "wins": 169,
+        "losses": 71,
+        "draws": 0,
+        "games": 240,
+        "timeLimitDecisions": 0,
+        "score": 0.7041666666666667,
+        "byDistance": {
+          "6": {
+            "wins": 29,
+            "losses": 11,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 24,
+            "losses": 16,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 29,
+            "losses": 11,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 24,
+            "losses": 16,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0,
+            "games": 40
+          },
+          "36": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0,
+            "games": 40
+          }
+        }
+      },
+      "blue": {
+        "wins": 69,
+        "losses": 171,
+        "draws": 0,
+        "games": 240,
+        "timeLimitDecisions": 0,
+        "score": 0.2875,
+        "byDistance": {
+          "6": {
+            "wins": 29,
+            "losses": 11,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 11,
+            "losses": 29,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 9,
+            "losses": 31,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 9,
+            "losses": 31,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
+            "wins": 6,
+            "losses": 34,
+            "draws": 0,
+            "games": 40
+          },
+          "36": {
+            "wins": 5,
+            "losses": 35,
             "draws": 0,
             "games": 40
           }
         }
       },
       "orange": {
-        "wins": 48,
-        "losses": 190,
-        "draws": 2,
+        "wins": 22,
+        "losses": 218,
+        "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.20416666666666666,
+        "score": 0.09166666666666666,
         "byDistance": {
           "6": {
-            "wins": 11,
-            "losses": 29,
+            "wins": 6,
+            "losses": 34,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 7,
-            "losses": 32,
-            "draws": 1,
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 2,
-            "losses": 38,
+            "wins": 3,
+            "losses": 37,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 11,
-            "losses": 29,
+            "wins": 3,
+            "losses": 37,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 6,
-            "losses": 33,
-            "draws": 1,
+            "wins": 4,
+            "losses": 36,
+            "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 11,
-            "losses": 29,
+            "wins": 6,
+            "losses": 34,
             "draws": 0,
             "games": 40
           }
@@ -3032,16 +3030,16 @@
         }
       },
       "cyan": {
-        "wins": 5,
-        "losses": 235,
+        "wins": 0,
+        "losses": 240,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.020833333333333332,
+        "score": 0,
         "byDistance": {
           "6": {
-            "wins": 5,
-            "losses": 35,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
@@ -3170,46 +3168,46 @@
         }
       },
       "crimson": {
-        "wins": 160,
-        "losses": 80,
+        "wins": 233,
+        "losses": 7,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.6666666666666666,
+        "score": 0.9708333333333333,
         "byDistance": {
           "6": {
-            "wins": 12,
-            "losses": 28,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 34,
-            "losses": 6,
+            "wins": 38,
+            "losses": 2,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 31,
-            "losses": 9,
+            "wins": 38,
+            "losses": 2,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 14,
-            "losses": 26,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 33,
-            "losses": 7,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 36,
-            "losses": 4,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           }
@@ -3262,22 +3260,22 @@
         }
       },
       "ivory": {
-        "wins": 238,
-        "losses": 2,
+        "wins": 233,
+        "losses": 7,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.9916666666666667,
+        "score": 0.9708333333333333,
         "byDistance": {
           "6": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 36,
+            "losses": 4,
             "draws": 0,
             "games": 40
           },
@@ -3288,8 +3286,8 @@
             "games": 40
           },
           "20": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
@@ -3300,8 +3298,8 @@
             "games": 40
           },
           "36": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 38,
+            "losses": 2,
             "draws": 0,
             "games": 40
           }
@@ -3354,12 +3352,12 @@
         }
       },
       "mint": {
-        "wins": 239,
-        "losses": 1,
+        "wins": 240,
+        "losses": 0,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.9958333333333333,
+        "score": 1,
         "byDistance": {
           "6": {
             "wins": 40,
@@ -3392,54 +3390,54 @@
             "games": 40
           },
           "36": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           }
         }
       },
       "azure": {
-        "wins": 238,
-        "losses": 2,
+        "wins": 172,
+        "losses": 68,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.9916666666666667,
+        "score": 0.7166666666666667,
         "byDistance": {
           "6": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 30,
+            "losses": 10,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 35,
+            "losses": 5,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 36,
+            "losses": 4,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 27,
+            "losses": 13,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 23,
+            "losses": 17,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 21,
+            "losses": 19,
             "draws": 0,
             "games": 40
           }
@@ -3492,58 +3490,58 @@
         }
       },
       "salmon": {
-        "wins": 223,
-        "losses": 17,
+        "wins": 93,
+        "losses": 147,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.9291666666666667,
+        "score": 0.3875,
         "byDistance": {
           "6": {
-            "wins": 38,
-            "losses": 2,
+            "wins": 14,
+            "losses": 26,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 17,
+            "losses": 23,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 37,
-            "losses": 3,
+            "wins": 14,
+            "losses": 26,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 37,
-            "losses": 3,
+            "wins": 17,
+            "losses": 23,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 38,
-            "losses": 2,
+            "wins": 18,
+            "losses": 22,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 34,
-            "losses": 6,
+            "wins": 13,
+            "losses": 27,
             "draws": 0,
             "games": 40
           }
         }
       },
       "raspberry": {
-        "wins": 240,
-        "losses": 0,
+        "wins": 239,
+        "losses": 1,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 1,
+        "score": 0.9958333333333333,
         "byDistance": {
           "6": {
             "wins": 40,
@@ -3576,8 +3574,8 @@
             "games": 40
           },
           "36": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           }
@@ -3632,47 +3630,47 @@
         }
       },
       "red": {
-        "wins": 48,
-        "losses": 188,
-        "draws": 4,
+        "wins": 71,
+        "losses": 169,
+        "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.20833333333333337,
+        "score": 0.2958333333333333,
         "byDistance": {
           "6": {
-            "wins": 10,
-            "losses": 30,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
             "wins": 11,
             "losses": 29,
             "draws": 0,
             "games": 40
           },
+          "10": {
+            "wins": 16,
+            "losses": 24,
+            "draws": 0,
+            "games": 40
+          },
           "14": {
             "wins": 11,
-            "losses": 27,
-            "draws": 2,
+            "losses": 29,
+            "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 6,
-            "losses": 33,
-            "draws": 1,
+            "wins": 16,
+            "losses": 24,
+            "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 8,
-            "losses": 32,
+            "wins": 3,
+            "losses": 37,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 2,
-            "losses": 37,
-            "draws": 1,
+            "wins": 14,
+            "losses": 26,
+            "draws": 0,
             "games": 40
           }
         }
@@ -4276,46 +4274,46 @@
         }
       },
       "salmon": {
-        "wins": 93,
-        "losses": 147,
+        "wins": 77,
+        "losses": 163,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.3875,
+        "score": 0.32083333333333336,
         "byDistance": {
           "6": {
-            "wins": 24,
-            "losses": 16,
+            "wins": 11,
+            "losses": 29,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 13,
+            "losses": 27,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 16,
-            "losses": 24,
+            "wins": 10,
+            "losses": 30,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
             "wins": 14,
             "losses": 26,
             "draws": 0,
             "games": 40
           },
+          "28": {
+            "wins": 15,
+            "losses": 25,
+            "draws": 0,
+            "games": 40
+          },
           "36": {
-            "wins": 10,
-            "losses": 30,
+            "wins": 14,
+            "losses": 26,
             "draws": 0,
             "games": 40
           }
@@ -4416,46 +4414,46 @@
         }
       },
       "red": {
-        "wins": 200,
-        "losses": 40,
+        "wins": 171,
+        "losses": 69,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.8333333333333334,
+        "score": 0.7125,
         "byDistance": {
           "6": {
-            "wins": 7,
-            "losses": 33,
+            "wins": 11,
+            "losses": 29,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 37,
-            "losses": 3,
+            "wins": 29,
+            "losses": 11,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 38,
-            "losses": 2,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 34,
+            "losses": 6,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 35,
+            "losses": 5,
             "draws": 0,
             "games": 40
           }
@@ -5060,12 +5058,12 @@
         }
       },
       "salmon": {
-        "wins": 240,
-        "losses": 0,
+        "wins": 239,
+        "losses": 1,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 1,
+        "score": 0.9958333333333333,
         "byDistance": {
           "6": {
             "wins": 40,
@@ -5086,8 +5084,8 @@
             "games": 40
           },
           "20": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
@@ -5200,46 +5198,46 @@
         }
       },
       "red": {
-        "wins": 190,
-        "losses": 48,
-        "draws": 2,
+        "wins": 218,
+        "losses": 22,
+        "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.7958333333333334,
+        "score": 0.9083333333333333,
         "byDistance": {
           "6": {
-            "wins": 29,
-            "losses": 11,
+            "wins": 34,
+            "losses": 6,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 32,
-            "losses": 7,
-            "draws": 1,
+            "wins": 40,
+            "losses": 0,
+            "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 38,
-            "losses": 2,
+            "wins": 37,
+            "losses": 3,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 29,
-            "losses": 11,
+            "wins": 37,
+            "losses": 3,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 33,
-            "losses": 6,
-            "draws": 1,
+            "wins": 36,
+            "losses": 4,
+            "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 29,
-            "losses": 11,
+            "wins": 34,
+            "losses": 6,
             "draws": 0,
             "games": 40
           }
@@ -5844,46 +5842,46 @@
         }
       },
       "salmon": {
-        "wins": 187,
-        "losses": 53,
+        "wins": 189,
+        "losses": 51,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.7791666666666667,
+        "score": 0.7875,
         "byDistance": {
           "6": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 29,
+            "losses": 11,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 30,
+            "losses": 10,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 33,
+            "losses": 7,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
             "wins": 32,
             "losses": 8,
             "draws": 0,
             "games": 40
           },
-          "10": {
-            "wins": 28,
-            "losses": 12,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 34,
-            "losses": 6,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 34,
-            "losses": 6,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
-            "wins": 28,
-            "losses": 12,
-            "draws": 0,
-            "games": 40
-          },
           "36": {
-            "wins": 31,
-            "losses": 9,
+            "wins": 30,
+            "losses": 10,
             "draws": 0,
             "games": 40
           }
@@ -6642,8 +6640,8 @@
             "games": 40
           },
           "10": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
@@ -6654,8 +6652,8 @@
             "games": 40
           },
           "20": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
@@ -6768,16 +6766,16 @@
         }
       },
       "red": {
-        "wins": 235,
-        "losses": 5,
+        "wins": 240,
+        "losses": 0,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.9791666666666666,
+        "score": 1,
         "byDistance": {
           "6": {
-            "wins": 35,
-            "losses": 5,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
@@ -7412,46 +7410,46 @@
         }
       },
       "salmon": {
-        "wins": 43,
-        "losses": 197,
+        "wins": 104,
+        "losses": 136,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.17916666666666667,
+        "score": 0.43333333333333335,
         "byDistance": {
           "6": {
+            "wins": 25,
+            "losses": 15,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
             "wins": 16,
             "losses": 24,
             "draws": 0,
             "games": 40
           },
-          "10": {
-            "wins": 8,
-            "losses": 32,
-            "draws": 0,
-            "games": 40
-          },
           "14": {
-            "wins": 6,
-            "losses": 34,
+            "wins": 14,
+            "losses": 26,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 7,
-            "losses": 33,
+            "wins": 17,
+            "losses": 23,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 3,
-            "losses": 37,
+            "wins": 16,
+            "losses": 24,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 3,
-            "losses": 37,
+            "wins": 16,
+            "losses": 24,
             "draws": 0,
             "games": 40
           }
@@ -8980,22 +8978,22 @@
         }
       },
       "salmon": {
-        "wins": 90,
-        "losses": 150,
+        "wins": 68,
+        "losses": 172,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.375,
+        "score": 0.2833333333333333,
         "byDistance": {
           "6": {
-            "wins": 10,
-            "losses": 30,
+            "wins": 9,
+            "losses": 31,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 19,
-            "losses": 21,
+            "wins": 14,
+            "losses": 26,
             "draws": 0,
             "games": 40
           },
@@ -9006,20 +9004,20 @@
             "games": 40
           },
           "20": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 12,
+            "losses": 28,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 16,
-            "losses": 24,
+            "wins": 10,
+            "losses": 30,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 15,
-            "losses": 25,
+            "wins": 10,
+            "losses": 30,
             "draws": 0,
             "games": 40
           }
@@ -9120,46 +9118,46 @@
         }
       },
       "red": {
-        "wins": 80,
-        "losses": 160,
+        "wins": 7,
+        "losses": 233,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.33333333333333337,
+        "score": 0.029166666666666674,
         "byDistance": {
           "6": {
-            "wins": 28,
-            "losses": 12,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 6,
-            "losses": 34,
+            "wins": 2,
+            "losses": 38,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 9,
-            "losses": 31,
+            "wins": 2,
+            "losses": 38,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 26,
-            "losses": 14,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 7,
-            "losses": 33,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 4,
-            "losses": 36,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           }
@@ -9496,14 +9494,14 @@
         "score": 0.9916666666666667,
         "byDistance": {
           "6": {
-            "wins": 38,
-            "losses": 2,
+            "wins": 40,
+            "losses": 0,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
@@ -9526,8 +9524,8 @@
             "games": 40
           },
           "36": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           }
@@ -9764,12 +9762,12 @@
         }
       },
       "salmon": {
-        "wins": 94,
-        "losses": 146,
+        "wins": 91,
+        "losses": 149,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.39166666666666666,
+        "score": 0.37916666666666665,
         "byDistance": {
           "6": {
             "wins": 16,
@@ -9778,32 +9776,32 @@
             "games": 40
           },
           "10": {
+            "wins": 18,
+            "losses": 22,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 14,
+            "losses": 26,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
             "wins": 19,
             "losses": 21,
             "draws": 0,
             "games": 40
           },
-          "14": {
-            "wins": 15,
-            "losses": 25,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 15,
-            "losses": 25,
-            "draws": 0,
-            "games": 40
-          },
           "28": {
-            "wins": 16,
-            "losses": 24,
+            "wins": 15,
+            "losses": 25,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 13,
-            "losses": 27,
+            "wins": 9,
+            "losses": 31,
             "draws": 0,
             "games": 40
           }
@@ -10280,14 +10278,14 @@
         "score": 0.008333333333333304,
         "byDistance": {
           "6": {
-            "wins": 2,
-            "losses": 38,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
@@ -10310,8 +10308,8 @@
             "games": 40
           },
           "36": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           }
@@ -10364,12 +10362,12 @@
         }
       },
       "chartreuse": {
-        "wins": 81,
-        "losses": 159,
+        "wins": 80,
+        "losses": 160,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.3375,
+        "score": 0.3333333333333333,
         "byDistance": {
           "6": {
             "wins": 18,
@@ -10378,8 +10376,8 @@
             "games": 40
           },
           "10": {
-            "wins": 14,
-            "losses": 26,
+            "wins": 15,
+            "losses": 25,
             "draws": 0,
             "games": 40
           },
@@ -10396,8 +10394,8 @@
             "games": 40
           },
           "28": {
-            "wins": 11,
-            "losses": 29,
+            "wins": 9,
+            "losses": 31,
             "draws": 0,
             "games": 40
           },
@@ -10410,12 +10408,12 @@
         }
       },
       "mint": {
-        "wins": 236,
-        "losses": 4,
+        "wins": 235,
+        "losses": 5,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.9833333333333333,
+        "score": 0.9791666666666666,
         "byDistance": {
           "6": {
             "wins": 39,
@@ -10430,8 +10428,8 @@
             "games": 40
           },
           "14": {
-            "wins": 39,
-            "losses": 1,
+            "wins": 38,
+            "losses": 2,
             "draws": 0,
             "games": 40
           },
@@ -10688,22 +10686,22 @@
         }
       },
       "red": {
-        "wins": 2,
-        "losses": 238,
+        "wins": 7,
+        "losses": 233,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.008333333333333304,
+        "score": 0.029166666666666674,
         "byDistance": {
           "6": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 4,
+            "losses": 36,
             "draws": 0,
             "games": 40
           },
@@ -10714,8 +10712,8 @@
             "games": 40
           },
           "20": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
@@ -10726,8 +10724,8 @@
             "games": 40
           },
           "36": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 2,
+            "losses": 38,
             "draws": 0,
             "games": 40
           }
@@ -11886,12 +11884,12 @@
         }
       },
       "gold": {
-        "wins": 159,
-        "losses": 81,
+        "wins": 160,
+        "losses": 80,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.6625,
+        "score": 0.6666666666666667,
         "byDistance": {
           "6": {
             "wins": 22,
@@ -11900,8 +11898,8 @@
             "games": 40
           },
           "10": {
-            "wins": 26,
-            "losses": 14,
+            "wins": 25,
+            "losses": 15,
             "draws": 0,
             "games": 40
           },
@@ -11918,8 +11916,8 @@
             "games": 40
           },
           "28": {
-            "wins": 29,
-            "losses": 11,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           },
@@ -12116,46 +12114,46 @@
         }
       },
       "salmon": {
-        "wins": 120,
-        "losses": 120,
+        "wins": 200,
+        "losses": 40,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.5,
+        "score": 0.8333333333333334,
         "byDistance": {
           "6": {
-            "wins": 11,
-            "losses": 29,
+            "wins": 38,
+            "losses": 2,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 21,
-            "losses": 19,
+            "wins": 32,
+            "losses": 8,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 23,
-            "losses": 17,
+            "wins": 34,
+            "losses": 6,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 23,
-            "losses": 17,
+            "wins": 33,
+            "losses": 7,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 21,
-            "losses": 19,
+            "wins": 32,
+            "losses": 8,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 21,
-            "losses": 19,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           }
@@ -12256,12 +12254,12 @@
         }
       },
       "red": {
-        "wins": 1,
-        "losses": 239,
+        "wins": 0,
+        "losses": 240,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.004166666666666652,
+        "score": 0,
         "byDistance": {
           "6": {
             "wins": 0,
@@ -12294,8 +12292,8 @@
             "games": 40
           },
           "36": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           }
@@ -12670,12 +12668,12 @@
         }
       },
       "gold": {
-        "wins": 4,
-        "losses": 236,
+        "wins": 5,
+        "losses": 235,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.01666666666666672,
+        "score": 0.02083333333333337,
         "byDistance": {
           "6": {
             "wins": 1,
@@ -12690,8 +12688,8 @@
             "games": 40
           },
           "14": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 2,
+            "losses": 38,
             "draws": 0,
             "games": 40
           },
@@ -12900,46 +12898,46 @@
         }
       },
       "salmon": {
-        "wins": 158,
-        "losses": 82,
+        "wins": 178,
+        "losses": 62,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.6583333333333333,
+        "score": 0.7416666666666667,
         "byDistance": {
           "6": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 29,
-            "losses": 11,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 28,
-            "losses": 12,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
             "wins": 32,
             "losses": 8,
             "draws": 0,
             "games": 40
           },
+          "10": {
+            "wins": 28,
+            "losses": 12,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 32,
+            "losses": 8,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 31,
+            "losses": 9,
+            "draws": 0,
+            "games": 40
+          },
           "28": {
-            "wins": 23,
-            "losses": 17,
+            "wins": 27,
+            "losses": 13,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 34,
-            "losses": 6,
+            "wins": 28,
+            "losses": 12,
             "draws": 0,
             "games": 40
           }
@@ -13040,46 +13038,46 @@
         }
       },
       "red": {
-        "wins": 2,
-        "losses": 238,
+        "wins": 68,
+        "losses": 172,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.008333333333333304,
+        "score": 0.2833333333333333,
         "byDistance": {
           "6": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 10,
+            "losses": 30,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 5,
+            "losses": 35,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 4,
+            "losses": 36,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 13,
+            "losses": 27,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 17,
+            "losses": 23,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 19,
+            "losses": 21,
             "draws": 0,
             "games": 40
           }
@@ -13684,12 +13682,12 @@
         }
       },
       "salmon": {
-        "wins": 240,
-        "losses": 0,
+        "wins": 239,
+        "losses": 1,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 1,
+        "score": 0.9958333333333333,
         "byDistance": {
           "6": {
             "wins": 40,
@@ -13698,8 +13696,8 @@
             "games": 40
           },
           "10": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
@@ -14468,46 +14466,46 @@
         }
       },
       "salmon": {
-        "wins": 134,
-        "losses": 106,
+        "wins": 63,
+        "losses": 177,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.5583333333333333,
+        "score": 0.2625,
         "byDistance": {
           "6": {
-            "wins": 23,
-            "losses": 17,
+            "wins": 12,
+            "losses": 28,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 24,
-            "losses": 16,
+            "wins": 13,
+            "losses": 27,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 21,
-            "losses": 19,
+            "wins": 9,
+            "losses": 31,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 21,
-            "losses": 19,
+            "wins": 8,
+            "losses": 32,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 28,
-            "losses": 12,
+            "wins": 9,
+            "losses": 31,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 12,
+            "losses": 28,
             "draws": 0,
             "games": 40
           }
@@ -14562,144 +14560,6 @@
     },
     "salmon": {
       "lavender": {
-        "wins": 64,
-        "losses": 176,
-        "draws": 0,
-        "games": 240,
-        "timeLimitDecisions": 0,
-        "score": 0.2666666666666667,
-        "byDistance": {
-          "6": {
-            "wins": 5,
-            "losses": 35,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 15,
-            "losses": 25,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 10,
-            "losses": 30,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
-            "wins": 10,
-            "losses": 30,
-            "draws": 0,
-            "games": 40
-          },
-          "36": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          }
-        }
-      },
-      "red": {
-        "wins": 17,
-        "losses": 223,
-        "draws": 0,
-        "games": 240,
-        "timeLimitDecisions": 0,
-        "score": 0.0708333333333333,
-        "byDistance": {
-          "6": {
-            "wins": 2,
-            "losses": 38,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 1,
-            "losses": 39,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 3,
-            "losses": 37,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 3,
-            "losses": 37,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
-            "wins": 2,
-            "losses": 38,
-            "draws": 0,
-            "games": 40
-          },
-          "36": {
-            "wins": 6,
-            "losses": 34,
-            "draws": 0,
-            "games": 40
-          }
-        }
-      },
-      "green": {
-        "wins": 147,
-        "losses": 93,
-        "draws": 0,
-        "games": 240,
-        "timeLimitDecisions": 0,
-        "score": 0.6125,
-        "byDistance": {
-          "6": {
-            "wins": 16,
-            "losses": 24,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 23,
-            "losses": 17,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 24,
-            "losses": 16,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 28,
-            "losses": 12,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
-            "wins": 26,
-            "losses": 14,
-            "draws": 0,
-            "games": 40
-          },
-          "36": {
-            "wins": 30,
-            "losses": 10,
-            "draws": 0,
-            "games": 40
-          }
-        }
-      },
-      "blue": {
         "wins": 0,
         "losses": 240,
         "draws": 0,
@@ -14745,47 +14605,185 @@
           }
         }
       },
-      "orange": {
-        "wins": 53,
-        "losses": 187,
+      "red": {
+        "wins": 147,
+        "losses": 93,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.22083333333333333,
+        "score": 0.6125,
         "byDistance": {
           "6": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 23,
+            "losses": 17,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 23,
+            "losses": 17,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
+            "wins": 22,
+            "losses": 18,
+            "draws": 0,
+            "games": 40
+          },
+          "36": {
+            "wins": 27,
+            "losses": 13,
+            "draws": 0,
+            "games": 40
+          }
+        }
+      },
+      "green": {
+        "wins": 163,
+        "losses": 77,
+        "draws": 0,
+        "games": 240,
+        "timeLimitDecisions": 0,
+        "score": 0.6791666666666667,
+        "byDistance": {
+          "6": {
+            "wins": 29,
+            "losses": 11,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 27,
+            "losses": 13,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 30,
+            "losses": 10,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
+            "wins": 25,
+            "losses": 15,
+            "draws": 0,
+            "games": 40
+          },
+          "36": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0,
+            "games": 40
+          }
+        }
+      },
+      "blue": {
+        "wins": 1,
+        "losses": 239,
+        "draws": 0,
+        "games": 240,
+        "timeLimitDecisions": 0,
+        "score": 0.004166666666666652,
+        "byDistance": {
+          "6": {
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 1,
+            "losses": 39,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
+            "games": 40
+          },
+          "36": {
+            "wins": 0,
+            "losses": 40,
+            "draws": 0,
+            "games": 40
+          }
+        }
+      },
+      "orange": {
+        "wins": 51,
+        "losses": 189,
+        "draws": 0,
+        "games": 240,
+        "timeLimitDecisions": 0,
+        "score": 0.21250000000000002,
+        "byDistance": {
+          "6": {
+            "wins": 5,
+            "losses": 35,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
+            "wins": 11,
+            "losses": 29,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 10,
+            "losses": 30,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 7,
+            "losses": 33,
+            "draws": 0,
+            "games": 40
+          },
+          "28": {
             "wins": 8,
             "losses": 32,
             "draws": 0,
             "games": 40
           },
-          "10": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 6,
-            "losses": 34,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 6,
-            "losses": 34,
-            "draws": 0,
-            "games": 40
-          },
-          "28": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          },
           "36": {
-            "wins": 9,
-            "losses": 31,
+            "wins": 10,
+            "losses": 30,
             "draws": 0,
             "games": 40
           }
@@ -14806,8 +14804,8 @@
             "games": 40
           },
           "10": {
-            "wins": 1,
-            "losses": 39,
+            "wins": 0,
+            "losses": 40,
             "draws": 0,
             "games": 40
           },
@@ -14818,8 +14816,8 @@
             "games": 40
           },
           "20": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
@@ -14838,46 +14836,46 @@
         }
       },
       "cyan": {
-        "wins": 197,
-        "losses": 43,
+        "wins": 136,
+        "losses": 104,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.8208333333333333,
+        "score": 0.5666666666666667,
         "byDistance": {
           "6": {
+            "wins": 15,
+            "losses": 25,
+            "draws": 0,
+            "games": 40
+          },
+          "10": {
             "wins": 24,
             "losses": 16,
             "draws": 0,
             "games": 40
           },
-          "10": {
-            "wins": 32,
-            "losses": 8,
-            "draws": 0,
-            "games": 40
-          },
           "14": {
-            "wins": 34,
-            "losses": 6,
+            "wins": 26,
+            "losses": 14,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 33,
-            "losses": 7,
+            "wins": 23,
+            "losses": 17,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 37,
-            "losses": 3,
+            "wins": 24,
+            "losses": 16,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 37,
-            "losses": 3,
+            "wins": 24,
+            "losses": 16,
             "draws": 0,
             "games": 40
           }
@@ -14930,22 +14928,22 @@
         }
       },
       "pink": {
-        "wins": 150,
-        "losses": 90,
+        "wins": 172,
+        "losses": 68,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.625,
+        "score": 0.7166666666666667,
         "byDistance": {
           "6": {
-            "wins": 30,
-            "losses": 10,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 21,
-            "losses": 19,
+            "wins": 26,
+            "losses": 14,
             "draws": 0,
             "games": 40
           },
@@ -14956,32 +14954,32 @@
             "games": 40
           },
           "20": {
-            "wins": 23,
-            "losses": 17,
+            "wins": 28,
+            "losses": 12,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 24,
-            "losses": 16,
+            "wins": 30,
+            "losses": 10,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 25,
-            "losses": 15,
+            "wins": 30,
+            "losses": 10,
             "draws": 0,
             "games": 40
           }
         }
       },
       "crimson": {
-        "wins": 146,
-        "losses": 94,
+        "wins": 149,
+        "losses": 91,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.6083333333333334,
+        "score": 0.6208333333333333,
         "byDistance": {
           "6": {
             "wins": 24,
@@ -14990,32 +14988,32 @@
             "games": 40
           },
           "10": {
+            "wins": 22,
+            "losses": 18,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
             "wins": 21,
             "losses": 19,
             "draws": 0,
             "games": 40
           },
-          "14": {
-            "wins": 25,
-            "losses": 15,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
-            "wins": 25,
-            "losses": 15,
-            "draws": 0,
-            "games": 40
-          },
           "28": {
-            "wins": 24,
-            "losses": 16,
+            "wins": 25,
+            "losses": 15,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 27,
-            "losses": 13,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           }
@@ -15114,104 +15112,104 @@
         }
       },
       "chartreuse": {
-        "wins": 120,
-        "losses": 120,
+        "wins": 40,
+        "losses": 200,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.5,
+        "score": 0.16666666666666663,
         "byDistance": {
           "6": {
-            "wins": 29,
-            "losses": 11,
+            "wins": 2,
+            "losses": 38,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 19,
-            "losses": 21,
+            "wins": 8,
+            "losses": 32,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 6,
+            "losses": 34,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 7,
+            "losses": 33,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 19,
-            "losses": 21,
+            "wins": 8,
+            "losses": 32,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 19,
-            "losses": 21,
+            "wins": 9,
+            "losses": 31,
             "draws": 0,
             "games": 40
           }
         }
       },
       "mint": {
-        "wins": 82,
-        "losses": 158,
+        "wins": 62,
+        "losses": 178,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.3416666666666667,
+        "score": 0.2583333333333333,
         "byDistance": {
           "6": {
-            "wins": 28,
-            "losses": 12,
-            "draws": 0,
-            "games": 40
-          },
-          "10": {
-            "wins": 11,
-            "losses": 29,
-            "draws": 0,
-            "games": 40
-          },
-          "14": {
-            "wins": 12,
-            "losses": 28,
-            "draws": 0,
-            "games": 40
-          },
-          "20": {
             "wins": 8,
             "losses": 32,
             "draws": 0,
             "games": 40
           },
+          "10": {
+            "wins": 12,
+            "losses": 28,
+            "draws": 0,
+            "games": 40
+          },
+          "14": {
+            "wins": 8,
+            "losses": 32,
+            "draws": 0,
+            "games": 40
+          },
+          "20": {
+            "wins": 9,
+            "losses": 31,
+            "draws": 0,
+            "games": 40
+          },
           "28": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 13,
+            "losses": 27,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 6,
-            "losses": 34,
+            "wins": 12,
+            "losses": 28,
             "draws": 0,
             "games": 40
           }
         }
       },
       "azure": {
-        "wins": 0,
-        "losses": 240,
+        "wins": 1,
+        "losses": 239,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0,
+        "score": 0.004166666666666652,
         "byDistance": {
           "6": {
             "wins": 0,
@@ -15220,8 +15218,8 @@
             "games": 40
           },
           "10": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
@@ -15252,68 +15250,68 @@
         }
       },
       "crystal": {
-        "wins": 106,
-        "losses": 134,
+        "wins": 177,
+        "losses": 63,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0.44166666666666665,
+        "score": 0.7375,
         "byDistance": {
           "6": {
-            "wins": 17,
-            "losses": 23,
+            "wins": 28,
+            "losses": 12,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 16,
-            "losses": 24,
+            "wins": 27,
+            "losses": 13,
             "draws": 0,
             "games": 40
           },
           "14": {
-            "wins": 19,
-            "losses": 21,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           },
           "20": {
-            "wins": 19,
-            "losses": 21,
+            "wins": 32,
+            "losses": 8,
             "draws": 0,
             "games": 40
           },
           "28": {
-            "wins": 12,
-            "losses": 28,
+            "wins": 31,
+            "losses": 9,
             "draws": 0,
             "games": 40
           },
           "36": {
-            "wins": 23,
-            "losses": 17,
+            "wins": 28,
+            "losses": 12,
             "draws": 0,
             "games": 40
           }
         }
       },
       "raspberry": {
-        "wins": 0,
-        "losses": 240,
+        "wins": 2,
+        "losses": 238,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0,
+        "score": 0.008333333333333333,
         "byDistance": {
           "6": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           },
@@ -15392,12 +15390,12 @@
         }
       },
       "red": {
-        "wins": 0,
-        "losses": 240,
+        "wins": 1,
+        "losses": 239,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 0,
+        "score": 0.004166666666666652,
         "byDistance": {
           "6": {
             "wins": 0,
@@ -15430,8 +15428,8 @@
             "games": 40
           },
           "36": {
-            "wins": 0,
-            "losses": 40,
+            "wins": 1,
+            "losses": 39,
             "draws": 0,
             "games": 40
           }
@@ -16082,22 +16080,22 @@
         }
       },
       "salmon": {
-        "wins": 240,
-        "losses": 0,
+        "wins": 238,
+        "losses": 2,
         "draws": 0,
         "games": 240,
         "timeLimitDecisions": 0,
-        "score": 1,
+        "score": 0.9916666666666667,
         "byDistance": {
           "6": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
           "10": {
-            "wins": 40,
-            "losses": 0,
+            "wins": 39,
+            "losses": 1,
             "draws": 0,
             "games": 40
           },
@@ -16959,7 +16957,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        5896,
+        4092,
         0
       ]
     },
@@ -16977,7 +16975,7 @@
       "outcome": -1,
       "hp": [
         0,
-        5896
+        6996
       ]
     },
     {
@@ -16993,7 +16991,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        8800,
+        6996,
         0
       ]
     },
@@ -17011,7 +17009,7 @@
       "outcome": -1,
       "hp": [
         0,
-        5896
+        6996
       ]
     },
     {
@@ -17027,7 +17025,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        5896,
+        6996,
         0
       ]
     },
@@ -17045,7 +17043,7 @@
       "outcome": -1,
       "hp": [
         0,
-        2992
+        4092
       ]
     },
     {
@@ -17061,7 +17059,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        2992,
+        4092,
         0
       ]
     },
@@ -17079,7 +17077,7 @@
       "outcome": -1,
       "hp": [
         0,
-        5896
+        6996
       ]
     },
     {
@@ -17095,7 +17093,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        8800,
+        9900,
         0
       ]
     },
@@ -17113,7 +17111,7 @@
       "outcome": -1,
       "hp": [
         0,
-        8800
+        9900
       ]
     },
     {
@@ -17129,7 +17127,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        5896,
+        9900,
         0
       ]
     },
@@ -17147,7 +17145,7 @@
       "outcome": -1,
       "hp": [
         0,
-        2992
+        4092
       ]
     },
     {
@@ -17163,7 +17161,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        2992,
+        4092,
         0
       ]
     },
@@ -17181,7 +17179,7 @@
       "outcome": -1,
       "hp": [
         0,
-        5896
+        6996
       ]
     },
     {
@@ -17197,7 +17195,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        8800,
+        6996,
         0
       ]
     },
@@ -17215,7 +17213,7 @@
       "outcome": -1,
       "hp": [
         0,
-        8800
+        6996
       ]
     },
     {
@@ -17231,7 +17229,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        2992,
+        4092,
         0
       ]
     },
@@ -17249,7 +17247,7 @@
       "outcome": -1,
       "hp": [
         0,
-        5896
+        6996
       ]
     },
     {
@@ -17265,7 +17263,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        5896,
+        6996,
         0
       ]
     },
@@ -17283,7 +17281,7 @@
       "outcome": -1,
       "hp": [
         0,
-        2992
+        4092
       ]
     },
     {
@@ -17299,7 +17297,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        5896,
+        6996,
         0
       ]
     },
@@ -17317,7 +17315,7 @@
       "outcome": -1,
       "hp": [
         0,
-        5896
+        6996
       ]
     },
     {
@@ -17333,7 +17331,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        5896,
+        9900,
         0
       ]
     },
@@ -17351,7 +17349,7 @@
       "outcome": -1,
       "hp": [
         0,
-        8800
+        6996
       ]
     },
     {
@@ -17402,7 +17400,7 @@
       "outcome": -1,
       "hp": [
         0,
-        4840
+        7260
       ]
     },
     {
@@ -17418,7 +17416,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        2147.75,
+        7260,
         0
       ]
     },
@@ -22264,7 +22262,7 @@
       "outcome": -1,
       "hp": [
         0,
-        7590
+        6490
       ]
     },
     {
@@ -22280,7 +22278,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        7590,
+        6490,
         0
       ]
     },
@@ -22298,7 +22296,7 @@
       "outcome": -1,
       "hp": [
         0,
-        7590
+        6490
       ]
     },
     {
@@ -22314,7 +22312,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        6600,
+        6930,
         0
       ]
     },
@@ -22332,7 +22330,7 @@
       "outcome": -1,
       "hp": [
         0,
-        7590
+        7920
       ]
     },
     {
@@ -22348,7 +22346,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        9020,
+        7920,
         0
       ]
     },
@@ -22366,7 +22364,7 @@
       "outcome": -1,
       "hp": [
         0,
-        9020
+        6160
       ]
     },
     {
@@ -22382,7 +22380,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        7260,
+        7920,
         0
       ]
     },
@@ -22400,7 +22398,7 @@
       "outcome": -1,
       "hp": [
         0,
-        9020
+        7920
       ]
     },
     {
@@ -22416,7 +22414,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        6600,
+        6490,
         0
       ]
     },
@@ -22434,7 +22432,7 @@
       "outcome": -1,
       "hp": [
         0,
-        7590
+        7920
       ]
     },
     {
@@ -22450,7 +22448,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        7590,
+        7920,
         0
       ]
     },
@@ -22468,7 +22466,7 @@
       "outcome": -1,
       "hp": [
         0,
-        9020
+        7920
       ]
     },
     {
@@ -22484,7 +22482,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        2138.5833333333417,
+        5500,
         0
       ]
     },
@@ -22502,7 +22500,7 @@
       "outcome": -1,
       "hp": [
         0,
-        9020
+        7920
       ]
     },
     {
@@ -22518,7 +22516,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        3410,
+        5060,
         0
       ]
     },
@@ -22536,7 +22534,7 @@
       "outcome": -1,
       "hp": [
         0,
-        9020
+        5500
       ]
     },
     {
@@ -22552,7 +22550,7 @@
       "mirror": -1,
       "outcome": 1,
       "hp": [
-        9020,
+        7920,
         0
       ]
     },
@@ -22567,6 +22565,125 @@
       },
       "seed": 20299025,
       "mirror": 1,
+      "outcome": -1,
+      "hp": [
+        0,
+        7920
+      ]
+    },
+    {
+      "first": "salmon",
+      "second": "gold",
+      "scenario": {
+        "distance": 28,
+        "aimError": 0.1,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20299025,
+      "mirror": -1,
+      "outcome": 1,
+      "hp": [
+        7920,
+        0
+      ]
+    },
+    {
+      "first": "gold",
+      "second": "salmon",
+      "scenario": {
+        "distance": 36,
+        "aimError": 0.035,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20297025,
+      "mirror": 1,
+      "outcome": -1,
+      "hp": [
+        0,
+        2090
+      ]
+    },
+    {
+      "first": "salmon",
+      "second": "gold",
+      "scenario": {
+        "distance": 36,
+        "aimError": 0.035,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20297025,
+      "mirror": -1,
+      "outcome": 1,
+      "hp": [
+        7920,
+        0
+      ]
+    },
+    {
+      "first": "gold",
+      "second": "salmon",
+      "scenario": {
+        "distance": 36,
+        "aimError": 0.1,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20307025,
+      "mirror": 1,
+      "outcome": -1,
+      "hp": [
+        0,
+        7920
+      ]
+    },
+    {
+      "first": "salmon",
+      "second": "gold",
+      "scenario": {
+        "distance": 36,
+        "aimError": 0.1,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20307025,
+      "mirror": -1,
+      "outcome": 1,
+      "hp": [
+        7920,
+        0
+      ]
+    },
+    {
+      "first": "ivory",
+      "second": "salmon",
+      "scenario": {
+        "distance": 6,
+        "aimError": 0.035,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20267025,
+      "mirror": 1,
+      "outcome": 1,
+      "hp": [
+        2970,
+        0
+      ]
+    },
+    {
+      "first": "salmon",
+      "second": "ivory",
+      "scenario": {
+        "distance": 6,
+        "aimError": 0.035,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20267025,
+      "mirror": -1,
       "outcome": -1,
       "hp": [
         0,
@@ -22574,125 +22691,6 @@
       ]
     },
     {
-      "first": "salmon",
-      "second": "gold",
-      "scenario": {
-        "distance": 28,
-        "aimError": 0.1,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20299025,
-      "mirror": -1,
-      "outcome": 1,
-      "hp": [
-        9020,
-        0
-      ]
-    },
-    {
-      "first": "gold",
-      "second": "salmon",
-      "scenario": {
-        "distance": 36,
-        "aimError": 0.035,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20297025,
-      "mirror": 1,
-      "outcome": -1,
-      "hp": [
-        0,
-        5610
-      ]
-    },
-    {
-      "first": "salmon",
-      "second": "gold",
-      "scenario": {
-        "distance": 36,
-        "aimError": 0.035,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20297025,
-      "mirror": -1,
-      "outcome": 1,
-      "hp": [
-        9020,
-        0
-      ]
-    },
-    {
-      "first": "gold",
-      "second": "salmon",
-      "scenario": {
-        "distance": 36,
-        "aimError": 0.1,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20307025,
-      "mirror": 1,
-      "outcome": -1,
-      "hp": [
-        0,
-        8030
-      ]
-    },
-    {
-      "first": "salmon",
-      "second": "gold",
-      "scenario": {
-        "distance": 36,
-        "aimError": 0.1,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20307025,
-      "mirror": -1,
-      "outcome": 1,
-      "hp": [
-        9020,
-        0
-      ]
-    },
-    {
-      "first": "ivory",
-      "second": "salmon",
-      "scenario": {
-        "distance": 6,
-        "aimError": 0.035,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20267025,
-      "mirror": 1,
-      "outcome": 1,
-      "hp": [
-        1185.25,
-        0
-      ]
-    },
-    {
-      "first": "salmon",
-      "second": "ivory",
-      "scenario": {
-        "distance": 6,
-        "aimError": 0.035,
-        "bounds": 59,
-        "level": 6
-      },
-      "seed": 20267025,
-      "mirror": -1,
-      "outcome": -1,
-      "hp": [
-        0,
-        7260
-      ]
-    },
-    {
       "first": "ivory",
       "second": "salmon",
       "scenario": {
@@ -22723,7 +22721,7 @@
       "outcome": -1,
       "hp": [
         0,
-        2062.5
+        7260
       ]
     },
     {
@@ -22739,7 +22737,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        1185.25,
+        2970,
         0
       ]
     },
@@ -22757,7 +22755,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -22773,7 +22771,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        35.75,
+        2970,
         0
       ]
     },
@@ -22791,7 +22789,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -22807,7 +22805,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        1185.25,
+        2970,
         0
       ]
     },
@@ -22825,7 +22823,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1639
+        7260
       ]
     },
     {
@@ -22841,7 +22839,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        1185.25,
+        2970,
         0
       ]
     },
@@ -22859,7 +22857,7 @@
       "outcome": -1,
       "hp": [
         0,
-        35.75
+        2970
       ]
     },
     {
@@ -22875,7 +22873,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        1185.25,
+        2970,
         0
       ]
     },
@@ -22893,7 +22891,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -22909,7 +22907,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        1185.25,
+        2970,
         0
       ]
     },
@@ -22927,7 +22925,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1639
+        7260
       ]
     },
     {
@@ -22943,7 +22941,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        1185.25,
+        2970,
         0
       ]
     },
@@ -22961,7 +22959,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -22977,7 +22975,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        35.75,
+        2970,
         0
       ]
     },
@@ -22995,7 +22993,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -23011,7 +23009,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        35.75,
+        3630,
         0
       ]
     },
@@ -23029,7 +23027,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -23045,7 +23043,7 @@
       "mirror": 1,
       "outcome": 1,
       "hp": [
-        35.75,
+        2970,
         0
       ]
     },
@@ -23063,7 +23061,7 @@
       "outcome": -1,
       "hp": [
         0,
-        1185.25
+        2970
       ]
     },
     {
@@ -23487,9 +23485,9 @@
     "src/config/beta8-counter-targets.js": "d2a944566cbed73f0bbd96df81c5ce67f1382fe338f5ca739962a637689226d2",
     "src/config/raspberry.js": "755afc899ca294f15a19e8de45623b8747dc2d32caf1d03b08bcf0fb68448ba7",
     "tools/beta9-cycle-definitions.mjs": "95ebb7a2a028674d959f9fef933d445bed5b7283a3e1bc49f977530dfcd24360",
-    "src/config/beta9-balance.js": "6ae5369304902333568cb50fb2af46fea1ae1992df347edf209e417426e60662",
-    "src/combat/beta6-combat.js": "7833c1f679f4ee4d6cb4e92f4968b4d69662e9726b5d18bf0292bbf112e95bcd",
-    "src/combat/salmon-combat.js": "b6ff6ea410d400a7526dfe53fb63258387fcd83e67e964213e4404b677d2bde6",
+    "src/config/beta9-balance.js": "e477c377689d3bc1914253e58cc8f204ea74045ffd095823f94cb393e2f7c8c4",
+    "src/combat/beta6-combat.js": "16cc8638d585f79515a1058abbba856dbfa45e39157bfb1e408b8d5821df2741",
+    "src/combat/salmon-combat.js": "a7def2e910b15ecc88f3fba154afe5f7371b159162de9d4827b0d4018d726b06",
     "tools/simulate-beta6-balance.mjs": "6a2a1f1d9626e530b8712251d733b0713ca1154cc8293bbb5816b1b925339288",
     "tools/beta8-simulation-profile.mjs": "07d1cf634538bd4955d4b40c77bf3c3352be695bb893323b99dde23f6250e053",
     "src/config/beta-showdown.js": "8ea3f49e958da3903fc7baf845ba17ecf88a79438d47a7923f87f8fa6344046f",

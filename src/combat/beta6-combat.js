@@ -1,4 +1,4 @@
-import { createSalmonCombat } from "./salmon-combat.js?v=1";
+import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
@@ -585,7 +585,7 @@ export function createBeta6Combat(definitions, options = {}) {
         dist = distance(a, destination);
         yaw = Math.atan2(destination.z - a.z, destination.x - a.x);
       }
-      const ideal = recoverTarget ? 0 : destination !== moveTarget ? 0 : (({ red: 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
+      const ideal = recoverTarget ? 0 : destination !== moveTarget ? 0 : (({ red: a.d.botIdealDistance ?? 3.5, green: 2, crimson: 2, pink: 3, azure: a.d.botIdealDistance ?? 2.5 })[a.id] ?? perceivedRange(a) * .7);
       const groundStandoff=destination===target&&a.d.botGroundAttackSpacing&&Number.isFinite(target.d.groundAttackRange)
         ? Math.min(perceivedRange(a)-1,target.d.groundAttackRange+a.d.botGroundAttackSpacing):null;
       const retreatsAtLowHealth = !approachingDevice && (options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth && groundStandoff==null));
