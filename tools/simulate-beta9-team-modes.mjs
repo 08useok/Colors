@@ -2,7 +2,7 @@
 // Each match draws 6 distinct characters from the 18-character beta roster and splits them into two
 // random teams. A character's mode score is its team's win rate (draw = 0.5) over every match it plays.
 //
-// Usage: node tools/simulate-beta9-team-modes.mjs [--matches N] [--quick]
+// Usage: node tools/simulate-beta9-team-modes.mjs [--matches N] [--quick] [--out specs/file.json]
 // Writes specs/beta9-team-mode-simulation.json.
 //
 // Model limits: engine bots fight the nearest visible enemy and walk straight (no path-finding around
@@ -219,6 +219,7 @@ if (process.argv[1]?.endsWith('simulate-beta9-team-modes.mjs')) {
   console.log('decided', { knockout: results.knockout.decidedRate, gemGrab: results.gemGrab.decidedRate }, 'seconds', ((Date.now() - started) / 1000).toFixed(0));
   if (!process.argv.includes('--quick')) {
     for (const r of Object.values(results)) delete r.pair;
-    writeFileSync(new URL('../specs/beta9-team-mode-simulation.json', import.meta.url), JSON.stringify({ date: '2026-11-02', scope: '3v3 random teams from the 18-character beta roster, level 6, three event maps per mode, aim error .035/.1', results, split, rows }, null, 2) + '\n');
+    const outIndex = process.argv.indexOf('--out'), out = outIndex >= 0 ? process.argv[outIndex + 1] : 'specs/beta9-team-mode-simulation.json';
+    writeFileSync(new URL('../' + out, import.meta.url), JSON.stringify({ date: new Date().toISOString().slice(0, 10), scope: '3v3 random teams from the 18-character beta roster, level 6, three event maps per mode, aim error .035/.1', results, split, rows }, null, 2) + '\n');
   }
 }
