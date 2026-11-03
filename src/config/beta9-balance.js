@@ -5,20 +5,22 @@
 //  - Patch 1 (2026-11-02): first pass from the 3v3 results.
 //  - Patch 2 (2026-11-03): second pass after re-running the 3v3 simulation on patch 1.
 //  - Patch 3 (2026-11-03): third pass (Salmon switched from health to throw speed/attack interval).
+//  - Cycle fix (2026-11-03): Red 8000 HP, Salmon 8200 HP, Gold 7000 HP, Crystal 6600 HP restore all 18 links.
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1800 },
-  red: { maxHealth: 6800, attackDamage: 2200 },
+  red: { maxHealth: 8000, attackDamage: 2200 },
   orange: { maxHealth: 3400 },
   // Buffs: behind in 3v3.
-  salmon: { maxHealth: 9000, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5 },
+  salmon: { maxHealth: 8200, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5 },
   green: { maxHealth: 9600 },
   mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15 },
   yellow: { electricSpeed: 22, maxHealth: 6800, electricDamage: 2500 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
   crimson: { maxHealth: 11500 },
   azure: { maxHealth: 11500 },
-  crystal: { maxHealth: 7000 },
+  crystal: { maxHealth: 6600 },
+  gold: { maxHealth: 7000 },
 });
 
 const replaceText = (object, key, pairs) => {

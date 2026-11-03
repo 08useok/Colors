@@ -16,8 +16,8 @@ export const RASPBERRY_CHARACTER = {
   attackRange: 18,
   vineRange: 18,
   vineSpeed: 36,
-  // 2026-11-02 emergency 3v3 buff: 2,050 → 2,400.
-  vineDamage: 2400,
+  // 2026-11-02 emergency 3v3 buff: 2,050 → 2,400; 2026-11-03 2,250 so Chartreuse still wins 240-0.
+  vineDamage: 2250,
   vineRadius: .35,
   vineBindDuration: .6,
   // Built-in trait: +1 s on basic-attack binds only (1.6 s total). Ultimates never get it.
@@ -31,8 +31,8 @@ export const RASPBERRY_CHARACTER = {
   basicAttack: {
     name: '덩굴 저격',
     nameEn: 'Vine Snipe',
-    description: '사거리 18타일의 직선 덩굴탄을 쏴 2,400 피해를 주고 1.6초 동안 이동을 묶습니다(기본 0.6초 + 특성 1초). 묶인 적은 공격과 제자리 궁극기는 쓸 수 있지만 이동·돌진·점프는 할 수 없습니다. 벽이나 첫 적에게 맞으면 사라집니다.',
-    descriptionEn: 'Fires a straight 18-tile vine shot dealing 2,400 damage and binding movement for 1.6 seconds (0.6 base + 1 trait). Bound enemies can still attack and use in-place ultimates but cannot move, dash or jump. Stops at walls and the first enemy.',
+    description: '사거리 18타일의 직선 덩굴탄을 쏴 2,250 피해를 주고 1.6초 동안 이동을 묶습니다(기본 0.6초 + 특성 1초). 묶인 적은 공격과 제자리 궁극기는 쓸 수 있지만 이동·돌진·점프는 할 수 없습니다. 벽이나 첫 적에게 맞으면 사라집니다.',
+    descriptionEn: 'Fires a straight 18-tile vine shot dealing 2,250 damage and binding movement for 1.6 seconds (0.6 base + 1 trait). Bound enemies can still attack and use in-place ultimates but cannot move, dash or jump. Stops at walls and the first enemy.',
   },
   ultimate: {
     id: 'vinePrison',

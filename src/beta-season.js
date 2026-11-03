@@ -8,7 +8,7 @@ import { skinEffectProfile } from "./config/skin-effects.js?v=1";
 import { createSalmonMotion } from "./visuals/salmon-motion.js?v=1";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createRaspberryVisuals } from "./visuals/raspberry-vines.js?v=1";
-import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=5";
+import { RASPBERRY_CHARACTER } from "./config/raspberry.js?v=6";
 import { BETA_ATTACK_MOTIONS } from "./config/beta-attack-motion.js";
 import { RIG_ATTACK_PROFILES as LEGACY_ATTACK_PROFILES, applyRigAttackPose as applyLegacyAttackPose, restoreRigAttackPose as restoreLegacyAttackPose } from "./visuals/rig-attack-motion.js?v=2";
 import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from "./visuals/beta-attack-motion.js?v=1";
@@ -40,7 +40,7 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance } from "./config/beta9-balance.js?v=2";
+import { applyBeta9Balance } from "./config/beta9-balance.js?v=3";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=41";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
