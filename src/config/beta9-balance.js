@@ -24,11 +24,14 @@ export const BETA9_BALANCE = Object.freeze({
   // 2026-11-03: faster burst (120 → 80 ms), no windup, 0.55 s between attacks and a 4-unit ultimate
   // (was 7; the field was cast 0.01–0.18 times per 3v3 match).
   mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15, burstSpreadAngle: Math.PI / 20,
-    burstIntervalMs: 80, attackWindup: 0, attackCooldown: .55, special: { chargeRequired: 4 } },
+    burstIntervalMs: 80, attackWindup: 0, attackCooldown: .55,
+    // Standing 3 s on the field freezes (25 ice/s vs 75); no ice builds while frozen, so freezes re-apply after thawing.
+    iceBlockedWhileFrozen: true, special: { chargeRequired: 4, icePerSecond: 25 } },
   yellow: { electricSpeed: 22, maxHealth: 6800, electricDamage: 2500 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
   crimson: { maxHealth: 11500 },
-  azure: { maxHealth: 11500 },
+  // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
+  azure: { maxHealth: 11500, pursuesWhileLowHealth: true },
   crystal: { maxHealth: 6600 },
   gold: { maxHealth: 7000, ultimate: { radius: 4.5 } },
 });
@@ -57,6 +60,8 @@ export function applyBeta9Balance(characters) {
     replaceText(ivory.ultimate, 'descriptionEn', [['Each deals 2400 impact damage', 'Each deals 1800 impact damage'], ['dealing 2600 damage every 1 seconds', 'dealing 1300 damage every 1 seconds']]);
   }
   if (mint) {
+    replaceText(mint.special, 'description', [['매초 563 피해와 얼음 수치 5를 받습니다.', '매초 563 피해와 얼음 수치 25를 받아, 장판 위에 3초 있으면 빙결됩니다. 빙결 중에는 얼음이 쌓이지 않고 풀린 뒤 다시 쌓입니다.']]);
+    replaceText(mint.special, 'descriptionEn', [['plus 5 ice each second.', 'plus 25 ice each second, so 3 seconds on it freezes them. No ice builds while frozen; it builds again after thawing.']]);
     replaceText(mint.basicAttack, 'description', [['100이 되면', '75가 되면'], ['3발 연속 발사합니다.', '3발 연속 발사합니다. 3발은 좌우 9도로 부채꼴처럼 퍼져 나갑니다.']]);
     replaceText(mint.basicAttack, 'descriptionEn', [['at 100,', 'at 75,'], ['in succession.', 'in succession, fanning out 9° to each side.']]);
   }

@@ -66,6 +66,8 @@ export function createBeta6Combat(definitions, options = {}) {
     emit('revive', { owner, target: a });
   }
   function ice(a, amount) {
+    // Optional rule: no ice builds up while frozen, so a freeze cannot be chained; it can be applied again once it ends.
+    if (definitions.mint.iceBlockedWhileFrozen && time < a.frozenUntil) return;
     a.ice += amount;
     if (a.ice >= definitions.mint.freezeThreshold) { a.ice = 0; a.frozenUntil = time + definitions.mint.freezeDuration; emit('freeze', { target: a }); }
   }
