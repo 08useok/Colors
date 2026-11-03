@@ -20,7 +20,8 @@ export const BETA9_BALANCE = Object.freeze({
   // Buffs: behind in 3v3.
   salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
   green: { maxHealth: 9600 },
-  mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15 },
+  // Mint's three-shot burst fans out: side shots 10% of a right angle (9°) off the aim line.
+  mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15, burstSpreadAngle: Math.PI / 20 },
   yellow: { electricSpeed: 22, maxHealth: 6800, electricDamage: 2500 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
   crimson: { maxHealth: 11500 },
@@ -53,8 +54,8 @@ export function applyBeta9Balance(characters) {
     replaceText(ivory.ultimate, 'descriptionEn', [['Each deals 2400 impact damage', 'Each deals 1800 impact damage'], ['dealing 2600 damage every 1 seconds', 'dealing 1300 damage every 1 seconds']]);
   }
   if (mint) {
-    replaceText(mint.basicAttack, 'description', [['100이 되면', '75가 되면']]);
-    replaceText(mint.basicAttack, 'descriptionEn', [['at 100,', 'at 75,']]);
+    replaceText(mint.basicAttack, 'description', [['100이 되면', '75가 되면'], ['3발 연속 발사합니다.', '3발 연속 발사합니다. 3발은 좌우 9도로 부채꼴처럼 퍼져 나갑니다.']]);
+    replaceText(mint.basicAttack, 'descriptionEn', [['at 100,', 'at 75,'], ['in succession.', 'in succession, fanning out 9° to each side.']]);
   }
   if (cyan) {
     replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해']]);

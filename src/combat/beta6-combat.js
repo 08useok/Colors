@@ -300,7 +300,7 @@ export function createBeta6Combat(definitions, options = {}) {
       a.rounds.push(rollRound(time < a.focusUntil, d));
       if (kind !== 'blank') launch(d.chartreuseSpeed, d.chartreuseRange, (kind === 'enhanced' ? d.chartreuseEnhancedDamage : d.chartreuseDamage) * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind, control:kind==='cc'?'crowdControl':kind==='plague'?'execute':undefined });
     } else if (id === 'mint') for (let i = 0; i < d.burstCount; i++) after(i * d.burstIntervalMs / 1000, a, () => {
-      if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint', control: 'ice' });
+      if (time >= a.frozenUntil && time >= a.lockUntil) launch(d.iceBulletSpeed, d.iceBulletRange, d.iceBulletDamage, { kind: 'mint', control: 'ice' }, yaw + (i - (d.burstCount - 1) / 2) * (d.burstSpreadAngle ?? 0));
     });
     else if (id === 'azure') wave(a, yaw, false);
     else if (id === 'crystal') launch(d.crystalSpeed, d.crystalRange, d.crystalDamage, { kind: 'crystal', stage: 1, token: { hits: new Set() }, homingTarget: target });
