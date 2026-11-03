@@ -287,7 +287,7 @@ export function createBeta6Combat(definitions, options = {}) {
     } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage);
     else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
-    else if (id === 'yellow') launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', control:'shock', start: time + (d.attackWindup ? 0 : d.attackDelay) });
+    else if (id === 'yellow') launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', control:'shock', radius: d.electricRadius ?? .2, start: time + (d.attackWindup ? 0 : d.attackDelay) });
     else if (id === 'cyan') for (let i = 0; i < d.spreadLineCount; i++) {
       const offset = (i - (d.spreadLineCount - 1) / 2) * (d.spreadLineSpacing ?? .75);
       launch(d.spreadLineSpeed, d.spreadLineRange, d.spreadLineDamage, { x: a.x + Math.cos(yaw) * .6 - Math.sin(yaw) * offset, z: a.z + Math.sin(yaw) * .6 + Math.cos(yaw) * offset, formation:'parallel' });

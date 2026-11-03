@@ -27,9 +27,10 @@ export const BETA9_BALANCE = Object.freeze({
     burstIntervalMs: 80, attackWindup: 0, attackCooldown: .55,
     // Standing 3 s on the field freezes (25 ice/s vs 75); no ice builds while frozen, so freezes re-apply after thawing.
     iceBlockedWhileFrozen: true, special: { chargeRequired: 4, icePerSecond: 25 } },
-  yellow: { electricSpeed: 22, maxHealth: 6800, electricDamage: 2500 },
+  // Yellow's orb was hard to land (18% in 3v3): no release delay, 0.5 hitbox (was 0.2), speed 30.
+  yellow: { electricSpeed: 30, maxHealth: 6800, electricDamage: 2500, electricRange: 14, shockSlowPercent: .4, attackDelay: 0, attackWindup: 0, electricRadius: .5 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
-  crimson: { maxHealth: 11500 },
+  crimson: { maxHealth: 13000, attackCooldown: .6 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   azure: { maxHealth: 11500, pursuesWhileLowHealth: true },
   crystal: { maxHealth: 6600 },
@@ -44,7 +45,11 @@ const replaceText = (object, key, pairs) => {
 export function applyBeta9Balance(characters) {
   const merge = (target, patch) => { for (const [key, value] of Object.entries(patch)) { if (value && typeof value === 'object' && !Array.isArray(value)) merge(target[key] ??= {}, value); else target[key] = value; } };
   for (const [id, patch] of Object.entries(BETA9_BALANCE)) if (characters[id]) merge(characters[id], patch);
-  const { ivory, mint, cyan, salmon, red, gold } = characters;
+  const { ivory, mint, cyan, salmon, red, gold, yellow } = characters;
+  if (yellow) {
+    replaceText(yellow.basicAttack, 'description', [['이동속도를 25% 감소', '이동속도를 40% 감소']]);
+    replaceText(yellow.basicAttack, 'descriptionEn', [['by 25%', 'by 40%']]);
+  }
   if (gold) {
     replaceText(gold.ultimate, 'description', [['반경 6타일 장판', '반경 4.5타일 장판']]);
     replaceText(gold.ultimate, 'descriptionEn', [['6-tile', '4.5-tile']]);
