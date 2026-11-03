@@ -21,7 +21,10 @@ export const BETA9_BALANCE = Object.freeze({
   salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
   green: { maxHealth: 9600 },
   // Mint's three-shot burst fans out: side shots 10% of a right angle (9°) off the aim line.
-  mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15, burstSpreadAngle: Math.PI / 20 },
+  // 2026-11-03: faster burst (120 → 80 ms), no windup, 0.55 s between attacks and a 4-unit ultimate
+  // (was 7; the field was cast 0.01–0.18 times per 3v3 match).
+  mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15, burstSpreadAngle: Math.PI / 20,
+    burstIntervalMs: 80, attackWindup: 0, attackCooldown: .55, special: { chargeRequired: 4 } },
   yellow: { electricSpeed: 22, maxHealth: 6800, electricDamage: 2500 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
   crimson: { maxHealth: 11500 },
