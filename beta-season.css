@@ -649,3 +649,22 @@ body.beta-season-9-theme .beta-wallet, body.beta-season-9-theme .test-panel, bod
 /* Green stealth: revealed countdown shown above the HUD while Green stands in its bush. */
 .green-reveal-label { position: fixed; left: 50%; bottom: 210px; transform: translateX(-50%); z-index: 30; padding: 6px 12px; border-radius: 999px; background: rgba(40,20,8,.86); border: 1px solid #ff8a3d; color: #ffd2b0; font-weight: 700; font-size: 13px; pointer-events: none; }
 .green-reveal-label.hidden { display: none; }
+
+/* Season 9 balance patch notes panel */
+.patch-summary { margin: 8px 0 0; padding-left: 18px; color: #b9cdd5; font-size: 12px; line-height: 1.6; }
+.patch-group-title { margin: 18px 0 8px; font-size: 15px; }
+.patch-group-title.nerf { color: #ff8f8f; }
+.patch-group-title.buff { color: #8ff0a8; }
+.patch-group-title.adjust { color: #ffd479; }
+.patch-badge { display: inline-block; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 900; }
+.patch-badge.nerf { color: #ffe0e0; background: #8a2f36; }
+.patch-badge.buff { color: #dfffe7; background: #2b6b3e; }
+.patch-badge.adjust { color: #fff1cf; background: #7a5a1c; }
+.patch-card.nerf, .patch-card.patch-nerf { border-color: #6a3036; }
+.patch-card.patch-buff { border-color: #2f5a3d; }
+.patch-card.patch-adjust { border-color: #6a5426; }
+.patch-changes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 5px; }
+.patch-changes li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 11px; color: #c9dbe2; border-bottom: 1px solid #1d3540; padding-bottom: 4px; }
+.patch-changes b { color: #9fb6bf; font-weight: 700; }
+.patch-changes s { color: #6f858e; }
+.patch-changes strong { color: #f2fbff; }

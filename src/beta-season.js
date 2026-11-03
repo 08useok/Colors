@@ -41,6 +41,7 @@ import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=12";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=1";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=46";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
@@ -2964,6 +2965,14 @@ function renderBeta8Overview() {
   }));
 }
 
+function renderBetaPatchNotes() {
+  const notes = BETA9_PATCH_NOTES;
+  modalTitle.textContent = `${notes.title} · ${notes.date}`;
+  const card = (group, c) => `<article class="beta-card patch-card patch-${group.type}"><span class="patch-badge ${group.type}">${group.label}</span><h3>${c.name}</h3><ul class="patch-changes">${c.changes.map(([stat, before, after]) => `<li><b>${stat}</b><span><s>${before}</s> → <strong>${after}</strong></span></li>`).join('')}</ul>${c.note ? `<p>${c.note}</p>` : ''}</article>`;
+  modalContent.innerHTML = `<section class="storybook-intro"><span>SEASON 9 · BALANCE PATCH</span><h2>${notes.title}</h2><ul class="patch-summary">${notes.summary.map(line => `<li>${line}</li>`).join('')}</ul></section>`
+    + notes.groups.map(group => `<h3 class="patch-group-title ${group.type}">${group.label} · ${group.characters.length}명</h3><div class="beta-grid">${group.characters.map(c => card(group, c)).join('')}</div>`).join('');
+}
+
 function openPanel(panel) {
   closeAssetShowroomViewer();
   modal.classList.remove("hidden");
@@ -2975,6 +2984,7 @@ function openPanel(panel) {
   if (panel === "storybook") renderStorybook();
   if (panel === "orders") renderOrderEvent();
   if (panel === "seaprops") renderSeasonProps();
+  if (panel === "patchnotes") renderBetaPatchNotes();
   if (panel === "quests") IS_BETA8_TEST ? renderBeta8Quests() : IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
