@@ -18,7 +18,9 @@ export const BETA9_BALANCE = Object.freeze({
   red: { attackDamage: 2000, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
   orange: { maxHealth: 3400 },
   // Buffs: behind in 3v3.
-  salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 20, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
+  // 2026-11-04: faster throw (windup 0.36 → 0.22 s, speed 20 → 26, impact radius 1.75 → 2.3) so Salmon can
+  // land hits on Orange (1v1 55-185 → 152-88); the beta page plays the throw clip faster to match.
+  salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 26, throwWindup: .22, impactRadius: 2.3, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
   green: { maxHealth: 9600 },
   // Mint's three-shot burst fans out: side shots 10% of a right angle (9°) off the aim line.
   // 2026-11-03: faster burst (120 → 80 ms), no windup, 0.55 s between attacks and a 4-unit ultimate

@@ -40,8 +40,9 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance } from "./config/beta9-balance.js?v=12";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=1";
+import { applyBeta9Balance } from "./config/beta9-balance.js?v=13";
+import { SALMON_THROW } from "./config/salmon-animation.js";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=46";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
@@ -75,6 +76,8 @@ if (BETA_SEASON_ID === "beta8") {
   // Season 9 emergency 3v3 balance (beta only; main Season 8 is unchanged).
   applyBeta9Balance(BETA_CHARACTERS);
 }
+// Salmon's throw clip releases at 0.36 s; play it faster when the balance shortens throwWindup so the bobber leaves the hand on time.
+const attackMotionTimeScale = id => id === "salmon" ? SALMON_THROW.release / (BETA_CHARACTERS.salmon?.throwWindup || SALMON_THROW.release) : 1;
 // 시즌별 로비 음악. 기본 베타(시즌 9 챔피언스)는 The Final Ascent를 쓴다. 지난 시즌 곡은 assets/unused/에 보관한다.
 const BETA_SEASON_BGM = {
   beta5: "./assets/unused/beta5-clockwork-midway.mp3?v=1",
@@ -1803,7 +1806,7 @@ function applyModelPose(profile, strength) {
 function updateModelAttackMotion(dt) {
   const rigProfile = RIG_ATTACK_PROFILES[modelAttackCharacter];
   if (rigProfile && modelAttackMotionTime >= 0) {
-    modelAttackMotionTime += dt;
+    modelAttackMotionTime += dt * attackMotionTimeScale(modelAttackCharacter);
     const model = activeCharacterMotion ? activeCharacterMotion.scenes[activeCharacterMotion.current] : activeCharacterModel;
     modelAttackPoseRestore.push(...applyRigAttackPose(model, modelAttackCharacter, modelAttackMotionTime));
     if (modelAttackMotionTime >= rigProfile.duration) {
@@ -7118,7 +7121,7 @@ function updateBetaBotModel(bot, dt, concealed = false) {
     bot.mixer.update(dt);
   }
   if (bot.modelAttackTime >= 0 && !bot.dead) {
-    bot.modelAttackTime += dt;
+    bot.modelAttackTime += dt * attackMotionTimeScale(bot.characterId);
     const motionId = bot.modelUltimateMotion && IS_BETA8_TEST ? bot.characterId + 'Ultimate' : bot.characterId;
     bot.rigAttackPose = applyRigAttackPose(bot.model, motionId, bot.modelAttackTime);
     if (bot.modelAttackTime >= (RIG_ATTACK_PROFILES[motionId]?.duration ?? 0)) { bot.modelAttackTime = -1; bot.modelUltimateMotion = false; }
