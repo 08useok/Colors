@@ -23,6 +23,25 @@ export function createBeta6Combat(definitions, options = {}) {
     if (!blocked(x, a.z) && !salmon.moveBlocked(a, x, a.z)) a.x = x;
     if (!blocked(a.x, z) && !salmon.moveBlocked(a, a.x, z)) a.z = z;
   }
+  // Dashes travel along their path: stop before the first wall or map edge instead of
+  // teleporting through it. Returns true when the destination was reached.
+  function dashPathClear(a, x, z) {
+    const bounds = options.bounds ?? 24, gap = Math.hypot(x - a.x, z - a.z);
+    for (let step = .2; step < gap + .2; step += .2) {
+      const t = Math.min(1, step / gap), px = a.x + (x - a.x) * t, pz = a.z + (z - a.z) * t;
+      if (Math.abs(px) > bounds || Math.abs(pz) > bounds || blocked(px, pz) || salmon.moveBlocked(a, px, pz)) return false;
+    }
+    return true;
+  }
+  function travel(a, x, z) {
+    const bounds = options.bounds ?? 24, gap = Math.hypot(x - a.x, z - a.z), sx = a.x, sz = a.z;
+    for (let step = .2; step < gap + .2; step += .2) {
+      const t = Math.min(1, step / gap), px = sx + (x - sx) * t, pz = sz + (z - sz) * t;
+      if (Math.abs(px) > bounds || Math.abs(pz) > bounds || blocked(px, pz) || salmon.moveBlocked(a, px, pz)) return false;
+      a.x = px; a.z = pz;
+    }
+    return true;
+  }
   function add(id, data = {}) {
     const d = definitions[id];
     if (!d) throw new Error(`Unknown beta6 character: ${id}`);
@@ -336,7 +355,7 @@ export function createBeta6Combat(definitions, options = {}) {
           const dx=target.x-telegraph.x,dz=target.z-telegraph.z;
           const front=dx*Math.cos(telegraph.yaw)+dz*Math.sin(telegraph.yaw),cross=-dx*Math.sin(telegraph.yaw)+dz*Math.cos(telegraph.yaw);
           if(front<-.55||front>telegraph.range+.55||Math.abs(cross)>telegraph.width/2+.55){
-            move(a,telegraph.x+Math.cos(telegraph.yaw)*telegraph.range,telegraph.z+Math.sin(telegraph.yaw)*telegraph.range);
+            travel(a,telegraph.x+Math.cos(telegraph.yaw)*telegraph.range,telegraph.z+Math.sin(telegraph.yaw)*telegraph.range);
             emit('ultimateMiss',{owner:a,target});emit('ultimate',{owner:a,target,miss:true});return;
           }
         }
@@ -395,6 +414,7 @@ export function createBeta6Combat(definitions, options = {}) {
             .sort((b,c)=>front(b)-front(c))[0];
           if (!target) return false;
         } else if (dist > u.range || target.analysisOwner) return false;
+        if (a.automatic && !dashPathClear(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1)) return false;
       }
       if (a.automatic && a.id === 'green' && a.ammo > 0 && a.hp > a.d.maxHealth * .4) return false;
       // Spend the stored charge before resolving the skill so successful
@@ -466,7 +486,7 @@ export function createBeta6Combat(definitions, options = {}) {
         after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }));
       } else if (a.id === 'azure') wave(a, yaw, true);
       else if (a.id === 'crystal') {
-        move(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1);
+        if (!travel(a, target.x - Math.cos(yaw) * 1.1, target.z - Math.sin(yaw) * 1.1)) { emit('ultimateMiss', { owner: a, target }); return; }
         const until = time + u.analysisDuration;
         // 붙잡힌 쪽이 걸어 둔 분석은 풀린다 — 먼저 잡는 쪽이 이긴다
         if (target.analysisTarget) releaseAnalysis(target);

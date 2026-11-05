@@ -23498,7 +23498,7 @@
     "src/config/raspberry.js": "755afc899ca294f15a19e8de45623b8747dc2d32caf1d03b08bcf0fb68448ba7",
     "tools/beta9-cycle-definitions.mjs": "95ebb7a2a028674d959f9fef933d445bed5b7283a3e1bc49f977530dfcd24360",
     "src/config/beta9-balance.js": "9284610114143298e9c9e8056ed695aa3d4be15c442df94a34157388e5250f40",
-    "src/combat/beta6-combat.js": "94e0ca3d13019b73eed32ed3d394fef8f75c8d96e947659923e5fb1401e29cf8",
+    "src/combat/beta6-combat.js": "b3ffee2f9db02ab4f961706299a365b44dec2d823486a39fcb3ec2e3cd0fbd15",
     "src/combat/salmon-combat.js": "a7def2e910b15ecc88f3fba154afe5f7371b159162de9d4827b0d4018d726b06",
     "tools/simulate-beta6-balance.mjs": "6a2a1f1d9626e530b8712251d733b0713ca1154cc8293bbb5816b1b925339288",
     "tools/beta8-simulation-profile.mjs": "07d1cf634538bd4955d4b40c77bf3c3352be695bb893323b99dde23f6250e053",
