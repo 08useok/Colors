@@ -7542,7 +7542,8 @@ function updateBeta6BotCombat(dt) {
   if (!beta6Combat || !beta6PlayerActor) return;
   const world = beta6Combat;
   if (beta6PlayerActor.hp <= 0 && !goldRushState.dead && goldRushState.health > 0) {
-    const charge = ["salmon", "raspberry"].includes(beta6PlayerActor.id) ? beta6PlayerActor.charge : 0;
+    // Every character keeps its ultimate charge through death and respawn.
+    const charge = beta6PlayerActor.charge;
     world.remove(beta6PlayerActor);
     beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge });
   }
@@ -7559,7 +7560,7 @@ function updateBeta6BotCombat(dt) {
   for (const bot of goldRushBots) {
     let actor = bot.combatActor;
     if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
-      const charge = ["salmon", "raspberry"].includes(actor.id) ? actor.charge : 0;
+      const charge = actor.charge;
       world.remove(actor);
       actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
