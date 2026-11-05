@@ -16,7 +16,8 @@ export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1800 },
   red: { attackDamage: 2000, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
-  orange: { maxHealth: 3400 },
+  // Orange's ultimate charges by fixed shares: 10% per orange hit, 5% per juice hit (they add up).
+  orange: { maxHealth: 3400, ultimateChargeShare: { bomb: .1, juice: .05 } },
   // Buffs: behind in 3v3.
   // 2026-11-04: faster throw (windup 0.36 → 0.22 s, speed 20 → 26, impact radius 1.75 → 2.3) so Salmon can
   // land hits on Orange (1v1 55-185 → 152-88); the beta page plays the throw clip faster to match.
@@ -47,7 +48,8 @@ const replaceText = (object, key, pairs) => {
 export function applyBeta9Balance(characters) {
   const merge = (target, patch) => { for (const [key, value] of Object.entries(patch)) { if (value && typeof value === 'object' && !Array.isArray(value)) merge(target[key] ??= {}, value); else target[key] = value; } };
   for (const [id, patch] of Object.entries(BETA9_BALANCE)) if (characters[id]) merge(characters[id], patch);
-  const { ivory, mint, cyan, salmon, red, gold, yellow } = characters;
+  const { ivory, mint, cyan, salmon, red, gold, yellow, orange } = characters;
+  if (orange) replaceText(orange.basicAttack, 'description', [[' 일반 공격 적중으로 얻는 궁극기 충전량이 기존의 50%입니다.', ' 오렌지 적중은 궁극기를 10%, 과즙은 하나당 5% 충전하며 함께 맞으면 더해집니다.']]);
   if (yellow) {
     replaceText(yellow.basicAttack, 'description', [['이동속도를 25% 감소', '이동속도를 40% 감소']]);
     replaceText(yellow.basicAttack, 'descriptionEn', [['by 25%', 'by 40%']]);

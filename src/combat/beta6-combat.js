@@ -738,7 +738,9 @@ export function createBeta6Combat(definitions, options = {}) {
         }
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
         if (p.burstChargeHits?.has(b.key)) award = 0;
-        const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) * (p.rechargeScale ?? 1) : award, p.ultimate);
+        // Fixed ultimate share per basic hit (Season 9 Orange: orange 10%, each juice 5%); hits add up.
+        const share = p.ultimate ? null : d.ultimateChargeShare?.[p.kind];
+        const dealt = hit(a, b, amount, true, share != null ? share * a.u.chargeRequired : p.ultimate ? award * (a.u.rechargePerHit ?? 1) * (p.rechargeScale ?? 1) : award, p.ultimate || share != null);
         if (dealt > 0) {
           p.burstChargeHits?.add(b.key);
           b.lastDamageKind = p.kind;
@@ -750,7 +752,8 @@ export function createBeta6Combat(definitions, options = {}) {
           if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9), a);
           if (p.kind === 'heaven') { b.angelMarkUntil = time + a.t.markDuration; b.angelMarkOwner = a; emit('angelMark', { owner: a, target: b, until: b.angelMarkUntil }); }
           if (p.kind === 'cc') { const effect = Math.floor(random() * 6); if (effect === 0 || effect === 5) { b.slowUntil = time + 2; b.slow = effect === 5 ? 1 : .35; } if (effect === 1 || effect === 5) b.lockUntil = time + 2; if (effect === 2) b.frozenUntil = time + 2; if (effect === 3) { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; } if (effect === 4) knock(b, p.yaw, 3.5); if (effect !== 3) control(b, a); }
-          if (p.kind === 'bomb') hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount);
+          // A direct hit also eats the juices: each one charges like a juice hit.
+          if (p.kind === 'bomb') { const juice = d.ultimateChargeShare?.juice; hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount, juice != null, (juice ?? 0) * d.bombDirectHitJuiceCount * (a.u?.chargeRequired ?? 0), true); }
         }
         if (!['wave', 'gale', 'boomerang', 'orangePeel'].includes(p.kind)) { ended = true; break; }
       }

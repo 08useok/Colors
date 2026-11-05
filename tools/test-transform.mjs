@@ -89,7 +89,8 @@ const step = (w, seconds) => { for (let i = 0; i < seconds * 60; i++) w.update(1
     // Full gauge and ultimate: the bot transforms once an enemy is in reach (Orange then throws 15 peels).
     const bot = w.add(id, { team: 'a', x: -5, z: 0, transformCharge: 1 }); bot.charge = bot.u.chargeRequired; w.add('red', { team: 'b', x: 5, z: 0 }); w.add('pink', { team: 'b', x: 6, z: 3 });
     let most = 0; for (let i = 0; i < 300; i++) { w.update(1 / 60); most = Math.max(most, w.projectiles.filter(p => p.transformed).length); }
-    if (id === 'orange') assert.equal(most, 15, 'bot Orange throws the transformed ultimate');
+    // Orange can recharge and throw a second transformed ultimate inside one transform.
+    if (id === 'orange') assert(most >= 15 && most % 15 === 0, `bot Orange throws the transformed ultimate (${most} peels)`);
   }
   assert.equal(used, 12, `bots use transform (${used} of 12)`);
 }

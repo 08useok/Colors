@@ -40,10 +40,10 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance } from "./config/beta9-balance.js?v=13";
+import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=49";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=50";
 import { createBetaTransform } from "./beta-transform.js?v=2";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
@@ -9666,11 +9666,17 @@ function animate() {
         }
         if (projectile.type === "orangeFruit") {
           if (IS_BETA7_TEST || IS_BETA8_TEST) {
-            orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + basicUltimateCharge("orange"));
+            const share = BETA_CHARACTERS.orange.ultimateChargeShare?.bomb;
+            orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + (share != null ? share * BETA_CHARACTERS.orange.ultimate.chargeRequired : basicUltimateCharge("orange")));
             if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
           }
           shouldSplitOrange = true;
           orangeDirectHitTarget = target;
+        }
+        // Season 9: every juice hit charges Orange's ultimate (5% each).
+        if (projectile.type === "orangeJuice" && BETA_CHARACTERS.orange.ultimateChargeShare?.juice != null) {
+          orangeUltimateCharge = Math.min(BETA_CHARACTERS.orange.ultimate.chargeRequired, orangeUltimateCharge + BETA_CHARACTERS.orange.ultimateChargeShare.juice * BETA_CHARACTERS.orange.ultimate.chargeRequired);
+          if (betaState.selectedCharacter === "orange") updateCrimsonUltimateGauge();
         }
         if (projectile.type === "purpleThorn" && !projectile.burstChargeHits.has(target)) {
           projectile.burstChargeHits.add(target);
