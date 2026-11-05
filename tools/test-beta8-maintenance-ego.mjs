@@ -1,0 +1,31 @@
+const qaProjectRoot=(await import('node:url')).fileURLToPath(new URL('../',import.meta.url));
+const task=await taskSpace('COLORS Beta8 maintenance '+Date.now());console.log({spaceId:task.spaceId});const page=task.page('p1');
+await page.goto('http://127.0.0.1:4191/beta-season.html?test=beta8');await page.waitForFunction(()=>window.__recordsQA?.ready(),undefined,{timeout:90000});
+const initial=await page.evaluate(()=>({tagline:document.querySelector('.beta-header p').textContent,errors:__qaErrors.slice()}));
+if(!initial.tagline.includes('17종'))throw Error('wrong character count');
+const register=await page.evaluate(async()=>{const r=await fetch('/api/beta-account/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'mt_'+Date.now(),nickname:'정리 검증',password:'maintenance-test-1234'})});return r.status;});if(register!==200)throw Error('register failed');
+await page.reload();await page.waitForFunction(()=>window.__recordsQA?.ready(),undefined,{timeout:90000});
+const first=await page.evaluate(()=>__recordsQA.run(true));
+await page.waitForFunction(async()=>{const r=await fetch('/api/beta-account/records/ranking');return(await r.json()).me?.points===8.5;},undefined,{timeout:15000});
+const firstRanking=await page.evaluate(async()=>await(await fetch('/api/beta-account/records/ranking')).json());
+const second=await page.evaluate(()=>__recordsQA.run(false));
+await page.waitForFunction(async()=>{const r=await fetch('/api/beta-account/records/ranking');return(await r.json()).me?.points===12;},undefined,{timeout:15000});
+await page.evaluate(()=>__recordsQA.open());
+await page.evaluate(()=>document.querySelector('[data-record-tab="personal"]').click());
+const personal=await page.evaluate(()=>document.querySelector('#modal-content').textContent);if(!personal.includes('50%'))throw Error('personal win rate');
+const failedStatus=await page.evaluate(async()=>{
+ const {createBetaRecords}=await import('/src/beta-records.js');const {user}=await(await fetch('/api/beta-account/session')).json();
+ const state={beta8Records:{},beta8RecordPending:[{id:'no-start-ticket',season:'beta8',mode:'knockout',character:'red',kills:0,deaths:0,damage:0,healing:0,duration:0}]};
+ const title=document.createElement('h2'),content=document.createElement('section');
+ const c=createBetaRecords({state,save(){},storageKey:'maintenance-rejected-test-'+Date.now(),account:{user},characters:[],title,content,open(){}});
+ await new Promise(resolve=>{const until=Date.now()+5000;const check=()=>{if(state.beta8RecordFailed?.length||Date.now()>until)resolve();else setTimeout(check,20);};check();});c.render('history');return{failed:state.beta8RecordFailed?.length,text:content.textContent};
+});if(failedStatus.failed!==1||!failedStatus.text.includes('개인 전적은 유지됩니다'))throw Error('missing rejection status');
+await page.evaluate(()=>__recordsQA.interrupt());await page.reload();await page.waitForFunction(()=>window.__recordsQA?.ready(),undefined,{timeout:90000});
+const restored=await page.evaluate(()=>__recordsQA.state());if(restored.total.games!==3||restored.total.points!==12||!restored.recent[0].abandoned)throw Error('reload recovery failed');
+const deathCleanup=await page.evaluate(async()=>{
+ const [{BETA_CHARACTERS},{applyBeta7Balance},{applyBeta8Balance},{createBeta6Combat}]=await Promise.all([import('/src/config/beta-characters.js'),import('/src/config/beta7-balance.js'),import('/src/config/beta8-balance.js'),import('/src/combat/beta6-combat.js')]);
+ const w=createBeta6Combat(applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS))),a=w.add('salmon',{automatic:false,team:'a',next:0}),b=w.add('red',{x:3,automatic:false,team:'b',hp:100000});w.fire(a,b);for(let i=0;i<50;i++)w.update(1/60);const before=b.salmonHeight;b.hp=0;w.update(1/60);const result={before,after:b.salmonHeight,air:b.salmonAirborne};w.clear();return result;
+});if(!(deathCleanup.before>0&&deathCleanup.after===0&&deathCleanup.air===null))throw Error('floating corpse');
+const errors=await page.evaluate(()=>__qaErrors);if(initial.errors.length||errors.length)throw Error(JSON.stringify({initial,errors}));
+const report={initial,first:first.book.total,firstRanking:firstRanking.me,second:second.book.total,personal,failedStatus,restored:restored.total,deathCleanup,errors};
+const fs=await import('node:fs/promises');await fs.writeFile(qaProjectRoot+'specs/beta8-maintenance-browser.json',JSON.stringify(report,null,2));console.log({firstMatchUploadedWithoutReload:true,consecutivePoints:firstRanking.me.points+' → '+second.book.total.points,reloadGames:restored.total.games,failedStatus:failedStatus.failed,deathCleanup,errors});await task.finish({keep:[]});

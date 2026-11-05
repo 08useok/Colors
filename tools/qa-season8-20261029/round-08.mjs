@@ -1,0 +1,1 @@
+const t=await taskSpace(1),p=t.page('p1');console.log(await p.snapshot());console.log(await p.evaluate(()=>({ready:window.__recordsQA?.ready(),errors:window.__qaErrors})));

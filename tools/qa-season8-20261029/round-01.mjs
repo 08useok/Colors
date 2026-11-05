@@ -1,0 +1,1 @@
+const t=await taskSpace('COLORS release flow 20261029');console.log({spaceId:t.spaceId});const p=t.page('p1');await p.goto('http://127.0.0.1:4196/beta-season.html?test=beta8');await p.waitForFunction(()=>window.__recordsQA?.ready()&&document.querySelector('#beta-account-button'),undefined,{timeout:90000});console.log(await p.snapshot());

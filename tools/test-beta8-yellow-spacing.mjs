@@ -1,0 +1,7 @@
+import assert from 'node:assert/strict';import {BETA_CHARACTERS} from '../src/config/beta-characters.js';import {applyBeta7Balance} from '../src/config/beta7-balance.js';import {applyBeta8Balance} from '../src/config/beta8-balance.js';import {createBeta6Combat} from '../src/combat/beta6-combat.js';
+const prior=applyBeta7Balance(BETA_CHARACTERS),defs=applyBeta8Balance(prior);assert.equal(prior.yellow.botGroundAttackSpacing,undefined);for(const key of ['maxHealth','electricDamage','electricRange','botLandingDodgeSpeedMultiplier'])assert.equal(defs.yellow[key],prior.yellow[key]);
+const c=structuredClone(defs);c.testGroundThrower={...defs.ivory};
+for(const [distance,direction]of [[20,1],[11,0],[8,-1]]){const w=createBeta6Combat(c),a=w.add('yellow',{hp:100,next:100});w.add('testGroundThrower',{x:distance,automatic:false});w.update(1/60);assert.equal(Math.sign(a.x),direction,'spacing uses attack geometry without checking opponent identity');w.clear();}
+{const w=createBeta6Combat(defs),a=w.add('yellow',{next:100});w.add('chartreuse',{x:8,automatic:false});w.update(1/60);assert.equal(a.x,0,'normal projectile spacing retained');w.clear();}
+{const w=createBeta6Combat(defs,{destination:()=>({x:15,z:0})}),a=w.add('yellow',{next:100});w.add('ivory',{x:8,automatic:false});w.update(1/60);assert(a.x>0,'objective navigation remains available');w.clear();}
+console.log('PASS Yellow ground-attack spacing/re-entry by geometry, normal projectile behavior, objectives, prior season and unchanged health/damage/range/dodge speed.');

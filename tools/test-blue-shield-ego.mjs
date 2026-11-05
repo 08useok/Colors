@@ -1,0 +1,15 @@
+const qaProjectRoot=(await import('node:url')).fileURLToPath(new URL('../',import.meta.url));
+const task=await taskSpace('COLORS Blue ultimate shield '+Date.now());console.log({spaceId:task.spaceId});const page=task.page('p1');
+await page.goto('http://127.0.0.1:4194/beta-season.html?test=beta8');await page.waitForFunction(()=>window.__blueShieldQA?.ready(),undefined,{timeout:90000});await page.evaluate(()=>__blueShieldQA.pick());await page.waitForFunction(()=>__blueShieldQA.ready(),undefined,{timeout:90000});
+const report={before:await page.evaluate(()=>{__blueShieldQA.reset();return __blueShieldQA.hit();})};
+await page.evaluate(()=>__blueShieldQA.start());report.preparing=await page.evaluate(()=>({state:__blueShieldQA.snapshot(),damage:__blueShieldQA.hit()}));
+await page.waitForFunction(()=>__blueShieldQA.snapshot().rolling,undefined,{timeout:10000});report.rolling=await page.evaluate(()=>({state:__blueShieldQA.snapshot(),damage:__blueShieldQA.hit()}));report.after=await page.evaluate(()=>({state:__blueShieldQA.finish(),damage:__blueShieldQA.hit()}));
+if(report.before!==1000||Math.abs(report.preparing.damage-300)>1e-7||!report.preparing.state.shield||Math.abs(report.rolling.damage-300)>1e-7||report.after.damage!==1000||report.after.state.shield||report.after.state.reduction!==0)throw Error(JSON.stringify(report));
+report.errors=await page.evaluate(()=>__qaErrors);if(report.errors.length)throw Error(JSON.stringify(report.errors));
+report.projectile=await page.evaluate(()=>__blueShieldQA.shot());if(!report.projectile||Math.abs(report.projectile.radius-.154)>1e-9||Math.abs(report.projectile.scale-1.1)>1e-9)throw Error('practice hitbox '+JSON.stringify(report.projectile));
+report.charge=await page.evaluate(async()=>{
+ const [{BETA_CHARACTERS},{applyBeta7Balance},{applyBeta8Balance},{createBeta6Combat}]=await Promise.all([import('/src/config/beta-characters.js'),import('/src/config/beta7-balance.js'),import('/src/config/beta8-balance.js'),import('/src/combat/beta6-combat.js')]);const defs=applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS)),run=(w,s)=>{for(let t=0;t<s-1e-9;t+=1/60)w.update(Math.min(1/60,s-t));};
+ const w=createBeta6Combat(defs,{aimError:0}),a=w.add('blue',{automatic:false,next:0,team:'a'}),b=w.add('red',{x:5,automatic:false,team:'b',hp:100000}),basic=[];for(let i=0;i<5;i++){a.ammo=3;w.fire(a,b,0);run(w,.4);basic.push(a.charge);}w.clear();
+ const u=createBeta6Combat(defs,{bounds:40}),owner=u.add('blue',{automatic:false,team:'a'});let target;for(let i=0;i<5;i++)target=u.add('red',{x:3+i*3,automatic:false,team:'b',hp:100000});owner.charge=owner.u.chargeRequired;u.cast(owner,target,{angle:0});run(u,1.5);const result={basic,required:defs.blue.special.chargeRequired,ultimateRecharge:owner.charge};u.clear();return result;
+});if(JSON.stringify(report.charge.basic)!==JSON.stringify([.5,1,1.5,2,2.5])||report.charge.required!==2.5||report.charge.ultimateRecharge!==2.5)throw Error(JSON.stringify(report.charge));
+const fs=await import('node:fs/promises');await fs.writeFile(qaProjectRoot+'specs/beta8-blue-shield-browser.json',JSON.stringify(report,null,2));console.log(report);await task.finish({keep:[]});
