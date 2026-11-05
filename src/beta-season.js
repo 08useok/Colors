@@ -46,6 +46,7 @@ import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=51";
 import { createBetaTransform } from "./beta-transform.js?v=2";
+import { createTransformModels } from "./visuals/transform-models.js?v=1";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -1147,6 +1148,7 @@ player.add(crown);
 const skinAccessory = new THREE.Group();
 player.add(skinAccessory);
 const characterLoader = new GLTFLoader(modelLoading.manager);
+const transformModels = createTransformModels({ THREE, loader: new GLTFLoader(), clone: skeletonClone });
 const staticCharacterLoader = new FBXLoader(modelLoading.manager);
 let activeCharacterModel = null;
 let activeCharacterMixer = null;
@@ -7004,6 +7006,7 @@ if (IS_BETA7_TEST) {
 }
 
 function clearBeta6RoundCombat() {
+  transformModels.clear();
   betaAttackGeneration++;
   betaPracticeUltimatePending = null;
   restoreModelAttackPose();
@@ -7370,6 +7373,7 @@ function processBeta6CombatEvent(event) {
       }
       if (event.type === "attack") {
         const a = event.owner;
+        transformModels.cue(a, 'Attack', event.time);
         if (a.bot) { a.bot.modelAttackTime = 0; a.bot.modelUltimateMotion = false; if (a.bot.model) a.bot.model.userData.betaAttackVariant = a.index % 2; }
         if (["red", "crimson"].includes(a.id)) for (let i = 0; i < a.d.attackCount; i++) beta6AttackVisualQueue.push({ at: event.time + (a.d.attackWindup ?? 0) + i * a.d.attackIntervalMs / 1000, owner: a, index: i, yaw: Math.PI / 2 - a.angle });
         if (a.id === "pink") withBeta6AttackVisuals(() => {
@@ -7382,6 +7386,7 @@ function processBeta6CombatEvent(event) {
         else if (event.owner === beta6PlayerActor) startModelAttackMotion(event.owner.id + 'Ultimate');
       }
       if (event.type === "ultimate") {
+        transformModels.cue(event.owner, 'Ultimate', event.time);
         if (event.owner.id === "salmon" && event.owner.bot) { event.owner.bot.modelAttackTime = 0; event.owner.bot.modelUltimateMotion = IS_BETA8_TEST; }
         const from = event.owner.bot?.mesh.position ?? (event.owner === beta6PlayerActor ? player.position : null);
         const to = event.owner.id === "crystal" ? new THREE.Vector3(event.owner.x, groundHeightAt(event.owner.x,event.owner.z)+1, event.owner.z) : event.target?.bot?.mesh.position ?? player.position;
@@ -7449,6 +7454,10 @@ function beta6TransformGauges() {
 
 function startBeta6BotCombat(carried = null) {
   if (goldRushState.mode === "soccer") return;
+  if (IS_BETA8_TEST) {
+    transformModels.preload(betaState.selectedCharacter);
+    for (const bot of goldRushBots) transformModels.preload(bot.characterId);
+  }
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
     allowRevives: goldRushState.mode !== "knockout",
     transforms: true,
@@ -7668,6 +7677,12 @@ function updateBeta6BotCombat(dt) {
   updateBeta6AttackVisuals(world);
   updateBeta6StatusVisuals(world);
   betaTransformUi().updateWorld(world, beta6ActorPosition, a => a === hero || (a.team != null && a.team === hero.team) || !world.hidden(a, hero));
+  transformModels.update(world, dt, actor => {
+    if (actor === hero) return { root: player, base: [activeCharacterModel, body, visor, crown, skinAccessory] };
+    const bot = actor.bot;
+    if (!bot) return null;
+    return { root: bot.mesh, base: bot.model ? [bot.model] : bot.disposableMeshes.filter(mesh => mesh.geometry.type === 'CapsuleGeometry') };
+  });
   betaTransformUi().updateButton(hero, world.time, hero.id);
   const draw = (key, object, radius, kind) => {
     visible.add(key);
