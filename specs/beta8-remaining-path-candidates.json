@@ -1,0 +1,8443 @@
+{
+  "rows": [
+    {
+      "left": "red",
+      "right": "chartreuse",
+      "patch": {
+        "botAvoidControlProjectiles": true
+      },
+      "target": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 205,
+        "losses": 35,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 5.0979212477129385,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20267025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.549999999999989
+          },
+          {
+            "distance": 3.9713748984327393,
+            "aimError": 0.035,
+            "n": 1,
+            "reverse": false,
+            "seed": 20267026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              6,
+              3
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 8.866666666666687
+          },
+          {
+            "distance": 4.769783260718593,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": false,
+            "seed": 20267030,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 7.416666666666646
+          },
+          {
+            "distance": 3.8445056200686376,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20267031,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 0.9333333333333346
+          },
+          {
+            "distance": 4.384032922497534,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": true,
+            "seed": 20267034,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              6.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.183333333333618
+          },
+          {
+            "distance": 4.928500857057276,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20277026,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.133333333333615
+          },
+          {
+            "distance": 4.718681260431788,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20277027,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              3,
+              5
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 7.333333333333313
+          },
+          {
+            "distance": 4.433303657645723,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20277028,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 13.916666666666938
+          },
+          {
+            "distance": 4.818419199797668,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 2.0999999999999974
+          },
+          {
+            "distance": 5.0967406395219905,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20277030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              4
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.24999999999999
+          },
+          {
+            "distance": 5.2232282847077505,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20277030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              4
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.19999999999999
+          },
+          {
+            "distance": 5.378645974488344,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": true,
+            "seed": 20277031,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 0.8833333333333344
+          },
+          {
+            "distance": 4.647445617562888,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": true,
+            "seed": 20277032,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              4,
+              8
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 13.750000000000263
+          },
+          {
+            "distance": 3.9619955427511404,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20277033,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              1,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 0.9333333333333346
+          },
+          {
+            "distance": 4.051012067604327,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20271027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 8.31666666666666
+          },
+          {
+            "distance": 3.9444314898049875,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20281026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              3190
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 8.78333333333335
+          },
+          {
+            "distance": 4.059549374928313,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20281026,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              3,
+              7
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 13.50000000000025
+          },
+          {
+            "distance": 4.713224462912647,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 3.7999999999999914
+          },
+          {
+            "distance": 4.536297247908863,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20281028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              7,
+              3
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 13.10000000000023
+          },
+          {
+            "distance": 5.097962308034206,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20285027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 9.200000000000037
+          },
+          {
+            "distance": 5.195585789258921,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 9.233333333333372
+          },
+          {
+            "distance": 4.534115887292844,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20285030,
+            "outcome": -1,
+            "casts": [
+              3,
+              2
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              660
+            ],
+            "charge": [
+              0,
+              3
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 17.33333333333363
+          },
+          {
+            "distance": 5.093566366725233,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20285032,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.34999999999999
+          },
+          {
+            "distance": 5.184340385709464,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20285034,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              9
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 19.55000000000017
+          },
+          {
+            "distance": 3.9114922810650063,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 2.7333333333333285
+          },
+          {
+            "distance": 4.043193919213303,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 2.749999999999995
+          },
+          {
+            "distance": 5.259133776049833,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20291026,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 12.5000000000002
+          },
+          {
+            "distance": 4.305712985520193,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20291034,
+            "outcome": -1,
+            "casts": [
+              3,
+              2
+            ],
+            "attacks": [
+              7,
+              2
+            ],
+            "hp": [
+              0,
+              660
+            ],
+            "charge": [
+              0,
+              4.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.03333333333361
+          },
+          {
+            "distance": 4.547291315765399,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20299025,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.600000000000305
+          },
+          {
+            "distance": 5.210805483849806,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20299025,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              8
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 19.883333333333486
+          },
+          {
+            "distance": 4.915279685578205,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20299026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 7.683333333333311
+          },
+          {
+            "distance": 5.0767355788223485,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20299027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              6,
+              3
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 10.616666666666774
+          },
+          {
+            "distance": 5.199297179101375,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 10.633333333333441
+          },
+          {
+            "distance": 5.086942675704552,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20299033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 9.983333333333409
+          },
+          {
+            "distance": 4.432845329128546,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": true,
+            "seed": 20297030,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              8
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 23.516666666666612
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0
+          },
+          "10": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "14": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "20": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "28": {
+            "wins": 34,
+            "losses": 6,
+            "draws": 0
+          },
+          "36": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "red",
+      "right": "chartreuse",
+      "patch": {
+        "botAvoidControlProjectiles": true,
+        "botTrackTargetDuringWindup": true
+      },
+      "target": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 205,
+        "losses": 35,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 5.0979212477129385,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20267025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.549999999999989
+          },
+          {
+            "distance": 3.9713748984327393,
+            "aimError": 0.035,
+            "n": 1,
+            "reverse": false,
+            "seed": 20267026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              6,
+              3
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 8.866666666666687
+          },
+          {
+            "distance": 4.769783260718593,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": false,
+            "seed": 20267030,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 7.416666666666646
+          },
+          {
+            "distance": 3.8445056200686376,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20267031,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 0.9333333333333346
+          },
+          {
+            "distance": 4.384032922497534,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": true,
+            "seed": 20267034,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              6.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.183333333333618
+          },
+          {
+            "distance": 4.928500857057276,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20277026,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.133333333333615
+          },
+          {
+            "distance": 4.718681260431788,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20277027,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              3,
+              5
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 7.333333333333313
+          },
+          {
+            "distance": 4.433303657645723,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20277028,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 13.916666666666938
+          },
+          {
+            "distance": 4.818419199797668,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 2.0999999999999974
+          },
+          {
+            "distance": 5.0967406395219905,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20277030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              4
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.24999999999999
+          },
+          {
+            "distance": 5.2232282847077505,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20277030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              4
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.19999999999999
+          },
+          {
+            "distance": 5.378645974488344,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": true,
+            "seed": 20277031,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 0.8833333333333344
+          },
+          {
+            "distance": 4.647445617562888,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": true,
+            "seed": 20277032,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              4,
+              8
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 13.750000000000263
+          },
+          {
+            "distance": 3.9619955427511404,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20277033,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              1,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 0.9333333333333346
+          },
+          {
+            "distance": 4.051012067604327,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20271027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 8.31666666666666
+          },
+          {
+            "distance": 3.9444314898049875,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20281026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              3190
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 8.78333333333335
+          },
+          {
+            "distance": 4.059549374928313,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20281026,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              3,
+              7
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 13.50000000000025
+          },
+          {
+            "distance": 4.713224462912647,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 3.7999999999999914
+          },
+          {
+            "distance": 4.536297247908863,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20281028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              7,
+              3
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 13.10000000000023
+          },
+          {
+            "distance": 5.097962308034206,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20285027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 9.200000000000037
+          },
+          {
+            "distance": 5.195585789258921,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 9.233333333333372
+          },
+          {
+            "distance": 4.534115887292844,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20285030,
+            "outcome": -1,
+            "casts": [
+              3,
+              2
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              660
+            ],
+            "charge": [
+              0,
+              3
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 17.33333333333363
+          },
+          {
+            "distance": 5.093566366725233,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20285032,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.34999999999999
+          },
+          {
+            "distance": 5.184340385709464,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20285034,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              9
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 19.55000000000017
+          },
+          {
+            "distance": 3.9114922810650063,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 2.7333333333333285
+          },
+          {
+            "distance": 4.043193919213303,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 2.749999999999995
+          },
+          {
+            "distance": 5.259133776049833,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20291026,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 12.5000000000002
+          },
+          {
+            "distance": 4.305712985520193,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20291034,
+            "outcome": -1,
+            "casts": [
+              3,
+              2
+            ],
+            "attacks": [
+              7,
+              2
+            ],
+            "hp": [
+              0,
+              660
+            ],
+            "charge": [
+              0,
+              4.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.03333333333361
+          },
+          {
+            "distance": 4.547291315765399,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20299025,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.600000000000305
+          },
+          {
+            "distance": 5.210805483849806,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20299025,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              8
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 19.883333333333486
+          },
+          {
+            "distance": 4.915279685578205,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20299026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 7.683333333333311
+          },
+          {
+            "distance": 5.0767355788223485,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20299027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              6,
+              3
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 10.616666666666774
+          },
+          {
+            "distance": 5.199297179101375,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 10.633333333333441
+          },
+          {
+            "distance": 5.086942675704552,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20299033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 9.983333333333409
+          },
+          {
+            "distance": 4.432845329128546,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": true,
+            "seed": 20297030,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              8
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 23.516666666666612
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0
+          },
+          "10": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "14": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "20": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "28": {
+            "wins": 34,
+            "losses": 6,
+            "draws": 0
+          },
+          "36": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "chartreuse",
+      "right": "yellow",
+      "patch": {
+        "botAvoidControlProjectiles": true
+      },
+      "target": {
+        "left": "chartreuse",
+        "right": "yellow",
+        "seedBase": 20261025,
+        "wins": 238,
+        "losses": 1,
+        "draws": 1,
+        "failures": [
+          {
+            "distance": 20.62368801263723,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20281026,
+            "outcome": 0,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              29,
+              20
+            ],
+            "hp": [
+              0,
+              0
+            ],
+            "charge": [
+              0,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 34.01666666666602
+          },
+          {
+            "distance": 15.007144043363157,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20307030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              28,
+              19
+            ],
+            "hp": [
+              1701.3333333333485,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "electric"
+            ],
+            "time": 32.93333333333275
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 39,
+            "losses": 0,
+            "draws": 1
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 211,
+        "losses": 29,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 5.882848536509132,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20267025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4,
+              3
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 7.24999999999998
+          },
+          {
+            "distance": 7.28076969830469,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4.5,
+              3
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 8.98333333333336
+          },
+          {
+            "distance": 5.242222327996211,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.8000000000000008
+          },
+          {
+            "distance": 5.792510842126278,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": true,
+            "seed": 20277029,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              3
+            ],
+            "hp": [
+              1100,
+              0
+            ],
+            "charge": [
+              1.5,
+              5.5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 8.349999999999994
+          },
+          {
+            "distance": 9.599861136436445,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20277032,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              9
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              6,
+              3.5
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 13.000000000000226
+          },
+          {
+            "distance": 5.837276430564792,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20271027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.36666666666666664
+          },
+          {
+            "distance": 5.368155816371522,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20271031,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.8333333333333343
+          },
+          {
+            "distance": 10.402297908574443,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20281028,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              1100,
+              0
+            ],
+            "charge": [
+              2.5,
+              4
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 11.90000000000017
+          },
+          {
+            "distance": 4.016183209728735,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": false,
+            "seed": 20281031,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              4
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              7,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 3.0333333333333274
+          },
+          {
+            "distance": 6.080004996387282,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20275025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.5833333333333335
+          },
+          {
+            "distance": 5.275984843984914,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": true,
+            "seed": 20275030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              2,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 3.349999999999993
+          },
+          {
+            "distance": 8.521141745772757,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20275031,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 8.71666666666668
+          },
+          {
+            "distance": 5.279570946967519,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.0666666666666678
+          },
+          {
+            "distance": 6.19038388927274,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20285028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.1333333333333342
+          },
+          {
+            "distance": 8.60585631909869,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20281025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              5
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              2,
+              2.5
+            ],
+            "lastDamageKind": [
+              "cc",
+              null
+            ],
+            "time": 9.100000000000032
+          },
+          {
+            "distance": 6.208595770852255,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.5166666666666662
+          },
+          {
+            "distance": 8.491230638028682,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": true,
+            "seed": 20281034,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 9.100000000000032
+          },
+          {
+            "distance": 4.135293483999335,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              3
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              3,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9666666666666646
+          },
+          {
+            "distance": 5.406906968136488,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.4499999999999997
+          },
+          {
+            "distance": 5.237993500092014,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20291026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9999999999999978
+          },
+          {
+            "distance": 6.2397799970469965,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20291028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              2.5,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 5.549999999999986
+          },
+          {
+            "distance": 5.317078457864577,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20289027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              2,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 4.233333333333324
+          },
+          {
+            "distance": 5.3637375407462935,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20289033,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              4
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              6.5,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 4.216666666666657
+          },
+          {
+            "distance": 4.796980070844198,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20299029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              2.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9166666666666647
+          },
+          {
+            "distance": 6.21343423358501,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20299030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              4,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.583333333333329
+          },
+          {
+            "distance": 6.0948119363407365,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.4333333333333331
+          },
+          {
+            "distance": 4.6390878616625555,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20297031,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              1,
+              2.5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 2.416666666666663
+          },
+          {
+            "distance": 4.793589871024873,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20307025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.3999999999999964
+          },
+          {
+            "distance": 4.797660245467158,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20307027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.3999999999999964
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "10": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "14": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "20": {
+            "wins": 33,
+            "losses": 7,
+            "draws": 0
+          },
+          "28": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "36": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "chartreuse",
+      "right": "yellow",
+      "patch": {
+        "botAvoidControlProjectiles": true,
+        "botAimLeadFactor": 0.3,
+        "botTrackTargetDuringWindup": true
+      },
+      "target": {
+        "left": "chartreuse",
+        "right": "yellow",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 209,
+        "losses": 31,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 5.838112006985948,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20267025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4,
+              3
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 7.266666666666646
+          },
+          {
+            "distance": 5.2574721207124115,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.8000000000000008
+          },
+          {
+            "distance": 5.39998390991363,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20271031,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.8333333333333343
+          },
+          {
+            "distance": 6.250744996099618,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.9833333333333347
+          },
+          {
+            "distance": 5.993993590592347,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20281029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.35
+          },
+          {
+            "distance": 6.080004996387282,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20275025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.5833333333333335
+          },
+          {
+            "distance": 4.027479807372565,
+            "aimError": 0.035,
+            "n": 4,
+            "reverse": false,
+            "seed": 20275029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              7,
+              2.5
+            ],
+            "lastDamageKind": [
+              "cc",
+              null
+            ],
+            "time": 5.033333333333321
+          },
+          {
+            "distance": 5.275984843984914,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": true,
+            "seed": 20275030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              2,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 3.349999999999993
+          },
+          {
+            "distance": 5.399606631413899,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": false,
+            "seed": 20275034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.0500000000000012
+          },
+          {
+            "distance": 5.282208921135592,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.0666666666666678
+          },
+          {
+            "distance": 4.859034609128354,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20285028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              2.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.0333333333333345
+          },
+          {
+            "distance": 6.208595770852255,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.5166666666666662
+          },
+          {
+            "distance": 8.536525859442934,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": true,
+            "seed": 20281034,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 9.083333333333364
+          },
+          {
+            "distance": 6.20490413849491,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              4,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.083333333333331
+          },
+          {
+            "distance": 6.210629344707982,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.5333333333333328
+          },
+          {
+            "distance": 5.22107842173168,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20291026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9999999999999978
+          },
+          {
+            "distance": 3.9584328027713096,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20291030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              1100,
+              0
+            ],
+            "charge": [
+              2,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 3.6666666666666585
+          },
+          {
+            "distance": 5.674519587308239,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20291033,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              1,
+              3
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 5.483333333333319
+          },
+          {
+            "distance": 5.317078457864577,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20289027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              2,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 4.233333333333324
+          },
+          {
+            "distance": 5.2607096878954955,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": false,
+            "seed": 20289034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9333333333333313
+          },
+          {
+            "distance": 6.231344971024431,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              2,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 4.499999999999989
+          },
+          {
+            "distance": 4.008895291214324,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20299028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              4
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              4.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 4.183333333333324
+          },
+          {
+            "distance": 4.796980070844198,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20299029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9166666666666647
+          },
+          {
+            "distance": 6.21343423358501,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20299030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              4,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.583333333333329
+          },
+          {
+            "distance": 5.222483563563751,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20299033,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              7,
+              3
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 10.683333333333444
+          },
+          {
+            "distance": 6.0499368263992,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.4499999999999997
+          },
+          {
+            "distance": 4.6390878616625555,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20297031,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              1,
+              2.5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 2.416666666666663
+          },
+          {
+            "distance": 4.059783788126848,
+            "aimError": 0.035,
+            "n": 7,
+            "reverse": false,
+            "seed": 20297032,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              4
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              5.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 4.666666666666655
+          },
+          {
+            "distance": 4.793589871024873,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20307025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.3999999999999964
+          },
+          {
+            "distance": 4.797660245467158,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20307027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.3999999999999964
+          },
+          {
+            "distance": 8.523066820602049,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": true,
+            "seed": 20307032,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 10.050000000000079
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 38,
+            "losses": 2,
+            "draws": 0
+          },
+          "10": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "14": {
+            "wins": 34,
+            "losses": 6,
+            "draws": 0
+          },
+          "20": {
+            "wins": 33,
+            "losses": 7,
+            "draws": 0
+          },
+          "28": {
+            "wins": 32,
+            "losses": 8,
+            "draws": 0
+          },
+          "36": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "chartreuse",
+      "right": "yellow",
+      "patch": {
+        "botAvoidControlProjectiles": true,
+        "botAimLeadFactor": 0.65,
+        "botTrackTargetDuringWindup": true
+      },
+      "target": {
+        "left": "chartreuse",
+        "right": "yellow",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 192,
+        "losses": 48,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 5.882848536509132,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20267025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4,
+              3
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 7.24999999999998
+          },
+          {
+            "distance": 7.325789657173752,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              6
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4.5,
+              3
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 8.966666666666692
+          },
+          {
+            "distance": 3.96412382896268,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20267031,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 3.016666666666661
+          },
+          {
+            "distance": 6.2354093440596685,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.8833333333333344
+          },
+          {
+            "distance": 7.674440490656348,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20277032,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              9
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              6,
+              3.5
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 12.933333333333556
+          },
+          {
+            "distance": 5.54310910989887,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20277034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              3.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.5166666666666662
+          },
+          {
+            "distance": 5.187013826423688,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20277034,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.3
+          },
+          {
+            "distance": 4.190552255842932,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": true,
+            "seed": 20271025,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 3.0666666666666607
+          },
+          {
+            "distance": 5.837276430564792,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20271027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.36666666666666664
+          },
+          {
+            "distance": 8.677590171295828,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20271028,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              4
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              6,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 6.683333333333315
+          },
+          {
+            "distance": 4.742640698024597,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20271031,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              2.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.8166666666666675
+          },
+          {
+            "distance": 6.014232369945937,
+            "aimError": 0.035,
+            "n": 7,
+            "reverse": false,
+            "seed": 20271032,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              4
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 3.399999999999993
+          },
+          {
+            "distance": 8.624960067792223,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20281025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              5
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              2,
+              2.5
+            ],
+            "lastDamageKind": [
+              "cc",
+              null
+            ],
+            "time": 8.533333333333337
+          },
+          {
+            "distance": 6.205467285800464,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.966666666666668
+          },
+          {
+            "distance": 4.016183209728735,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": false,
+            "seed": 20281031,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              4
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              7,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 3.0333333333333274
+          },
+          {
+            "distance": 8.531981824840447,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20281034,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 8.483333333333334
+          },
+          {
+            "distance": 6.080004996387282,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20275025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.5833333333333335
+          },
+          {
+            "distance": 8.521141745772757,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20275031,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 8.71666666666668
+          },
+          {
+            "distance": 4.855786756966038,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": false,
+            "seed": 20275034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.0333333333333345
+          },
+          {
+            "distance": 5.224765385087197,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.0666666666666678
+          },
+          {
+            "distance": 6.19038388927274,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20285028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.1333333333333342
+          },
+          {
+            "distance": 5.9668009695183,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20285030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.5833333333333335
+          },
+          {
+            "distance": 8.651159328105592,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20281025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              5
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              2,
+              2.5
+            ],
+            "lastDamageKind": [
+              "cc",
+              null
+            ],
+            "time": 9.083333333333364
+          },
+          {
+            "distance": 6.208595770852255,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.5166666666666662
+          },
+          {
+            "distance": 4.1739754862778184,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20281028,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              3,
+              6
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4.5,
+              3
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 12.183333333333518
+          },
+          {
+            "distance": 5.2175397746264105,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": true,
+            "seed": 20281028,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              6,
+              3
+            ],
+            "hp": [
+              1100,
+              0
+            ],
+            "charge": [
+              3,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 11.200000000000136
+          },
+          {
+            "distance": 6.09101271093516,
+            "aimError": 0.035,
+            "n": 4,
+            "reverse": false,
+            "seed": 20281029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.9500000000000013
+          },
+          {
+            "distance": 8.536525859442934,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": true,
+            "seed": 20281034,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 9.083333333333364
+          },
+          {
+            "distance": 6.204998038238983,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              4,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.083333333333331
+          },
+          {
+            "distance": 5.407543296592546,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.4499999999999997
+          },
+          {
+            "distance": 5.242473233852597,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20291026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9999999999999978
+          },
+          {
+            "distance": 6.2397799970469965,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20291028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              2.5,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 5.549999999999986
+          },
+          {
+            "distance": 6.627988442633873,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20291033,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              1.5,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 10.016666666666744
+          },
+          {
+            "distance": 6.0908297581946025,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20291034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.9500000000000013
+          },
+          {
+            "distance": 5.317078457864577,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20289027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              2,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 4.233333333333324
+          },
+          {
+            "distance": 6.163542818757992,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20289031,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              4
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              6,
+              2
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 4.24999999999999
+          },
+          {
+            "distance": 4.039380987328896,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20289031,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 4.19999999999999
+          },
+          {
+            "distance": 4.203629892273577,
+            "aimError": 0.035,
+            "n": 7,
+            "reverse": false,
+            "seed": 20289032,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              4
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              0,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 4.183333333333324
+          },
+          {
+            "distance": 5.3637375407462935,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20289033,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              4
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              6.5,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 4.216666666666657
+          },
+          {
+            "distance": 5.9431290771884715,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": false,
+            "seed": 20289034,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              8
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              6,
+              3.5
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 12.23333333333352
+          },
+          {
+            "distance": 4.796980070844198,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20299029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              2.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9166666666666647
+          },
+          {
+            "distance": 6.21343423358501,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20299030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              3
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              4,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.583333333333329
+          },
+          {
+            "distance": 6.0948119363407365,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.4333333333333331
+          },
+          {
+            "distance": 4.748891571782811,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20307025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.416666666666663
+          },
+          {
+            "distance": 4.797660245467158,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20307027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.3999999999999964
+          },
+          {
+            "distance": 4.210087568510384,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20307029,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              4
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              0,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 4.666666666666655
+          },
+          {
+            "distance": 8.544835170193297,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": true,
+            "seed": 20307032,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 10.083333333333414
+          },
+          {
+            "distance": 7.287899289949006,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20307034,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              4,
+              2.5
+            ],
+            "lastDamageKind": [
+              "cc",
+              null
+            ],
+            "time": 8.800000000000017
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 33,
+            "losses": 7,
+            "draws": 0
+          },
+          "10": {
+            "wins": 31,
+            "losses": 9,
+            "draws": 0
+          },
+          "14": {
+            "wins": 34,
+            "losses": 6,
+            "draws": 0
+          },
+          "20": {
+            "wins": 28,
+            "losses": 12,
+            "draws": 0
+          },
+          "28": {
+            "wins": 31,
+            "losses": 9,
+            "draws": 0
+          },
+          "36": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "chartreuse",
+      "right": "yellow",
+      "patch": {
+        "botAvoidControlProjectiles": true,
+        "botAimLeadFactor": 1,
+        "botTrackTargetDuringWindup": true
+      },
+      "target": {
+        "left": "chartreuse",
+        "right": "yellow",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 215,
+        "losses": 25,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 6.1952884310024094,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              5
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              7,
+              2.5
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 4.966666666666654
+          },
+          {
+            "distance": 6.259062417304801,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.8833333333333344
+          },
+          {
+            "distance": 5.187013826423688,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20277034,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              1
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.3
+          },
+          {
+            "distance": 4.146560915614621,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": true,
+            "seed": 20271025,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 3.0833333333333273
+          },
+          {
+            "distance": 5.918611344344504,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20281025,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              7
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              2,
+              2.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 9.533333333333387
+          },
+          {
+            "distance": 8.44290106170747,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20281034,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              5,
+              1
+            ],
+            "hp": [
+              3740,
+              0
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              null,
+              "cc"
+            ],
+            "time": 8.51666666666667
+          },
+          {
+            "distance": 4.811004848096628,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": false,
+            "seed": 20275034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.0500000000000012
+          },
+          {
+            "distance": 4.769987095005642,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20285028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.0666666666666678
+          },
+          {
+            "distance": 5.921959553018641,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20285030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 0.6000000000000002
+          },
+          {
+            "distance": 6.208595770852255,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.5166666666666662
+          },
+          {
+            "distance": 6.0461815072313,
+            "aimError": 0.035,
+            "n": 4,
+            "reverse": false,
+            "seed": 20281029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.966666666666668
+          },
+          {
+            "distance": 6.199564431698793,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              3
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              2.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.083333333333331
+          },
+          {
+            "distance": 4.605009874442194,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 1.4166666666666665
+          },
+          {
+            "distance": 3.9887189876111124,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20291026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              3
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              2.5,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9666666666666646
+          },
+          {
+            "distance": 6.263149222051413,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20291028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              0
+            ],
+            "hp": [
+              9020,
+              0
+            ],
+            "charge": [
+              2.5,
+              7
+            ],
+            "lastDamageKind": [
+              null,
+              "enhanced"
+            ],
+            "time": 5.549999999999986
+          },
+          {
+            "distance": 6.046042398706493,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20291034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 0.966666666666668
+          },
+          {
+            "distance": 4.108697371684872,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20289025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              5.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.466666666666663
+          },
+          {
+            "distance": 4.159878859037056,
+            "aimError": 0.035,
+            "n": 7,
+            "reverse": false,
+            "seed": 20289032,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              1,
+              4
+            ],
+            "hp": [
+              0,
+              3740
+            ],
+            "charge": [
+              0,
+              2
+            ],
+            "lastDamageKind": [
+              "enhanced",
+              null
+            ],
+            "time": 4.19999999999999
+          },
+          {
+            "distance": 4.749919672128441,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": false,
+            "seed": 20289034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              1,
+              2
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.9333333333333313
+          },
+          {
+            "distance": 4.101497186660665,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20299029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              0,
+              1100
+            ],
+            "charge": [
+              1.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.466666666666663
+          },
+          {
+            "distance": 6.0499368263992,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              1
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 1.4499999999999997
+          },
+          {
+            "distance": 4.594034389207392,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20297031,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              6380,
+              0
+            ],
+            "charge": [
+              1,
+              2.5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 2.4333333333333296
+          },
+          {
+            "distance": 3.948587350783811,
+            "aimError": 0.035,
+            "n": 9,
+            "reverse": true,
+            "seed": 20297034,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              1100,
+              0
+            ],
+            "charge": [
+              0.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "plague"
+            ],
+            "time": 2.966666666666661
+          },
+          {
+            "distance": 5.482113893846922,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20307027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              0,
+              2
+            ],
+            "hp": [
+              0,
+              9020
+            ],
+            "charge": [
+              2,
+              1
+            ],
+            "lastDamageKind": [
+              "plague",
+              null
+            ],
+            "time": 2.4333333333333296
+          },
+          {
+            "distance": 6.1926585162632195,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20307032,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              0,
+              6380
+            ],
+            "charge": [
+              7,
+              2.5
+            ],
+            "lastDamageKind": [
+              "cc",
+              null
+            ],
+            "time": 6.5333333333333155
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "10": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "14": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "20": {
+            "wins": 33,
+            "losses": 7,
+            "draws": 0
+          },
+          "28": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "36": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "mint",
+      "right": "cyan",
+      "patch": {
+        "botAvoidVolleyProjectiles": true
+      },
+      "target": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "orange",
+        "right": "mint",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "mint",
+      "right": "cyan",
+      "patch": {
+        "botAvoidVolleyProjectiles": true,
+        "attackPerceptionMinRange": 8,
+        "attackPerceptionRange": 10
+      },
+      "target": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "orange",
+        "right": "mint",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "mint",
+      "right": "cyan",
+      "patch": {
+        "botAvoidVolleyProjectiles": true,
+        "attackPerceptionMinRange": 9,
+        "attackPerceptionRange": 10
+      },
+      "target": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "orange",
+        "right": "mint",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "mint",
+      "right": "cyan",
+      "patch": {
+        "botAvoidVolleyProjectiles": true,
+        "attackPerceptionMinRange": 9.5,
+        "attackPerceptionRange": 10
+      },
+      "target": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "orange",
+        "right": "mint",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "cyan",
+      "right": "pink",
+      "patch": {
+        "botKnockbackUltimateTankRange": 5,
+        "botTrackTargetDuringWindup": true,
+        "botAimLeadFactor": 0.3
+      },
+      "target": {
+        "left": "cyan",
+        "right": "pink",
+        "seedBase": 20261025,
+        "wins": 237,
+        "losses": 3,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.3797000767711864,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": false,
+            "seed": 20277031,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              1320
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "bullet"
+            ],
+            "time": 3.3166666666666598
+          },
+          {
+            "distance": 4.243741709117438,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20271031,
+            "outcome": 1,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              3,
+              5
+            ],
+            "hp": [
+              1320,
+              0
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "bullet",
+              null
+            ],
+            "time": 3.21666666666666
+          },
+          {
+            "distance": 3.9882074028372445,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20291034,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              550
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "bullet"
+            ],
+            "time": 3.899999999999991
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 230,
+        "losses": 10,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 6.311840043742625,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20277030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              8,
+              7
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 9.950000000000074
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.035,
+            "n": 1,
+            "reverse": false,
+            "seed": 20271026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              4
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20271027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              4
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20281028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              5
+            ],
+            "hp": [
+              0,
+              268.5833333333331
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.61666666666621
+          },
+          {
+            "distance": 161.76436892956073,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20289027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              7
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 6.330323211402594,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              6
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 12.466666666666866
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              5
+            ],
+            "hp": [
+              0,
+              1368.5833333333335
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.61666666666621
+          },
+          {
+            "distance": 6.22523655224593,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": false,
+            "seed": 20297030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              8
+            ],
+            "hp": [
+              0,
+              4620
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 16.416666666667016
+          },
+          {
+            "distance": 7.262597899989435,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20307034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              6
+            ],
+            "hp": [
+              0,
+              3520
+            ],
+            "charge": [
+              1.5,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 12.650000000000208
+          },
+          {
+            "distance": 7.706639262725564,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20307034,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              7
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 12.63333333333354
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "36": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "cyan",
+      "right": "pink",
+      "patch": {
+        "botKnockbackUltimateTankRange": 5,
+        "botTrackTargetDuringWindup": true,
+        "botAimLeadFactor": 0.65
+      },
+      "target": {
+        "left": "cyan",
+        "right": "pink",
+        "seedBase": 20261025,
+        "wins": 238,
+        "losses": 1,
+        "draws": 1,
+        "failures": [
+          {
+            "distance": 4.1178561907144555,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": false,
+            "seed": 20277031,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              1320
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "bullet"
+            ],
+            "time": 3.299999999999993
+          },
+          {
+            "distance": 3.4561513660360528,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20291032,
+            "outcome": 0,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              0
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "bullet"
+            ],
+            "time": 3.9166666666666576
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 39,
+            "losses": 0,
+            "draws": 1
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 227,
+        "losses": 13,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 6.2877281810296815,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20277030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              8,
+              7
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 9.966666666666741
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20281028,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              5
+            ],
+            "hp": [
+              0,
+              268.5833333333331
+            ],
+            "charge": [
+              2.5,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.61666666666621
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20285026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              5
+            ],
+            "hp": [
+              0,
+              1368.5833333333335
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.61666666666621
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              4
+            ],
+            "hp": [
+              658.1666666666664,
+              0
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20285028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              5
+            ],
+            "hp": [
+              658.1666666666664,
+              0
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20285029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              5
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 124.10092802535644,
+            "aimError": 0.035,
+            "n": 4,
+            "reverse": true,
+            "seed": 20281029,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              3
+            ],
+            "hp": [
+              658.1666666666664,
+              0
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 162.17791634286982,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20289027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              7
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              5
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 7.038173063691304,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20307026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              6
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              3,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 17.10000000000031
+          },
+          {
+            "distance": 118.01179627329107,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20307030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              5
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 6.409592725394364,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20307030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              4
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 6.549999999999982
+          },
+          {
+            "distance": 6.298229362724177,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20307034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              6
+            ],
+            "hp": [
+              0,
+              3520
+            ],
+            "charge": [
+              1.5,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 12.30000000000019
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "14": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "20": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "28": {
+            "wins": 38,
+            "losses": 2,
+            "draws": 0
+          },
+          "36": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "left": "cyan",
+      "right": "pink",
+      "patch": {
+        "botKnockbackUltimateTankRange": 5,
+        "botTrackTargetDuringWindup": true,
+        "botAimLeadFactor": 1
+      },
+      "target": {
+        "left": "cyan",
+        "right": "pink",
+        "seedBase": 20261025,
+        "wins": 235,
+        "losses": 2,
+        "draws": 3,
+        "failures": [
+          {
+            "distance": 4.382771294619143,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": true,
+            "seed": 20271027,
+            "outcome": 0,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              3,
+              5
+            ],
+            "hp": [
+              0,
+              0
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "bullet",
+              null
+            ],
+            "time": 3.3666666666666596
+          },
+          {
+            "distance": 3.542952554137852,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": true,
+            "seed": 20281031,
+            "outcome": 0,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              3,
+              5
+            ],
+            "hp": [
+              0,
+              0
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "bullet",
+              null
+            ],
+            "time": 3.2333333333333267
+          },
+          {
+            "distance": 3.442501495152182,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20281032,
+            "outcome": -1,
+            "casts": [
+              1,
+              0
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              550
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "bullet"
+            ],
+            "time": 3.3166666666666598
+          },
+          {
+            "distance": 3.4153546960149614,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20289033,
+            "outcome": -1,
+            "casts": [
+              2,
+              0
+            ],
+            "attacks": [
+              5,
+              3
+            ],
+            "hp": [
+              0,
+              550
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              "bullet"
+            ],
+            "time": 4.533333333333323
+          },
+          {
+            "distance": 4.342368016755001,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20307033,
+            "outcome": 0,
+            "casts": [
+              0,
+              1
+            ],
+            "attacks": [
+              3,
+              5
+            ],
+            "hp": [
+              0,
+              0
+            ],
+            "charge": [
+              1.5,
+              1.5
+            ],
+            "lastDamageKind": [
+              "bullet",
+              null
+            ],
+            "time": 4.983333333333321
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 37,
+            "losses": 1,
+            "draws": 2
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "36": {
+            "wins": 39,
+            "losses": 0,
+            "draws": 1
+          }
+        }
+      },
+      "prior": {
+        "left": "mint",
+        "right": "cyan",
+        "seedBase": 20261025,
+        "wins": 228,
+        "losses": 12,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 6.309450978706974,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20277030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              8,
+              7
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 10.016666666666744
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20285026,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              5
+            ],
+            "hp": [
+              0,
+              1368.5833333333335
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.61666666666621
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20285029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              5
+            ],
+            "hp": [
+              0,
+              658.1666666666664
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 128.8710789263169,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": true,
+            "seed": 20281028,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              3
+            ],
+            "hp": [
+              658.1666666666664,
+              0
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 31.033333333332852
+          },
+          {
+            "distance": 158.65928287901664,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20289027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              7
+            ],
+            "hp": [
+              0,
+              2107.4166666666683
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.1833333333329
+          },
+          {
+            "distance": 6.416305436688107,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20299027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              6
+            ],
+            "hp": [
+              0,
+              2420
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 11.833333333333501
+          },
+          {
+            "distance": 6.43448957971913,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              7
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 12.483333333333533
+          },
+          {
+            "distance": 166.87720036002523,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              5
+            ],
+            "hp": [
+              0,
+              1368.5833333333335
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 30.61666666666621
+          },
+          {
+            "distance": 6.224403326822582,
+            "aimError": 0.035,
+            "n": 5,
+            "reverse": false,
+            "seed": 20297030,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              8
+            ],
+            "hp": [
+              0,
+              4620
+            ],
+            "charge": [
+              1,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 16.466666666667013
+          },
+          {
+            "distance": 7.893546843101257,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20307030,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              8,
+              7
+            ],
+            "hp": [
+              2420,
+              0
+            ],
+            "charge": [
+              2,
+              2
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 12.400000000000196
+          },
+          {
+            "distance": 7.397868966482095,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20307034,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              6
+            ],
+            "hp": [
+              0,
+              3520
+            ],
+            "charge": [
+              1.5,
+              2
+            ],
+            "lastDamageKind": [
+              "bullet",
+              "mint"
+            ],
+            "time": 12.666666666666876
+          },
+          {
+            "distance": 7.875653504541861,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20307034,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              7
+            ],
+            "hp": [
+              3520,
+              0
+            ],
+            "charge": [
+              2,
+              1.5
+            ],
+            "lastDamageKind": [
+              "mint",
+              "bullet"
+            ],
+            "time": 12.650000000000208
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 38,
+            "losses": 2,
+            "draws": 0
+          },
+          "20": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "28": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "36": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          }
+        }
+      }
+    }
+  ]
+}

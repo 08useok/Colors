@@ -1,0 +1,19 @@
+{
+  "preparing": {
+    "pending": true,
+    "fx": 1,
+    "label": "수정 분석 준비 0.5초 · 표시된 돌진 경로에서 벗어나세요",
+    "hidden": false,
+    "dash": false
+  },
+  "after": {
+    "pending": false,
+    "fx": 0,
+    "label": "수정 분석 준비 0.5초 · 표시된 돌진 경로에서 벗어나세요",
+    "hidden": true,
+    "dash": false,
+    "errors": []
+  },
+  "componentImage": "beta8-crystal-telegraph-component.png",
+  "limitation": "Actual game warning/cleanup checked; native whole-window screenshots blocked while minimized. Image renders the actual visual module in an isolated scene."
+}

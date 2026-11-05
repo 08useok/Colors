@@ -1,0 +1,11 @@
+{
+  "signup": true,
+  "passwordConfirmation": true,
+  "wrongPassword": true,
+  "guestCredits": 733,
+  "accountCredits": 444,
+  "restoredAfterReload": true,
+  "restoredAfterLogin": true,
+  "cookieHttpOnly": true,
+  "pageErrors": []
+}

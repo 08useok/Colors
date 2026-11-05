@@ -1,0 +1,122 @@
+{
+  "balance": {
+    "gold": {
+      "health": 7380,
+      "stages": [
+        1300,
+        600,
+        300
+      ],
+      "ultimateTick": 138
+    },
+    "purple": {
+      "required": 2,
+      "perBasicHit": 1,
+      "poison": 1250,
+      "poisonDuration": 5,
+      "needleSpeed": 36,
+      "ultimateDamage": 1000,
+      "thornDamage": 550,
+      "recycle": 0.25
+    },
+    "crystal": {
+      "fixed": 28000,
+      "shielded50000Remaining": 22000,
+      "boundMovement": 0,
+      "stages": [
+        {
+          "stage": 2,
+          "damage": 1000,
+          "charge": 0.5
+        },
+        {
+          "stage": 3,
+          "damage": 1000,
+          "charge": 0
+        }
+      ]
+    }
+  },
+  "profile": {
+    "mapSide": 120,
+    "bounds": 59,
+    "liveMapSide": 100,
+    "liveBounds": 49,
+    "distances": [
+      6,
+      10,
+      14,
+      20,
+      28,
+      36
+    ],
+    "aimErrors": [
+      0.035,
+      0.1
+    ],
+    "seedsPerScenario": 10,
+    "zone": {
+      "start": 30,
+      "end": 45,
+      "startRadius": 40,
+      "endRadius": 8,
+      "damagePerSecond": 0.25
+    },
+    "scope": "Enlarged 120x120 open simulation arena (live map is 100x100); historical synthetic zone, no obstacles or multiplayer spawns"
+  },
+  "checked": 408,
+  "outcomeDifferences": 0,
+  "hpDifferences": 2,
+  "differences": [
+    {
+      "first": "azure",
+      "second": "lavender",
+      "scenario": {
+        "distance": 10,
+        "aimError": 0.035,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20271025,
+      "mirror": -1,
+      "outcome": 1,
+      "expectedOutcome": 1,
+      "hp": [
+        10037.5,
+        0
+      ],
+      "expectedHp": [
+        8827.5,
+        0
+      ],
+      "outcomeMatch": true,
+      "hpMatch": false
+    },
+    {
+      "first": "azure",
+      "second": "lavender",
+      "scenario": {
+        "distance": 20,
+        "aimError": 0.1,
+        "bounds": 59,
+        "level": 6
+      },
+      "seed": 20291025,
+      "mirror": -1,
+      "outcome": -1,
+      "expectedOutcome": -1,
+      "hp": [
+        0,
+        3300
+      ],
+      "expectedHp": [
+        0,
+        1210
+      ],
+      "outcomeMatch": true,
+      "hpMatch": false
+    }
+  ],
+  "sourceHashesMatch": true,
+  "scope": "Target edges, seed 0, distances from current report, both actor orders; isolated in-browser combat worlds, no rendered play-through"
+}

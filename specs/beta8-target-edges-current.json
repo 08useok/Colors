@@ -1,0 +1,703 @@
+{
+  "date": "2026-10-27T10:30:14.055Z",
+  "scope": "17 intended edges only, 240 games per edge; not a full matrix",
+  "rows": [
+    {
+      "left": "red",
+      "right": "chartreuse",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "chartreuse",
+      "right": "yellow",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "yellow",
+      "right": "ivory",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "ivory",
+      "right": "salmon",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "salmon",
+      "right": "gold",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "gold",
+      "right": "green",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "green",
+      "right": "azure",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "azure",
+      "right": "lavender",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "lavender",
+      "right": "crimson",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "crimson",
+      "right": "blue",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "blue",
+      "right": "orange",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "orange",
+      "right": "mint",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "mint",
+      "right": "cyan",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "cyan",
+      "right": "pink",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "purple",
+      "right": "crystal",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "seedBase": 20261025,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": [],
+      "byDistance": {
+        "6": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "10": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "14": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "20": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "28": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        },
+        "36": {
+          "wins": 40,
+          "losses": 0,
+          "draws": 0
+        }
+      }
+    }
+  ]
+}

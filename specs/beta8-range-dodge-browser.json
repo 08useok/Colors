@@ -1,0 +1,17 @@
+{
+  "range": {
+    "range": 20,
+    "recognition": 20,
+    "attacks": 3,
+    "damage": 3240
+  },
+  "dodge": {
+    "active": true,
+    "cooldown": 0.9666666666666667,
+    "attacks": 1,
+    "position": [
+      5.454506349655071,
+      -0.46841059145549446
+    ]
+  }
+}

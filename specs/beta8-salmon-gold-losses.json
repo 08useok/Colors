@@ -1,0 +1,2746 @@
+{
+  "profile": {
+    "mapSide": 120,
+    "bounds": 59,
+    "liveMapSide": 100,
+    "liveBounds": 49,
+    "distances": [
+      6,
+      10,
+      14,
+      20,
+      28,
+      36
+    ],
+    "aimErrors": [
+      0.035,
+      0.1
+    ],
+    "seedsPerScenario": 10,
+    "zone": {
+      "start": 30,
+      "end": 45,
+      "startRadius": 40,
+      "endRadius": 8,
+      "damagePerSecond": 0.25
+    },
+    "scope": "Enlarged 120x120 open simulation arena (live map is 100x100); historical synthetic zone, no obstacles or multiplayer spawns"
+  },
+  "scope": "Current baseline traces plus diagnostic-only counterfactuals; no gameplay changes",
+  "reports": [
+    {
+      "left": "salmon",
+      "right": "gold",
+      "variant": "baseline",
+      "wins": 238,
+      "losses": 2,
+      "draws": 0,
+      "lossCauses": {
+        "gold": 2
+      },
+      "lossCasts": {
+        "zero": 2,
+        "used": 0
+      },
+      "lossCharge": {
+        "8/20": 1,
+        "4/20": 1
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 14,
+          "aimError": 0.1,
+          "n": 0,
+          "reverse": false,
+          "cause": "gold",
+          "time": 22.7,
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            6
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "attackRangeSeconds": 9.266666666666667,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                8360,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 13.77,
+              "a": [
+                -6.9,
+                0
+              ],
+              "b": [
+                6.9,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6600,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.97,
+              "a": [
+                -2.1,
+                1.4
+              ],
+              "b": [
+                3.2,
+                -1.4
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                3740,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.09,
+              "a": [
+                1.2,
+                2.9
+              ],
+              "b": [
+                3.2,
+                -2.9
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                3740,
+                4818
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 14.32,
+              "a": [
+                -9,
+                11
+              ],
+              "b": [
+                2.8,
+                3
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                3740,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.29,
+              "a": [
+                -20,
+                18.5
+              ],
+              "b": [
+                -5.3,
+                11.5
+              ]
+            },
+            {
+              "time": 10.02,
+              "hp": [
+                3740,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.3,
+              "a": [
+                -30,
+                27.7
+              ],
+              "b": [
+                -16.4,
+                18.6
+              ]
+            },
+            {
+              "time": 12.02,
+              "hp": [
+                3740,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.31,
+              "a": [
+                -40.8,
+                35.2
+              ],
+              "b": [
+                -28.7,
+                24.3
+              ]
+            },
+            {
+              "time": 14.02,
+              "hp": [
+                3740,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.32,
+              "a": [
+                -53.1,
+                41
+              ],
+              "b": [
+                -39.8,
+                31.6
+              ]
+            },
+            {
+              "time": 16.02,
+              "hp": [
+                3740,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 11.85,
+              "a": [
+                -59,
+                48.3
+              ],
+              "b": [
+                -49.5,
+                41.2
+              ]
+            },
+            {
+              "time": 18.02,
+              "hp": [
+                3740,
+                4158
+              ],
+              "ammo": 4,
+              "charge": 4,
+              "floats": 0,
+              "gap": 7.5,
+              "a": [
+                -59,
+                59
+              ],
+              "b": [
+                -55.6,
+                52.3
+              ]
+            },
+            {
+              "time": 20.02,
+              "hp": [
+                880,
+                4158
+              ],
+              "ammo": 4,
+              "charge": 4,
+              "floats": 0,
+              "gap": 6.06,
+              "a": [
+                -57.7,
+                59
+              ],
+              "b": [
+                -58,
+                53
+              ]
+            },
+            {
+              "time": 22.02,
+              "hp": [
+                880,
+                198
+              ],
+              "ammo": 4,
+              "charge": 8,
+              "floats": 0,
+              "gap": 6.95,
+              "a": [
+                -58.3,
+                59
+              ],
+              "b": [
+                -58.2,
+                52
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.433,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.221601499061387
+            },
+            {
+              "time": 0.45,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 8360,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.881859827085811
+            },
+            {
+              "time": 0.883,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 6930,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.076318643729561
+            },
+            {
+              "time": 1.117,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.957017126136836
+            },
+            {
+              "time": 1.583,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.961400238348915
+            },
+            {
+              "time": 1.967,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 2,
+              "ownCasts": 0,
+              "gap": 5.966020059456696
+            },
+            {
+              "time": 2.383,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 5170,
+              "charge": 0,
+              "ownerCharge": 2,
+              "ownCasts": 0,
+              "gap": 5.869527119314752
+            },
+            {
+              "time": 2.45,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 3.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.870660547236493
+            },
+            {
+              "time": 3.483,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 5170,
+              "charge": 0,
+              "ownerCharge": 3.5,
+              "ownCasts": 0,
+              "gap": 5.153911156727577
+            },
+            {
+              "time": 3.533,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.068083950844188
+            },
+            {
+              "time": 3.933,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 3740,
+              "charge": 0,
+              "ownerCharge": 3.5,
+              "ownCasts": 0,
+              "gap": 5.6330337403716255
+            },
+            {
+              "time": 4.467,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.203739325713449
+            },
+            {
+              "time": 5.05,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 4818,
+              "charge": 5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.101897532051406
+            },
+            {
+              "time": 5.05,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.101897532051406
+            },
+            {
+              "time": 5.05,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.101897532051406
+            },
+            {
+              "time": 6.267,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 4158,
+              "charge": 5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 16.28140715523202
+            },
+            {
+              "time": 17.9,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 8.407906731138095
+            },
+            {
+              "time": 17.967,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 3740,
+              "charge": 4,
+              "ownerCharge": 5,
+              "ownCasts": 0,
+              "gap": 7.841854697150727
+            },
+            {
+              "time": 18.433,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 2310,
+              "charge": 4,
+              "ownerCharge": 5,
+              "ownCasts": 0,
+              "gap": 6.025857612827692
+            },
+            {
+              "time": 19.483,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 2310,
+              "charge": 4,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 6.034981154202609
+            },
+            {
+              "time": 19.733,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.017252118372083
+            },
+            {
+              "time": 19.917,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 6,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.047830354744637
+            },
+            {
+              "time": 19.933,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 880,
+              "charge": 4,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 6.049631079461482
+            },
+            {
+              "time": 20.717,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 858,
+              "charge": 6,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.0305718480741275
+            },
+            {
+              "time": 20.717,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.0305718480741275
+            },
+            {
+              "time": 20.717,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.0305718480741275
+            },
+            {
+              "time": 21.933,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.286914333442331
+            },
+            {
+              "time": 21.933,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.283372742312444
+            },
+            {
+              "time": 21.933,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 880,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 6.396823878882058
+            },
+            {
+              "time": 22.683,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 660,
+              "targetHp": 220,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 11.909192557590602
+            },
+            {
+              "time": 22.7,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 220,
+              "targetHp": 0,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 12.02831222934491
+            }
+          ]
+        },
+        {
+          "distance": 14,
+          "aimError": 0.1,
+          "n": 6,
+          "reverse": false,
+          "cause": "gold",
+          "time": 16.05,
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "attackRangeSeconds": 6.983333333333333,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                8360,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 13.77,
+              "a": [
+                -6.9,
+                0
+              ],
+              "b": [
+                6.9,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6930,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.9,
+              "a": [
+                -2.9,
+                -1.2
+              ],
+              "b": [
+                3,
+                -0.9
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                3080,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.04,
+              "a": [
+                -1.6,
+                -2.4
+              ],
+              "b": [
+                4.5,
+                -2.3
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                3080,
+                4818
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 14.33,
+              "a": [
+                -14.9,
+                -2.9
+              ],
+              "b": [
+                -0.9,
+                0
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                3080,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.29,
+              "a": [
+                -28.6,
+                -4
+              ],
+              "b": [
+                -12.7,
+                -0.4
+              ]
+            },
+            {
+              "time": 10.02,
+              "hp": [
+                3080,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.31,
+              "a": [
+                -41.8,
+                -6.9
+              ],
+              "b": [
+                -25.9,
+                -3.5
+              ]
+            },
+            {
+              "time": 12.02,
+              "hp": [
+                3080,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 16.32,
+              "a": [
+                -54.7,
+                -11.6
+              ],
+              "b": [
+                -38.7,
+                -8.2
+              ]
+            },
+            {
+              "time": 14.02,
+              "hp": [
+                3080,
+                4158
+              ],
+              "ammo": 4,
+              "charge": 4,
+              "floats": 0,
+              "gap": 8.4,
+              "a": [
+                -59,
+                -15.5
+              ],
+              "b": [
+                -51.4,
+                -12
+              ]
+            },
+            {
+              "time": 16.02,
+              "hp": [
+                1320,
+                4158
+              ],
+              "ammo": 3,
+              "charge": 4,
+              "floats": 1,
+              "gap": 5.57,
+              "a": [
+                -59,
+                -15.2
+              ],
+              "b": [
+                -54.7,
+                -11.7
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.433,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.223605545895197
+            },
+            {
+              "time": 0.45,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 8360,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.8840982487948885
+            },
+            {
+              "time": 0.883,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 6930,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.994461293357363
+            },
+            {
+              "time": 1.117,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.995921165881242
+            },
+            {
+              "time": 1.967,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 6930,
+              "charge": 0,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.895144466054844
+            },
+            {
+              "time": 2.45,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.007816794086901
+            },
+            {
+              "time": 2.483,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 5500,
+              "charge": 0,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.007838933622315
+            },
+            {
+              "time": 2.533,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 660,
+              "targetHp": 4840,
+              "charge": 0,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 6.007845367204098
+            },
+            {
+              "time": 2.55,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 4510,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.007850541725499
+            },
+            {
+              "time": 3.483,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 4510,
+              "charge": 0,
+              "ownerCharge": 4.5,
+              "ownCasts": 0,
+              "gap": 5.111341660232705
+            },
+            {
+              "time": 3.583,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.023109069906109
+            },
+            {
+              "time": 3.867,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 3080,
+              "charge": 0,
+              "ownerCharge": 4.5,
+              "ownCasts": 0,
+              "gap": 5.4772745454984975
+            },
+            {
+              "time": 3.883,
+              "type": "ultimatePrepare",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 3080,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.5906183186001
+            },
+            {
+              "time": 4.133,
+              "type": "ultimate",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 3080,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.045499791204126
+            },
+            {
+              "time": 4.467,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.166114932746871
+            },
+            {
+              "time": 5.05,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 4818,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.06217120968822
+            },
+            {
+              "time": 5.05,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.06217120968822
+            },
+            {
+              "time": 5.05,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.06217120968822
+            },
+            {
+              "time": 6.267,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 4158,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 16.287360648716355
+            },
+            {
+              "time": 14.017,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 8.512878854948148
+            },
+            {
+              "time": 14.133,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 3080,
+              "charge": 4,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.82132744556327
+            },
+            {
+              "time": 14.617,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 1650,
+              "charge": 4,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.03180185960407
+            },
+            {
+              "time": 15.367,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 1320,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.342256353525719
+            },
+            {
+              "time": 15.633,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 1320,
+              "charge": 4,
+              "ownerCharge": 2,
+              "ownCasts": 0,
+              "gap": 5.188287707964403
+            },
+            {
+              "time": 16.017,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 2,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.572463984794166
+            },
+            {
+              "time": 16.05,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 4,
+              "ownerCharge": 2,
+              "ownCasts": 0,
+              "gap": 5.643824762328539
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "left": "salmon",
+      "right": "gold",
+      "variant": "noLowHealthRetreat",
+      "wins": 6,
+      "losses": 234,
+      "draws": 0,
+      "lossCauses": {
+        "gold": 234
+      },
+      "lossCasts": {
+        "zero": 234,
+        "used": 0
+      },
+      "lossCharge": {
+        "8/20": 214,
+        "4/20": 20
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 0,
+          "reverse": false,
+          "cause": "gold",
+          "time": 10.383,
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            6
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "attackRangeSeconds": 10.383333333333333,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                8360,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6,
+              "a": [
+                -3,
+                0
+              ],
+              "b": [
+                3,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6930,
+                4818
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 6.12,
+              "a": [
+                -2.7,
+                1.3
+              ],
+              "b": [
+                3.4,
+                1.7
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                4070,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 5.58,
+              "a": [
+                -1.7,
+                3.1
+              ],
+              "b": [
+                3.8,
+                1.9
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                4070,
+                858
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 5.79,
+              "a": [
+                -1.5,
+                2
+              ],
+              "b": [
+                4.1,
+                0.6
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                1650,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 7.39,
+              "a": [
+                8.2,
+                -4.5
+              ],
+              "b": [
+                15.6,
+                -3.8
+              ]
+            },
+            {
+              "time": 10.02,
+              "hp": [
+                1650,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 7.43,
+              "a": [
+                20.4,
+                -7.5
+              ],
+              "b": [
+                27.6,
+                -9.5
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.033,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.00014210610061
+            },
+            {
+              "time": 0.033,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 8360,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.000267013009875
+            },
+            {
+              "time": 0.45,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 6930,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.002423397687757
+            },
+            {
+              "time": 0.833,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.009081765298557
+            },
+            {
+              "time": 0.833,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.009081765298557
+            },
+            {
+              "time": 0.833,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.009081765298557
+            },
+            {
+              "time": 2.05,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 4158,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.126691711344239
+            },
+            {
+              "time": 2.05,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.126923741404973
+            },
+            {
+              "time": 2.05,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 6930,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.013732295613234
+            },
+            {
+              "time": 2.467,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 5500,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.008213140533242
+            },
+            {
+              "time": 3.083,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.1056227652717485
+            },
+            {
+              "time": 3.567,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 5500,
+              "charge": 4,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 5.569556881988751
+            },
+            {
+              "time": 3.967,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 4070,
+              "charge": 4,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 5.576619313797231
+            },
+            {
+              "time": 4.067,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 4.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.57713147974476
+            },
+            {
+              "time": 4.833,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 858,
+              "charge": 4.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.588010362790732
+            },
+            {
+              "time": 4.833,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 4.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.588010362790732
+            },
+            {
+              "time": 4.833,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 4.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.588010362790732
+            },
+            {
+              "time": 6.05,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 198,
+              "charge": 4.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.799783630285815
+            },
+            {
+              "time": 6.083,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 4.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.027502910953989
+            },
+            {
+              "time": 7.067,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.492029578326795
+            },
+            {
+              "time": 7.2,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 4070,
+              "charge": 8,
+              "ownerCharge": 4.5,
+              "ownCasts": 0,
+              "gap": 6.485309697433334
+            },
+            {
+              "time": 7.617,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 2640,
+              "charge": 8,
+              "ownerCharge": 4.5,
+              "ownCasts": 0,
+              "gap": 7.389178034982717
+            },
+            {
+              "time": 7.667,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 660,
+              "targetHp": 1980,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 7.38996436772068
+            },
+            {
+              "time": 7.683,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 1650,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 7.390204879737735
+            },
+            {
+              "time": 8.1,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.279656218021037
+            },
+            {
+              "time": 9.083,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.406351605752007
+            },
+            {
+              "time": 9.883,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 1650,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 7.429460668171104
+            },
+            {
+              "time": 10.1,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.799760549238478
+            },
+            {
+              "time": 10.333,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 220,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 8.309414639755316
+            },
+            {
+              "time": 10.383,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 220,
+              "targetHp": 0,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 8.30993477721967
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 0,
+          "reverse": true,
+          "cause": "gold",
+          "time": 15.283,
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            6
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            7,
+            7
+          ],
+          "attackRangeSeconds": 14.966666666666667,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                8360,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6,
+              "a": [
+                -3,
+                0
+              ],
+              "b": [
+                3,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6930,
+                4818
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 5.89,
+              "a": [
+                -2.1,
+                1.6
+              ],
+              "b": [
+                3.4,
+                -0.3
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                5500,
+                858
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 5.9,
+              "a": [
+                -2.2,
+                2.9
+              ],
+              "b": [
+                3.7,
+                2.2
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                4070,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 6.49,
+              "a": [
+                9.3,
+                5.5
+              ],
+              "b": [
+                15.3,
+                7.9
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                1650,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 7.5,
+              "a": [
+                22.1,
+                7.4
+              ],
+              "b": [
+                27.9,
+                12.1
+              ]
+            },
+            {
+              "time": 10.02,
+              "hp": [
+                1650,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 8.47,
+              "a": [
+                33.5,
+                12.3
+              ],
+              "b": [
+                41.3,
+                15.6
+              ]
+            },
+            {
+              "time": 12.02,
+              "hp": [
+                1650,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 8.49,
+              "a": [
+                45.6,
+                19.3
+              ],
+              "b": [
+                54,
+                20.5
+              ]
+            },
+            {
+              "time": 14.02,
+              "hp": [
+                220,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 6.43,
+              "a": [
+                55.6,
+                24.1
+              ],
+              "b": [
+                59,
+                29.5
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.033,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 8360,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.000165600949918
+            },
+            {
+              "time": 0.167,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.001193524996832
+            },
+            {
+              "time": 0.45,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 6930,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.0027930655002
+            },
+            {
+              "time": 0.967,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.012196912284379
+            },
+            {
+              "time": 0.967,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.012196912284379
+            },
+            {
+              "time": 0.967,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.012196912284379
+            },
+            {
+              "time": 2.183,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 4158,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.920747218484147
+            },
+            {
+              "time": 2.183,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 6930,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.920960580218064
+            },
+            {
+              "time": 2.183,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.9211521123608675
+            },
+            {
+              "time": 2.6,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 5500,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.897587452472445
+            },
+            {
+              "time": 2.983,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 858,
+              "charge": 3,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.899872263242145
+            },
+            {
+              "time": 2.983,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 3,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.899872263242145
+            },
+            {
+              "time": 2.983,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 3,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.899872263242145
+            },
+            {
+              "time": 4.2,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 198,
+              "charge": 3,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.869201471291356
+            },
+            {
+              "time": 4.2,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 5500,
+              "charge": 8,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 5.982583270477072
+            },
+            {
+              "time": 4.2,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 3,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.9826096021605935
+            },
+            {
+              "time": 4.567,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 4070,
+              "charge": 8,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 6.439297046762021
+            },
+            {
+              "time": 5.183,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.564185886231644
+            },
+            {
+              "time": 6.217,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 4.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.4915615489129195
+            },
+            {
+              "time": 6.867,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 4070,
+              "charge": 8,
+              "ownerCharge": 4.5,
+              "ownCasts": 0,
+              "gap": 6.611874016855394
+            },
+            {
+              "time": 7.2,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.5919294321820034
+            },
+            {
+              "time": 7.317,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 2640,
+              "charge": 8,
+              "ownerCharge": 4.5,
+              "ownCasts": 0,
+              "gap": 7.487063672597176
+            },
+            {
+              "time": 7.367,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 660,
+              "targetHp": 1980,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 7.487977628058606
+            },
+            {
+              "time": 7.383,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 1650,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 7.488290355513931
+            },
+            {
+              "time": 8.217,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.497231052562578
+            },
+            {
+              "time": 9.2,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.623795407230064
+            },
+            {
+              "time": 9.55,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 1650,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 7.6251203255532065
+            },
+            {
+              "time": 12.95,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 8.369913326542438
+            },
+            {
+              "time": 13.067,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 1650,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 8.053045504103347
+            },
+            {
+              "time": 13.467,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 220,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 6.604947427915648
+            },
+            {
+              "time": 13.933,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.473678480558053
+            },
+            {
+              "time": 14.917,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 220,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 6.457187592627476
+            },
+            {
+              "time": 14.95,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 6,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.343534364669681
+            },
+            {
+              "time": 15.283,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 220,
+              "targetHp": 0,
+              "charge": 8,
+              "ownerCharge": 6,
+              "ownCasts": 0,
+              "gap": 6.349800315276796
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 1,
+          "reverse": false,
+          "cause": "gold",
+          "time": 10.367,
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            5
+          ],
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "attackRangeSeconds": 10.366666666666667,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                8360,
+                8118
+              ],
+              "ammo": 5,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6,
+              "a": [
+                -3,
+                0
+              ],
+              "b": [
+                3,
+                -0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6930,
+                4818
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 5.85,
+              "a": [
+                -3.4,
+                -1.6
+              ],
+              "b": [
+                2.3,
+                -3
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                5170,
+                4158
+              ],
+              "ammo": 5,
+              "charge": 4,
+              "floats": 0,
+              "gap": 5.54,
+              "a": [
+                -2.7,
+                -1.1
+              ],
+              "b": [
+                1.9,
+                -4.2
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                2446,
+                858
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 5.62,
+              "a": [
+                -2.4,
+                -0.5
+              ],
+              "b": [
+                3,
+                -1.9
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                26,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 7.47,
+              "a": [
+                7.9,
+                2.6
+              ],
+              "b": [
+                15.3,
+                1.5
+              ]
+            },
+            {
+              "time": 10.02,
+              "hp": [
+                26,
+                198
+              ],
+              "ammo": 5,
+              "charge": 8,
+              "floats": 0,
+              "gap": 7.5,
+              "a": [
+                20.8,
+                1.1
+              ],
+              "b": [
+                27.9,
+                3.5
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.017,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 8360,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.000434265132152
+            },
+            {
+              "time": 0.083,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 8118,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.001851556983417
+            },
+            {
+              "time": 0.433,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 6930,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.006864626577816
+            },
+            {
+              "time": 0.9,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.008871038396325
+            },
+            {
+              "time": 0.9,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.008871038396325
+            },
+            {
+              "time": 0.9,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 6.008871038396325
+            },
+            {
+              "time": 2.1,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4818,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.85592181883916
+            },
+            {
+              "time": 2.117,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 4158,
+              "charge": 1.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.855921818839161
+            },
+            {
+              "time": 2.117,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 6930,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.856059236504121
+            },
+            {
+              "time": 2.55,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 5500,
+              "charge": 4,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 5.864993395662274
+            },
+            {
+              "time": 3.067,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.068372030418952
+            },
+            {
+              "time": 3.283,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 5170,
+              "charge": 4,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 5.522226069200825
+            },
+            {
+              "time": 3.633,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 5170,
+              "charge": 4,
+              "ownerCharge": 3.5,
+              "ownCasts": 0,
+              "gap": 5.526341767854712
+            },
+            {
+              "time": 4.05,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 3740,
+              "charge": 4,
+              "ownerCharge": 3.5,
+              "ownCasts": 0,
+              "gap": 5.537693772892549
+            },
+            {
+              "time": 4.117,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 4158,
+              "charge": 5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.538903616052119
+            },
+            {
+              "time": 4.133,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 660,
+              "targetHp": 3080,
+              "charge": 4,
+              "ownerCharge": 5,
+              "ownCasts": 0,
+              "gap": 5.539431978260052
+            },
+            {
+              "time": 4.15,
+              "type": "ultimatePrepare",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 3080,
+              "charge": 4,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.539526860783571
+            },
+            {
+              "time": 4.15,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 2750,
+              "charge": 4,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.539726360894007
+            },
+            {
+              "time": 4.4,
+              "type": "ultimate",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 2750,
+              "charge": 4,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 5.542057193613842
+            },
+            {
+              "time": 4.617,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 152,
+              "targetHp": 2598,
+              "charge": 4,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 5.542490233900778
+            },
+            {
+              "time": 4.9,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 3300,
+              "targetHp": 858,
+              "charge": 0.5,
+              "ownerCharge": 4,
+              "ownCasts": 0,
+              "gap": 5.543690095403514
+            },
+            {
+              "time": 4.9,
+              "type": "salmonCapture",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 0.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.543690095403514
+            },
+            {
+              "time": 4.9,
+              "type": "salmonReward",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 858,
+              "charge": 0.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.543690095403514
+            },
+            {
+              "time": 5.617,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 152,
+              "targetHp": 2446,
+              "charge": 8,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 5.551875571157089
+            },
+            {
+              "time": 6.117,
+              "type": "damage",
+              "owner": "salmon",
+              "target": "gold",
+              "amount": 660,
+              "targetHp": 198,
+              "charge": 0.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 5.649395536406263
+            },
+            {
+              "time": 6.2,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 0.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.216819336532769
+            },
+            {
+              "time": 7.183,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 6.571418631198542
+            },
+            {
+              "time": 7.267,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 2446,
+              "charge": 8,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.581661715976562
+            },
+            {
+              "time": 7.7,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 1430,
+              "targetHp": 1016,
+              "charge": 8,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 7.465315142480354
+            },
+            {
+              "time": 7.75,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 660,
+              "targetHp": 356,
+              "charge": 8,
+              "ownerCharge": 2,
+              "ownCasts": 0,
+              "gap": 7.466399808810544
+            },
+            {
+              "time": 7.767,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 330,
+              "targetHp": 26,
+              "charge": 8,
+              "ownerCharge": 3,
+              "ownCasts": 0,
+              "gap": 7.466766059604545
+            },
+            {
+              "time": 8.2,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 3.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.360352460754941
+            },
+            {
+              "time": 9.183,
+              "type": "salmonRecover",
+              "owner": "salmon",
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.483801228533698
+            },
+            {
+              "time": 9.95,
+              "type": "attack",
+              "owner": "gold",
+              "target": "salmon",
+              "targetHp": 26,
+              "charge": 8,
+              "ownerCharge": 3.5,
+              "ownCasts": 0,
+              "gap": 7.499165665966866
+            },
+            {
+              "time": 10.2,
+              "type": "attack",
+              "owner": "salmon",
+              "target": "gold",
+              "targetHp": 198,
+              "charge": 3.5,
+              "ownerCharge": 8,
+              "ownCasts": 0,
+              "gap": 7.388703228643851
+            },
+            {
+              "time": 10.367,
+              "type": "damage",
+              "owner": "gold",
+              "target": "salmon",
+              "amount": 26,
+              "targetHp": 0,
+              "charge": 8,
+              "ownerCharge": 3.5,
+              "ownCasts": 0,
+              "gap": 7.505525188916578
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "scope": "Beta8 Salmon versus 16 opponents, deterministic bot duels; not a player win-rate prediction",
+  "level": 6,
+  "distances": [
+    6,
+    10,
+    14
+  ],
+  "aimErrors": [
+    0.035,
+    0.1
+  ],
+  "seeds": 10,
+  "reverseActorOrder": true,
+  "initialCharge": 0,
+  "timeLimit": 45,
+  "timeoutRule": "remaining HP percentage, draws worth 0.5",
+  "zone": "30–45 seconds, shrinks from 40 to 8",
+  "games": 1920,
+  "rows": [
+    {
+      "opponent": "gold",
+      "wins": 120,
+      "losses": 0,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 120,
+      "knockoutLosses": 0,
+      "timeLimitDecisions": 0,
+      "score": 1
+    },
+    {
+      "opponent": "green",
+      "wins": 83,
+      "losses": 37,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 83,
+      "knockoutLosses": 37,
+      "timeLimitDecisions": 0,
+      "score": 0.6916666666666667
+    },
+    {
+      "opponent": "pink",
+      "wins": 67,
+      "losses": 53,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 67,
+      "knockoutLosses": 53,
+      "timeLimitDecisions": 0,
+      "score": 0.5583333333333333
+    },
+    {
+      "opponent": "crimson",
+      "wins": 49,
+      "losses": 71,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 49,
+      "knockoutLosses": 71,
+      "timeLimitDecisions": 0,
+      "score": 0.4083333333333333
+    },
+    {
+      "opponent": "chartreuse",
+      "wins": 37,
+      "losses": 83,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 37,
+      "knockoutLosses": 83,
+      "timeLimitDecisions": 0,
+      "score": 0.30833333333333335
+    },
+    {
+      "opponent": "cyan",
+      "wins": 32,
+      "losses": 88,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 32,
+      "knockoutLosses": 88,
+      "timeLimitDecisions": 0,
+      "score": 0.26666666666666666
+    },
+    {
+      "opponent": "lavender",
+      "wins": 22,
+      "losses": 98,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 22,
+      "knockoutLosses": 98,
+      "timeLimitDecisions": 0,
+      "score": 0.18333333333333332
+    },
+    {
+      "opponent": "orange",
+      "wins": 12,
+      "losses": 108,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 12,
+      "knockoutLosses": 108,
+      "timeLimitDecisions": 0,
+      "score": 0.1
+    },
+    {
+      "opponent": "yellow",
+      "wins": 9,
+      "losses": 111,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 9,
+      "knockoutLosses": 111,
+      "timeLimitDecisions": 0,
+      "score": 0.075
+    },
+    {
+      "opponent": "red",
+      "wins": 5,
+      "losses": 115,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 5,
+      "knockoutLosses": 115,
+      "timeLimitDecisions": 0,
+      "score": 0.041666666666666664
+    },
+    {
+      "opponent": "blue",
+      "wins": 0,
+      "losses": 120,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 0,
+      "knockoutLosses": 120,
+      "timeLimitDecisions": 0,
+      "score": 0
+    },
+    {
+      "opponent": "purple",
+      "wins": 0,
+      "losses": 120,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 0,
+      "knockoutLosses": 120,
+      "timeLimitDecisions": 0,
+      "score": 0
+    },
+    {
+      "opponent": "ivory",
+      "wins": 0,
+      "losses": 120,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 0,
+      "knockoutLosses": 120,
+      "timeLimitDecisions": 0,
+      "score": 0
+    },
+    {
+      "opponent": "mint",
+      "wins": 0,
+      "losses": 120,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 0,
+      "knockoutLosses": 120,
+      "timeLimitDecisions": 0,
+      "score": 0
+    },
+    {
+      "opponent": "azure",
+      "wins": 0,
+      "losses": 120,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 0,
+      "knockoutLosses": 120,
+      "timeLimitDecisions": 0,
+      "score": 0
+    },
+    {
+      "opponent": "crystal",
+      "wins": 0,
+      "losses": 120,
+      "draws": 0,
+      "games": 120,
+      "knockoutWins": 0,
+      "knockoutLosses": 120,
+      "timeLimitDecisions": 0,
+      "score": 0
+    }
+  ]
+}

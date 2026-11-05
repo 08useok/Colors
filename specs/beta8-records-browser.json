@@ -1,0 +1,342 @@
+{
+  "restored": {
+    "recent": [
+      {
+        "id": "914561ce-b33e-4355-9a05-bca4ffab602e",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915672238,
+        "duration": 0,
+        "kills": 1,
+        "healing": 0,
+        "damage": 2500,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": false,
+        "won": true,
+        "draw": false,
+        "points": 8.5
+      }
+    ],
+    "total": {
+      "games": 1,
+      "wins": 1,
+      "losses": 0,
+      "draws": 0,
+      "abandoned": 0,
+      "kills": 1,
+      "deaths": 0,
+      "damage": 2500,
+      "healing": 0,
+      "points": 8.5,
+      "streak": 1,
+      "bestStreak": 1,
+      "bestKills": 1,
+      "bestDamage": 2500,
+      "bestHealing": 0
+    },
+    "characters": {
+      "red": {
+        "games": 1,
+        "wins": 1,
+        "losses": 0,
+        "draws": 0,
+        "abandoned": 0,
+        "kills": 1,
+        "deaths": 0,
+        "damage": 2500,
+        "healing": 0,
+        "points": 8.5,
+        "streak": 1,
+        "bestStreak": 1,
+        "bestKills": 1,
+        "bestDamage": 2500,
+        "bestHealing": 0
+      }
+    }
+  },
+  "loss": {
+    "before": {
+      "kills": 1,
+      "healing": 0,
+      "damage": 2500
+    },
+    "book": {
+      "recent": [
+        {
+          "id": "a7989d78-2178-4544-a664-3743e219a4c8",
+          "season": "beta8",
+          "mode": "knockout",
+          "character": "red",
+          "endedAt": 1792915738281,
+          "duration": 0,
+          "kills": 1,
+          "healing": 0,
+          "damage": 2500,
+          "deaths": 0,
+          "rank": null,
+          "abandoned": false,
+          "won": false,
+          "draw": false,
+          "points": 3.5
+        },
+        {
+          "id": "914561ce-b33e-4355-9a05-bca4ffab602e",
+          "season": "beta8",
+          "mode": "knockout",
+          "character": "red",
+          "endedAt": 1792915672238,
+          "duration": 0,
+          "kills": 1,
+          "healing": 0,
+          "damage": 2500,
+          "deaths": 0,
+          "rank": null,
+          "abandoned": false,
+          "won": true,
+          "draw": false,
+          "points": 8.5
+        }
+      ],
+      "total": {
+        "games": 2,
+        "wins": 1,
+        "losses": 1,
+        "draws": 0,
+        "abandoned": 0,
+        "kills": 2,
+        "deaths": 0,
+        "damage": 5000,
+        "healing": 0,
+        "points": 12,
+        "streak": 0,
+        "bestStreak": 1,
+        "bestKills": 1,
+        "bestDamage": 2500,
+        "bestHealing": 0
+      },
+      "characters": {
+        "red": {
+          "games": 2,
+          "wins": 1,
+          "losses": 1,
+          "draws": 0,
+          "abandoned": 0,
+          "kills": 2,
+          "deaths": 0,
+          "damage": 5000,
+          "healing": 0,
+          "points": 12,
+          "streak": 0,
+          "bestStreak": 1,
+          "bestKills": 1,
+          "bestDamage": 2500,
+          "bestHealing": 0
+        }
+      }
+    }
+  },
+  "quit": {
+    "recent": [
+      {
+        "id": "e667ecb0-70f8-47f4-9081-8491b81e0edd",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915738416,
+        "duration": 0,
+        "kills": 0,
+        "healing": 0,
+        "damage": 10000,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": true,
+        "won": false,
+        "draw": false,
+        "points": 0
+      },
+      {
+        "id": "a7989d78-2178-4544-a664-3743e219a4c8",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915738281,
+        "duration": 0,
+        "kills": 1,
+        "healing": 0,
+        "damage": 2500,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": false,
+        "won": false,
+        "draw": false,
+        "points": 3.5
+      },
+      {
+        "id": "914561ce-b33e-4355-9a05-bca4ffab602e",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915672238,
+        "duration": 0,
+        "kills": 1,
+        "healing": 0,
+        "damage": 2500,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": false,
+        "won": true,
+        "draw": false,
+        "points": 8.5
+      }
+    ],
+    "total": {
+      "games": 3,
+      "wins": 1,
+      "losses": 2,
+      "draws": 0,
+      "abandoned": 1,
+      "kills": 2,
+      "deaths": 0,
+      "damage": 15000,
+      "healing": 0,
+      "points": 12,
+      "streak": 0,
+      "bestStreak": 1,
+      "bestKills": 1,
+      "bestDamage": 10000,
+      "bestHealing": 0
+    },
+    "characters": {
+      "red": {
+        "games": 3,
+        "wins": 1,
+        "losses": 2,
+        "draws": 0,
+        "abandoned": 1,
+        "kills": 2,
+        "deaths": 0,
+        "damage": 15000,
+        "healing": 0,
+        "points": 12,
+        "streak": 0,
+        "bestStreak": 1,
+        "bestKills": 1,
+        "bestDamage": 10000,
+        "bestHealing": 0
+      }
+    }
+  },
+  "personal": "베타 테스트 기록정식 시즌과 별도 집계 · 연습 제외 · 소수 점수 누적전적개인 기록랭킹이번 시즌경기3승리1패배2무승부0승률33.3%킬2데스0피해량15,000회복량0시즌 점수12개인 최고 기록연승 1 · 한 경기 최다 킬 1 · 피해 10,000 · 회복 0캐릭터별 기록Red3경기 · 승률 33.3% · 평균 킬 0.7 · 피해 5,000 · 회복 0",
+  "ranking": "베타 테스트 기록정식 시즌과 별도 집계 · 연습 제외 · 소수 점수 누적전적개인 기록랭킹이 PC의 베타 계정 랭킹 · 상위 100명킬 + 피해량/1,000 + 회복량/2,000 + 승리 5점베타 시험용: 경기 수치의 서버 전투 검증은 아직 적용되지 않습니다.내 순위1위 · 기록 검증12점 · 1승 · 대표 Red상위 순위1위 · 기록 검증12점 · 1승 · 대표 Red다시 불러오기",
+  "interrupted": {
+    "recent": [
+      {
+        "id": "5c56fe78-ba9a-4c12-a385-480ee715234f",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915739360,
+        "duration": 4.163336342344337e-17,
+        "kills": 0,
+        "healing": 0,
+        "damage": 500,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": true,
+        "won": false,
+        "draw": false,
+        "points": 0
+      },
+      {
+        "id": "e667ecb0-70f8-47f4-9081-8491b81e0edd",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915738416,
+        "duration": 0,
+        "kills": 0,
+        "healing": 0,
+        "damage": 10000,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": true,
+        "won": false,
+        "draw": false,
+        "points": 0
+      },
+      {
+        "id": "a7989d78-2178-4544-a664-3743e219a4c8",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915738281,
+        "duration": 0,
+        "kills": 1,
+        "healing": 0,
+        "damage": 2500,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": false,
+        "won": false,
+        "draw": false,
+        "points": 3.5
+      },
+      {
+        "id": "914561ce-b33e-4355-9a05-bca4ffab602e",
+        "season": "beta8",
+        "mode": "knockout",
+        "character": "red",
+        "endedAt": 1792915672238,
+        "duration": 0,
+        "kills": 1,
+        "healing": 0,
+        "damage": 2500,
+        "deaths": 0,
+        "rank": null,
+        "abandoned": false,
+        "won": true,
+        "draw": false,
+        "points": 8.5
+      }
+    ],
+    "total": {
+      "games": 4,
+      "wins": 1,
+      "losses": 3,
+      "draws": 0,
+      "abandoned": 2,
+      "kills": 2,
+      "deaths": 0,
+      "damage": 15500,
+      "healing": 0,
+      "points": 12,
+      "streak": 0,
+      "bestStreak": 1,
+      "bestKills": 1,
+      "bestDamage": 10000,
+      "bestHealing": 0
+    },
+    "characters": {
+      "red": {
+        "games": 4,
+        "wins": 1,
+        "losses": 3,
+        "draws": 0,
+        "abandoned": 2,
+        "kills": 2,
+        "deaths": 0,
+        "damage": 15500,
+        "healing": 0,
+        "points": 12,
+        "streak": 0,
+        "bestStreak": 1,
+        "bestKills": 1,
+        "bestDamage": 10000,
+        "bestHealing": 0
+      }
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,55 @@
+{
+  "samples": [
+    {
+      "time": 0.12,
+      "held": true,
+      "hand": [
+        -40.16812386090842,
+        7.227115102077158,
+        0.1383873924615558
+      ],
+      "changed": 3,
+      "flying": false
+    },
+    {
+      "time": 0.28,
+      "held": true,
+      "hand": [
+        -40.36481464953187,
+        8.181002694707862,
+        -0.18786662363608414
+      ],
+      "changed": 3,
+      "flying": false
+    },
+    {
+      "time": 0.4,
+      "held": false,
+      "hand": [
+        -40.23726395566765,
+        7.895493638377371,
+        0.547081715603981
+      ],
+      "changed": 3,
+      "flying": true
+    },
+    {
+      "time": 0.85,
+      "held": false,
+      "hand": [
+        -40.36330206642918,
+        7.119356421422835,
+        0.08389607930712198
+      ],
+      "changed": 0,
+      "flying": true
+    }
+  ],
+  "bot": {
+    "held": true,
+    "changed": 3,
+    "released": true,
+    "restored": true
+  },
+  "pageErrors": []
+}

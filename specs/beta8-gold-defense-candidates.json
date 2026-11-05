@@ -1,0 +1,3673 @@
+{
+  "baseline": {
+    "wins": 163,
+    "losses": 74,
+    "draws": 3,
+    "failures": [
+      {
+        "key": "6:0.035:1:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          1688.5,
+          0
+        ],
+        "charge": [
+          5,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "6:0.035:2:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          6,
+          10
+        ],
+        "hp": [
+          0,
+          4950
+        ],
+        "charge": [
+          4.5,
+          6
+        ],
+        "distance": 2.782644920115253,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 11.300000000000141
+      },
+      {
+        "key": "6:0.035:2:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          12,
+          7
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 120.57482495230111,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "6:0.035:5:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 141.88876539454566,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "6:0.035:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          148.5
+        ],
+        "charge": [
+          0.5,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "6:0.035:7:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          14,
+          8
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 110.47983118887791,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "6:0.035:9:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          7,
+          13
+        ],
+        "hp": [
+          0,
+          4950
+        ],
+        "charge": [
+          4.5,
+          6
+        ],
+        "distance": 2.4511671476693326,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 15.650000000000357
+      },
+      {
+        "key": "6:0.035:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          148.5,
+          0
+        ],
+        "charge": [
+          4,
+          0.5
+        ],
+        "distance": 163.08957603889334,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "6:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          1688.5
+        ],
+        "charge": [
+          0.5,
+          5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "6:0.1:0:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "6:0.1:2:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          6,
+          10
+        ],
+        "hp": [
+          0,
+          2458.5
+        ],
+        "charge": [
+          0.5,
+          5.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "6:0.1:2:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          1688.5,
+          0
+        ],
+        "charge": [
+          5,
+          0.5
+        ],
+        "distance": 118.39638548957905,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "6:0.1:3:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          2788.5
+        ],
+        "charge": [
+          0,
+          5.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "6:0.1:3:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          1248.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0
+        ],
+        "distance": 161.36717902224066,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "6:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          1248.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0
+        ],
+        "distance": 163.90101353681814,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "6:0.1:5:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          0,
+          148.5
+        ],
+        "charge": [
+          0.5,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "6:0.1:7:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "6:0.1:8:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 149.477095754463,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "6:0.1:9:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          7,
+          13
+        ],
+        "hp": [
+          0,
+          6380
+        ],
+        "charge": [
+          3,
+          6
+        ],
+        "distance": 2.1429931262341197,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 15.666666666667025
+      },
+      {
+        "key": "6:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          14,
+          8
+        ],
+        "hp": [
+          2788.5,
+          0
+        ],
+        "charge": [
+          5.5,
+          0
+        ],
+        "distance": 127.57182899550685,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "10:0.035:5:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          0,
+          148.5
+        ],
+        "charge": [
+          0.5,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "10:0.035:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "10:0.035:6:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 119.09005970469951,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "10:0.1:3:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "10:0.1:4:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          1248.5
+        ],
+        "charge": [
+          0,
+          4.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "10:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          1248.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "10:0.1:7:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          6,
+          10
+        ],
+        "hp": [
+          0,
+          110
+        ],
+        "charge": [
+          0,
+          3.5
+        ],
+        "distance": 140.6711876052502,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.66666666666615
+      },
+      {
+        "key": "10:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          1358.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0.5
+        ],
+        "distance": 139.45149549726477,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "14:0.035:3:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          1248.5
+        ],
+        "charge": [
+          0,
+          4.5
+        ],
+        "distance": 155.15927490628204,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "14:0.035:5:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          0,
+          918.5
+        ],
+        "charge": [
+          0.5,
+          4.5
+        ],
+        "distance": 128.5854940980272,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "14:0.035:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "14:0.1:2:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          1248.5
+        ],
+        "charge": [
+          0,
+          4.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "14:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "14:0.1:6:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "14:0.1:7:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          6,
+          10
+        ],
+        "hp": [
+          0,
+          2788.5
+        ],
+        "charge": [
+          0,
+          5.5
+        ],
+        "distance": 159.79502425158938,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          2458.5,
+          0
+        ],
+        "charge": [
+          5.5,
+          0.5
+        ],
+        "distance": 154.82717650732926,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "14:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 139.0599492325668,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "20:0.035:1:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "20:0.035:1:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 154.7012927483973,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "20:0.035:4:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          1248.5
+        ],
+        "charge": [
+          0,
+          4.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "20:0.035:4:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          1248.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "20:0.035:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          148.5
+        ],
+        "charge": [
+          0.5,
+          4
+        ],
+        "distance": 145.74119110977455,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "20:0.035:7:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          6,
+          11
+        ],
+        "hp": [
+          0,
+          4950
+        ],
+        "charge": [
+          4.5,
+          6
+        ],
+        "distance": 2.3276890080333175,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 13.550000000000253
+      },
+      {
+        "key": "20:0.035:7:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          12,
+          7
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 120.37796141537113,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "20:0.1:1:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          1688.5
+        ],
+        "charge": [
+          0.5,
+          5
+        ],
+        "distance": 165.4420353142674,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "20:0.1:1:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          918.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "20:0.1:3:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          2788.5
+        ],
+        "charge": [
+          0,
+          5.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "20:0.1:8:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "20:0.1:9:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          2458.5
+        ],
+        "charge": [
+          0.5,
+          5.5
+        ],
+        "distance": 159.21398772292827,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "20:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          2788.5,
+          0
+        ],
+        "charge": [
+          5.5,
+          0
+        ],
+        "distance": 122.66887485481817,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "28:0.035:3:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "28:0.035:4:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          110,
+          0
+        ],
+        "charge": [
+          3.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.66666666666615
+      },
+      {
+        "key": "28:0.035:5:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          1688.5,
+          0
+        ],
+        "charge": [
+          5,
+          0.5
+        ],
+        "distance": 144.32230990171703,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "28:0.035:6:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          4950
+        ],
+        "charge": [
+          4.5,
+          6
+        ],
+        "distance": 2.3942266654974693,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 9.783333333333399
+      },
+      {
+        "key": "28:0.035:6:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          4950,
+          0
+        ],
+        "charge": [
+          6,
+          4.5
+        ],
+        "distance": 2.55125704449395,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 9.833333333333401
+      },
+      {
+        "key": "28:0.035:7:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          2018.5,
+          0
+        ],
+        "charge": [
+          5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "28:0.035:9:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          918.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 136.46641766308568,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "28:0.035:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          148.5,
+          0
+        ],
+        "charge": [
+          4,
+          0.5
+        ],
+        "distance": 155.18916997501165,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "28:0.1:1:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 152.0635740774156,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "28:0.1:1:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "28:0.1:2:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          6,
+          10
+        ],
+        "hp": [
+          0,
+          918.5
+        ],
+        "charge": [
+          0.5,
+          4.5
+        ],
+        "distance": 144.71983487331627,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "28:0.1:5:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "28:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          12,
+          7
+        ],
+        "hp": [
+          2788.5,
+          0
+        ],
+        "charge": [
+          5.5,
+          0
+        ],
+        "distance": 123.7738415598068,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.316666666666226
+      },
+      {
+        "key": "36:0.035:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          148.5
+        ],
+        "charge": [
+          0.5,
+          4
+        ],
+        "distance": 135.63947215597543,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.035:0:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          148.5,
+          0
+        ],
+        "charge": [
+          4,
+          0.5
+        ],
+        "distance": 123.09991708210838,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.035:3:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          148.5,
+          0
+        ],
+        "charge": [
+          4,
+          0.5
+        ],
+        "distance": 125.72338740520091,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.035:5:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          7,
+          12
+        ],
+        "hp": [
+          0,
+          1248.5
+        ],
+        "charge": [
+          0,
+          4.5
+        ],
+        "distance": 128.56732915412263,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "36:0.035:8:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.035:8:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          148.5,
+          0
+        ],
+        "charge": [
+          4,
+          0.5
+        ],
+        "distance": 158.1443071601268,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.035:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          1688.5,
+          0
+        ],
+        "charge": [
+          5,
+          0.5
+        ],
+        "distance": 149.02294553760692,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "36:0.1:2:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          5,
+          8
+        ],
+        "hp": [
+          0,
+          148.5
+        ],
+        "charge": [
+          0.5,
+          4
+        ],
+        "distance": 126.333882131764,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.1:5:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          12,
+          7
+        ],
+        "hp": [
+          1248.5,
+          0
+        ],
+        "charge": [
+          4.5,
+          0
+        ],
+        "distance": 118.00920113109382,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 30.983333333332855
+      },
+      {
+        "key": "36:0.1:9:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          7,
+          12
+        ],
+        "hp": [
+          0,
+          478.5
+        ],
+        "charge": [
+          0,
+          4
+        ],
+        "distance": 147.73798256936666,
+        "lastDamageKind": [
+          "boomerang",
+          "gold"
+        ],
+        "time": 31.31666666666617
+      },
+      {
+        "key": "36:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          10,
+          6
+        ],
+        "hp": [
+          478.5,
+          0
+        ],
+        "charge": [
+          4,
+          0
+        ],
+        "distance": 133.91193799568438,
+        "lastDamageKind": [
+          "gold",
+          "boomerang"
+        ],
+        "time": 31.31666666666617
+      }
+    ]
+  },
+  "rows": [
+    {
+      "patch": {
+        "reduction": 1500,
+        "lead": 0.5
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "reduction": 1500,
+        "lead": 1
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "reduction": 1600,
+        "lead": 0.5
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "reduction": 1600,
+        "lead": 1
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "reduction": 1700,
+        "lead": 0.5
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "reduction": 1700,
+        "lead": 1
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "reduction": 1400,
+        "lead": 0.5
+      },
+      "wins": 238,
+      "losses": 2,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "20:0.035:5:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            495,
+            0
+          ],
+          "charge": [
+            6,
+            0.5
+          ],
+          "distance": 7.91671689645599,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.166666666666178
+        },
+        {
+          "key": "20:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            495
+          ],
+          "charge": [
+            0.5,
+            6
+          ],
+          "distance": 23.38722330402389,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.166666666666178
+        }
+      ]
+    },
+    {
+      "patch": {
+        "reduction": 1400,
+        "lead": 1
+      },
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:7:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            8,
+            11
+          ],
+          "hp": [
+            0,
+            286
+          ],
+          "charge": [
+            0,
+            5.5
+          ],
+          "distance": 9.227732615247396,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.399999999999498
+        },
+        {
+          "key": "10:0.035:0:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            10,
+            12
+          ],
+          "hp": [
+            0,
+            374
+          ],
+          "charge": [
+            1.5,
+            6.5
+          ],
+          "distance": 9.93257881772855,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.933333333332858
+        },
+        {
+          "key": "20:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            8
+          ],
+          "hp": [
+            825,
+            0
+          ],
+          "charge": [
+            6,
+            0
+          ],
+          "distance": 19.338178020710235,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.166666666666178
+        },
+        {
+          "key": "20:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            825
+          ],
+          "charge": [
+            0,
+            6
+          ],
+          "distance": 23.660820863877177,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.166666666666178
+        }
+      ]
+    },
+    {
+      "patch": {
+        "reduction": 1300,
+        "lead": 0.5
+      },
+      "wins": 228,
+      "losses": 12,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            533.5
+          ],
+          "charge": [
+            0.5,
+            5
+          ],
+          "distance": 8.38813256627548,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "6:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            711.5,
+            0
+          ],
+          "charge": [
+            5,
+            0
+          ],
+          "distance": 15.84179049145904,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "10:0.035:2:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            209
+          ],
+          "charge": [
+            0,
+            4.5
+          ],
+          "distance": 17.754908827726762,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.43333333333283
+        },
+        {
+          "key": "10:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            9,
+            7
+          ],
+          "hp": [
+            863.5,
+            0
+          ],
+          "charge": [
+            5,
+            0
+          ],
+          "distance": 6.91687104178547,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "10:0.1:7:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            2865.5,
+            0
+          ],
+          "charge": [
+            6.5,
+            0
+          ],
+          "distance": 7.923388457543279,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "20:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            6
+          ],
+          "hp": [
+            57,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 7.8889791451382445,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.43333333333283
+        },
+        {
+          "key": "20:0.035:5:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            1881,
+            0
+          ],
+          "charge": [
+            6,
+            0.5
+          ],
+          "distance": 7.934207573510241,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.56666666666621
+        },
+        {
+          "key": "20:0.035:6:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            209,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 10.421565292281368,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.43333333333283
+        },
+        {
+          "key": "20:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1881
+          ],
+          "charge": [
+            0.5,
+            6
+          ],
+          "distance": 22.569182066472216,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.56666666666621
+        },
+        {
+          "key": "28:0.035:5:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            451,
+            0
+          ],
+          "charge": [
+            6,
+            2
+          ],
+          "distance": 11.779362127273286,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.56666666666621
+        },
+        {
+          "key": "28:0.035:6:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            7
+          ],
+          "hp": [
+            1221,
+            0
+          ],
+          "charge": [
+            6,
+            1.5
+          ],
+          "distance": 7.955474923740778,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.56666666666621
+        },
+        {
+          "key": "36:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            533.5,
+            0
+          ],
+          "charge": [
+            5,
+            0.5
+          ],
+          "distance": 7.963560629302798,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.149999999999512
+        }
+      ]
+    },
+    {
+      "patch": {
+        "reduction": 1250,
+        "lead": 0.5
+      },
+      "wins": 227,
+      "losses": 13,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1111
+          ],
+          "charge": [
+            0.5,
+            5
+          ],
+          "distance": 10.087923281931143,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "6:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            1289,
+            0
+          ],
+          "charge": [
+            5,
+            0
+          ],
+          "distance": 17.50491441015776,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "10:0.035:2:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            709.5
+          ],
+          "charge": [
+            0,
+            4.5
+          ],
+          "distance": 17.458397406798948,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.216666666666175
+        },
+        {
+          "key": "10:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            7
+          ],
+          "hp": [
+            1441,
+            0
+          ],
+          "charge": [
+            5,
+            0
+          ],
+          "distance": 7.88757061777672,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "10:0.1:7:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            3520,
+            0
+          ],
+          "charge": [
+            6.5,
+            0
+          ],
+          "distance": 2.86561460222674,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 11.500000000000151
+        },
+        {
+          "key": "20:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            6
+          ],
+          "hp": [
+            557.5,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 7.921656758746078,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.216666666666175
+        },
+        {
+          "key": "20:0.035:5:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            2535.5,
+            0
+          ],
+          "charge": [
+            6,
+            0.5
+          ],
+          "distance": 9.133525007567336,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "20:0.035:6:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            709.5,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 11.894455852332003,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.216666666666175
+        },
+        {
+          "key": "20:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            2535.5
+          ],
+          "charge": [
+            0.5,
+            6
+          ],
+          "distance": 22.18148893738701,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "20:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            7
+          ],
+          "hp": [
+            451,
+            0
+          ],
+          "charge": [
+            5,
+            1.5
+          ],
+          "distance": 8.778323251434063,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "28:0.035:5:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            1105.5,
+            0
+          ],
+          "charge": [
+            6,
+            2
+          ],
+          "distance": 11.391260301434663,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "28:0.035:6:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            7
+          ],
+          "hp": [
+            1875.5,
+            0
+          ],
+          "charge": [
+            6,
+            1.5
+          ],
+          "distance": 7.983812473050729,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "36:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            1111,
+            0
+          ],
+          "charge": [
+            5,
+            0.5
+          ],
+          "distance": 8.335959656475444,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        }
+      ]
+    },
+    {
+      "patch": {
+        "reduction": 1300,
+        "lead": 1
+      },
+      "wins": 227,
+      "losses": 13,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            4950
+          ],
+          "charge": [
+            4.5,
+            7
+          ],
+          "distance": 2.3085693302555743,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 11.283333333333474
+        },
+        {
+          "key": "6:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1188
+          ],
+          "charge": [
+            0.5,
+            5.5
+          ],
+          "distance": 9.90204741918414,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.866666666666195
+        },
+        {
+          "key": "6:0.1:7:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            8,
+            11
+          ],
+          "hp": [
+            0,
+            1518
+          ],
+          "charge": [
+            0,
+            5.5
+          ],
+          "distance": 12.88837159156736,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.866666666666195
+        },
+        {
+          "key": "10:0.035:0:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            10,
+            12
+          ],
+          "hp": [
+            0,
+            1875.5
+          ],
+          "charge": [
+            1.5,
+            6.5
+          ],
+          "distance": 9.038455453968458,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "10:0.035:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            209,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 18.747420398328174,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.43333333333283
+        },
+        {
+          "key": "10:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            9,
+            7
+          ],
+          "hp": [
+            711.5,
+            0
+          ],
+          "charge": [
+            5,
+            0
+          ],
+          "distance": 7.451949543352621,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "14:0.035:6:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            533.5
+          ],
+          "charge": [
+            0.5,
+            5
+          ],
+          "distance": 18.44426383081977,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "20:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            8
+          ],
+          "hp": [
+            2211,
+            0
+          ],
+          "charge": [
+            6,
+            0
+          ],
+          "distance": 18.518140105172723,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.56666666666621
+        },
+        {
+          "key": "20:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            2211
+          ],
+          "charge": [
+            0,
+            6
+          ],
+          "distance": 22.842803897986453,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.56666666666621
+        },
+        {
+          "key": "20:0.1:8:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            863.5
+          ],
+          "charge": [
+            0,
+            5
+          ],
+          "distance": 9.284680550428591,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "36:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            973.5
+          ],
+          "charge": [
+            0.5,
+            5
+          ],
+          "distance": 12.873334844268161,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "36:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            533.5,
+            0
+          ],
+          "charge": [
+            5,
+            0.5
+          ],
+          "distance": 23.267106560987337,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.149999999999512
+        },
+        {
+          "key": "36:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            7,
+            8
+          ],
+          "hp": [
+            0,
+            209
+          ],
+          "charge": [
+            0,
+            4.5
+          ],
+          "distance": 15.594321323408325,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.43333333333283
+        }
+      ]
+    },
+    {
+      "patch": {
+        "reduction": 1250,
+        "lead": 1
+      },
+      "wins": 222,
+      "losses": 18,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            4950
+          ],
+          "charge": [
+            4.5,
+            6.5
+          ],
+          "distance": 2.3085693302555743,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 11.283333333333474
+        },
+        {
+          "key": "6:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            12,
+            11
+          ],
+          "hp": [
+            11,
+            0
+          ],
+          "charge": [
+            5,
+            1.5
+          ],
+          "distance": 9.653192446185166,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "6:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1842.5
+          ],
+          "charge": [
+            0.5,
+            5.5
+          ],
+          "distance": 11.78009312999254,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.583333333332877
+        },
+        {
+          "key": "6:0.1:7:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            8,
+            11
+          ],
+          "hp": [
+            0,
+            2172.5
+          ],
+          "charge": [
+            0,
+            5.5
+          ],
+          "distance": 14.657935643540284,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.583333333332877
+        },
+        {
+          "key": "10:0.035:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            11
+          ],
+          "hp": [
+            0,
+            4950
+          ],
+          "charge": [
+            4.5,
+            6.5
+          ],
+          "distance": 2.410949053564957,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 12.916666666666888
+        },
+        {
+          "key": "10:0.035:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            709.5,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 18.451130207952755,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.216666666666175
+        },
+        {
+          "key": "10:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            9,
+            7
+          ],
+          "hp": [
+            1289,
+            0
+          ],
+          "charge": [
+            5,
+            0
+          ],
+          "distance": 7.997524242381663,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "14:0.035:6:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1111
+          ],
+          "charge": [
+            0.5,
+            5
+          ],
+          "distance": 18.103052160768627,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "14:0.1:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            7
+          ],
+          "hp": [
+            16.5,
+            0
+          ],
+          "charge": [
+            4,
+            0
+          ],
+          "distance": 19.306151136991204,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.516666666666158
+        },
+        {
+          "key": "20:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            8
+          ],
+          "hp": [
+            2865.5,
+            0
+          ],
+          "charge": [
+            6,
+            0
+          ],
+          "distance": 18.132651744153584,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "20:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            8,
+            6
+          ],
+          "hp": [
+            709.5,
+            0
+          ],
+          "charge": [
+            4.5,
+            0
+          ],
+          "distance": 7.9198259605727195,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 31.216666666666175
+        },
+        {
+          "key": "20:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            2865.5
+          ],
+          "charge": [
+            0,
+            6
+          ],
+          "distance": 22.455139329559643,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "20:0.1:8:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1441
+          ],
+          "charge": [
+            0,
+            5
+          ],
+          "distance": 8.961900681935765,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "20:0.1:9:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            7,
+            8
+          ],
+          "hp": [
+            0,
+            115.5
+          ],
+          "charge": [
+            3.5,
+            6
+          ],
+          "distance": 7.976423309574333,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.283333333332894
+        },
+        {
+          "key": "36:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            7
+          ],
+          "hp": [
+            1111,
+            0
+          ],
+          "charge": [
+            5,
+            0.5
+          ],
+          "distance": 6.9819184870955855,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "36:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            10
+          ],
+          "hp": [
+            0,
+            1551
+          ],
+          "charge": [
+            0.5,
+            5
+          ],
+          "distance": 12.684241392647902,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "36:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            10,
+            6
+          ],
+          "hp": [
+            1111,
+            0
+          ],
+          "charge": [
+            5,
+            0.5
+          ],
+          "distance": 24.96646931653216,
+          "lastDamageKind": [
+            "gold",
+            "boomerang"
+          ],
+          "time": 30.899999999999526
+        },
+        {
+          "key": "36:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            7,
+            8
+          ],
+          "hp": [
+            0,
+            709.5
+          ],
+          "charge": [
+            0,
+            4.5
+          ],
+          "distance": 15.298807470589288,
+          "lastDamageKind": [
+            "boomerang",
+            "gold"
+          ],
+          "time": 31.216666666666175
+        }
+      ]
+    }
+  ]
+}

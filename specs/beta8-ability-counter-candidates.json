@@ -1,0 +1,167 @@
+{
+  "scope": "not applied",
+  "finalists": [
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 6000,
+          "special": {
+            "chargeRequired": 1
+          }
+        },
+        "azure": {
+          "botApproachMin": 1.5,
+          "botFireRangeFactor": 1,
+          "botIdealDistance": 1.5
+        }
+      },
+      "scores": [
+        1,
+        0.8083333333333333,
+        1
+      ],
+      "min": 0.8083333333333333,
+      "sum": 2.8083333333333336
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 6000,
+          "special": {
+            "chargeRequired": 1
+          }
+        },
+        "azure": {
+          "botApproachMin": 2
+        }
+      },
+      "scores": [
+        1,
+        0.7833333333333333,
+        1
+      ],
+      "min": 0.7833333333333333,
+      "sum": 2.783333333333333
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 6000,
+          "special": {
+            "chargeRequired": 1
+          }
+        },
+        "azure": {
+          "botFireRangeFactor": 1
+        }
+      },
+      "scores": [
+        1,
+        0.7833333333333333,
+        1
+      ],
+      "min": 0.7833333333333333,
+      "sum": 2.783333333333333
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 6000,
+          "special": {
+            "chargeRequired": 1
+          }
+        },
+        "azure": {
+          "botApproachMin": 2,
+          "botFireRangeFactor": 1
+        }
+      },
+      "scores": [
+        1,
+        0.7833333333333333,
+        1
+      ],
+      "min": 0.7833333333333333,
+      "sum": 2.783333333333333
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 6000,
+          "special": {
+            "chargeRequired": 1
+          }
+        },
+        "azure": {}
+      },
+      "scores": [
+        1,
+        0.775,
+        1
+      ],
+      "min": 0.775,
+      "sum": 2.775
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 8000,
+          "special": {
+            "chargeRequired": 1.5
+          }
+        },
+        "azure": {
+          "botApproachMin": 1.5,
+          "botFireRangeFactor": 1,
+          "botIdealDistance": 1.5
+        }
+      },
+      "scores": [
+        1,
+        0.6916666666666667,
+        0.975
+      ],
+      "min": 0.6916666666666667,
+      "sum": 2.6666666666666665
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 7000,
+          "special": {
+            "chargeRequired": 1
+          }
+        },
+        "azure": {}
+      },
+      "scores": [
+        1,
+        0.6666666666666666,
+        1
+      ],
+      "min": 0.6666666666666666,
+      "sum": 2.6666666666666665
+    },
+    {
+      "patch": {
+        "lavender": {
+          "maxHealth": 8000,
+          "special": {
+            "chargeRequired": 1.5
+          }
+        },
+        "azure": {
+          "botApproachMin": 2,
+          "botFireRangeFactor": 1
+        }
+      },
+      "scores": [
+        1,
+        0.6583333333333333,
+        0.975
+      ],
+      "min": 0.6583333333333333,
+      "sum": 2.6333333333333333
+    }
+  ]
+}

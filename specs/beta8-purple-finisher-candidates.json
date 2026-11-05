@@ -1,0 +1,99 @@
+[
+  {
+    "name": "baseline",
+    "smart": false,
+    "follow": false,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "20:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          0,
+          176
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 9.645763880355664,
+        "lastDamageKind": [
+          "crystal",
+          null
+        ],
+        "time": 8.133333333333317
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          5,
+          6
+        ],
+        "hp": [
+          176,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 15.380794115111748,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 8.950000000000024
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          3
+        ],
+        "hp": [
+          0,
+          803
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 11.078238683659926,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 10.350000000000094
+      }
+    ]
+  },
+  {
+    "name": "healthDistance",
+    "smart": true,
+    "follow": false,
+    "wins": 240,
+    "losses": 0,
+    "draws": 0,
+    "failures": []
+  }
+]

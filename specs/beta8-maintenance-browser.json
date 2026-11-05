@@ -1,0 +1,75 @@
+{
+  "initial": {
+    "tagline": "🎃 할로윈 · 라벤더·살몬 · 스킨 4종 · 17종 전투",
+    "errors": []
+  },
+  "first": {
+    "games": 1,
+    "wins": 1,
+    "losses": 0,
+    "draws": 0,
+    "abandoned": 0,
+    "kills": 1,
+    "deaths": 0,
+    "damage": 2500,
+    "healing": 0,
+    "points": 8.5,
+    "streak": 1,
+    "bestStreak": 1,
+    "bestKills": 1,
+    "bestDamage": 2500,
+    "bestHealing": 0
+  },
+  "firstRanking": {
+    "rank": 1,
+    "nickname": "정리 검증",
+    "points": 8.5,
+    "wins": 1,
+    "character": "red"
+  },
+  "second": {
+    "games": 2,
+    "wins": 1,
+    "losses": 1,
+    "draws": 0,
+    "abandoned": 0,
+    "kills": 2,
+    "deaths": 0,
+    "damage": 5000,
+    "healing": 0,
+    "points": 12,
+    "streak": 0,
+    "bestStreak": 1,
+    "bestKills": 1,
+    "bestDamage": 2500,
+    "bestHealing": 0
+  },
+  "personal": "베타 테스트 기록정식 시즌과 별도 집계 · 연습 제외 · 소수 점수 누적전적개인 기록랭킹이번 시즌경기2승리1패배1무승부0승률50%킬2데스0피해량5,000회복량0시즌 점수12개인 최고 기록연승 1 · 한 경기 최다 킬 1 · 피해 2,500 · 회복 0캐릭터별 기록Red2경기 · 승률 50% · 평균 킬 1 · 피해 2,500 · 회복 0",
+  "failedStatus": {
+    "failed": 1,
+    "text": "베타 테스트 기록정식 시즌과 별도 집계 · 연습 제외 · 소수 점수 누적랭킹에 반영되지 않은 경기 1건이 있습니다. 개인 전적은 유지됩니다.전적개인 기록랭킹최근 전적 · 0 / 20경기아직 전적이 없습니다. 대전을 완료하면 기록됩니다."
+  },
+  "restored": {
+    "games": 3,
+    "wins": 1,
+    "losses": 2,
+    "draws": 0,
+    "abandoned": 1,
+    "kills": 2,
+    "deaths": 0,
+    "damage": 5500,
+    "healing": 0,
+    "points": 12,
+    "streak": 0,
+    "bestStreak": 1,
+    "bestKills": 1,
+    "bestDamage": 2500,
+    "bestHealing": 0
+  },
+  "deathCleanup": {
+    "before": 2.73942643053925,
+    "after": 0,
+    "air": null
+  },
+  "errors": []
+}

@@ -1,0 +1,1574 @@
+{
+  "baseline": {
+    "wins": 193,
+    "losses": 47,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "6:0.035:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          165
+        ],
+        "charge": [
+          0.5,
+          0.55
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.89999999999947
+      },
+      {
+        "key": "6:0.035:1:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          852.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "6:0.035:6:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          687.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.58333333333282
+      },
+      {
+        "key": "6:0.1:2:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          770,
+          0
+        ],
+        "charge": [
+          0.5750000000000001,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.533333333332823
+      },
+      {
+        "key": "6:0.1:9:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          3300
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 12.61917232546658,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 5.016666666666654
+      },
+      {
+        "key": "6:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          852.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 125.50559413011396,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "10:0.035:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          330
+        ],
+        "charge": [
+          0.5,
+          0.55
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.799999999999475
+      },
+      {
+        "key": "10:0.035:1:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          852.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "10:0.035:3:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          852.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "10:0.035:3:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          852.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "10:0.035:8:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          3300,
+          0
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 13.92178341726794,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 5.083333333333321
+      },
+      {
+        "key": "10:0.035:9:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          3,
+          3
+        ],
+        "hp": [
+          0,
+          1017.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.383333333332832
+      },
+      {
+        "key": "10:0.1:7:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          852.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "10:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          3300,
+          0
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 12.481620574143781,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 4.999999999999988
+      },
+      {
+        "key": "10:0.1:8:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          3,
+          3
+        ],
+        "hp": [
+          0,
+          687.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.58333333333282
+      },
+      {
+        "key": "14:0.035:8:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          3300
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 14.063787319685954,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 5.083333333333321
+      },
+      {
+        "key": "14:0.035:8:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          852.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 156.0047032668742,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.483333333332826
+      },
+      {
+        "key": "14:0.1:0:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          165,
+          0
+        ],
+        "charge": [
+          0.55,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.89999999999947
+      },
+      {
+        "key": "14:0.1:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          3300
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 10.93728550039092,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 4.866666666666655
+      },
+      {
+        "key": "14:0.1:2:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2860
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.26666666666623
+      },
+      {
+        "key": "14:0.1:2:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          687.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 155.44815141820473,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.58333333333282
+      },
+      {
+        "key": "14:0.1:3:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          3300
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 14.785022591353087,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 5.116666666666654
+      },
+      {
+        "key": "14:0.1:3:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          3300,
+          0
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 16.807611809369646,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 5.2999999999999865
+      },
+      {
+        "key": "14:0.1:4:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          0,
+          2145
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 132.9247185161895,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.699999999999537
+      },
+      {
+        "key": "14:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          6600,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 3.4121978157835504,
+        "lastDamageKind": [
+          null,
+          null
+        ],
+        "time": 4.483333333333323
+      },
+      {
+        "key": "14:0.1:8:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          687.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.58333333333282
+      },
+      {
+        "key": "14:0.1:8:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          3
+        ],
+        "hp": [
+          1017.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.383333333332832
+      },
+      {
+        "key": "20:0.035:5:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          3,
+          4
+        ],
+        "hp": [
+          687.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.58333333333282
+      },
+      {
+        "key": "20:0.035:7:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          2227.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "20:0.035:8:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          6600,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 3.513211372770354,
+        "lastDamageKind": [
+          null,
+          null
+        ],
+        "time": 4.883333333333321
+      },
+      {
+        "key": "20:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2145
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.699999999999537
+      },
+      {
+        "key": "20:0.1:0:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          1292.5,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 31.216666666666175
+      },
+      {
+        "key": "20:0.1:2:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          1705
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.96666666666619
+      },
+      {
+        "key": "20:0.1:2:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          3300,
+          0
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 14.005236611985875,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 5.633333333333319
+      },
+      {
+        "key": "20:0.1:7:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          1622.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.016666666666186
+      },
+      {
+        "key": "20:0.1:8:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          1622.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.016666666666186
+      },
+      {
+        "key": "28:0.035:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          1705
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 160.53242358987438,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.96666666666619
+      },
+      {
+        "key": "28:0.035:9:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          0,
+          6600
+        ],
+        "charge": [
+          0,
+          1
+        ],
+        "distance": 3.5625392579050676,
+        "lastDamageKind": [
+          null,
+          null
+        ],
+        "time": 5.433333333333319
+      },
+      {
+        "key": "28:0.1:3:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          2750,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 30.33333333333289
+      },
+      {
+        "key": "28:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          1622.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.016666666666186
+      },
+      {
+        "key": "28:0.1:9:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          2227.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 150.64969688124862,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "36:0.035:3:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          2227.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "36:0.035:5:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          2227.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 30.64999999999954
+      },
+      {
+        "key": "36:0.035:7:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          1622.5
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.016666666666186
+      },
+      {
+        "key": "36:0.1:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          2
+        ],
+        "attacks": [
+          4,
+          3
+        ],
+        "hp": [
+          0,
+          1375
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          null,
+          "wave"
+        ],
+        "time": 31.166666666666178
+      },
+      {
+        "key": "36:0.1:1:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          2750,
+          0
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 166.87720036002523,
+        "lastDamageKind": [
+          "wave",
+          null
+        ],
+        "time": 30.33333333333289
+      },
+      {
+        "key": "36:0.1:7:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          7,
+          4
+        ],
+        "hp": [
+          0,
+          6600
+        ],
+        "charge": [
+          0,
+          1
+        ],
+        "distance": 3.4206623317645297,
+        "lastDamageKind": [
+          null,
+          null
+        ],
+        "time": 5.999999999999984
+      }
+    ]
+  },
+  "rows": [
+    {
+      "patch": {
+        "width": 3,
+        "close": false
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 3.5,
+        "close": false
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 4,
+        "close": false
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 2.5,
+        "close": true
+      },
+      "wins": 238,
+      "losses": 0,
+      "draws": 2,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 3,
+        "close": true
+      },
+      "wins": 238,
+      "losses": 0,
+      "draws": 2,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 3.5,
+        "close": true
+      },
+      "wins": 238,
+      "losses": 0,
+      "draws": 2,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 4,
+        "close": true
+      },
+      "wins": 238,
+      "losses": 0,
+      "draws": 2,
+      "failures": []
+    },
+    {
+      "patch": {
+        "width": 2.5,
+        "close": false
+      },
+      "wins": 230,
+      "losses": 10,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "10:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            4,
+            3
+          ],
+          "hp": [
+            0,
+            330
+          ],
+          "charge": [
+            0.5,
+            0.55
+          ],
+          "distance": 166.87720036002523,
+          "lastDamageKind": [
+            null,
+            "wave"
+          ],
+          "time": 31.799999999999475
+        },
+        {
+          "key": "10:0.1:7:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            2
+          ],
+          "attacks": [
+            4,
+            3
+          ],
+          "hp": [
+            0,
+            852.5
+          ],
+          "charge": [
+            0.5,
+            0
+          ],
+          "distance": 166.87720036002523,
+          "lastDamageKind": [
+            null,
+            "wave"
+          ],
+          "time": 31.483333333332826
+        },
+        {
+          "key": "10:0.1:7:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            4,
+            5
+          ],
+          "hp": [
+            3300,
+            0
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 12.481620574143781,
+          "lastDamageKind": [
+            "wave",
+            null
+          ],
+          "time": 4.999999999999988
+        },
+        {
+          "key": "14:0.035:8:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            4
+          ],
+          "hp": [
+            0,
+            3300
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 14.063787319685954,
+          "lastDamageKind": [
+            null,
+            "wave"
+          ],
+          "time": 5.083333333333321
+        },
+        {
+          "key": "14:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            2
+          ],
+          "attacks": [
+            5,
+            4
+          ],
+          "hp": [
+            0,
+            2860
+          ],
+          "charge": [
+            0.5,
+            0
+          ],
+          "distance": 166.87720036002523,
+          "lastDamageKind": [
+            null,
+            "wave"
+          ],
+          "time": 30.26666666666623
+        },
+        {
+          "key": "20:0.1:0:true",
+          "outcome": 1,
+          "casts": [
+            2,
+            0
+          ],
+          "attacks": [
+            4,
+            6
+          ],
+          "hp": [
+            1292.5,
+            0
+          ],
+          "charge": [
+            0,
+            0.5
+          ],
+          "distance": 166.87720036002523,
+          "lastDamageKind": [
+            "wave",
+            null
+          ],
+          "time": 31.216666666666175
+        },
+        {
+          "key": "28:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            2
+          ],
+          "attacks": [
+            5,
+            4
+          ],
+          "hp": [
+            0,
+            1705
+          ],
+          "charge": [
+            0.5,
+            0
+          ],
+          "distance": 160.53242358987438,
+          "lastDamageKind": [
+            null,
+            "wave"
+          ],
+          "time": 30.96666666666619
+        },
+        {
+          "key": "28:0.035:9:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            6,
+            4
+          ],
+          "hp": [
+            0,
+            6600
+          ],
+          "charge": [
+            0,
+            1
+          ],
+          "distance": 3.5625392579050676,
+          "lastDamageKind": [
+            null,
+            null
+          ],
+          "time": 5.433333333333319
+        },
+        {
+          "key": "36:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            2,
+            0
+          ],
+          "attacks": [
+            4,
+            5
+          ],
+          "hp": [
+            2750,
+            0
+          ],
+          "charge": [
+            0,
+            0.5
+          ],
+          "distance": 166.87720036002523,
+          "lastDamageKind": [
+            "wave",
+            null
+          ],
+          "time": 30.33333333333289
+        },
+        {
+          "key": "36:0.1:7:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            2
+          ],
+          "attacks": [
+            4,
+            3
+          ],
+          "hp": [
+            0,
+            1622.5
+          ],
+          "charge": [
+            0.5,
+            0
+          ],
+          "distance": 157.67306916339987,
+          "lastDamageKind": [
+            null,
+            "wave"
+          ],
+          "time": 31.016666666666186
+        }
+      ]
+    }
+  ]
+}

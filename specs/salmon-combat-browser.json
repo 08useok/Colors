@@ -1,0 +1,72 @@
+{
+  "basic": {
+    "selected": "salmon",
+    "health": 98200,
+    "ammo": 5,
+    "charge": 4,
+    "aiming": false,
+    "flights": 0,
+    "devices": 0,
+    "floats": 0,
+    "model": "salmon",
+    "motion": "idle",
+    "blocking": false,
+    "practice": true,
+    "dead": false,
+    "errors": []
+  },
+  "recovery": {
+    "selected": "salmon",
+    "health": 98200,
+    "ammo": 1,
+    "charge": 4,
+    "aiming": false,
+    "flights": 0,
+    "devices": 0,
+    "floats": 0,
+    "model": "salmon",
+    "motion": "idle",
+    "blocking": false,
+    "practice": true,
+    "dead": false,
+    "errors": []
+  },
+  "held": {
+    "selected": "salmon",
+    "health": 98200,
+    "ammo": 1,
+    "charge": 20,
+    "aiming": true,
+    "flights": 0,
+    "devices": 0,
+    "floats": 0,
+    "model": "salmon",
+    "motion": "idle",
+    "blocking": false,
+    "practice": true,
+    "dead": false,
+    "errors": []
+  },
+  "ultimate": {
+    "selected": "salmon",
+    "health": 98200,
+    "ammo": 1,
+    "charge": 0,
+    "aiming": false,
+    "flights": 0,
+    "devices": 8,
+    "floats": 0,
+    "model": "salmon",
+    "motion": "idle",
+    "blocking": false,
+    "practice": true,
+    "dead": false,
+    "errors": []
+  },
+  "battle": {
+    "active": true,
+    "health": 7600,
+    "actor": "salmon"
+  },
+  "pageErrors": []
+}

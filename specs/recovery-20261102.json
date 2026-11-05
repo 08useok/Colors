@@ -1,0 +1,647 @@
+{
+  "date": "2026-11-02T07:10:14.472Z",
+  "head": "a51c27a55b91d29e8ecf126a47e3839776adcd30",
+  "backup": {
+    "path": ".local/recovery/20261102-project-recovery",
+    "files": 1140,
+    "deleted": 9,
+    "copyHashesVerified": true,
+    "databaseIntegrity": "ok"
+  },
+  "changedExistingFiles": [
+    "README.md",
+    "specs/README.md",
+    "specs/beta-season-9.md",
+    "specs/characters/raspberry.md"
+  ],
+  "gameSourceAndAssetsUnchanged": true,
+  "checksPassed": [
+    "src/*.js recursive: node --check (61 files)",
+    "npm.cmd run check",
+    "npm.cmd run check:main8",
+    "node tools/test-raspberry-combat.mjs",
+    "node tools/test-beta-attack-release.mjs",
+    "node tools/test-beta-ultimate-motion.mjs",
+    "node tools/test-beta6-combat.mjs",
+    "node tools/test-salmon-combat.mjs",
+    "node tools/test-salmon-ammo-return.mjs",
+    "node tools/test-knockout.mjs",
+    "node tools/test-beta-soccer-possession.mjs",
+    "node tools/test-ivory-ultimate-impacts.mjs"
+  ],
+  "browser": {
+    "info": {
+      "selected": "raspberry",
+      "paths": {
+        "start": "./assets/3d/raspberry/walk.glb?v=armrepair2",
+        "loop": "./assets/3d/raspberry/walk.glb?v=armrepair2",
+        "stop": "./assets/3d/raspberry/idle.glb?v=armrepair2",
+        "attack": "./assets/3d/raspberry/attack.glb?v=armrepair2",
+        "ultimate": "./assets/3d/raspberry/ultimate.glb?v=armrepair2"
+      },
+      "clips": {
+        "start": 1.0333333015441895,
+        "loop": 1.0333333015441895,
+        "stop": 2.0333333015441895,
+        "attack": 0.6000000238418579,
+        "ultimate": 0.7333333492279053
+      },
+      "errors": []
+    },
+    "samples": [
+      {
+        "kind": "idle",
+        "t": 0,
+        "current": "stop",
+        "time": 1.6916667936444316,
+        "quaternion": [
+          -0.5,
+          -0.5,
+          -0.5,
+          0.5
+        ],
+        "bounds": [
+          [
+            -41.09499292534212,
+            6.241983597714348,
+            9.473749729577753
+          ],
+          [
+            -39.14063145195573,
+            8.94751376447063,
+            10.525523537042565
+          ]
+        ],
+        "visible": [
+          "stop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "idle",
+        "t": 0.1,
+        "current": "stop",
+        "time": 1.7916667936444317,
+        "quaternion": [
+          -0.5,
+          -0.5,
+          -0.5,
+          0.5
+        ],
+        "bounds": [
+          [
+            -41.09499292534212,
+            6.243721012782629,
+            9.473758984347857
+          ],
+          [
+            -39.137338569277745,
+            8.948041254773887,
+            10.523462635471608
+          ]
+        ],
+        "visible": [
+          "stop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "idle",
+        "t": 0.3,
+        "current": "stop",
+        "time": 0.05833349210024208,
+        "quaternion": [
+          -0.5,
+          -0.5,
+          -0.5,
+          0.5
+        ],
+        "bounds": [
+          [
+            -41.09499292534212,
+            6.2507158513636965,
+            9.473825309968227
+          ],
+          [
+            -39.12390339743276,
+            8.951272501348017,
+            10.515268726842276
+          ]
+        ],
+        "visible": [
+          "stop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "idle",
+        "t": 0.55,
+        "current": "stop",
+        "time": 0.6083334921002421,
+        "quaternion": [
+          -0.5,
+          -0.5,
+          -0.5,
+          0.5
+        ],
+        "bounds": [
+          [
+            -41.09499292534212,
+            6.25886989225196,
+            9.473961333996964
+          ],
+          [
+            -39.108135389907055,
+            8.965513851435695,
+            10.50583360022593
+          ]
+        ],
+        "visible": [
+          "stop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "walk",
+        "t": 0,
+        "current": "loop",
+        "time": 0,
+        "quaternion": [
+          -0.538358211517334,
+          -0.4584435224533081,
+          -0.5383581519126892,
+          0.4584435224533081
+        ],
+        "bounds": [
+          [
+            -41.09299803619987,
+            6.250000000000001,
+            -0.5357994732408269
+          ],
+          [
+            -39.125294210368004,
+            8.950000000000001,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "loop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "walk",
+        "t": 0.1,
+        "current": "loop",
+        "time": 0.1,
+        "quaternion": [
+          -0.5363087058483138,
+          -0.46083948011327247,
+          -0.5363087654529533,
+          0.46083945031094875
+        ],
+        "bounds": [
+          [
+            -41.09064072253729,
+            6.247614378432511,
+            -0.535877156755184
+          ],
+          [
+            -39.10388547021481,
+            8.96232412851661,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "loop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "walk",
+        "t": 0.3,
+        "current": "loop",
+        "time": 0.4,
+        "quaternion": [
+          -0.541084229883378,
+          -0.4552229047567586,
+          -0.5410841702787332,
+          0.4552229047567479
+        ],
+        "bounds": [
+          [
+            -41.085761909362176,
+            6.260958638426942,
+            -0.535774803395073
+          ],
+          [
+            -39.08629655542832,
+            8.981767758159648,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "loop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "walk",
+        "t": 0.55,
+        "current": "loop",
+        "time": 0.9500000000000001,
+        "quaternion": [
+          -0.540681308400693,
+          -0.4557013871628096,
+          -0.540681308400693,
+          0.45570135736046063
+        ],
+        "bounds": [
+          [
+            -41.09569677887438,
+            6.246073036073194,
+            -0.5357687908744132
+          ],
+          [
+            -39.15120484856336,
+            8.967044240335909,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "loop"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "attack",
+        "t": 0,
+        "current": "attack",
+        "time": 0,
+        "quaternion": [
+          -0.5,
+          -0.5,
+          -0.5,
+          0.5
+        ],
+        "bounds": [
+          [
+            -41.09499292534212,
+            6.250000000000001,
+            -0.5261786428974851
+          ],
+          [
+            -39.12529420895065,
+            8.950000000000001,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "attack"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "attack",
+        "t": 0.1,
+        "current": "attack",
+        "time": 0.1,
+        "quaternion": [
+          -0.18301270211394005,
+          -0.6830127217808671,
+          -0.6830126621762276,
+          0.18301270211394005
+        ],
+        "bounds": [
+          [
+            -40.6296830130821,
+            6.250000000000001,
+            -1.4802228960302488
+          ],
+          [
+            -39.12529420895065,
+            8.949934309106865,
+            0.5172427793863817
+          ]
+        ],
+        "visible": [
+          "attack"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "attack",
+        "t": 0.3,
+        "current": "attack",
+        "time": 0.3,
+        "quaternion": [
+          -0.12598486020455985,
+          -0.6957929165409807,
+          -0.6957929761456255,
+          0.1259848602045492
+        ],
+        "bounds": [
+          [
+            -40.6296830130821,
+            6.250000000000001,
+            -1.5619952269077697
+          ],
+          [
+            -39.12529420895065,
+            8.950000000000001,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "attack"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "attack",
+        "t": 0.55,
+        "current": "attack",
+        "time": 0.55,
+        "quaternion": [
+          -0.4532743459112235,
+          -0.5427175895940182,
+          -0.5427176194140519,
+          0.4532743160911897
+        ],
+        "bounds": [
+          [
+            -41.08355781576677,
+            6.250000000000001,
+            -0.6382820309369384
+          ],
+          [
+            -39.12529420895065,
+            8.950000000000001,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "attack"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "ultimate",
+        "t": 0,
+        "current": "ultimate",
+        "time": 0,
+        "quaternion": [
+          -0.5,
+          -0.5,
+          -0.5,
+          0.5
+        ],
+        "bounds": [
+          [
+            -41.09499292534212,
+            6.250000000000001,
+            -0.5261664584880567
+          ],
+          [
+            -39.12529420895065,
+            8.950000000000001,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "ultimate"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "ultimate",
+        "t": 0.1,
+        "current": "ultimate",
+        "time": 0.1,
+        "quaternion": [
+          -0.35355338812587206,
+          -0.6123724559122271,
+          -0.6123725155168692,
+          0.35355335832354823
+        ],
+        "bounds": [
+          [
+            -40.94404060984582,
+            6.250000000000001,
+            -1.037763902371255
+          ],
+          [
+            -39.09493515982243,
+            8.958355809002574,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "ultimate"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "ultimate",
+        "t": 0.3,
+        "current": "ultimate",
+        "time": 0.3,
+        "quaternion": [
+          -0.017628678046167422,
+          0.7068870063666581,
+          0.7068870063666581,
+          0.017628709711132985
+        ],
+        "bounds": [
+          [
+            -40.53611013586392,
+            6.250000000000001,
+            -1.5985043674424522
+          ],
+          [
+            -39.03245300395615,
+            8.972024431002275,
+            0.5634216429699874
+          ]
+        ],
+        "visible": [
+          "ultimate"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      },
+      {
+        "kind": "ultimate",
+        "t": 0.55,
+        "current": "ultimate",
+        "time": 0.55,
+        "quaternion": [
+          -0.30282507794607993,
+          -0.6389811716856104,
+          -0.6389812611360379,
+          0.30282506303766826
+        ],
+        "bounds": [
+          [
+            -40.83189075775239,
+            6.250000000000001,
+            -1.2008915169670284
+          ],
+          [
+            -39.08560118410417,
+            8.96079675240939,
+            0.516094322946385
+          ]
+        ],
+        "visible": [
+          "ultimate"
+        ],
+        "textures": [
+          "Raspberry_Baked_Color"
+        ]
+      }
+    ],
+    "returnToIdle": "stop",
+    "training": {
+      "attack": {
+        "motion": "raspberry",
+        "ammo": 2
+      },
+      "afterAttack": {
+        "health": 997950,
+        "charge": 1,
+        "motion": null,
+        "zones": []
+      },
+      "ultimate": {
+        "motion": "raspberryUltimate",
+        "charge": 0
+      },
+      "afterUltimate": {
+        "health": 997350,
+        "charge": 0,
+        "motion": null,
+        "zones": [
+          "vinePrison"
+        ]
+      },
+      "errors": []
+    },
+    "battle": {
+      "mode": "knockout",
+      "player": "raspberry",
+      "motion": "raspberry",
+      "damage": 2050,
+      "ammo": 2
+    },
+    "errors": [],
+    "controlledTest": true,
+    "setupCorrections": [
+      "Manual aim aligned with target before damage check",
+      "Wait for match bot model loading before battle attack"
+    ],
+    "notVerified": [
+      "manual full match",
+      "Raspberry bot authored attack animation",
+      "live account persistence",
+      "online multiplayer",
+      "remote deployment"
+    ]
+  },
+  "sourceHashes": {
+    "assets/3d/raspberry/attack.glb": "884de750389dff4c4252a6631dd648c7a219b8ff78469d377124ae94beb93c00",
+    "assets/3d/raspberry/idle.glb": "f82364b9c4cdd5d54d16b980fe035c0a35d149cf8c4663935c9058b59aac4d9b",
+    "assets/3d/raspberry/ultimate.glb": "4d2f631c90d760e0f83e8f98d977306669df785722666bfb8eccc8b00ea700a3",
+    "assets/3d/raspberry/walk.glb": "a79eb600a58b5036a46a3626518be2635d0a01dfb84ff30541f6296c1d0db0ea",
+    "src/config/beta8-counter-targets.js": "c3c4f976b64a2adafcea5a98853c0efde8055605beeab04985a201372d28ddd4",
+    "src/LANGS/archive-text.js": "ec2faa1e7d67ef9edf5373d003892616175865209cbebbbc00daffc2f3889c4c",
+    "src/LANGS/character-names.js": "26c2685e96f5e9b8a57d88b4f3320499dd8c9e2e88b5709dcf592629e4548bf1",
+    "src/LANGS/langs.js": "a49cc905dcaa0697b559e3a74110cd0601ed81317318af90d8ede9b85ad831ae",
+    "src/LANGS/main-ui.js": "5247dc2813b4a483cbeacdb9c853c39e92de5b70493d80421999df1d4cf39629",
+    "src/account-transfer.js": "a2f1f91ef2c0a718feb9f4fbae790a2dca1fc5db80081631e2bae969d79eb9d4",
+    "src/beta-account.js": "48fb46cd58d6f990a14244cbdc439790c8ca6d8ae48ae779c2da69e584554b97",
+    "src/beta-records.js": "71d8eee3020ea8928caa3173a1efc392602cb2b2faabc5ae127e7b3f4820bb6c",
+    "src/beta-season.js": "f7cad8597602adeb17d15b157b0ae1462e7fc9abccfd5f23e6ecc9593aa4c835",
+    "src/combat/beta6-combat.js": "72511a36b6d69cce95228da9dda96aa8701dcc9b844a34641bbde6c6bc802c46",
+    "src/combat/main-season-combat.js": "2840d39fe4e935e596c9784600794cfcbef243bddbbd2043cf09076aae4f5f8b",
+    "src/combat/salmon-combat.js": "1205092fd9a0bd9461477bd3d5b0dcbf2adbc106fed7b3716e8408d0b2745397",
+    "src/config/aim-guides.js": "1f15ef83304bbd1fb4cd1152f2fb9a2bfc9b67feb0f3503b895bb8cd23924b59",
+    "src/config/beta-attack-motion.js": "856fdc7f2be329f41d6d50039583a4a6b5c4c27d732dcbe8068c7a8496f373a3",
+    "src/config/beta-characters.js": "f1ce45b72b678e368e689fa227eb202e2d3469046273b79aee1f50e7f40062d4",
+    "src/config/beta-chop-wood.js": "17e79cb28af17666cff2a781412d86c7d85abf97fb07dfe6918ab2605bb0d535",
+    "src/config/beta-lobby-layout.js": "11ef1ced9b2979a47edcc19e58ec6631127a1fd31abdb5770626df0dcf223615",
+    "src/config/beta-showdown.js": "08c6aa7dd16d08542e5007ccf2eedfd3abafc25b7715090461fcd0eead153461",
+    "src/config/beta-stairs-profile.js": "13b39ccde1c73a2ba72cb02afef0e9682a25bf9d79e2c81d9f87bf81197cc628",
+    "src/config/beta-ultimate-motion.js": "ce840bc83e0bd56e8a6f609d8cd901d2f7ae9e5e235efb9eb1b2472ea3d7bae3",
+    "src/config/beta6-balance.js": "09fd1f4f7d13e39d0d73bbbd051b35fd31c9a916282dca7fd9d71c426fa06e2f",
+    "src/config/beta7-balance.js": "e9ac5bdc3d5be8a7aded776984355b9a3388469a80eb356bc8139c250937f2ec",
+    "src/config/beta7-counter-targets.js": "8fc6b76d88eaf6599b6026705dd7f6754231d824be74701ead85651367260ea5",
+    "src/config/beta8-balance.js": "faf08d70e20a7759df6ac0e256a799a14f551f77ad77cbee1262909d455545d1",
+    "src/config/beta8-quests.js": "76082e5dcd14d93eed8bbb5e07ba2ce86504f395602c45599a36653247c04bad",
+    "src/config/beta8-records.js": "bbafa3512d60aa38dd4fe2b6fce3d72d8a5307969eb897561753ae72ed935d9c",
+    "src/config/characters.js": "af06467cdd8890addd968ccbe304b982c3ce18ab53d5a3ff5c66b31e07074bda",
+    "src/config/event-maps.js": "9a867e7ce0a909b97f873392854c90c5e6bb1cad5632bb78bac9b47e624dd865",
+    "src/config/gem-grab.js": "1fbd57b30befcda304708021068de2c2697ca29226a77c01de035d841a7878a6",
+    "src/config/knockout.js": "87ef9751564f32cf172ec8306323413c8346491fec492fb2cf850b7d9c732f37",
+    "src/config/raspberry.js": "fb419c3eb88dad20c60e9ac9e1dbff3bde9e20bf1ad20aee34ef157639715657",
+    "src/config/salmon-animation.js": "5f503cf0629649867ca362c2a406d780fc249423b104b4474027f428c6422825",
+    "src/config/salmon.js": "063410d3324e72ac5341c7939b12e61b2a875889db8fe1b855ff9532a4c48d50",
+    "src/config/skin-effects.js": "16fe11fcecba7676d5176b06ab290421927ccb6b5d8433bd758c762f66629d84",
+    "src/config/skins.js": "b97f82b5a9a4f865cfa9a5a7b737ed46e719131757e989eff45a5b7d98639ad5",
+    "src/main.js": "22dcf6e8adb8094ea1e172514af4af3f4a9344ce561a6af2535ab2802b965ad3",
+    "src/multiplayer.js": "9faa72064a40e1db57bd3886b67c565a6a6a2a9fb84587ed6b15b5f1da5b287e",
+    "src/visuals/aim-guide.js": "dbdf5428c4b27e1fc76055497ee08e3de97da8d0058426f384f3bdf225e7f2e0",
+    "src/visuals/beta-attack-motion.js": "fc19d73dcf44bd3fad8b1961b9731a5df8af6907688543e7d3d2fc8bacfe35b5",
+    "src/visuals/beta-attack-props.js": "c3ceab7303534f7eb886c0892e970ae15ce39bf36f6ef0630ab3780e5e13a11a",
+    "src/visuals/beta-obelisk.js": "3560f26150a9e769721e59ec11827d1379d2c48a27074f187830e84ef21386f1",
+    "src/visuals/beta-stairs.js": "5fa98e6f1ac57b3141e8d22b57fbc1530d585f6cd1e278e124060c86d875f53c",
+    "src/visuals/beta-wall.js": "048bdb70029095296605de15e1fb2712d25b17ad9ef4e62cd24016ab75f75948",
+    "src/visuals/beta8-halloween.js": "0551d48274a2774f3e06706f7e716adeba7afec3ba10b61d549703c257a2489f",
+    "src/visuals/beta8-lobby-rooms.js": "4cb6ad4211ccad96092d3639f83e77895f551145fa81c23c732929d6937ca5c8",
+    "src/visuals/beta9-champions.js": "c1d2b1722bfbb9274ca3fc6dc9d4d3a03ffa09f6a895b91c09b83001917ee996",
+    "src/visuals/crown.js": "b94629422c9895385d00b8ca455341f8bbed0dc15db317d3f8b40695b46decfd",
+    "src/visuals/crystal-motion.js": "71ddfaf2bdedc0bd7386c24072c209cac3ba0aeda772d081888526184876512f",
+    "src/visuals/crystal-telegraph.js": "0a1558fad521e3b2e1c5a398821672ed15cde770179148c11eee242d0a98d7be",
+    "src/visuals/model-loading.js": "5e4b7da838a77d018f535de3f8b3c1f21332cf37c1528ad0aaef82c20738e473",
+    "src/visuals/raspberry-vines.js": "984de18fef614d23aa6fda7d912372a26db7a3f43dbee15764af0481fa07800b",
+    "src/visuals/respawn-shield.js": "32c2fb801ebc22db64987ccb84156d034e469d5eed52f6a396d781dba0ba1ff1",
+    "src/visuals/rig-attack-motion.js": "ef3dd5b98ed0bee6e3bc5b63262ae5d3acdb1f60c1e753841a8e4c43e271fe07",
+    "src/visuals/salmon-attack.js": "23628d71eeb18cc03b57c4742d3c7a5f13f1fff3e96e1f4115b211080d1438fc",
+    "src/visuals/salmon-combat.js": "67b06df2f5eca426d4422b8a6c0cd2b3a308dfd73ee15b352648871720f34d51",
+    "src/visuals/salmon-motion.js": "916961616f00335e5b7c70345ee6cf5d2987877718aa5424dfe9bc7121bc01c5",
+    "src/visuals/salmon-preview.js": "7a8dfe0fc5a1e31d5bbb7cdf52afdf3533f94b797b3db8a6ddc5801e5177d193",
+    "src/visuals/season-combat.js": "e38a6ddea5fd25eec525816036f43b4c635518e3e7e1b96f519318e9c8599670",
+    "src/visuals/skin-effects.js": "05b56f5a009fb7cb28928731b665350186bfdca36f7f722be478581ffe03fd6d",
+    "src/visuals/yellow-circuit.js": "e999b46ca44f8ecbae373b8b0a8a58425f902f92691bcd6314387bcc7034e7c2",
+    "src/wiki.js": "9c182416d1e3e5d08c4fb5d3ce3a95715b6590522b99c5665e932526cf4f5e03"
+  }
+}

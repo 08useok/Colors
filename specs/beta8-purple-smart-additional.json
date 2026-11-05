@@ -1,0 +1,20 @@
+[
+  {
+    "left": "pink",
+    "right": "purple",
+    "seedBase": 20261025,
+    "games": 240,
+    "wins": 240,
+    "losses": 0,
+    "draws": 0
+  },
+  {
+    "left": "purple",
+    "right": "crystal",
+    "seedBase": 314159265,
+    "games": 240,
+    "wins": 240,
+    "losses": 0,
+    "draws": 0
+  }
+]

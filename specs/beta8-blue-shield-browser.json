@@ -1,0 +1,46 @@
+{
+  "before": 1000,
+  "preparing": {
+    "state": {
+      "reduction": 0.7,
+      "rolling": false,
+      "preparing": true,
+      "shield": true
+    },
+    "damage": 300
+  },
+  "rolling": {
+    "state": {
+      "reduction": 0.7,
+      "rolling": true,
+      "preparing": false,
+      "shield": true
+    },
+    "damage": 300
+  },
+  "after": {
+    "state": {
+      "reduction": 0,
+      "rolling": false,
+      "preparing": false,
+      "shield": false
+    },
+    "damage": 1000
+  },
+  "errors": [],
+  "projectile": {
+    "radius": 0.15400000000000003,
+    "scale": 1.1
+  },
+  "charge": {
+    "basic": [
+      0.5,
+      1,
+      1.5,
+      2,
+      2.5
+    ],
+    "required": 2.5,
+    "ultimateRecharge": 2.5
+  }
+}

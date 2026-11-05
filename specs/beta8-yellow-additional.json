@@ -1,0 +1,42 @@
+[
+  {
+    "pursuit": false,
+    "left": "chartreuse",
+    "right": "yellow",
+    "seedBase": 20261025,
+    "games": 240,
+    "wins": 130,
+    "losses": 109,
+    "draws": 1
+  },
+  {
+    "pursuit": false,
+    "left": "yellow",
+    "right": "ivory",
+    "seedBase": 314159265,
+    "games": 240,
+    "wins": 239,
+    "losses": 1,
+    "draws": 0
+  },
+  {
+    "pursuit": true,
+    "left": "chartreuse",
+    "right": "yellow",
+    "seedBase": 20261025,
+    "games": 240,
+    "wins": 125,
+    "losses": 115,
+    "draws": 0
+  },
+  {
+    "pursuit": true,
+    "left": "yellow",
+    "right": "ivory",
+    "seedBase": 314159265,
+    "games": 240,
+    "wins": 240,
+    "losses": 0,
+    "draws": 0
+  }
+]

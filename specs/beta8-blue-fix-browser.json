@@ -1,0 +1,28 @@
+{
+  "chance": 0.5,
+  "evaded": 188,
+  "opportunities": 400,
+  "crimson": {
+    "speed": 1.5,
+    "cooldown": 0.9
+  },
+  "blue": {
+    "min": 14,
+    "max": 20,
+    "duration": 0.18
+  },
+  "movement": [
+    {
+      "distance": 25,
+      "dx": 0.11333333333333333
+    },
+    {
+      "distance": 17,
+      "dx": 0
+    },
+    {
+      "distance": 8,
+      "dx": -0.11333333333333333
+    }
+  ]
+}

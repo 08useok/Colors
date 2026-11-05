@@ -1,0 +1,1723 @@
+{
+  "scope": "Diagnostic candidates only; common stats and fixed 28000 analysis preserved; 36 poison and leap candidates, 2-seed scout then top8 full10-seed tests",
+  "rows": [
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9583333333333334,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9513888888888888,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9513888888888888,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9513888888888888,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9513888888888888,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9375,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9375,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9375,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9375,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.9305555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.9305555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.9305555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.9305555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.9305555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.923611111111111,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.923611111111111,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.923611111111111,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.8541666666666666,
+      "mean": 0.923611111111111,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 41,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.8541666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8541666666666666,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8541666666666666,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 47,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.9791666666666666
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.6041666666666666,
+      "mean": 0.8472222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 29,
+          "losses": 19,
+          "draws": 0,
+          "score": 0.6041666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.6041666666666666,
+      "mean": 0.8472222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 29,
+          "losses": 19,
+          "draws": 0,
+          "score": 0.6041666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 5,
+        "speed": 28
+      },
+      "min": 0.6041666666666666,
+      "mean": 0.8472222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 29,
+          "losses": 19,
+          "draws": 0,
+          "score": 0.6041666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.6041666666666666,
+      "mean": 0.8472222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 29,
+          "losses": 19,
+          "draws": 0,
+          "score": 0.6041666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.6041666666666666,
+      "mean": 0.8472222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 29,
+          "losses": 19,
+          "draws": 0,
+          "score": 0.6041666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.6041666666666666,
+      "mean": 0.8472222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 29,
+          "losses": 19,
+          "draws": 0,
+          "score": 0.6041666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.5833333333333334,
+      "mean": 0.8402777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 28,
+          "losses": 20,
+          "draws": 0,
+          "score": 0.5833333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.5833333333333334,
+      "mean": 0.8402777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 28,
+          "losses": 20,
+          "draws": 0,
+          "score": 0.5833333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1100,
+        "duration": 4,
+        "speed": 28
+      },
+      "min": 0.5833333333333334,
+      "mean": 0.8402777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 28,
+          "losses": 20,
+          "draws": 0,
+          "score": 0.5833333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    }
+  ],
+  "finalists": [
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9541666666666667,
+      "mean": 0.9638888888888889,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 233,
+          "losses": 7,
+          "draws": 0,
+          "score": 0.9708333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.94375,
+      "mean": 0.9548611111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 226,
+          "losses": 13,
+          "draws": 1,
+          "score": 0.94375
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.9416666666666667,
+      "mean": 0.9541666666666667,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 226,
+          "losses": 14,
+          "draws": 0,
+          "score": 0.9416666666666667
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1400,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9375,
+      "mean": 0.9527777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 225,
+          "losses": 15,
+          "draws": 0,
+          "score": 0.9375
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 1500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9333333333333333,
+      "mean": 0.951388888888889,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 224,
+          "losses": 16,
+          "draws": 0,
+          "score": 0.9333333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.9125,
+      "mean": 0.9444444444444445,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 219,
+          "losses": 21,
+          "draws": 0,
+          "score": 0.9125
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 4,
+        "speed": 36
+      },
+      "min": 0.9083333333333333,
+      "mean": 0.9430555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 218,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.9083333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2000,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 1.5,
+        "poison": 1800,
+        "duration": 5,
+        "speed": 36
+      },
+      "min": 0.9083333333333333,
+      "mean": 0.9430555555555555,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 229,
+          "losses": 11,
+          "draws": 0,
+          "score": 0.9541666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 218,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.9083333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    }
+  ]
+}

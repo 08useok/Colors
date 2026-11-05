@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "id": "red",
+      "skin": "alpha_red",
+      "basic": 0,
+      "ultimate": 0,
+      "ambient": 0
+    },
+    {
+      "id": "crimson",
+      "skin": "beta_red_crimson",
+      "basic": 8,
+      "ultimate": 0,
+      "ambient": 0
+    },
+    {
+      "id": "gold",
+      "skin": "beta7_gold_pharaoh",
+      "basic": 8,
+      "ultimate": 18,
+      "ambient": 0
+    },
+    {
+      "id": "red",
+      "skin": "beta_red_red",
+      "basic": 8,
+      "ultimate": 18,
+      "ambient": 1
+    }
+  ],
+  "pageErrors": []
+}

@@ -1,0 +1,165 @@
+{
+  "samples": [
+    {
+      "yaw": 0,
+      "count": 6,
+      "parallel": true,
+      "spacing": 0.75
+    },
+    {
+      "yaw": 1.5707963267948966,
+      "count": 6,
+      "parallel": true,
+      "spacing": 0.75
+    },
+    {
+      "yaw": 0.7,
+      "count": 6,
+      "parallel": true,
+      "spacing": 0.75
+    }
+  ],
+  "policy": {
+    "cyanDamage": 5200,
+    "rows": [
+      {
+        "id": "cyan",
+        "enemy": "red",
+        "distance": 2,
+        "manual": false,
+        "cast": true,
+        "reach": 4
+      },
+      {
+        "id": "cyan",
+        "enemy": "pink",
+        "distance": 2,
+        "manual": false,
+        "cast": true,
+        "reach": 4
+      },
+      {
+        "id": "cyan",
+        "enemy": "red",
+        "distance": 4.1,
+        "manual": false,
+        "cast": false,
+        "reach": 4
+      },
+      {
+        "id": "cyan",
+        "enemy": "green",
+        "distance": 2,
+        "manual": false,
+        "cast": false,
+        "reach": 4
+      },
+      {
+        "id": "cyan",
+        "enemy": "green",
+        "distance": 2,
+        "manual": true,
+        "cast": true,
+        "reach": 4
+      },
+      {
+        "id": "azure",
+        "enemy": "red",
+        "distance": 2,
+        "manual": false,
+        "cast": true,
+        "reach": 3
+      },
+      {
+        "id": "azure",
+        "enemy": "pink",
+        "distance": 2,
+        "manual": false,
+        "cast": true,
+        "reach": 3
+      },
+      {
+        "id": "azure",
+        "enemy": "red",
+        "distance": 3.1,
+        "manual": false,
+        "cast": false,
+        "reach": 3
+      },
+      {
+        "id": "azure",
+        "enemy": "green",
+        "distance": 2,
+        "manual": false,
+        "cast": false,
+        "reach": 3
+      },
+      {
+        "id": "azure",
+        "enemy": "green",
+        "distance": 2,
+        "manual": true,
+        "cast": true,
+        "reach": 3
+      },
+      {
+        "id": "crimson",
+        "enemy": "red",
+        "distance": 2,
+        "manual": false,
+        "cast": true,
+        "reach": 3
+      },
+      {
+        "id": "crimson",
+        "enemy": "pink",
+        "distance": 2,
+        "manual": false,
+        "cast": true,
+        "reach": 3
+      },
+      {
+        "id": "crimson",
+        "enemy": "red",
+        "distance": 3.1,
+        "manual": false,
+        "cast": false,
+        "reach": 3
+      },
+      {
+        "id": "crimson",
+        "enemy": "green",
+        "distance": 2,
+        "manual": false,
+        "cast": false,
+        "reach": 3
+      },
+      {
+        "id": "crimson",
+        "enemy": "green",
+        "distance": 2,
+        "manual": true,
+        "cast": true,
+        "reach": 3
+      }
+    ],
+    "pushes": [
+      {
+        "id": "cyan",
+        "distance": 8,
+        "expected": 8
+      },
+      {
+        "id": "azure",
+        "distance": 9,
+        "expected": 9
+      }
+    ],
+    "executionHp": 0,
+    "charge": {
+      "cyan": 2,
+      "lavender": 1,
+      "crystal": 1.5
+    }
+  }
+}

@@ -1,0 +1,1268 @@
+{
+  "profile": {
+    "mapSide": 120,
+    "bounds": 59,
+    "liveMapSide": 100,
+    "liveBounds": 49,
+    "distances": [
+      6,
+      10,
+      14,
+      20,
+      28,
+      36
+    ],
+    "aimErrors": [
+      0.035,
+      0.1
+    ],
+    "seedsPerScenario": 10,
+    "zone": {
+      "start": 30,
+      "end": 45,
+      "startRadius": 40,
+      "endRadius": 8,
+      "damagePerSecond": 0.25
+    },
+    "scope": "Enlarged 120x120 open simulation arena (live map is 100x100); historical synthetic zone, no obstacles or multiplayer spawns"
+  },
+  "scope": "Current baseline traces plus diagnostic-only counterfactuals; no gameplay changes",
+  "reports": [
+    {
+      "left": "cyan",
+      "right": "pink",
+      "variant": "baseline",
+      "wins": 237,
+      "losses": 3,
+      "draws": 0,
+      "lossCauses": {
+        "combat": 3
+      },
+      "lossCasts": {
+        "zero": 3,
+        "used": 0
+      },
+      "lossCharge": {
+        "1.5/2": 3
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 10,
+          "aimError": 0.1,
+          "n": 2,
+          "reverse": false,
+          "cause": "combat",
+          "time": 1.867,
+          "hp": [
+            0,
+            8580
+          ],
+          "charge": [
+            1.5,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.7666666666666666,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6820,
+                10890
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 9.74,
+              "a": [
+                -4.9,
+                0.1
+              ],
+              "b": [
+                4.9,
+                0
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.2,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.021646697351019
+            },
+            {
+              "time": 0.55,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.27690353822498
+            },
+            {
+              "time": 0.767,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.994957321158993
+            },
+            {
+              "time": 0.9,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.873886488208287
+            },
+            {
+              "time": 1.1,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 6820,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.326398622176578
+            },
+            {
+              "time": 1.1,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 9350,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.326398622176578
+            },
+            {
+              "time": 1.1,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 8580,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 4.326398622176578
+            },
+            {
+              "time": 1.233,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.059238516088072
+            },
+            {
+              "time": 1.417,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.6907154061101397
+            },
+            {
+              "time": 1.55,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.42165412710762
+            },
+            {
+              "time": 1.733,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.492948322078579
+            },
+            {
+              "time": 1.867,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 1980,
+              "targetHp": 0,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.3710704532735756
+            }
+          ]
+        },
+        {
+          "distance": 20,
+          "aimError": 0.1,
+          "n": 7,
+          "reverse": false,
+          "cause": "combat",
+          "time": 2.467,
+          "hp": [
+            0,
+            8580
+          ],
+          "charge": [
+            1.5,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.7333333333333334,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6820,
+                10890
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 19.74,
+              "a": [
+                -9.9,
+                0
+              ],
+              "b": [
+                9.9,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                4400,
+                8580
+              ],
+              "ammo": 0,
+              "charge": 1.5,
+              "floats": 0,
+              "gap": 3.69,
+              "a": [
+                -8.3,
+                2.4
+              ],
+              "b": [
+                -4.7,
+                2.7
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.767,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.160741880046531
+            },
+            {
+              "time": 1.117,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.2440564747750384
+            },
+            {
+              "time": 1.333,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.075145290185031
+            },
+            {
+              "time": 1.483,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.917799125595534
+            },
+            {
+              "time": 1.683,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 9350,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.362731324595001
+            },
+            {
+              "time": 1.683,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 8580,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 4.362731324595001
+            },
+            {
+              "time": 1.7,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 6820,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.328777088013524
+            },
+            {
+              "time": 1.833,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.057971751332489
+            },
+            {
+              "time": 2.017,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.6894118664059072
+            },
+            {
+              "time": 2.15,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.424570237602861
+            },
+            {
+              "time": 2.333,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.3571868814076296
+            },
+            {
+              "time": 2.467,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 1980,
+              "targetHp": 0,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.387533662910093
+            }
+          ]
+        },
+        {
+          "distance": 20,
+          "aimError": 0.1,
+          "n": 7,
+          "reverse": true,
+          "cause": "combat",
+          "time": 2.433,
+          "hp": [
+            0,
+            8580
+          ],
+          "charge": [
+            1.5,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.7,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6820,
+                10890
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 19.74,
+              "a": [
+                -9.9,
+                0
+              ],
+              "b": [
+                9.9,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                4400,
+                8580
+              ],
+              "ammo": 0,
+              "charge": 1.5,
+              "floats": 0,
+              "gap": 3.75,
+              "a": [
+                -8.3,
+                2.4
+              ],
+              "b": [
+                -4.5,
+                2.8
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.767,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.013763990780223
+            },
+            {
+              "time": 1.117,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.254389878100879
+            },
+            {
+              "time": 1.333,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.137636625985699
+            },
+            {
+              "time": 1.483,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.832898795956133
+            },
+            {
+              "time": 1.667,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 6820,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.34573019077037
+            },
+            {
+              "time": 1.683,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 9350,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.425107928409335
+            },
+            {
+              "time": 1.7,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 8580,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 4.391164240407174
+            },
+            {
+              "time": 1.8,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.187988986966244
+            },
+            {
+              "time": 1.983,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.7052947247533323
+            },
+            {
+              "time": 2.117,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.5536481382651095
+            },
+            {
+              "time": 2.3,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.3724599971082965
+            },
+            {
+              "time": 2.433,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 1980,
+              "targetHp": 0,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.5168423288966295
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "left": "cyan",
+      "right": "pink",
+      "variant": "noLowHealthRetreat",
+      "wins": 237,
+      "losses": 3,
+      "draws": 0,
+      "lossCauses": {
+        "combat": 3
+      },
+      "lossCasts": {
+        "zero": 3,
+        "used": 0
+      },
+      "lossCharge": {
+        "1.5/2": 3
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 10,
+          "aimError": 0.1,
+          "n": 2,
+          "reverse": false,
+          "cause": "combat",
+          "time": 1.867,
+          "hp": [
+            0,
+            8580
+          ],
+          "charge": [
+            1.5,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.7666666666666666,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6820,
+                10890
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 9.74,
+              "a": [
+                -4.9,
+                0.1
+              ],
+              "b": [
+                4.9,
+                0
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.2,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.021646697351019
+            },
+            {
+              "time": 0.55,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.27690353822498
+            },
+            {
+              "time": 0.767,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.994957321158993
+            },
+            {
+              "time": 0.9,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.873886488208287
+            },
+            {
+              "time": 1.1,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 6820,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.326398622176578
+            },
+            {
+              "time": 1.1,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 9350,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.326398622176578
+            },
+            {
+              "time": 1.1,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 8580,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 4.326398622176578
+            },
+            {
+              "time": 1.233,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.059238516088072
+            },
+            {
+              "time": 1.417,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.6907154061101397
+            },
+            {
+              "time": 1.55,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.42165412710762
+            },
+            {
+              "time": 1.733,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.492948322078579
+            },
+            {
+              "time": 1.867,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 1980,
+              "targetHp": 0,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.3710704532735756
+            }
+          ]
+        },
+        {
+          "distance": 20,
+          "aimError": 0.1,
+          "n": 7,
+          "reverse": false,
+          "cause": "combat",
+          "time": 2.467,
+          "hp": [
+            0,
+            8580
+          ],
+          "charge": [
+            1.5,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.7333333333333334,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6820,
+                10890
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 19.74,
+              "a": [
+                -9.9,
+                0
+              ],
+              "b": [
+                9.9,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                4400,
+                8580
+              ],
+              "ammo": 0,
+              "charge": 1.5,
+              "floats": 0,
+              "gap": 3.69,
+              "a": [
+                -8.3,
+                2.4
+              ],
+              "b": [
+                -4.7,
+                2.7
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.767,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.160741880046531
+            },
+            {
+              "time": 1.117,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.2440564747750384
+            },
+            {
+              "time": 1.333,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.075145290185031
+            },
+            {
+              "time": 1.483,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.917799125595534
+            },
+            {
+              "time": 1.683,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 9350,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.362731324595001
+            },
+            {
+              "time": 1.683,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 8580,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 4.362731324595001
+            },
+            {
+              "time": 1.7,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 6820,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.328777088013524
+            },
+            {
+              "time": 1.833,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.057971751332489
+            },
+            {
+              "time": 2.017,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.6894118664059072
+            },
+            {
+              "time": 2.15,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.424570237602861
+            },
+            {
+              "time": 2.333,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.3571868814076296
+            },
+            {
+              "time": 2.467,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 1980,
+              "targetHp": 0,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.387533662910093
+            }
+          ]
+        },
+        {
+          "distance": 20,
+          "aimError": 0.1,
+          "n": 7,
+          "reverse": true,
+          "cause": "combat",
+          "time": 2.433,
+          "hp": [
+            0,
+            8580
+          ],
+          "charge": [
+            1.5,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.7,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6820,
+                10890
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 19.74,
+              "a": [
+                -9.9,
+                0
+              ],
+              "b": [
+                9.9,
+                0
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                4400,
+                8580
+              ],
+              "ammo": 0,
+              "charge": 1.5,
+              "floats": 0,
+              "gap": 3.75,
+              "a": [
+                -8.3,
+                2.4
+              ],
+              "b": [
+                -4.5,
+                2.8
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.767,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.013763990780223
+            },
+            {
+              "time": 1.117,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10890,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.254389878100879
+            },
+            {
+              "time": 1.333,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.137636625985699
+            },
+            {
+              "time": 1.483,
+              "type": "attack",
+              "owner": "cyan",
+              "target": "pink",
+              "targetHp": 10120,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.832898795956133
+            },
+            {
+              "time": 1.667,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 6820,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.34573019077037
+            },
+            {
+              "time": 1.683,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 9350,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.425107928409335
+            },
+            {
+              "time": 1.7,
+              "type": "damage",
+              "owner": "cyan",
+              "target": "pink",
+              "amount": 770,
+              "targetHp": 8580,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 4.391164240407174
+            },
+            {
+              "time": 1.8,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.187988986966244
+            },
+            {
+              "time": 1.983,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 4400,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.7052947247533323
+            },
+            {
+              "time": 2.117,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 2420,
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 3.5536481382651095
+            },
+            {
+              "time": 2.3,
+              "type": "attack",
+              "owner": "pink",
+              "target": "cyan",
+              "targetHp": 1980,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.3724599971082965
+            },
+            {
+              "time": 2.433,
+              "type": "damage",
+              "owner": "pink",
+              "target": "cyan",
+              "amount": 1980,
+              "targetHp": 0,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 3.5168423288966295
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

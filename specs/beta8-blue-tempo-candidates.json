@@ -1,0 +1,3145 @@
+{
+  "baseline": {
+    "wins": 222,
+    "losses": 18,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "6:0.035:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 9.035872158903706,
+        "lastDamageKind": [
+          "bomb",
+          "bullet"
+        ],
+        "time": 0.5666666666666668
+      },
+      {
+        "key": "6:0.035:1:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          2024,
+          0
+        ],
+        "charge": [
+          2.5,
+          1
+        ],
+        "distance": 9.78995783766918,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.6333333333333336
+      },
+      {
+        "key": "6:0.035:2:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          3,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          2.5
+        ],
+        "distance": 13.33897800192535,
+        "lastDamageKind": [
+          "juice",
+          "bullet"
+        ],
+        "time": 0.9333333333333346
+      },
+      {
+        "key": "6:0.035:2:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          2024,
+          0
+        ],
+        "charge": [
+          2.5,
+          1
+        ],
+        "distance": 8.197993442421062,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.5666666666666668
+      },
+      {
+        "key": "6:0.035:3:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          3
+        ],
+        "hp": [
+          2024,
+          0
+        ],
+        "charge": [
+          2.5,
+          1
+        ],
+        "distance": 10.672775576010554,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.7166666666666672
+      },
+      {
+        "key": "6:0.035:4:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 8.386616816928797,
+        "lastDamageKind": [
+          "bomb",
+          "bullet"
+        ],
+        "time": 0.6166666666666669
+      },
+      {
+        "key": "6:0.035:4:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          2024,
+          0
+        ],
+        "charge": [
+          2.5,
+          1
+        ],
+        "distance": 7.820010499361488,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.6166666666666669
+      },
+      {
+        "key": "6:0.035:7:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          3
+        ],
+        "hp": [
+          2024,
+          0
+        ],
+        "charge": [
+          2.5,
+          1
+        ],
+        "distance": 10.08621029925479,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.733333333333334
+      },
+      {
+        "key": "6:0.035:8:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          2.5
+        ],
+        "distance": 7.708722083886464,
+        "lastDamageKind": [
+          "juice",
+          "bullet"
+        ],
+        "time": 0.6500000000000004
+      },
+      {
+        "key": "6:0.035:8:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          2024,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 8.048312145403209,
+        "lastDamageKind": [
+          "bullet",
+          "bomb"
+        ],
+        "time": 0.6166666666666669
+      },
+      {
+        "key": "6:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          3,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          1
+        ],
+        "distance": 11.529817861810791,
+        "lastDamageKind": [
+          "bomb",
+          "bullet"
+        ],
+        "time": 0.9000000000000011
+      },
+      {
+        "key": "6:0.1:1:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          3212
+        ],
+        "charge": [
+          0.5,
+          0.5
+        ],
+        "distance": 6.800954052178644,
+        "lastDamageKind": [
+          "bomb",
+          "bullet"
+        ],
+        "time": 0.5833333333333335
+      },
+      {
+        "key": "6:0.1:1:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          3212,
+          0
+        ],
+        "charge": [
+          0.5,
+          0.5
+        ],
+        "distance": 6.9150689449345775,
+        "lastDamageKind": [
+          "bullet",
+          "bomb"
+        ],
+        "time": 0.6500000000000004
+      },
+      {
+        "key": "6:0.1:3:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 8.615064614887592,
+        "lastDamageKind": [
+          "bomb",
+          "bullet"
+        ],
+        "time": 0.6000000000000002
+      },
+      {
+        "key": "6:0.1:3:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          3
+        ],
+        "hp": [
+          836,
+          0
+        ],
+        "charge": [
+          2.5,
+          1.5
+        ],
+        "distance": 12.050968254317816,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.9333333333333346
+      },
+      {
+        "key": "6:0.1:4:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          0.5
+        ],
+        "distance": 8.60657541563898,
+        "lastDamageKind": [
+          "bomb",
+          "bullet"
+        ],
+        "time": 0.6666666666666671
+      },
+      {
+        "key": "6:0.1:5:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          0,
+          2024
+        ],
+        "charge": [
+          1,
+          2.5
+        ],
+        "distance": 9.559610438148184,
+        "lastDamageKind": [
+          "juice",
+          "bullet"
+        ],
+        "time": 0.7000000000000005
+      },
+      {
+        "key": "6:0.1:9:true",
+        "outcome": 1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          2,
+          2
+        ],
+        "hp": [
+          3212,
+          0
+        ],
+        "charge": [
+          2.5,
+          0.5
+        ],
+        "distance": 6.907469679102709,
+        "lastDamageKind": [
+          "bullet",
+          "juice"
+        ],
+        "time": 0.6333333333333336
+      }
+    ]
+  },
+  "rows": [
+    {
+      "patch": {
+        "health": 6000,
+        "interval": 0.2,
+        "speed": 1.2
+      },
+      "wins": 239,
+      "losses": 1,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 14.583101782893747,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.183333333333334
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 6000,
+        "interval": 0.2,
+        "speed": 1
+      },
+      "wins": 237,
+      "losses": 3,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 11.791671326364982,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.0500000000000012
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 15.748173394493703,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2166666666666672
+        },
+        {
+          "key": "6:0.1:5:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 14.66588571139942,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2166666666666672
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 6000,
+        "interval": 0.25,
+        "speed": 1.2
+      },
+      "wins": 237,
+      "losses": 3,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 13.926763934288589,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2333333333333338
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 16.206842612449314,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2500000000000004
+        },
+        {
+          "key": "10:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            17
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 15.133462842691884,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 11.133333333333466
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 6000,
+        "interval": 0.25,
+        "speed": 1
+      },
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            3,
+            1
+          ],
+          "distance": 13.49014749242626,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.9833333333333347
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 10.205497618257995,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.0500000000000012
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 15.18131646521866,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.1666666666666674
+        },
+        {
+          "key": "6:0.1:5:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 14.553706374277136,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2833333333333337
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 6000,
+        "interval": 0.3,
+        "speed": 1.2
+      },
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 13.043270396211799,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2500000000000004
+        },
+        {
+          "key": "6:0.1:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            3,
+            1
+          ],
+          "distance": 13.631152675222394,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 1.3166666666666669
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 15.594862531313359,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.2333333333333338
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            3,
+            1
+          ],
+          "distance": 14.466663921902326,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 1.4
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 6000,
+        "interval": 0.3,
+        "speed": 1
+      },
+      "wins": 234,
+      "losses": 6,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            3
+          ],
+          "distance": 13.33897800192535,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.9333333333333346
+        },
+        {
+          "key": "6:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            3,
+            1
+          ],
+          "distance": 13.490875500035868,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 1.0333333333333345
+        },
+        {
+          "key": "6:0.1:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 11.529817861810791,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.9000000000000011
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 9.072454664584157,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.0500000000000012
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 14.501274969378812,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 1.1333333333333342
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            3,
+            1
+          ],
+          "distance": 9.181091580975082,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 1.0833333333333344
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 5200,
+        "interval": 0.2,
+        "speed": 1.2
+      },
+      "wins": 230,
+      "losses": 10,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:0:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.866952991894147,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.5833333333333335
+        },
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            1
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 11.661881545958243,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 11.1072666117749,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6666666666666671
+        },
+        {
+          "key": "6:0.035:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 11.019196684372384,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6833333333333338
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            2.5
+          ],
+          "distance": 7.461526941341218,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.321378476229174,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.7000000000000005
+        },
+        {
+          "key": "6:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 8.117670515108955,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 11.12766733270045,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.7166666666666672
+        },
+        {
+          "key": "6:0.1:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 11.532256009262092,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.9166666666666679
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.836622038231146,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 5200,
+        "interval": 0.25,
+        "speed": 1.2
+      },
+      "wins": 230,
+      "losses": 10,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:0:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.413643869038152,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.5833333333333335
+        },
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            1
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 10.981887204741478,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 10.427475745511964,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6666666666666671
+        },
+        {
+          "key": "6:0.035:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 10.339379159476387,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6833333333333338
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            2.5
+          ],
+          "distance": 7.461526941341218,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            2915,
+            0
+          ],
+          "charge": [
+            2.5,
+            0.5
+          ],
+          "distance": 7.641409826791152,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.7000000000000005
+        },
+        {
+          "key": "6:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 10.383988668736052,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 10.674371933841162,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.7166666666666672
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.383451639615286,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "10:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            16
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 8.289897953769767,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 10.566666666666771
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 5200,
+        "interval": 0.3,
+        "speed": 1.2
+      },
+      "wins": 230,
+      "losses": 10,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:0:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            2915,
+            0
+          ],
+          "charge": [
+            2.5,
+            0.5
+          ],
+          "distance": 8.186982495874682,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.5833333333333335
+        },
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            1
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 10.301891012413243,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 9.74766052889616,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6666666666666671
+        },
+        {
+          "key": "6:0.035:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 9.65952703010269,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6833333333333338
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            2.5
+          ],
+          "distance": 7.461526941341218,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            2915,
+            0
+          ],
+          "charge": [
+            2.5,
+            0.5
+          ],
+          "distance": 7.641409826791152,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.7000000000000005
+        },
+        {
+          "key": "6:0.1:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 13.631152675222394,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 1.3166666666666669
+        },
+        {
+          "key": "6:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.704133162868127,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 9.767743317185172,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.7166666666666672
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            2915,
+            0
+          ],
+          "charge": [
+            2.5,
+            0.5
+          ],
+          "distance": 7.250321890936161,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 5200,
+        "interval": 0.2,
+        "speed": 1
+      },
+      "wins": 225,
+      "losses": 14,
+      "draws": 1,
+      "failures": [
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 10.39586738506562,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.5666666666666668
+        },
+        {
+          "key": "6:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 11.578099054256496,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "6:0.035:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 9.331231385326502,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.5666666666666668
+        },
+        {
+          "key": "6:0.035:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.746270260913452,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 9.179742340906843,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:8:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 9.068507307512432,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.035:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 9.408030795100645,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            0.5
+          ],
+          "distance": 6.800954052178644,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.5833333333333335
+        },
+        {
+          "key": "6:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 9.861321571805188,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 7.028575205105158,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6000000000000002
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.966532198913168,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6666666666666671
+        },
+        {
+          "key": "6:0.1:5:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            2.5
+          ],
+          "distance": 8.879625237020752,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.7000000000000005
+        },
+        {
+          "key": "6:0.1:6:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            4
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 16.268395053125097,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 1.5833333333333326
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.493810907628799,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 5200,
+        "interval": 0.25,
+        "speed": 1
+      },
+      "wins": 225,
+      "losses": 15,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.942536743950424,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.5666666666666668
+        },
+        {
+          "key": "6:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 10.898106283783108,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "6:0.035:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.877940454037132,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.5666666666666668
+        },
+        {
+          "key": "6:0.035:3:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 11.352731839531517,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.7166666666666672
+        },
+        {
+          "key": "6:0.035:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.06645918961194,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.499896030409445,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:7:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 10.76605621918038,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.733333333333334
+        },
+        {
+          "key": "6:0.035:8:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 8.615264705612246,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.035:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 8.728192021590138,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            0.5
+          ],
+          "distance": 6.800954052178644,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.5833333333333335
+        },
+        {
+          "key": "6:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 9.181475794603246,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.29492107558689,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6000000000000002
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.513225032921488,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6666666666666671
+        },
+        {
+          "key": "6:0.1:5:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            2.5
+          ],
+          "distance": 8.879625237020752,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.7000000000000005
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.040621410173591,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        }
+      ]
+    },
+    {
+      "patch": {
+        "health": 5200,
+        "interval": 0.3,
+        "speed": 1
+      },
+      "wins": 223,
+      "losses": 17,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "6:0.035:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 9.035872158903706,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.5666666666666668
+        },
+        {
+          "key": "6:0.035:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 9.78995783766918,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        },
+        {
+          "key": "6:0.035:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 13.33897800192535,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.9333333333333346
+        },
+        {
+          "key": "6:0.035:2:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 8.197993442421062,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.5666666666666668
+        },
+        {
+          "key": "6:0.035:3:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 10.672775576010554,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.7166666666666672
+        },
+        {
+          "key": "6:0.035:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 8.386616816928797,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:4:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 7.820010499361488,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.035:7:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            3
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            2.5,
+            1
+          ],
+          "distance": 10.08621029925479,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.733333333333334
+        },
+        {
+          "key": "6:0.035:8:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 7.708722083886464,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.035:8:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            1430,
+            0
+          ],
+          "charge": [
+            0.5,
+            1
+          ],
+          "distance": 8.048312145403209,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 0.6166666666666669
+        },
+        {
+          "key": "6:0.1:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            1
+          ],
+          "distance": 11.529817861810791,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.9000000000000011
+        },
+        {
+          "key": "6:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            2915
+          ],
+          "charge": [
+            0.5,
+            0.5
+          ],
+          "distance": 6.800954052178644,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.5833333333333335
+        },
+        {
+          "key": "6:0.1:1:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            2915,
+            0
+          ],
+          "charge": [
+            0.5,
+            0.5
+          ],
+          "distance": 6.9150689449345775,
+          "lastDamageKind": [
+            "bullet",
+            "bomb"
+          ],
+          "time": 0.6500000000000004
+        },
+        {
+          "key": "6:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 8.615064614887592,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6000000000000002
+        },
+        {
+          "key": "6:0.1:4:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            0.5
+          ],
+          "distance": 8.60657541563898,
+          "lastDamageKind": [
+            "bomb",
+            "bullet"
+          ],
+          "time": 0.6666666666666671
+        },
+        {
+          "key": "6:0.1:5:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            0,
+            1430
+          ],
+          "charge": [
+            1,
+            2.5
+          ],
+          "distance": 9.559610438148184,
+          "lastDamageKind": [
+            "juice",
+            "bullet"
+          ],
+          "time": 0.7000000000000005
+        },
+        {
+          "key": "6:0.1:9:true",
+          "outcome": 1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            2,
+            2
+          ],
+          "hp": [
+            2915,
+            0
+          ],
+          "charge": [
+            2.5,
+            0.5
+          ],
+          "distance": 6.907469679102709,
+          "lastDamageKind": [
+            "bullet",
+            "juice"
+          ],
+          "time": 0.6333333333333336
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "version": "0.8.65",
+  "documents": 21,
+  "characterSnapshots": 17,
+  "localLinksChecked": 212,
+  "brokenLocalLinks": 0,
+  "generatorIdempotent": true,
+  "runtimeUnchanged": true,
+  "scope": "Documentation checks only; existing game verification remains current by source hash"
+}

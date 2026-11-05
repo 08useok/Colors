@@ -1,0 +1,1270 @@
+[
+  {
+    "reaction": 0.05,
+    "angle": 1.5707963267948966,
+    "duration": 2,
+    "wins": 236,
+    "losses": 4,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          3,
+          6
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 12.050567044962023,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 8.91666666666669
+      },
+      {
+        "key": "20:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          7,
+          4
+        ],
+        "hp": [
+          0,
+          176
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 10.059412888359397,
+        "lastDamageKind": [
+          "crystal",
+          null
+        ],
+        "time": 8.816666666666684
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          7
+        ],
+        "hp": [
+          176,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 11.920024113564779,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 9.100000000000032
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          3
+        ],
+        "hp": [
+          0,
+          803
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 11.075448603602693,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 10.416666666666764
+      }
+    ]
+  },
+  {
+    "reaction": 0.05,
+    "angle": 1.5707963267948966,
+    "duration": 3,
+    "wins": 236,
+    "losses": 4,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          2178,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 8.705716789076785,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 11.016666666666794
+      },
+      {
+        "key": "20:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          2
+        ],
+        "attacks": [
+          8,
+          5
+        ],
+        "hp": [
+          0,
+          176
+        ],
+        "charge": [
+          0,
+          0.5
+        ],
+        "distance": 14.431502559049544,
+        "lastDamageKind": [
+          "crystal",
+          null
+        ],
+        "time": 12.850000000000218
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          7
+        ],
+        "hp": [
+          176,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 9.083022514607693,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 11.550000000000153
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.313320261337187,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.76666666666688
+      }
+    ]
+  },
+  {
+    "reaction": 0.05,
+    "angle": 1.5707963267948966,
+    "duration": 4,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          3,
+          5
+        ],
+        "hp": [
+          2178,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 11.744794345676397,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 10.716666666666779
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          7
+        ],
+        "hp": [
+          176,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 8.964542626834222,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 11.400000000000146
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.152133477624822,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.600000000000206
+      }
+    ]
+  },
+  {
+    "reaction": 0.1,
+    "angle": 1.5707963267948966,
+    "duration": 2,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "20:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          0,
+          176
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 9.645763880355664,
+        "lastDamageKind": [
+          "crystal",
+          null
+        ],
+        "time": 8.133333333333317
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          6,
+          6
+        ],
+        "hp": [
+          176,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 15.085310252809546,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 8.950000000000024
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          3
+        ],
+        "hp": [
+          0,
+          803
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 11.082006388067446,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 10.383333333333429
+      }
+    ]
+  },
+  {
+    "reaction": 0.1,
+    "angle": 1.5707963267948966,
+    "duration": 3,
+    "wins": 238,
+    "losses": 2,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          6
+        ],
+        "hp": [
+          2178,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 8.73285705521401,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 11.016666666666794
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.377170896523776,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.733333333333546
+      }
+    ]
+  },
+  {
+    "reaction": 0.1,
+    "angle": 1.5707963267948966,
+    "duration": 4,
+    "wins": 238,
+    "losses": 2,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          3,
+          5
+        ],
+        "hp": [
+          2178,
+          0
+        ],
+        "charge": [
+          1,
+          0
+        ],
+        "distance": 11.77116506534358,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 10.716666666666779
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.13934304495143,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.583333333333538
+      }
+    ]
+  },
+  {
+    "reaction": 0.15,
+    "angle": 1.5707963267948966,
+    "duration": 2,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 16.86910078163371,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 6.016666666666651
+      },
+      {
+        "key": "20:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          4
+        ],
+        "hp": [
+          0,
+          176
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 9.039639195558285,
+        "lastDamageKind": [
+          "crystal",
+          null
+        ],
+        "time": 7.816666666666644
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          3
+        ],
+        "hp": [
+          0,
+          803
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 11.08246055527007,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 10.366666666666761
+      }
+    ]
+  },
+  {
+    "reaction": 0.15,
+    "angle": 1.5707963267948966,
+    "duration": 3,
+    "wins": 238,
+    "losses": 2,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 17.154493765573413,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.949999999999984
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.28483650555279,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.733333333333546
+      }
+    ]
+  },
+  {
+    "reaction": 0.15,
+    "angle": 1.5707963267948966,
+    "duration": 4,
+    "wins": 238,
+    "losses": 2,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 17.254487864904256,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.949999999999984
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.194891387505992,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.56666666666687
+      }
+    ]
+  },
+  {
+    "reaction": 0.2,
+    "angle": 1.5707963267948966,
+    "duration": 2,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 16.26039839695235,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.983333333333317
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          3388,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 13.931133092949098,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 5.599999999999985
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          3
+        ],
+        "hp": [
+          0,
+          803
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 11.082265006770744,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 10.350000000000094
+      }
+    ]
+  },
+  {
+    "reaction": 0.2,
+    "angle": 1.5707963267948966,
+    "duration": 3,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          1.5,
+          0
+        ],
+        "distance": 14.653576609470829,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.783333333333318
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          3388,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 13.931133092949098,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 5.599999999999985
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.275483760650385,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.716666666666878
+      }
+    ]
+  },
+  {
+    "reaction": 0.2,
+    "angle": 1.5707963267948966,
+    "duration": 4,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          1.5,
+          0
+        ],
+        "distance": 14.653576609470829,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.783333333333318
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          3388,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 13.931133092949098,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 5.599999999999985
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.191773986690587,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.550000000000203
+      }
+    ]
+  },
+  {
+    "reaction": 0.25,
+    "angle": 1.5707963267948966,
+    "duration": 2,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          0.5,
+          0
+        ],
+        "distance": 16.169743030603943,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.983333333333317
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          3388,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 14.014873929341665,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 5.599999999999985
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          6,
+          3
+        ],
+        "hp": [
+          0,
+          803
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 11.078238683659926,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 10.350000000000094
+      }
+    ]
+  },
+  {
+    "reaction": 0.25,
+    "angle": 1.5707963267948966,
+    "duration": 3,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          1.5,
+          0
+        ],
+        "distance": 13.705982323686715,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.733333333333318
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          3388,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 14.014873929341665,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 5.599999999999985
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.266350639832904,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.70000000000021
+      }
+    ]
+  },
+  {
+    "reaction": 0.25,
+    "angle": 1.5707963267948966,
+    "duration": 4,
+    "wins": 237,
+    "losses": 3,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:7:true",
+        "outcome": 1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          4,
+          5
+        ],
+        "hp": [
+          803,
+          0
+        ],
+        "charge": [
+          1.5,
+          0
+        ],
+        "distance": 13.705982323686715,
+        "lastDamageKind": [
+          "needle",
+          "crystal"
+        ],
+        "time": 5.733333333333318
+      },
+      {
+        "key": "28:0.1:4:true",
+        "outcome": 1,
+        "casts": [
+          2,
+          0
+        ],
+        "attacks": [
+          4,
+          4
+        ],
+        "hp": [
+          3388,
+          0
+        ],
+        "charge": [
+          0.5,
+          1
+        ],
+        "distance": 14.014873929341665,
+        "lastDamageKind": [
+          null,
+          "crystal"
+        ],
+        "time": 5.599999999999985
+      },
+      {
+        "key": "36:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          1,
+          1
+        ],
+        "attacks": [
+          5,
+          4
+        ],
+        "hp": [
+          0,
+          2178
+        ],
+        "charge": [
+          0,
+          1.5
+        ],
+        "distance": 8.246145900547441,
+        "lastDamageKind": [
+          "crystal",
+          "needle"
+        ],
+        "time": 12.533333333333536
+      }
+    ]
+  }
+]

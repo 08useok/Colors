@@ -1,0 +1,1045 @@
+{
+  "scope": "Exactly the three remaining cases in0.8.57; no gameplay changes",
+  "reports": [
+    {
+      "distance": 20,
+      "aimError": 0.1,
+      "n": 6,
+      "reverse": false,
+      "time": 8.133333333333317,
+      "hp": [
+        0,
+        176
+      ],
+      "charge": [
+        0,
+        1.5
+      ],
+      "casts": [
+        1,
+        1
+      ],
+      "poison": {
+        "until": 0,
+        "next": 0,
+        "active": false
+      },
+      "events": [
+        {
+          "t": 0.533,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "needle",
+          "gap": 12.69,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 0.583,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 6600,
+          "gap": 11.87,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 0.983,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "vial",
+          "gap": 11.12,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.233,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 6600,
+          "gap": 8.9,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.45,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "needle",
+          "gap": 8.9,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.667,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 6050,
+          "gap": 8.78,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.733,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 2200,
+          "hp": 3850,
+          "gap": 8.78,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.733,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 3212,
+          "hp": 3388,
+          "gap": 8.78,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.75,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1100,
+          "hp": 2750,
+          "gap": 8.78,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.767,
+          "type": "ultimatePrepare",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2750,
+          "gap": 8.9,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.767,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 2200,
+          "gap": 8.9,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.883,
+          "type": "ultimateEvade",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "gap": 9.58,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.283,
+          "type": "ultimateMiss",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.64,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.283,
+          "type": "ultimate",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.64,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.3,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "vial",
+          "gap": 11.77,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.3,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.65,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.45,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 1650,
+          "gap": 12.65,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.517,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "needle",
+          "gap": 12.82,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 6.35,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "vial",
+          "gap": 13.11,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.1,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 3212,
+          "hp": 176,
+          "gap": 12.74,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.117,
+          "type": "ultimatePrepare",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 176,
+          "gap": 12.74,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.283,
+          "type": "purpleLeap",
+          "owner": "purple",
+          "phase": "takeoff",
+          "gap": 15.3,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.283,
+          "type": "ultimate",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 176,
+          "gap": 15.3,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.7,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 1650,
+          "gap": 12.03,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 8.083,
+          "type": "purpleLeap",
+          "owner": "purple",
+          "phase": "landing",
+          "gap": 8.95,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 8.133,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1650,
+          "hp": 0,
+          "gap": 9.65,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        }
+      ]
+    },
+    {
+      "distance": 28,
+      "aimError": 0.1,
+      "n": 4,
+      "reverse": true,
+      "time": 8.950000000000024,
+      "hp": [
+        0,
+        176
+      ],
+      "charge": [
+        0,
+        0.5
+      ],
+      "casts": [
+        1,
+        2
+      ],
+      "poison": {
+        "until": 0,
+        "next": 0,
+        "active": false
+      },
+      "events": [
+        {
+          "t": 1.1,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "needle",
+          "gap": 12.67,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.167,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 6600,
+          "gap": 11.85,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.567,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "vial",
+          "gap": 8.88,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.833,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 6600,
+          "gap": 8.88,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.033,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "needle",
+          "gap": 8.89,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.2,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 6050,
+          "gap": 8.88,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.317,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 3212,
+          "hp": 3388,
+          "gap": 8.91,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.333,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 2200,
+          "hp": 3850,
+          "gap": 8.92,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.35,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1100,
+          "hp": 2750,
+          "gap": 8.93,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.367,
+          "type": "ultimatePrepare",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2750,
+          "gap": 8.93,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.367,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 2200,
+          "gap": 9.05,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.483,
+          "type": "ultimateEvade",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "gap": 9.73,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.55,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "vial",
+          "gap": 12.99,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.883,
+          "type": "ultimateMiss",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.28,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.883,
+          "type": "ultimate",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.28,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.9,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.16,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.567,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2200,
+          "gap": 11.74,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.867,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1100,
+          "hp": 1100,
+          "gap": 10.84,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.883,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 550,
+          "gap": 10.74,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.9,
+          "type": "ultimatePrepare",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 550,
+          "gap": 10.74,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 5,
+          "type": "ultimateEvade",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "gap": 10.97,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 5.1,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "needle",
+          "gap": 11.06,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 6.417,
+          "type": "ultimateMiss",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 550,
+          "gap": 12.11,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 6.417,
+          "type": "ultimate",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 550,
+          "gap": 12.11,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 6.65,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "vial",
+          "gap": 12.31,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.4,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 3212,
+          "hp": 176,
+          "gap": 12.96,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.417,
+          "type": "ultimatePrepare",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 176,
+          "gap": 13.07,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.583,
+          "type": "purpleLeap",
+          "owner": "purple",
+          "phase": "takeoff",
+          "gap": 15.73,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 7.583,
+          "type": "ultimate",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 176,
+          "gap": 15.73,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 8.083,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 550,
+          "gap": 12.09,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 8.383,
+          "type": "purpleLeap",
+          "owner": "purple",
+          "phase": "landing",
+          "gap": 9.64,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 8.95,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 0,
+          "gap": 15.38,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        }
+      ]
+    },
+    {
+      "distance": 36,
+      "aimError": 0.1,
+      "n": 0,
+      "reverse": false,
+      "time": 10.350000000000094,
+      "hp": [
+        0,
+        803
+      ],
+      "charge": [
+        0,
+        1.5
+      ],
+      "casts": [
+        1,
+        1
+      ],
+      "poison": {
+        "until": 14.250000000000039,
+        "next": 11.250000000000089,
+        "active": true
+      },
+      "events": [
+        {
+          "t": 1.683,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "needle",
+          "gap": 12.66,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 1.733,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 6600,
+          "gap": 11.84,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.15,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "vial",
+          "gap": 8.82,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.4,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 6600,
+          "gap": 8.82,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.617,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 6600,
+          "attackKind": "needle",
+          "gap": 8.82,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.717,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1100,
+          "hp": 5500,
+          "gap": 8.83,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.733,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 4950,
+          "gap": 8.83,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.9,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 2200,
+          "hp": 2750,
+          "gap": 8.87,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.9,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 3212,
+          "hp": 3388,
+          "gap": 8.87,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.917,
+          "type": "ultimatePrepare",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 2750,
+          "gap": 8.85,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.917,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1100,
+          "hp": 1650,
+          "gap": 8.85,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 2.933,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 550,
+          "hp": 1100,
+          "gap": 8.83,
+          "ownerCharge": 0.5,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 3.183,
+          "type": "ultimateEvade",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "gap": 8.73,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.133,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "vial",
+          "gap": 12.9,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.433,
+          "type": "ultimateMiss",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 1100,
+          "gap": 12.08,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 4.433,
+          "type": "ultimate",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 1100,
+          "gap": 12.08,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 8.833,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 3388,
+          "attackKind": "needle",
+          "gap": 13.11,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 9.25,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 1210,
+          "hp": 2178,
+          "gap": 12.85,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 0,
+          "crystalPoisonNext": 0
+        },
+        {
+          "t": 9.267,
+          "type": "ultimatePrepare",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 2178,
+          "gap": 12.85,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 9.433,
+          "type": "purpleLeap",
+          "owner": "purple",
+          "phase": "takeoff",
+          "gap": 15.41,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 9.433,
+          "type": "ultimate",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 2178,
+          "gap": 15.41,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 9.867,
+          "type": "attack",
+          "owner": "crystal",
+          "target": "purple",
+          "hp": 1100,
+          "gap": 12.05,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 10.233,
+          "type": "purpleLeap",
+          "owner": "purple",
+          "phase": "landing",
+          "gap": 9.33,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 10.25,
+          "type": "attack",
+          "owner": "purple",
+          "target": "crystal",
+          "hp": 2178,
+          "attackKind": "vial",
+          "gap": 9.56,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 10.25,
+          "type": "damage",
+          "owner": "purple",
+          "target": "crystal",
+          "amount": 1375,
+          "hp": 803,
+          "gap": 9.56,
+          "ownerCharge": 0,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 10.250000000000039
+        },
+        {
+          "t": 10.35,
+          "type": "damage",
+          "owner": "crystal",
+          "target": "purple",
+          "amount": 1100,
+          "hp": 0,
+          "gap": 11.08,
+          "ownerCharge": 1,
+          "crystalPoisonUntil": 14.250000000000039,
+          "crystalPoisonNext": 11.250000000000089
+        }
+      ]
+    }
+  ]
+}

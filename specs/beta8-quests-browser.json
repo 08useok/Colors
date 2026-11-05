@@ -1,0 +1,42 @@
+{
+  "result": {
+    "once": {
+      "kills": 1,
+      "healing": 0,
+      "damage": 2500
+    },
+    "match": {
+      "kills": 1,
+      "healing": 250,
+      "damage": 2500
+    },
+    "saved": {
+      "kills": 1,
+      "healing": 250,
+      "damage": 2500
+    },
+    "total": {
+      "kills": 1,
+      "healing": 250,
+      "damage": 2500
+    },
+    "points": 3.625
+  },
+  "abandoned": {
+    "kills": 1,
+    "healing": 250,
+    "damage": 2500
+  },
+  "panel": {
+    "title": "시즌 8 · 할로윈 퀘스트",
+    "text": "HALLOWEEN · SEASON QUEST시즌 누적 3.63 포인트킬 1회 = 1점 · 회복량 2,000 = 1점 · 피해량 1,000 = 1점세 항목의 소수 점수를 합산하며 경기 사이에도 남은 점수를 이어갑니다.완주한 경기만 반영 · 연습·중도 퇴장·자연 회복·설치물은 제외내 전투 기록처치 1회 · 회복 250 · 피해 2,500진행 중누적 10 포인트3.63 / 10보상 미설정진행 중누적 30 포인트3.63 / 30보상 미설정진행 중누적 60 포인트3.63 / 60보상 미설정시즌 업데이트 보기",
+    "goals": 3,
+    "total": {
+      "kills": 1,
+      "healing": 250,
+      "damage": 2500
+    }
+  },
+  "milestone": "달성 완료누적 10 포인트10 / 10보상 미설정",
+  "errors": []
+}

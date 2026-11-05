@@ -1,0 +1,42 @@
+{
+  "version": "0.8.60",
+  "scope": "Current Gold projectile defense, Node240/240 and Ego240/240; level6,120x120,six distances,two aim errors,ten seeds,both processing orders",
+  "games": 240,
+  "wins": 240,
+  "losses": 0,
+  "draws": 0,
+  "byDistance": {
+    "6": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "10": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "14": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "20": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "28": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "36": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    }
+  },
+  "reduction": 1650,
+  "health": 8118
+}

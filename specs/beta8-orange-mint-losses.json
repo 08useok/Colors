@@ -1,0 +1,1432 @@
+{
+  "profile": {
+    "mapSide": 120,
+    "bounds": 59,
+    "liveMapSide": 100,
+    "liveBounds": 49,
+    "distances": [
+      6,
+      10,
+      14,
+      20,
+      28,
+      36
+    ],
+    "aimErrors": [
+      0.035,
+      0.1
+    ],
+    "seedsPerScenario": 10,
+    "zone": {
+      "start": 30,
+      "end": 45,
+      "startRadius": 40,
+      "endRadius": 8,
+      "damagePerSecond": 0.25
+    },
+    "scope": "Enlarged 120x120 open simulation arena (live map is 100x100); historical synthetic zone, no obstacles or multiplayer spawns"
+  },
+  "scope": "Current baseline traces plus diagnostic-only counterfactuals; no gameplay changes",
+  "reports": [
+    {
+      "left": "orange",
+      "right": "mint",
+      "variant": "baseline",
+      "wins": 234,
+      "losses": 6,
+      "draws": 0,
+      "lossCauses": {
+        "mint": 6
+      },
+      "lossCasts": {
+        "zero": 6,
+        "used": 0
+      },
+      "lossCharge": {
+        "1/8": 1,
+        "0.5/8": 5
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 6,
+          "aimError": 0.1,
+          "n": 6,
+          "reverse": false,
+          "cause": "mint",
+          "time": 1.65,
+          "hp": [
+            0,
+            4686
+          ],
+          "charge": [
+            1,
+            2
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            2
+          ],
+          "attackRangeSeconds": 1.65,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                4400,
+                7260
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.12,
+              "a": [
+                -3,
+                0
+              ],
+              "b": [
+                3.1,
+                0
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.167,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.596641678140368
+            },
+            {
+              "time": 0.183,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.597095344288442
+            },
+            {
+              "time": 0.517,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.689342373691125
+            },
+            {
+              "time": 0.517,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 3300,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.748273340978082
+            },
+            {
+              "time": 0.867,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.723852528158445
+            },
+            {
+              "time": 0.933,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 3300,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.724397593658964
+            },
+            {
+              "time": 0.95,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 5973,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.724496763539921
+            },
+            {
+              "time": 1.233,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 4686,
+              "charge": 0.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.72538237875718
+            },
+            {
+              "time": 1.3,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 2200,
+              "charge": 1,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.7257138389148405
+            },
+            {
+              "time": 1.467,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 1100,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.384615319660028
+            },
+            {
+              "time": 1.65,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 0,
+              "charge": 1,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.444391002272211
+            }
+          ]
+        },
+        {
+          "distance": 10,
+          "aimError": 0.035,
+          "n": 1,
+          "reverse": false,
+          "cause": "mint",
+          "time": 2.3,
+          "hp": [
+            0,
+            5973
+          ],
+          "charge": [
+            0.5,
+            2
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            4,
+            3
+          ],
+          "attackRangeSeconds": 2.2333333333333334,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                4400,
+                7260
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 9.77,
+              "a": [
+                -4.9,
+                0
+              ],
+              "b": [
+                4.9,
+                -0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                2200,
+                5973
+              ],
+              "ammo": 0,
+              "charge": 0.5,
+              "floats": 0,
+              "gap": 7.31,
+              "a": [
+                -4.2,
+                -0.6
+              ],
+              "b": [
+                3.1,
+                -0.2
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.05,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 9.303757679323294
+            },
+            {
+              "time": 0.1,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.726354509033122
+            },
+            {
+              "time": 0.45,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.976568762837598
+            },
+            {
+              "time": 0.8,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.728281531051948
+            },
+            {
+              "time": 0.8,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.728282597172106
+            },
+            {
+              "time": 0.867,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 5973,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.728914776379775
+            },
+            {
+              "time": 1.167,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 3300,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.733934530783946
+            },
+            {
+              "time": 1.567,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 3300,
+              "charge": 0.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.741863483846823
+            },
+            {
+              "time": 1.933,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 2200,
+              "charge": 0.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.744675477246182
+            },
+            {
+              "time": 2.1,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 5973,
+              "charge": 1,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 7.521896372891802
+            },
+            {
+              "time": 2.1,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 1100,
+              "charge": 0.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.402896822627361
+            },
+            {
+              "time": 2.3,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 0,
+              "charge": 0.5,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.9897885866383325
+            }
+          ]
+        },
+        {
+          "distance": 10,
+          "aimError": 0.035,
+          "n": 3,
+          "reverse": false,
+          "cause": "mint",
+          "time": 2.317,
+          "hp": [
+            0,
+            5973
+          ],
+          "charge": [
+            0.5,
+            2
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            4,
+            3
+          ],
+          "attackRangeSeconds": 2.25,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                4400,
+                7260
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 9.77,
+              "a": [
+                -4.9,
+                -0.1
+              ],
+              "b": [
+                4.9,
+                0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                2200,
+                5973
+              ],
+              "ammo": 0,
+              "charge": 0.5,
+              "floats": 0,
+              "gap": 7.44,
+              "a": [
+                -10.1,
+                5
+              ],
+              "b": [
+                -4.8,
+                -0.2
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.1,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.726726227956469
+            },
+            {
+              "time": 0.133,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 8.143898160182559
+            },
+            {
+              "time": 0.45,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.703207485301452
+            },
+            {
+              "time": 0.483,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 3300,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.7934900135109855
+            },
+            {
+              "time": 0.617,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 2200,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.715141187811643
+            },
+            {
+              "time": 0.8,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 1,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.604940012424929
+            },
+            {
+              "time": 0.883,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 2200,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.458006952471702
+            },
+            {
+              "time": 0.983,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 5973,
+              "charge": 1,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.424935199058772
+            },
+            {
+              "time": 1.65,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 2200,
+              "charge": 0.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.449215412313622
+            },
+            {
+              "time": 2.1,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 5973,
+              "charge": 1,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 7.5355895641852415
+            },
+            {
+              "time": 2.2,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 1100,
+              "charge": 0.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.383067887569607
+            },
+            {
+              "time": 2.317,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 0,
+              "charge": 0.5,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.463583458608196
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "left": "orange",
+      "right": "mint",
+      "variant": "noLowHealthRetreat",
+      "wins": 195,
+      "losses": 45,
+      "draws": 0,
+      "lossCauses": {
+        "mint": 45
+      },
+      "lossCasts": {
+        "zero": 45,
+        "used": 0
+      },
+      "lossCharge": {
+        "1/8": 6,
+        "2/8": 3,
+        "0.5/8": 30,
+        "2.5/8": 4,
+        "0/8": 2
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 5,
+          "reverse": false,
+          "cause": "mint",
+          "time": 5.917,
+          "hp": [
+            0,
+            4686
+          ],
+          "charge": [
+            1,
+            2
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "attackRangeSeconds": 5.916666666666667,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                4400,
+                7260
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.12,
+              "a": [
+                -3,
+                -0.1
+              ],
+              "b": [
+                3.1,
+                0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                4400,
+                5973
+              ],
+              "ammo": 0,
+              "charge": 0.5,
+              "floats": 0,
+              "gap": 6.71,
+              "a": [
+                -2.6,
+                0.4
+              ],
+              "b": [
+                4.1,
+                0.7
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                2200,
+                4686
+              ],
+              "ammo": 0,
+              "charge": 1,
+              "floats": 0,
+              "gap": 6.72,
+              "a": [
+                -2.2,
+                0.1
+              ],
+              "b": [
+                4,
+                2.6
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.15,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.598160357067631
+            },
+            {
+              "time": 0.2,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.5987687908550905
+            },
+            {
+              "time": 0.55,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.422103529331376
+            },
+            {
+              "time": 0.9,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.6982499115469
+            },
+            {
+              "time": 0.9,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.698397735769084
+            },
+            {
+              "time": 0.967,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 5973,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.6996663388245
+            },
+            {
+              "time": 1.667,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.713245108102125
+            },
+            {
+              "time": 2.033,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 3300,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.713887415220428
+            },
+            {
+              "time": 2.15,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 2200,
+              "charge": 0.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.715011431053122
+            },
+            {
+              "time": 2.217,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 5973,
+              "charge": 1,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.715885950472631
+            },
+            {
+              "time": 3.1,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 4686,
+              "charge": 1,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.705859796120587
+            },
+            {
+              "time": 3.533,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 2200,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.708598043623303
+            },
+            {
+              "time": 3.567,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 4686,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.709056587528604
+            },
+            {
+              "time": 4.917,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 4686,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.727376346362519
+            },
+            {
+              "time": 5.433,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 2200,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.7393326547029755
+            },
+            {
+              "time": 5.8,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 1100,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.740798691813544
+            },
+            {
+              "time": 5.917,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 0,
+              "charge": 1,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.74101773326906
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 5,
+          "reverse": true,
+          "cause": "mint",
+          "time": 5.817,
+          "hp": [
+            0,
+            2112
+          ],
+          "charge": [
+            2,
+            2
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "attackRangeSeconds": 5.816666666666666,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                4400,
+                7260
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.12,
+              "a": [
+                -3,
+                0
+              ],
+              "b": [
+                3.1,
+                0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                4400,
+                4686
+              ],
+              "ammo": 0,
+              "charge": 1,
+              "floats": 0,
+              "gap": 6.71,
+              "a": [
+                -2.8,
+                0.1
+              ],
+              "b": [
+                3.9,
+                0.3
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                1100,
+                3399
+              ],
+              "ammo": 0,
+              "charge": 1.5,
+              "floats": 0,
+              "gap": 7.11,
+              "a": [
+                1.9,
+                4.1
+              ],
+              "b": [
+                8.5,
+                6.9
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.15,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.598147756471098
+            },
+            {
+              "time": 0.2,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.5987687527318295
+            },
+            {
+              "time": 0.517,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.599365660065698
+            },
+            {
+              "time": 0.867,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.6949679488427165
+            },
+            {
+              "time": 0.95,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.696268852313585
+            },
+            {
+              "time": 0.95,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 5973,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.6964265264485405
+            },
+            {
+              "time": 1.483,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 4686,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.708773847042585
+            },
+            {
+              "time": 1.717,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 1,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.710481420189346
+            },
+            {
+              "time": 2.083,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 3300,
+              "charge": 1,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.711382250383056
+            },
+            {
+              "time": 2.183,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 4686,
+              "charge": 0.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.712600430235605
+            },
+            {
+              "time": 2.2,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 2200,
+              "charge": 1,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.712865303920958
+            },
+            {
+              "time": 3.083,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 3399,
+              "charge": 1,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.783969162856574
+            },
+            {
+              "time": 3.533,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 3399,
+              "charge": 1,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.9396012360225505
+            },
+            {
+              "time": 3.583,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 2200,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.070703761865877
+            },
+            {
+              "time": 3.883,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 1100,
+              "charge": 1.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 7.066694887184054
+            },
+            {
+              "time": 4.883,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 3399,
+              "charge": 1.5,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.415698125288282
+            },
+            {
+              "time": 5.483,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 1100,
+              "charge": 1.5,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.744547664175153
+            },
+            {
+              "time": 5.717,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 2112,
+              "charge": 1.5,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.711407836126685
+            },
+            {
+              "time": 5.817,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 0,
+              "charge": 2,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 7.7454220347463165
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.1,
+          "n": 0,
+          "reverse": false,
+          "cause": "mint",
+          "time": 1.95,
+          "hp": [
+            0,
+            4686
+          ],
+          "charge": [
+            1,
+            2
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            3,
+            3
+          ],
+          "attackRangeSeconds": 1.95,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                4400,
+                7260
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.12,
+              "a": [
+                -3,
+                0
+              ],
+              "b": [
+                3.1,
+                -0.1
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.05,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.2387405360612345
+            },
+            {
+              "time": 0.067,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.477237606110559
+            },
+            {
+              "time": 0.4,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.669229550174301
+            },
+            {
+              "time": 0.75,
+              "type": "attack",
+              "owner": "orange",
+              "target": "mint",
+              "targetHp": 7260,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.791142942350537
+            },
+            {
+              "time": 0.817,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 4400,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.792136238681683
+            },
+            {
+              "time": 0.817,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 5973,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.792136238681683
+            },
+            {
+              "time": 1.183,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 3300,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.800165912919145
+            },
+            {
+              "time": 1.3,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 2200,
+              "charge": 0.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.66818955197515
+            },
+            {
+              "time": 1.417,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 1100,
+              "charge": 0.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.622994562001711
+            },
+            {
+              "time": 1.467,
+              "type": "damage",
+              "owner": "orange",
+              "target": "mint",
+              "amount": 1287,
+              "targetHp": 4686,
+              "charge": 1.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.655970797152206
+            },
+            {
+              "time": 1.583,
+              "type": "attack",
+              "owner": "mint",
+              "target": "orange",
+              "targetHp": 1100,
+              "charge": 1,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.77549203232775
+            },
+            {
+              "time": 1.95,
+              "type": "damage",
+              "owner": "mint",
+              "target": "orange",
+              "amount": 1100,
+              "targetHp": 0,
+              "charge": 1,
+              "ownerCharge": 1.5,
+              "ownCasts": 0,
+              "gap": 6.776834245477125
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

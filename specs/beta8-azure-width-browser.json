@@ -1,0 +1,41 @@
+{
+  "scope": "Isolated browser combat worlds; no rendered play-through",
+  "games": 240,
+  "wins": 240,
+  "losses": 0,
+  "draws": 0,
+  "byDistance": {
+    "6": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "10": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "14": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "20": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "28": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    },
+    "36": {
+      "wins": 40,
+      "losses": 0,
+      "draws": 0
+    }
+  },
+  "width": 3,
+  "health": 11550
+}

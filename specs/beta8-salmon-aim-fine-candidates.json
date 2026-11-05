@@ -1,0 +1,912 @@
+{
+  "baseline": {
+    "wins": 238,
+    "losses": 2,
+    "draws": 0,
+    "failures": [
+      {
+        "key": "14:0.1:0:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          0
+        ],
+        "attacks": [
+          6,
+          6
+        ],
+        "hp": [
+          0,
+          198
+        ],
+        "charge": [
+          8,
+          6
+        ],
+        "distance": 12.02831222934491,
+        "lastDamageKind": [
+          "gold",
+          null
+        ],
+        "time": 22.699999999999992
+      },
+      {
+        "key": "14:0.1:6:false",
+        "outcome": -1,
+        "casts": [
+          0,
+          1
+        ],
+        "attacks": [
+          5,
+          5
+        ],
+        "hp": [
+          0,
+          4158
+        ],
+        "charge": [
+          4,
+          3.5
+        ],
+        "distance": 5.643824762328539,
+        "lastDamageKind": [
+          "gold",
+          null
+        ],
+        "time": 16.05000000000037
+      }
+    ]
+  },
+  "rows": [
+    {
+      "patch": {
+        "lead": 0.6
+      },
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "failures": []
+    },
+    {
+      "patch": {
+        "lead": 0.625
+      },
+      "wins": 238,
+      "losses": 2,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "14:0.1:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            6
+          ],
+          "distance": 9.980141975697425,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 22.483333333333338
+        },
+        {
+          "key": "28:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "distance": 6.165355677770202,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 18.15000000000025
+        }
+      ]
+    },
+    {
+      "patch": {
+        "lead": 0.575
+      },
+      "wins": 237,
+      "losses": 3,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "10:0.1:7:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            2
+          ],
+          "distance": 6.021722623887634,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 15.43333333333368
+        },
+        {
+          "key": "10:0.1:8:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "distance": 6.070780244335551,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 17.56666666666695
+        },
+        {
+          "key": "28:0.1:3:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            1.5
+          ],
+          "distance": 6.143953932453621,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 17.150000000000308
+        }
+      ]
+    },
+    {
+      "patch": {
+        "lead": 0.675
+      },
+      "wins": 234,
+      "losses": 6,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "14:0.1:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            3
+          ],
+          "distance": 12.067558992435725,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 22.683333333333326
+        },
+        {
+          "key": "14:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "distance": 6.0569958599623535,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 17.80000000000027
+        },
+        {
+          "key": "14:0.1:6:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "distance": 5.261528478661143,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 16.01666666666704
+        },
+        {
+          "key": "36:0.035:9:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            4.5
+          ],
+          "distance": 6.018572166099469,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 17.133333333333642
+        },
+        {
+          "key": "36:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            4,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3
+          ],
+          "distance": 5.816457368875678,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 18.416666666666902
+        },
+        {
+          "key": "36:0.1:2:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "hp": [
+            4158,
+            0
+          ],
+          "charge": [
+            3,
+            4
+          ],
+          "distance": 6.372690221784259,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 19.16666666666686
+        }
+      ]
+    },
+    {
+      "patch": {
+        "lead": 0.725
+      },
+      "wins": 234,
+      "losses": 6,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "10:0.1:3:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            4158,
+            0
+          ],
+          "charge": [
+            1.5,
+            4
+          ],
+          "distance": 6.147544827121396,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 14.333333333333625
+        },
+        {
+          "key": "14:0.1:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            3
+          ],
+          "distance": 10.110463298457082,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 22.533333333333335
+        },
+        {
+          "key": "14:0.1:6:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            4,
+            5
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "distance": 5.136028417677741,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 15.950000000000372
+        },
+        {
+          "key": "28:0.1:5:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "hp": [
+            198,
+            0
+          ],
+          "charge": [
+            3,
+            8
+          ],
+          "distance": 9.548313979124648,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 22.966666666666644
+        },
+        {
+          "key": "36:0.035:9:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            0,
+            164.175
+          ],
+          "charge": [
+            8,
+            1.5
+          ],
+          "distance": 113.04602003285329,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 30.016666666666243
+        },
+        {
+          "key": "36:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3
+          ],
+          "distance": 6.087109737598143,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 18.566666666666894
+        }
+      ]
+    },
+    {
+      "patch": {
+        "lead": 0.75
+      },
+      "wins": 234,
+      "losses": 6,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "10:0.1:3:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            4158,
+            0
+          ],
+          "charge": [
+            1.5,
+            4
+          ],
+          "distance": 6.190188408959397,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 14.350000000000293
+        },
+        {
+          "key": "14:0.035:5:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "hp": [
+            4158,
+            0
+          ],
+          "charge": [
+            3,
+            4
+          ],
+          "distance": 6.1586441162947905,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 17.366666666666962
+        },
+        {
+          "key": "28:0.1:5:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            6,
+            4
+          ],
+          "hp": [
+            4158,
+            0
+          ],
+          "charge": [
+            3,
+            4
+          ],
+          "distance": 5.831019140693167,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 21.9666666666667
+        },
+        {
+          "key": "36:0.035:9:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            0,
+            164.175
+          ],
+          "charge": [
+            8,
+            1.5
+          ],
+          "distance": 113.85151013834715,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 30.016666666666243
+        },
+        {
+          "key": "36:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3
+          ],
+          "distance": 5.987803942455391,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 18.550000000000228
+        },
+        {
+          "key": "36:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            1.5
+          ],
+          "distance": 5.98743876083428,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 19.333333333333517
+        }
+      ]
+    },
+    {
+      "patch": {
+        "lead": 0.7
+      },
+      "wins": 233,
+      "losses": 7,
+      "draws": 0,
+      "failures": [
+        {
+          "key": "10:0.1:3:true",
+          "outcome": 1,
+          "casts": [
+            1,
+            0
+          ],
+          "attacks": [
+            5,
+            5
+          ],
+          "hp": [
+            4158,
+            0
+          ],
+          "charge": [
+            3,
+            4
+          ],
+          "distance": 6.092716764260808,
+          "lastDamageKind": [
+            null,
+            "gold"
+          ],
+          "time": 14.316666666666958
+        },
+        {
+          "key": "14:0.1:0:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "hp": [
+            0,
+            198
+          ],
+          "charge": [
+            8,
+            6
+          ],
+          "distance": 12.088052526571374,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 22.683333333333326
+        },
+        {
+          "key": "14:0.1:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            6,
+            6
+          ],
+          "hp": [
+            0,
+            130.35000000000002
+          ],
+          "charge": [
+            8,
+            3
+          ],
+          "distance": 91.87946429082238,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 30.03333333333291
+        },
+        {
+          "key": "14:0.1:6:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            4,
+            5
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3.5
+          ],
+          "distance": 5.191735212788856,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 15.983333333333707
+        },
+        {
+          "key": "28:0.035:2:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            6
+          ],
+          "distance": 5.993234529675719,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 18.483333333333565
+        },
+        {
+          "key": "36:0.035:9:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            6,
+            5
+          ],
+          "hp": [
+            0,
+            164.175
+          ],
+          "charge": [
+            8,
+            1.5
+          ],
+          "distance": 121.89946853261691,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 30.016666666666243
+        },
+        {
+          "key": "36:0.1:1:false",
+          "outcome": -1,
+          "casts": [
+            0,
+            1
+          ],
+          "attacks": [
+            5,
+            6
+          ],
+          "hp": [
+            0,
+            4158
+          ],
+          "charge": [
+            4,
+            3
+          ],
+          "distance": 5.992635093519276,
+          "lastDamageKind": [
+            "gold",
+            null
+          ],
+          "time": 18.483333333333565
+        }
+      ]
+    }
+  ]
+}

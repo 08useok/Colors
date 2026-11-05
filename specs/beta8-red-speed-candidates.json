@@ -1,0 +1,3453 @@
+{
+  "rows": [
+    {
+      "speed": 1.1,
+      "aim": false,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 239,
+        "losses": 1,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.530576620891708,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20277033,
+            "outcome": -1,
+            "casts": [
+              2,
+              2
+            ],
+            "attacks": [
+              7,
+              2
+            ],
+            "hp": [
+              0,
+              1650
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 26.71666666666643
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.1,
+      "aim": true,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.15,
+      "aim": false,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 238,
+        "losses": 2,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.882138777395422,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20267031,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 1.4499999999999997
+          },
+          {
+            "distance": 4.363935545720054,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 26.01666666666647
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "10": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.15,
+      "aim": true,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.2,
+      "aim": false,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 219,
+        "losses": 21,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.937142070127256,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.266666666667005
+          },
+          {
+            "distance": 4.683014298697892,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20267031,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 1.3000000000000003
+          },
+          {
+            "distance": 4.221031051577381,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20267031,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 1.183333333333334
+          },
+          {
+            "distance": 5.461284313683281,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.250000000000338
+          },
+          {
+            "distance": 4.976960736986378,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20277025,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              6.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 27.466666666666388
+          },
+          {
+            "distance": 23.293958660946974,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20277026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.52507624371393,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.70000000000031
+          },
+          {
+            "distance": 4.676600147537362,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20277029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 5.099999999999987
+          },
+          {
+            "distance": 4.865331752461272,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20277030,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 16.233333333333693
+          },
+          {
+            "distance": 4.613642871313462,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20277033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 1.3000000000000003
+          },
+          {
+            "distance": 4.587393114340018,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20277033,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              3850,
+              0
+            ],
+            "charge": [
+              2.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.750000000000313
+          },
+          {
+            "distance": 4.696513177786051,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 5.066666666666654
+          },
+          {
+            "distance": 4.796663231991326,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 4.233333333333324
+          },
+          {
+            "distance": 4.4867676101471154,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              4
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 4.166666666666657
+          },
+          {
+            "distance": 4.699967151873479,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20291033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              9,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 12.783333333333548
+          },
+          {
+            "distance": 5.077186946346384,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20291034,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              9
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              3,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.816666666666983
+          },
+          {
+            "distance": 4.7221976405618316,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20299027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              9,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.43333333333363
+          },
+          {
+            "distance": 4.834226899386419,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              9
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.450000000000298
+          },
+          {
+            "distance": 4.949332168576239,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20299033,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              8
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 15.400000000000345
+          },
+          {
+            "distance": 4.709748773619288,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20307025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 8.199999999999987
+          },
+          {
+            "distance": 5.01816278587829,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20307032,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              9,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.400000000000345
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 29,
+            "losses": 11,
+            "draws": 0
+          },
+          "10": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "28": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "36": {
+            "wins": 38,
+            "losses": 2,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.2,
+      "aim": true,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 237,
+        "losses": 3,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.89826981491921,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.266666666667005
+          },
+          {
+            "distance": 5.330968323918454,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              2,
+              2
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              1650
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.250000000000338
+          },
+          {
+            "distance": 4.52507624371393,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.70000000000031
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.25,
+      "aim": false,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 214,
+        "losses": 26,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.394112364090562,
+            "aimError": 0.035,
+            "n": 0,
+            "reverse": false,
+            "seed": 20267025,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 20.700000000000106
+          },
+          {
+            "distance": 12.26144225739357,
+            "aimError": 0.035,
+            "n": 2,
+            "reverse": false,
+            "seed": 20267027,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.639883653111335,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.016666666666993
+          },
+          {
+            "distance": 4.38610224966246,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20267031,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 1.2500000000000004
+          },
+          {
+            "distance": 4.596516925512932,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20267031,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              7700,
+              0
+            ],
+            "charge": [
+              3.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 1.0500000000000012
+          },
+          {
+            "distance": 5.168384648134976,
+            "aimError": 0.035,
+            "n": 7,
+            "reverse": false,
+            "seed": 20267032,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.883333333333702
+          },
+          {
+            "distance": 5.027841540933327,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.016666666666993
+          },
+          {
+            "distance": 4.82983997281694,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20277025,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              6.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 27.03333333333308
+          },
+          {
+            "distance": 10.751252635452937,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": false,
+            "seed": 20277026,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.5033155390794715,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.43333333333363
+          },
+          {
+            "distance": 4.456669743029769,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20277029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.466666666666656
+          },
+          {
+            "distance": 4.251429192510106,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20277030,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 16.300000000000356
+          },
+          {
+            "distance": 4.315639044528309,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20277033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 1.2500000000000004
+          },
+          {
+            "distance": 4.501523827161761,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20277033,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.43333333333363
+          },
+          {
+            "distance": 13.949035566978697,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20277034,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.578990970347795,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": true,
+            "seed": 20277034,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              5
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              6.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 24.14999999999991
+          },
+          {
+            "distance": 4.450713697117143,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20281027,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.533333333333323
+          },
+          {
+            "distance": 4.452506398617487,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 3.599999999999992
+          },
+          {
+            "distance": 4.57820536654312,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 3.5333333333333257
+          },
+          {
+            "distance": 4.477837040725374,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20291033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 12.250000000000188
+          },
+          {
+            "distance": 4.476344678828275,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20299027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 9.233333333333372
+          },
+          {
+            "distance": 4.59868503335294,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              7
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 12.116666666666848
+          },
+          {
+            "distance": 4.609455212820788,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20299033,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              7
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              5.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.816666666666983
+          },
+          {
+            "distance": 4.4766662151923295,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              6,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 13.450000000000248
+          },
+          {
+            "distance": 4.461987080090939,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20307025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              5,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 7.5499999999999785
+          },
+          {
+            "distance": 4.551796436093998,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20307026,
+            "outcome": 1,
+            "casts": [
+              2,
+              3
+            ],
+            "attacks": [
+              2,
+              7
+            ],
+            "hp": [
+              660,
+              0
+            ],
+            "charge": [
+              4.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.716666666666978
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 24,
+            "losses": 16,
+            "draws": 0
+          },
+          "10": {
+            "wins": 39,
+            "losses": 1,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "28": {
+            "wins": 36,
+            "losses": 4,
+            "draws": 0
+          },
+          "36": {
+            "wins": 38,
+            "losses": 2,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.25,
+      "aim": true,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 235,
+        "losses": 5,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.769198869726055,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.016666666666993
+          },
+          {
+            "distance": 4.8674904970693635,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.000000000000325
+          },
+          {
+            "distance": 4.5033155390794715,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.43333333333363
+          },
+          {
+            "distance": 5.260777163427632,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": true,
+            "seed": 20277030,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              2200,
+              0
+            ],
+            "charge": [
+              6.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 17.316666666666965
+          },
+          {
+            "distance": 13.949035566978697,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20277034,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              2,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 35,
+            "losses": 5,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.3,
+      "aim": false,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 215,
+        "losses": 24,
+        "draws": 1,
+        "failures": [
+          {
+            "distance": 4.53837948850437,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.800000000000315
+          },
+          {
+            "distance": 4.979756473980072,
+            "aimError": 0.035,
+            "n": 4,
+            "reverse": true,
+            "seed": 20267029,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.150000000000283
+          },
+          {
+            "distance": 3.9670799714817977,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": false,
+            "seed": 20267031,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 1.0500000000000012
+          },
+          {
+            "distance": 4.382637908767727,
+            "aimError": 0.035,
+            "n": 6,
+            "reverse": true,
+            "seed": 20267031,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 0.966666666666668
+          },
+          {
+            "distance": 4.854972144510127,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.800000000000315
+          },
+          {
+            "distance": 5.258219591840967,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": true,
+            "seed": 20267033,
+            "outcome": 1,
+            "casts": [
+              2,
+              2
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              1650,
+              0
+            ],
+            "charge": [
+              0.5,
+              0.5
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.850000000000318
+          },
+          {
+            "distance": 14.378614565787304,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20277027,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              220,
+              0
+            ],
+            "charge": [
+              6,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.773016668499601,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": false,
+            "seed": 20277028,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.400000000000295
+          },
+          {
+            "distance": 4.4405749258667315,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.183333333333618
+          },
+          {
+            "distance": 4.2189581480051155,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": false,
+            "seed": 20277029,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 4.099999999999991
+          },
+          {
+            "distance": 4.863420198157053,
+            "aimError": 0.1,
+            "n": 5,
+            "reverse": false,
+            "seed": 20277030,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 25.999999999999805
+          },
+          {
+            "distance": 3.964206031541066,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20277033,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 1.0500000000000012
+          },
+          {
+            "distance": 4.461167118192565,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": true,
+            "seed": 20277033,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.16666666666695
+          },
+          {
+            "distance": 6.736080495945587,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20277034,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.895381056865949,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20285027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              4,
+              10
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 16.966666666666985
+          },
+          {
+            "distance": 4.591196133965091,
+            "aimError": 0.1,
+            "n": 4,
+            "reverse": true,
+            "seed": 20285029,
+            "outcome": 0,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              4,
+              10
+            ],
+            "hp": [
+              0,
+              0
+            ],
+            "charge": [
+              5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 24.38333333333323
+          },
+          {
+            "distance": 4.764489468776446,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20285032,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              7,
+              3
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 8.71666666666668
+          },
+          {
+            "distance": 4.227499678945007,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": false,
+            "seed": 20291025,
+            "outcome": -1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              9900
+            ],
+            "charge": [
+              0,
+              1.5
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 3.1499999999999937
+          },
+          {
+            "distance": 4.345064951390599,
+            "aimError": 0.1,
+            "n": 0,
+            "reverse": true,
+            "seed": 20291025,
+            "outcome": 1,
+            "casts": [
+              0,
+              0
+            ],
+            "attacks": [
+              2,
+              3
+            ],
+            "hp": [
+              9900,
+              0
+            ],
+            "charge": [
+              1.5,
+              0
+            ],
+            "lastDamageKind": [
+              null,
+              null
+            ],
+            "time": 3.1666666666666603
+          },
+          {
+            "distance": 4.789845682080332,
+            "aimError": 0.1,
+            "n": 8,
+            "reverse": false,
+            "seed": 20291033,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 11.766666666666831
+          },
+          {
+            "distance": 4.247428281259123,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": false,
+            "seed": 20299027,
+            "outcome": -1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              7,
+              2
+            ],
+            "hp": [
+              0,
+              6050
+            ],
+            "charge": [
+              0,
+              0.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 11.816666666666833
+          },
+          {
+            "distance": 4.375577758829456,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20299027,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              8
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 13.516666666666918
+          },
+          {
+            "distance": 4.210760670846292,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20299034,
+            "outcome": -1,
+            "casts": [
+              3,
+              2
+            ],
+            "attacks": [
+              8,
+              2
+            ],
+            "hp": [
+              0,
+              660
+            ],
+            "charge": [
+              0,
+              3.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 18.533333333333562
+          },
+          {
+            "distance": 4.363972130236404,
+            "aimError": 0.1,
+            "n": 1,
+            "reverse": true,
+            "seed": 20307026,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              7
+            ],
+            "hp": [
+              1320,
+              0
+            ],
+            "charge": [
+              7,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.5000000000003
+          },
+          {
+            "distance": 4.225611377316462,
+            "aimError": 0.1,
+            "n": 7,
+            "reverse": false,
+            "seed": 20307032,
+            "outcome": -1,
+            "casts": [
+              3,
+              2
+            ],
+            "attacks": [
+              11,
+              3
+            ],
+            "hp": [
+              0,
+              660
+            ],
+            "charge": [
+              0,
+              3.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 20.616666666666777
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 26,
+            "losses": 14,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 37,
+            "losses": 2,
+            "draws": 1
+          },
+          "20": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "28": {
+            "wins": 37,
+            "losses": 3,
+            "draws": 0
+          },
+          "36": {
+            "wins": 38,
+            "losses": 2,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    },
+    {
+      "speed": 1.3,
+      "aim": true,
+      "target": {
+        "left": "crystal",
+        "right": "red",
+        "seedBase": 20261025,
+        "wins": 234,
+        "losses": 6,
+        "draws": 0,
+        "failures": [
+          {
+            "distance": 4.57366529946007,
+            "aimError": 0.035,
+            "n": 3,
+            "reverse": false,
+            "seed": 20267028,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.76666666666698
+          },
+          {
+            "distance": 4.892535218865703,
+            "aimError": 0.035,
+            "n": 8,
+            "reverse": false,
+            "seed": 20267033,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 14.783333333333648
+          },
+          {
+            "distance": 14.149988013388155,
+            "aimError": 0.1,
+            "n": 2,
+            "reverse": true,
+            "seed": 20277027,
+            "outcome": 1,
+            "casts": [
+              1,
+              2
+            ],
+            "attacks": [
+              2,
+              2
+            ],
+            "hp": [
+              220,
+              0
+            ],
+            "charge": [
+              6,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 30.79999999999953
+          },
+          {
+            "distance": 4.4405749258667315,
+            "aimError": 0.1,
+            "n": 3,
+            "reverse": true,
+            "seed": 20277028,
+            "outcome": 1,
+            "casts": [
+              1,
+              1
+            ],
+            "attacks": [
+              3,
+              3
+            ],
+            "hp": [
+              6050,
+              0
+            ],
+            "charge": [
+              0.5,
+              0
+            ],
+            "lastDamageKind": [
+              "crystal",
+              null
+            ],
+            "time": 14.183333333333618
+          },
+          {
+            "distance": 5.040595916066245,
+            "aimError": 0.1,
+            "n": 6,
+            "reverse": false,
+            "seed": 20277031,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              3,
+              2
+            ],
+            "hp": [
+              0,
+              2200
+            ],
+            "charge": [
+              0,
+              6.5
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 15.03333333333366
+          },
+          {
+            "distance": 9.241182003338881,
+            "aimError": 0.1,
+            "n": 9,
+            "reverse": false,
+            "seed": 20277034,
+            "outcome": -1,
+            "casts": [
+              2,
+              1
+            ],
+            "attacks": [
+              4,
+              1
+            ],
+            "hp": [
+              0,
+              220
+            ],
+            "charge": [
+              0,
+              6
+            ],
+            "lastDamageKind": [
+              null,
+              "crystal"
+            ],
+            "time": 30.79999999999953
+          }
+        ],
+        "byDistance": {
+          "6": {
+            "wins": 34,
+            "losses": 6,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      },
+      "prior": {
+        "left": "red",
+        "right": "chartreuse",
+        "seedBase": 20261025,
+        "wins": 240,
+        "losses": 0,
+        "draws": 0,
+        "failures": [],
+        "byDistance": {
+          "6": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "10": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "14": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "20": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "28": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          },
+          "36": {
+            "wins": 40,
+            "losses": 0,
+            "draws": 0
+          }
+        }
+      }
+    }
+  ]
+}

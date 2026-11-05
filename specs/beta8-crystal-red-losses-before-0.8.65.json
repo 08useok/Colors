@@ -1,0 +1,2045 @@
+{
+  "profile": {
+    "mapSide": 120,
+    "bounds": 59,
+    "liveMapSide": 100,
+    "liveBounds": 49,
+    "distances": [
+      6,
+      10,
+      14,
+      20,
+      28,
+      36
+    ],
+    "aimErrors": [
+      0.035,
+      0.1
+    ],
+    "seedsPerScenario": 10,
+    "zone": {
+      "start": 30,
+      "end": 45,
+      "startRadius": 40,
+      "endRadius": 8,
+      "damagePerSecond": 0.25
+    },
+    "scope": "Enlarged 120x120 open simulation arena (live map is 100x100); historical synthetic zone, no obstacles or multiplayer spawns"
+  },
+  "scope": "Current baseline traces plus diagnostic-only counterfactuals; no gameplay changes",
+  "reports": [
+    {
+      "left": "crystal",
+      "right": "red",
+      "variant": "baseline",
+      "wins": 205,
+      "losses": 35,
+      "draws": 0,
+      "lossCauses": {
+        "combat": 35
+      },
+      "lossCasts": {
+        "zero": 7,
+        "used": 28
+      },
+      "lossCharge": {
+        "0/1.5": 34,
+        "1/1.5": 1
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 0,
+          "reverse": false,
+          "cause": "combat",
+          "time": 4.55,
+          "hp": [
+            0,
+            9900
+          ],
+          "charge": [
+            0,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            4,
+            2
+          ],
+          "attackRangeSeconds": 4.55,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.96,
+              "a": [
+                -3.1,
+                0
+              ],
+              "b": [
+                2.8,
+                0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 0,
+              "charge": 0,
+              "floats": 0,
+              "gap": 7.17,
+              "a": [
+                -10.8,
+                11.2
+              ],
+              "b": [
+                -9.9,
+                4.1
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                1320,
+                9900
+              ],
+              "ammo": 0,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.36,
+              "a": [
+                -14.2,
+                23.8
+              ],
+              "b": [
+                -16.7,
+                18
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.033,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.079653164871497
+            },
+            {
+              "time": 0.683,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.53862182618794
+            },
+            {
+              "time": 1.35,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.970536841117957
+            },
+            {
+              "time": 2.8,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.326713285693372
+            },
+            {
+              "time": 2.9,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.089513121856941
+            },
+            {
+              "time": 3.067,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.852973414189993
+            },
+            {
+              "time": 3.133,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.536650419410714
+            },
+            {
+              "time": 4.45,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 5.333887579454011
+            },
+            {
+              "time": 4.55,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 5.0979212477129385
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 1,
+          "reverse": false,
+          "cause": "combat",
+          "time": 8.867,
+          "hp": [
+            0,
+            2200
+          ],
+          "charge": [
+            0,
+            6.5
+          ],
+          "casts": [
+            2,
+            1
+          ],
+          "attacks": [
+            6,
+            3
+          ],
+          "attackRangeSeconds": 5.65,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.96,
+              "a": [
+                -3.1,
+                0.1
+              ],
+              "b": [
+                2.8,
+                -0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 1,
+              "charge": 0,
+              "floats": 0,
+              "gap": 10.81,
+              "a": [
+                -10,
+                3.2
+              ],
+              "b": [
+                -1.6,
+                10
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 21.98,
+              "a": [
+                0.5,
+                9.8
+              ],
+              "b": [
+                5.9,
+                31.1
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 2,
+              "charge": 0,
+              "floats": 0,
+              "gap": 7.57,
+              "a": [
+                2.4,
+                20.8
+              ],
+              "b": [
+                4.1,
+                28.2
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 0,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.78,
+              "a": [
+                9.2,
+                8.4
+              ],
+              "b": [
+                7.7,
+                13.9
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.083,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.96312749368535
+            },
+            {
+              "time": 0.733,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.4414756578298435
+            },
+            {
+              "time": 1.067,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 7700,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.496248102562373
+            },
+            {
+              "time": 1.083,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 6600,
+              "charge": 2,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.4571702199393854
+            },
+            {
+              "time": 1.1,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 6050,
+              "charge": 4,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.418111135567075
+            },
+            {
+              "time": 1.117,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 6.418111135567075
+            },
+            {
+              "time": 1.217,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.3106436242362856
+            },
+            {
+              "time": 2.633,
+              "type": "ultimate",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 16.359707362611772
+            },
+            {
+              "time": 5.383,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 11.810386855800335
+            },
+            {
+              "time": 6.05,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 7.65081555782431
+            },
+            {
+              "time": 6.717,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 6.084480001688066
+            },
+            {
+              "time": 8.217,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.306779333031638
+            },
+            {
+              "time": 8.317,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.069450364247285
+            },
+            {
+              "time": 8.433,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.95063342971117
+            },
+            {
+              "time": 8.55,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6.5,
+              "ownCasts": 1,
+              "gap": 4.514667486565312
+            },
+            {
+              "time": 8.567,
+              "type": "ultimatePrepare",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.633751553992967
+            },
+            {
+              "time": 8.667,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 3850,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.238504535772573
+            },
+            {
+              "time": 8.683,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 2750,
+              "charge": 2,
+              "ownerCharge": 0.5,
+              "ownCasts": 1,
+              "gap": 4.199195920233198
+            },
+            {
+              "time": 8.7,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 2200,
+              "charge": 4,
+              "ownerCharge": 1,
+              "ownCasts": 1,
+              "gap": 4.159929093347256
+            },
+            {
+              "time": 8.717,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 2200,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 4.159929093347256
+            },
+            {
+              "time": 8.733,
+              "type": "ultimate",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 3.84309608186418
+            },
+            {
+              "time": 8.767,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 3.8437188781434597
+            },
+            {
+              "time": 8.867,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 3.9713748984327393
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 5,
+          "reverse": false,
+          "cause": "combat",
+          "time": 7.417,
+          "hp": [
+            0,
+            2200
+          ],
+          "charge": [
+            0,
+            5
+          ],
+          "casts": [
+            2,
+            1
+          ],
+          "attacks": [
+            5,
+            3
+          ],
+          "attackRangeSeconds": 4.2,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.96,
+              "a": [
+                -3.1,
+                -0.1
+              ],
+              "b": [
+                2.8,
+                0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                3960,
+                6050
+              ],
+              "ammo": 1,
+              "charge": 0,
+              "floats": 0,
+              "gap": 9.66,
+              "a": [
+                -11,
+                -3.5
+              ],
+              "b": [
+                -3.7,
+                -9.8
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                3960,
+                6050
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 21.5,
+              "a": [
+                -1.4,
+                -10.2
+              ],
+              "b": [
+                1.7,
+                -31.5
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                3960,
+                6050
+              ],
+              "ammo": 2,
+              "charge": 0,
+              "floats": 0,
+              "gap": 7.83,
+              "a": [
+                -0.3,
+                -22.6
+              ],
+              "b": [
+                5,
+                -28.3
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.2,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.688652195269078
+            },
+            {
+              "time": 0.283,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.333361930168178
+            },
+            {
+              "time": 0.85,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.382268329593529
+            },
+            {
+              "time": 1.183,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 7700,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.441128220048083
+            },
+            {
+              "time": 1.2,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 6600,
+              "charge": 2,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.40213368192172
+            },
+            {
+              "time": 1.217,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 6050,
+              "charge": 4,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.36313908354895
+            },
+            {
+              "time": 1.233,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 6.36313908354895
+            },
+            {
+              "time": 1.333,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.255622873550745
+            },
+            {
+              "time": 1.433,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.468895720888784
+            },
+            {
+              "time": 2.75,
+              "type": "ultimate",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 16.35370772348819
+            },
+            {
+              "time": 5.5,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 11.804371411124313
+            },
+            {
+              "time": 6.167,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 7.634005209151515
+            },
+            {
+              "time": 6.833,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 6.067459518604521
+            },
+            {
+              "time": 7.083,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 6.5,
+              "ownCasts": 1,
+              "gap": 5.314854527700225
+            },
+            {
+              "time": 7.1,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 3850,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 5.275193197922648
+            },
+            {
+              "time": 7.117,
+              "type": "ultimatePrepare",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 3960,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 5.394196068716456
+            },
+            {
+              "time": 7.117,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 2750,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 1,
+              "gap": 5.235538416531592
+            },
+            {
+              "time": 7.133,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 2200,
+              "charge": 2,
+              "ownerCharge": 1,
+              "ownCasts": 1,
+              "gap": 5.195892858459517
+            },
+            {
+              "time": 7.15,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 2200,
+              "charge": 4,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 5.195892858459517
+            },
+            {
+              "time": 7.183,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 2,
+              "gap": 4.720000574013005
+            },
+            {
+              "time": 7.283,
+              "type": "ultimate",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 4.5,
+              "ownCasts": 2,
+              "gap": 4.297599746550321
+            },
+            {
+              "time": 7.417,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 0,
+              "ownerCharge": 4.5,
+              "ownCasts": 2,
+              "gap": 4.769783260718593
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "variant": "noLowHealthRetreat",
+      "wins": 205,
+      "losses": 35,
+      "draws": 0,
+      "lossCauses": {
+        "combat": 35
+      },
+      "lossCasts": {
+        "zero": 7,
+        "used": 28
+      },
+      "lossCharge": {
+        "0/1.5": 34,
+        "1/1.5": 1
+      },
+      "analysisInLosses": 0,
+      "analysisAfterOwnUlt": 0,
+      "samples": [
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 0,
+          "reverse": false,
+          "cause": "combat",
+          "time": 4.55,
+          "hp": [
+            0,
+            9900
+          ],
+          "charge": [
+            0,
+            1.5
+          ],
+          "casts": [
+            0,
+            0
+          ],
+          "attacks": [
+            4,
+            2
+          ],
+          "attackRangeSeconds": 4.55,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.96,
+              "a": [
+                -3.1,
+                0
+              ],
+              "b": [
+                2.8,
+                0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 0,
+              "charge": 0,
+              "floats": 0,
+              "gap": 7.17,
+              "a": [
+                -10.8,
+                11.2
+              ],
+              "b": [
+                -9.9,
+                4.1
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                1320,
+                9900
+              ],
+              "ammo": 0,
+              "charge": 0,
+              "floats": 0,
+              "gap": 6.36,
+              "a": [
+                -14.2,
+                23.8
+              ],
+              "b": [
+                -16.7,
+                18
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.033,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.079653164871497
+            },
+            {
+              "time": 0.683,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.53862182618794
+            },
+            {
+              "time": 1.35,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.970536841117957
+            },
+            {
+              "time": 2.8,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.326713285693372
+            },
+            {
+              "time": 2.9,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.089513121856941
+            },
+            {
+              "time": 3.067,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 4.852973414189993
+            },
+            {
+              "time": 3.133,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 4.536650419410714
+            },
+            {
+              "time": 4.45,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 5.333887579454011
+            },
+            {
+              "time": 4.55,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 0,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 5.0979212477129385
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 1,
+          "reverse": false,
+          "cause": "combat",
+          "time": 8.867,
+          "hp": [
+            0,
+            2200
+          ],
+          "charge": [
+            0,
+            6.5
+          ],
+          "casts": [
+            2,
+            1
+          ],
+          "attacks": [
+            6,
+            3
+          ],
+          "attackRangeSeconds": 5.65,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.96,
+              "a": [
+                -3.1,
+                0.1
+              ],
+              "b": [
+                2.8,
+                -0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 1,
+              "charge": 0,
+              "floats": 0,
+              "gap": 10.81,
+              "a": [
+                -10,
+                3.2
+              ],
+              "b": [
+                -1.6,
+                10
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 21.98,
+              "a": [
+                0.5,
+                9.8
+              ],
+              "b": [
+                5.9,
+                31.1
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 2,
+              "charge": 0,
+              "floats": 0,
+              "gap": 7.57,
+              "a": [
+                2.4,
+                20.8
+              ],
+              "b": [
+                4.1,
+                28.2
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                6600,
+                6050
+              ],
+              "ammo": 0,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.78,
+              "a": [
+                9.2,
+                8.4
+              ],
+              "b": [
+                7.7,
+                13.9
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.083,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.96312749368535
+            },
+            {
+              "time": 0.733,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 7.4414756578298435
+            },
+            {
+              "time": 1.067,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 7700,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 6.496248102562373
+            },
+            {
+              "time": 1.083,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 6600,
+              "charge": 2,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 6.4571702199393854
+            },
+            {
+              "time": 1.1,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 6050,
+              "charge": 4,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 6.418111135567075
+            },
+            {
+              "time": 1.117,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 6.418111135567075
+            },
+            {
+              "time": 1.217,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.3106436242362856
+            },
+            {
+              "time": 2.633,
+              "type": "ultimate",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 16.359707362611772
+            },
+            {
+              "time": 5.383,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 11.810386855800335
+            },
+            {
+              "time": 6.05,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 7.65081555782431
+            },
+            {
+              "time": 6.717,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 6.084480001688066
+            },
+            {
+              "time": 8.217,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.306779333031638
+            },
+            {
+              "time": 8.317,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 1,
+              "gap": 5.069450364247285
+            },
+            {
+              "time": 8.433,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.95063342971117
+            },
+            {
+              "time": 8.55,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6.5,
+              "ownCasts": 1,
+              "gap": 4.514667486565312
+            },
+            {
+              "time": 8.567,
+              "type": "ultimatePrepare",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.633751553992967
+            },
+            {
+              "time": 8.667,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 3850,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.238504535772573
+            },
+            {
+              "time": 8.683,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 2750,
+              "charge": 2,
+              "ownerCharge": 0.5,
+              "ownCasts": 1,
+              "gap": 4.199195920233198
+            },
+            {
+              "time": 8.7,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 2200,
+              "charge": 4,
+              "ownerCharge": 1,
+              "ownCasts": 1,
+              "gap": 4.159929093347256
+            },
+            {
+              "time": 8.717,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 2200,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 4.159929093347256
+            },
+            {
+              "time": 8.733,
+              "type": "ultimate",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 3.84309608186418
+            },
+            {
+              "time": 8.767,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 3.8437188781434597
+            },
+            {
+              "time": 8.867,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 3.9713748984327393
+            }
+          ]
+        },
+        {
+          "distance": 6,
+          "aimError": 0.035,
+          "n": 4,
+          "reverse": true,
+          "cause": "combat",
+          "time": 11.017,
+          "hp": [
+            0,
+            660
+          ],
+          "charge": [
+            0,
+            4.5
+          ],
+          "casts": [
+            3,
+            2
+          ],
+          "attacks": [
+            5,
+            3
+          ],
+          "attackRangeSeconds": 4.6,
+          "positions": [
+            {
+              "time": 0.02,
+              "hp": [
+                6600,
+                9900
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 5.96,
+              "a": [
+                -3.1,
+                0
+              ],
+              "b": [
+                2.8,
+                -0.1
+              ]
+            },
+            {
+              "time": 2.02,
+              "hp": [
+                1320,
+                6050
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 16.28,
+              "a": [
+                -0.9,
+                -1.2
+              ],
+              "b": [
+                -1.3,
+                -17.5
+              ]
+            },
+            {
+              "time": 4.02,
+              "hp": [
+                1320,
+                6050
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 22.67,
+              "a": [
+                -2.9,
+                -15.5
+              ],
+              "b": [
+                -1.4,
+                -38.1
+              ]
+            },
+            {
+              "time": 6.02,
+              "hp": [
+                1320,
+                4510
+              ],
+              "ammo": 2,
+              "charge": 0,
+              "floats": 0,
+              "gap": 11.4,
+              "a": [
+                0.1,
+                -20.2
+              ],
+              "b": [
+                -10.9,
+                -23
+              ]
+            },
+            {
+              "time": 8.02,
+              "hp": [
+                1320,
+                4510
+              ],
+              "ammo": 3,
+              "charge": 0,
+              "floats": 0,
+              "gap": 21.93,
+              "a": [
+                -12.1,
+                -24.4
+              ],
+              "b": [
+                -30.9,
+                -13.1
+              ]
+            },
+            {
+              "time": 10.02,
+              "hp": [
+                1320,
+                4510
+              ],
+              "ammo": 1,
+              "charge": 0,
+              "floats": 0,
+              "gap": 7.57,
+              "a": [
+                -21,
+                -20.3
+              ],
+              "b": [
+                -28.3,
+                -18.2
+              ]
+            }
+          ],
+          "events": [
+            {
+              "time": 0.117,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 9900,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.724562210117328
+            },
+            {
+              "time": 0.233,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 6600,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.3296133308793
+            },
+            {
+              "time": 0.333,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 3960,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.212300924528283
+            },
+            {
+              "time": 0.383,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 7700,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 0,
+              "gap": 5.094103689265436
+            },
+            {
+              "time": 0.4,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 6600,
+              "charge": 2.5,
+              "ownerCharge": 0.5,
+              "ownCasts": 0,
+              "gap": 5.054718138166678
+            },
+            {
+              "time": 0.417,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 6050,
+              "charge": 4.5,
+              "ownerCharge": 1,
+              "ownCasts": 0,
+              "gap": 5.015341231077215
+            },
+            {
+              "time": 0.433,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 6.5,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.8566759369915
+            },
+            {
+              "time": 0.567,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 2640,
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6.5,
+              "ownCasts": 1,
+              "gap": 4.093752247725849
+            },
+            {
+              "time": 0.583,
+              "type": "ultimatePrepare",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.093752247725849
+            },
+            {
+              "time": 0.75,
+              "type": "ultimate",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 4.799095720022439
+            },
+            {
+              "time": 0.783,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 5.007767173181896
+            },
+            {
+              "time": 1.95,
+              "type": "ultimate",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 16.00563782899229
+            },
+            {
+              "time": 4.667,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 6050,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 11.849419048531088
+            },
+            {
+              "time": 5.083,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 880,
+              "targetHp": 5170,
+              "charge": 0,
+              "ownerCharge": 0,
+              "ownCasts": 1,
+              "gap": 7.65299525370306
+            },
+            {
+              "time": 5.1,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 440,
+              "targetHp": 4730,
+              "charge": 2,
+              "ownerCharge": 0.5,
+              "ownCasts": 1,
+              "gap": 7.613677350233789
+            },
+            {
+              "time": 5.117,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 220,
+              "targetHp": 4510,
+              "charge": 4,
+              "ownerCharge": 1,
+              "ownCasts": 1,
+              "gap": 7.574353349970709
+            },
+            {
+              "time": 5.133,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 4510,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 7.416022329857756
+            },
+            {
+              "time": 6.65,
+              "type": "ultimate",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 4510,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 16.375405309594466
+            },
+            {
+              "time": 9.367,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 4510,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 11.876663152999726
+            },
+            {
+              "time": 10.017,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 4510,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 7.570447529046969
+            },
+            {
+              "time": 10.667,
+              "type": "attack",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 4510,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 6.037464113906565
+            },
+            {
+              "time": 10.917,
+              "type": "attack",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0,
+              "ownerCharge": 6,
+              "ownCasts": 2,
+              "gap": 5.326842844639083
+            },
+            {
+              "time": 10.95,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 2200,
+              "targetHp": 2310,
+              "charge": 6,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 5.367374658374765
+            },
+            {
+              "time": 10.967,
+              "type": "ultimatePrepare",
+              "owner": "red",
+              "target": "crystal",
+              "targetHp": 1320,
+              "charge": 0.5,
+              "ownerCharge": 0,
+              "ownCasts": 2,
+              "gap": 5.367374658374765
+            },
+            {
+              "time": 10.967,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 1100,
+              "targetHp": 1210,
+              "charge": 0,
+              "ownerCharge": 0.5,
+              "ownCasts": 2,
+              "gap": 5.32802040432957
+            },
+            {
+              "time": 10.983,
+              "type": "damage",
+              "owner": "crystal",
+              "target": "red",
+              "amount": 550,
+              "targetHp": 660,
+              "charge": 2,
+              "ownerCharge": 1,
+              "ownCasts": 2,
+              "gap": 5.288679097968632
+            },
+            {
+              "time": 11,
+              "type": "ultimatePrepare",
+              "owner": "crystal",
+              "target": "red",
+              "targetHp": 660,
+              "charge": 4,
+              "ownerCharge": 0,
+              "ownCasts": 3,
+              "gap": 5.130052834762255
+            },
+            {
+              "time": 11.017,
+              "type": "damage",
+              "owner": "red",
+              "target": "crystal",
+              "amount": 1320,
+              "targetHp": 0,
+              "charge": 0,
+              "ownerCharge": 4,
+              "ownCasts": 3,
+              "gap": 4.971440379742413
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

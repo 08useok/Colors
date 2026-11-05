@@ -1,0 +1,9 @@
+{
+  "captureDamage": 3000,
+  "landingDamage": 600,
+  "stable": 96400,
+  "after": 96400,
+  "peak": 4.5,
+  "duration": 1.2,
+  "charge": 4
+}

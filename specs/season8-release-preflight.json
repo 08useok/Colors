@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-10-29T02:57:13.331Z",
+  "timeZone": "Asia/Seoul",
+  "scope": "Fast release preparation only; no migration, deployment or new duel simulation",
+  "balanceSourceHashes": [
+    {
+      "path": "src/config/beta-characters.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta7-balance.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta6-balance.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta8-balance.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta-ultimate-motion.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta-attack-motion.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/salmon.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/salmon-animation.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta8-counter-targets.js",
+      "matches": true
+    },
+    {
+      "path": "src/combat/beta6-combat.js",
+      "matches": true
+    },
+    {
+      "path": "src/combat/salmon-combat.js",
+      "matches": true
+    },
+    {
+      "path": "tools/simulate-beta6-balance.mjs",
+      "matches": true
+    },
+    {
+      "path": "tools/beta8-simulation-profile.mjs",
+      "matches": true
+    },
+    {
+      "path": "src/config/beta-showdown.js",
+      "matches": true
+    },
+    {
+      "path": "src/config/event-maps.js",
+      "matches": true
+    }
+  ],
+  "allBalanceSourcesMatch": true,
+  "browserRechecked": false
+}

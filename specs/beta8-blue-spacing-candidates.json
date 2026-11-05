@@ -1,0 +1,593 @@
+[
+  {
+    "name": "current",
+    "change": {},
+    "wins": 91,
+    "losses": 29,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267027,
+        "reverse": false,
+        "hp": [
+          0,
+          575.6666666666698
+        ]
+      }
+    ]
+  },
+  {
+    "name": "range14",
+    "change": {
+      "attackPerceptionMinRange": 14
+    },
+    "wins": 98,
+    "losses": 22,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": false,
+        "hp": [
+          0,
+          575.6666666666698
+        ]
+      }
+    ]
+  },
+  {
+    "name": "range16",
+    "change": {
+      "attackPerceptionMinRange": 16
+    },
+    "wins": 98,
+    "losses": 22,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": false,
+        "hp": [
+          0,
+          575.6666666666698
+        ]
+      }
+    ]
+  },
+  {
+    "name": "range18",
+    "change": {
+      "attackPerceptionMinRange": 18
+    },
+    "wins": 98,
+    "losses": 22,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": false,
+        "hp": [
+          0,
+          575.6666666666698
+        ]
+      }
+    ]
+  },
+  {
+    "name": "noRetreat",
+    "change": {
+      "pursuesWhileLowHealth": true
+    },
+    "wins": 94,
+    "losses": 26,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      }
+    ]
+  },
+  {
+    "name": "range14NoRetreat",
+    "change": {
+      "attackPerceptionMinRange": 14,
+      "pursuesWhileLowHealth": true
+    },
+    "wins": 99,
+    "losses": 21,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "name": "range16NoRetreat",
+    "change": {
+      "attackPerceptionMinRange": 16,
+      "pursuesWhileLowHealth": true
+    },
+    "wins": 99,
+    "losses": 21,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "name": "range18NoRetreat",
+    "change": {
+      "attackPerceptionMinRange": 18,
+      "pursuesWhileLowHealth": true
+    },
+    "wins": 99,
+    "losses": 21,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "name": "guardEarlier",
+    "change": {
+      "attackPerceptionMinRange": 14,
+      "pursuesWhileLowHealth": true,
+      "ultimateUseHealthMin": 0,
+      "ultimateUseHealthMax": 0.75
+    },
+    "wins": 99,
+    "losses": 21,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267028,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      }
+    ]
+  },
+  {
+    "name": "longerDodge",
+    "change": {
+      "attackPerceptionMinRange": 14,
+      "pursuesWhileLowHealth": true,
+      "projectileDodgeDuration": 0.5
+    },
+    "wins": 97,
+    "losses": 23,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267027,
+        "reverse": false,
+        "hp": [
+          0,
+          836
+        ]
+      }
+    ]
+  },
+  {
+    "name": "shorterDodge",
+    "change": {
+      "attackPerceptionMinRange": 14,
+      "pursuesWhileLowHealth": true,
+      "projectileDodgeDuration": 0.18
+    },
+    "wins": 102,
+    "losses": 18,
+    "draws": 0,
+    "failed": [
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267026,
+        "reverse": true,
+        "hp": [
+          2024,
+          0
+        ]
+      },
+      {
+        "scenario": {
+          "distance": 6,
+          "aimError": 0.035,
+          "bounds": 40,
+          "level": 6
+        },
+        "seed": 20267027,
+        "reverse": false,
+        "hp": [
+          0,
+          2024
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,175 @@
+{
+  "report": [
+    {
+      "id": "red",
+      "accepted": true,
+      "changed": 5,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 5,
+      "botReturned": true,
+      "damage": 4800
+    },
+    {
+      "id": "green",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 6840
+    },
+    {
+      "id": "blue",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 1080
+    },
+    {
+      "id": "orange",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 750
+    },
+    {
+      "id": "yellow",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2200
+    },
+    {
+      "id": "cyan",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 4200
+    },
+    {
+      "id": "purple",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 3300
+    },
+    {
+      "id": "pink",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2200
+    },
+    {
+      "id": "crimson",
+      "accepted": true,
+      "changed": 5,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 5,
+      "botReturned": true,
+      "damage": 4000
+    },
+    {
+      "id": "gold",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2380
+    },
+    {
+      "id": "ivory",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2400
+    },
+    {
+      "id": "chartreuse",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2600
+    },
+    {
+      "id": "mint",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2600
+    },
+    {
+      "id": "azure",
+      "accepted": true,
+      "changed": 5,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 5,
+      "botReturned": true,
+      "damage": 2600
+    },
+    {
+      "id": "crystal",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 2600
+    },
+    {
+      "id": "lavender",
+      "accepted": true,
+      "changed": 4,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 4,
+      "botReturned": true,
+      "damage": 1100
+    },
+    {
+      "id": "salmon",
+      "accepted": true,
+      "changed": 3,
+      "returned": true,
+      "rootUnchanged": true,
+      "botChanged": 3,
+      "botReturned": true,
+      "damage": 1800
+    }
+  ],
+  "pageErrors": []
+}

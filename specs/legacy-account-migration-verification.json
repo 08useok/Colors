@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-29T06:57:12.778Z",
+  "passed": true,
+  "scope": "Offline synthetic migration planning and receipt validation only; no user data, database writes, server import or runtime integration",
+  "checks": [
+    "Exact full-field preservation including unknown nested fields",
+    "Original input unchanged",
+    "Repeat planning stable",
+    "Canonical hash ignores object key order",
+    "Same source cannot become a new claim just by changing balance",
+    "Destination conflict rejected without currency merge",
+    "Invalid input and prototype keys rejected",
+    "Wrong receipt and changed source rejected",
+    "Source deletion never authorized"
+  ],
+  "remaining": [
+    "Legacy ownership policy",
+    "Atomic server import and receipt",
+    "Shared-state adapter",
+    "Isolated HTTP/Ego end-to-end migration",
+    "Actual user transfer"
+  ]
+}

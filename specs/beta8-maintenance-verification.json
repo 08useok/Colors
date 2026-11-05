@@ -1,0 +1,279 @@
+{
+  "date": "2026-11-03T09:29:49.455Z",
+  "timeZone": "Asia/Seoul",
+  "syntaxModules": 23,
+  "testSuites": 31,
+  "allPassed": true,
+  "results": [
+    {
+      "command": "--check src/beta-season.js",
+      "passed": true,
+      "ms": 127
+    },
+    {
+      "command": "--check src/beta-account.js",
+      "passed": true,
+      "ms": 105
+    },
+    {
+      "command": "--check src/beta-records.js",
+      "passed": true,
+      "ms": 92
+    },
+    {
+      "command": "--check src/config/beta8-balance.js",
+      "passed": true,
+      "ms": 121
+    },
+    {
+      "command": "--check src/config/beta8-counter-targets.js",
+      "passed": true,
+      "ms": 114
+    },
+    {
+      "command": "--check src/config/beta8-quests.js",
+      "passed": true,
+      "ms": 116
+    },
+    {
+      "command": "--check src/config/beta8-records.js",
+      "passed": true,
+      "ms": 112
+    },
+    {
+      "command": "--check src/config/salmon.js",
+      "passed": true,
+      "ms": 114
+    },
+    {
+      "command": "--check src/config/salmon-animation.js",
+      "passed": true,
+      "ms": 114
+    },
+    {
+      "command": "--check src/config/beta-attack-motion.js",
+      "passed": true,
+      "ms": 115
+    },
+    {
+      "command": "--check src/config/beta-ultimate-motion.js",
+      "passed": true,
+      "ms": 931
+    },
+    {
+      "command": "--check src/config/skin-effects.js",
+      "passed": true,
+      "ms": 153
+    },
+    {
+      "command": "--check src/combat/beta6-combat.js",
+      "passed": true,
+      "ms": 137
+    },
+    {
+      "command": "--check src/combat/salmon-combat.js",
+      "passed": true,
+      "ms": 97
+    },
+    {
+      "command": "--check src/visuals/crystal-telegraph.js",
+      "passed": true,
+      "ms": 107
+    },
+    {
+      "command": "--check src/visuals/salmon-combat.js",
+      "passed": true,
+      "ms": 101
+    },
+    {
+      "command": "--check src/visuals/salmon-attack.js",
+      "passed": true,
+      "ms": 102
+    },
+    {
+      "command": "--check src/visuals/beta-attack-motion.js",
+      "passed": true,
+      "ms": 100
+    },
+    {
+      "command": "--check src/visuals/beta-attack-props.js",
+      "passed": true,
+      "ms": 112
+    },
+    {
+      "command": "--check src/visuals/skin-effects.js",
+      "passed": true,
+      "ms": 112
+    },
+    {
+      "command": "--check tools/beta-auth.mjs",
+      "passed": true,
+      "ms": 107
+    },
+    {
+      "command": "--check tools/beta-records.mjs",
+      "passed": true,
+      "ms": 121
+    },
+    {
+      "command": "--check tools/serve-game.mjs",
+      "passed": true,
+      "ms": 115
+    },
+    {
+      "command": "tools/test-beta-auth.mjs",
+      "passed": true,
+      "ms": 1775
+    },
+    {
+      "command": "tools/test-beta-recovery.mjs",
+      "passed": true,
+      "ms": 4961
+    },
+    {
+      "command": "tools/test-beta8-records.mjs",
+      "passed": true,
+      "ms": 826
+    },
+    {
+      "command": "tools/test-beta8-records-client.mjs",
+      "passed": true,
+      "ms": 120
+    },
+    {
+      "command": "tools/test-beta8-quests.mjs",
+      "passed": true,
+      "ms": 170
+    },
+    {
+      "command": "tools/test-salmon-combat.mjs",
+      "passed": true,
+      "ms": 176
+    },
+    {
+      "command": "tools/test-beta8-cyan-defense.mjs",
+      "passed": true,
+      "ms": 176
+    },
+    {
+      "command": "tools/test-beta8-ultimate-balance.mjs",
+      "passed": true,
+      "ms": 497
+    },
+    {
+      "command": "tools/test-beta-attack-release.mjs",
+      "passed": true,
+      "ms": 194
+    },
+    {
+      "command": "tools/test-beta-ultimate-motion.mjs",
+      "passed": true,
+      "ms": 194
+    },
+    {
+      "command": "tools/test-skin-tier-effects.mjs",
+      "passed": true,
+      "ms": 112
+    },
+    {
+      "command": "tools/test-beta6-combat.mjs",
+      "passed": true,
+      "ms": 236
+    },
+    {
+      "command": "tools/test-aim-guides.mjs",
+      "passed": true,
+      "ms": 138
+    },
+    {
+      "command": "tools/test-beta8-blue-knockback.mjs",
+      "passed": true,
+      "ms": 175
+    },
+    {
+      "command": "tools/test-beta8-blue-shield.mjs",
+      "passed": true,
+      "ms": 165
+    },
+    {
+      "command": "tools/test-beta8-blue-charge.mjs",
+      "passed": true,
+      "ms": 157
+    },
+    {
+      "command": "tools/test-beta8-bot-dodge.mjs",
+      "passed": true,
+      "ms": 166
+    },
+    {
+      "command": "tools/test-beta8-dodge-chance.mjs",
+      "passed": true,
+      "ms": 1095
+    },
+    {
+      "command": "tools/test-beta8-counter-targets.mjs",
+      "passed": true,
+      "ms": 147
+    },
+    {
+      "command": "tools/test-beta8-purple-crystal.mjs",
+      "passed": true,
+      "ms": 205
+    },
+    {
+      "command": "tools/test-beta8-crystal-stages.mjs",
+      "passed": true,
+      "ms": 164
+    },
+    {
+      "command": "tools/test-beta8-crystal-windup.mjs",
+      "passed": true,
+      "ms": 178
+    },
+    {
+      "command": "tools/test-beta8-crystal-telegraph.mjs",
+      "passed": true,
+      "ms": 167
+    },
+    {
+      "command": "tools/test-beta8-purple-smart-ultimate.mjs",
+      "passed": true,
+      "ms": 149
+    },
+    {
+      "command": "tools/test-beta8-yellow-spacing.mjs",
+      "passed": true,
+      "ms": 154
+    },
+    {
+      "command": "tools/test-beta8-gold-defense.mjs",
+      "passed": true,
+      "ms": 174
+    },
+    {
+      "command": "tools/test-beta8-salmon-spacing.mjs",
+      "passed": true,
+      "ms": 163
+    },
+    {
+      "command": "tools/test-beta8-azure-width.mjs",
+      "passed": true,
+      "ms": 168
+    },
+    {
+      "command": "tools/test-beta8-blue-burst.mjs",
+      "passed": true,
+      "ms": 182
+    },
+    {
+      "command": "tools/test-beta8-orange-tracking.mjs",
+      "passed": true,
+      "ms": 185
+    },
+    {
+      "command": "tools/test-beta8-remaining-edges.mjs",
+      "passed": true,
+      "ms": 151
+    }
+  ]
+}

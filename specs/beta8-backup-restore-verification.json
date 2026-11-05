@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-29T06:50:22.045Z",
+  "passed": true,
+  "backup": "C:\\Users\\useok\\Colors\\.local\\backups\\20261029T064902414449Z\\beta-auth.sqlite",
+  "backupSha256": "b86eb0bc14f66bc031609465a8c3a4e2f835be8b500fdecc2d2e2ac7102d2e50",
+  "drillDirectory": "C:\\Users\\useok\\Colors\\.local\\backups\\20261029T064902414449Z\\restore-drill-1793256619872",
+  "checks": {
+    "backupBoots": true,
+    "sessionAndSaveSurviveServerRestart": true,
+    "passwordLoginAfterRestart": true,
+    "laterChangesWritten": true,
+    "allTablesRestoredExactly": true,
+    "accountProgressQuestsRewardsRecoveryPreserved": true,
+    "rankingAndDuplicateRecordProtectionPreserved": true,
+    "originalBackupUnchanged": true,
+    "liveOriginalLogicalContentsUnchanged": true
+  },
+  "scope": "Real local beta SQLite snapshot and isolated HTTP child-server restart/restore drill; original DB opened read-only only during backup",
+  "limitations": [
+    "Browser localStorage guest/main progress is not part of the server SQLite backup",
+    "No production deployment, main/beta migration or original-DB rollback performed"
+  ]
+}

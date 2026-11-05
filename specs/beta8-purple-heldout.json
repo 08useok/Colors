@@ -1,0 +1,203 @@
+{
+  "scope": "Unseen seeds 314159265+distance*1009+n+accuracyOffset; levels1/3/6; live and expanded bounds; no candidate selection on these results",
+  "games": 4320,
+  "sourceHashes": {
+    "src/config/beta-characters.js": "f1ce45b72b678e368e689fa227eb202e2d3469046273b79aee1f50e7f40062d4",
+    "src/config/beta7-balance.js": "e9ac5bdc3d5be8a7aded776984355b9a3388469a80eb356bc8139c250937f2ec",
+    "src/config/beta6-balance.js": "09fd1f4f7d13e39d0d73bbbd051b35fd31c9a916282dca7fd9d71c426fa06e2f",
+    "src/config/beta8-balance.js": "83ce60d7e45d4226672b4d5d06ff13e33e91a554916d7bad20245f43caa698bb",
+    "src/config/beta-ultimate-motion.js": "b95e056c0caebde37ce89e7d68f9f10ccd6d3b1806d826a6b9afcb0f608e6e51",
+    "src/config/beta-attack-motion.js": "25e860bde988ef4768e9c4c9c31c01c5caa772467d102a7c9ee8abdb120ce738",
+    "src/config/salmon.js": "f193d679af0f407473683b4211592d48106641db654afcfc8b380e5e7cfa31e8",
+    "src/config/salmon-animation.js": "5f503cf0629649867ca362c2a406d780fc249423b104b4474027f428c6422825",
+    "src/config/beta8-counter-targets.js": "8d0c3ced2c02cef6da0188f1bc545252d7987860aa1c97875b43d20167ba5db6",
+    "src/combat/beta6-combat.js": "a51253e328b77585111bf966aa14693a0b6fcef0d07474f1b611a431bb7e66aa",
+    "src/combat/salmon-combat.js": "110b1b09db79b25b310be07f94af71b55086debaf97b05332d5092b5103354f0",
+    "tools/simulate-beta6-balance.mjs": "6a2a1f1d9626e530b8712251d733b0713ca1154cc8293bbb5816b1b925339288",
+    "tools/beta8-simulation-profile.mjs": "07d1cf634538bd4955d4b40c77bf3c3352be695bb893323b99dde23f6250e053",
+    "src/config/beta-showdown.js": "8ea3f49e958da3903fc7baf845ba17ecf88a79438d47a7923f87f8fa6344046f",
+    "src/config/event-maps.js": "518bfb00905b9805ef677a35a293d5043ed618f2198c10f24f6bac766db168c4"
+  },
+  "rows": [
+    {
+      "left": "purple",
+      "right": "crystal",
+      "level": 1,
+      "bounds": 49,
+      "wins": 224,
+      "losses": 16,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "purple",
+      "right": "crystal",
+      "level": 1,
+      "bounds": 59,
+      "wins": 224,
+      "losses": 16,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "purple",
+      "right": "crystal",
+      "level": 3,
+      "bounds": 49,
+      "wins": 224,
+      "losses": 16,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "purple",
+      "right": "crystal",
+      "level": 3,
+      "bounds": 59,
+      "wins": 224,
+      "losses": 16,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "purple",
+      "right": "crystal",
+      "level": 6,
+      "bounds": 49,
+      "wins": 224,
+      "losses": 16,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "purple",
+      "right": "crystal",
+      "level": 6,
+      "bounds": 59,
+      "wins": 224,
+      "losses": 16,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "level": 1,
+      "bounds": 49,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "level": 1,
+      "bounds": 59,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "level": 3,
+      "bounds": 49,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "level": 3,
+      "bounds": 59,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "level": 6,
+      "bounds": 49,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "pink",
+      "right": "purple",
+      "level": 6,
+      "bounds": 59,
+      "wins": 240,
+      "losses": 0,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "level": 1,
+      "bounds": 49,
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "level": 1,
+      "bounds": 59,
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "level": 3,
+      "bounds": 49,
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "level": 3,
+      "bounds": 59,
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "level": 6,
+      "bounds": 49,
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "games": 240
+    },
+    {
+      "left": "crystal",
+      "right": "red",
+      "level": 6,
+      "bounds": 59,
+      "wins": 236,
+      "losses": 4,
+      "draws": 0,
+      "games": 240
+    }
+  ]
+}

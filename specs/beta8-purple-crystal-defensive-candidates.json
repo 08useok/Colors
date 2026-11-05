@@ -1,0 +1,1223 @@
+{
+  "scope": "Diagnostic candidates only; common stats and fixed 28000 analysis preserved; 24 candidates; defensive charge and faster needles, 2-seed scout then top8 full10-seed tests",
+  "rows": [
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.25,
+        "needleSpeed": 28
+      },
+      "min": 0.7916666666666666,
+      "mean": 0.9097222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 38,
+          "losses": 10,
+          "draws": 0,
+          "score": 0.7916666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 0.5,
+        "needleSpeed": 28
+      },
+      "min": 0.7916666666666666,
+      "mean": 0.9097222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 38,
+          "losses": 10,
+          "draws": 0,
+          "score": 0.7916666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 1,
+        "needleSpeed": 28
+      },
+      "min": 0.7916666666666666,
+      "mean": 0.9097222222222222,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 38,
+          "losses": 10,
+          "draws": 0,
+          "score": 0.7916666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.25,
+        "needleSpeed": 18
+      },
+      "min": 0.75,
+      "mean": 0.8958333333333334,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 36,
+          "losses": 12,
+          "draws": 0,
+          "score": 0.75
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 0.5,
+        "needleSpeed": 18
+      },
+      "min": 0.75,
+      "mean": 0.8958333333333334,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 36,
+          "losses": 12,
+          "draws": 0,
+          "score": 0.75
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 1,
+        "needleSpeed": 18
+      },
+      "min": 0.75,
+      "mean": 0.8958333333333334,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 36,
+          "losses": 12,
+          "draws": 0,
+          "score": 0.75
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 1,
+        "needleSpeed": 18
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8819444444444445,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.5,
+        "needleSpeed": 18
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 1,
+        "needleSpeed": 18
+      },
+      "min": 0.6458333333333334,
+      "mean": 0.8611111111111112,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.5,
+        "needleSpeed": 28
+      },
+      "min": 0.5833333333333334,
+      "mean": 0.8402777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 28,
+          "losses": 20,
+          "draws": 0,
+          "score": 0.5833333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 1,
+        "needleSpeed": 28
+      },
+      "min": 0.5833333333333334,
+      "mean": 0.8402777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 28,
+          "losses": 20,
+          "draws": 0,
+          "score": 0.5833333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 45,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.9375
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 1,
+        "needleSpeed": 28
+      },
+      "min": 0.5625,
+      "mean": 0.8541666666666666,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 27,
+          "losses": 21,
+          "draws": 0,
+          "score": 0.5625
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 0.5,
+        "needleSpeed": 18
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.7569444444444443,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 35,
+          "losses": 13,
+          "draws": 0,
+          "score": 0.7291666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 0.25,
+        "needleSpeed": 18
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.75,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 34,
+          "losses": 14,
+          "draws": 0,
+          "score": 0.7083333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 4,
+        "incoming": 1,
+        "needleSpeed": 18
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.75,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 34,
+          "losses": 14,
+          "draws": 0,
+          "score": 0.7083333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 0.25,
+        "needleSpeed": 28
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.7291666666666666,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 0.5,
+        "needleSpeed": 28
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.7291666666666666,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 4,
+        "incoming": 1,
+        "needleSpeed": 28
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.7291666666666666,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 31,
+          "losses": 17,
+          "draws": 0,
+          "score": 0.6458333333333334
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 4,
+        "incoming": 0.5,
+        "needleSpeed": 18
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.7013888888888888,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 27,
+          "losses": 21,
+          "draws": 0,
+          "score": 0.5625
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 0.25,
+        "needleSpeed": 18
+      },
+      "min": 0.5416666666666666,
+      "mean": 0.6944444444444443,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 0.25,
+        "needleSpeed": 28
+      },
+      "min": 0.5104166666666666,
+      "mean": 0.6840277777777777,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 24,
+          "losses": 23,
+          "draws": 1,
+          "score": 0.5104166666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 4,
+        "incoming": 0.5,
+        "needleSpeed": 28
+      },
+      "min": 0.5104166666666666,
+      "mean": 0.6840277777777777,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 24,
+          "losses": 23,
+          "draws": 1,
+          "score": 0.5104166666666666
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 26,
+          "losses": 22,
+          "draws": 0,
+          "score": 0.5416666666666666
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 4,
+        "incoming": 0.25,
+        "needleSpeed": 18
+      },
+      "min": 0.10416666666666667,
+      "mean": 0.5555555555555556,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 27,
+          "losses": 21,
+          "draws": 0,
+          "score": 0.5625
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 5,
+          "losses": 43,
+          "draws": 0,
+          "score": 0.10416666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 4,
+        "incoming": 0.25,
+        "needleSpeed": 28
+      },
+      "min": 0.10416666666666667,
+      "mean": 0.5277777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 23,
+          "losses": 25,
+          "draws": 0,
+          "score": 0.4791666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 48,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 5,
+          "losses": 43,
+          "draws": 0,
+          "score": 0.10416666666666667
+        }
+      ]
+    }
+  ],
+  "finalists": [
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 1,
+        "needleSpeed": 28
+      },
+      "min": 0.7416666666666667,
+      "mean": 0.8972222222222223,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 178,
+          "losses": 62,
+          "draws": 0,
+          "score": 0.7416666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 236,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.9833333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.25,
+        "needleSpeed": 28
+      },
+      "min": 0.7375,
+      "mean": 0.8958333333333334,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 177,
+          "losses": 63,
+          "draws": 0,
+          "score": 0.7375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 236,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.9833333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 0.5,
+        "needleSpeed": 28
+      },
+      "min": 0.7375,
+      "mean": 0.8958333333333334,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 177,
+          "losses": 63,
+          "draws": 0,
+          "score": 0.7375
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 236,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.9833333333333333
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.25,
+        "needleSpeed": 18
+      },
+      "min": 0.625,
+      "mean": 0.8638888888888889,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 150,
+          "losses": 90,
+          "draws": 0,
+          "score": 0.625
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2.5,
+        "incoming": 0.5,
+        "needleSpeed": 18
+      },
+      "min": 0.625,
+      "mean": 0.8638888888888889,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 150,
+          "losses": 90,
+          "draws": 0,
+          "score": 0.625
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 3,
+        "incoming": 1,
+        "needleSpeed": 18
+      },
+      "min": 0.625,
+      "mean": 0.8638888888888889,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 150,
+          "losses": 90,
+          "draws": 0,
+          "score": 0.625
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 0.5,
+        "needleSpeed": 18
+      },
+      "min": 0.5166666666666667,
+      "mean": 0.8277777777777778,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 124,
+          "losses": 116,
+          "draws": 0,
+          "score": 0.5166666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 232,
+          "losses": 8,
+          "draws": 0,
+          "score": 0.9666666666666667
+        }
+      ]
+    },
+    {
+      "patch": {
+        "damage": 2500,
+        "thorns": 550,
+        "recycle": 0.25,
+        "crystalCharge": 2,
+        "incoming": 1,
+        "needleSpeed": 18
+      },
+      "min": 0.4791666666666667,
+      "mean": 0.826388888888889,
+      "results": [
+        {
+          "left": "purple",
+          "right": "crystal",
+          "wins": 115,
+          "losses": 125,
+          "draws": 0,
+          "score": 0.4791666666666667
+        },
+        {
+          "left": "pink",
+          "right": "purple",
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        },
+        {
+          "left": "crystal",
+          "right": "red",
+          "wins": 240,
+          "losses": 0,
+          "draws": 0,
+          "score": 1
+        }
+      ]
+    }
+  ]
+}

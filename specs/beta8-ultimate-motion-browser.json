@@ -1,0 +1,349 @@
+{
+  "report": [
+    {
+      "id": "red",
+      "pose": {
+        "id": "red",
+        "changed": 4,
+        "restored": true,
+        "botChanged": 4,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "redUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "crimson",
+      "pose": {
+        "id": "crimson",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "crimsonUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "green",
+      "pose": {
+        "id": "green",
+        "changed": 4,
+        "restored": true,
+        "botChanged": 4,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "greenUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "blue",
+      "pose": {
+        "id": "blue",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "blueUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 3,
+        "pending": false
+      }
+    },
+    {
+      "id": "yellow",
+      "pose": {
+        "id": "yellow",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "yellowUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "cyan",
+      "pose": {
+        "id": "cyan",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "cyanUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "orange",
+      "pose": {
+        "id": "orange",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "orangeUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "purple",
+      "pose": {
+        "id": "purple",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "purpleUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 8,
+        "pending": false
+      }
+    },
+    {
+      "id": "pink",
+      "pose": {
+        "id": "pink",
+        "changed": 4,
+        "restored": true,
+        "botChanged": 4,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "pinkUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "gold",
+      "pose": {
+        "id": "gold",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "goldUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "ivory",
+      "pose": {
+        "id": "ivory",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "ivoryUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "chartreuse",
+      "pose": {
+        "id": "chartreuse",
+        "changed": 4,
+        "restored": true,
+        "botChanged": 4,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "chartreuseUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "mint",
+      "pose": {
+        "id": "mint",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "mintUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "azure",
+      "pose": {
+        "id": "azure",
+        "changed": 4,
+        "restored": true,
+        "botChanged": 4,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "azureUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "crystal",
+      "pose": {
+        "id": "crystal",
+        "changed": 5,
+        "restored": true,
+        "botChanged": 5,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "crystalUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    },
+    {
+      "id": "lavender",
+      "pose": {
+        "id": "lavender",
+        "changed": 4,
+        "restored": true,
+        "botChanged": 4,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "lavenderUltimate",
+        "pending": true,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0.6250000000000002,
+        "pending": false
+      }
+    },
+    {
+      "id": "salmon",
+      "pose": {
+        "id": "salmon",
+        "changed": 3,
+        "restored": true,
+        "botChanged": 3,
+        "botRestored": true,
+        "rootFixed": true
+      },
+      "cast": {
+        "profile": "salmonUltimate",
+        "pending": false,
+        "before": 1000
+      },
+      "result": {
+        "charge": 0,
+        "pending": false
+      }
+    }
+  ],
+  "cancellation": {
+    "queued": true,
+    "cleared": true
+  },
+  "pageErrors": []
+}
