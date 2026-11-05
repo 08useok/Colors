@@ -44,7 +44,7 @@ import { applyBeta9Balance } from "./config/beta9-balance.js?v=13";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=49";
-import { createBetaTransform } from "./beta-transform.js?v=1";
+import { createBetaTransform } from "./beta-transform.js?v=2";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -2254,6 +2254,7 @@ function updateCrimsonControls() {
   document.querySelector(".ultimate-connector").classList.toggle("hidden", hideUltimate);
   ultimateButton.classList.toggle("gold-ultimate", betaState.selectedCharacter === "gold");
   ultimateButton.classList.toggle("pink-ultimate", betaState.selectedCharacter === "pink");
+  betaTransformUi().updateButton(beta6PlayerActor, beta6Combat?.time ?? 0, betaState.selectedCharacter);
   updateCrimsonUltimateGauge();
 }
 
@@ -7004,7 +7005,7 @@ function clearBeta6RoundCombat() {
   beta6Combat?.clear();
   beta6Combat = null;
   beta6PlayerActor = null;
-  betaTransform?.clear(); betaTransform?.updateButton(null);
+  betaTransform?.clear(); betaTransform?.updateButton(null, 0, betaState.selectedCharacter);
   for (const mesh of beta6CombatVisuals.values()) {
     scene.remove(mesh);
     // 종류별 모양은 조각을 묶은 그룹일 수 있다
@@ -7404,7 +7405,8 @@ function beta6PlayerTeam() {
   return ["gemGrab", "chopWood", "knockout"].includes(goldRushState.mode) ? "a" : null;
 }
 
-let betaTransform = null;
+// var, not let: the lobby controls can create the button before this line runs.
+var betaTransform;
 function betaTransformUi() {
   return betaTransform ??= createBetaTransform({ THREE, scene, document, anchor: ultimateButton, activate: activateBeta6Transform });
 }
@@ -7414,7 +7416,7 @@ function activateBeta6Transform() {
   actor.x = player.position.x; actor.z = player.position.z;
   if (!world.transform(actor)) return;
   for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
-  betaTransformUi().updateButton(actor, world.time);
+  betaTransformUi().updateButton(actor, world.time, actor.id);
 }
 
 // Knockout keeps the transform gauge from round to round; the ultimate still resets.
@@ -7458,7 +7460,7 @@ function startBeta6BotCombat(carried = null) {
   });
   beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0 });
   for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0 });
-  betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time);
+  betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time, beta6PlayerActor.id);
 }
 
 // 전투 투사체도 로비와 같은 모양으로 그린다. 모르는 종류는 기본 구슬을 쓴다.
@@ -7642,7 +7644,7 @@ function updateBeta6BotCombat(dt) {
   updateBeta6AttackVisuals(world);
   updateBeta6StatusVisuals(world);
   betaTransformUi().updateWorld(world, beta6ActorPosition, a => a === hero || (a.team != null && a.team === hero.team) || !world.hidden(a, hero));
-  betaTransformUi().updateButton(hero, world.time);
+  betaTransformUi().updateButton(hero, world.time, hero.id);
   const draw = (key, object, radius, kind) => {
     visible.add(key);
     let mesh = beta6CombatVisuals.get(key);

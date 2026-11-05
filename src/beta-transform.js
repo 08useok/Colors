@@ -1,5 +1,6 @@
 // Transform (변신) for the beta match screen: the round gauge button (key F) and the in-world
 // visuals — an aura around transformed fighters, the angel mark halo and Heaven rounds.
+import { TRANSFORMS } from "./config/transforms.js";
 
 const STYLE = `
 .transform-btn { --transform-color:#fff2a8; --charge-angle:0deg; position:relative; display:grid; place-content:center; justify-items:center; width:62px; height:62px; margin-top:8px; padding:0; overflow:hidden; border:3px solid #777b82; border-radius:50%; background:conic-gradient(var(--transform-color) 0 var(--charge-angle), #1b2547 var(--charge-angle) 360deg); color:#d8dadd; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,.3); transition:filter .2s, box-shadow .2s, transform .15s; }
@@ -14,6 +15,7 @@ const STYLE = `
 .transform-btn.active { border-color:#fff; color:#fff; box-shadow:0 0 14px var(--transform-color),0 0 34px var(--transform-color); }
 .transform-btn:active { transform:scale(.94); }
 .transform-btn.hidden { display:none; }
+.transform-btn.idle { opacity:.6; cursor:default; }
 @keyframes transform-ready-pulse { 50% { filter:brightness(1.35); } }
 `;
 
@@ -33,10 +35,24 @@ export function createBetaTransform({ THREE, scene, document, anchor, activate }
     event.preventDefault(); activate();
   });
 
-  function updateButton(actor, time) {
-    const t = actor?.t;
+  // Outside a bot match (lobby, practice) the button still shows for characters that have a
+  // transform, dimmed, so players can see it exists.
+  function updateButton(actor, time, characterId = actor?.id) {
+    const t = actor?.t ?? TRANSFORMS[characterId];
     button.classList.toggle("hidden", !t);
+    button.classList.toggle("idle", !!t && !actor?.t);
     if (!t) return;
+    if (!actor?.t) {
+      button.style.setProperty("--transform-color", t.color);
+      button.style.setProperty("--charge-angle", "0deg");
+      button.classList.remove("ready", "active");
+      state.textContent = "경기 전용";
+      button.title = `변신 · ${t.name}
+${t.summary}
+봇 대전 경기에서 궁극기를 충전하면 변신 게이지가 찹니다 (F)`;
+      button.setAttribute("aria-label", `변신 ${t.name}`);
+      return;
+    }
     const active = time < actor.transformUntil;
     const ultimateReady = !t.needsUltimate || actor.charge >= actor.u.chargeRequired;
     const ready = !active && actor.transformCharge >= 1 && ultimateReady;
