@@ -1,6 +1,7 @@
 import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
+import { TRANSFORMS } from '../config/transforms.js';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
@@ -50,13 +51,33 @@ export function createBeta6Combat(definitions, options = {}) {
       automatic: true, team: null, phase: random() * Math.PI * 2, slowUntil: 0, slow: 0,
       frozenUntil: 0, lockUntil: 0, guardUntil: 0, invulnerableUntil: 0, hiddenUntil: 0, revealedUntil: 0,
       focusUntil: 0, ice: 0, poisonUntil: 0, poisonNext: 0, zoneNext: 0, combatAt: 0, regenNext: 0,
-      encoreUntil: 0, rootUntil: 0, dodgeUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
+      encoreUntil: 0, rootUntil: 0, dodgeUntil: 0, t: options.transforms ? TRANSFORMS[id] ?? null : null, transformCharge: 0, transformUntil: 0, angelMarkUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
     a.rounds = Array.from({ length: a.ammo }, () => rollRound(false, a.d));
     actors.push(a); return a;
   }
   // Plague odds are tunable per definition; the defaults reproduce the original 45/45/5/5 and 1/3 focus rolls.
   function rollRound(focus, d = {}) { const r = random(); if (focus) { const p = d.chartreuseFocusPlagueChance ?? 1 / 3; return r < (1 - p) / 2 ? 'enhanced' : r < 1 - p ? 'cc' : 'plague'; } return r < .45 ? 'enhanced' : r < .9 ? 'cc' : r < .9 + (d.chartreusePlagueChance ?? .05) ? 'plague' : 'blank'; }
-  function charge(a, amount = 1) { if (a.u && alive(a)) a.charge = Math.min(a.u.chargeRequired, a.charge + amount); }
+  function charge(a, amount = 1) {
+    if (a.u && alive(a)) a.charge = Math.min(a.u.chargeRequired, a.charge + amount);
+    if (a.t && a.u && alive(a) && !transformed(a)) a.transformCharge = Math.min(1, a.transformCharge + amount / (a.u.chargeRequired * a.t.chargeMultiplier));
+  }
+  const transformed = a => time < (a.transformUntil ?? 0);
+  // Transform (변신): spend a full transform gauge to change the kit for a few seconds.
+  function transform(a) {
+    const t = a.t;
+    if (!t || !alive(a) || a.isSalmonDevice || a.transformCharge < 1 || transformed(a) || time < a.lockUntil || time < a.frozenUntil) return false;
+    if (t.needsUltimate && (!a.u || a.charge < a.u.chargeRequired)) return false;
+    a.transformCharge = 0; a.transformUntil = time + t.duration;
+    emit('transform', { owner: a, until: a.transformUntil });
+    return true;
+  }
+  // Chartreuse's angel mark: a marked enemy dies the moment it is crowd-controlled.
+  function control(b, by) {
+    if (!by || !alive(b) || time >= (b.angelMarkUntil ?? 0) || !enemies(by, b)) return;
+    const marker = b.angelMarkOwner;
+    b.angelMarkUntil = 0; b.angelMarkOwner = null;
+    if (hit(by, b, b.hp, false, 0, false, true) > 0) emit('angelExecute', { owner: by, marker, target: b });
+  }
   function damageReductionFor(a) {
     const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;
     const rolling=(a.dash&&time<a.dash.until)||(a.ultimatePreparing&&a.u?.guardDuringPreparation);
@@ -84,19 +105,20 @@ export function createBeta6Combat(definitions, options = {}) {
     if (a.id === 'salmon' && !a.isSalmonDevice) a.ammo = a.d.maxAmmo;
     emit('revive', { owner, target: a });
   }
-  function ice(a, amount) {
+  function ice(a, amount, by) {
     // Optional rule: no ice builds up while frozen, so a freeze cannot be chained; it can be applied again once it ends.
     if (definitions.mint.iceBlockedWhileFrozen && time < a.frozenUntil) return;
     a.ice += amount;
-    if (a.ice >= definitions.mint.freezeThreshold) { a.ice = 0; a.frozenUntil = time + definitions.mint.freezeDuration; emit('freeze', { target: a }); }
+    if (a.ice >= definitions.mint.freezeThreshold) { a.ice = 0; a.frozenUntil = time + definitions.mint.freezeDuration; emit('freeze', { target: a }); control(a, by); }
   }
   // Raspberry bind: stops movement, dashes, jumps and teleports; attacks and in-place ultimates stay usable.
   // Re-binding keeps the later end time. Knockback still moves a bound actor.
-  function root(b, duration) {
+  function root(b, duration, by) {
     if (!alive(b) || time < (b.invulnerableUntil ?? 0)) return;
     b.rootUntil = Math.max(b.rootUntil ?? 0, time + duration);
     if (b.dash) b.dash = null;
     emit('root', { target: b, until: b.rootUntil });
+    control(b, by);
   }
   const rooted = a => time < (a.rootUntil ?? 0);
   const inAir = b => !!(b.salmonAirborne || b.leap || b.airborne === true);
@@ -105,7 +127,8 @@ export function createBeta6Combat(definitions, options = {}) {
     for (let step = .25; step < length; step += .25) if (blocked(from.x + Math.cos(yaw) * step, from.z + Math.sin(yaw) * step, .1)) return false;
     return true;
   }
-  function knock(a, yaw, amount) {
+  function knock(a, yaw, amount, by) {
+    control(a, by);
     const applied = amount * (1 - clamp(a.d.knockbackResistance ?? 0, 0, 1));
     move(a, a.x + Math.cos(yaw) * applied, a.z + Math.sin(yaw) * applied);
   }
@@ -118,7 +141,7 @@ export function createBeta6Combat(definitions, options = {}) {
       ultimate: false, kind: 'bullet', ...extra };
     // Preserve the authored radius of peels, fragments and boomerangs.
     // Character size overrides apply only to ordinary bullets.
-    if (a.d.projectileSize != null && ['bullet', 'enhanced', 'cc', 'plague'].includes(projectile.kind)) {
+    if (a.d.projectileSize != null && ['bullet', 'enhanced', 'cc', 'plague', 'heaven'].includes(projectile.kind)) {
       projectile.radius = a.d.projectileSize / 2;
     }
     if(a.id==='blue'&&!projectile.ultimate&&projectile.kind==='bullet')projectile.radius*=a.d.bulletHitboxMultiplier??1;
@@ -316,6 +339,7 @@ export function createBeta6Combat(definitions, options = {}) {
       else for (let i = 0; i < d.needleCount; i++) launch(d.needleSpeed, d.needleRange, d.needleDamage, { kind: 'needle' }, yaw + (i / (d.needleCount - 1) - .5) * d.needleSpreadAngle);
     } else if (id === 'gold') launch(d.stage1Speed, d.stage1Range, d.stage1Damage, { kind: 'gold', stage: 1, radius: d.stage1Size / 2, token: { hits: new Set(), charge: 0 }, spawn: 0 });
     else if (id === 'ivory') launch(d.iceCreamSpeed, Math.min(d.iceCreamRange, distance(a, target)), d.iceCreamDamage, { kind: 'ivory', start: time + (d.attackWindup ? 0 : .2), spawn: 0 });
+    else if (id === 'chartreuse' && transformed(a) && a.t.heaven) launch(d.chartreuseSpeed, d.chartreuseRange, d.chartreuseDamage * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind: 'heaven' });
     else if (id === 'chartreuse') {
       const kind = a.rounds.shift() ?? rollRound(time < a.focusUntil, d);
       a.rounds.push(rollRound(time < a.focusUntil, d));
@@ -436,7 +460,7 @@ export function createBeta6Combat(definitions, options = {}) {
             if (!alive(b) || !enemies(a, b) || distance(zone, b) > u.radius + 1e-9 || inAir(b) || !pathClear(zone, b)) continue;
             if (time < (b.invulnerableUntil ?? 0)) continue;
             hit(a, b, u.damage, false, 0, true);
-            root(b, u.bindDuration);
+            root(b, u.bindDuration, a);
           }
           emit('vinePrison', { owner: a, x, z, radius: u.radius });
         });
@@ -450,7 +474,7 @@ export function createBeta6Combat(definitions, options = {}) {
       else if (a.id === 'crimson') {
         for (const b of actors.filter(b => enemies(a, b))) {
           const dx = b.x - a.x, dz = b.z - a.z, front = dx * Math.cos(yaw) + dz * Math.sin(yaw);
-          if (front >= 0 && front <= u.range && Math.abs(-dx * Math.sin(yaw) + dz * Math.cos(yaw)) <= u.width / 2) { hit(a, b, u.damage, true, 1, true); knock(b, yaw, u.knockback); }
+          if (front >= 0 && front <= u.range && Math.abs(-dx * Math.sin(yaw) + dz * Math.cos(yaw)) <= u.width / 2) { hit(a, b, u.damage, true, 1, true); knock(b, yaw, u.knockback, a); }
         }
       } else if (a.id === 'cyan') shot(a, yaw, a.d.spreadLineSpeed * u.speedMultiplier, u.range, u.damage, { kind: 'gale', ultimate: true, radius: u.projectileRadius });
       else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }), true);
@@ -463,6 +487,18 @@ export function createBeta6Combat(definitions, options = {}) {
           shot(a, Math.atan2(dz, dx), a.d.iceCreamSpeed, Math.hypot(dx, dz), a.d.iceCreamDamage * (u.damageMultiplier ?? 1), { kind: 'ivory', ultimate: true, spawn: 0, impactHits });
         }
       } else if (a.id === 'chartreuse') a.focusUntil = time + u.duration;
+      else if (a.id === 'orange' && transformed(a) && a.t.peelRows) {
+        const rows = a.t.peelRows, total = rows.reduce((sum, n) => sum + n, 0);
+        rows.forEach((n, row) => {
+          const ahead = u.range * (row + 1) / rows.length;
+          for (let i = 0; i < n; i++) {
+            const side = (i - (n - 1) / 2) * a.t.peelSpacing;
+            // Same total ultimate recharge as the normal cast.
+            shot(a, yaw + Math.atan2(side, ahead), u.speed, Math.hypot(ahead, side), a.t.peelDamage,
+              { kind: 'orangePeel', ultimate: true, radius: u.hitRadius, transformed: true, rechargeScale: u.count / total });
+          }
+        });
+      }
       else if (a.id === 'orange') {
         for (let i = 0; i < u.count; i++) {
           const offset = u.count > 1 ? -u.spreadAngle / 2 + i * u.spreadAngle / (u.count - 1) : 0;
@@ -495,6 +531,7 @@ export function createBeta6Combat(definitions, options = {}) {
           for (const bound of [a,target]) { bound.leap=null; bound.dash=null; bound.wave=null; bound.vx=0; bound.vz=0; }
         }
         a.analysisTarget = target; target.analysisOwner = a; target.analysisExpires = until;
+        control(target, a);
         emit('analysis', { owner: a, target, expiresAt: until });
       }
       else if (a.id === 'yellow') {
@@ -544,6 +581,7 @@ export function createBeta6Combat(definitions, options = {}) {
     for (const a of actors) {
       // 시전자가 쓰러져도 대상이 영원히 묶이지 않도록 죽음 검사보다 먼저 푼다
       if (a.analysisTarget && (!alive(a) || !alive(a.analysisTarget))) releaseAnalysis(a);
+      if (a.salmonAirborne && time < (a.angelMarkUntil ?? 0)) control(a, a.salmonAirborne.owner);
       if (!alive(a) || a.isSalmonDevice || a.salmonAirborne) continue;
       if (a.analysisTarget) {
         const target = a.analysisTarget;
@@ -578,6 +616,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const opponents=actors.filter(b=>alive(b)&&enemies(a,b)).sort((b,c)=>distance(a,b)-distance(a,c));
       const target=opponents.find(b=>!hidden(b,a)) ?? opponents[0];
       a.target = target;
+      if (a.automatic && a.t && target && distance(a, target) <= perceivedRange(a) + 1) transform(a);
       if (a.automatic) cast(a, target);
       if (a.leap) continue;
       if (time < a.poisonUntil && time >= a.poisonNext) { hit(a.poisonOwner, a, a.poisonOwner.d.poisonDPS ?? definitions.purple.poisonDPS); a.poisonNext = time + 1; }
@@ -647,7 +686,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const x = a.x + Math.cos(dash.yaw) * a.u.speed * dt, z = a.z + Math.sin(dash.yaw) * a.u.speed * dt;
       if (blocked(x, z) || Math.abs(x) > (options.bounds ?? 24) || Math.abs(z) > (options.bounds ?? 24)) dash.yaw += Math.PI;
       else move(a, x, z);
-      for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit, true); knock(b, dash.yaw, .65); }
+      for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit, true); knock(b, dash.yaw, .65, a); }
     }
     for (let i = scheduled.length - 1; i >= 0; i--) if (scheduled[i].at <= time) { const event = scheduled.splice(i, 1)[0]; if (alive(event.owner)) event.run(); else { event.owner.ultimatePreparing = false; event.owner.ultimateTelegraph=null; } }
     for (let i = projectiles.length - 1; i >= 0; i--) {
@@ -673,7 +712,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (p.kind === 'wave') move(a, p.origin.x + Math.cos(p.yaw) * Math.min(p.traveled, p.ride), p.origin.z + Math.sin(p.yaw) * Math.min(p.traveled, p.ride));
       if (p.kind === 'electric' && a.devices.some(v => segmentDistance(v, before, p) <= .8 + p.radius)) {
         for (let j = 0; j < a.devices.length - 1; j++) { const from = { ...a.devices[j] }, to = { ...a.devices[j + 1] }; after(j * .18, a, () => {
-          for (const b of actors) if (enemies(a, b) && segmentDistance(b, from, to) <= a.u.connectionRadius + .85) { hit(a, b, a.u.connectionDamage, true, 1, true); b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; }
+          for (const b of actors) if (enemies(a, b) && segmentDistance(b, from, to) <= a.u.connectionRadius + .85) { hit(a, b, a.u.connectionDamage, true, 1, true); b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; control(b, a); }
           emit('circuit', { owner: a, from, to });
         }); }
         projectiles.splice(i, 1); continue;
@@ -699,17 +738,18 @@ export function createBeta6Combat(definitions, options = {}) {
         }
         amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
         if (p.burstChargeHits?.has(b.key)) award = 0;
-        const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) : award, p.ultimate);
+        const dealt = hit(a, b, amount, true, p.ultimate ? award * (a.u.rechargePerHit ?? 1) * (p.rechargeScale ?? 1) : award, p.ultimate);
         if (dealt > 0) {
           p.burstChargeHits?.add(b.key);
           b.lastDamageKind = p.kind;
           if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
-          if (p.kind === 'mint') ice(b, d.icePerHit);
-          if (p.kind === 'vine') root(b, d.vineBindDuration + (d.vineTraitBindBonus ?? 0));
-          if (a.id === 'blue' && !p.ultimate && d.bulletKnockback) knock(b, p.yaw, d.bulletKnockback);
-          if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; }
-          if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9));
-          if (p.kind === 'cc') { const effect = Math.floor(random() * 6); if (effect === 0 || effect === 5) { b.slowUntil = time + 2; b.slow = effect === 5 ? 1 : .35; } if (effect === 1 || effect === 5) b.lockUntil = time + 2; if (effect === 2) b.frozenUntil = time + 2; if (effect === 3) { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; } if (effect === 4) knock(b, p.yaw, 3.5); }
+          if (p.kind === 'mint') ice(b, d.icePerHit, a);
+          if (p.kind === 'vine') root(b, d.vineBindDuration + (d.vineTraitBindBonus ?? 0), a);
+          if (a.id === 'blue' && !p.ultimate && d.bulletKnockback) knock(b, p.yaw, d.bulletKnockback, a);
+          if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; control(b, a); }
+          if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9), a);
+          if (p.kind === 'heaven') { b.angelMarkUntil = time + a.t.markDuration; b.angelMarkOwner = a; emit('angelMark', { owner: a, target: b, until: b.angelMarkUntil }); }
+          if (p.kind === 'cc') { const effect = Math.floor(random() * 6); if (effect === 0 || effect === 5) { b.slowUntil = time + 2; b.slow = effect === 5 ? 1 : .35; } if (effect === 1 || effect === 5) b.lockUntil = time + 2; if (effect === 2) b.frozenUntil = time + 2; if (effect === 3) { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; } if (effect === 4) knock(b, p.yaw, 3.5); if (effect !== 3) control(b, a); }
           if (p.kind === 'bomb') hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount);
         }
         if (!['wave', 'gale', 'boomerang', 'orangePeel'].includes(p.kind)) { ended = true; break; }
@@ -763,18 +803,21 @@ export function createBeta6Combat(definitions, options = {}) {
           const previousSlow = time < b.slowUntil ? b.slow : 0;
           b.slowUntil = Math.max(b.slowUntil, time + .05);
           b.slow = Math.max(previousSlow, a.u.slowPercent);
+          control(b, a);
         }
         if (zone.kind === 'fragrance') {
           const previousSlow = time < b.slowUntil ? b.slow : 0;
           b.slowUntil = Math.max(b.slowUntil, time + .05);
           b.slow = Math.max(previousSlow, a.u.slowPercent);
+          control(b, a);
           if (time + 1e-9 >= zone.next) hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true);
         }
         if (zone.kind === 'lock' && alive(a)) {
           b.lockUntil = time + .05; b.slowUntil = time + .05; b.slow = .5;
+          control(b, a);
           if (time + 1e-9 >= zone.next) hit(a, b, a.u.tickDamage ?? 0);
         }
-        if (zone.kind === 'mint') { if (time + 1e-9 >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true); ice(b, a.u.icePerSecond); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt); }
+        if (zone.kind === 'mint') { if (time + 1e-9 >= zone.next) { hit(a, b, a.u.damagePerSecond, true, a.u.rechargePerHit ?? 1, true); ice(b, a.u.icePerSecond, a); } if (time >= b.frozenUntil) knock(b, Math.atan2(b.z - zone.z, b.x - zone.x), (a.u.slideStrength + a.u.slideAcceleration * (time - zone.started)) * dt, a); }
         if (zone.kind === 'ivory') {
           if (time + 1e-9 >= zone.next && time + 1e-9 >= b.zoneNext) {
             if (a.d.basicUltimateChargeMultiplier == null) {
@@ -799,7 +842,7 @@ export function createBeta6Combat(definitions, options = {}) {
   const salmon = createSalmonCombat({actors, time:()=>time, key:()=>++serial, bounds:options.bounds??24, blocked, walkable:options.walkable, hit, emit,
     cancelRide(a){for(let i=projectiles.length-1;i>=0;i--)if(projectiles[i].owner===a&&projectiles[i].kind==='wave')projectiles.splice(i,1);},
     addDevice(owner,p){return add('salmon',{...p,owner,isSalmonDevice:true,automatic:false,team:owner.team,hp:owner.u.deviceHealth,ammo:0,charge:0,u:null,d:{maxHealth:owner.u.deviceHealth,maxAmmo:0,noAutomaticReload:true,moveSpeedMultiplier:0},next:Infinity});}});
-  return { actors, projectiles, zones, salmon, add, fire, cast, hit, hidden, range, damageReductionFor, ultimateFieldActive, get time() { return time; },
+  return { actors, projectiles, zones, salmon, add, fire, cast, transform, hit, hidden, range, damageReductionFor, ultimateFieldActive, get time() { return time; },
     update(dt) { let remaining = Math.min(.25, Math.max(0, dt)); while (remaining > 1e-9) { const step = Math.min(1 / 60, remaining); tick(step); remaining -= step; } },
     remove(actor) {
       actor.ultimatePreparing=false;actor.ultimateTelegraph=null;

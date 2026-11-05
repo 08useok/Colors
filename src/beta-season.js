@@ -43,7 +43,8 @@ import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=13";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=48";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=49";
+import { createBetaTransform } from "./beta-transform.js?v=1";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -7003,6 +7004,7 @@ function clearBeta6RoundCombat() {
   beta6Combat?.clear();
   beta6Combat = null;
   beta6PlayerActor = null;
+  betaTransform?.clear(); betaTransform?.updateButton(null);
   for (const mesh of beta6CombatVisuals.values()) {
     scene.remove(mesh);
     // 종류별 모양은 조각을 묶은 그룹일 수 있다
@@ -7362,6 +7364,17 @@ function processBeta6CombatEvent(event) {
         if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
         if (event.type === "ultimate") canvas.dataset[event.owner === beta6PlayerActor ? "lastBeta6PlayerUltimate" : "lastBeta6BotUltimate"] = event.owner.id;
       }
+      if (event.type === "transform") {
+        const position = beta6ActorPosition(event.owner);
+        if (position) createGroundPulse(1.8, new THREE.Color(event.owner.t.color).getHex(), position);
+        if (event.owner === beta6PlayerActor) showToast(`변신! ${event.owner.t.name}`);
+        canvas.dataset.lastTransform = `${event.owner === beta6PlayerActor ? "player" : "bot"}:${event.owner.id}`;
+      }
+      if (event.type === "angelExecute") {
+        const position = beta6ActorPosition(event.target);
+        if (position) { createHitImpact(position, 0xffe680); createGroundPulse(1.4, 0xfff2a8, position); }
+        canvas.dataset.lastAngelExecute = event.target.id;
+      }
       if (event.type === "analysisExecute") {
         const position = beta6ActorPosition(event.target);
         if (position) {
@@ -7391,10 +7404,29 @@ function beta6PlayerTeam() {
   return ["gemGrab", "chopWood", "knockout"].includes(goldRushState.mode) ? "a" : null;
 }
 
-function startBeta6BotCombat() {
+let betaTransform = null;
+function betaTransformUi() {
+  return betaTransform ??= createBetaTransform({ THREE, scene, document, anchor: ultimateButton, activate: activateBeta6Transform });
+}
+function activateBeta6Transform() {
+  const world = beta6Combat, actor = beta6PlayerActor;
+  if (!world || !actor || goldRushState.dead || isKnockoutFrozen() || modelLoading.blocking) return;
+  actor.x = player.position.x; actor.z = player.position.z;
+  if (!world.transform(actor)) return;
+  for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
+  betaTransformUi().updateButton(actor, world.time);
+}
+
+// Knockout keeps the transform gauge from round to round; the ultimate still resets.
+function beta6TransformGauges() {
+  return beta6Combat ? new Map([[null, beta6PlayerActor?.transformCharge ?? 0], ...goldRushBots.map(bot => [bot, bot.combatActor?.transformCharge ?? 0])]) : null;
+}
+
+function startBeta6BotCombat(carried = null) {
   if (goldRushState.mode === "soccer") return;
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
     allowRevives: goldRushState.mode !== "knockout",
+    transforms: true,
     seed: Math.floor(Math.random() * 0x7fffffff),
     bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
     walkable: (x, z) => groundHeightAt(x, z) > -5 && !(activeEventLayout?.lakes.some(rect => insideMapRect(x, z, rect, 1))),
@@ -7424,8 +7456,9 @@ function startBeta6BotCombat() {
     bushAt: (x,z)=>activeEventLayout?.bushes.some(r=>insideMapRect(x,z,r)) ?? false,
     onEvent(event) { beta6PendingEvents.push(event); }
   });
-  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z });
-  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot });
+  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0 });
+  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0 });
+  betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time);
 }
 
 // 전투 투사체도 로비와 같은 모양으로 그린다. 모르는 종류는 기본 구슬을 쓴다.
@@ -7444,6 +7477,7 @@ function createBeta6ProjectileMesh(projectile, color) {
   if (kind === "purpleThorn") return orient(createPurpleThornMesh());
   if (kind === "vial") return createPurpleVialMesh();
   if (kind === "mint") return orient(createMintIceCreamMesh());
+  if (kind === "heaven") return betaTransformUi().heavenMesh();
   if (kind === "orangePeel") {
     const mesh = new THREE.Mesh(
       new THREE.TorusGeometry(0.24, 0.075, 6, 14, Math.PI * 1.35),
@@ -7543,9 +7577,9 @@ function updateBeta6BotCombat(dt) {
   const world = beta6Combat;
   if (beta6PlayerActor.hp <= 0 && !goldRushState.dead && goldRushState.health > 0) {
     // Every character keeps its ultimate charge through death and respawn.
-    const charge = beta6PlayerActor.charge;
+    const { charge, transformCharge } = beta6PlayerActor;
     world.remove(beta6PlayerActor);
-    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge });
+    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge, transformCharge });
   }
   const hero = beta6PlayerActor;
   const deadline = nativeTime => world.time + Math.max(0, (nativeTime || 0) - clock.elapsedTime);
@@ -7560,9 +7594,9 @@ function updateBeta6BotCombat(dt) {
   for (const bot of goldRushBots) {
     let actor = bot.combatActor;
     if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
-      const charge = actor.charge;
+      const { charge, transformCharge } = actor;
       world.remove(actor);
-      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge });
+      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge, transformCharge });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
       bot.mesh.userData.health = bot.health; grantBetaRespawnProtection(bot, bot.mesh);
       Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
@@ -7607,6 +7641,8 @@ function updateBeta6BotCombat(dt) {
   const visible = new Set();
   updateBeta6AttackVisuals(world);
   updateBeta6StatusVisuals(world);
+  betaTransformUi().updateWorld(world, beta6ActorPosition, a => a === hero || (a.team != null && a.team === hero.team) || !world.hidden(a, hero));
+  betaTransformUi().updateButton(hero, world.time);
   const draw = (key, object, radius, kind) => {
     visible.add(key);
     let mesh = beta6CombatVisuals.get(key);
@@ -8619,6 +8655,7 @@ function isKnockoutFrozen() {
 
 function resetKnockoutRound() {
   cancelUltimateAim(); clearAzureWave(); clearYellowCircuit(); clearCrystalUltimate(); blueDashState=null;
+  const transformGauges = beta6TransformGauges();
   clearBeta6RoundCombat(); resetAllUltimateCharges();
   for (const projectile of betaProjectiles.splice(0)) {
     scene.remove(projectile.mesh);
@@ -8640,7 +8677,7 @@ function resetKnockoutRound() {
   });
   knockoutPoison.forEach(mesh=>mesh.visible=false);
   respawnOverlay.classList.add("hidden");
-  startBeta6BotCombat();
+  startBeta6BotCombat(transformGauges);
   updateGoldRushHealthBar(playerGoldRushHealthBar,goldRushState.health,goldRushState.maxHealth);
 }
 
