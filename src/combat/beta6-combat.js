@@ -613,7 +613,14 @@ export function createBeta6Combat(definitions, options = {}) {
       const retreatsAtLowHealth = !approachingDevice && (options.retreatsAtLowHealth?.(a, destination, target) ?? (a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth && groundStandoff==null));
       const bandMin = groundStandoff ?? a.d.attackPerceptionMinRange;
       const usesRangeBand = destination === target && Number.isFinite(bandMin);
-      const radial = retreatsAtLowHealth ? -.85 : usesRangeBand
+      // Retreat away from the enemy itself. Backing away from a navigation waypoint flips direction
+      // whenever the waypoint changes, which left low-health bots shaking in place.
+      const moveYaw = retreatsAtLowHealth && target && destination !== target ? Math.atan2(target.z - a.z, target.x - a.x) : yaw;
+      // A fleeing bot that is well out of reach and backed into a wall or the map edge holds still
+      // instead of pressing into it (target switches there made it shake in place).
+      const fleeX = a.x - Math.cos(moveYaw), fleeZ = a.z - Math.sin(moveYaw), edge = options.bounds ?? 24;
+      const cornered = Math.abs(fleeX) > edge - .3 || Math.abs(fleeZ) > edge - .3 || blocked(fleeX, fleeZ);
+      const radial = retreatsAtLowHealth ? (cornered && target && distance(a, target) > perceivedRange(a) + 3 ? 0 : -.85) : usesRangeBand
         ? (dist > perceivedRange(a) ? .85 : dist < bandMin ? -.85 : 0)
         : dist > ideal + .5 ? .85 : dist < ideal - .5 ? -.85 : 0;
       const strafe = Math.sin(time * 2.4 + a.phase) * .4;
@@ -627,8 +634,8 @@ export function createBeta6Combat(definitions, options = {}) {
       const dodgeScale = 1 / Math.hypot(1, dodgeForward);
       const analysisBound = (a.analysisOwner?.u.bindStopsMovement || (a.analysisTarget && a.u?.bindStopsMovement));
       if (!(a.ultimatePreparing && a.ultimateTelegraph) && !analysisBound && !rooted(a) && !a.wave && !a.dash && !a.leap && !hidden(a)) move(a,
-        a.x + (evasion ? evasion.x : dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(yaw) * radial - Math.sin(yaw) * strafe) * speed * dt,
-        a.z + (evasion ? evasion.z : dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(yaw) * radial + Math.cos(yaw) * strafe) * speed * dt);
+        a.x + (evasion ? evasion.x : dodging ? (Math.cos(a.dodgeYaw) + Math.cos(yaw) * dodgeForward) * dodgeScale : Math.cos(moveYaw) * radial - Math.sin(moveYaw) * strafe) * speed * dt,
+        a.z + (evasion ? evasion.z : dodging ? (Math.sin(a.dodgeYaw) + Math.sin(yaw) * dodgeForward) * dodgeScale : Math.sin(moveYaw) * radial + Math.cos(moveYaw) * strafe) * speed * dt);
       a.vx = (a.x - previousX) / dt; a.vz = (a.z - previousZ) / dt; a.angle = yaw;
       const attackDistance = destination === target ? dist : distance(a, target);
       if (circuitDevice && distance(a,circuitDevice)<=range(a)) fire(a,{...circuitDevice,vx:0,vz:0});

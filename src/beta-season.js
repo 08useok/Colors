@@ -43,7 +43,7 @@ import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=13";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=47";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=48";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
