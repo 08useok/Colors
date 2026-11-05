@@ -1,6 +1,8 @@
 import { appendRecord, emptySummary, matchRecord, RECORD_SEASON } from './config/beta8-records.js';
 const modes={goldRush:'골드 러쉬',showdown:'쇼다운',soccer:'SOCCER KICK',gemGrab:'젬 그랩',chopWood:'찹 우드',knockout:'KNOCKOUT'};
 const n=value=>Number(value||0).toLocaleString('ko-KR',{maximumFractionDigits:1});
+// Kills/deaths in one cell: "12/5 (2.4)"; with no deaths the ratio is the kill count.
+const kd=(kills,deaths)=>`${n(kills)}/${n(deaths)} (${n(Number(deaths)?kills/deaths:kills)})`;
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function request(path,method='GET',data) {
   const res=await fetch('/api/beta-account/records'+path,{method,credentials:'same-origin',cache:'no-store',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined,signal:AbortSignal.timeout(8000)});
@@ -17,8 +19,8 @@ export function createBetaRecords({state,save,storageKey,account,characters,titl
   const name=id=>characters.find(c=>c.id===id)?.name||id;
   const book=()=>state.beta8Records||{};
   const outcome=r=>r.abandoned?'패배 · 이탈':r.draw?'무승부':r.won?'승리':'패배';
-  const stats=s=>`<div class="record-metrics">${[['경기',s.games],['승리',s.wins],['패배',s.losses],['무승부',s.draws],['승률',n(s.games?s.wins/s.games*100:0)+'%'],['킬',s.kills],['데스',s.deaths],['피해량',s.damage],['회복량',s.healing],['시즌 점수',s.points]].map(([label,v])=>`<div><small>${label}</small><strong>${typeof v==='string'?v:n(v)}</strong></div>`).join('')}</div>`;
-  function detailHTML(r){return `<article class="record-card"><h3>${escape(name(r.character))} · ${modes[r.mode]} · ${outcome(r)}</h3><p>${new Date(r.endedAt).toLocaleString('ko-KR')} · ${n(r.duration)}초 ${r.rank?'· '+r.rank+'위':''}</p><p>${n(r.kills)} 킬 / ${n(r.deaths)} 데스 · 피해 ${n(r.damage)} · 회복 ${n(r.healing)}</p><p>${r.abandoned?'이탈 경기: 랭킹 0점':`킬 ${n(r.kills)} + 피해 ${n(r.damage/1000)} + 회복 ${n(r.healing/2000)} + 승리 ${r.won?5:0} = ${n(r.points)}점`}</p></article>`;}
+  const stats=s=>`<div class="record-metrics">${[['경기',s.games],['승리',s.wins],['패배',s.losses],['무승부',s.draws],['승률',n(s.games?s.wins/s.games*100:0)+'%'],['K/D',kd(s.kills,s.deaths)],['피해량',s.damage],['회복량',s.healing],['시즌 점수',s.points]].map(([label,v])=>`<div><small>${label}</small><strong>${typeof v==='string'?v:n(v)}</strong></div>`).join('')}</div>`;
+  function detailHTML(r){return `<article class="record-card"><h3>${escape(name(r.character))} · ${modes[r.mode]} · ${outcome(r)}</h3><p>${new Date(r.endedAt).toLocaleString('ko-KR')} · ${n(r.duration)}초 ${r.rank?'· '+r.rank+'위':''}</p><p>K/D ${n(r.kills)}/${n(r.deaths)} · 피해 ${n(r.damage)} · 회복 ${n(r.healing)}</p><p>${r.abandoned?'이탈 경기: 랭킹 0점':`킬 ${n(r.kills)} + 피해 ${n(r.damage/1000)} + 회복 ${n(r.healing/2000)} + 승리 ${r.won?5:0} = ${n(r.points)}점`}</p></article>`;}
   function render(next=tab) {
     tab=next;const version=++generation;title.textContent='시즌 8 · 기록';
     const pending=state.beta8RecordPending?.length||0,failed=state.beta8RecordFailed?.length||0;
@@ -28,7 +30,7 @@ export function createBetaRecords({state,save,storageKey,account,characters,titl
     const body=content.querySelector('[data-record-body]');
     if(tab==='history') {
       const recent=book().recent||[];
-      body.innerHTML=`<h3>최근 전적 · ${recent.length} / 20경기</h3>${detail?detailHTML(detail):''}${recent.length?recent.map(r=>`<button class="record-row" data-record-id="${escape(r.id)}"><b>${outcome(r)}${r.rank?' · '+r.rank+'위':''}</b><span>${escape(name(r.character))} · ${modes[r.mode]}</span><span>${n(r.kills)}킬 / ${n(r.deaths)}데스 · 피해 ${n(r.damage)} · 회복 ${n(r.healing)}</span><span>+${n(r.points)}점 · ${new Date(r.endedAt).toLocaleString('ko-KR')}</span></button>`).join(''):'<p>아직 전적이 없습니다. 대전을 완료하면 기록됩니다.</p>'}`;
+      body.innerHTML=`<h3>최근 전적 · ${recent.length} / 20경기</h3>${detail?detailHTML(detail):''}${recent.length?recent.map(r=>`<button class="record-row" data-record-id="${escape(r.id)}"><b>${outcome(r)}${r.rank?' · '+r.rank+'위':''}</b><span>${escape(name(r.character))} · ${modes[r.mode]}</span><span>K/D ${n(r.kills)}/${n(r.deaths)} · 피해 ${n(r.damage)} · 회복 ${n(r.healing)}</span><span>+${n(r.points)}점 · ${new Date(r.endedAt).toLocaleString('ko-KR')}</span></button>`).join(''):'<p>아직 전적이 없습니다. 대전을 완료하면 기록됩니다.</p>'}`;
       body.querySelectorAll('[data-record-id]').forEach(b=>b.onclick=()=>{detail=recent.find(r=>r.id===b.dataset.recordId);render();});
     } else if(tab==='personal') {
       const total={...emptySummary(),...book().total};

@@ -1,6 +1,6 @@
 import { createCrystalTelegraphEffects } from './visuals/crystal-telegraph.js';
 import { BETA8_QUEST_GOALS, BETA8_QUEST_REWARDS, questClaims, claimQuestReward, questStats, questPoints, addQuestStats } from './config/beta8-quests.js';
-import { createBetaRecords } from './beta-records.js';
+import { createBetaRecords } from './beta-records.js?v=4';
 import { BETA_ULTIMATE_MOTIONS } from './config/beta-ultimate-motion.js';
 import { initBetaAccount } from "./beta-account.js?v=2";
 import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
