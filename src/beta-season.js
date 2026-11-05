@@ -19,7 +19,8 @@ import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { createChampionsLobby } from "./visuals/beta9-champions.js?v=1";
 import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./visuals/beta8-lobby-rooms.js?v=1";
-import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout, knockoutSafeHalf } from "./config/knockout.js?v=1";
+import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout } from "./config/knockout.js?v=1";
+import { TEAM_ARENA, TEAM_ARENA_RESERVED, BETA9_GEM_RULES, teamArenaMap, knockoutSafeArea } from "./config/beta9-team-arena.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=4";
@@ -43,7 +44,7 @@ import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=50";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=51";
 import { createBetaTransform } from "./beta-transform.js?v=2";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
@@ -6576,18 +6577,22 @@ function updateSoccerBotAttack(bot, dt) {
 // 맵은 좌우 대칭이다. 양옆에 ㄷ자 엄폐물이 있고 그 안쪽 팔이 가운데 통로를 좁힌다.
 // 우리 팀(a)은 +Z, 상대 팀(b)은 -Z에서 시작하고 한가운데 제단에서 젬이 솟는다.
 const GEM_FIELD_HALF = 20;
+// Season 9: the field is longer front to back (see beta9-team-arena.js).
+const GEM_FIELD_HALF_Z = TEAM_ARENA.halfDepth;
 const GEM_FIELD_Y = 1.57;
 const GEM_WALL_HEIGHT = 2.6;
 const GEM_ACTOR_LIMIT = 19.2;
+const GEM_ACTOR_LIMIT_Z = GEM_FIELD_HALF_Z - .8;
 const GEM_VENT_RADIUS = 2.2;
 const GEM_PICKUP_RANGE = 1.5;
 const GEM_TARGET_COUNT = 10;
 const GEM_ESCAPE_DURATION = 15;
 const GEM_MATCH_DURATION = 180;
-const GEM_SPAWN_INTERVAL = 1.5;
+// Brawl-style: one gem every 7 s from the centre, up to 30 in the match.
+const GEM_SPAWN_INTERVAL = BETA9_GEM_RULES.spawnInterval;
 // 경기가 시작되고 첫 젬이 솟기까지 기다리는 시간. 그 사이 양 팀이 자리를 잡는다.
-const GEM_FIRST_SPAWN_DELAY = 3;
-const GEM_MAX_IN_PLAY = 21;
+const GEM_FIRST_SPAWN_DELAY = BETA9_GEM_RULES.firstSpawnDelay;
+const GEM_MAX_IN_PLAY = BETA9_GEM_RULES.maxInPlay;
 const GEM_BOT_RESPAWN_DELAY = 5;
 
 const gemArena = new THREE.Group();
@@ -6610,11 +6615,11 @@ function addGemWall(x, z, width, depth) {
 }
 
 {
-  const floor = new THREE.Mesh(new THREE.BoxGeometry(GEM_FIELD_HALF * 2 + 3, 3, GEM_FIELD_HALF * 2 + 3), gemFloorMaterial);
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(GEM_FIELD_HALF * 2 + 3, 3, GEM_FIELD_HALF_Z * 2 + 3), gemFloorMaterial);
   floor.position.set(0, GEM_FIELD_Y - 1.5, 0);
   floor.receiveShadow = true;
   gemArena.add(floor);
-  gemGrabSolids.push({ x: 0, z: 0, halfW: GEM_FIELD_HALF + 1.5, halfD: GEM_FIELD_HALF + 1.5, top: GEM_FIELD_Y, mesh: floor });
+  gemGrabSolids.push({ x: 0, z: 0, halfW: GEM_FIELD_HALF + 1.5, halfD: GEM_FIELD_HALF_Z + 1.5, top: GEM_FIELD_Y, mesh: floor });
   // 가운데 제단 — 젬이 솟는 자리
   const altar = new THREE.Mesh(new THREE.CylinderGeometry(GEM_VENT_RADIUS, GEM_VENT_RADIUS + 0.4, 0.28, 24), gemAltarMaterial);
   altar.position.set(0, GEM_FIELD_Y + 0.14, 0);
@@ -6623,11 +6628,9 @@ function addGemWall(x, z, width, depth) {
   // 외곽을 닫아 경기장 경계를 눈으로도 알 수 있게 한다.
   // 안쪽 면은 ±20타일, 모서리는 겹쳐 틈이 생기지 않는다.
   const boundaryThickness = 1;
-  const boundaryOffset = GEM_FIELD_HALF + boundaryThickness / 2;
-  const boundaryLength = GEM_FIELD_HALF * 2 + boundaryThickness * 2;
   for (const sign of [-1, 1]) {
-    addGemWall(0, sign * boundaryOffset, boundaryLength, boundaryThickness);
-    addGemWall(sign * boundaryOffset, 0, boundaryThickness, boundaryLength);
+    addGemWall(0, sign * (GEM_FIELD_HALF_Z + boundaryThickness / 2), GEM_FIELD_HALF * 2 + boundaryThickness * 2, boundaryThickness);
+    addGemWall(sign * (GEM_FIELD_HALF + boundaryThickness / 2), 0, boundaryThickness, GEM_FIELD_HALF_Z * 2 + boundaryThickness * 2);
   }
   canvas.dataset.gemBoundaryWallCount = "4";
   // 좌우 ㄷ자 엄폐물과 안쪽 팔
@@ -6662,7 +6665,27 @@ function nearestGemPoint(actor) {
 
 // 자기 진영 수비 자리
 function gemHomePoint(actor) {
-  return { x: Math.cos(actor.phase) * 7, z: (actor.team === "b" ? -1 : 1) * 13 };
+  return { x: Math.cos(actor.phase) * 7, z: (actor.team === "b" ? -1 : 1) * (TEAM_ARENA.spawnZ - 6) };
+}
+
+// The enemy fighter carrying the most gems (the player counts for team a).
+function gemCarrier(team) {
+  const carriers = goldRushBots.filter(bot => bot.team === team && !bot.dead && bot.gold > 0)
+    .map(bot => ({ gold: bot.gold, x: bot.mesh.position.x, z: bot.mesh.position.z }));
+  if (team === "a" && !goldRushState.dead && goldRushState.gold > 0) carriers.push({ gold: goldRushState.gold, x: player.position.x, z: player.position.z });
+  return carriers.sort((a, b) => b.gold - a.gold)[0] ?? null;
+}
+
+// Gem Grab bot goal: hold back when winning, hunt the gem carrier when behind,
+// otherwise collect (or wait by the altar until the next gem).
+function gemObjective(actor) {
+  const enemy = actor.team === "a" ? "b" : "a", ours = gemTeamGems(actor.team), theirs = gemTeamGems(enemy);
+  if (ours >= GEM_TARGET_COUNT && ours > theirs) return gemHomePoint(actor);
+  if (theirs > ours && (theirs >= GEM_TARGET_COUNT - 3 || !goldPickups.length)) {
+    const carrier = gemCarrier(enemy);
+    if (carrier) return carrier;
+  }
+  return nearestGemPoint(actor);
 }
 
 function gemTeamGems(team) {
@@ -6676,7 +6699,7 @@ function gemsInPlay() {
 
 function clampGemActor(position) {
   position.x = THREE.MathUtils.clamp(position.x, -GEM_ACTOR_LIMIT, GEM_ACTOR_LIMIT);
-  position.z = THREE.MathUtils.clamp(position.z, -GEM_ACTOR_LIMIT, GEM_ACTOR_LIMIT);
+  position.z = THREE.MathUtils.clamp(position.z, -GEM_ACTOR_LIMIT_Z, GEM_ACTOR_LIMIT_Z);
 }
 
 // 벽에 파묻히면 한 축씩 되돌려서 벽을 타고 미끄러지게 한다
@@ -6719,9 +6742,9 @@ function applyArenaWallBlock(position, previousX, previousZ, radius = 0.5) {
 }
 
 function resetGemGrabPositions() {
-  const spawns = [[-5, 15], [5, 15], [-6, -15], [0, -15], [6, -15]];
+  const z0 = TEAM_ARENA.spawnZ, spawns = [[-5, z0], [5, z0], [-6, -z0], [0, -z0], [6, -z0]];
   goldRushBots.forEach((bot, index) => {
-    const [x, z] = spawns[index] ?? [0, -15];
+    const [x, z] = spawns[index] ?? [0, -z0];
     bot.spawn.set(x, GEM_FIELD_Y + 0.05, z);
     bot.mesh.position.copy(bot.spawn);
     bot.gold = 0;
@@ -7430,7 +7453,7 @@ function startBeta6BotCombat(carried = null) {
     allowRevives: goldRushState.mode !== "knockout",
     transforms: true,
     seed: Math.floor(Math.random() * 0x7fffffff),
-    bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : goldRushState.mode === "gemGrab" ? GEM_ACTOR_LIMIT : 19.5,
+    bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : ["gemGrab", "knockout"].includes(goldRushState.mode) ? TEAM_ARENA.halfDepth - .5 : 19.5,
     walkable: (x, z) => groundHeightAt(x, z) > -5 && !(activeEventLayout?.lakes.some(rect => insideMapRect(x, z, rect, 1))),
     retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
     destination(actor, target) {
@@ -7441,9 +7464,10 @@ function startBeta6BotCombat(carried = null) {
       // 젬 그랩에서는 적이 바싹 붙었을 때만 싸우고, 그 밖에는 젬을 주우러 간다.
       if (goldRushState.mode === "gemGrab") {
         // 팀이 10개를 채웠으면 자기 진영으로 물러나 버티고, 아니면 젬을 주우러 간다.
-        if (gemTeamGems(actor.team) >= GEM_TARGET_COUNT) return navigateEventMap(activeEventLayout,actor,gemHomePoint(actor));
+        const goal = gemObjective(actor);
+        if (gemTeamGems(actor.team) >= GEM_TARGET_COUNT && gemTeamGems(actor.team) > gemTeamGems(actor.team === "a" ? "b" : "a")) return navigateEventMap(activeEventLayout,actor,goal);
         if (Math.hypot(actor.x - target.x, actor.z - target.z) < 6) return target;
-        return navigateEventMap(activeEventLayout,actor,nearestGemPoint(actor));
+        return navigateEventMap(activeEventLayout,actor,goal);
       }
       if (!["goldRush", "gemGrab"].includes(goldRushState.mode) || Math.hypot(actor.x - target.x, actor.z - target.z) < 18) return navigateEventMap(activeEventLayout,actor,target);
       const pickup = goldPickups.slice().sort((a, b) => Math.hypot(a.mesh.position.x - actor.x, a.mesh.position.z - actor.z) - Math.hypot(b.mesh.position.x - actor.x, b.mesh.position.z - actor.z))[0];
@@ -8632,10 +8656,11 @@ scene.add(knockoutArena);
 const knockoutSolids = [];
 const knockoutPoison = [];
 if (IS_BETA8_TEST) {
-  const floor = new THREE.Mesh(new THREE.BoxGeometry(42, 3, 42), new THREE.MeshStandardMaterial({ color: 0x514062, roughness: .92 }));
+  const W = TEAM_ARENA.halfWidth, D = TEAM_ARENA.halfDepth;
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(W * 2 + 2, 3, D * 2 + 2), new THREE.MeshStandardMaterial({ color: 0x514062, roughness: .92 }));
   floor.receiveShadow = true; knockoutArena.add(floor);
-  knockoutSolids.push({ x: 0, z: 0, halfW: 21, halfD: 21, top: 1.5, walkable: true, mesh: floor });
-  for (const [x,z,w,d] of [[-20.3,0,.6,40.6],[20.3,0,.6,40.6],[0,-20.3,40.6,.6],[0,20.3,40.6,.6]]) {
+  knockoutSolids.push({ x: 0, z: 0, halfW: W + 1, halfD: D + 1, top: 1.5, walkable: true, mesh: floor });
+  for (const [x,z,w,d] of [[-W-.3,0,.6,D*2+.6],[W+.3,0,.6,D*2+.6],[0,-D-.3,W*2+.6,.6],[0,D+.3,W*2+.6,.6]]) {
     const wall = new THREE.Mesh(new THREE.BoxGeometry(w, 2.6, d), new THREE.MeshStandardMaterial({color:0x40324e,roughness:.9}));
     wall.position.set(x,2.8,z); wall.castShadow = true; knockoutArena.add(wall);
     knockoutSolids.push({ x,z,halfW:w/2,halfD:d/2,top:4.1,walkable:false,mesh:wall });
@@ -8647,7 +8672,7 @@ if (IS_BETA8_TEST) {
   }
   for (const team of ["a","b"]) {
     const pad = new THREE.Mesh(new THREE.BoxGeometry(18,.04,3),new THREE.MeshBasicMaterial({color:team==="a"?0x369aff:0xff674d,transparent:true,opacity:.32}));
-    pad.position.set(0,1.53,team==="a"?-15:15); knockoutArena.add(pad);
+    pad.position.set(0,1.53,(team==="a"?-1:1)*TEAM_ARENA.spawnZ); knockoutArena.add(pad);
   }
 }
 
@@ -8665,9 +8690,9 @@ function resetKnockoutRound() {
   }
   updateGoldRushAttackEffects(Infinity);
   Object.assign(goldRushState,{dead:false,health:goldRushState.maxHealth,ammo:goldRushState.maxAmmo,reloadTimer:0,respawnAt:Infinity,invulnerableUntil:clock.elapsedTime+KNOCKOUT_RULES.countdown,lastDamageAt:clock.elapsedTime});
-  initialSpawnPoint.set(0,1.55,-15); resetPlayer(); player.visible=true;
+  initialSpawnPoint.set(0,1.55,-TEAM_ARENA.spawnZ); resetPlayer(); player.visible=true;
   Object.assign(player.userData,{mintIce:0,mintFrozenUntil:0,slowUntil:0,poisonUntil:0,inMalfunctionZone:false});
-  const positions=[[-6,-15],[6,-15],[-6,15],[0,15],[6,15]];
+  const z0=TEAM_ARENA.spawnZ,positions=[[-6,-z0],[6,-z0],[-6,z0],[0,z0],[6,z0]];
   goldRushBots.forEach((bot,i)=>{
     const [x,z]=positions[i];
     bot.spawn.set(x,1.55,z);bot.mesh.position.copy(bot.spawn);
@@ -8698,11 +8723,11 @@ function updateKnockout(dt) {
   const now=clock.elapsedTime;
   if(m.phase==="fighting") {
     updateGoldRushBots(dt);
-    const elapsed=now-m.startedAt,half=knockoutSafeHalf(elapsed);
+    const elapsed=now-m.startedAt,safe=knockoutSafeArea(elapsed),W=TEAM_ARENA.halfWidth,D=TEAM_ARENA.halfDepth;
     if(elapsed>=KNOCKOUT_RULES.poisonStarts) {
-      const strips=[[-(20+half)/2,0,20-half,40],[(20+half)/2,0,20-half,40],[0,-(20+half)/2,half*2,20-half],[0,(20+half)/2,half*2,20-half]];
-      knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(w,1,d);});
-      const outside=p=>Math.max(Math.abs(p.x),Math.abs(p.z))>half;
+      const strips=[[-(W+safe.x)/2,0,W-safe.x,D*2],[(W+safe.x)/2,0,W-safe.x,D*2],[0,-(D+safe.z)/2,safe.x*2,D-safe.z],[0,(D+safe.z)/2,safe.x*2,D-safe.z]];
+      knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(Math.max(.001,w),1,Math.max(.001,d));});
+      const outside=p=>Math.abs(p.x)>safe.x||Math.abs(p.z)>safe.z;
       // Poison ticks once per second for 10% of max health; shields and damage reduction do not apply.
       if(!goldRushState.dead&&outside(player.position)&&now>=(goldRushState.poisonCloudNext??0)){goldRushState.poisonCloudNext=now+1;damageGoldRushPlayer(goldRushState.maxHealth*.1,true);}
       for(const bot of goldRushBots)if(!bot.dead&&outside(bot.mesh.position)&&now>=(bot.poisonCloudNext??0)){bot.poisonCloudNext=now+1;damageGoldRushBot(bot,bot.maxHealth*.1,false,true);}
@@ -8735,7 +8760,7 @@ function prepareBetaEventMap(mode,plus) {
   const geometry=getArenaSolids();
   let record=eventArenaRecords.get(group);
   if(!record){
-    const half=mode==="chopWood" ? [15,30] : mode==="showdown" ? [showdownProfile.halfSize,showdownProfile.halfSize] : [20,20];
+    const half=mode==="chopWood" ? [15,30] : mode==="showdown" ? [showdownProfile.halfSize,showdownProfile.halfSize] : ["knockout","gemGrab"].includes(mode) ? [TEAM_ARENA.halfWidth,TEAM_ARENA.halfDepth] : [20,20];
     const walls=geometry.filter(s=>s.top>2 && Math.abs(s.x)<half[0]-1 && Math.abs(s.z)<half[1]-1);
     geometry.filter(s=>s.top>2).forEach(s=>s.walkable=false);
     record={walls,bushes:group.children.filter(m=>m.userData.eventBaseBush),overlay:new THREE.Group()};
@@ -8748,11 +8773,10 @@ function prepareBetaEventMap(mode,plus) {
   record.bushes.forEach(m=>m.visible=index===0);
   const reserved=mode==="chopWood" ? [[0,-25,4],[0,25,4],...[-8,0,8].flatMap(x=>[[x,-28,2],[x,28,2]])]
     : mode==="soccer" ? [[0,0,3],[-6,-12,2],[6,-12,2],[-7,12,2],[0,12,2],[7,12,2],[0,-14,2]]
-    : mode==="knockout" ? [[0,-15,2],[-6,-15,2],[6,-15,2],[-6,15,2],[0,15,2],[6,15,2]]
-    : mode==="gemGrab" ? [[0,0,3],[-5,15,2],[5,15,2],[-6,-15,2],[0,-15,2],[6,-15,2],[0,15,2]]
+    : mode==="knockout" || mode==="gemGrab" ? TEAM_ARENA_RESERVED[mode]
     : [[0,15,2],[0,0,3],...Array.from({length:9},(_,i)=>[Math.sin(i*Math.PI*2/9)*9,Math.cos(i*Math.PI*2/9)*9,1.4])];
   if(mode==="showdown")for(const point of reserved){point[0]*=showdownProfile.scale;point[1]*=showdownProfile.scale;}
-  activeEventLayout=eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
+  activeEventLayout=["knockout","gemGrab"].includes(mode) ? teamArenaMap(mode,index) : eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
   if(mode==="showdown")activeEventLayout.navigationStep=showdownProfile.navigationStep;
   const addWall=r=>{
     const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));
@@ -8772,7 +8796,7 @@ function prepareBetaEventMap(mode,plus) {
     let i=0;for(let x=0;x<cols;x++)for(let z=0;z<rows;z++){matrix.makeTranslation(r.x-r.width/2+(x+.5)*r.width/cols,2,r.z-r.depth/2+(z+.5)*r.depth/rows);m.setMatrixAt(i++,matrix);}m.castShadow=true;record.overlay.add(m);
   }
   // Include the original map walls in navigation without replacing their visuals.
-  if(index===0 && mode!=="knockout")activeEventLayout.walls=record.walls.map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2}));
+  if(index===0 && mode!=="knockout")activeEventLayout.walls=[...record.walls.map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2})),...activeEventLayout.walls];
   if(index===0 && mode==="chopWood")activeEventLayout.bushes=[[-10,0],[10,0],[0,-10],[0,10]].map(([x,z])=>({x,z,width:2.4,depth:2.4}));
   if(mode==="showdown" && IS_BETA8_TEST)activeEventLayout.walls.push(...geometry.filter(s=>s.mesh.userData.showdownBoundary).map(s=>({x:s.x,z:s.z,width:s.halfW*2,depth:s.halfD*2})));
   canvas.dataset.eventMap=activeEventLayout.id;canvas.dataset.eventMapWalls=String(activeEventLayout.walls.length);canvas.dataset.eventMapBushes=String(activeEventLayout.bushes.length);
@@ -8903,7 +8927,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
     gemGrabState.escapeB = null;
     gemGrabState.spawnedGems = 0;
     resetGemGrabPositions();
-    initialSpawnPoint.set(0, GEM_FIELD_Y + 0.13, 15);
+    initialSpawnPoint.set(0, GEM_FIELD_Y + 0.13, TEAM_ARENA.spawnZ);
     resetPlayer();
     goldRushHud.querySelector("strong").textContent = "GEM GRAB · ANCIENT SEAL";
     const resourceLabel = document.getElementById("season-resource-label");

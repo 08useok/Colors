@@ -662,7 +662,9 @@ export function createBeta6Combat(definitions, options = {}) {
       const radial = retreatsAtLowHealth ? (cornered && target && distance(a, target) > perceivedRange(a) + 3 ? 0 : -.85) : usesRangeBand
         ? (dist > perceivedRange(a) ? .85 : dist < bandMin ? -.85 : 0)
         : dist > ideal + .5 ? .85 : dist < ideal - .5 ? -.85 : 0;
-      const strafe = Math.sin(time * 2.4 + a.phase) * .4;
+      // No side-step once a bot has reached an objective point (a gem, a waiting spot):
+      // strafing around it made idle Gem Grab bots circle on the spot.
+      const strafe = destination !== target && dist < 1 ? 0 : Math.sin(time * 2.4 + a.phase) * .4;
       const dodging = time < a.dodgeUntil;
       let speed = 8 * a.d.moveSpeedMultiplier * (dodging ? a.d.projectileDodgeSpeedMultiplier ?? 1 : 1) * (time < a.slowUntil ? 1 - a.slow : 1) * (time < a.frozenUntil ? 0 : 1);
       const landingSpeed=speed*(a.d.botLandingDodgeSpeedMultiplier??1);

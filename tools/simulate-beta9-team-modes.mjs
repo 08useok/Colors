@@ -5,8 +5,8 @@
 // Usage: node tools/simulate-beta9-team-modes.mjs [--matches N] [--quick] [--out specs/file.json]
 // Writes specs/beta9-team-mode-simulation.json.
 //
-// Model limits: engine bots fight the nearest visible enemy and walk straight (no path-finding around
-// walls). Gem Grab adds simple objective rules on top (collect, hold back with many gems, escape).
+// Model limits: engine bots fight the nearest visible enemy and path around walls on the Season 9
+// team arenas (40x60). Gem Grab adds simple objective rules on top (collect, hold back with many gems, escape).
 import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
 import { BETA_CHARACTERS } from '../src/config/beta-characters.js';
@@ -18,7 +18,8 @@ import { BETA_ATTACK_MOTIONS } from '../src/config/beta-attack-motion.js';
 import { BETA_ULTIMATE_MOTIONS } from '../src/config/beta-ultimate-motion.js';
 import { KNOCKOUT_RULES } from '../src/config/knockout.js';
 import { GEM_GRAB_RULES, gemEscapeResult } from '../src/config/gem-grab.js';
-import { eventMap, mapBlocked, insideMapRect } from '../src/config/event-maps.js';
+import { mapBlocked, insideMapRect, navigateEventMap } from '../src/config/event-maps.js';
+import { TEAM_ARENA, BETA9_GEM_RULES, teamArenaMap, knockoutSafeArea } from '../src/config/beta9-team-arena.js';
 import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 import { atCharacterLevel } from './simulate-beta6-balance.mjs';
 
@@ -33,20 +34,20 @@ export function season9Definitions() {
   return atCharacterLevel(defs, 6);
 }
 
-const HALF = 20, BOUNDS = 19.4, DT = 1 / 60, REGEN_DELAY = 5, REGEN_PER_SECOND = .1;
+const BOUNDS_X = TEAM_ARENA.halfWidth - .6, BOUNDS_Z = TEAM_ARENA.halfDepth - .6, DT = 1 / 60, REGEN_DELAY = 5, REGEN_PER_SECOND = .1;
 const mulberry = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let x = Math.imul(seed ^ seed >>> 15, 1 | seed); x ^= x + Math.imul(x ^ x >>> 7, 61 | x); return ((x ^ x >>> 14) >>> 0) / 4294967296; };
-const spawnSpots = side => [-4, 0, 4].map(x => ({ x, z: side * 15 }));
+const spawnSpots = side => [-4, 0, 4].map(x => ({ x, z: side * TEAM_ARENA.spawnZ }));
 const sideOf = team => team === 'a' ? -1 : 1;
 // Optional event tap for probes (e.g. counting one character's shots and hits).
 export const simHooks = { onEvent: null };
 
 function createWorld(defs, mode, mapIndex, seed, aimError, extra = {}) {
-  const layout = eventMap(mode, mapIndex, HALF, HALF);
+  const layout = teamArenaMap(mode, mapIndex);
   return {
     layout,
     world: createBeta6Combat(defs, {
-      seed, aimError, bounds: BOUNDS, onEvent: e => simHooks.onEvent?.(e),
-      blocked: (x, z, r = .55) => layout.walls.some(rect => insideMapRect(x, z, rect, r)),
+      seed, aimError, bounds: BOUNDS_Z, onEvent: e => simHooks.onEvent?.(e),
+      blocked: (x, z, r = .55) => mapBlocked(layout, x, z, r),
       walkable: (x, z) => !mapBlocked(layout, x, z, .5),
       bushAt: (x, z) => layout.bushes.some(rect => insideMapRect(x, z, rect)),
       ...extra,
@@ -62,14 +63,15 @@ const defaultLowHealthRetreat = a => a.hp <= a.d.maxHealth * .5 && !a.d.pursuesW
 
 // ---------- Knockout: no respawn, best of 3, poison square closes from 45 s to 85 s ----------
 function knockoutRound(defs, teams, mapIndex, seed, aimError) {
-  let safeHalf = HALF;
-  const { world } = createWorld(defs, 'knockout', mapIndex, seed, aimError, {
-    destination(a) {
-      if (safeHalf >= HALF || (Math.abs(a.x) < safeHalf - 1.5 && Math.abs(a.z) < safeHalf - 1.5)) return undefined;
-      return { x: a.x * .3, z: a.z * .3 };
+  let safe = null, layout;
+  const { world, layout: arena } = createWorld(defs, 'knockout', mapIndex, seed, aimError, {
+    destination(a, target) {
+      if (!safe || (Math.abs(a.x) < safe.x - 1.5 && Math.abs(a.z) < safe.z - 1.5)) return navigateEventMap(layout, a, target);
+      return navigateEventMap(layout, a, { x: a.x * .3, z: a.z * .3 });
     },
     retreatsAtLowHealth(a, destination, target) { return destination === target ? undefined : false; },
   });
+  layout = arena;
   const fighters = [];
   for (const team of ['a', 'b']) teams[team].forEach((id, i) => fighters.push(world.add(id, { team, ...spawnSpots(sideOf(team))[i] })));
   let nextPoison = KNOCKOUT_RULES.poisonStarts;
@@ -77,10 +79,10 @@ function knockoutRound(defs, teams, mapIndex, seed, aimError) {
   while (world.time < KNOCKOUT_RULES.roundSeconds) {
     world.update(DT); regen(world, DT);
     const t = world.time;
-    safeHalf = t < KNOCKOUT_RULES.poisonStarts ? HALF : 19.5 * Math.max(0, Math.min(1, (KNOCKOUT_RULES.poisonCloses - t) / (KNOCKOUT_RULES.poisonCloses - KNOCKOUT_RULES.poisonStarts)));
+    safe = t < KNOCKOUT_RULES.poisonStarts ? null : knockoutSafeArea(t);
     if (t >= nextPoison) {
       nextPoison += 1;
-      for (const f of fighters) if (f.hp > 0 && (Math.abs(f.x) > safeHalf || Math.abs(f.z) > safeHalf)) { f.hp = Math.max(0, f.hp - f.d.maxHealth * .1); f.combatAt = t; }
+      for (const f of fighters) if (f.hp > 0 && safe && (Math.abs(f.x) > safe.x || Math.abs(f.z) > safe.z)) { f.hp = Math.max(0, f.hp - f.d.maxHealth * .1); f.combatAt = t; }
     }
     // Pink's encore can bring a fallen ally back a moment later, so only end once nobody is pending.
     const a = living('a').length, b = living('b').length, pending = fighters.some(f => f.hp <= 0 && f.encoreReviveAt);
@@ -99,7 +101,7 @@ export function knockoutMatch(defs, teams, mapIndex, seed, aimError) {
   return { winner: wins.a > wins.b ? 'a' : wins.b > wins.a ? 'b' : null, rounds, wins };
 }
 
-// ---------- Gem Grab: respawn after 5 s, gems from the centre, hold 10 for 15 s ----------
+// ---------- Gem Grab: respawn after 5 s, a gem from the centre every 7 s (max 30), hold 10 for 15 s ----------
 export function gemGrabMatch(defs, teams, mapIndex, seed, aimError) {
   const rand = mulberry(seed ^ 0x5bd1e995);
   const gems = [], escape = { a: null, b: null };
@@ -108,41 +110,42 @@ export function gemGrabMatch(defs, teams, mapIndex, seed, aimError) {
     for (const f of fighters) if (f.hp > 0) c[f.team] += f.gems;
     return c;
   };
-  let world, fighters = [];
-  ({ world } = createWorld(defs, 'gemGrab', mapIndex, seed, aimError, {
+  let world, layout, fighters = [];
+  const go = (a, point) => navigateEventMap(layout, a, point);
+  ({ world, layout } = createWorld(defs, 'gemGrab', mapIndex, seed, aimError, {
     destination(a, moveTarget) {
       if (!a.team) return undefined;
       const side = sideOf(a.team), c = counts();
       // Escaping or clearly ahead: carriers fall back toward their own side.
-      if (a.gems > 0 && (c[a.team] >= GEM_GRAB_RULES.target || a.gems >= 4)) return { x: a.x * .5, z: side * 13 };
+      if (a.gems > 0 && (c[a.team] >= GEM_GRAB_RULES.target || a.gems >= 4)) return go(a, { x: a.x * .5, z: side * (TEAM_ARENA.spawnZ - 6) });
       if (gems.length) {
         let best = null, bestDist = Infinity;
         for (const g of gems) { const d = Math.hypot(g.x - a.x, g.z - a.z); if (d < bestDist) { best = g; bestDist = d; } }
         const teammates = fighters.filter(f => f.team === a.team && f.hp > 0 && f !== a);
         const closest = teammates.every(f => Math.hypot(best.x - f.x, best.z - f.z) >= bestDist);
-        if (closest || bestDist < 4) return best;
+        if (closest || bestDist < 4) return go(a, best);
       }
-      return undefined;
+      return go(a, moveTarget);
     },
     retreatsAtLowHealth(a, destination, target) { return destination === target ? undefined : (a.gems > 0 && defaultLowHealthRetreat(a) ? true : false); },
   }));
   const add = (id, team, i) => { const f = world.add(id, { team, ...spawnSpots(sideOf(team))[i] }); f.gems = 0; f.slot = i; return f; };
   for (const team of ['a', 'b']) teams[team].forEach((id, i) => fighters.push(add(id, team, i)));
   const deadAt = new Map();
-  let nextGem = GEM_GRAB_RULES.firstSpawnDelay, collected = { a: 0, b: 0 };
+  let nextGem = BETA9_GEM_RULES.firstSpawnDelay, collected = { a: 0, b: 0 };
   while (world.time < GEM_GRAB_RULES.matchSeconds) {
     world.update(DT); regen(world, DT);
     const t = world.time;
     if (t >= nextGem) {
-      nextGem += GEM_GRAB_RULES.spawnInterval;
+      nextGem += BETA9_GEM_RULES.spawnInterval;
       const held = fighters.reduce((s, f) => s + (f.hp > 0 ? f.gems : 0), 0);
-      if (gems.length + held < GEM_GRAB_RULES.maxInPlay) { const r = rand() * 2.5, th = rand() * Math.PI * 2; gems.push({ x: Math.cos(th) * r, z: Math.sin(th) * r }); }
+      if (gems.length + held < BETA9_GEM_RULES.maxInPlay) { const r = rand() * 2.5, th = rand() * Math.PI * 2; gems.push({ x: Math.cos(th) * r, z: Math.sin(th) * r }); }
     }
     for (let i = fighters.length - 1; i >= 0; i--) {
       const f = fighters[i];
       if (f.hp <= 0 && !deadAt.has(f)) {
         deadAt.set(f, t);
-        for (let k = 0; k < f.gems; k++) { const th = rand() * Math.PI * 2, r = .6 + rand() * 1.6; gems.push({ x: Math.max(-BOUNDS, Math.min(BOUNDS, f.x + Math.cos(th) * r)), z: Math.max(-BOUNDS, Math.min(BOUNDS, f.z + Math.sin(th) * r)) }); }
+        for (let k = 0; k < f.gems; k++) { const th = rand() * Math.PI * 2, r = .6 + rand() * 1.6; gems.push({ x: Math.max(-BOUNDS_X, Math.min(BOUNDS_X, f.x + Math.cos(th) * r)), z: Math.max(-BOUNDS_Z, Math.min(BOUNDS_Z, f.z + Math.sin(th) * r)) }); }
         f.gems = 0;
       } else if (f.hp > 0 && deadAt.has(f)) deadAt.delete(f); // encore revive
       else if (f.hp <= 0 && t - deadAt.get(f) >= GEM_GRAB_RULES.respawnDelay && !f.encoreReviveAt) {
