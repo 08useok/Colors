@@ -47,6 +47,7 @@ import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=51";
 import { createBetaTransform } from "./beta-transform.js?v=2";
 import { createTransformModels } from "./visuals/transform-models.js?v=1";
+import { TRANSFORMS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -1778,6 +1779,7 @@ const MODEL_ATTACK_POSES = {
 let modelHeldPoseId = null;
 
 function startModelAttackMotion(characterId = betaState.selectedCharacter) {
+  if (lobbyTransformed()) transformModels.cue(lobbyTransformActor, String(characterId).endsWith("Ultimate") ? "Ultimate" : "Attack", clock.elapsedTime);
   if (!MODEL_ATTACK_POSES[characterId] && !RIG_ATTACK_PROFILES[characterId]) return;
   modelAttackMotionTime = 0;
   modelAttackCharacter = characterId;
@@ -3492,6 +3494,7 @@ function fireBetaProjectile({ angle = 0, yawOverride = null, lateralOffset = 0, 
     chartreuse_cc: () => createChartreuseRoundMesh("cc"),
     chartreuse_plague: () => createChartreuseRoundMesh("plague"),
     chartreuse_blank: () => createChartreuseRoundMesh("blank"),
+    chartreuse_heaven: () => betaTransformUi().heavenMesh(),
   };
   const mesh = CUSTOM_PROJECTILE_MESHES[type]
     ? CUSTOM_PROJECTILE_MESHES[type]()
@@ -4974,9 +4977,9 @@ function performCharacterAttackCore({ manualAim = false } = {}) {
     attackComboState.textContent = "아이스크림 배달 중";
   } else if (id === "chartreuse") {
     const focused = clock.elapsedTime < chartreuseFocusUntil;
-    const roundType = chartreuseAmmoTypes.shift() || randomChartreuseRound(focused);
+    const roundType = lobbyTransformed("chartreuse") ? "heaven" : chartreuseAmmoTypes.shift() || randomChartreuseRound(focused);
     const damage = (roundType === "enhanced" ? def.chartreuseEnhancedDamage : def.chartreuseDamage) * (focused ? def.ultimate.damageMultiplier ?? 1 : 1);
-    const color = roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
+    const color = roundType === "heaven" ? 0xfff2a8 : roundType === "enhanced" ? 0xffff00 : roundType === "cc" ? 0x9acd32 : roundType === "plague" ? 0x111111 : 0xffffff;
     fireBetaProjectile({ speed: def.chartreuseSpeed, range: def.chartreuseRange, damage, color, radius: 0.24, type: `chartreuse_${roundType}` });
     attackComboState.textContent = roundType;
   } else if (id === "mint") {
@@ -5627,6 +5630,20 @@ function updatePurpleLeap(dt) {
 
 function performOrangeUltimate() {
   const def = BETA_CHARACTERS.orange.ultimate;
+  if (lobbyTransformed("orange")) {
+    // Transformed: 15 peels in rows of 1-5 across the ultimate range.
+    const tf = TRANSFORMS.orange;
+    tf.peelRows.forEach((count, row) => {
+      const ahead = def.range * (row + 1) / tf.peelRows.length;
+      for (let i = 0; i < count; i += 1) {
+        const side = (i - (count - 1) / 2) * tf.peelSpacing;
+        fireBetaProjectile({ angle: Math.atan2(side, ahead), speed: def.speed, range: Math.hypot(ahead, side), damage: tf.peelDamage,
+          color: 0xff9b32, radius: def.hitRadius, type: "orangePeel", pierces: true });
+      }
+    });
+    attackComboState.textContent = tf.name;
+    return;
+  }
   for (let index = 0; index < def.count; index += 1) {
     const angle = def.count > 1
       ? -def.spreadAngle / 2 + index * (def.spreadAngle / (def.count - 1)) : 0;
@@ -7438,9 +7455,47 @@ var betaTransform;
 function betaTransformUi() {
   return betaTransform ??= createBetaTransform({ THREE, scene, document, anchor: ultimateButton, activate: activateBeta6Transform });
 }
+// Lobby / practice transform: no gauge outside a bot match, so it is always ready to try.
+// A stand-in actor drives the same transform model, aura and button as in matches.
+const lobbyTransformActor = { key: "lobby-transform", id: null, hp: 1, vx: 0, vz: 0, t: null, transformUntil: 0, transformCharge: 1, charge: 1, u: { chargeRequired: 1 } };
+let lobbyTransformLast = null;
+function lobbyTransformAvailable() {
+  return !beta6Combat && !goldRushState.active && !!TRANSFORMS[betaState.selectedCharacter];
+}
+function lobbyTransformed(id = betaState.selectedCharacter) {
+  return lobbyTransformAvailable() && lobbyTransformActor.id === id && clock.elapsedTime < lobbyTransformActor.transformUntil;
+}
+function activateLobbyTransform() {
+  const id = betaState.selectedCharacter, t = TRANSFORMS[id];
+  if (!lobbyTransformAvailable() || goldRushState.dead || modelLoading.blocking || lobbyTransformed(id)) return;
+  transformModels.preload(id);
+  Object.assign(lobbyTransformActor, { id, t, transformUntil: clock.elapsedTime + t.duration });
+  createGroundPulse(1.8, new THREE.Color(t.color).getHex(), player.position);
+  showToast(`변신! ${t.name}`);
+  canvas.dataset.lastTransform = `lobby:${id}`;
+}
+function updateLobbyTransform(dt) {
+  if (beta6Combat) { lobbyTransformLast = null; return; }
+  const id = betaState.selectedCharacter, t = lobbyTransformAvailable() ? TRANSFORMS[id] : null;
+  if (lobbyTransformActor.id !== id || !t) lobbyTransformActor.transformUntil = 0;
+  if (t) transformModels.preload(id);
+  const last = lobbyTransformLast ?? player.position;
+  lobbyTransformActor.vx = (player.position.x - last.x) / Math.max(dt, 1e-3);
+  lobbyTransformActor.vz = (player.position.z - last.z) / Math.max(dt, 1e-3);
+  lobbyTransformLast = { x: player.position.x, z: player.position.z };
+  Object.assign(lobbyTransformActor, { id, t, hp: player.visible && !goldRushState.dead ? 1 : 0 });
+  // Practice targets carrying an angel mark show the halo.
+  const marked = testTargets.filter(target => target.visible && (target.userData.angelMarkUntil ?? 0) > clock.elapsedTime)
+    .map(target => ({ key: target.uuid, hp: 1, t: null, angelMarkUntil: target.userData.angelMarkUntil, mesh: target }));
+  const world = { time: clock.elapsedTime, actors: [lobbyTransformActor, ...marked] };
+  transformModels.update(world, dt, actor => actor === lobbyTransformActor ? { root: player, base: [activeCharacterModel, body, visor, crown, skinAccessory] } : null);
+  betaTransformUi().updateWorld(world, actor => actor === lobbyTransformActor ? player.position : actor.mesh.position, () => true);
+  betaTransformUi().updateButton(t ? lobbyTransformActor : null, clock.elapsedTime, id);
+}
 function activateBeta6Transform() {
   const world = beta6Combat, actor = beta6PlayerActor;
-  if (!world || !actor || goldRushState.dead || isKnockoutFrozen() || modelLoading.blocking) return;
+  if (!world || !actor) return activateLobbyTransform();
+  if (goldRushState.dead || isKnockoutFrozen() || modelLoading.blocking) return;
   actor.x = player.position.x; actor.z = player.position.z;
   if (!world.transform(actor)) return;
   for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
@@ -9483,6 +9538,7 @@ function animate() {
   beta8LobbyRooms?.update(clock.elapsedTime);
   salmonPreview?.update(dt);
   respawnShields.update(clock.elapsedTime);
+  updateLobbyTransform(dt);
   if (betaState.selectedCharacter === "red") updateAttackAimIndicator();
   const aimId = betaState.selectedCharacter, aimDef = BETA_CHARACTERS[aimId];
   if (ivoryUltimateAiming || directionalUltimateAiming) {
@@ -9768,9 +9824,20 @@ function animate() {
           if (betaState.selectedCharacter === "green") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "chartreuse") {
+          if (projectile.type === "chartreuse_heaven") {
+            target.userData.angelMarkUntil = clock.elapsedTime + TRANSFORMS.chartreuse.markDuration;
+            showToast("천사 표식 · CC를 받으면 즉사");
+          }
           if (projectile.type === "chartreuse_cc") {
             const ccTypes = ["slow", "malfunction", "reveal", "poison", "knockback", "ice"];
             const cc = ccTypes[Math.floor(Math.random() * ccTypes.length)];
+            // Angel mark: crowd control finishes a marked target (poison and reveal are not CC).
+            if ((target.userData.angelMarkUntil ?? 0) > clock.elapsedTime && ["slow", "malfunction", "knockback", "ice"].includes(cc)) {
+              target.userData.angelMarkUntil = 0; target.userData.health = 0; target.visible = false;
+              createHitImpact(target.position.clone(), 0xffe680);
+              showToast("천사 표식 · CC 즉사");
+              canvas.dataset.lastAngelExecute = "practice";
+            }
             const ccNames = { slow: "둔화", malfunction: "고장", reveal: "발각", poison: "독", knockback: "넉백", ice: "얼음" };
             showToast(`CC 적중 · ${ccNames[cc]}`);
             createChartreuseStatusEffect(cc, target);
