@@ -44,7 +44,7 @@ import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=52";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=53";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS } from "./config/transforms.js";
@@ -9824,9 +9824,15 @@ function animate() {
           if (betaState.selectedCharacter === "green") updateCrimsonUltimateGauge();
         }
         if (projectile.characterId === "chartreuse") {
-          if (projectile.type === "chartreuse_heaven") {
+          if (projectile.type === "chartreuse_heaven" && (target.userData.angelMarkUntil ?? 0) > clock.elapsedTime) {
+            // A second Heaven round on a marked target finishes it (the mark counts as CC).
+            target.userData.angelMarkUntil = 0; target.userData.health = 0; target.visible = false;
+            createHitImpact(target.position.clone(), 0xffe680);
+            showToast("천사 표식 · Heaven 재적중 즉사");
+            canvas.dataset.lastAngelExecute = "practice-heaven";
+          } else if (projectile.type === "chartreuse_heaven") {
             target.userData.angelMarkUntil = clock.elapsedTime + TRANSFORMS.chartreuse.markDuration;
-            showToast("천사 표식 · CC를 받으면 즉사");
+            showToast("천사 표식 · CC나 Heaven을 또 맞으면 즉사");
           }
           if (projectile.type === "chartreuse_cc") {
             // Every crowd control in the game, equal odds (same list as the match engine).

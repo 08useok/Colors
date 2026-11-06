@@ -65,6 +65,16 @@ const step = (w, seconds) => { for (let i = 0; i < seconds * 60; i++) w.update(1
   w.fire(ally, foe, Math.atan2(foe.z - ally.z, foe.x - ally.x)); step(w, .6);
   assert.equal(foe.hp, 0, 'marked enemy dies to crowd control');
 }
+{ // The mark counts as CC: a second Heaven round on a marked enemy finishes it.
+  const w = world();
+  const c = w.add('chartreuse', { automatic: false, team: 'a', x: 0, z: 0 });
+  const foe = w.add('salmon', { automatic: false, team: 'b', x: 5, z: 0 });
+  c.transformCharge = 1; w.transform(c); c.next = 0;
+  w.fire(c, foe, 0); step(w, .6);
+  assert(foe.hp > 0 && w.time < foe.angelMarkUntil, 'first Heaven round marks');
+  c.next = 0; c.ammo = 3; w.fire(c, foe, 0); step(w, .6);
+  assert.equal(foe.hp, 0, 'second Heaven round finishes the marked enemy');
+}
 { // Unmarked enemies take CC normally; marks expire.
   const w = world();
   const c = w.add('chartreuse', { automatic: false, team: 'a', x: 0, z: 0 });

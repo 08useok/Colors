@@ -774,7 +774,9 @@ export function createBeta6Combat(definitions, options = {}) {
           if (a.id === 'blue' && !p.ultimate && d.bulletKnockback) knock(b, p.yaw, d.bulletKnockback, a);
           if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; control(b, a); }
           if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9), a);
-          if (p.kind === 'heaven') { b.angelMarkUntil = time + a.t.markDuration; b.angelMarkOwner = a; emit('angelMark', { owner: a, target: b, until: b.angelMarkUntil }); }
+          // The angel mark is crowd control too: a second Heaven round on a marked enemy finishes it.
+          if (p.kind === 'heaven' && time < (b.angelMarkUntil ?? 0)) control(b, a);
+          else if (p.kind === 'heaven') { b.angelMarkUntil = time + a.t.markDuration; b.angelMarkOwner = a; emit('angelMark', { owner: a, target: b, until: b.angelMarkUntil }); }
           if (p.kind === 'cc') ccRound(a, b, p.yaw);
           // A direct hit also eats the juices: each one charges like a juice hit.
           if (p.kind === 'bomb') { const juice = d.ultimateChargeShare?.juice; hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount, juice != null, (juice ?? 0) * d.bombDirectHitJuiceCount * (a.u?.chargeRequired ?? 0), true); }
