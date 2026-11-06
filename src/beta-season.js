@@ -44,7 +44,7 @@ import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=51";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=52";
 import { createBetaTransform } from "./beta-transform.js?v=2";
 import { createTransformModels } from "./visuals/transform-models.js?v=1";
 import { TRANSFORMS } from "./config/transforms.js";
@@ -4266,8 +4266,8 @@ function createMintIceZone(x, z) {
 }
 
 function createChartreuseStatusEffect(kind, target, durationOverride = null) {
-  const colors = { slow: 0x7fdbff, malfunction: 0xffc928, reveal: 0xff9d2e, poison: 0x75e34c, knockback: 0xff4d5a };
-  const durations = { slow: 1.5, malfunction: 1.2, reveal: 2.5, poison: 3, knockback: 0.8 };
+  const colors = { slow: 0x7fdbff, malfunction: 0xffc928, reveal: 0xff9d2e, poison: 0x75e34c, knockback: 0xff4d5a, stun: 0xfff36b, root: 0xd6336c, airborne: 0xffffff, ice: 0x98ffed };
+  const durations = { slow: 1.5, malfunction: 1.2, reveal: 2.5, poison: 3, knockback: 0.8, stun: 1.5, root: 1.5, airborne: 1, ice: 1.5 };
   const color = colors[kind] || 0xffffff;
   const group = new THREE.Group();
   const ring = new THREE.Mesh(
@@ -9829,19 +9829,23 @@ function animate() {
             showToast("천사 표식 · CC를 받으면 즉사");
           }
           if (projectile.type === "chartreuse_cc") {
-            const ccTypes = ["slow", "malfunction", "reveal", "poison", "knockback", "ice"];
+            // Every crowd control in the game, equal odds (same list as the match engine).
+            const ccTypes = ["slow", "malfunction", "ice", "poison", "knockback", "stun", "root", "airborne", "reveal"];
             const cc = ccTypes[Math.floor(Math.random() * ccTypes.length)];
             // Angel mark: crowd control finishes a marked target (poison and reveal are not CC).
-            if ((target.userData.angelMarkUntil ?? 0) > clock.elapsedTime && ["slow", "malfunction", "knockback", "ice"].includes(cc)) {
+            if ((target.userData.angelMarkUntil ?? 0) > clock.elapsedTime && !["poison", "reveal"].includes(cc)) {
               target.userData.angelMarkUntil = 0; target.userData.health = 0; target.visible = false;
               createHitImpact(target.position.clone(), 0xffe680);
               showToast("천사 표식 · CC 즉사");
               canvas.dataset.lastAngelExecute = "practice";
             }
-            const ccNames = { slow: "둔화", malfunction: "고장", reveal: "발각", poison: "독", knockback: "넉백", ice: "얼음" };
+            const ccNames = { slow: "둔화", malfunction: "고장", reveal: "발각", poison: "독", knockback: "넉백", ice: "빙결", stun: "기절", root: "속박", airborne: "띄우기" };
             showToast(`CC 적중 · ${ccNames[cc]}`);
             createChartreuseStatusEffect(cc, target);
-            if (cc === "slow") target.userData.slowUntil = clock.elapsedTime + 1.5;
+            if (cc === "slow") { target.userData.slowUntil = clock.elapsedTime + 1.5; target.userData.slowMultiplier = .65; }
+            // Stun, bind and lift keep the target in place; stun and lift also stop its attacks.
+            if (["stun", "root", "airborne"].includes(cc)) { const hold = cc === "airborne" ? 1 : 1.5; target.userData.slowUntil = clock.elapsedTime + hold; target.userData.slowMultiplier = 0; }
+            if (cc === "stun" || cc === "airborne") target.userData.malfunctionUntil = clock.elapsedTime + (cc === "airborne" ? 1 : 1.5);
             if (cc === "malfunction") target.userData.malfunctionUntil = clock.elapsedTime + 1.2;
             if (cc === "reveal") target.userData.revealedUntil = clock.elapsedTime + 2.5;
             if (cc === "poison") {

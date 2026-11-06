@@ -78,6 +78,27 @@ export function createBeta6Combat(definitions, options = {}) {
     b.angelMarkUntil = 0; b.angelMarkOwner = null;
     if (hit(by, b, b.hp, false, 0, false, true) > 0) emit('angelExecute', { owner: by, marker, target: b });
   }
+  // Chartreuse CC round: one of every crowd control in the game, equal odds.
+  // Order only decides which random roll maps to which effect; every effect keeps a 1/9 chance.
+  const CC_ROUND_EFFECTS = ['slow', 'malfunction', 'freeze', 'poison', 'stun', 'root', 'airborne', 'reveal', 'knockback'];
+  function ccRound(a, b, yaw) {
+    const effect = CC_ROUND_EFFECTS[Math.floor(random() * CC_ROUND_EFFECTS.length)];
+    if (effect === 'slow') { b.slowUntil = time + 2; b.slow = .35; }
+    if (effect === 'malfunction') b.lockUntil = Math.max(b.lockUntil, time + 2);
+    if (effect === 'freeze') { b.frozenUntil = Math.max(b.frozenUntil, time + 2); emit('freeze', { target: b }); }
+    if (effect === 'poison') { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; }
+    if (effect === 'knockback') knock(b, yaw, 3.5, a);
+    if (effect === 'stun') { b.slowUntil = time + 2; b.slow = 1; b.lockUntil = Math.max(b.lockUntil, time + 2); }
+    if (effect === 'root') root(b, 2, a);
+    // Lifted into the air in place for 1 s, like Salmon's catch (no landing damage).
+    if (effect === 'airborne' && !b.isSalmonDevice && !inAir(b)) {
+      b.salmonAirborne = { from: { x: b.x, z: b.z }, to: { x: b.x, z: b.z }, start: time, until: time + 1, duration: 1, slow: false, owner: a, landingDamage: 0 };
+      b.lockUntil = Math.max(b.lockUntil, time + 1); b.dash = null; b.wave = false;
+    }
+    if (effect === 'reveal') b.revealedUntil = Math.max(b.revealedUntil, time + 3);
+    emit('ccRound', { owner: a, target: b, effect });
+    if (effect !== 'poison' && effect !== 'reveal') control(b, a);
+  }
   function damageReductionFor(a) {
     const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;
     const rolling=(a.dash&&time<a.dash.until)||(a.ultimatePreparing&&a.u?.guardDuringPreparation);
@@ -753,7 +774,7 @@ export function createBeta6Combat(definitions, options = {}) {
           if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; control(b, a); }
           if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9), a);
           if (p.kind === 'heaven') { b.angelMarkUntil = time + a.t.markDuration; b.angelMarkOwner = a; emit('angelMark', { owner: a, target: b, until: b.angelMarkUntil }); }
-          if (p.kind === 'cc') { const effect = Math.floor(random() * 6); if (effect === 0 || effect === 5) { b.slowUntil = time + 2; b.slow = effect === 5 ? 1 : .35; } if (effect === 1 || effect === 5) b.lockUntil = time + 2; if (effect === 2) b.frozenUntil = time + 2; if (effect === 3) { b.poisonOwner = a; b.poisonUntil = time + 4; b.poisonNext = time + 1; } if (effect === 4) knock(b, p.yaw, 3.5); if (effect !== 3) control(b, a); }
+          if (p.kind === 'cc') ccRound(a, b, p.yaw);
           // A direct hit also eats the juices: each one charges like a juice hit.
           if (p.kind === 'bomb') { const juice = d.ultimateChargeShare?.juice; hit(a, b, d.bombSplashDamage * d.bombDirectHitJuiceCount, juice != null, (juice ?? 0) * d.bombDirectHitJuiceCount * (a.u?.chargeRequired ?? 0), true); }
         }
