@@ -74,17 +74,64 @@ ${t.summary}
 
   // World visuals keyed by actor.
   const auras = new Map(), halos = new Map();
+  // Soft round glow and a vertical fade, drawn once and shared by every aura.
+  const glowTexture = (() => {
+    const c = document.createElement("canvas"); c.width = c.height = 64;
+    const g = c.getContext("2d"), r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    r.addColorStop(0, "rgba(255,255,255,1)"); r.addColorStop(.35, "rgba(255,255,255,.55)"); r.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = r; g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  })();
+  const fadeTexture = (() => {
+    const c = document.createElement("canvas"); c.width = 4; c.height = 64;
+    const g = c.getContext("2d"), r = g.createLinearGradient(0, 0, 0, 64);
+    r.addColorStop(0, "rgba(255,255,255,0)"); r.addColorStop(.55, "rgba(255,255,255,.35)"); r.addColorStop(1, "rgba(255,255,255,1)");
+    g.fillStyle = r; g.fillRect(0, 0, 4, 64);
+    return new THREE.CanvasTexture(c);
+  })();
+  const FLAMES = 34;
+  // Purple aura for the whole transform: a ground glow, a column that fades upward and
+  // flame sparks rising around the body.
   function makeAura(color) {
     const group = new THREE.Group();
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(.85, .05, 8, 40),
-      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .85, depthWrite: false, toneMapped: false }));
+    const glow = (opacity, extra = {}) => ({ color, transparent: true, opacity, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending, ...extra });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(.85, .05, 8, 40), new THREE.MeshBasicMaterial(glow(.9)));
     ring.rotation.x = Math.PI / 2; ring.position.y = .08;
-    const column = new THREE.Mesh(new THREE.CylinderGeometry(.75, .9, 2.4, 24, 1, true),
-      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .16, side: THREE.DoubleSide, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
-    column.position.y = 1.2;
-    group.add(ring, column);
-    group.userData.parts = { ring, column };
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(1.25, 32), new THREE.MeshBasicMaterial(glow(.55, { map: glowTexture })));
+    disc.rotation.x = -Math.PI / 2; disc.position.y = .06;
+    const column = new THREE.Mesh(new THREE.CylinderGeometry(.7, .95, 2.6, 24, 1, true),
+      new THREE.MeshBasicMaterial(glow(.38, { map: fadeTexture, side: THREE.DoubleSide })));
+    column.position.y = 1.3;
+    group.add(disc, ring, column);
+    const light = new THREE.Color(color).lerp(new THREE.Color(0xffffff), .45);
+    const flames = Array.from({ length: FLAMES }, (_, i) => {
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture, color: i % 4 === 0 ? light : color,
+        transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
+      sprite.userData = { angle: i * 2.39996, radius: .38 + (i * 37 % 10) / 30, speed: .55 + (i * 53 % 10) / 22, offset: (i * 29 % 34) / 34, size: .36 + (i * 17 % 10) / 36 };
+      group.add(sprite);
+      return sprite;
+    });
+    group.userData.parts = { ring, disc, column, flames };
     return group;
+  }
+  function animateAura(group, time, remaining) {
+    const { ring, disc, column, flames } = group.userData.parts;
+    const pulse = .5 + .5 * Math.sin(time * 8);
+    // Flicker during the last second so players see the transform ending.
+    const fade = remaining < 1 ? .35 + .65 * Math.abs(Math.sin(time * 14)) : 1;
+    ring.scale.setScalar(1 + pulse * .12);
+    ring.material.opacity = .9 * fade;
+    disc.material.opacity = (.4 + pulse * .2) * fade;
+    column.material.opacity = (.28 + pulse * .14) * fade;
+    column.rotation.y = time * 1.5;
+    for (const sprite of flames) {
+      const f = sprite.userData, life = (time * f.speed + f.offset) % 1;
+      const angle = f.angle + time * .9;
+      const radius = f.radius * (1 - life * .45);
+      sprite.position.set(Math.cos(angle) * radius, .15 + life * 2.6, Math.sin(angle) * radius);
+      sprite.scale.setScalar(f.size * (1.2 - life * .7));
+      sprite.material.opacity = Math.sin(life * Math.PI) * .95 * fade;
+    }
   }
   function makeHalo() {
     const halo = new THREE.Mesh(new THREE.TorusGeometry(.4, .055, 8, 32),
@@ -98,7 +145,8 @@ ${t.summary}
     if (!mesh) { mesh = create(); scene.add(mesh); map.set(key, mesh); }
     place(mesh);
   }
-  function dispose(object) { object.traverse(part => { part.geometry?.dispose(); part.material?.dispose(); }); }
+  // Sprites share one geometry inside three.js, so only their materials are freed.
+  function dispose(object) { object.traverse(part => { if (!part.isSprite) part.geometry?.dispose(); part.material?.dispose(); }); }
 
   function updateWorld(world, positionOf, visibleTo) {
     const seen = new Set();
@@ -109,10 +157,7 @@ ${t.summary}
       const transformed = show && actor.t && world.time < actor.transformUntil;
       sync(auras, actor.key, transformed, () => makeAura(new THREE.Color(EFFECT_COLOR)), group => {
         group.position.set(position.x, position.y, position.z);
-        const pulse = .5 + .5 * Math.sin(world.time * 8);
-        group.userData.parts.ring.scale.setScalar(1 + pulse * .12);
-        group.userData.parts.column.material.opacity = .1 + pulse * .1;
-        group.rotation.y = world.time * 1.5;
+        animateAura(group, world.time, actor.transformUntil - world.time);
       });
       const marked = show && world.time < (actor.angelMarkUntil ?? 0);
       sync(halos, actor.key, marked, makeHalo, halo => {
