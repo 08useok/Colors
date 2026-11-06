@@ -2,8 +2,12 @@
 // visuals — an aura around transformed fighters, the angel mark halo and Heaven rounds.
 import { TRANSFORMS } from "./config/transforms.js";
 
+// Every transform shares one purple effect colour (like a hypercharge), so it reads apart from
+// the ultimate (gold) and the character's own colour. The angel-mark halo stays gold.
+const EFFECT_COLOR = "#a855f7";
+
 const STYLE = `
-.transform-btn { --transform-color:#fff2a8; --charge-angle:0deg; position:relative; display:grid; place-content:center; justify-items:center; width:62px; height:62px; margin-top:8px; padding:0; overflow:hidden; border:3px solid #777b82; border-radius:50%; background:conic-gradient(var(--transform-color) 0 var(--charge-angle), #1b2547 var(--charge-angle) 360deg); color:#d8dadd; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,.3); transition:filter .2s, box-shadow .2s, transform .15s; }
+.transform-btn { --transform-color:#a855f7; --charge-angle:0deg; position:relative; display:grid; place-content:center; justify-items:center; width:62px; height:62px; margin-top:8px; padding:0; overflow:hidden; border:3px solid #777b82; border-radius:50%; background:conic-gradient(var(--transform-color) 0 var(--charge-angle), #1b2547 var(--charge-angle) 360deg); color:#d8dadd; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,.3); transition:filter .2s, box-shadow .2s, transform .15s; }
 .transform-btn::before { content:""; position:absolute; inset:6px; border-radius:50%; background:radial-gradient(circle at 45% 35%,#454950,#25282d 70%); }
 .transform-btn > * { position:relative; z-index:1; }
 .transform-btn .transform-icon { font-size:13px; line-height:1; color:#aeb1b6; }
@@ -43,7 +47,7 @@ export function createBetaTransform({ THREE, scene, document, anchor, activate }
     button.classList.toggle("idle", !!t && !actor?.t);
     if (!t) return;
     if (!actor?.t) {
-      button.style.setProperty("--transform-color", t.color);
+      button.style.setProperty("--transform-color", EFFECT_COLOR);
       button.style.setProperty("--charge-angle", "0deg");
       button.classList.remove("ready", "active");
       state.textContent = "경기 전용";
@@ -57,7 +61,7 @@ ${t.summary}
     const ultimateReady = !t.needsUltimate || actor.charge >= actor.u.chargeRequired;
     const ready = !active && actor.transformCharge >= 1 && ultimateReady;
     const ratio = active ? (actor.transformUntil - time) / t.duration : actor.transformCharge;
-    button.style.setProperty("--transform-color", t.color);
+    button.style.setProperty("--transform-color", EFFECT_COLOR);
     button.style.setProperty("--charge-angle", `${Math.max(0, Math.min(1, ratio)) * 360}deg`);
     button.classList.toggle("ready", ready);
     button.classList.toggle("active", active);
@@ -103,7 +107,7 @@ ${t.summary}
       const position = positionOf(actor);
       const show = position && actor.hp > 0 && visibleTo(actor);
       const transformed = show && actor.t && world.time < actor.transformUntil;
-      sync(auras, actor.key, transformed, () => makeAura(new THREE.Color(actor.t.color)), group => {
+      sync(auras, actor.key, transformed, () => makeAura(new THREE.Color(EFFECT_COLOR)), group => {
         group.position.set(position.x, position.y, position.z);
         const pulse = .5 + .5 * Math.sin(world.time * 8);
         group.userData.parts.ring.scale.setScalar(1 + pulse * .12);
@@ -130,5 +134,5 @@ ${t.summary}
     group.add(glow, ring);
     return group;
   }
-  return { button, updateButton, updateWorld, clear, heavenMesh };
+  return { button, updateButton, updateWorld, clear, heavenMesh, effectColor: new THREE.Color(EFFECT_COLOR).getHex() };
 }

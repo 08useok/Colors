@@ -45,7 +45,7 @@ import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=52";
-import { createBetaTransform } from "./beta-transform.js?v=2";
+import { createBetaTransform } from "./beta-transform.js?v=3";
 import { createTransformModels } from "./visuals/transform-models.js?v=1";
 import { TRANSFORMS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
@@ -7412,7 +7412,7 @@ function processBeta6CombatEvent(event) {
       }
       if (event.type === "transform") {
         const position = beta6ActorPosition(event.owner);
-        if (position) createGroundPulse(1.8, new THREE.Color(event.owner.t.color).getHex(), position);
+        if (position) createGroundPulse(1.8, betaTransformUi().effectColor, position);
         if (event.owner === beta6PlayerActor) showToast(`변신! ${event.owner.t.name}`);
         canvas.dataset.lastTransform = `${event.owner === beta6PlayerActor ? "player" : "bot"}:${event.owner.id}`;
       }
@@ -7470,7 +7470,7 @@ function activateLobbyTransform() {
   if (!lobbyTransformAvailable() || goldRushState.dead || modelLoading.blocking || lobbyTransformed(id)) return;
   transformModels.preload(id);
   Object.assign(lobbyTransformActor, { id, t, transformUntil: clock.elapsedTime + t.duration });
-  createGroundPulse(1.8, new THREE.Color(t.color).getHex(), player.position);
+  createGroundPulse(1.8, betaTransformUi().effectColor, player.position);
   showToast(`변신! ${t.name}`);
   canvas.dataset.lastTransform = `lobby:${id}`;
 }
