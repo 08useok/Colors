@@ -97,7 +97,8 @@ export function createBeta6Combat(definitions, options = {}) {
     }
     if (effect === 'reveal') b.revealedUntil = Math.max(b.revealedUntil, time + 3);
     emit('ccRound', { owner: a, target: b, effect });
-    if (effect !== 'poison' && effect !== 'reveal') control(b, a);
+    // Every CC round effect, poison and reveal included, finishes an angel-marked target.
+    control(b, a);
   }
   function damageReductionFor(a) {
     const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;

@@ -9832,8 +9832,8 @@ function animate() {
             // Every crowd control in the game, equal odds (same list as the match engine).
             const ccTypes = ["slow", "malfunction", "ice", "poison", "knockback", "stun", "root", "airborne", "reveal"];
             const cc = ccTypes[Math.floor(Math.random() * ccTypes.length)];
-            // Angel mark: crowd control finishes a marked target (poison and reveal are not CC).
-            if ((target.userData.angelMarkUntil ?? 0) > clock.elapsedTime && !["poison", "reveal"].includes(cc)) {
+            // Angel mark: any CC round effect (poison and reveal included) finishes a marked target.
+            if ((target.userData.angelMarkUntil ?? 0) > clock.elapsedTime) {
               target.userData.angelMarkUntil = 0; target.userData.health = 0; target.visible = false;
               createHitImpact(target.position.clone(), 0xffe680);
               showToast("천사 표식 · CC 즉사");

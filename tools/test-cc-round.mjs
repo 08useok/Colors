@@ -30,4 +30,19 @@ for (let seed = 1; shots < 2700; seed++) {
 assert.deepEqual([...applied].sort(), [...EFFECTS].sort(), 'every effect shows up');
 const expected = shots / EFFECTS.length;
 for (const e of EFFECTS) assert(Math.abs(counts[e] - expected) < expected * .2, `${e}: ${counts[e]} of ${shots} (expected about ${expected.toFixed(0)})`);
-console.log('PASS CC round: 9 crowd controls, equal odds', Object.fromEntries(EFFECTS.map(e => [e, counts[e]])));
+// With transforms on, every CC round effect (poison and reveal included) finishes an angel-marked enemy.
+const executed = new Set();
+for (let seed = 1; executed.size < EFFECTS.length && seed < 400; seed++) {
+  let effect = null;
+  const w = createBeta6Combat(defs, { seed, bounds: 19.4, transforms: true, onEvent: e => { if (e.type === 'ccRound') effect = e.effect; } });
+  const c = w.add('chartreuse', { automatic: false, team: 'a', x: 0, z: 0 });
+  const t = w.add('salmon', { automatic: false, team: 'b', x: 4, z: 0, angelMarkUntil: 1e9 });
+  t.angelMarkOwner = c; c.rounds = ['cc']; c.next = 0;
+  w.fire(c, t, 0);
+  for (let f = 0; f < 18 && !effect; f++) w.update(1 / 60);
+  if (!effect) continue;
+  assert.equal(t.hp, 0, `${effect} finishes a marked enemy`);
+  executed.add(effect);
+}
+assert.equal(executed.size, EFFECTS.length, 'all nine effects execute a marked enemy');
+console.log('PASS CC round: 9 crowd controls, equal odds, all execute an angel mark', Object.fromEntries(EFFECTS.map(e => [e, counts[e]])));
