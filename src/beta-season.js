@@ -46,7 +46,7 @@ import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=52";
 import { createBetaTransform } from "./beta-transform.js?v=3";
-import { createTransformModels } from "./visuals/transform-models.js?v=1";
+import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";

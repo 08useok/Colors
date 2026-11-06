@@ -9,7 +9,7 @@ export function createTransformModels({ THREE, loader, clone }) {
     if (!FORM_IDS.has(id) || assets.has(id)) return;
     const entry = {};
     assets.set(id, entry);
-    loader.loadAsync(`./assets/3d/${id}/transform/motions.glb?v=1`).then(asset => {
+    loader.loadAsync(`./assets/3d/${id}/transform/motions.glb?v=2`).then(asset => {
       if (!MOTIONS.every(name => asset.animations.some(clip => clip.name === name))) {
         throw new Error('Transform model is missing motion clips');
       }
