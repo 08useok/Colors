@@ -1,6 +1,6 @@
 import { questStats, questPoints } from './beta8-quests.js';
 export const RECORD_SEASON = 'beta8';
-export const RECORD_MODES = ['goldRush','showdown','soccer','gemGrab','chopWood','knockout'];
+export const RECORD_MODES = ['goldRush','showdown','soccer','gemGrab','chopWood','knockout','hotZone'];
 export function matchRecord(input) {
   if (!input || !RECORD_MODES.includes(input.mode) || typeof input.id !== 'string' || !/^[a-zA-Z0-9-]{1,80}$/.test(input.id)) return null;
   if (typeof input.character !== 'string' || !/^[a-z]+$/.test(input.character)) return null;

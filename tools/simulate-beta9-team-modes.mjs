@@ -20,6 +20,7 @@ import { KNOCKOUT_RULES } from '../src/config/knockout.js';
 import { GEM_GRAB_RULES, gemEscapeResult } from '../src/config/gem-grab.js';
 import { mapBlocked, insideMapRect, navigateEventMap } from '../src/config/event-maps.js';
 import { TEAM_ARENA, BETA9_GEM_RULES, teamArenaMap, knockoutSafeArea } from '../src/config/beta9-team-arena.js';
+import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from '../src/config/hot-zone.js';
 import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 import { atCharacterLevel } from './simulate-beta6-balance.mjs';
 
@@ -167,13 +168,48 @@ export function gemGrabMatch(defs, teams, mapIndex, seed, aimError) {
   return { winner: c.a > c.b ? 'a' : c.b > c.a ? 'b' : null, time: world.time, reason: 'time', collected };
 }
 
+// ---------- Hot Zone (Official Season 1): respawn after 5 s, score while alone in a zone, 100% or 2 min ----------
+export function hotZoneMatch(defs, teams, mapIndex, seed, aimError) {
+  const state = createHotZone(mapIndex);
+  let world, layout, fighters = [];
+  const go = (a, point) => navigateEventMap(layout, a, point);
+  ({ world, layout } = createWorld(defs, 'gemGrab', mapIndex, seed, aimError, {
+    destination(a, moveTarget) {
+      if (!a.team) return undefined;
+      if (moveTarget && Math.hypot(moveTarget.x - a.x, moveTarget.z - a.z) < 6) return go(a, moveTarget);
+      const zone = [...state.zones].sort((p, q) => Math.hypot(p.x - a.x, p.z - a.z) - Math.hypot(q.x - a.x, q.z - a.z))[0];
+      return go(a, { x: zone.x + Math.cos(a.phase) * zone.radius * .5, z: zone.z + Math.sin(a.phase) * zone.radius * .5 });
+    },
+    retreatsAtLowHealth(a, destination, target) { return destination === target ? undefined : false; },
+  }));
+  const add = (id, team, i) => { const f = world.add(id, { team, ...spawnSpots(sideOf(team))[i] }); f.slot = i; return f; };
+  for (const team of ['a', 'b']) teams[team].forEach((id, i) => fighters.push(add(id, team, i)));
+  const deadAt = new Map();
+  while (world.time < HOT_ZONE_RULES.matchSeconds) {
+    world.update(DT); regen(world, DT);
+    const t = world.time;
+    for (let i = fighters.length - 1; i >= 0; i--) {
+      const f = fighters[i];
+      if (f.hp <= 0 && !deadAt.has(f)) deadAt.set(f, t);
+      else if (f.hp > 0 && deadAt.has(f)) deadAt.delete(f); // encore revive
+      else if (f.hp <= 0 && t - deadAt.get(f) >= HOT_ZONE_RULES.respawnDelay && !f.encoreReviveAt) {
+        deadAt.delete(f); const { charge, transformCharge } = f; world.remove(f);
+        const next = add(f.id, f.team, f.slot); next.charge = charge; next.transformCharge = transformCharge; fighters[i] = next;
+      }
+    }
+    const winner = tickHotZone(state, fighters.map(f => ({ team: f.team, x: f.x, z: f.z, alive: f.hp > 0 })), DT);
+    if (winner) return { winner, time: t, reason: 'zone', score: { ...state.score } };
+  }
+  return { winner: hotZoneTimeResult(state), time: world.time, reason: 'time', score: { ...state.score } };
+}
+
 // ---------- Tournament ----------
 export function runModes({ matches = 1200, seed = 20261102, modes = ['knockout', 'gemGrab'] } = {}) {
   const defs = season9Definitions(), ids = Object.keys(defs);
   assert.equal(ids.length, 18);
   const results = {};
   for (const mode of modes) {
-    const rand = mulberry(seed + (mode === 'knockout' ? 1 : 2));
+    const rand = mulberry(seed + ({ knockout: 1, gemGrab: 2, hotZone: 3 })[mode]);
     const stats = Object.fromEntries(ids.map(id => [id, { games: 0, wins: 0, losses: 0, draws: 0 }]));
     const pair = {}; let decided = 0, totalTime = 0;
     for (let m = 0; m < matches; m++) {
@@ -181,7 +217,8 @@ export function runModes({ matches = 1200, seed = 20261102, modes = ['knockout',
       for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
       const teams = { a: pool.slice(0, 3), b: pool.slice(3, 6) };
       const mapIndex = m % 3, aimError = m % 2 ? .1 : .035;
-      const r = mode === 'knockout' ? knockoutMatch(defs, teams, mapIndex, seed + m * 31, aimError) : gemGrabMatch(defs, teams, mapIndex, seed + m * 31, aimError);
+      const play = ({ knockout: knockoutMatch, gemGrab: gemGrabMatch, hotZone: hotZoneMatch })[mode];
+      const r = play(defs, teams, mapIndex, seed + m * 31, aimError);
       if (r.winner) decided++;
       totalTime += r.time ?? 0;
       for (const team of ['a', 'b']) for (const id of teams[team]) {
@@ -220,12 +257,13 @@ if (process.argv[1]?.endsWith('simulate-beta9-team-modes.mjs')) {
   const matches = arg('--matches') ?? (process.argv.includes('--quick') ? 30 : 1200);
   simOptions.transforms = process.argv.includes('--transforms');
   const started = Date.now();
-  const { ids, results } = runModes({ matches });
+  // --hot-zone adds the Official Season 1 Hot Zone mode to the run.
+  const { ids, results } = runModes({ matches, modes: ['knockout', 'gemGrab', ...(process.argv.includes('--hot-zone') ? ['hotZone'] : [])] });
   const split = splitRoster(ids, results.knockout.stats, results.gemGrab.stats);
-  const rows = ids.map(id => ({ id, knockout: +(results.knockout.stats[id].score * 100).toFixed(1), gemGrab: +(results.gemGrab.stats[id].score * 100).toFixed(1), edge: +(split.edge[id] * 100).toFixed(1), group: split.knockout.includes(id) ? 'knockout' : 'gemGrab' }))
+  const rows = ids.map(id => ({ id, knockout: +(results.knockout.stats[id].score * 100).toFixed(1), gemGrab: +(results.gemGrab.stats[id].score * 100).toFixed(1), ...(results.hotZone ? { hotZone: +(results.hotZone.stats[id].score * 100).toFixed(1) } : {}), edge: +(split.edge[id] * 100).toFixed(1), group: split.knockout.includes(id) ? 'knockout' : 'gemGrab' }))
     .sort((a, b) => b.edge - a.edge);
   console.table(rows);
-  console.log('decided', { knockout: results.knockout.decidedRate, gemGrab: results.gemGrab.decidedRate }, 'seconds', ((Date.now() - started) / 1000).toFixed(0));
+  console.log('decided', Object.fromEntries(Object.entries(results).map(([mode, r]) => [mode, r.decidedRate])), 'seconds', ((Date.now() - started) / 1000).toFixed(0));
   if (!process.argv.includes('--quick')) {
     for (const r of Object.values(results)) delete r.pair;
     const outIndex = process.argv.indexOf('--out'), out = outIndex >= 0 ? process.argv[outIndex + 1] : 'specs/beta9-team-mode-simulation.json';

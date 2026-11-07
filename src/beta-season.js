@@ -1,6 +1,6 @@
 import { createCrystalTelegraphEffects } from './visuals/crystal-telegraph.js';
 import { BETA8_QUEST_GOALS, BETA8_QUEST_REWARDS, questClaims, claimQuestReward, questStats, questPoints, addQuestStats } from './config/beta8-quests.js';
-import { createBetaRecords } from './beta-records.js?v=5';
+import { createBetaRecords } from './beta-records.js?v=6';
 import { BETA_ULTIMATE_MOTIONS } from './config/beta-ultimate-motion.js';
 import { initBetaAccount } from "./beta-account.js?v=2";
 import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
@@ -47,6 +47,8 @@ import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=3";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=55";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
+import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
+import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=1";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS, TRANSFORM_STATS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
@@ -6718,9 +6720,79 @@ function gemCarrier(team) {
   return carriers.sort((a, b) => b.gold - a.gold)[0] ?? null;
 }
 
+// ===== Hot Zone (Official Season 1): Gem Grab arena, teams and respawns, with zones instead of gems =====
+let hotZoneState = null;
+const hotZoneMeshes = [];
+// The text after the team counter: " / 10" gems in Gem Grab, " / 100%" in Hot Zone.
+function setGemTargetLabel(text) {
+  const tail = goldCountEl.nextSibling;
+  if (tail?.nodeType === Node.TEXT_NODE) tail.textContent = text;
+}
+function clearHotZone() {
+  for (const mesh of hotZoneMeshes.splice(0)) { gemArena.remove(mesh); mesh.traverse(part => { part.geometry?.dispose(); part.material?.dispose(); }); }
+  hotZoneState = null;
+}
+function startHotZone() {
+  const index = Math.max(0, Number(document.getElementById("beta-event-map-variant")?.value) || 0);
+  hotZoneState = createHotZone(index);
+  for (const zone of hotZoneState.zones) {
+    const group = new THREE.Group();
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(zone.radius, 48), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .2, depthWrite: false }));
+    const ring = new THREE.Mesh(new THREE.RingGeometry(zone.radius - .18, zone.radius, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9, side: THREE.DoubleSide, depthWrite: false }));
+    disc.rotation.x = ring.rotation.x = -Math.PI / 2;
+    group.add(disc, ring);
+    group.position.set(zone.x, GEM_FIELD_Y + .04, zone.z);
+    group.userData = { zone, disc, ring };
+    gemArena.add(group); hotZoneMeshes.push(group);
+  }
+  goldRushHud.querySelector("strong").textContent = "HOT ZONE · 3v3";
+  const resourceLabel = document.getElementById("season-resource-label");
+  if (resourceLabel) resourceLabel.textContent = "우리 팀 점수";
+  canvas.dataset.betaMode = "hot-zone";
+  updateHotZoneHud();
+}
+// Bots spread out inside the nearest zone (they still fight enemies that come close).
+function hotZonePoint(actor) {
+  const zone = [...hotZoneState.zones].sort((p, q) => Math.hypot(p.x - actor.x, p.z - actor.z) - Math.hypot(q.x - actor.x, q.z - actor.z))[0];
+  const r = zone.radius * .5;
+  return { x: zone.x + Math.cos(actor.phase) * r, z: zone.z + Math.sin(actor.phase) * r };
+}
+function updateHotZone(dt) {
+  if (!hotZoneState) return;
+  const fighters = [{ team: "a", x: player.position.x, z: player.position.z, alive: !goldRushState.dead },
+    ...goldRushBots.map(bot => ({ team: bot.team, x: bot.mesh.position.x, z: bot.mesh.position.z, alive: !bot.dead }))];
+  const winner = tickHotZone(hotZoneState, fighters, dt);
+  const colors = { a: 0x369aff, b: 0xff674d, contested: 0xffd34d };
+  for (const group of hotZoneMeshes) {
+    const color = colors[group.userData.zone.owner] ?? 0xffffff;
+    group.userData.disc.material.color.setHex(color); group.userData.ring.material.color.setHex(color);
+  }
+  updateHotZoneHud();
+  const score = `${Math.floor(hotZoneState.score.a)}%:${Math.floor(hotZoneState.score.b)}%`;
+  if (winner) { endGoldRush(winner === "a" ? `핫 존 승리! · ${score}` : `상대 팀 핫 존 승리 · ${score}`, winner === "a"); return; }
+  if (clock.elapsedTime - goldRushState.startedAt >= HOT_ZONE_RULES.matchSeconds) {
+    const result = hotZoneTimeResult(hotZoneState);
+    endGoldRush(result ? `시간 종료 · ${result === "a" ? "승리" : "패배"} ${score}` : `시간 종료 · 무승부 ${score}`, result === "a");
+  }
+}
+function updateHotZoneHud() {
+  if (!hotZoneState) return;
+  const ours = Math.floor(hotZoneState.score.a), theirs = Math.floor(hotZoneState.score.b);
+  goldCountEl.textContent = `${ours}%`;
+  setGemTargetLabel(" / 100%");
+  goldRushRivalsEl.textContent = `우리 ${ours}% : ${theirs}% 상대`;
+  goldRushTimerEl.textContent = formatSoccerClock(Math.max(0, HOT_ZONE_RULES.matchSeconds - (clock.elapsedTime - goldRushState.startedAt)));
+  const owners = hotZoneState.zones.map(zone => zone.owner);
+  goldRushStatusEl.textContent = owners.includes("contested") ? "구역 쟁탈 중 · 점수가 멈췄습니다"
+    : owners.includes("a") ? "우리 팀이 구역을 차지하는 중" : owners.includes("b") ? "상대 팀이 구역을 차지하는 중 · 막으세요" : "구역 안에 들어가 점수를 올리세요";
+  document.body.classList.remove("temple-countdown-final");
+  updateGoldRushCombatHud();
+}
+
 // Gem Grab bot goal: hold back when winning, hunt the gem carrier when behind,
 // otherwise collect (or wait by the altar until the next gem).
 function gemObjective(actor) {
+  if (goldRushState.hotZone && hotZoneState) return hotZonePoint(actor);
   const enemy = actor.team === "a" ? "b" : "a", ours = gemTeamGems(actor.team), theirs = gemTeamGems(enemy);
   if (ours >= GEM_TARGET_COUNT && ours > theirs) return gemHomePoint(actor);
   if (theirs > ours && (theirs >= GEM_TARGET_COUNT - 3 || !goldPickups.length)) {
@@ -6845,6 +6917,7 @@ function updateGemGrab(dt) {
     if (bot.dead) continue;
     clampGemActor(bot.mesh.position);
   }
+  if (goldRushState.hotZone) { updateHotZone(dt); return; }
   if (clock.elapsedTime >= gemGrabState.nextGemAt && gemsInPlay() < GEM_MAX_IN_PLAY) {
     spawnGemAtAltar();
     gemGrabState.nextGemAt = clock.elapsedTime + GEM_SPAWN_INTERVAL;
@@ -8557,7 +8630,7 @@ function updateGoldRushHud() {
   if (goldRushState.mode === "knockout") { updateKnockoutHud(); return; }
   if (goldRushState.mode === "chopWood") { updateGoldRushCombatHud(); return; }
   const gemGrab = goldRushState.mode === "gemGrab";
-  if (goldRushState.mode === "gemGrab") { updateGemGrabHud(); return; }
+  if (goldRushState.mode === "gemGrab") { if (goldRushState.hotZone) updateHotZoneHud(); else updateGemGrabHud(); return; }
   goldCountEl.textContent = String(goldRushState.gold);
   updateGoldRushCombatHud();
   const elapsed = Math.max(0, clock.elapsedTime - goldRushState.startedAt);
@@ -8940,6 +9013,12 @@ function prepareBetaEventMap(mode,plus) {
 }
 
 function startGoldRush(mode = "goldRush", showdownPlus = false) {
+  // Official Season 1: only modes in the current rotation start (Showdown always, Showdown+ in the last week).
+  const rotationMode = mode === "showdown" && showdownPlus ? "showdownPlus" : mode;
+  if (IS_OFFICIAL_SEASON && !modeOpen(rotationMode)) { showToast(`${MODE_NAMES[rotationMode] ?? mode}은(는) 지금 로테이션에 없습니다.`); return; }
+  // Hot Zone runs on the Gem Grab arena, teams and respawns, with zones instead of gems.
+  const hotZone = mode === "hotZone";
+  if (hotZone) mode = "gemGrab";
   if (mode === "knockout" && !IS_BETA8_TEST) return;
   if (IS_BETA8_TEST && goldRushState.active && !goldRushState.ended) endGoldRush('중도 이탈',false,null,true);
   closeBetaModal();
@@ -8962,6 +9041,8 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
   setBetaMatchMusic(beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
   goldRushState.mode = mode;
+  goldRushState.hotZone = hotZone;
+  clearHotZone();
   goldRushState.showdownPlus = mode === "showdown" && showdownPlus;
   const arenaMode = true;
   currentArenaMode = mode;
@@ -8982,7 +9063,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   goldRushState.kills = 0;
   goldRushState.questStats = questStats();
   goldRushState.recordDeaths = 0;
-  goldRushState.recordMatch = betaRecords?.start(mode,betaState.selectedCharacter);
+  goldRushState.recordMatch = betaRecords?.start(hotZone?'hotZone':mode,betaState.selectedCharacter);
   goldRushState.startedAt = clock.elapsedTime;
   goldRushState.nextSpawnAt = clock.elapsedTime + 2.5;
   goldRushState.winCountdownStartedAt = null;
@@ -9014,7 +9095,9 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   renderGoldRushAmmoFan(goldRushState.maxAmmo);
   respawnOverlay.classList.add("hidden");
   goldRushToggle.textContent = mode === "goldRush" ? "골드 러쉬 재시작" : "골드 러쉬 시작";
-  gemGrabToggle.textContent = mode === "gemGrab" ? "젬 그랩 재시작" : "젬 그랩 시작";
+  gemGrabToggle.textContent = mode === "gemGrab" && !hotZone ? "젬 그랩 재시작" : "젬 그랩 시작";
+  const hotZoneToggle = document.getElementById("hot-zone-toggle");
+  if (hotZoneToggle) hotZoneToggle.textContent = hotZone ? "핫 존 재시작" : "핫 존 시작";
   showdownToggle.textContent = mode === "showdown" && !showdownPlus ? "쇼다운 재시작" : "쇼다운 시작";
   showdownPlusToggle.textContent = mode === "showdown" && showdownPlus ? "쇼다운+ 재시작" : "쇼다운+ 시작";
   soccerToggle.textContent = mode === "soccer" ? "SOCCER KICK 재시작" : "SOCCER KICK 시작";
@@ -9071,7 +9154,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
     if (resourceLabel) resourceLabel.textContent = "우리 팀 젬";
     goldCountEl.parentElement.style.display = "";
     canvas.dataset.betaMode = "ancient-gem-grab";
-    updateGemGrabHud();
+    if (hotZone) startHotZone(); else { setGemTargetLabel(` / ${GEM_TARGET_COUNT}`); updateGemGrabHud(); }
   } else {
     goldRushHud.querySelector("strong").textContent = "GOLD RUSH";
     const resourceLabel = document.getElementById("season-resource-label");
@@ -9484,6 +9567,33 @@ showdownPlusToggle.addEventListener("click", () => startGoldRush("showdown", tru
 showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
 soccerToggle?.addEventListener("click", () => startGoldRush("soccer"));
 chopWoodOpen.addEventListener("click", () => startGoldRush("chopWood"));
+// Official Season 1 rotation: Hot Zone button, open and closed mode buttons, time to the next change.
+if (IS_OFFICIAL_SEASON) {
+  const style = document.createElement("style");
+  style.textContent = ".rotation-closed{opacity:.4;cursor:not-allowed}.mode-rotation-info{align-self:center;padding:0 6px;font-size:12px;color:#cfd8e8}";
+  document.head.append(style);
+  const hotZoneButton = document.createElement("button");
+  hotZoneButton.type = "button"; hotZoneButton.id = "hot-zone-toggle"; hotZoneButton.textContent = "핫 존 시작";
+  gemGrabToggle.after(hotZoneButton);
+  hotZoneButton.addEventListener("click", () => startGoldRush("hotZone"));
+  const rotationInfo = document.createElement("span");
+  rotationInfo.id = "mode-rotation-info"; rotationInfo.className = "mode-rotation-info";
+  hotZoneButton.after(rotationInfo);
+  const buttons = { knockout: document.getElementById("knockout-toggle"), gemGrab: gemGrabToggle, soccer: soccerToggle, goldRush: goldRushToggle,
+    chopWood: chopWoodOpen, hotZone: hotZoneButton, showdownPlus: showdownPlusToggle };
+  const left = ms => { const s = Math.max(0, Math.floor(ms / 1000)); return `${Math.floor(s / 3600)}시간 ${String(Math.floor(s % 3600 / 60)).padStart(2, "0")}분`; };
+  const refresh = () => {
+    const now = Date.now(), rotation = activeRotation(now);
+    for (const [mode, button] of Object.entries(buttons)) {
+      if (!button) continue;
+      const open = modeOpen(mode, now);
+      button.disabled = !open; button.classList.toggle("rotation-closed", !open);
+      button.title = open ? `${MODE_NAMES[mode]} · 지금 열림` : mode === "showdownPlus" ? "쇼다운+는 매달 마지막 주에만 열립니다" : `${MODE_NAMES[mode]} · 다음 로테이션에 열립니다`;
+    }
+    rotationInfo.textContent = `로테이션: ${rotation.modes.map(mode => MODE_NAMES[mode]).join(" · ")} · 교체까지 ${left(rotation.endsAt - now)}`;
+  };
+  refresh(); setInterval(refresh, 30000);
+}
 chopWoodClose.addEventListener("click", () => endGoldRush("찹 우드 종료", false, null, true));
 document.getElementById("test-death-btn").addEventListener("click", () => {
   if (betaState.selectedCharacter === "pink") {

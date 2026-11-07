@@ -1,5 +1,5 @@
 import { appendRecord, emptySummary, matchRecord, RECORD_SEASON } from './config/beta8-records.js';
-const modes={goldRush:'골드 러쉬',showdown:'쇼다운',soccer:'SOCCER KICK',gemGrab:'젬 그랩',chopWood:'찹 우드',knockout:'KNOCKOUT'};
+const modes={goldRush:'골드 러쉬',showdown:'쇼다운',soccer:'SOCCER KICK',gemGrab:'젬 그랩',chopWood:'찹 우드',knockout:'KNOCKOUT',hotZone:'핫 존'};
 const n=value=>Number(value||0).toLocaleString('ko-KR',{maximumFractionDigits:1});
 // Kills/deaths in one cell: "12/5 (2.4)"; with no deaths the ratio is the kill count.
 const kd=(kills,deaths)=>`${n(kills)}/${n(deaths)} (${n(Number(deaths)?kills/deaths:kills)})`;
