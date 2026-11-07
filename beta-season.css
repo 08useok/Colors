@@ -663,6 +663,12 @@ body.beta-season-9-theme .beta-wallet, body.beta-season-9-theme .test-panel, bod
 .patch-card.nerf, .patch-card.patch-nerf { border-color: #6a3036; }
 .patch-card.patch-buff { border-color: #2f5a3d; }
 .patch-card.patch-adjust { border-color: #6a5426; }
+.patch-group-title.new { color: #c9a2ff; }
+.patch-badge.new { color: #f3e8ff; background: #5b2a8a; }
+.patch-card.patch-new { border-color: #5a3a80; }
+.patch-group-title.system { color: #8fd3ff; }
+.patch-badge.system { color: #e0f4ff; background: #1f5578; }
+.patch-card.patch-system { border-color: #2c5571; }
 .patch-changes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 5px; }
 .patch-changes li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 11px; color: #c9dbe2; border-bottom: 1px solid #1d3540; padding-bottom: 4px; }
 .patch-changes b { color: #9fb6bf; font-weight: 700; }

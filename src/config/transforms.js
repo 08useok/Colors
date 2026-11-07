@@ -2,6 +2,10 @@
 // While a character is transformed its kit changes for `duration` seconds.
 // Gauge: ultimate charge gained also fills the transform gauge; a full gauge takes
 // `chargeMultiplier` ultimates' worth of charge. Nothing charges while transformed.
+// Shared boost while transformed (like a hypercharge): +5% damage dealt, +20% health
+// (added on transform, removed when it ends) and a 10% shield (damage reduction).
+export const TRANSFORM_STATS = Object.freeze({ damageBonus: .05, healthBonus: .2, damageReduction: .1 });
+
 export const TRANSFORMS = {
   orange: {
     name: '껍질이 왜 이렇게 많아?!', color: '#ff9b32', duration: 6, chargeMultiplier: 1.5,

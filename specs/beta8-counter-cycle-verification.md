@@ -1,4 +1,4 @@
-# Beta8 counter verification - 0.8.65 - 2026-11-06
+# Beta8 counter verification - 0.8.65 - 2026-11-07
 
 **18/18 specified target edges are undefeated in the standard sampled conditions. Cycle complete: true. Unique one-win/one-loss counter relation: false.**
 

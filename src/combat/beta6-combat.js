@@ -1,7 +1,7 @@
 import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
-import { TRANSFORMS } from '../config/transforms.js';
+import { TRANSFORMS, TRANSFORM_STATS } from '../config/transforms.js';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
@@ -68,6 +68,7 @@ export function createBeta6Combat(definitions, options = {}) {
     if (!t || !alive(a) || a.isSalmonDevice || a.transformCharge < 1 || transformed(a) || time < a.lockUntil || time < a.frozenUntil) return false;
     if (t.needsUltimate && (!a.u || a.charge < a.u.chargeRequired)) return false;
     a.transformCharge = 0; a.transformUntil = time + t.duration;
+    a.transformBonusHp = a.d.maxHealth * TRANSFORM_STATS.healthBonus; a.hp += a.transformBonusHp;
     emit('transform', { owner: a, until: a.transformUntil });
     return true;
   }
@@ -104,10 +105,13 @@ export function createBeta6Combat(definitions, options = {}) {
     const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;
     const rolling=(a.dash&&time<a.dash.until)||(a.ultimatePreparing&&a.u?.guardDuringPreparation);
     const dash=alive(a)&&!a.salmonAirborne&&time>=a.lockUntil&&time>=a.frozenUntil&&rolling?(a.u?.damageReduction??0):0;
-    return clamp(Math.max(guard,dash),0,1);
+    // Transform shield stacks multiplicatively with guards and dashes.
+    const shield=a.t&&transformed(a)?TRANSFORM_STATS.damageReduction:0;
+    return clamp(1-(1-Math.max(guard,dash))*(1-shield),0,1);
   }
   function hit(a, b, damage, basic = false, award = 1, ultimate = false, bypassGuard = false) {
     if (!alive(b) || damage <= 0 || time < b.invulnerableUntil || !enemies(a, b)) return 0;
+    if (a.t && transformed(a)) damage *= 1 + TRANSFORM_STATS.damageBonus;
     const dealt = Math.min(b.hp, damage * (bypassGuard?1:1-damageReductionFor(b)));
     b.hp -= dealt; a.combatAt = b.combatAt = time;
     b.revealedUntil = a.revealedUntil = time + 3;
@@ -603,6 +607,8 @@ export function createBeta6Combat(definitions, options = {}) {
     for (const a of actors) {
       // 시전자가 쓰러져도 대상이 영원히 묶이지 않도록 죽음 검사보다 먼저 푼다
       if (a.analysisTarget && (!alive(a) || !alive(a.analysisTarget))) releaseAnalysis(a);
+      // The +20% transform health goes away when the transform ends.
+      if (a.transformBonusHp && time >= a.transformUntil) { a.transformBonusHp = 0; a.hp = Math.min(a.hp, a.d.maxHealth); }
       if (a.salmonAirborne && time < (a.angelMarkUntil ?? 0)) control(a, a.salmonAirborne.owner);
       if (!alive(a) || a.isSalmonDevice || a.salmonAirborne) continue;
       if (a.analysisTarget) {

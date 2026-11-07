@@ -43,11 +43,11 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=2";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=53";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=3";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=54";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
-import { TRANSFORMS } from "./config/transforms.js";
+import { TRANSFORMS, TRANSFORM_STATS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
 import { LANGS } from "./LANGS/langs.js?v=1.5.141";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
@@ -2979,8 +2979,8 @@ function renderBetaPatchNotes() {
   const notes = BETA9_PATCH_NOTES;
   modalTitle.textContent = `${notes.title} · ${notes.date}`;
   const card = (group, c) => `<article class="beta-card patch-card patch-${group.type}"><span class="patch-badge ${group.type}">${group.label}</span><h3>${c.name}</h3><ul class="patch-changes">${c.changes.map(([stat, before, after]) => `<li><b>${stat}</b><span><s>${before}</s> → <strong>${after}</strong></span></li>`).join('')}</ul>${c.note ? `<p>${c.note}</p>` : ''}</article>`;
-  modalContent.innerHTML = `<section class="storybook-intro"><span>SEASON 9 · BALANCE PATCH</span><h2>${notes.title}</h2><ul class="patch-summary">${notes.summary.map(line => `<li>${line}</li>`).join('')}</ul></section>`
-    + notes.groups.map(group => `<h3 class="patch-group-title ${group.type}">${group.label} · ${group.characters.length}명</h3><div class="beta-grid">${group.characters.map(c => card(group, c)).join('')}</div>`).join('');
+  modalContent.innerHTML = `<section class="storybook-intro"><span>SEASON 9 · UPDATE</span><h2>${notes.title}</h2><ul class="patch-summary">${notes.summary.map(line => `<li>${line}</li>`).join('')}</ul></section>`
+    + notes.groups.map(group => `<h3 class="patch-group-title ${group.type}">${group.label} · ${group.characters.length}${group.unit ?? '명'}</h3><div class="beta-grid">${group.characters.map(c => card(group, c)).join('')}</div>`).join('');
 }
 
 function openPanel(panel) {
@@ -7024,6 +7024,9 @@ if (IS_BETA7_TEST) {
 
 function clearBeta6RoundCombat() {
   transformModels.clear();
+  for (const owner of [goldRushState, ...goldRushBots]) if (owner.transformBaseMax) {
+    owner.maxHealth = owner.transformBaseMax; owner.health = Math.min(owner.health, owner.maxHealth); owner.transformBaseMax = 0;
+  }
   betaAttackGeneration++;
   betaPracticeUltimatePending = null;
   restoreModelAttackPose();
@@ -7492,6 +7495,23 @@ function updateLobbyTransform(dt) {
   betaTransformUi().updateWorld(world, actor => actor === lobbyTransformActor ? player.position : actor.mesh.position, () => true);
   betaTransformUi().updateButton(t ? lobbyTransformActor : null, clock.elapsedTime, id);
 }
+// Transform health on the page side: the page owns fighters' health, so the +20% health
+// (with a matching max) is added here while transformed and removed when it ends.
+function beta6TransformHealth(owner, actor, mesh) {
+  if (!owner) return;
+  const on = !!actor?.t && !!beta6Combat && beta6Combat.time < actor.transformUntil && !owner.dead;
+  if (on && !owner.transformBaseMax) {
+    owner.transformBaseMax = owner.maxHealth;
+    owner.maxHealth = owner.transformBaseMax * (1 + TRANSFORM_STATS.healthBonus);
+    owner.health += owner.transformBaseMax * TRANSFORM_STATS.healthBonus;
+  } else if (!on && owner.transformBaseMax) {
+    owner.maxHealth = owner.transformBaseMax;
+    owner.health = Math.min(owner.health, owner.maxHealth);
+    owner.transformBaseMax = 0;
+  } else return;
+  if (mesh) { mesh.userData.maxHealth = owner.maxHealth; mesh.userData.health = owner.health; }
+  if (owner === goldRushState) updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+}
 function activateBeta6Transform() {
   const world = beta6Combat, actor = beta6PlayerActor;
   if (!world || !actor) return activateLobbyTransform();
@@ -7705,6 +7725,8 @@ function updateBeta6BotCombat(dt) {
     processBeta6CombatEvent(event);
   }
   if (beta6Combat !== world) return;
+  beta6TransformHealth(goldRushState, hero);
+  for (const bot of goldRushBots) beta6TransformHealth(bot, bot.combatActor, bot.mesh);
   salmonBattleVisuals.update(world);
   raspberryVisuals.update(world);
   const wasHeroLeaping = Boolean(hero.leap);

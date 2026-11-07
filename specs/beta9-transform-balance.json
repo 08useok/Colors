@@ -1,0 +1,102 @@
+{
+ "date": "2026-11-07",
+ "scope": "3v3 random teams, 18-character Season 9 beta roster, level 6, team arena 40x60, 600 matches per mode, same seeds with transforms off/on",
+ "matchesPerCharacter": {
+  "knockout": 195,
+  "gemGrab": 190
+ },
+ "eventsWithTransforms": {
+  "ultimate:orange": 766,
+  "ultimate:chartreuse": 349,
+  "transform:chartreuse": 206,
+  "transform:orange": 248,
+  "angelExecute:all": 75,
+  "angelExecute:chartreuse": 41
+ },
+ "scores": {
+  "off": {
+   "knockout": {
+    "lavender": 61.2,
+    "red": 66.3,
+    "green": 42.3,
+    "blue": 54,
+    "orange": 59,
+    "yellow": 62.1,
+    "cyan": 45.3,
+    "purple": 57.1,
+    "pink": 34.3,
+    "crimson": 38.7,
+    "gold": 42.8,
+    "ivory": 61.7,
+    "chartreuse": 48.8,
+    "mint": 43,
+    "azure": 49.8,
+    "crystal": 41.2,
+    "salmon": 46.5,
+    "raspberry": 42.3
+   },
+   "gemGrab": {
+    "lavender": 55.9,
+    "red": 52.3,
+    "green": 43.1,
+    "blue": 43.6,
+    "orange": 48.9,
+    "yellow": 56.5,
+    "cyan": 44.1,
+    "purple": 41.2,
+    "pink": 45.7,
+    "crimson": 42.1,
+    "gold": 41.6,
+    "ivory": 62.2,
+    "chartreuse": 52.5,
+    "mint": 56.3,
+    "azure": 48.8,
+    "crystal": 48.3,
+    "salmon": 59.5,
+    "raspberry": 55.5
+   }
+  },
+  "on": {
+   "knockout": {
+    "lavender": 60.7,
+    "red": 66.3,
+    "green": 43.3,
+    "blue": 53.5,
+    "orange": 59.5,
+    "yellow": 62.1,
+    "cyan": 45.3,
+    "purple": 56.1,
+    "pink": 34.8,
+    "crimson": 38.2,
+    "gold": 42.1,
+    "ivory": 61.7,
+    "chartreuse": 50.7,
+    "mint": 41.5,
+    "azure": 50.2,
+    "crystal": 40.7,
+    "salmon": 47,
+    "raspberry": 42.3
+   },
+   "gemGrab": {
+    "lavender": 57.3,
+    "red": 49.2,
+    "green": 43.7,
+    "blue": 41.5,
+    "orange": 50.5,
+    "yellow": 56.5,
+    "cyan": 44.1,
+    "purple": 43.9,
+    "pink": 47.3,
+    "crimson": 43.1,
+    "gold": 42.9,
+    "ivory": 60.4,
+    "chartreuse": 50.5,
+    "mint": 59.6,
+    "azure": 49.8,
+    "crystal": 46.1,
+    "salmon": 57,
+    "raspberry": 54.5
+   }
+  }
+ }
+}

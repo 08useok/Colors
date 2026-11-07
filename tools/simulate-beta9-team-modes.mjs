@@ -40,13 +40,15 @@ const spawnSpots = side => [-4, 0, 4].map(x => ({ x, z: side * TEAM_ARENA.spawnZ
 const sideOf = team => team === 'a' ? -1 : 1;
 // Optional event tap for probes (e.g. counting one character's shots and hits).
 export const simHooks = { onEvent: null };
+// transforms: turn on the Season 9 transform (변신) as on the beta page (--transforms).
+export const simOptions = { transforms: false };
 
 function createWorld(defs, mode, mapIndex, seed, aimError, extra = {}) {
   const layout = teamArenaMap(mode, mapIndex);
   return {
     layout,
     world: createBeta6Combat(defs, {
-      seed, aimError, bounds: BOUNDS_Z, onEvent: e => simHooks.onEvent?.(e),
+      seed, aimError, bounds: BOUNDS_Z, transforms: simOptions.transforms, onEvent: e => simHooks.onEvent?.(e),
       blocked: (x, z, r = .55) => mapBlocked(layout, x, z, r),
       walkable: (x, z) => !mapBlocked(layout, x, z, .5),
       bushAt: (x, z) => layout.bushes.some(rect => insideMapRect(x, z, rect)),
@@ -56,13 +58,13 @@ function createWorld(defs, mode, mapIndex, seed, aimError, extra = {}) {
 }
 
 function regen(world, dt) {
-  for (const a of world.actors) if (a.hp > 0 && !a.isSalmonDevice && world.time - a.combatAt >= REGEN_DELAY)
+  for (const a of world.actors) if (a.hp > 0 && a.hp < a.d.maxHealth && !a.isSalmonDevice && world.time - a.combatAt >= REGEN_DELAY)
     a.hp = Math.min(a.d.maxHealth, a.hp + a.d.maxHealth * REGEN_PER_SECOND * dt);
 }
 const defaultLowHealthRetreat = a => a.hp <= a.d.maxHealth * .5 && !a.d.pursuesWhileLowHealth;
 
 // ---------- Knockout: no respawn, best of 3, poison square closes from 45 s to 85 s ----------
-function knockoutRound(defs, teams, mapIndex, seed, aimError) {
+function knockoutRound(defs, teams, mapIndex, seed, aimError, gauges = new Map()) {
   let safe = null, layout;
   const { world, layout: arena } = createWorld(defs, 'knockout', mapIndex, seed, aimError, {
     destination(a, target) {
@@ -73,7 +75,9 @@ function knockoutRound(defs, teams, mapIndex, seed, aimError) {
   });
   layout = arena;
   const fighters = [];
-  for (const team of ['a', 'b']) teams[team].forEach((id, i) => fighters.push(world.add(id, { team, ...spawnSpots(sideOf(team))[i] })));
+  // The transform gauge carries over between rounds, as on the beta page.
+  for (const team of ['a', 'b']) teams[team].forEach((id, i) => fighters.push(world.add(id, { team, ...spawnSpots(sideOf(team))[i], transformCharge: gauges.get(`${team}:${i}`) ?? 0 })));
+  const keep = () => { for (const f of fighters) gauges.set(`${f.team}:${teams[f.team].indexOf(f.id)}`, f.transformCharge); };
   let nextPoison = KNOCKOUT_RULES.poisonStarts;
   const living = team => fighters.filter(f => f.team === team && f.hp > 0);
   while (world.time < KNOCKOUT_RULES.roundSeconds) {
@@ -86,16 +90,17 @@ function knockoutRound(defs, teams, mapIndex, seed, aimError) {
     }
     // Pink's encore can bring a fallen ally back a moment later, so only end once nobody is pending.
     const a = living('a').length, b = living('b').length, pending = fighters.some(f => f.hp <= 0 && f.encoreReviveAt);
-    if ((!a || !b) && !pending) return { winner: a && !b ? 'a' : b && !a ? 'b' : null, time: t, reason: 'elimination' };
+    if ((!a || !b) && !pending) { keep(); return { winner: a && !b ? 'a' : b && !a ? 'b' : null, time: t, reason: 'elimination' }; }
   }
+  keep();
   const a = living('a'), b = living('b'), hp = list => list.reduce((s, f) => s + f.hp / f.d.maxHealth, 0);
   const winner = a.length !== b.length ? (a.length > b.length ? 'a' : 'b') : Math.abs(hp(a) - hp(b)) > 1e-6 ? (hp(a) > hp(b) ? 'a' : 'b') : null;
   return { winner, time: world.time, reason: 'timeout' };
 }
 export function knockoutMatch(defs, teams, mapIndex, seed, aimError) {
-  const wins = { a: 0, b: 0 }; let rounds = 0;
+  const wins = { a: 0, b: 0 }, gauges = new Map(); let rounds = 0;
   while (wins.a < KNOCKOUT_RULES.winsRequired && wins.b < KNOCKOUT_RULES.winsRequired && rounds < 5) {
-    const r = knockoutRound(defs, teams, mapIndex, seed + rounds * 7919, aimError); rounds++;
+    const r = knockoutRound(defs, teams, mapIndex, seed + rounds * 7919, aimError, gauges); rounds++;
     if (r.winner) wins[r.winner]++;
   }
   return { winner: wins.a > wins.b ? 'a' : wins.b > wins.a ? 'b' : null, rounds, wins };
@@ -149,8 +154,8 @@ export function gemGrabMatch(defs, teams, mapIndex, seed, aimError) {
         f.gems = 0;
       } else if (f.hp > 0 && deadAt.has(f)) deadAt.delete(f); // encore revive
       else if (f.hp <= 0 && t - deadAt.get(f) >= GEM_GRAB_RULES.respawnDelay && !f.encoreReviveAt) {
-        deadAt.delete(f); const charge = f.charge; world.remove(f);
-        const next = add(f.id, f.team, f.slot); next.charge = charge; fighters[i] = next;
+        deadAt.delete(f); const { charge, transformCharge } = f; world.remove(f);
+        const next = add(f.id, f.team, f.slot); next.charge = charge; next.transformCharge = transformCharge; fighters[i] = next;
       }
     }
     for (const f of fighters) if (f.hp > 0) for (let g = gems.length - 1; g >= 0; g--)
@@ -213,6 +218,7 @@ export function splitRoster(ids, knockout, gemGrab) {
 if (process.argv[1]?.endsWith('simulate-beta9-team-modes.mjs')) {
   const arg = name => { const i = process.argv.indexOf(name); return i >= 0 ? Number(process.argv[i + 1]) : null; };
   const matches = arg('--matches') ?? (process.argv.includes('--quick') ? 30 : 1200);
+  simOptions.transforms = process.argv.includes('--transforms');
   const started = Date.now();
   const { ids, results } = runModes({ matches });
   const split = splitRoster(ids, results.knockout.stats, results.gemGrab.stats);
@@ -223,6 +229,6 @@ if (process.argv[1]?.endsWith('simulate-beta9-team-modes.mjs')) {
   if (!process.argv.includes('--quick')) {
     for (const r of Object.values(results)) delete r.pair;
     const outIndex = process.argv.indexOf('--out'), out = outIndex >= 0 ? process.argv[outIndex + 1] : 'specs/beta9-team-mode-simulation.json';
-    writeFileSync(new URL('../' + out, import.meta.url), JSON.stringify({ date: new Date().toISOString().slice(0, 10), scope: '3v3 random teams from the 18-character beta roster, level 6, three event maps per mode, aim error .035/.1', results, split, rows }, null, 2) + '\n');
+    writeFileSync(new URL('../' + out, import.meta.url), JSON.stringify({ date: new Date().toISOString().slice(0, 10), scope: '3v3 random teams from the 18-character beta roster, level 6, three event maps per mode, aim error .035/.1', transforms: simOptions.transforms, results, split, rows }, null, 2) + '\n');
   }
 }

@@ -75,6 +75,22 @@ const step = (w, seconds) => { for (let i = 0; i < seconds * 60; i++) w.update(1
   c.next = 0; c.ammo = 3; w.fire(c, foe, 0); step(w, .6);
   assert.equal(foe.hp, 0, 'second Heaven round finishes the marked enemy');
 }
+{ // Shared boost while transformed: +5% damage dealt, +20% health, 10% shield; health bonus ends with it.
+  const w = world();
+  const a = w.add('red', { automatic: false, team: 'a', x: 0, z: 0 });
+  const b = w.add('blue', { automatic: false, team: 'b', x: 3, z: 0 });
+  const o = w.add('orange', { automatic: false, team: 'a', x: 0, z: 2, transformCharge: 1 });
+  o.charge = o.u.chargeRequired;
+  assert.equal(w.hit(o, b, 1000), 1000, 'normal damage');
+  w.transform(o);
+  assert.equal(o.hp, o.d.maxHealth * 1.2, '+20% health on transform');
+  assert(Math.abs(w.hit(o, b, 1000) - 1050) < 1e-9, '+5% damage while transformed');
+  assert(Math.abs(w.hit(b, o, 1000) - 900) < 1e-9, '10% shield while transformed');
+  assert.equal(w.damageReductionFor(a), 0);
+  step(w, TRANSFORMS.orange.duration + .1);
+  assert(o.hp <= o.d.maxHealth, 'bonus health removed when the transform ends');
+  assert.equal(w.hit(o, b, 1000), 1000, 'damage back to normal');
+}
 { // Unmarked enemies take CC normally; marks expire.
   const w = world();
   const c = w.add('chartreuse', { automatic: false, team: 'a', x: 0, z: 0 });
