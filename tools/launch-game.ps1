@@ -1,4 +1,4 @@
-param([switch]$Beta, [switch]$NoBrowser)
+param([switch]$Beta, [switch]$Official, [switch]$NoBrowser)
 $ErrorActionPreference = 'Stop'
 try {
   $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -14,7 +14,7 @@ try {
   if (!(Test-Path -LiteralPath $readyFile)) { throw 'Local server startup timed out.' }
   $serverInfo = Get-Content -LiteralPath $readyFile -Raw | ConvertFrom-Json
   Remove-Item -LiteralPath $readyFile
-  $page = if ($Beta) { '/beta-season.html?test=beta8' } else { '/index.html' }
+  $page = if ($Official) { '/official.html' } elseif ($Beta) { '/beta-season.html?test=beta8' } else { '/index.html' }
   $url = $serverInfo.url + $page
   Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 5 | Out-Null
   Write-Host ('Game URL: ' + $url)

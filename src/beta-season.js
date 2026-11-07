@@ -62,7 +62,10 @@ import { BETA_LOBBY_FLOORS, BETA_LOBBY_STAIRS, lobbyStairAt, lobbyFloorHeight, b
 const canvas = document.getElementById("beta-canvas");
 let azureWaveState = null;
 const betaSearchParams = new URLSearchParams(location.search);
-const requestedBetaSeason = betaSearchParams.get("test");
+// official.html runs this same code as Official Season 1 with its own saves; Season 1 features
+// switch on with IS_OFFICIAL_SEASON. It always uses the current (beta8) code path.
+const IS_OFFICIAL_SEASON = document.documentElement.dataset.officialSeason === "1";
+const requestedBetaSeason = IS_OFFICIAL_SEASON ? "beta8" : betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta8";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
 const seasonCharacters = ["beta7", "beta8"].includes(BETA_SEASON_ID) ? applyBeta7Balance(BASE_BETA_CHARACTERS) : HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS) : structuredClone(BASE_BETA_CHARACTERS);
@@ -345,7 +348,9 @@ if (!IS_BETA5_TEST && beta6LoadingScreen) {
   if (document.readyState === "complete") finishBeta6Loading();
   else window.addEventListener("load", finishBeta6Loading, { once: true });
 }
-const BASE_BETA_STORAGE_KEY = IS_BETA8_TEST
+const BASE_BETA_STORAGE_KEY = IS_OFFICIAL_SEASON
+  ? "colorsOfficialSeason1"
+  : IS_BETA8_TEST
   ? "colorsBetaSeason8Test"
   : IS_BETA7_TEST
     ? "colorsBetaSeason7Test"
@@ -444,6 +449,23 @@ if (IS_BETA8_TEST) {
     loading.querySelector("span").textContent = "챔피언스 광장으로 입장하는 중…";
   }
   beta6LoadingScreen?.setAttribute("aria-label", "베타 시즌 9 챔피언스 불러오는 중");
+}
+if (IS_OFFICIAL_SEASON) {
+  document.body.classList.add("official-season-1");
+  document.title = "Colors - 정식 시즌 1";
+  const chip = document.querySelector(".beta-header .test-chip");
+  const heading = document.querySelector(".beta-header h1");
+  const tagline = document.querySelector(".beta-header p");
+  if (chip) chip.textContent = "SEASON 1";
+  if (heading) heading.textContent = "정식 시즌 1";
+  if (tagline) tagline.textContent = `컬러스 정식 시즌 1 · ${CHARACTERS.length}종 전투`;
+  const loading = document.querySelector(".beta6-loading-status");
+  if (loading) {
+    loading.querySelector("strong").textContent = "SEASON 1";
+    loading.querySelector("b").textContent = "COLORS · OFFICIAL";
+    loading.querySelector("span").textContent = "정식 시즌 1에 입장하는 중…";
+  }
+  beta6LoadingScreen?.setAttribute("aria-label", "정식 시즌 1 불러오는 중");
 }
 
 // 시즌 한정 꾸미기 소품: 캐릭터 성능과 무관, 이번 시즌 참여를 보여주는 장식물.

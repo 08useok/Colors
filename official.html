@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko" data-official-season="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colors - 정식 시즌 1</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./beta-season.css?v=0.9.18">
+  <script>
+    // Official Season 1 always loads the current season look.
+    const loadingSeason = "beta8";
+    if (loadingSeason === "beta8") document.documentElement.classList.add("beta8-loading", "beta9-loading");
+    if (loadingSeason === "beta5") {
+      document.documentElement.classList.add("beta5-loading");
+    } else {
+      document.documentElement.classList.add("beta6-loading");
+      if (loadingSeason === "beta7") document.documentElement.classList.add("beta7-loading");
+    }
+  </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+  <style>
+    .storybook-panel { color: #eaf6ff; line-height: 1.85; }
+    .storybook-intro { margin: 0 0 28px; padding: 22px; border: 1px solid rgba(126, 206, 255, .42); border-radius: 16px; background: linear-gradient(135deg, rgba(15, 57, 90, .93), rgba(33, 109, 157, .72)); }
+    .storybook-intro span { color: #8ed9ff; font-size: .72rem; font-weight: 800; letter-spacing: .13em; }
+    .storybook-intro h2 { margin: 6px 0; color: #fff; font-size: 1.7rem; }
+    .storybook-intro p { margin: 0; color: #cceaff; font-size: .86rem; }
+    .storybook-era { margin: 34px 0 18px; padding: 0 0 10px; border-bottom: 1px solid rgba(159, 217, 250, .42); }
+    .storybook-era h2 { margin: 0; color: #fff4a7; font-size: 1.35rem; }
+    .storybook-chapter { margin: 0 0 34px; padding: 0 0 28px; border-bottom: 1px solid rgba(159, 217, 250, .25); }
+    .storybook-chapter h3 { margin: 0 0 18px; color: #9ee4ff; font-size: 1.2rem; }
+    .storybook-chapter h4 { margin: 24px 0 8px; color: #d4efff; font-size: 1rem; }
+    .storybook-text { margin: 0 0 14px; color: #e9f6ff; word-break: keep-all; }
+    .storybook-text strong { color: #fff4a7; }
+    .storybook-quote { padding: 11px 15px; border-left: 3px solid #84d5f4; border-radius: 0 10px 10px 0; background: rgba(122, 205, 246, .12); }
+    .storybook-loading { color: #d6edff; text-align: center; padding: 40px 0; }
+    .storybook-toc { margin: 0 0 30px; padding: 16px 18px; border: 1px solid rgba(142, 217, 255, .38); border-radius: 14px; background: rgba(9, 34, 54, .72); }
+    .storybook-toc summary { color: #fff4a7; font-weight: 800; cursor: pointer; user-select: none; }
+    .storybook-toc-groups { display: grid; gap: 18px; margin-top: 16px; }
+    .storybook-toc-group h3 { margin: 0 0 8px; color: #8ed9ff; font-size: .9rem; }
+    .storybook-toc-group ol { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px 18px; margin: 0; padding-left: 22px; }
+    .storybook-toc-group a { color: #dcefff; font-size: .82rem; text-decoration: none; }
+    .storybook-toc-group a:hover, .storybook-toc-group a:focus-visible { color: #fff4a7; text-decoration: underline; }
+    .storybook-chapter { scroll-margin-top: 24px; }
+  </style>
+  <link rel="stylesheet" href="./model-loading.css?v=1">
+  <link rel="stylesheet" href="./beta-account.css?v=2">
+  <link rel="stylesheet" href="./beta-records.css?v=1">
+  <link rel="stylesheet" href="./beta-champions.css?v=2">
+</head>
+<body>
+  <div id="model-loading-screen" class="model-loading-screen" role="status" aria-live="polite" aria-busy="true">
+    <h1>COLORS BETA</h1><p data-model-loading-label>캐릭터 모델을 준비하는 중…</p>
+    <progress aria-label="모델 준비 진행률" max="100" value="0"></progress><small data-model-loading-detail>0%</small><button type="button" hidden>다시 시도</button>
+  </div>
+  <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="정식 시즌 1 불러오는 중">
+    <img class="beta6-loading-bg" src="./assets/beta6-loading-bg.jpg?v=1" alt="애저 해변의 여름 바다 풍경">
+    <div class="beta7-loading-art" aria-hidden="true">
+      <i class="beta7-sun"></i><i class="beta7-dune beta7-dune-back"></i><i class="beta7-dune beta7-dune-front"></i>
+      <i class="beta7-pyramid beta7-pyramid-left"></i><i class="beta7-pyramid beta7-pyramid-right"></i>
+      <i class="beta7-gem"></i><i class="beta7-glyph beta7-glyph-left">◇</i><i class="beta7-glyph beta7-glyph-right">◇</i>
+    </div>
+    <img class="beta8-loading-bg" alt="">
+    <div class="beta6-loading-shade"></div>
+    <img class="beta6-badge beta6-badge-wave" src="./assets/beta6-loading-badge-wave.png?v=1" alt="">
+    <img class="beta6-badge beta6-badge-splash" src="./assets/beta6-loading-splash.png?v=1" alt="">
+    <img class="beta6-badge beta6-badge-shark" src="./assets/beta6-loading-badge-shark.png?v=1" alt="">
+    <img class="beta6-badge beta6-badge-pufferfish" src="./assets/beta6-loading-badge-pufferfish.png?v=1" alt="">
+    <div class="beta6-loading-status">
+      <img class="beta6-loading-banner" src="./assets/beta6-loading-banner.png?v=1" alt="">
+      <strong>SEASON 1</strong><b>COLORS · OFFICIAL</b><span>정식 시즌 1에 입장하는 중…</span>
+    </div>
+  </div>
+  <div id="beta5-loading-screen" class="beta5-loading-screen" role="status" aria-live="polite" aria-label="베타 시즌 5 불러오는 중">
+    <img src="./assets/beta5-loading.png?v=1" alt="Colors 놀이공원에서 캐릭터들이 즐기는 베타 시즌 5">
+    <div class="beta5-loading-shade"></div>
+    <div class="beta5-loading-status">
+      <strong>BETA SEASON 5</strong>
+      <div class="beta5-loading-bar"><i></i></div>
+      <span>놀이공원 입장 준비 중…</span>
+    </div>
+  </div>
+  <canvas id="beta-canvas"></canvas>
+
+  <div class="season-background-decor" aria-hidden="true">
+    <div class="season-sky-glow"></div>
+    <div class="season-cloud season-cloud-left"></div>
+    <div class="season-cloud season-cloud-right"></div>
+    <div class="season-scoop season-scoop-pink"></div>
+    <div class="season-scoop season-scoop-mint"></div>
+    <div class="season-sprinkles">
+      <i></i><i></i><i></i><i></i><i></i><i></i>
+      <i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+  </div>
+
+  <header class="beta-header">
+    <div>
+      <span class="test-chip">SEASON 1</span>
+      <h1>정식 시즌 1</h1>
+      <p>잃어버린 황금 유적 · 보물을 훔치자 유적이 깨어난다</p>
+      <img id="sea-prop-banner" class="sea-prop-banner hidden" alt="장착한 시즌 소품 배너">
+    </div>
+    <nav class="beta-nav" aria-label="메뉴 및 정규 이벤트">
+      <label>맵 유형 <select id="beta-event-map-variant"><option value="0">기본 맵</option><option value="1">벽 많음 · 부쉬 적음</option><option value="2">부쉬 많음 · 벽 적음</option></select></label>
+      <button type="button" data-panel="characters">캐릭터</button>
+      <button type="button" data-panel="patchnotes">패치노트</button>
+      <button type="button" id="beta-champions-open" class="hidden" data-panel="champions">🏆 BETA FINAL EVENT</button>
+      <button type="button" data-panel="shop">시즌 상점</button>
+      <button type="button" data-panel="assets">에셋 쇼룸</button>
+      <button type="button" data-panel="daily">일일 보상</button>
+      <button type="button" data-panel="seaprops">시즌 소품</button>
+      <button type="button" data-panel="quests">시즌 퀘스트</button>
+      <button id="chop-wood-open" type="button">찹 우드</button>
+      <button id="gold-rush-toggle" type="button">골드 러쉬 시작</button>
+      <button id="gem-grab-toggle" type="button">젬 그랩 시작</button>
+      <button id="showdown-toggle" type="button" title="생존 순위로 승부하는 쇼다운">쇼다운 시작</button>
+      <button id="showdown-plus-toggle" type="button" title="생존 순위와 별도로 처치당 트로피 +2를 받는 쇼다운+">쇼다운+ 시작</button>
+      <button id="soccer-toggle" type="button">SOCCER KICK 시작</button>
+      <button id="knockout-toggle" class="hidden" type="button">KNOCKOUT · 3대3</button>
+      <button id="knockout-exit" class="hidden" type="button">KNOCKOUT 나가기</button>
+      <a href="./index.html">현재 게임</a>
+      <details id="beta-settings" class="beta-settings">
+        <summary>⚙ 설정</summary>
+        <div id="beta-settings-menu" class="beta-settings-menu" aria-label="설정 메뉴">
+          <button type="button" data-panel="storybook">컬러스 스토리북</button>
+          <button type="button" data-panel="records">기록</button>
+        </div>
+      </details>
+    </nav>
+  </header>
+
+  <div class="beta-wallet">
+    <img id="sea-prop-icon" class="sea-prop-icon hidden" alt="장착한 시즌 소품 아이콘">
+    <span>β 크레딧</span>
+    <strong id="credit-value">1,500</strong>
+    <span class="rank-chip">베타 시즌 8 테스트</span>
+  </div>
+
+  <aside id="beta-boss-health" class="beta-boss-health hidden" aria-label="거대 보스 체력">
+    <strong>거대 보스</strong><span id="beta-boss-health-text">120000 / 120000</span>
+    <div id="beta-boss-health-meter" class="beta-boss-health-meter" role="progressbar" aria-label="거대 보스 체력" aria-valuemin="0" aria-valuemax="120000" aria-valuenow="120000"><div id="beta-boss-health-fill"></div></div>
+  </aside>
+
+  <aside class="test-panel">
+    <strong>맵 테스트</strong>
+    <p><kbd>WASD</kbd> 이동 · 마우스 드래그 시점 · 휠 확대</p>
+    <div class="test-actions">
+      <button id="overview-btn" type="button">전체 보기</button>
+      <button id="reset-btn" type="button">훈련장 텔레포트</button>
+      <button type="button" data-lobby-room="graveyard" hidden>달빛 묘지</button>
+      <button type="button" data-lobby-room="workshop" hidden>호박 작업장</button>
+      <button id="test-death-btn" type="button">테스트 사망</button>
+      <button id="test-ally-death-btn" type="button">아군 사망</button>
+      <button id="slowmo-btn" type="button" aria-pressed="false">슬로우 모드</button>
+    </div>
+    <small>로그인하면 베타 시험 기록을 계정별로 저장합니다. 정식 전적과는 별도입니다.</small>
+  </aside>
+
+  <div class="location-card">
+    <span>현재 구역</span>
+    <strong id="location-name">베타 광장</strong>
+  </div>
+  <button id="beta-room-interact" class="beta-room-interact" type="button" hidden></button>
+
+  <div class="beta-watermark">BETA MAP 0.1</div>
+
+  <div id="gold-rush-hud" class="gold-rush-hud hidden">
+    <strong>GEM GRAB</strong>
+    <span><i id="season-resource-label">고대 젬</i> <b id="gold-count">0</b> / 10</span>
+    <span id="gold-rush-timer">03:00</span>
+    <span id="gold-rush-rivals">AI 9명 참가</span>
+    <span id="gold-rush-status">중앙 유적 제단에서 젬을 모으세요</span>
+    <span id="gem-participants"></span>
+    <span id="champions-arena-status" hidden></span>
+  </div>
+
+  <div id="gold-rush-player-panel" class="gold-rush-player-panel hidden">
+    <div class="gold-rush-stat-label">체력</div>
+    <div class="gold-rush-health-bar">
+      <div id="gold-rush-health-fill" class="gold-rush-health-fill"></div>
+      <div class="gold-rush-health-segments"><span></span><span></span><span></span><span></span></div>
+      <div id="gold-rush-health-value" class="gold-rush-health-value">0</div>
+    </div>
+    <div class="gold-rush-stat-row">
+      <span id="gold-rush-health">0 / 0</span>
+      <span id="gold-rush-reload-state" class="hidden" aria-hidden="true"></span>
+    </div>
+    <div class="gold-rush-reload-outer hidden" aria-hidden="true"><div id="gold-rush-reload-bar" class="gold-rush-reload-inner"></div></div>
+    <div class="gold-rush-stat-label gold-rush-ammo-label">탄약</div>
+    <div id="gold-rush-ammo-fan" class="gold-rush-ammo-fan"></div>
+  </div>
+
+  <div id="respawn-overlay" class="respawn-overlay hidden">
+    <strong id="respawn-countdown">5</strong>
+    <span>최초 스폰 지점에서 부활합니다</span>
+  </div>
+
+  <div id="daily-reward-reveal" class="daily-reward-reveal hidden" aria-live="polite">
+    <button id="daily-reward-help" class="daily-reward-help" type="button" aria-label="일일 보상 확률 보기">?</button>
+    <div id="daily-reward-fx" class="daily-reward-fx" aria-hidden="true"></div>
+    <span class="reward-kicker">DAILY REWARD</span>
+    <strong id="daily-reward-grade">일반</strong>
+    <button id="daily-reward-star" class="daily-reward-star" type="button" aria-label="일일 보상 별 열기">★</button>
+    <span id="daily-reward-attempts" class="daily-reward-attempts">업그레이드 기회 4 / 4</span>
+    <button id="daily-reward-upgrade-all" class="daily-reward-upgrade-all" type="button">남은 기회 한 번에 사용</button>
+    <p id="daily-reward-message">별을 클릭해 보상을 확인하세요</p>
+    <button id="daily-reward-return" class="daily-reward-return hidden" type="button">로비로 돌아가기</button>
+    <div id="daily-reward-odds" class="daily-reward-odds hidden" role="dialog" aria-modal="true" aria-labelledby="daily-reward-odds-title">
+      <section class="daily-reward-odds-card">
+        <button id="daily-reward-odds-close" class="daily-reward-odds-close" type="button" aria-label="확률표 닫기">×</button>
+        <h3 id="daily-reward-odds-title">일일 보상 확률</h3>
+        <h4>업그레이드 성공 확률</h4>
+        <table>
+          <thead><tr><th>사용 방식</th><th>일반</th><th>희귀 이상</th></tr></thead>
+          <tbody id="daily-reward-upgrade-odds-body"></tbody>
+        </table>
+        <h4>성공 시 상승 단계</h4>
+        <table>
+          <thead><tr><th>상승</th><th>확률</th><th>상승</th><th>확률</th></tr></thead>
+          <tbody id="daily-reward-jump-odds-body"></tbody>
+        </table>
+        <p>업그레이드 성공 시 기회는 줄어들지 않습니다.</p>
+      </section>
+    </div>
+  </div>
+
+  <div id="crimson-controls" class="crimson-controls hidden">
+    <button id="aim-mode-btn" class="aim-mode-btn" type="button" aria-pressed="false">
+      이동 모드 · 클릭 이동
+    </button>
+    <button id="crimson-attack-btn" class="attack-btn hidden" type="button">
+      <small>마우스 좌클릭 · 일반 공격</small>
+      <strong>3연속 펀치</strong>
+      <span id="attack-combo-state">준비</span>
+    </button>
+    <button id="ultimate-btn" class="ultimate-btn" type="button" aria-label="크림슨 궁극기 KO 스트레이트" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0">
+      <span class="ultimate-icon" aria-hidden="true">◆</span>
+      <strong>궁극기</strong>
+      <span id="ultimate-state">0%</span>
+    </button>
+    <button id="beta-emote-thumbdown-btn" class="beta-emote-btn" type="button" aria-label="역따봉 이모트">👎</button>
+    <button id="beta-pin-btn" class="beta-emote-btn" type="button" aria-label="장착한 핀 표시">📌</button>
+    <button id="beta-spray-btn" class="beta-emote-btn" type="button" aria-label="장착한 스프레이 뿌리기">🎨</button>
+    <div class="ultimate-connector" aria-hidden="true"></div>
+  </div>
+
+  <div id="beta-modal" class="beta-modal hidden" role="dialog" aria-modal="true">
+    <section class="beta-modal-card">
+      <div class="modal-title-row">
+        <div>
+          <span class="test-chip">BETA SYSTEM</span>
+          <h2 id="modal-title">베타 시즌</h2>
+        </div>
+        <button id="modal-close" class="modal-close" type="button" aria-label="닫기">×</button>
+      </div>
+      <div id="modal-content"></div>
+    </section>
+  </div>
+
+  <div id="beta-toast" class="beta-toast" aria-live="polite"></div>
+  <aside id="chop-wood-hud" class="chop-wood-hud hidden" aria-label="찹 우드 경기 정보">
+    <div id="chop-tree-health"></div>
+    <div id="chop-axe"></div>
+    <label>벌목 진행 <progress id="chop-progress" max="2" value="0"></progress></label>
+    <button id="chop-wood-close" type="button">로비로 돌아가기</button>
+  </aside>
+  <script type="module" src="./src/beta-season.js?v=0.9.28-transform-stats-official"></script>
+</body>
+</html>
