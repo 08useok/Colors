@@ -2,6 +2,7 @@ import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 import { TRANSFORMS, TRANSFORM_STATS } from '../config/transforms.js';
+import { GADGETS } from '../config/gadgets.js';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
@@ -51,7 +52,7 @@ export function createBeta6Combat(definitions, options = {}) {
       automatic: true, team: null, phase: random() * Math.PI * 2, slowUntil: 0, slow: 0,
       frozenUntil: 0, lockUntil: 0, guardUntil: 0, invulnerableUntil: 0, hiddenUntil: 0, revealedUntil: 0,
       focusUntil: 0, ice: 0, poisonUntil: 0, poisonNext: 0, zoneNext: 0, combatAt: 0, regenNext: 0,
-      encoreUntil: 0, rootUntil: 0, dodgeUntil: 0, t: options.transforms ? TRANSFORMS[id] ?? null : null, transformCharge: 0, transformUntil: 0, angelMarkUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
+      encoreUntil: 0, rootUntil: 0, dodgeUntil: 0, t: options.transforms ? TRANSFORMS[id] ?? null : null, g: options.gadgets ? GADGETS[id] ?? null : null, gadgetReadyAt: 0, transformCharge: 0, transformUntil: 0, angelMarkUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
     a.rounds = Array.from({ length: a.ammo }, () => rollRound(false, a.d));
     actors.push(a); return a;
   }
@@ -70,6 +71,24 @@ export function createBeta6Combat(definitions, options = {}) {
     a.transformCharge = 0; a.transformUntil = time + t.duration;
     a.transformBonusHp = a.d.maxHealth * TRANSFORM_STATS.healthBonus; a.hp += a.transformBonusHp;
     emit('transform', { owner: a, until: a.transformUntil });
+    return true;
+  }
+  // Gadget (가젯): one per character, used on a cooldown with no per-match limit (options.gadgets).
+  // 'dash' moves toward the aim and stops at walls; 'empowerAttack' marks the next basic attack.
+  // Damage dealt by a gadget must pass award 0 to hit() so it never charges the ultimate or transform.
+  function gadget(a, aim = {}) {
+    const g = a.g;
+    if (!g || !alive(a) || a.isSalmonDevice || time < (a.gadgetReadyAt ?? 0) || time < a.lockUntil || time < a.frozenUntil || a.salmonAirborne || a.leap || a.dash) return false;
+    if (g.kind === 'dash') {
+      if (rooted(a)) return false;
+      const yaw = aim.angle ?? a.angle, from = { x: a.x, z: a.z };
+      travel(a, a.x + Math.cos(yaw) * g.distance, a.z + Math.sin(yaw) * g.distance);
+      // Pressed straight into a wall: nothing happens and the cooldown is kept.
+      if (Math.hypot(a.x - from.x, a.z - from.z) < .2) return false;
+      a.angle = yaw;
+    } else if (g.kind === 'empowerAttack') a.empoweredAttack = g.effect;
+    a.gadgetReadyAt = time + g.cooldown;
+    emit('gadget', { owner: a, kind: g.kind, from: aim.from });
     return true;
   }
   // Chartreuse's angel mark: a marked enemy dies the moment it is crowd-controlled.
@@ -644,6 +663,16 @@ export function createBeta6Combat(definitions, options = {}) {
       const opponents=actors.filter(b=>alive(b)&&enemies(a,b)).sort((b,c)=>distance(a,b)-distance(a,c));
       const target=opponents.find(b=>!hidden(b,a)) ?? opponents[0];
       a.target = target;
+      // Bots use a ready gadget: dash in when the target is just out of reach (or away when low),
+      // and empower an attack when the target is in reach.
+      if (a.automatic && a.g && target && time >= (a.gadgetReadyAt ?? 0)) {
+        const gap = distance(a, target), reach = perceivedRange(a);
+        if (a.g.kind === 'dash') {
+          const low = a.hp <= a.d.maxHealth * .35;
+          if (low && gap < reach + 1) gadget(a, { angle: Math.atan2(a.z - target.z, a.x - target.x) });
+          else if (!low && gap > reach + 1 && gap < reach + a.g.distance + 1) gadget(a, { angle: Math.atan2(target.z - a.z, target.x - a.x) });
+        } else if (a.g.kind === 'empowerAttack' && gap <= reach && !a.empoweredAttack) gadget(a);
+      }
       if (a.automatic && a.t && target && distance(a, target) <= perceivedRange(a) + 1) transform(a);
       if (a.automatic) cast(a, target);
       if (a.leap) continue;
@@ -877,7 +906,7 @@ export function createBeta6Combat(definitions, options = {}) {
   const salmon = createSalmonCombat({actors, time:()=>time, key:()=>++serial, bounds:options.bounds??24, blocked, walkable:options.walkable, hit, emit,
     cancelRide(a){for(let i=projectiles.length-1;i>=0;i--)if(projectiles[i].owner===a&&projectiles[i].kind==='wave')projectiles.splice(i,1);},
     addDevice(owner,p){return add('salmon',{...p,owner,isSalmonDevice:true,automatic:false,team:owner.team,hp:owner.u.deviceHealth,ammo:0,charge:0,u:null,d:{maxHealth:owner.u.deviceHealth,maxAmmo:0,noAutomaticReload:true,moveSpeedMultiplier:0},next:Infinity});}});
-  return { actors, projectiles, zones, salmon, add, fire, cast, transform, hit, hidden, range, damageReductionFor, ultimateFieldActive, get time() { return time; },
+  return { actors, projectiles, zones, salmon, add, fire, cast, transform, gadget, hit, hidden, range, damageReductionFor, ultimateFieldActive, get time() { return time; },
     update(dt) { let remaining = Math.min(.25, Math.max(0, dt)); while (remaining > 1e-9) { const step = Math.min(1 / 60, remaining); tick(step); remaining -= step; } },
     remove(actor) {
       actor.ultimatePreparing=false;actor.ultimateTelegraph=null;

@@ -44,8 +44,9 @@ import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=14";
 import { SALMON_THROW } from "./config/salmon-animation.js";
 import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=3";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=54";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=55";
 import { createBetaTransform } from "./beta-transform.js?v=4";
+import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS, TRANSFORM_STATS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
@@ -7073,7 +7074,7 @@ function clearBeta6RoundCombat() {
   beta6Combat?.clear();
   beta6Combat = null;
   beta6PlayerActor = null;
-  betaTransform?.clear(); betaTransform?.updateButton(null, 0, betaState.selectedCharacter);
+  betaTransform?.clear(); betaTransform?.updateButton(null, 0, betaState.selectedCharacter); betaGadget?.updateButton(null);
   for (const mesh of beta6CombatVisuals.values()) {
     scene.remove(mesh);
     // 종류별 모양은 조각을 묶은 그룹일 수 있다
@@ -7435,6 +7436,11 @@ function processBeta6CombatEvent(event) {
         if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
         if (event.type === "ultimate") canvas.dataset[event.owner === beta6PlayerActor ? "lastBeta6PlayerUltimate" : "lastBeta6BotUltimate"] = event.owner.id;
       }
+      if (event.type === "gadget") {
+        const position = beta6ActorPosition(event.owner);
+        if (position) createGroundPulse(1.2, 0x38d9c8, position);
+        canvas.dataset.lastGadget = `${event.owner === beta6PlayerActor ? "player" : "bot"}:${event.owner.id}:${event.kind}`;
+      }
       if (event.type === "transform") {
         const position = beta6ActorPosition(event.owner);
         if (position) createGroundPulse(1.8, betaTransformUi().effectColor, position);
@@ -7534,6 +7540,20 @@ function beta6TransformHealth(owner, actor, mesh) {
   if (mesh) { mesh.userData.maxHealth = owner.maxHealth; mesh.userData.health = owner.health; }
   if (owner === goldRushState) updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
 }
+// Gadget button (official season only: the engine gives gadgets when options.gadgets is on).
+var betaGadget;
+function betaGadgetUi() {
+  return betaGadget ??= createGadgetUi({ document, anchor: betaTransformUi().button, activate: activateBeta6Gadget });
+}
+function activateBeta6Gadget() {
+  const world = beta6Combat, actor = beta6PlayerActor;
+  if (!world || !actor || goldRushState.dead || isKnockoutFrozen() || modelLoading.blocking) return;
+  actor.x = player.position.x; actor.z = player.position.z;
+  if (!world.gadget(actor, { angle: Math.PI / 2 - player.rotation.y })) return;
+  player.position.x = actor.x; player.position.z = actor.z;
+  for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
+  betaGadgetUi().updateButton(actor, world.time);
+}
 function activateBeta6Transform() {
   const world = beta6Combat, actor = beta6PlayerActor;
   if (!world || !actor) return activateLobbyTransform();
@@ -7558,6 +7578,7 @@ function startBeta6BotCombat(carried = null) {
   beta6Combat = createBeta6Combat(BETA_CHARACTERS, {
     allowRevives: goldRushState.mode !== "knockout",
     transforms: true,
+    gadgets: IS_OFFICIAL_SEASON,
     seed: Math.floor(Math.random() * 0x7fffffff),
     bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : ["gemGrab", "knockout"].includes(goldRushState.mode) ? TEAM_ARENA.halfDepth - .5 : 19.5,
     walkable: (x, z) => groundHeightAt(x, z) > -5 && !(activeEventLayout?.lakes.some(rect => insideMapRect(x, z, rect, 1))),
@@ -7591,6 +7612,7 @@ function startBeta6BotCombat(carried = null) {
   beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0 });
   for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0 });
   betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time, beta6PlayerActor.id);
+  betaGadgetUi().updateButton(beta6PlayerActor, beta6Combat.time);
 }
 
 // 전투 투사체도 로비와 같은 모양으로 그린다. 모르는 종류는 기본 구슬을 쓴다.
@@ -7783,6 +7805,7 @@ function updateBeta6BotCombat(dt) {
     return { root: bot.mesh, base: bot.model ? [bot.model] : bot.disposableMeshes.filter(mesh => mesh.geometry.type === 'CapsuleGeometry') };
   });
   betaTransformUi().updateButton(hero, world.time, hero.id);
+  betaGadgetUi().updateButton(hero, world.time);
   const draw = (key, object, radius, kind) => {
     visible.add(key);
     let mesh = beta6CombatVisuals.get(key);
