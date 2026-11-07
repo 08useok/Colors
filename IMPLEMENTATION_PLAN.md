@@ -1,223 +1,55 @@
-# Implementation Plan — Skull Creek (해골천)
+# Implementation Plan — 정식 시즌 1
 
-> 과거 구현 진행 기록이다. 아래 버전·예약 일정·완료 표시는 작성 당시 기준이며 현재 작업 지시나 배포 일정이 아니다. 현재 구조는 [프로젝트 README](README.md), 기능별 기준은 [스펙 목차](specs/README.md)를 확인한다.
+> 2026-11-07 새로 작성. 이전 계획(베타 시즌 1, 2026-07)은 Git 이력에 있다.
+> 기준 문서: [specs/official-season-1.md](specs/official-season-1.md) · 캐릭터 [블랙](specs/characters/black.md) · [화이트](specs/characters/white.md)
+> 실행: `정식시즌 실행.cmd` → `official.html` → `src/beta-season.js` (`IS_OFFICIAL_SEASON`, 저장 키 `colorsOfficialSeason1`)
 
-> Last updated: 2026-07-25
-> Status: Beta Season 1 (v1.5.0) 구현 완료 — 2026-07-27 00:00 KST 푸시 배포 예약
-> Source of truth: `specs/*` vs `src/main.js` (monolithic, ~7538 lines)
-> Entry point: `index.html` → `src/main.js?v=1.4.9`
+## 원칙
 
----
+- 정식 시즌 기능은 `IS_OFFICIAL_SEASON`일 때만 켠다. 베타 페이지 동작은 바꾸지 않는다.
+- 전투 엔진(`src/combat/beta6-combat.js`)을 바꾸면 꼬리잡기 240-0을 다시 검증한다 (`node tools/verify-beta8-counter-cycle.mjs`).
+- 새 기능은 가능한 한 별도 모듈(`src/official/…`)로 만들고 `beta-season.js`에는 연결 코드만 둔다.
+- 사용자의 커밋 안 된 작업(챔피언스·라즈베리)은 커밋하지 않는다(부분 스테이징).
 
-## Completed Features
+## 할 일 (순서대로)
 
-The following specs are fully implemented in `src/main.js` and `index.html`:
+### 완료
+- [x] 정식 전용 페이지 `official.html`, `정식시즌 실행.cmd`, 저장 분리
 
-- [x] Lobby screen (registration, daily login gate, game launch) — `specs/lobby.md`
-- [x] Character select (Red, Green, Blue, Orange, Yellow, Cyan, Purple, Pink — 8 selectable) — `specs/character-select.md`
-- [x] Combat: natural regen (3s player / 5s bot, 25%/tick) + auto-reload on `ammo < maxAmmo` — `specs/combat-regen-autoreload.md`
-- [x] Green boomerang (60° spread, 4-shot sequential 0.08s, fan indicator) — `specs/characters/green.md`
-- [x] Per-character stats + win streak system (charStats, streakBonus, 100-win milestone) — `specs/character-stats.md`
-- [x] Daily ID verification (5-attempt lockout, date-based reset, account recovery) — `specs/daily-login.md`
-- [x] Trophy ranking (12 - rank*2, floor 0, deathOrder tracking) — `specs/trophy-ranking.md`
-- [x] Battle map rotation (3 maps, random per battle) — `specs/map-rotation.md`
-- [x] Mouse aim (raycaster to y=0 plane, independent from WASD) — `specs/mouse-aim.md`
-- [x] Initial render bug fix (CDN swap, overlay display fix) — `specs/fix-initial-render.md`
-- [x] Orange character (bomb + 5-way splash, aim indicator, bot AI) — `specs/alpha-season-2-v13.md`
-- [x] Yellow character (electric projectile, 40% slow debuff 1.5s) — `specs/characters/yellow.md`
-- [x] Cyan character (6-pill spreadLine projectiles) — `specs/characters/cyan.md`
-- [x] Purple character (poison needle + vial, 760 DPS × 4s DoT) — confirmed in CHARACTERS
-- [x] Pink character (heal circle + melee, 11500 HP, 1.4x speed) — confirmed in CHARACTERS
-- [x] Chop Wood 3v3 mode (team trees, axe grades, bot team AI) — `specs/chop-wood.md`
-- [x] Shop — coin-based character level up (8 chars, max Lv.6) — confirmed in main.js
-- [x] Shop — skins tab (buy/equip/unequip flow, 1 skin: `alpha_red`) — confirmed in main.js
-- [x] Shop — cosmetics tab (emote/bg/badge subtabs) — `specs/cosmetics-shop.md`
-- [x] Emotes (5 emotes, Q key trigger, 5s cooldown, sprite bubble) — `specs/cosmetics-emote.md`
-- [x] Profile backgrounds (6 backgrounds, CSS-based) — `specs/cosmetics-profile.md`
-- [x] Profile badges (8 badges, emoji prepend to nickname) — `specs/cosmetics-profile.md`
-- [x] Season system (alpha1–alpha4, per-season stats tracking) — confirmed in main.js
-- [x] Leaderboard & stats UI — `specs/leaderboard-stats-ui.md`
-- [x] v1.3.2 patch notes — confirmed in index.html + langs.js
-- [x] Bush stealth + combat reveal system — confirmed in main.js
-- [x] Bot detection range = 50 units — confirmed in main.js
-- [x] Multiplayer Take Down mode (WebSocket via Railway) — `src/multiplayer.js`
+### 1. 가젯 시스템 뼈대
+- [ ] 엔진: 캐릭터당 가젯 1개, 쿨타임, `world.gadget(actor)`; 가젯 피해는 궁극기·변신 게이지를 채우지 않음
+- [ ] 화면: 변신 버튼 옆 가젯 버튼(쿨타임 원형 게이지), 키보드 키(E와 로비 방 입장 충돌 정리)
+- [ ] 봇이 가젯을 쓰는 조건
+- [ ] 가젯은 블랙·화이트·1등 캐릭터용으로 비워 둔 자리만 먼저(블랙·화이트 본체는 이번 범위 밖)
 
----
+### 4. 모드 로테이션 · 핫 존
+- [ ] 로테이션: 6종 중 3개 동시, 6시간마다 교체(시간 기준, 모두 같은 순서)
+- [ ] 쇼다운 상시, 쇼다운+ 매달 마지막 주만
+- [ ] 로비 모드 버튼을 로테이션 상태대로 보여 주기(남은 시간 표시)
+- [ ] 핫 존 모드: 구역 1~2개, 우리 팀만 있으면 점수 상승, 100% 또는 2분 뒤 높은 팀 승, 부활 5초, 봇 구역 AI
+- [ ] 핫 존 시뮬레이터 규칙 추가(밸런스 확인용)
 
-## Priority 1 — Beta Season 1 Transition (베타 시즌 1) — ✅ 구현 완료 (2026-07-25)
+### 5. 훈련장 가기 버튼
+- [ ] 로비 화면에 「훈련장 가기」 버튼 → 훈련장으로 이동
 
-Umbrella spec: `specs/beta-season-transition.md` — 배포 시점 2026-07-27 00:00 KST.
+### 6. 파워 1~11
+- [ ] 캐릭터별 파워 저장, 파워당 체력·피해 +2% (파워 11 = +20%)
+- [ ] 코인으로 업그레이드 (1→2 20코인 … 10→11 약 1,500, 합계 약 4,500)
+- [ ] 파워 7 가젯 해금, 파워 11 변신 해금
 
-구현 결과 요약 (아래 세부 항목은 2026-07-06 계획 시점 기준이라 일부 값이 최종 구현과 다름):
-- 1.1 시즌 상수 → `main.js`의 `CURRENT_SEASON = "beta1"`, `SEASONS.beta1` 추가 ✅
-- 1.2 Orange 버프 → `config/characters.js` 직격 900 / 속도 26 / 판정 0.75 ✅
-      (`bombSplashDamage`는 700 유지 — 스펙의 380은 현재값을 300으로 오기한 값이라 적용 시 너프가 됨)
-- 1.3 등급/크레딧 → `ownedCharacters` + `credits`, 잠금 UI, 상점 캐릭터 구매 탭 ✅
-- 1.4 일일 보상 → 스펙 개정판대로 "승리 1회 = 100 β 크레딧 자동 지급"으로 구현 (6회 가샤는 폐기) ✅
-- 1.5 크림슨 → 부채꼴 3연타(타당 900) + KO 스트레이트(5×5·2500·벽 파괴·게이지 9) ✅
-      단 `ROTATION_CHAR_ORDER`에는 미추가 — 로테이션 캠페인 데이터가 8종 기준이라 깨짐
-- 1.6 레드 테마 스킨 → `config/skins.js` 6종 + 상점 등급 배지 + 장식 비주얼 ✅
-- 1.7 패치노트 → `index.html` v1.5.0 항목, 캐시버스터 갱신 ✅
+### 7. 보석 · 배틀 패스 · 보석 상점
+- [ ] 보석 재화 저장, 일일 보상 하루 5보석
+- [ ] 배틀 패스 50단계, 판마다 경험치, 무료 줄(코인·크레딧·보석 50)·프리미엄 줄(169보석, 스킨 2개, 30단계 신규 캐릭터)
+- [ ] 보석 사용처: 프리미엄 패스, 스킨, 캐릭터, 코인·크레딧 교환
+- [ ] 보석 패키지 상점 화면(30/80/170/360/950) — **실제 결제 없음**
 
-남은 검증: 크림슨 실전 전투(3연타 판정·궁극기 벽 파괴)는 브라우저에서 육안 확인 필요.
+### 8. 경쟁전 · 매칭
+- [ ] 랭크 모드: 브론즈~마스터, 시즌 초기화, **파워 11 캐릭터만**
+- [ ] 실제 플레이어 매칭(트로피·등급 비슷하게) + 시간 안에 못 채우면 봇 채움 — 서버(`party/`, `server/`) 작업 필요
 
-**Dependency chain** (implement in this order):
-```
-1.1 Season Constant  ←  foundation for all beta work
-1.2 Orange Rebalance ←  standalone, no cross-dependencies
-1.3 Rarity & Credits ←  account schema for Crimson + Gacha
-1.4 Daily Gacha      ←  sole source of credits
-1.5 Crimson Character ← hero tier (900 credits), needs rarity shop
-1.6 Red Theme Skins  ←  beta_red_crimson needs Crimson to exist
-1.7 Patch Notes      ←  last step, after all features land
-```
+### 9. 광장형 맵
+- [ ] 모드별 맵을 넓은 광장형으로: 가운데 개방, 엄폐물·수풀은 가장자리와 길목, 핫 존 구역·젬 제단은 중앙
 
-### 1.1 Season Constant Change
-- [ ] `main.js:176`: Change `CURRENT_SEASON` from `"alpha4"` to `"beta1"`
-- [ ] `main.js:177-182`: Add `beta1: "베타 시즌 1"` to `SEASONS` object
-- [ ] `langs.js`: Update `season` key from `"알파 시즌 4"` to `"베타 시즌 1"` (ko) / `"Alpha Season 4"` to `"Beta Season 1"` (en)
-- [ ] Verify: new accounts get `seasonStats.beta1` / `seasonCharStats.beta1` initialized
-- [ ] Verify: existing alpha accounts auto-create `beta1` keys on load (migration logic already exists)
-- [ ] Verify: profile "시즌별 전적" shows beta1 with current-season marker (⬅)
-
-### 1.2 Orange Rebalance — `specs/characters/orange.md`
-- [ ] `CHARACTERS.orange.bombDamage`: 750 → 900
-- [ ] `CHARACTERS.orange.bombSplashDamage`: 300 → 380
-- [ ] `CHARACTERS.orange.bombSpeed`: 22 → 26
-- [ ] `CHARACTERS.orange.bombSplashHitRadius`: 0.60 → 0.75
-- [ ] Verify: other Orange stats unchanged (HP 5800, range 9, splashCount 5, splashSpeed 10, splashRange 4.4)
-- [ ] Effective full-hit total becomes 900 + (380×5) = 2,800 (up from 2,250, +24%)
-
-### 1.3 Character Rarity & Credit System — `specs/character-rarity-shop.md`
-- [ ] Define rarity tiers: Common (red/green/blue — free), Rare (orange/yellow/cyan/purple/pink — 200 credits), Hero (crimson — 900 credits)
-- [ ] Add `ownedCharacters` field to account schema (new accounts start with `["red","green","blue"]`)
-- [ ] Add `credits` field to account schema (integer, starts at 0)
-- [ ] Migration: accounts without `ownedCharacters` auto-receive all 8 pre-beta characters; Crimson excluded
-- [ ] Lock UI: unowned characters show lock icon + price, cannot be selected, click redirects to shop
-- [ ] Shop character purchase tab: check balance → deduct credits → add to `ownedCharacters` → unlock
-- [ ] Bots use all 9 characters regardless of player ownership
-- [ ] Add rarity/credit i18n keys to langs.js
-
-### 1.4 Daily Gacha — `specs/daily-gacha.md`
-- [ ] Add `gacha: { lastResetDate, remaining: 6 }` to account schema
-- [ ] 6 pulls per day, reset at midnight (same `getTodayString()` logic)
-- [ ] Reward pool: coins (50/100/200/400), credits (50/100/200/400), emotes (5), badges (7 excl. badge_none) — weighted probabilities per spec
-- [ ] Duplicate emote/badge → auto-convert to coin value
-- [ ] Gacha UI: overlay with result popup (icon + name + quantity), remaining pull counter
-- [ ] Add gacha button to lobby UI + `#gacha-overlay` to index.html
-- [ ] Add all gacha i18n keys to langs.js
-- [ ] Credits obtainable ONLY through gacha — no other source
-
-### 1.5 Crimson Character (Hero tier) — `specs/characters/crimson.md`
-- [ ] Add `crimson` to `CHARACTERS`: HP 9800, color `#a00000`, range 4, melee fan attack
-- [ ] Implement fan-shaped 4-hit combo: 0.12s intervals, ±15°/±45° directions, damage 600/700/800/1100 (total 3200), cooldown 0.6s, reload 0.5s
-- [ ] Implement ultimate "파괴의 일격": 8 gauge charges → 3000 damage in 5×5 area, destroy walls, knockback 1-2 tiles
-- [ ] Add gauge HUD element (0-8 progress bar, activate at 8)
-- [ ] Gauge persists through death
-- [ ] Crimson movement speed: fastest in game (above Pink's 1.4x) — determine concrete multiplier
-- [ ] Add `crimson` to `ROTATION_CHAR_ORDER` and bot type pools
-- [ ] Add crimson bot AI (aggressive melee approach, bot uses ultimate)
-- [ ] Add `crimson` to `charStats` in `createAccount()` + migration in `loadAccount()`
-- [ ] Add `crimson` to `seasonCharStats` initialization
-- [ ] Add `crimson` to `charLevels` initialization + migration
-- [ ] Add `crimson` to `CHAR_STAT_BARS`
-- [ ] Add Crimson button to `index.html` (`#char-select-row` + `#color-buttons`)
-- [ ] Add Crimson row to matchup table in HTML
-- [ ] Add crimson attack animation (fan/sweep melee)
-- [ ] Add all crimson i18n keys to `langs.js` (crimsonDesc, crimsonDetails, attack name, ultimate name)
-- [ ] Update `charCount` in langs.js: "8종" → "9종"
-
-### 1.6 Red Theme Skins — `specs/skin-red-theme.md`
-- [ ] Add `rarity` field to existing `alpha_red` skin: `rarity: "rare"`
-- [ ] Add 3 new skins to `SKINS`:
-  - `beta_red_orange` (Orange, "Crimson Orange", rare, 1000 coins)
-  - `beta_red_crimson` (Crimson, "Blood Crimson", epic, 2500 coins)
-  - `beta_red_red` (Red, "Scarlet Red", legendary, 5000 coins)
-- [ ] Rarity badge displayed on shop skin cards
-- [ ] Add skin name/description i18n keys to langs.js (ko + en)
-- [ ] Skins purchased with coins (no credits needed, no character ownership gate)
-
-### 1.7 Beta Season Patch Notes
-- [ ] Add beta season 1 patch notes div to `index.html`
-- [ ] Add corresponding i18n keys to langs.js
-- [ ] Bump version in `index.html` script tag (currently v1.4.9)
-
----
-
-## Priority 2 — Bugs & Missing Data (current code gaps)
-
-### 2.1 `CHAR_STAT_BARS` Missing Purple & Pink — ✅ Fixed
-- [x] `main.js:757-765`: Added `purple: { hp: 6, atk: 8, range: 5, speed: 6 }` and `pink: { hp: 10, atk: 7, range: 3, speed: 10 }`
-- [ ] Add: `crimson: { ... }` (after Crimson is implemented, tracked under 1.5)
-
-### 2.2 `charLevels` Missing Purple & Pink — ✅ Fixed
-- [x] `createAccount()`: `charLevels` now includes `purple: 1, pink: 1`
-- [x] Migration guard: added `purple`/`pink` backfill checks alongside existing yellow/cyan checks
-- [ ] Add `crimson: 1` after Crimson is implemented (tracked under 1.5)
-
-### 2.3 `cosmetics` Not Initialized in `createAccount()` — ✅ Fixed
-- [x] `createAccount()` now sets `cosmetics` field directly (same shape as the `loadAccount()` migration default) — no longer relies on next-load migration
-
-### 2.4 ~~Yellow Animation Fallthrough~~ — Not a bug (stale plan finding)
-- Verified `main.js:5819`: Yellow is already grouped with Orange/Cyan in a dedicated windup-throw animation branch, does NOT fall through to Red's punch. No fix needed.
-
-### 2.5 `alpha_red` Skin Missing `rarity` Field
-- [ ] `main.js` SKINS definition (line 213): `alpha_red` has no `rarity` field — spec says add `rarity: "rare"` retroactively
-- [ ] (Will be addressed as part of 1.6)
-
-### 2.6 Version String Inconsistencies in `index.html` — ✅ Fixed
-- [x] `index.html`: Lobby version badge `v1.4.2` → `v1.4.9`
-- [x] `index.html`: CSS cache buster `styles.css?v=1.4.2` → `?v=1.4.9`
-- [ ] Both should be updated whenever version bumps (ongoing process note, not a one-time fix)
-
-### 2.7 `showDamageTakenIndicator` Unreachable — ✅ Fixed (wired up)
-- [x] Confirmed the element/CSS animation (`damagePopDown`) were purpose-built but never called — wired into `applyDamage()` alongside the existing `createDamagePopup()` 3D popup for the player-damaged case
-
----
-
-## Priority 3 — Spec Maintenance
-
-### 3.1 Update `specs/overview.md`
-- [x] Now says 9 characters (correct after Crimson) — already updated
-- [ ] Verify all 18 features listed match actual implementation state after Beta Season 1
-
-### 3.2 Update `specs/character-select.md`
-- [x] Already updated to include Crimson + rarity tiers (9 characters)
-- [ ] Verify lock/unlock mechanics match final implementation after 1.3 is done
-
-### 3.3 Patch Notes for Recent Versions
-- [ ] Verify all versions through v1.4.9 have patch notes (currently present in index.html)
-- [ ] After Beta Season 1 work: add new version patch notes
-
----
-
-## Priority 4 — Dead Code & Vestigial Cleanup — ✅ Done (2026-07-07)
-
-### 4.1 Dead Modules (not imported by main.js) — ✅ Deleted
-Decision: delete (not sync) — confirmed zero runtime imports anywhere outside the modules' own mutual references, and the project is committed to a single-file `main.js` architecture (no bundler).
-- [x] Deleted `src/character.js`
-- [x] Deleted `src/hud.js`
-- [x] Deleted `src/animation.js`
-- [x] Deleted `src/LANGS/dom-core.js`
-
-### 4.2 Vestigial State Fields — ✅ Removed
-- [x] `state.pointerLocked`: removed from initial state (was declared, never set `true`, never read)
-- [x] `state.mouse.yaw` / `state.mouse.pitch`: removed from all 4 reset locations (never declared in initial `state.mouse`, never read)
-- [x] `state.winner`: removed from initial state and all 4 reset locations (never read after being set)
-
-### 4.3 Stale Comments — ✅ Moot
-- Resolved automatically — the file (`src/LANGS/dom-core.js`) containing the stale comment was deleted in 4.1
-
-### 4.4 Unused Local Three.js Copy — ✅ Removed (2026-07-06)
-- [x] Deleted `src/three.module.js` (1.28MB local Three.js r165 copy) — never imported; `main.js:1` loads Three.js from the jsdelivr CDN instead
-
----
-
-## Architecture Notes
-
-- **Authoritative runtime**: `src/main.js` (~7538 lines, monolithic)
-- **Translations**: `src/LANGS/langs.js` (flat key-value, ko + en — imported by main.js)
-- **Multiplayer**: `src/multiplayer.js` (WebSocket client for Take Down mode — imported by main.js)
-- **Entry point**: `index.html` → `src/main.js?v=1.4.9`
-- **No `src/lib/`** — no shared utility library
-- **No bundler** — vanilla ES modules, Three.js r165 via CDN
+## 범위 밖 (이번 계획에서 제외)
+- 블랙·화이트 캐릭터 본체(모델 필요), 1등 캐릭터 가젯 효과(우승자 확정 후)
+- 실제 결제 연동
