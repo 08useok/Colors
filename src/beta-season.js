@@ -9567,6 +9567,19 @@ showdownPlusToggle.addEventListener("click", () => startGoldRush("showdown", tru
 showdownToggle.addEventListener("click", () => startGoldRush("showdown"));
 soccerToggle?.addEventListener("click", () => startGoldRush("soccer"));
 chopWoodOpen.addEventListener("click", () => startGoldRush("chopWood"));
+// Official Season 1: a lobby button that goes straight to the training ground (not during a match).
+if (IS_OFFICIAL_SEASON) {
+  const trainingButton = document.createElement("button");
+  trainingButton.type = "button"; trainingButton.id = "training-go"; trainingButton.textContent = "🎯 훈련장 가기";
+  document.querySelector(".beta-header .beta-nav")?.prepend(trainingButton);
+  trainingButton.addEventListener("click", () => {
+    if (goldRushState.active && !goldRushState.ended) { showToast("경기 중에는 훈련장으로 갈 수 없습니다."); return; }
+    closeBetaModal();
+    initialSpawnPoint.set(TRAINING_TELEPORT_POINT.x, TRAINING_TELEPORT_POINT.y, TRAINING_TELEPORT_POINT.z);
+    keys.clear(); resetPlayer();
+    showToast("훈련장으로 이동했습니다.");
+  });
+}
 // Official Season 1 rotation: Hot Zone button, open and closed mode buttons, time to the next change.
 if (IS_OFFICIAL_SEASON) {
   const style = document.createElement("style");
