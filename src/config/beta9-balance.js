@@ -14,6 +14,8 @@
 //    Ivory's zone stays 4 s, Gold's ultimate field radius 6 → 4.5.
 //  - Raspberry (2026-11-07): basic bind 1.6 → 2.0 s (raspberry.js). Chartreuse → Raspberry fell to 238-2, so
 //    Chartreuse shots fly faster (22 → 26) and reload faster (1.2 → 1.1 s): 240-0 again, Red → Chartreuse stays 240-0.
+//  - Chartreuse (2026-11-07): range 9.5 → 11, damage 1320 → 1380, enhanced 2640 → 2760 (more than this lets
+//    Chartreuse beat Red). Keeps Red → Chartreuse and Chartreuse → Raspberry at 240-0.
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1800 },
@@ -35,7 +37,7 @@ export const BETA9_BALANCE = Object.freeze({
   // Yellow's orb was hard to land (18% in 3v3): no release delay, 0.5 hitbox (was 0.2), speed 30.
   yellow: { electricSpeed: 30, maxHealth: 6800, electricDamage: 2500, electricRange: 14, shockSlowPercent: .4, attackDelay: 0, attackWindup: 0, electricRadius: .5 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
-  chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1 },
+  chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760 },
   crimson: { maxHealth: 13000, attackCooldown: .6 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   azure: { maxHealth: 11500, pursuesWhileLowHealth: true },
