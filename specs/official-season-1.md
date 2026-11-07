@@ -61,7 +61,12 @@
 | 모드 | 곡 |
 |---|---|
 | 핫 존 | The December Offensive |
-| 찹 우드 | Timber and Tinsel (정식 전용, 베타는 기존 곡) |
+| 찹 우드 | Timber and Tinsel |
+| 젬 그랩 | Victory Under Snowfall |
+| 사커 킥 | Championship Sleigh Ride |
+| 녹아웃·골드 러쉬·쇼다운 | 베타와 같은 곡 |
+
+정식 전용 곡은 베타 페이지에 영향이 없다.
 
 ### 로테이션
 

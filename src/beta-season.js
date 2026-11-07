@@ -117,6 +117,8 @@ const beta8MatchBgm = BETA_SEASON_ID === "beta8" ? Object.fromEntries(Object.ent
   hotZone: "official-the-december-offensive",
   // 정식 시즌 1 찹 우드 (베타는 위의 chopWood 곡 그대로)
   officialChopWood: "official-timber-and-tinsel",
+  officialGemGrab: "official-victory-under-snowfall",
+  officialSoccer: "official-championship-sleigh-ride",
 }).map(([mode, name]) => {
   const track = new Audio(`./assets/${name}.mp3?v=1`);
   track.loop = true;
@@ -9045,7 +9047,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   }
   resetAllUltimateCharges();
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
-  setBetaMatchMusic((hotZone ? beta8MatchBgm.hotZone : IS_OFFICIAL_SEASON && mode === "chopWood" ? beta8MatchBgm.officialChopWood : null) ?? beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
+  setBetaMatchMusic((hotZone ? beta8MatchBgm.hotZone : IS_OFFICIAL_SEASON ? ({ chopWood: beta8MatchBgm.officialChopWood, gemGrab: beta8MatchBgm.officialGemGrab, soccer: beta8MatchBgm.officialSoccer })[mode] : null) ?? beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
   goldRushState.mode = mode;
   goldRushState.hotZone = hotZone;
   clearHotZone();
