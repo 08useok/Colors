@@ -5,19 +5,21 @@ export const RASPBERRY_CHARACTER = {
   nameEn: 'Raspberry',
   rarity: 'hero',
   color: 0xd6336c,
-  maxHealth: 4800,
+  maxHealth: 5500,
   moveSpeedMultiplier: 1,
   // 2026-11-01: 2.4 s was longer than the 2 s reload, so ammo never ran down. Three shots now fit in 1.6 s.
-  attackCooldown: .8,
+  attackCooldown: .68,
   // 2026-11-02: 3:3 simulation buff (reload 2 → 1.2, hitbox .15 → .35, speed 24 → 36).
-  reloadDuration: 1.2,
+  reloadDuration: 1.6,
   maxAmmo: 3,
   // AI range and aim guide use attackRange; the shot itself uses the vine* values.
   attackRange: 18,
   vineRange: 18,
-  vineSpeed: 36,
+  vineSpeed: 41,
   // 2026-11-02 emergency 3v3 buff: 2,050 → 2,400; 2026-11-03 2,250 so Chartreuse still wins 240-0.
-  vineDamage: 2250,
+  // 2026-11-07 (eliminated from Champions): health 4800 -> 5500, interval .8 -> .68, speed 36 -> 41,
+  // damage 2,250 -> 2,600, reload 1.2 -> 1.6 s (nerf). Chartreuse -> Raspberry -> Yellow stay 240-0.
+  vineDamage: 2600,
   vineRadius: .35,
   vineBindDuration: .6,
   // Built-in trait: +1.4 s on basic-attack binds only (2.0 s total; 1 s → 1.4 s on 2026-11-07). Ultimates never get it.
@@ -31,8 +33,8 @@ export const RASPBERRY_CHARACTER = {
   basicAttack: {
     name: '덩굴 저격',
     nameEn: 'Vine Snipe',
-    description: '사거리 18타일의 직선 덩굴탄을 쏴 2,250 피해를 주고 2초 동안 이동을 묶습니다(기본 0.6초 + 특성 1.4초). 묶인 적은 공격과 제자리 궁극기는 쓸 수 있지만 이동·돌진·점프는 할 수 없습니다. 벽이나 첫 적에게 맞으면 사라집니다.',
-    descriptionEn: 'Fires a straight 18-tile vine shot dealing 2,250 damage and binding movement for 2 seconds (0.6 base + 1.4 trait). Bound enemies can still attack and use in-place ultimates but cannot move, dash or jump. Stops at walls and the first enemy.',
+    description: '사거리 18타일의 직선 덩굴탄을 쏴 2,600 피해를 주고 2초 동안 이동을 묶습니다(기본 0.6초 + 특성 1.4초). 묶인 적은 공격과 제자리 궁극기는 쓸 수 있지만 이동·돌진·점프는 할 수 없습니다. 벽이나 첫 적에게 맞으면 사라집니다.',
+    descriptionEn: 'Fires a straight 18-tile vine shot dealing 2,600 damage and binding movement for 2 seconds (0.6 base + 1.4 trait). Bound enemies can still attack and use in-place ultimates but cannot move, dash or jump. Stops at walls and the first enemy.',
   },
   ultimate: {
     id: 'vinePrison',

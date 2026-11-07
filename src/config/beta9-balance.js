@@ -17,6 +17,11 @@
 //  - Chartreuse (2026-11-07): range 9.5 → 11, damage 1320 → 1380, enhanced 2640 → 2760 (more than this lets
 //    Chartreuse beat Red). Keeps Red → Chartreuse and Chartreuse → Raspberry at 240-0.
 //    Ultimate damage bonus +25% → +50% (both links still 240-0).
+//  - 2026-11-07 package (each change kept its two cycle links at 240-0):
+//    Mint rework: freeze needs 9 hits (max 100, ~11 per hit), faster/stronger/tougher, reload 1.15 → 1.45 s.
+//    Yellow: 6800 → 6200 HP, slow 40% → 50%. Salmon: impact radius 2.3 → 2.0.
+//    Buffs: Crystal crystal 2000 → 2200, Crimson punch 1333 → 1450, Cyan 8800 HP, Green 10200 HP,
+//    Pink 10600 HP, Gold 7500 HP.
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1800 },
@@ -26,24 +31,27 @@ export const BETA9_BALANCE = Object.freeze({
   // Buffs: behind in 3v3.
   // 2026-11-04: faster throw (windup 0.36 → 0.22 s, speed 20 → 26, impact radius 1.75 → 2.3) so Salmon can
   // land hits on Orange (1v1 55-185 → 152-88); the beta page plays the throw clip faster to match.
-  salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 26, throwWindup: .22, impactRadius: 2.3, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
-  green: { maxHealth: 9600 },
+  salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 26, throwWindup: .22, impactRadius: 2, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
+  green: { maxHealth: 10200 },
   // Mint's three-shot burst fans out: side shots 10% of a right angle (9°) off the aim line.
   // 2026-11-03: faster burst (120 → 80 ms), no windup, 0.55 s between attacks and a 4-unit ultimate
   // (was 7; the field was cast 0.01–0.18 times per 3v3 match).
-  mint: { maxHealth: 8600, freezeThreshold: 75, iceBulletDamage: 1200, moveSpeedMultiplier: 1.15, burstSpreadAngle: Math.PI / 20,
-    burstIntervalMs: 80, attackWindup: 0, attackCooldown: .55,
+  // 2026-11-07 rework: 9 hits freeze (100 / ~11.1); interval .55 → .5, speed 20 → 22, damage 1200 → 1320,
+  // 9500 HP; reload 1.15 → 1.45 s.
+  mint: { maxHealth: 9500, freezeThreshold: 100, icePerHit: 11.12, iceBulletDamage: 1320, iceBulletSpeed: 22, reloadDuration: 1.45, moveSpeedMultiplier: 1.15, burstSpreadAngle: Math.PI / 20,
+    burstIntervalMs: 80, attackWindup: 0, attackCooldown: .5,
     // Standing 3 s on the field freezes (25 ice/s vs 75); no ice builds while frozen, so freezes re-apply after thawing.
     iceBlockedWhileFrozen: true, special: { chargeRequired: 4, icePerSecond: 25 } },
   // Yellow's orb was hard to land (18% in 3v3): no release delay, 0.5 hitbox (was 0.2), speed 30.
-  yellow: { electricSpeed: 30, maxHealth: 6800, electricDamage: 2500, electricRange: 14, shockSlowPercent: .4, attackDelay: 0, attackWindup: 0, electricRadius: .5 },
-  cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
+  yellow: { electricSpeed: 30, maxHealth: 6200, electricDamage: 2500, electricRange: 14, shockSlowPercent: .5, attackDelay: 0, attackWindup: 0, electricRadius: .5 },
+  cyan: { spreadLineDamage: 1000, maxHealth: 8800 },
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
-  crimson: { maxHealth: 13000, attackCooldown: .6 },
+  crimson: { maxHealth: 13000, attackCooldown: .6, attackDamage: 1450 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   azure: { maxHealth: 11500, pursuesWhileLowHealth: true },
-  crystal: { maxHealth: 6600 },
-  gold: { maxHealth: 7000, ultimate: { radius: 4.5 } },
+  pink: { maxHealth: 10600 },
+  crystal: { maxHealth: 6600, crystalDamage: 2200 },
+  gold: { maxHealth: 7500, ultimate: { radius: 4.5 } },
 });
 
 const replaceText = (object, key, pairs) => {
@@ -61,8 +69,8 @@ export function applyBeta9Balance(characters) {
   }
   if (orange) replaceText(orange.basicAttack, 'description', [[' 일반 공격 적중으로 얻는 궁극기 충전량이 기존의 50%입니다.', ' 오렌지 적중은 궁극기를 10%, 과즙은 하나당 5% 충전하며 함께 맞으면 더해집니다.']]);
   if (yellow) {
-    replaceText(yellow.basicAttack, 'description', [['이동속도를 25% 감소', '이동속도를 40% 감소']]);
-    replaceText(yellow.basicAttack, 'descriptionEn', [['by 25%', 'by 40%']]);
+    replaceText(yellow.basicAttack, 'description', [['이동속도를 25% 감소', '이동속도를 50% 감소']]);
+    replaceText(yellow.basicAttack, 'descriptionEn', [['by 25%', 'by 50%']]);
   }
   if (gold) {
     replaceText(gold.ultimate, 'description', [['반경 6타일 장판', '반경 4.5타일 장판']]);
@@ -79,10 +87,14 @@ export function applyBeta9Balance(characters) {
     replaceText(ivory.ultimate, 'descriptionEn', [['Each deals 2400 impact damage', 'Each deals 1800 impact damage'], ['dealing 2600 damage every 1 seconds', 'dealing 1300 damage every 1 seconds']]);
   }
   if (mint) {
-    replaceText(mint.special, 'description', [['매초 563 피해와 얼음 수치 5를 받습니다.', '매초 563 피해와 얼음 수치 25를 받아, 장판 위에 3초 있으면 빙결됩니다. 빙결 중에는 얼음이 쌓이지 않고 풀린 뒤 다시 쌓입니다.']]);
-    replaceText(mint.special, 'descriptionEn', [['plus 5 ice each second.', 'plus 25 ice each second, so 3 seconds on it freezes them. No ice builds while frozen; it builds again after thawing.']]);
-    replaceText(mint.basicAttack, 'description', [['100이 되면', '75가 되면'], ['3발 연속 발사합니다.', '3발 연속 발사합니다. 3발은 좌우 9도로 부채꼴처럼 퍼져 나갑니다.']]);
-    replaceText(mint.basicAttack, 'descriptionEn', [['at 100,', 'at 75,'], ['in succession.', 'in succession, fanning out 9° to each side.']]);
+    replaceText(mint.special, 'description', [['매초 563 피해와 얼음 수치 5를 받습니다.', '매초 563 피해와 얼음 수치 25를 받아, 장판 위에 4초 있으면 빙결됩니다. 빙결 중에는 얼음이 쌓이지 않고 풀린 뒤 다시 쌓입니다.']]);
+    replaceText(mint.special, 'descriptionEn', [['plus 5 ice each second.', 'plus 25 ice each second, so 4 seconds on it freezes them. No ice builds while frozen; it builds again after thawing.']]);
+    replaceText(mint.basicAttack, 'description', [['얼음 수치가 25 누적되며, 100이 되면', '얼음 수치가 약 11 누적되며, 100이 되면(9발 명중)'], ['3발 연속 발사합니다.', '3발 연속 발사합니다. 3발은 좌우 9도로 부채꼴처럼 퍼져 나갑니다.']]);
+    replaceText(mint.basicAttack, 'descriptionEn', [['Each hit adds 25 ice; at 100,', 'Each hit adds about 11 ice; at 100 (9 hits),'], ['in succession.', 'in succession, fanning out 9° to each side.']]);
+  }
+  if (characters.crystal) {
+    replaceText(characters.crystal.basicAttack, 'description', [['2000 피해의 수정탄', '2200 피해의 수정탄']]);
+    replaceText(characters.crystal.basicAttack, 'descriptionEn', [['A 2,000-damage crystal', 'A 2,200-damage crystal']]);
   }
   if (cyan) {
     replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해']]);
