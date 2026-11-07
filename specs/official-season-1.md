@@ -73,6 +73,7 @@
 | 점수 속도 | 혼자 차지한 구역 하나당 초당 1.25% (구역 하나만 계속 지키면 80초) |
 | 구역 위치 | 맵 0: 가운데 1개(반경 4) / 맵 1: 좌우 2개 / 맵 2: 앞뒤 2개 (반경 3) |
 | 부활 | 5초 |
+| 음악 | The December Offensive (`assets/official-the-december-offensive.mp3`) |
 
 ## 맵 (방향)
 

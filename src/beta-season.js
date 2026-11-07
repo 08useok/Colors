@@ -113,6 +113,8 @@ const beta8MatchBgm = BETA_SEASON_ID === "beta8" ? Object.fromEntries(Object.ent
   showdown: "beta8-graveyard-gambit",
   goldRush: "beta8-vault-of-the-greedy-phantom",
   training: "beta8-violet-courtyard-study",
+  // 정식 시즌 1 핫 존
+  hotZone: "official-the-december-offensive",
 }).map(([mode, name]) => {
   const track = new Audio(`./assets/${name}.mp3?v=1`);
   track.loop = true;
@@ -9041,7 +9043,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   }
   resetAllUltimateCharges();
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
-  setBetaMatchMusic(beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
+  setBetaMatchMusic((hotZone ? beta8MatchBgm.hotZone : null) ?? beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
   goldRushState.mode = mode;
   goldRushState.hotZone = hotZone;
   clearHotZone();
