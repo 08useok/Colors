@@ -18,6 +18,7 @@ import { createSalmonPreview } from "./visuals/salmon-preview.js?v=4";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { createRespawnShields, RESPAWN_PROTECTION_SECONDS } from "./visuals/respawn-shield.js?v=1";
 import { createChampionsLobby } from "./visuals/beta9-champions.js?v=1";
+import { createChristmasLobby } from "./visuals/christmas-lobby.js?v=1";
 import { BETA8_LOBBY_ROOMS, beta8LobbyRoomAt, createBeta8LobbyRooms } from "./visuals/beta8-lobby-rooms.js?v=1";
 import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout } from "./config/knockout.js?v=1";
 import { TEAM_ARENA, TEAM_ARENA_RESERVED, BETA9_GEM_RULES, teamArenaMap, knockoutSafeArea } from "./config/beta9-team-arena.js?v=1";
@@ -461,12 +462,12 @@ if (IS_OFFICIAL_SEASON) {
   const tagline = document.querySelector(".beta-header p");
   if (chip) chip.textContent = "SEASON 1";
   if (heading) heading.textContent = "정식 시즌 1";
-  if (tagline) tagline.textContent = `컬러스 정식 시즌 1 · ${CHARACTERS.length}종 전투`;
+  if (tagline) tagline.textContent = `🎄 크리스마스 시즌 · 정식 시즌 1 · ${CHARACTERS.length}종 전투`;
   const loading = document.querySelector(".beta6-loading-status");
   if (loading) {
     loading.querySelector("strong").textContent = "SEASON 1";
-    loading.querySelector("b").textContent = "COLORS · OFFICIAL";
-    loading.querySelector("span").textContent = "정식 시즌 1에 입장하는 중…";
+    loading.querySelector("b").textContent = "CHRISTMAS · OFFICIAL";
+    loading.querySelector("span").textContent = "눈 내리는 크리스마스 광장으로 입장하는 중…";
   }
   beta6LoadingScreen?.setAttribute("aria-label", "정식 시즌 1 불러오는 중");
 }
@@ -833,7 +834,8 @@ function createBeta7AncientRuinDecor() {
 }
 
 createBeta7AncientRuinDecor();
-const seasonLobbyDecor = IS_CHAMPIONS_THEME ? createChampionsLobby(scene,map) : null;
+// Official Season 1 is Christmas themed: trees, candy canes, presents and snow in the lobby spots.
+const seasonLobbyDecor = IS_OFFICIAL_SEASON ? createChristmasLobby(scene, map) : IS_CHAMPIONS_THEME ? createChampionsLobby(scene,map) : null;
 const beta8LobbyRooms = IS_BETA8_TEST ? createBeta8LobbyRooms(map, solids) : null;
 const salmonPreview = IS_BETA8_TEST ? createSalmonPreview(map, solids, modelLoading.manager, canvas) : null;
 
@@ -9577,7 +9579,7 @@ if (IS_OFFICIAL_SEASON) {
     closeBetaModal();
     initialSpawnPoint.set(TRAINING_TELEPORT_POINT.x, TRAINING_TELEPORT_POINT.y, TRAINING_TELEPORT_POINT.z);
     keys.clear(); resetPlayer();
-    showToast("훈련장으로 이동했습니다.");
+    showToast("눈사람 훈련장으로 이동했습니다.");
   });
 }
 // Official Season 1 rotation: Hot Zone button, open and closed mode buttons, time to the next change.
@@ -9688,6 +9690,10 @@ function updateLocation() {
     return;
   }
   const { x, z } = player.position;
+  if (IS_OFFICIAL_SEASON) {
+    locationName.textContent = z < -28 ? "산타 성 관문" : z > 28 ? "눈꽃 결투장" : x < -28 ? "눈사람 훈련장" : x > 28 ? "선물 공방" : "크리스마스 광장";
+    return;
+  }
   if (IS_BETA8_TEST) {
     locationName.textContent = z < -28 ? "유령 성 관문" : z > 28 ? "달빛 묘지" : x < -28 ? "저주받은 훈련장" : x > 28 ? "호박 작업장" : "할로윈 유령 광장";
     return;

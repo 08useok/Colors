@@ -1,0 +1,32 @@
+/* Official Season 1 — Christmas theme. Loaded after beta-season.css on official.html only;
+   body.official-season-1 is set by src/beta-season.js when the page runs as the official season. */
+:root { --xmas-pine: #14482a; --xmas-pine-2: #1f6b3a; --xmas-red: #c8102e; --xmas-gold: #f2c14e; --xmas-snow: #f7fbff; }
+
+html.official-loading .beta6-loading-screen { background: radial-gradient(circle at 50% 28%, #fff7d6 0, #f2c14e 6%, #1f6b3a 30%, #14482a 62%, #0b2a18 90%); }
+html.official-loading .beta8-loading-bg { display: none; }
+html.official-loading .beta6-loading-shade { background: linear-gradient(transparent 35%, rgba(11,42,24,.92)); }
+html.official-loading .beta6-loading-status strong { color: var(--xmas-snow); text-shadow: 0 3px 14px var(--xmas-red); }
+html.official-loading .beta6-loading-status b { color: var(--xmas-gold); }
+
+body.official-season-1 { background: #0b2a18; color: #f7f2e6; }
+body.official-season-1 .beta-header { background: linear-gradient(100deg, var(--xmas-pine), #7a1020 140%); border-bottom: 3px solid var(--xmas-red); }
+body.official-season-1 .beta-header h1 { color: var(--xmas-snow); text-shadow: 0 2px 12px rgba(200,16,46,.55); }
+body.official-season-1 .beta-header p, body.official-season-1 .test-panel p { color: #d9eadf; }
+body.official-season-1 .rank-chip, body.official-season-1 .test-chip { color: var(--xmas-snow); background: var(--xmas-red); border-color: var(--xmas-gold); }
+body.official-season-1 .beta-nav button, body.official-season-1 .beta-header a, body.official-season-1 .test-actions button { background: #163d27; color: #f7f2e6; border-color: #3f8a5c; }
+body.official-season-1 .beta-nav button:hover, body.official-season-1 .test-actions button:hover { background: #1f6b3a; border-color: var(--xmas-gold); }
+body.official-season-1 #training-go { background: var(--xmas-red); border-color: var(--xmas-gold); }
+body.official-season-1 .location-card strong, body.official-season-1 .test-panel strong, body.official-season-1 .gold-rush-hud strong { color: var(--xmas-gold); }
+body.official-season-1 .beta-modal-card, body.official-season-1 .modal-title-row { background: #12341f; color: #f7f2e6; }
+body.official-season-1 .beta-card { background: #163d27; border-color: #3f8a5c; }
+body.official-season-1 .beta-card h3 { color: var(--xmas-gold); }
+body.official-season-1 .beta-card p { color: #d9eadf; }
+body.official-season-1 .modal-close { background: var(--xmas-red); color: var(--xmas-snow); }
+body.official-season-1 .ultimate-btn { --ultimate-color: var(--xmas-red); border-color: var(--xmas-gold); background: conic-gradient(var(--ultimate-color) 0 var(--charge-angle), #163d27 var(--charge-angle) 360deg); }
+body.official-season-1 .beta-watermark { color: var(--xmas-gold); }
+body.official-season-1 #aim-mode-btn { background: #163d27; border-color: #3f8a5c; color: #f7f2e6; }
+body.official-season-1 .beta-wallet, body.official-season-1 .test-panel, body.official-season-1 .location-card,
+body.official-season-1 .gold-rush-player-panel, body.official-season-1 .gold-rush-hud {
+  background: linear-gradient(135deg, rgba(20,72,42,.96), rgba(122,16,32,.9)); border-color: rgba(242,193,78,.55); box-shadow: 0 8px 32px rgba(4,20,10,.45);
+}
+body.official-season-1 .mode-rotation-info { color: #ffe9a8; }

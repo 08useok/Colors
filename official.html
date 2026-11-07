@@ -9,6 +9,7 @@
   <script>
     // Official Season 1 always loads the current season look.
     const loadingSeason = "beta8";
+    document.documentElement.classList.add("official-loading");
     if (loadingSeason === "beta8") document.documentElement.classList.add("beta8-loading", "beta9-loading");
     if (loadingSeason === "beta5") {
       document.documentElement.classList.add("beta5-loading");
@@ -53,10 +54,11 @@
   <link rel="stylesheet" href="./beta-account.css?v=2">
   <link rel="stylesheet" href="./beta-records.css?v=1">
   <link rel="stylesheet" href="./beta-champions.css?v=2">
+  <link rel="stylesheet" href="./official-season.css?v=1">
 </head>
 <body>
   <div id="model-loading-screen" class="model-loading-screen" role="status" aria-live="polite" aria-busy="true">
-    <h1>COLORS BETA</h1><p data-model-loading-label>캐릭터 모델을 준비하는 중…</p>
+    <h1>COLORS · CHRISTMAS</h1><p data-model-loading-label>캐릭터 모델을 준비하는 중…</p>
     <progress aria-label="모델 준비 진행률" max="100" value="0"></progress><small data-model-loading-detail>0%</small><button type="button" hidden>다시 시도</button>
   </div>
   <div id="beta6-loading-screen" class="beta6-loading-screen" role="status" aria-label="정식 시즌 1 불러오는 중">
@@ -74,7 +76,7 @@
     <img class="beta6-badge beta6-badge-pufferfish" src="./assets/beta6-loading-badge-pufferfish.png?v=1" alt="">
     <div class="beta6-loading-status">
       <img class="beta6-loading-banner" src="./assets/beta6-loading-banner.png?v=1" alt="">
-      <strong>SEASON 1</strong><b>COLORS · OFFICIAL</b><span>정식 시즌 1에 입장하는 중…</span>
+      <strong>SEASON 1</strong><b>CHRISTMAS · OFFICIAL</b><span>눈 내리는 크리스마스 광장으로 입장하는 중…</span>
     </div>
   </div>
   <div id="beta5-loading-screen" class="beta5-loading-screen" role="status" aria-live="polite" aria-label="베타 시즌 5 불러오는 중">
@@ -271,6 +273,6 @@
     <label>벌목 진행 <progress id="chop-progress" max="2" value="0"></progress></label>
     <button id="chop-wood-close" type="button">로비로 돌아가기</button>
   </aside>
-  <script type="module" src="./src/beta-season.js?v=0.9.31-training-official"></script>
+  <script type="module" src="./src/beta-season.js?v=0.9.32-christmas-official"></script>
 </body>
 </html>
