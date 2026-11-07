@@ -16,6 +16,7 @@
 //    Chartreuse shots fly faster (22 → 26) and reload faster (1.2 → 1.1 s): 240-0 again, Red → Chartreuse stays 240-0.
 //  - Chartreuse (2026-11-07): range 9.5 → 11, damage 1320 → 1380, enhanced 2640 → 2760 (more than this lets
 //    Chartreuse beat Red). Keeps Red → Chartreuse and Chartreuse → Raspberry at 240-0.
+//    Ultimate damage bonus +25% → +50% (both links still 240-0).
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1800 },
@@ -37,7 +38,7 @@ export const BETA9_BALANCE = Object.freeze({
   // Yellow's orb was hard to land (18% in 3v3): no release delay, 0.5 hitbox (was 0.2), speed 30.
   yellow: { electricSpeed: 30, maxHealth: 6800, electricDamage: 2500, electricRange: 14, shockSlowPercent: .4, attackDelay: 0, attackWindup: 0, electricRadius: .5 },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
-  chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760 },
+  chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
   crimson: { maxHealth: 13000, attackCooldown: .6 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   azure: { maxHealth: 11500, pursuesWhileLowHealth: true },
@@ -54,6 +55,10 @@ export function applyBeta9Balance(characters) {
   const merge = (target, patch) => { for (const [key, value] of Object.entries(patch)) { if (value && typeof value === 'object' && !Array.isArray(value)) merge(target[key] ??= {}, value); else target[key] = value; } };
   for (const [id, patch] of Object.entries(BETA9_BALANCE)) if (characters[id]) merge(characters[id], patch);
   const { ivory, mint, cyan, salmon, red, gold, yellow, orange } = characters;
+  if (characters.chartreuse) {
+    replaceText(characters.chartreuse.ultimate, 'description', [['피해가 25% 증가', '피해가 50% 증가']]);
+    replaceText(characters.chartreuse.ultimate, 'descriptionEn', [['increased by 25%', 'increased by 50%']]);
+  }
   if (orange) replaceText(orange.basicAttack, 'description', [[' 일반 공격 적중으로 얻는 궁극기 충전량이 기존의 50%입니다.', ' 오렌지 적중은 궁극기를 10%, 과즙은 하나당 5% 충전하며 함께 맞으면 더해집니다.']]);
   if (yellow) {
     replaceText(yellow.basicAttack, 'description', [['이동속도를 25% 감소', '이동속도를 40% 감소']]);
