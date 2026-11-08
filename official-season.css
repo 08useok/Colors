@@ -30,3 +30,15 @@ body.official-season-1 .gold-rush-player-panel, body.official-season-1 .gold-rus
   background: linear-gradient(135deg, rgba(20,72,42,.96), rgba(122,16,32,.9)); border-color: rgba(242,193,78,.55); box-shadow: 0 8px 32px rgba(4,20,10,.45);
 }
 body.official-season-1 .mode-rotation-info { color: #ffe9a8; }
+
+/* Official Season 1 progression screens (src/official/official-ui.js). */
+body.official-season-1 .official-power { margin: .4rem 0; color: #ffe9a8; }
+body.official-season-1 .official-power small { color: #d9eadf; }
+.official-pass-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .5rem; max-height: 55vh; overflow-y: auto; }
+.official-pass-tier { display: grid; gap: .3rem; padding: .4rem; border: 1px solid rgba(242,193,78,.35); border-radius: 10px; background: rgba(20,72,42,.55); opacity: .7; }
+.official-pass-tier.reached { opacity: 1; border-color: #f2c14e; }
+.official-pass-tier > b { font-size: 1.1rem; color: #f2c14e; }
+.official-pass-cell { display: grid; gap: .15rem; font-size: .8rem; padding: .3rem; border-radius: 8px; background: rgba(0,0,0,.25); }
+.official-pass-cell.premium { background: rgba(122,16,32,.55); }
+.official-pass-cell.claimed { opacity: .55; }
+.official-pass-cell button { font-size: .75rem; padding: .2rem .4rem; }

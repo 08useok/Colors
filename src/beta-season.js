@@ -49,6 +49,9 @@ import { createBeta6Combat } from "./combat/beta6-combat.js?v=55";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
+import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER } from "./official/progression.js?v=1";
+import { createOfficialUi } from "./official/official-ui.js?v=1";
+import { plazaArenaMap } from "./official/plaza-maps.js?v=1";
 import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=1";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS, TRANSFORM_STATS } from "./config/transforms.js";
@@ -577,6 +580,8 @@ function loadBetaState() {
       lastRewardTierId: saved.daily?.lastRewardTierId,
     },
   };
+  // Official Season 1: power, gems, battle pass and ranked live in their own save block.
+  if (IS_OFFICIAL_SEASON) state.official = normalizeOfficial(saved.official);
   // 베타 테스트 전용 캐릭터는 구매 없이 바로 시험할 수 있게 한다.
   for (const testCharacterId of ["ivory", "chartreuse", ...((IS_BETA5_TEST || HAS_BETA6_CONTENT) ? ["mint"] : []), ...(HAS_BETA6_CONTENT ? ["azure"] : []), ...((IS_BETA7_TEST || IS_BETA8_TEST) ? ["crystal"] : []), ...(IS_BETA8_TEST ? ["lavender", "salmon", "raspberry"] : [])]) {
     if (!state.ownedCharacters.includes(testCharacterId)) state.ownedCharacters.push(testCharacterId);
@@ -607,6 +612,26 @@ function loadBetaState() {
 const betaState = loadBetaState();
 function saveBetaState() { localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(betaState)); betaAccount.queueSave(betaState); updateWallet(); }
 const betaRecords = IS_BETA8_TEST ? createBetaRecords({state:betaState,save:saveBetaState,storageKey:BETA_STORAGE_KEY,account:betaAccount,characters:CHARACTERS,title:modalTitle,content:modalContent,open:()=>openPanel('records')}) : null;
+// Official Season 1 screens (battle pass, gem shop, ranked, power on character cards).
+const officialUi = IS_OFFICIAL_SEASON ? createOfficialUi({ state: betaState, save: saveBetaState, title: modalTitle, content: modalContent,
+  toast: message => showToast(message), characters: CHARACTERS, startRanked: (mode, id) => startOfficialRanked(mode, id),
+  onChange: () => { if (modalContent.querySelector('[data-official-upgrade]')) renderCharacters(); } }) : null;
+// Power level used in matches: the chosen character's power (bots match it); ranked is power 11 for everyone.
+const officialPowerLevel = () => !IS_OFFICIAL_SEASON ? 1 : goldRushState.ranked ? POWER_MAX : powerOf(betaState.official, betaState.selectedCharacter);
+const officialHealth = base => IS_OFFICIAL_SEASON ? Math.round(base * powerMultiplier(officialPowerLevel())) : base;
+// Engine data for a fighter: power multiplier, and no gadget below power 7 / no transform below power 11.
+function officialActorData() {
+  if (!IS_OFFICIAL_SEASON) return {};
+  const level = officialPowerLevel(), data = { powerMultiplier: powerMultiplier(level) };
+  if (level < GADGET_POWER) data.g = null;
+  if (level < TRANSFORM_POWER) data.t = null;
+  return data;
+}
+function startOfficialRanked(mode, id) {
+  if (betaState.selectedCharacter !== id) selectCharacter(id);
+  if (betaState.selectedCharacter !== id) return;
+  startGoldRush(mode, false, true);
+}
 document.querySelector('[data-panel="records"]').hidden = !IS_BETA8_TEST;
 function updateWallet() { creditValue.textContent = betaState.credits.toLocaleString("ko-KR"); }
 function rarityName(rarity) { return ({ common: "일반", rare: "희귀", epic: "초희귀", hero: "영웅", legendary: "영웅" })[rarity]; }
@@ -2335,6 +2360,7 @@ function renderCharacters() {
       ${ultimate ? `<p><strong>궁극기 · ${ultimate.name}</strong><br>${ultimate.description}</p>` : ""}
       ${(IS_BETA5_TEST || HAS_BETA6_CONTENT) && BETA_CHARACTERS[character.id]?.special ? `<p><strong>특수 공격 · ${BETA_CHARACTERS[character.id].special.name}</strong><br>${BETA_CHARACTERS[character.id].special.description}</p>` : ""}
       <p>${character.id === "azure" ? "베타 시즌 6 출시 · 파도 돌격 캐릭터" : character.id === "mint" ? "빙결 컨트롤러" : character.id === "gold" ? "설치형 컨트롤러" : character.id === "crimson" ? "근접 브루저 · 3연속 펀치" : `베타 시즌 ${BETA_SEASON_ID.replace("beta", "")} 캐릭터 테스트`}</p>
+      ${officialUi ? officialUi.powerHtml(character.id) : ""}
       <button data-character="${character.id}" data-action="${owned ? "select" : "buy"}" ${selected ? "disabled" : ""}>${selected ? "선택 중" : owned ? "선택" : `${character.price} 크레딧`}</button>
       ${skinList}
     </article>`;
@@ -3028,6 +3054,9 @@ function openPanel(panel) {
   if (panel === "orders") renderOrderEvent();
   if (panel === "seaprops") renderSeasonProps();
   if (panel === "patchnotes") renderBetaPatchNotes();
+  if (panel === "battlepass") officialUi?.renderBattlePass();
+  if (panel === "gemshop") officialUi?.renderGemShop();
+  if (panel === "ranked") officialUi?.renderRanked();
   if (panel === "quests") IS_BETA8_TEST ? renderBeta8Quests() : IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));
@@ -7690,8 +7719,8 @@ function startBeta6BotCombat(carried = null) {
     bushAt: (x,z)=>activeEventLayout?.bushes.some(r=>insideMapRect(x,z,r)) ?? false,
     onEvent(event) { beta6PendingEvents.push(event); }
   });
-  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0 });
-  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0 });
+  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0, ...officialActorData() });
+  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0, ...officialActorData() });
   betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time, beta6PlayerActor.id);
   betaGadgetUi().updateButton(beta6PlayerActor, beta6Combat.time);
 }
@@ -7814,7 +7843,7 @@ function updateBeta6BotCombat(dt) {
     // Every character keeps its ultimate charge through death and respawn.
     const { charge, transformCharge } = beta6PlayerActor;
     world.remove(beta6PlayerActor);
-    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge, transformCharge });
+    beta6PlayerActor = world.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge, transformCharge, ...officialActorData() });
   }
   const hero = beta6PlayerActor;
   const deadline = nativeTime => world.time + Math.max(0, (nativeTime || 0) - clock.elapsedTime);
@@ -7831,7 +7860,7 @@ function updateBeta6BotCombat(dt) {
     if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
       const { charge, transformCharge } = actor;
       world.remove(actor);
-      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge, transformCharge });
+      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge, transformCharge, ...officialActorData() });
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
       bot.mesh.userData.health = bot.health; grantBetaRespawnProtection(bot, bot.mesh);
       Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
@@ -8003,7 +8032,7 @@ function createGoldRushBots() {
     spawn.y = ground > -5 ? ground + 0.05 : 1.55;
     mesh.position.copy(spawn);
     scene.add(mesh);
-    const maxHealth = definition?.maxHealth || 6000;
+    const maxHealth = officialHealth(definition?.maxHealth || 6000);
     const maxAmmo = definition?.maxAmmo || 3;
     const bot = {
       id: i + 1,
@@ -8607,7 +8636,7 @@ function resetTestCombatHud() {
   generalAttackReady = true;
   crimsonAttackButton.classList.remove("cooldown");
   const def = BETA_CHARACTERS[betaState.selectedCharacter];
-  goldRushState.maxHealth = def?.maxHealth || 6000;
+  goldRushState.maxHealth = officialHealth(def?.maxHealth || 6000);
   goldRushState.health = goldRushState.maxHealth;
   goldRushState.maxAmmo = def?.maxAmmo || 3;
   goldRushState.ammo = goldRushState.maxAmmo;
@@ -8736,9 +8765,14 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
     playOrderVictoryEffect();
   }
   if (goldRushState.mode === "soccer" || goldRushState.mode === "gemGrab") betaSfx.play(playerWon ? "win" : "lose");
+  // Official Season 1: battle pass XP every match; ranked matches move rank points instead of trophies.
+  const officialNote = officialUi && goldRushState.active ? officialUi.matchEnded({ won: goldRushState.mode === 'showdown' ? Number(showdownRank || (playerWon ? 1 : 10)) <= 4 : playerWon, draw: message.includes('무승부'), abandoned, ranked: !!goldRushState.ranked }) : '';
+  if (goldRushState.ranked) trophyDelta = 0;
+  if (officialNote) setTimeout(() => showToast(officialNote), 1500);
   betaState.characterTrophies[characterId] = Math.max(0, previousTrophies + trophyDelta);
   saveBetaState();
   goldRushState.ended = true;
+  goldRushState.ranked = false;
   // 경기 종료 후 로비에서는 사망/부활 대기 상태를 이어받지 않는다.
   goldRushState.active = false;
   goldRushState.dead = false;
@@ -8994,7 +9028,7 @@ function prepareBetaEventMap(mode,plus) {
     : mode==="knockout" || mode==="gemGrab" ? TEAM_ARENA_RESERVED[mode]
     : [[0,15,2],[0,0,3],...Array.from({length:9},(_,i)=>[Math.sin(i*Math.PI*2/9)*9,Math.cos(i*Math.PI*2/9)*9,1.4])];
   if(mode==="showdown")for(const point of reserved){point[0]*=showdownProfile.scale;point[1]*=showdownProfile.scale;}
-  activeEventLayout=["knockout","gemGrab"].includes(mode) ? teamArenaMap(mode,index) : eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
+  activeEventLayout=["knockout","gemGrab"].includes(mode) ? (IS_OFFICIAL_SEASON ? plazaArenaMap(mode,index) : teamArenaMap(mode,index)) : eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
   if(mode==="showdown")activeEventLayout.navigationStep=showdownProfile.navigationStep;
   const addWall=r=>{
     const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));
@@ -9020,10 +9054,10 @@ function prepareBetaEventMap(mode,plus) {
   canvas.dataset.eventMap=activeEventLayout.id;canvas.dataset.eventMapWalls=String(activeEventLayout.walls.length);canvas.dataset.eventMapBushes=String(activeEventLayout.bushes.length);
 }
 
-function startGoldRush(mode = "goldRush", showdownPlus = false) {
+function startGoldRush(mode = "goldRush", showdownPlus = false, ranked = false) {
   // Official Season 1: only modes in the current rotation start (Showdown always, Showdown+ in the last week).
   const rotationMode = mode === "showdown" && showdownPlus ? "showdownPlus" : mode;
-  if (IS_OFFICIAL_SEASON && !modeOpen(rotationMode)) { showToast(`${MODE_NAMES[rotationMode] ?? mode}은(는) 지금 로테이션에 없습니다.`); return; }
+  if (IS_OFFICIAL_SEASON && !ranked && !modeOpen(rotationMode)) { showToast(`${MODE_NAMES[rotationMode] ?? mode}은(는) 지금 로테이션에 없습니다.`); return; }
   // Hot Zone runs on the Gem Grab arena, teams and respawns, with zones instead of gems.
   const hotZone = mode === "hotZone";
   if (hotZone) mode = "gemGrab";
@@ -9049,6 +9083,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   // 경기 중에 다른 모드를 바로 시작해도 음악이 남지 않게 여기서 한 번에 고른다.
   setBetaMatchMusic((hotZone ? beta8MatchBgm.hotZone : IS_OFFICIAL_SEASON ? ({ chopWood: beta8MatchBgm.officialChopWood, gemGrab: beta8MatchBgm.officialGemGrab, soccer: beta8MatchBgm.officialSoccer })[mode] : null) ?? beta8MatchBgm[mode] ?? (mode === "gemGrab" ? gemGrabBgm : betaBattleBgm));
   goldRushState.mode = mode;
+  goldRushState.ranked = IS_OFFICIAL_SEASON && ranked;
   goldRushState.hotZone = hotZone;
   clearHotZone();
   goldRushState.showdownPlus = mode === "showdown" && showdownPlus;
@@ -9079,7 +9114,7 @@ function startGoldRush(mode = "goldRush", showdownPlus = false) {
   goldRushState.invulnerableUntil = clock.elapsedTime + 2;
   goldRushState.mineGoldAvailable = true;
   goldRushState.mineGoldRespawnAt = 0;
-  goldRushState.maxHealth = BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000;
+  goldRushState.maxHealth = officialHealth(BETA_CHARACTERS[betaState.selectedCharacter]?.maxHealth || 6000);
   goldRushState.health = goldRushState.maxHealth;
   goldRushState.maxAmmo = BETA_CHARACTERS[betaState.selectedCharacter]?.maxAmmo || 3;
   goldRushState.ammo = goldRushState.maxAmmo;

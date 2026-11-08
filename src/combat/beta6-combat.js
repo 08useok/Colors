@@ -53,6 +53,9 @@ export function createBeta6Combat(definitions, options = {}) {
       frozenUntil: 0, lockUntil: 0, guardUntil: 0, invulnerableUntil: 0, hiddenUntil: 0, revealedUntil: 0,
       focusUntil: 0, ice: 0, poisonUntil: 0, poisonNext: 0, zoneNext: 0, combatAt: 0, regenNext: 0,
       encoreUntil: 0, rootUntil: 0, dodgeUntil: 0, t: options.transforms ? TRANSFORMS[id] ?? null : null, g: options.gadgets ? GADGETS[id] ?? null : null, gadgetReadyAt: 0, transformCharge: 0, transformUntil: 0, angelMarkUntil: 0, dodgeYaw: 0, approachNext: 0, devices: [], leap: null, castCount: 0, attackCount: 0, ...data };
+    // Official Season power (data.powerMultiplier, e.g. 1.2 at power 11): this fighter's own health copy;
+    // its outgoing damage is scaled in hit(). Off unless the page passes it.
+    if (a.powerMultiplier && a.powerMultiplier !== 1) { a.d = { ...d, maxHealth: d.maxHealth * a.powerMultiplier }; if (!('hp' in data)) a.hp = a.d.maxHealth; }
     a.rounds = Array.from({ length: a.ammo }, () => rollRound(false, a.d));
     actors.push(a); return a;
   }
@@ -131,6 +134,7 @@ export function createBeta6Combat(definitions, options = {}) {
   function hit(a, b, damage, basic = false, award = 1, ultimate = false, bypassGuard = false) {
     if (!alive(b) || damage <= 0 || time < b.invulnerableUntil || !enemies(a, b)) return 0;
     if (a.t && transformed(a)) damage *= 1 + TRANSFORM_STATS.damageBonus;
+    if (a.powerMultiplier) damage *= a.powerMultiplier;
     const dealt = Math.min(b.hp, damage * (bypassGuard?1:1-damageReductionFor(b)));
     b.hp -= dealt; a.combatAt = b.combatAt = time;
     b.revealedUntil = a.revealedUntil = time + 3;
