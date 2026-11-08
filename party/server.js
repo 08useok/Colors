@@ -1,5 +1,6 @@
 import { routePartykitRequest, Server } from "partyserver";
 import { DurableObject } from "cloudflare:workers";
+import { createRankedQueue, assignRankedSeats, RANKED_MAP_COUNT } from "../src/official/ranked-match.js";
 
 const ROOM_MAX = 8;
 const SOCCER_ROOM_MAX = 6;
@@ -34,6 +35,9 @@ export class ColorsServer extends Server {
   matches = new Map();
   playerMatch = new Map();
   nextMatchId = 1;
+  // Official Season 1 ranked (경쟁전): its own queue; matched players share a match and RELAY like the main game.
+  rankedQueue = createRankedQueue();
+  rankedTimer = null;
 
   onConnect(connection) {
     this.players.set(connection.id, { id: connection.id, connection, nickname: "플레이어", charType: "red" });
@@ -46,6 +50,9 @@ export class ColorsServer extends Server {
     try { data = JSON.parse(message); } catch { return; }
     if (data.type === "JOIN_QUEUE") this.joinQueue(sender, data);
     else if (data.type === "RELAY") this.relay(sender, data);
+    else if (data.type === "RANKED_QUEUE") this.joinRanked(sender, data);
+    else if (data.type === "RANKED_LEAVE") this.leaveRanked(sender.id);
+    else if (data.type === "RANKED_RESULT") this.rankedResult(sender, data);
   }
 
   onClose(connection) { this.removePlayer(connection.id); }
@@ -118,7 +125,62 @@ export class ColorsServer extends Server {
     this.broadcastMatch(match, { type: "COUNTDOWN_CANCELLED" });
   }
 
+  // ── Ranked ──────────────────────────────────────────────────────────────
+  joinRanked(connection, data) {
+    const player = this.players.get(connection.id);
+    if (!player) return;
+    this.leaveRanked(player.id);
+    player.nickname = this.cleanNickname(data.nickname);
+    player.charType = typeof data.charType === "string" ? data.charType.slice(0, 24) : "red";
+    const entry = this.rankedQueue.join({ id: player.id, mode: data.mode, points: data.points, nickname: player.nickname, charType: player.charType }, Date.now());
+    if (!entry) return this.send(connection, { type: "RANKED_ERROR", reason: "mode" });
+    this.send(connection, { type: "RANKED_QUEUED", playerId: player.id, mode: entry.mode, ...this.rankedQueue.status(player.id, Date.now()) });
+    this.rankedTimer ??= setInterval(() => this.tickRanked(), 1000);
+  }
+
+  leaveRanked(playerId) {
+    this.rankedQueue.leave(playerId);
+    const matchId = this.playerMatch.get(playerId);
+    if (matchId && this.matches.get(matchId)?.ranked) this.leaveMatch(playerId, matchId);
+  }
+
+  tickRanked() {
+    const now = Date.now();
+    for (const group of this.rankedQueue.tick(now)) this.startRankedMatch(group);
+    for (const player of this.players.values()) {
+      const status = this.rankedQueue.status(player.id, now);
+      if (status) this.send(player.connection, { type: "RANKED_STATUS", ...status });
+    }
+    if (this.rankedQueue.size === 0) { clearInterval(this.rankedTimer); this.rankedTimer = null; }
+  }
+
+  startRankedMatch({ mode, players }) {
+    const present = players.filter((p) => this.players.has(p.id));
+    if (!present.length) return;
+    const { seats, hostId } = assignRankedSeats(present);
+    const match = { id: `ranked-${this.nextMatchId++}`, ranked: true, started: true, ended: false, mode, mapId: Math.floor(Math.random() * RANKED_MAP_COUNT),
+      seed: Math.floor(Math.random() * 0x7fffffff), hostId, seats, playerIds: present.map((p) => p.id), countdownTimer: null };
+    this.matches.set(match.id, match);
+    for (const id of match.playerIds) {
+      const previous = this.playerMatch.get(id);
+      if (previous && previous !== match.id) this.leaveMatch(id, previous);
+      this.playerMatch.set(id, match.id);
+    }
+    this.broadcastMatch(match, { type: "RANKED_MATCH", matchId: match.id, mode, mapId: match.mapId, seed: match.seed, hostId, seats });
+  }
+
+  // Only the host decides the result; the server sends the same result to everyone in the match.
+  rankedResult(sender, data) {
+    const match = this.matches.get(this.playerMatch.get(sender.id));
+    if (!match?.ranked || match.ended || match.hostId !== sender.id) return;
+    match.ended = true;
+    const winner = data.winner === "a" || data.winner === "b" ? data.winner : null;
+    const score = { a: Math.max(0, Math.floor(Number(data.score?.a) || 0)), b: Math.max(0, Math.floor(Number(data.score?.b) || 0)) };
+    this.broadcastMatch(match, { type: "RANKED_END", matchId: match.id, winner, score, mode: match.mode });
+  }
+
   removePlayer(playerId) {
+    this.rankedQueue.leave(playerId);
     const matchId = this.playerMatch.get(playerId);
     if (matchId) this.leaveMatch(playerId, matchId);
     this.players.delete(playerId);
@@ -130,6 +192,13 @@ export class ColorsServer extends Server {
     if (!match) return;
     const wasHost = match.started && match.playerIds[0] === playerId;
     match.playerIds = match.playerIds.filter((id) => id !== playerId);
+    if (match.ranked) {
+      // Ranked: a guest's seat goes to a bot; if the host leaves, the match is void for everyone else.
+      if (!match.ended) this.broadcastMatch(match, match.hostId === playerId ? { type: "RANKED_VOID", matchId: match.id, reason: "host-left" } : { type: "PLAYER_LEFT", playerId });
+      if (match.hostId === playerId) match.ended = true;
+      if (match.playerIds.length === 0) this.matches.delete(match.id);
+      return;
+    }
     this.broadcastMatch(match, { type: "PLAYER_LEFT", playerId });
     if (wasHost && match.playerIds.length > 0) {
       this.broadcastMatch(match, {

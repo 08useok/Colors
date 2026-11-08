@@ -42,3 +42,7 @@ body.official-season-1 .official-power small { color: #d9eadf; }
 .official-pass-cell.premium { background: rgba(122,16,32,.55); }
 .official-pass-cell.claimed { opacity: .55; }
 .official-pass-cell button { font-size: .75rem; padding: .2rem .4rem; }
+/* Ranked queue (경쟁전 매칭 대기) */
+#official-ranked-queue { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); z-index: 60; display: flex; gap: 12px; align-items: center; max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 14px; background: rgba(11,42,24,.92); color: #fff7d6; border: 2px solid #f2c14e; font-weight: 700; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+#official-ranked-queue[hidden] { display: none; }
+#official-ranked-queue button { flex: none; padding: 6px 12px; border-radius: 10px; border: 0; background: #c8323c; color: #fff; font-weight: 800; cursor: pointer; }
