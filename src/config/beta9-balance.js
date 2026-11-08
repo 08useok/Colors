@@ -21,6 +21,7 @@
 //    Nerfs for characters strong in both live results and simulation: Ivory impact 1800 → 1600 and reload
 //    0.9 → 1.05 s; Azure 11500 → 10500 HP (ultimate untouched). Yellow → Ivory → Salmon and Green → Azure →
 //    Lavender stay 240-0.
+//    Azure's wave ultimate was too hard to land: range 6 → 10, width 4 → 5 (still 240-0).
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1600, reloadDuration: 1.05 },
@@ -45,7 +46,7 @@ export const BETA9_BALANCE = Object.freeze({
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
   crimson: { maxHealth: 13000, attackCooldown: .6 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
-  azure: { maxHealth: 10500, pursuesWhileLowHealth: true },
+  azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 10, width: 5 } },
   crystal: { maxHealth: 6600 },
   gold: { maxHealth: 7000, ultimate: { radius: 4.5 } },
 });
@@ -87,6 +88,10 @@ export function applyBeta9Balance(characters) {
     replaceText(mint.special, 'descriptionEn', [['plus 5 ice each second.', 'plus 25 ice each second, so 3 seconds on it freezes them. No ice builds while frozen; it builds again after thawing.']]);
     replaceText(mint.basicAttack, 'description', [['100이 되면', '75가 되면'], ['3발 연속 발사합니다.', '3발 연속 발사합니다. 3발은 좌우 9도로 부채꼴처럼 퍼져 나갑니다.']]);
     replaceText(mint.basicAttack, 'descriptionEn', [['at 100,', 'at 75,'], ['in succession.', 'in succession, fanning out 9° to each side.']]);
+  }
+  if (characters.azure) {
+    replaceText(characters.azure.ultimate, 'description', [['큰 파도를 전방으로 보내', '큰 파도를 전방 10타일·폭 5타일로 보내']]);
+    replaceText(characters.azure.ultimate, 'descriptionEn', [['Launches a huge wave', 'Launches a huge 10-tile, 5-wide wave']]);
   }
   if (cyan) {
     replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해']]);
