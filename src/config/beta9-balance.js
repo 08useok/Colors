@@ -48,7 +48,9 @@ export const BETA9_BALANCE = Object.freeze({
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 10, width: 5 } },
   crystal: { maxHealth: 6600 },
-  gold: { maxHealth: 7000, ultimate: { radius: 4.5 } },
+  // 11.10 Gold rework: back to a damage dealer. Big ore, faster and wider; split ore skips targets the same attack already hit; projectile defense 1650 -> 900.
+  gold: { maxHealth: 7000, stage1Damage: 3400, stage2Damage: 1700, stage3Damage: 850, stage1Speed: 26, stage1Size: 2.6, stage1SplashRadius: 2,
+    goldSplitsSkipHitTargets: true, projectileDamageReduction: 900, ultimate: { radius: 4.5 } },
 });
 
 const replaceText = (object, key, pairs) => {
@@ -72,6 +74,8 @@ export function applyBeta9Balance(characters) {
   if (gold) {
     replaceText(gold.ultimate, 'description', [['반경 6타일 장판', '반경 4.5타일 장판']]);
     replaceText(gold.ultimate, 'descriptionEn', [['6-tile', '4.5-tile']]);
+    replaceText(gold.basicAttack, 'description', [['2×2타일', '2.6×2.6타일'], ['1300 / 600 / 300입니다.', '3400 / 1700 / 850입니다. 분열탄과 금괴는 같은 공격에 이미 맞은 적을 통과합니다.'], ['1650 감소', '900 감소']]);
+    replaceText(gold.basicAttack, 'descriptionEn', [['2x2', '2.6x2.6'], ['1300 / 600 / 300.', '3400 / 1700 / 850. Fragments and bars pass through enemies the same attack already hit.'], ['by 1650', 'by 900']]);
   }
   if (red) {
     replaceText(red.ultimate, 'description', [['8초 동안 피해를 60% 감소', '4초 동안 피해를 75% 감소']]);

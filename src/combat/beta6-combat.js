@@ -782,6 +782,8 @@ export function createBeta6Combat(definitions, options = {}) {
       }
       if (!air && !hitWall) for (const b of actors) {
         if (!alive(b) || !enemies(a, b) || p.hits.has(b.key)) continue;
+        // goldSplitsSkipHitTargets: split ore passes through targets an earlier stage of the same attack already hit.
+        if (p.kind === 'gold' && p.stage > 1 && d.goldSplitsSkipHitTargets && [1, 2].some(s => s < p.stage && p.token.hits.has(`${b.key}:${s}`))) continue;
         const touches = p.kind === 'wave' ? segmentDistance(b, before, p) <= .2 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2 : segmentDistance(b, before, p) <= .55 + p.radius;
         // A wave is a moving line segment, not a circular bullet.
         const waveTouches = p.kind === 'wave' && Math.abs((b.x - p.x) * Math.cos(p.yaw) + (b.z - p.z) * Math.sin(p.yaw)) <= advance + .15 && Math.abs(-(b.x - p.x) * Math.sin(p.yaw) + (b.z - p.z) * Math.cos(p.yaw)) <= p.width / 2;
@@ -799,7 +801,8 @@ export function createBeta6Combat(definitions, options = {}) {
           if (count >= limit) amount = 0;
           else { counts.set(key, count + 1); p.token.hits.add(key); }
         }
-        amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
+        // Flat projectile reduction (Gold) does not apply to the same character's projectiles, so mirror matches can deal damage.
+        if (a.id !== b.id) amount = Math.max(0, amount - (b.d.projectileDamageReduction ?? 0));
         if (p.burstChargeHits?.has(b.key)) award = 0;
         // Fixed ultimate share per basic hit (Season 9 Orange: orange 10%, each juice 5%); hits add up.
         const share = p.ultimate ? null : d.ultimateChargeShare?.[p.kind];
