@@ -44,7 +44,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=21";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=12";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=13";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=56";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -7862,9 +7862,10 @@ function activateBeta6Transform() {
   betaTransformUi().updateButton(actor, world.time, actor.id);
 }
 
-// Knockout keeps the transform gauge from round to round; the ultimate still resets.
+// Knockout keeps the ultimate charge and the transform gauge from round to round.
 function beta6TransformGauges() {
-  return beta6Combat ? new Map([[null, beta6PlayerActor?.transformCharge ?? 0], ...goldRushBots.map(bot => [bot, bot.combatActor?.transformCharge ?? 0])]) : null;
+  const gauges = actor => ({ charge: actor?.charge ?? 0, transformCharge: actor?.transformCharge ?? 0 });
+  return beta6Combat ? new Map([[null, gauges(beta6PlayerActor)], ...goldRushBots.map(bot => [bot, gauges(bot.combatActor)])]) : null;
 }
 
 function startBeta6BotCombat(carried = null) {
@@ -7907,8 +7908,8 @@ function startBeta6BotCombat(carried = null) {
     bushAt: (x,z)=>activeEventLayout?.bushes.some(r=>insideMapRect(x,z,r)) ?? false,
     onEvent(event) { beta6PendingEvents.push(event); }
   });
-  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0, ...officialActorData() });
-  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0, ...officialActorData(), automatic: rankedBotAutomatic(bot) });
+  beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, charge: carried?.get(null)?.charge ?? 0, transformCharge: carried?.get(null)?.transformCharge ?? 0, ...officialActorData() });
+  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, charge: carried?.get(bot)?.charge ?? 0, transformCharge: carried?.get(bot)?.transformCharge ?? 0, ...officialActorData(), automatic: rankedBotAutomatic(bot) });
   betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time, beta6PlayerActor.id);
   betaGadgetUi().updateButton(beta6PlayerActor, beta6Combat.time);
 }
