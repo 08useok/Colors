@@ -3218,7 +3218,7 @@ function renderBeta8Overview() {
 function renderBetaPatchNotes() {
   const notes = BETA9_PATCH_NOTES;
   modalTitle.textContent = `${notes.title} · ${notes.date}`;
-  const card = (group, c) => `<article class="beta-card patch-card patch-${group.type}"><span class="patch-badge ${group.type}">${group.label}</span><h3>${c.name}</h3><ul class="patch-changes">${c.changes.map(([stat, before, after]) => `<li><b>${stat}</b><span><s>${before}</s> → <strong>${after}</strong></span></li>`).join('')}</ul>${c.note ? `<p>${c.note}</p>` : ''}</article>`;
+  const card = (group, c) => `<article class="beta-card patch-card patch-${group.type}"><span class="patch-badge ${group.type}">${group.label}</span><h3>${c.name}</h3><ul class="patch-changes">${c.changes.map(([stat, before, after, kind = group.type === 'buff' || group.type === 'nerf' ? group.type : '']) => `<li${kind ? ` class="patch-${kind}"` : ''}><b>${stat}</b><span><s>${before}</s> → <strong>${after}</strong></span></li>`).join('')}</ul>${c.note ? `<p>${c.note}</p>` : ''}</article>`;
   modalContent.innerHTML = `<section class="storybook-intro"><span>SEASON 9 · UPDATE</span><h2>${notes.title}</h2><ul class="patch-summary">${notes.summary.map(line => `<li>${line}</li>`).join('')}</ul></section>`
     + notes.groups.map(group => `<h3 class="patch-group-title ${group.type}">${group.label} · ${group.characters.length}${group.unit ?? '명'}</h3><div class="beta-grid">${group.characters.map(c => card(group, c)).join('')}</div>`).join('');
 }

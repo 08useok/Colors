@@ -674,3 +674,6 @@ body.beta-season-9-theme .beta-wallet, body.beta-season-9-theme .test-panel, bod
 .patch-changes b { color: #9fb6bf; font-weight: 700; }
 .patch-changes s { color: #6f858e; }
 .patch-changes strong { color: #f2fbff; }
+/* Per-line buff (green) / nerf (red), also inside rework and adjust cards. */
+.patch-changes li.patch-buff b, .patch-changes li.patch-buff strong { color: #5fe08a; }
+.patch-changes li.patch-nerf b, .patch-changes li.patch-nerf strong { color: #ff6b6b; }
