@@ -50,8 +50,9 @@ import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
 import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER } from "./official/progression.js?v=1";
-import { createOfficialUi } from "./official/official-ui.js?v=1";
+import { createOfficialUi } from "./official/official-ui.js?v=2";
 import { plazaArenaMap } from "./official/plaza-maps.js?v=1";
+import { createRankedSession, packFighter } from "./official/ranked-net.js?v=1";
 import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=1";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS, TRANSFORM_STATS } from "./config/transforms.js";
@@ -630,7 +631,187 @@ function officialActorData() {
 function startOfficialRanked(mode, id) {
   if (betaState.selectedCharacter !== id) selectCharacter(id);
   if (betaState.selectedCharacter !== id) return;
-  startGoldRush(mode, false, true);
+  if (rankedSession?.active) { showToast('경쟁전 경기가 이미 진행 중입니다.'); return; }
+  closeBetaModal();
+  rankedSession.queue({ mode, charType: id, points: betaState.official.ranked.points, nickname: betaAccount.user?.nickname ?? CHARACTERS.find(c => c.id === id)?.name ?? '플레이어' });
+}
+
+// ===== Official Season 1 ranked: real-player matchmaking (src/official/ranked-net.js) =====
+// The host runs the match as usual, with other people's fighters as non-automatic engine actors driven by
+// their inputs. A guest's page runs the same arena and engine for visuals only: every fighter except its own
+// follows the host's snapshots, damage is not applied locally, and objectives and the result come from the host.
+let rankedMatch = null, rankedEnding = false, rankedLife = 0, rankedPrevMapVariant = null;
+const rankedInputs = new Map(), rankedTargets = new Map();
+const rankedGuest = () => !!rankedMatch && rankedMatch.role === 'guest' && goldRushState.active;
+const rankedHost = () => !!rankedMatch && rankedMatch.role === 'host' && goldRushState.active;
+const rankedBot = seat => goldRushBots.find(bot => bot.netSeat === seat);
+// Bots run their AI except people's fighters on the host, and every fighter on a guest's page.
+const rankedBotAutomatic = bot => !(rankedMatch && (rankedMatch.role === 'guest' || bot.netHuman));
+const rankedQueueBox = IS_OFFICIAL_SEASON ? Object.assign(document.createElement('div'), { id: 'official-ranked-queue', hidden: true }) : null;
+if (rankedQueueBox) {
+  rankedQueueBox.innerHTML = '<span></span><button type="button">취소</button>';
+  rankedQueueBox.querySelector('button').addEventListener('click', () => rankedSession.cancel());
+  document.body.append(rankedQueueBox);
+}
+const rankedSession = IS_OFFICIAL_SEASON ? createRankedSession({ roster: CHARACTERS.map(c => c.id).filter(id => BETA_CHARACTERS[id]), adapter: {
+  status(text) { rankedQueueBox.hidden = !text; rankedQueueBox.querySelector('span').textContent = text ?? ''; canvas.dataset.rankedQueue = text ? 'waiting' : ''; },
+  startOffline(mode, note) { if (note) showToast(note); startGoldRush(mode, false, true); },
+  startMatch(match) {
+    rankedMatch = match; rankedLife = 0; rankedInputs.clear(); rankedTargets.clear();
+    const variant = document.getElementById('beta-event-map-variant');
+    rankedPrevMapVariant = variant.value; variant.value = String(match.mapId);
+    startGoldRush(match.mode, false, true);
+    canvas.dataset.rankedRole = match.role; canvas.dataset.rankedSeat = String(match.mySeat);
+    showToast(`경쟁전 매칭 완료 · ${match.seats.filter(s => s.playerId).length}명 + 봇 ${match.seats.filter(s => !s.playerId).length} · ${match.myTeam === 'a' ? 'BLUE' : 'RED'} 팀`);
+  },
+  hostSnapshot: rankedHostSnapshot,
+  guestInput: () => ({ x: player.position.x, z: player.position.z, angle: Math.PI / 2 - player.rotation.y, dead: goldRushState.dead, life: rankedLife }),
+  applySnapshot: rankedApplySnapshot,
+  applyInput(seat, input) { const bot = rankedBot(seat); if (bot?.netHuman && (input.life | 0) >= (bot.netLife | 0)) rankedInputs.set(seat, input); },
+  remoteAction: rankedRemoteAction,
+  seatLeft(seat) {
+    const bot = rankedBot(seat); if (!bot) return;
+    showToast(`${bot.name} 님이 나갔습니다 · 봇이 이어받습니다`);
+    bot.netHuman = false; rankedInputs.delete(seat); rankedTargets.delete(seat);
+    if (rankedMatch?.role === 'host' && bot.combatActor) bot.combatActor.automatic = true;
+  },
+  endMatch({ outcome, score }) {
+    const label = { gemGrab: '젬 그랩', knockout: 'KNOCKOUT', hotZone: '핫 존' }[rankedMatch?.mode] ?? '경쟁전', unit = rankedMatch?.mode === 'hotZone' ? '%' : '';
+    rankedEnding = true;
+    endGoldRush(`${label} ${outcome === 'win' ? '승리!' : outcome === 'draw' ? '무승부' : '패배'} · ${score.a}${unit}:${score.b}${unit}`, outcome === 'win');
+    rankedEnding = false;
+  },
+  voidMatch(reason) {
+    showToast(reason); goldRushState.ranked = false; rankedEnding = true;
+    endGoldRush('경쟁전 무효', false, null, true);
+    rankedEnding = false;
+  },
+} }) : null;
+
+function rankedHostSnapshot() {
+  const now = clock.elapsedTime, m = rankedMatch;
+  const snap = {
+    t: now - goldRushState.startedAt,
+    f: [packFighter({ seat: m.mySeat, x: player.position.x, z: player.position.z, angle: beta6PlayerActor?.angle ?? Math.PI / 2 - player.rotation.y, hp: goldRushState.health, maxHp: goldRushState.maxHealth,
+      dead: goldRushState.dead, life: 0, gems: goldRushState.gold, charge: beta6PlayerActor?.charge, transformCharge: beta6PlayerActor?.transformCharge }),
+      ...goldRushBots.filter(bot => bot.netSeat != null).map(bot => packFighter({ seat: bot.netSeat, x: bot.mesh.position.x, z: bot.mesh.position.z, angle: bot.combatActor?.angle ?? 0,
+        hp: bot.health, maxHp: bot.maxHealth, dead: bot.dead, life: bot.netLife, gems: bot.gold, charge: bot.combatActor?.charge, transformCharge: bot.combatActor?.transformCharge }))],
+    g: goldPickups.map(p => [Math.round(p.mesh.position.x * 100) / 100, Math.round(p.mesh.position.z * 100) / 100]),
+  };
+  const since = start => start == null ? null : now - start;
+  if (goldRushState.hotZone && hotZoneState) snap.hot = { s: [hotZoneState.score.a, hotZoneState.score.b], z: hotZoneState.zones.map(z => [z.x, z.z, z.owner]) };
+  else if (goldRushState.mode === 'gemGrab') snap.gem = { ea: since(gemGrabState.escapeA), eb: since(gemGrabState.escapeB), sp: gemGrabState.spawnedGems, nx: gemGrabState.nextGemAt - now };
+  if (goldRushState.mode === 'knockout' && knockoutMatch) { const k = knockoutMatch; snap.ko = { r: k.round, p: k.phase, w: [k.wins.a, k.wins.b], u: k.until - now, s: now - k.startedAt, lw: k.lastWinner, lr: k.lastReason ?? null, win: k.winner }; }
+  return snap;
+}
+
+function rankedApplySnapshot(view) {
+  if (!rankedGuest() || goldRushState.ended) return;
+  const now = clock.elapsedTime;
+  goldRushState.startedAt = now - view.t;
+  if (view.ko && knockoutMatch) {
+    if (view.ko.round > knockoutMatch.round) { knockoutMatch.round = view.ko.round; resetKnockoutRound(); }
+    Object.assign(knockoutMatch, { phase: view.ko.phase, wins: view.ko.wins, until: now + view.ko.untilIn, startedAt: now - view.ko.startedAgo, lastWinner: view.ko.lastWinner, lastReason: view.ko.lastReason, winner: view.ko.winner });
+  }
+  for (const f of view.fighters) {
+    if (f.seat === rankedMatch.mySeat) {
+      if (!goldRushState.dead && f.hp < goldRushState.health - 1) createDamagePopup(player.position, goldRushState.health - f.hp);
+      Object.assign(goldRushState, { maxHealth: f.maxHp, health: f.hp, gold: f.gems });
+      if (beta6PlayerActor) Object.assign(beta6PlayerActor, { charge: f.charge, transformCharge: f.transformCharge });
+      if (f.dead && !goldRushState.dead) { goldRushState.health = 0; killGoldRushPlayer(); }
+      else if (!f.dead && goldRushState.dead && goldRushState.mode !== 'knockout') { rankedLife = f.life; respawnGoldRushPlayer(); }
+      updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+      continue;
+    }
+    const bot = rankedBot(f.seat); if (!bot) continue;
+    rankedTargets.set(f.seat, f);
+    if (!bot.dead && f.hp < bot.health - 1) { createDamagePopup(bot.mesh.position, bot.health - f.hp); bot.lastDamageAt = now; }
+    Object.assign(bot, { health: f.hp, maxHealth: f.maxHp, gold: f.gems });
+    bot.mesh.userData.health = bot.health; bot.mesh.userData.maxHealth = bot.maxHealth;
+    if (f.dead && !bot.dead) { bot.dead = true; bot.mesh.visible = false; bot.respawnAt = Infinity; }
+    else if (!f.dead && bot.dead && goldRushState.mode !== 'knockout') { bot.respawnAt = 0; bot.spawn.set(f.x, bot.spawn.y, f.z); }
+    updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
+  }
+  // Gems on the floor: rebuild when the host's list changes.
+  const gems = view.gems, same = gems.length === goldPickups.length && gems.every((g, i) => Math.hypot(g.x - goldPickups[i].mesh.position.x, g.z - goldPickups[i].mesh.position.z) < .3);
+  if (!same) { for (let i = goldPickups.length - 1; i >= 0; i--) removeGoldPickup(i); for (const g of gems) spawnGoldPickup(new THREE.Vector3(g.x, 0, g.z), true); }
+  if (view.gem) Object.assign(gemGrabState, { escapeA: view.gem.escape.a == null ? null : now - view.gem.escape.a, escapeB: view.gem.escape.b == null ? null : now - view.gem.escape.b, spawnedGems: view.gem.spawned, nextGemAt: now + view.gem.nextIn });
+  if (view.hot && hotZoneState) {
+    hotZoneState.score = view.hot.score;
+    for (const zone of hotZoneState.zones) zone.owner = [...view.hot.zones].sort((p, q) => Math.hypot(p.x - zone.x, p.z - zone.z) - Math.hypot(q.x - zone.x, q.z - zone.z))[0]?.owner ?? null;
+    paintHotZones();
+  }
+}
+
+// Before each engine tick: move people's fighters (host) or every other fighter (guest) to where the network says.
+function rankedPlaceFighters(dt) {
+  const follow = rankedMatch.role === 'guest' ? rankedTargets : rankedInputs;
+  for (const [seat, target] of follow) {
+    const bot = rankedBot(seat), actor = bot?.combatActor;
+    if (!bot || !actor || bot.dead || target.dead) continue;
+    const p = bot.mesh.position, dx = target.x - p.x, dz = target.z - p.z, far = Math.hypot(dx, dz) > 4;
+    const k = far ? 1 : Math.min(1, dt * 18);
+    p.x += dx * k; p.z += dz * k;
+    actor.vx = dx * k / Math.max(dt, 1 / 120); actor.vz = dz * k / Math.max(dt, 1 / 120);
+    actor.angle = target.angle;
+  }
+}
+
+// An attack / ultimate / gadget / transform from the network. Host: a guest's real action. Guest: a copy to draw.
+function rankedRemoteAction(seat, action) {
+  const bot = rankedBot(seat), actor = bot?.combatActor, world = beta6Combat;
+  if (!world || !actor || bot.dead || !goldRushState.active || goldRushState.ended) return;
+  const guest = rankedMatch?.role === 'guest', angle = action.angle ?? actor.angle;
+  const point = action.point ?? { x: actor.x + Math.cos(angle) * world.range(actor), z: actor.z + Math.sin(angle) * world.range(actor) };
+  const target = { x: point.x, z: point.z, vx: 0, vz: 0, hp: 1 };
+  // The sender's own engine already checked ammo and cooldowns; a guest's copy must always play.
+  if (action.kind === 'fire') { actor.ammo = Math.max(actor.ammo, 1); actor.next = Math.min(actor.next, world.time); if (guest) actor.lockUntil = 0; world.fire(actor, target, angle); }
+  else if (action.kind === 'cast') { if (guest) actor.charge = Math.max(actor.charge, actor.u?.chargeRequired ?? 0); world.cast(actor, target, { angle, point }); }
+  else if (action.kind === 'gadget') { if (guest) actor.gadgetReadyAt = 0; world.gadget(actor, { angle }); }
+  else if (action.kind === 'transform') { if (guest) actor.transformCharge = 1; world.transform(actor); }
+  for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
+}
+
+// Host: tell guests about every fighter's action so they can draw it.
+function rankedRelayEvent(event) {
+  const kind = { attack: 'fire', ultimate: 'cast', gadget: 'gadget', transform: 'transform' }[event.type];
+  if (!kind || !rankedHost()) return;
+  const owner = event.owner, seat = owner === beta6PlayerActor ? rankedMatch.mySeat : owner?.bot?.netSeat;
+  if (seat == null) return;
+  const point = kind === 'cast' && event.target ? { x: event.target.x, z: event.target.z } : null;
+  rankedSession.hostEvent(seat, { kind, angle: owner.angle, point });
+}
+
+// Guest frame: no local rules (the host decides deaths, gems, zones, rounds and the result), only visuals and HUD.
+function updateRankedGuest(dt) {
+  faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
+  if (goldRushState.dead) respawnCountdownEl.textContent = String(Math.max(0, Math.ceil(goldRushState.respawnAt - clock.elapsedTime)));
+  updateGoldRushBots(dt);
+  if (!goldRushState.active || goldRushState.ended) return;
+  if (goldRushState.mode === 'knockout') {
+    if (knockoutMatch?.phase === 'fighting') drawKnockoutPoison(clock.elapsedTime - knockoutMatch.startedAt);
+    updateKnockoutHud(); return;
+  }
+  clampGemActor(player.position);
+  for (const pickup of goldPickups) pickup.mesh.rotation.y += dt * 3;
+  if (goldRushState.hotZone) updateHotZoneHud(); else updateGemGrabHud();
+}
+
+// Host ends the match: send the result (winner in host frame); a leaving player (host or guest) just leaves.
+function rankedMatchEnding(message, playerWon, abandoned) {
+  if (!rankedMatch || rankedEnding) return;
+  if (rankedMatch.role === 'host' && !abandoned) {
+    const draw = message.includes('무승부'), mode = rankedMatch.mode;
+    const score = mode === 'knockout' ? { ...knockoutMatch.wins } : mode === 'hotZone' && hotZoneState ? { a: Math.floor(hotZoneState.score.a), b: Math.floor(hotZoneState.score.b) } : { a: gemTeamGems('a'), b: gemTeamGems('b') };
+    rankedSession.reportResult(playerWon ? 'a' : draw ? null : 'b', score);
+  } else rankedSession.leave();
+}
+function rankedMatchEnded() {
+  if (!rankedMatch) return;
+  const variant = document.getElementById('beta-event-map-variant');
+  if (rankedPrevMapVariant != null) variant.value = rankedPrevMapVariant;
+  rankedMatch = null; rankedPrevMapVariant = null; rankedInputs.clear(); rankedTargets.clear();
+  canvas.dataset.rankedRole = '';
 }
 document.querySelector('[data-panel="records"]').hidden = !IS_BETA8_TEST;
 function updateWallet() { creditValue.textContent = betaState.credits.toLocaleString("ko-KR"); }
@@ -6794,16 +6975,19 @@ function hotZonePoint(actor) {
   const r = zone.radius * .5;
   return { x: zone.x + Math.cos(actor.phase) * r, z: zone.z + Math.sin(actor.phase) * r };
 }
-function updateHotZone(dt) {
-  if (!hotZoneState) return;
-  const fighters = [{ team: "a", x: player.position.x, z: player.position.z, alive: !goldRushState.dead },
-    ...goldRushBots.map(bot => ({ team: bot.team, x: bot.mesh.position.x, z: bot.mesh.position.z, alive: !bot.dead }))];
-  const winner = tickHotZone(hotZoneState, fighters, dt);
+function paintHotZones() {
   const colors = { a: 0x369aff, b: 0xff674d, contested: 0xffd34d };
   for (const group of hotZoneMeshes) {
     const color = colors[group.userData.zone.owner] ?? 0xffffff;
     group.userData.disc.material.color.setHex(color); group.userData.ring.material.color.setHex(color);
   }
+}
+function updateHotZone(dt) {
+  if (!hotZoneState) return;
+  const fighters = [{ team: "a", x: player.position.x, z: player.position.z, alive: !goldRushState.dead },
+    ...goldRushBots.map(bot => ({ team: bot.team, x: bot.mesh.position.x, z: bot.mesh.position.z, alive: !bot.dead }))];
+  const winner = tickHotZone(hotZoneState, fighters, dt);
+  paintHotZones();
   updateHotZoneHud();
   const score = `${Math.floor(hotZoneState.score.a)}%:${Math.floor(hotZoneState.score.b)}%`;
   if (winner) { endGoldRush(winner === "a" ? `핫 존 승리! · ${score}` : `상대 팀 핫 존 승리 · ${score}`, winner === "a"); return; }
@@ -7428,6 +7612,7 @@ function useBeta6PlayerSkill(ultimate, manualAim = false) {
   for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
   if (beta6Combat !== world) return;
   if (fired) {
+    if (rankedGuest()) rankedSession.localAction({ kind: ultimate ? "cast" : "fire", angle: actor.angle, point: ultimate ? (aim.point ?? { x: target.x, z: target.z }) : { x: target.x, z: target.z } });
     if (actor.id !== "salmon" || ultimate || actor.attackCount > attackCountBefore) startModelAttackMotion(IS_BETA8_TEST && ultimate ? actor.id + "Ultimate" : actor.id);
     player.rotation.y = Math.PI / 2 - actor.angle;
     attackComboState.textContent = ultimate ? actor.u.name : actor.d.basicAttack.name;
@@ -7495,6 +7680,7 @@ function createBeta6ProjectileImpact(p) {
 }
 
 function processBeta6CombatEvent(event) {
+      if (rankedMatch) { if (rankedGuest() && ["damage", "heal", "revive"].includes(event.type)) return; rankedRelayEvent(event); }
       if (event.type === "damage") {
         const victim = event.target === beta6PlayerActor ? goldRushState : event.target.bot;
         const attacker = event.owner === beta6PlayerActor ? goldRushState : event.owner?.bot;
@@ -7660,6 +7846,7 @@ function activateBeta6Gadget() {
   if (!world || !actor || goldRushState.dead || isKnockoutFrozen() || modelLoading.blocking) return;
   actor.x = player.position.x; actor.z = player.position.z;
   if (!world.gadget(actor, { angle: Math.PI / 2 - player.rotation.y })) return;
+  if (rankedGuest()) rankedSession.localAction({ kind: "gadget", angle: Math.PI / 2 - player.rotation.y });
   player.position.x = actor.x; player.position.z = actor.z;
   for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
   betaGadgetUi().updateButton(actor, world.time);
@@ -7670,6 +7857,7 @@ function activateBeta6Transform() {
   if (goldRushState.dead || isKnockoutFrozen() || modelLoading.blocking) return;
   actor.x = player.position.x; actor.z = player.position.z;
   if (!world.transform(actor)) return;
+  if (rankedGuest()) rankedSession.localAction({ kind: "transform" });
   for (const event of beta6PendingEvents.splice(0)) { if (beta6Combat !== world) break; processBeta6CombatEvent(event); }
   betaTransformUi().updateButton(actor, world.time, actor.id);
 }
@@ -7720,7 +7908,7 @@ function startBeta6BotCombat(carried = null) {
     onEvent(event) { beta6PendingEvents.push(event); }
   });
   beta6PlayerActor = beta6Combat.add(betaState.selectedCharacter, { automatic: false, team: beta6PlayerTeam(), x: player.position.x, z: player.position.z, transformCharge: carried?.get(null) ?? 0, ...officialActorData() });
-  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0, ...officialActorData() });
+  for (const bot of goldRushBots) bot.combatActor = beta6Combat.add(bot.characterId, { x: bot.mesh.position.x, z: bot.mesh.position.z, team: bot.team, bot, transformCharge: carried?.get(bot) ?? 0, ...officialActorData(), automatic: rankedBotAutomatic(bot) });
   betaTransformUi().updateButton(beta6PlayerActor, beta6Combat.time, beta6PlayerActor.id);
   betaGadgetUi().updateButton(beta6PlayerActor, beta6Combat.time);
 }
@@ -7855,12 +8043,14 @@ function updateBeta6BotCombat(dt) {
   hero.vz = (player.position.z - hero.z) / Math.max(dt, 1 / 120);
   hero.x = player.position.x; hero.z = player.position.z;
   hero.invulnerableUntil = deadline(goldRushState.invulnerableUntil);
+  if (rankedMatch) rankedPlaceFighters(dt);
   for (const bot of goldRushBots) {
     let actor = bot.combatActor;
     if (bot.dead && !["showdown", "knockout"].includes(goldRushState.mode) && clock.elapsedTime >= bot.respawnAt) {
       const { charge, transformCharge } = actor;
       world.remove(actor);
-      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge, transformCharge, ...officialActorData() });
+      actor = bot.combatActor = world.add(bot.characterId, { bot, team: bot.team, x: bot.spawn.x, z: bot.spawn.z, charge, transformCharge, ...officialActorData(), automatic: rankedBotAutomatic(bot) });
+      if (rankedHost() && bot.netSeat != null) { bot.netLife++; rankedInputs.delete(bot.netSeat); }
       bot.dead = false; bot.health = bot.maxHealth; bot.mesh.position.copy(bot.spawn); bot.mesh.visible = true;
       bot.mesh.userData.health = bot.health; grantBetaRespawnProtection(bot, bot.mesh);
       Object.assign(bot.mesh.userData, { mintIce: 0, mintFrozenUntil: 0, slowUntil: 0, poisonUntil: 0, inMalfunctionZone: false });
@@ -7879,6 +8069,8 @@ function updateBeta6BotCombat(dt) {
     processBeta6CombatEvent(event);
   }
   if (beta6Combat !== world) return;
+  // Ranked guest: hits in this copy of the fight only move and slow fighters; health comes from the host.
+  if (rankedGuest()) { hero.hp = goldRushState.dead ? 0 : goldRushState.health; for (const bot of goldRushBots) if (bot.combatActor) bot.combatActor.hp = bot.dead ? 0 : bot.health; }
   beta6TransformHealth(goldRushState, hero);
   for (const bot of goldRushBots) beta6TransformHealth(bot, bot.combatActor, bot.mesh);
   salmonBattleVisuals.update(world);
@@ -8016,7 +8208,9 @@ function createGoldRushBots() {
   const botCount = teamMode ? 5 : 9;
   for (let i = 0; i < botCount; i += 1) {
     const opponents = CHARACTERS.filter(c => c.id !== betaState.selectedCharacter);
-    const character = opponents[(i + beta6BotRotation) % opponents.length];
+    // Official ranked with other people: bot i is the i-th other seat (my team first), as the server dealt them.
+    const netSeat = teamMode ? rankedMatch?.botSeats[i] : null;
+    const character = netSeat ? CHARACTERS.find(c => c.id === netSeat.charType) ?? opponents[i % opponents.length] : opponents[(i + beta6BotRotation) % opponents.length];
     const definition = BETA_CHARACTERS[character?.id ?? betaState.selectedCharacter];
     const avatar = createGoldRushBotAvatar(i, character);
     const mesh = avatar.group;
@@ -8036,7 +8230,8 @@ function createGoldRushBots() {
     const maxAmmo = definition?.maxAmmo || 3;
     const bot = {
       id: i + 1,
-      name: character ? `${character.name} AI` : `AI ${i + 1}`,
+      name: netSeat?.playerId ? netSeat.nickname || character?.name || `플레이어 ${i + 1}` : character ? `${character.name} AI` : `AI ${i + 1}`,
+      netSeat: netSeat?.seat ?? null, netHuman: !!netSeat?.playerId, netLife: 0,
       characterId: character?.id,
       mesh,
       marker: avatar.marker,
@@ -8076,6 +8271,7 @@ function createGoldRushBots() {
 }
 
 function dropGoldRushGold(owner, position) {
+  if (rankedGuest()) { owner.gold = 0; owner.winCountdownStartedAt = null; return; }
   const droppedCount = owner.gold;
   for (let i = 0; i < owner.gold; i += 1) {
     const offset = new THREE.Vector3((Math.random() - 0.5) * 2.5, 0.65, (Math.random() - 0.5) * 2.5);
@@ -8097,6 +8293,7 @@ function recordBeta8QuestStat(kind, amount) {
 }
 
 function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = false) {
+  if (rankedGuest()) return;
   if (!goldRushState.active || goldRushState.ended || bot.dead || clock.elapsedTime < bot.invulnerableUntil) return;
   if (bot.team === "a" && !fromBeta6Engine) return;
   if (bot.combatActor && !fromBeta6Engine) {
@@ -8131,6 +8328,7 @@ function damageGoldRushBot(bot, damage, fromPlayer = false, fromBeta6Engine = fa
 }
 
 function damageGoldRushPlayer(damage, alreadyReduced = false) {
+  if (rankedGuest()) return;
   if (goldRushState.dead || clock.elapsedTime < goldRushState.invulnerableUntil) return;
   if(!alreadyReduced && betaState.selectedCharacter==='blue') damage *= 1-blueShieldReduction();
   player.userData.eventRevealedUntil=clock.elapsedTime+3;
@@ -8708,6 +8906,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   clearAzureWave();
   clearYellowCircuit();
   if (goldRushState.ended) return;
+  if (rankedMatch) rankedMatchEnding(message, playerWon, abandoned);
   const completedRecord = IS_BETA8_TEST && goldRushState.active ? betaRecords.finish(goldRushState.recordMatch, {
     ...goldRushState.questStats, deaths:goldRushState.recordDeaths || 0,
     duration:Math.max(0,clock.elapsedTime-goldRushState.startedAt),
@@ -8773,6 +8972,7 @@ function endGoldRush(message, playerWon = false, showdownRank = null, abandoned 
   saveBetaState();
   goldRushState.ended = true;
   goldRushState.ranked = false;
+  rankedMatchEnded();
   // 경기 종료 후 로비에서는 사망/부활 대기 상태를 이어받지 않는다.
   goldRushState.active = false;
   goldRushState.dead = false;
@@ -8970,15 +9170,21 @@ function updateKnockoutHud() {
   updateGoldRushCombatHud();
 }
 
+function drawKnockoutPoison(elapsed) {
+  if(elapsed<KNOCKOUT_RULES.poisonStarts)return;
+  const safe=knockoutSafeArea(elapsed),W=TEAM_ARENA.halfWidth,D=TEAM_ARENA.halfDepth;
+  const strips=[[-(W+safe.x)/2,0,W-safe.x,D*2],[(W+safe.x)/2,0,W-safe.x,D*2],[0,-(D+safe.z)/2,safe.x*2,D-safe.z],[0,(D+safe.z)/2,safe.x*2,D-safe.z]];
+  knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(Math.max(.001,w),1,Math.max(.001,d));});
+}
+
 function updateKnockout(dt) {
   const m=knockoutMatch;if(!m)return;
   const now=clock.elapsedTime;
   if(m.phase==="fighting") {
     updateGoldRushBots(dt);
-    const elapsed=now-m.startedAt,safe=knockoutSafeArea(elapsed),W=TEAM_ARENA.halfWidth,D=TEAM_ARENA.halfDepth;
+    const elapsed=now-m.startedAt,safe=knockoutSafeArea(elapsed);
     if(elapsed>=KNOCKOUT_RULES.poisonStarts) {
-      const strips=[[-(W+safe.x)/2,0,W-safe.x,D*2],[(W+safe.x)/2,0,W-safe.x,D*2],[0,-(D+safe.z)/2,safe.x*2,D-safe.z],[0,(D+safe.z)/2,safe.x*2,D-safe.z]];
-      knockoutPoison.forEach((mesh,i)=>{const[x,z,w,d]=strips[i];mesh.visible=true;mesh.position.set(x,1.57,z);mesh.scale.set(Math.max(.001,w),1,Math.max(.001,d));});
+      drawKnockoutPoison(elapsed);
       const outside=p=>Math.abs(p.x)>safe.x||Math.abs(p.z)>safe.z;
       // Poison ticks once per second for 10% of max health; shields and damage reduction do not apply.
       if(!goldRushState.dead&&outside(player.position)&&now>=(goldRushState.poisonCloudNext??0)){goldRushState.poisonCloudNext=now+1;damageGoldRushPlayer(goldRushState.maxHealth*.1,true);}
@@ -9055,6 +9261,7 @@ function prepareBetaEventMap(mode,plus) {
 }
 
 function startGoldRush(mode = "goldRush", showdownPlus = false, ranked = false) {
+  if (!ranked && rankedSession?.queued) rankedSession.cancel();
   // Official Season 1: only modes in the current rotation start (Showdown always, Showdown+ in the last week).
   const rotationMode = mode === "showdown" && showdownPlus ? "showdownPlus" : mode;
   if (IS_OFFICIAL_SEASON && !ranked && !modeOpen(rotationMode)) { showToast(`${MODE_NAMES[rotationMode] ?? mode}은(는) 지금 로테이션에 없습니다.`); return; }
@@ -9279,26 +9486,29 @@ function updatePracticeRespawn() {
   respawnOverlay.classList.add("hidden");
 }
 
+function respawnGoldRushPlayer() {
+  goldRushState.dead = false;
+  grantBetaRespawnProtection(goldRushState, player);
+  goldRushState.health = goldRushState.maxHealth;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  resetPlayer();
+  player.visible = true;
+  playerGoldRushHealthBar.visible = true;
+  updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
+  respawnOverlay.classList.add("hidden");
+}
+
 function updateGoldRush(dt) {
   if (!goldRushState.active || goldRushState.ended) return;
+  if (rankedGuest()) { updateRankedGuest(dt); return; }
   if (goldRushState.mode === "knockout") { updateKnockout(dt); return; }
   faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
   if (goldRushState.dead) {
     const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
     respawnCountdownEl.textContent = String(Math.ceil(remaining));
-    if (remaining <= 0) {
-      goldRushState.dead = false;
-      grantBetaRespawnProtection(goldRushState, player);
-      goldRushState.health = goldRushState.maxHealth;
-      goldRushState.ammo = goldRushState.maxAmmo;
-      goldRushState.reloadTimer = 0;
-      resetPlayer();
-      player.visible = true;
-      playerGoldRushHealthBar.visible = true;
-      updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
-      canvas.dataset.playerGoldRushHealth = String(goldRushState.health);
-      respawnOverlay.classList.add("hidden");
-    }
+    if (remaining <= 0) respawnGoldRushPlayer();
   }
   // 한 발만 써도 곧바로 채워진다. 공격 쿨다운과 무관하게 진행한다.
   if (!BETA_CHARACTERS[betaState.selectedCharacter]?.noAutomaticReload && !goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(beta6Combat)) {
@@ -9830,7 +10040,7 @@ function animate() {
     faceGoldRushHealthBarToCamera(attackRobot.userData.healthBar);
   }
   // AI regenerates by the player's rule: 5 s without taking damage, then 10% of max health per second.
-  if (goldRushState.active && !goldRushState.ended) for (const bot of goldRushBots) {
+  if (goldRushState.active && !goldRushState.ended && !rankedGuest()) for (const bot of goldRushBots) {
     if (bot.dead || bot.health <= 0 || bot.health >= bot.maxHealth) continue;
     if (clock.elapsedTime - (bot.lastDamageAt ?? -Infinity) < 5 || clock.elapsedTime < (bot.nextRegenAt ?? -Infinity)) continue;
     bot.health = Math.min(bot.maxHealth, bot.health + bot.maxHealth * 0.1);
@@ -9839,7 +10049,7 @@ function animate() {
     bot.mesh.userData.health = bot.health;
     updateGoldRushHealthBar(bot.healthBar, bot.health, bot.maxHealth);
   }
-  if (!goldRushState.ended && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 5 && clock.elapsedTime >= (goldRushState.nextRegenAt ?? -Infinity)) {
+  if (!goldRushState.ended && !rankedGuest() && goldRushState.health > 0 && goldRushState.health < goldRushState.maxHealth && clock.elapsedTime - goldRushState.lastDamageAt >= 5 && clock.elapsedTime >= (goldRushState.nextRegenAt ?? -Infinity)) {
     goldRushState.health = Math.min(goldRushState.maxHealth, goldRushState.health + goldRushState.maxHealth * 0.1);
     goldRushState.nextRegenAt = clock.elapsedTime + 1;
     updateGoldRushCombatHud();
@@ -10540,6 +10750,7 @@ function animate() {
     else player.position.y = THREE.MathUtils.damp(player.position.y, ground + 0.05, 12, dt);
   }
   updateGoldRush(dt);
+  if (rankedMatch && goldRushState.active) rankedSession.frame(dt);
   updatePracticeRespawn();
   updateTestCombatHud(dt);
   updateCrimsonUltimateGauge();

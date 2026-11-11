@@ -21,7 +21,8 @@ npm run dev
 Wrangler listens on `http://localhost:8787`; deploy with `npm run deploy`.
 
 ## Validation
-- Tests: none (no test framework configured)
+- Tests: plain node scripts in `tools/` (e.g. `node tools/test-ranked-matchmaking.mjs`);
+  ranked server/QA scripts need `npm run dev` (8787) and a static server.
 - Typecheck: none (plain JS, no TS)
 - Lint: none configured
 - Build: none (no bundler/compile step)

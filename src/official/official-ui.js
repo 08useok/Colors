@@ -82,10 +82,10 @@ export function createOfficialUi({ state, save, title, content, toast, character
     content.innerHTML = `<section><p><strong>${rank.name}</strong> · ${num(r.points)}점${next ? ` (다음 ${next.name}까지 ${num(next.min - r.points)}점)` : ''} · 최고 ${num(r.best)}점</p>
       <p>${r.wins}승 ${r.losses}패 ${r.draws}무 · 승리 +${P.RANKED_WIN} · 패배 -${P.RANKED_LOSS} · 시즌마다 초기화</p>
       <p><strong>파워 11 캐릭터만</strong> 출전할 수 있습니다. 모두 파워 11(가젯·변신 해금)로 겨룹니다.</p>
-      <p>실제 플레이어 매칭은 준비 중입니다. 지금은 봇으로 빈자리를 채워 바로 시작합니다.</p></section>
+      <p>같은 모드를 고른, 점수가 비슷한 플레이어와 매칭합니다(처음 ±150점, 기다릴수록 넓어짐). 20초 안에 6명이 모이지 않으면 빈자리는 봇이 채웁니다.</p></section>
       <h3>출전 캐릭터 (현재: ${name(selected)} ${ok ? '✅' : '— 파워 11 아님'})</h3>
       <p>${eligible.length ? eligible.map(id => `<button data-official-ranked-pick="${id}" ${id === selected ? 'disabled' : ''}>${name(id)}</button>`).join(' ') : '파워 11 캐릭터가 없습니다. 캐릭터 화면에서 파워를 올려 주세요.'}</p>
-      <h3>모드</h3><p>${P.RANKED_MODES.map(m => `<button data-official-ranked-start="${m}" ${ok ? '' : 'disabled'}>${MODE_LABEL[m]} 시작</button>`).join(' ')}</p>`;
+      <h3>모드</h3><p>${P.RANKED_MODES.map(m => `<button data-official-ranked-start="${m}" ${ok ? '' : 'disabled'}>${MODE_LABEL[m]} 매칭 시작</button>`).join(' ')}</p>`;
   }
 
   content.addEventListener('click', event => {
