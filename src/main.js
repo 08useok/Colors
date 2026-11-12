@@ -13656,7 +13656,7 @@ function updateChopWoodRespawn() {
       }
       const spawns = state.soccerMode
         ? (fighter.team === "blue" ? SOCCER_BLUE_SPAWNS : SOCCER_RED_SPAWNS)
-        : state.gemGrabMode ? (fighter.team==="a"?[[-6,-15],[0,-15],[6,-15]]:[[-6,15],[0,15],[6,15]])
+        : state.gemGrabMode ? (fighter.team==="a"?[[-6,15],[0,15],[6,15]]:[[-6,-15],[0,-15],[6,-15]])
         : state.goldRushMode ? MAP_POOL[state.currentMapId].spawns
         : (fighter.team === "a" ? CHOP_WOOD_SPAWNS_A : CHOP_WOOD_SPAWNS_B);
       const spawn = spawns[Math.floor(Math.random() * spawns.length)];
@@ -15501,7 +15501,7 @@ function getSeasonCombat(){
   blocked:(x,z,r)=>state.solids.some(s=>Math.abs(x-s.x)<(s.halfW??s.width/2)+r&&Math.abs(z-s.z)<(s.halfD??s.depth/2)+r)||state.lakeRects.some(s=>Math.abs(x-s.x)<s.width/2+r&&Math.abs(z-s.z)<s.depth/2+r),
   bushAt:(x,z)=>state.bushes.some(b=>Math.hypot(x-b.x,z-b.z)<(b.radius??2)),
   destination:(f,target)=>{
-   let goal=target;if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?-15:15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
+   let goal=target;if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?15:-15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
    return state.eventMapLayout?navigateEventMap(state.eventMapLayout,{x:f.mesh.position.x,z:f.mesh.position.z},goal):goal;
   },
   aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple","salmon"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
@@ -15534,14 +15534,15 @@ function ensureSeason7NormalLoading(id){
 
 function gemTeamCount(team){return state.players.filter(f=>f.team===team&&!f.dead).reduce((sum,f)=>sum+(f.goldCount??0),0);}
 // ── KNOCKOUT (Season 8): local 3v3, best of three rounds, no in-round respawns ──
-const KNOCKOUT_SPAWNS={a:[[-6,-15],[0,-15],[6,-15]],b:[[-6,15],[0,15],[6,15]]};
+// Team a (the local player's team) starts at the bottom of the fixed camera (+z) and pushes up the screen.
+const KNOCKOUT_SPAWNS={a:[[-6,15],[0,15],[6,15]],b:[[-6,-15],[0,-15],[6,-15]]};
 const knockoutBgm=new Audio("./assets/beta8-the-midnight-gambit.mp3?v=1");knockoutBgm.loop=true;
 function knockoutText(ko,en){return currentLang==="en"?en:ko;}
 function placeKnockoutTeams(){
  const fighters=state.players.slice(0,6);
  fighters.forEach((f,i)=>{const team=i<3?'a':'b',[x,z]=KNOCKOUT_SPAWNS[team][i%3];
   Object.assign(f,{dead:false,health:f.maxHealth,ammo:f.maxAmmo,respawnAt:0,invulnerableUntil:0,mintIce:0,mintFrozenUntil:0,blueDash:null,blueKnockback:null,shockUntil:0,seasonUltimateCharge:0,[`${f.characterType}UltimateCharge`]:0});
-  f.mesh.position.set(x,1.85,z);f.shadow.position.set(x,.04,z);f.yaw=team==='a'?0:Math.PI;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;});
+  f.mesh.position.set(x,1.85,z);f.shadow.position.set(x,.04,z);f.yaw=team==='a'?Math.PI:0;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;});
  // Recreate engine actors so charge, statuses, projectiles, fields and Salmon devices reset.
  seasonCombat?.clear();
  state.projectiles.forEach(p=>disposeSceneObject(p.mesh));state.projectiles=[];state.scheduledHits=[];
@@ -15600,7 +15601,7 @@ function finishMainKnockout(){
 function startMainGemGrab(){
  resetGame('gemGrab');state.gemGrabMode=true;state.goldRushMode=true;state.freezeUntil=3;state.gemEscapeTeam=null;state.gemEscapeAt=0;state.gemEscape={a:null,b:null};state.gemStartedAt=3;state.gemNextSpawnAt=3+GEM_GRAB_RULES.firstSpawnDelay;
  state.players.slice(6).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
- state.players.slice(0,6).forEach((f,i)=>{f.team=i<3?'a':'b';f.goldCount=0;f.mesh.position.set((i%3-1)*6,1.85,i<3?-15:15);f.shadow.position.set(f.mesh.position.x,.04,f.mesh.position.z);addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
+ state.players.slice(0,6).forEach((f,i)=>{f.team=i<3?'a':'b';f.goldCount=0;f.mesh.position.set((i%3-1)*6,1.85,i<3?15:-15);f.yaw=i<3?Math.PI:0;f.shadow.position.set(f.mesh.position.x,.04,f.mesh.position.z);addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
  const altar=new THREE.Mesh(new THREE.CylinderGeometry(2,2.4,.4,24),new THREE.MeshStandardMaterial({color:0x9d733b,emissive:0xaa38cc,emissiveIntensity:.2}));altar.position.y=.2;showdownMapGroup.add(altar);
  stopAllBgm();gemGrabBgm.currentTime=0;gemGrabBgm.play().catch(()=>{});mapNameEl.textContent='GEM GRAB · '+ui(showdownMapGroup.userData.eventMapName);
 }
