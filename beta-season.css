@@ -685,3 +685,8 @@ body.beta-in-match.beta-ui-peek .beta-header { opacity: 1; pointer-events: auto;
 body.beta-in-match::after { content: "Esc · 메뉴"; position: fixed; top: 10px; left: 50%; translate: -50% 0; z-index: 3; padding: 4px 10px;
   border-radius: 999px; background: rgba(7, 19, 28, .6); color: rgba(220, 248, 255, .75); font-size: 11px; pointer-events: none; }
 body.beta-in-match.beta-ui-peek::after { content: "Esc · 메뉴 닫기"; }
+/* In a match the scoreboard and Chop Wood HUD move up to where the hidden menu was (back down while Esc shows the menu). */
+body.beta-in-match .gold-rush-hud { top: 36px; }
+body.beta-in-match .chop-wood-hud { top: 101px; }
+body.beta-in-match.beta-ui-peek .gold-rush-hud { top: var(--beta-header-bottom, 148px); }
+body.beta-in-match.beta-ui-peek .chop-wood-hud { top: calc(var(--beta-header-bottom, 148px) + 65px); }
