@@ -12042,8 +12042,10 @@ function updatePlayerControls(dt) {
 
   const keyboardX = (state.keyState.KeyD ? 1 : 0) - (state.keyState.KeyA ? 1 : 0);
   const keyboardZ = (state.keyState.KeyW ? 1 : 0) - (state.keyState.KeyS ? 1 : 0);
-  const inputX = THREE.MathUtils.clamp(keyboardX + state.mobileMove.x, -1, 1);
-  const inputZ = THREE.MathUtils.clamp(keyboardZ + state.mobileMove.y, -1, 1);
+  // Input is screen-relative: when the camera looks from the other side, flip it to world directions.
+  const screenFlip = playerHomeAtTop() ? -1 : 1;
+  const inputX = THREE.MathUtils.clamp(keyboardX + state.mobileMove.x, -1, 1) * screenFlip;
+  const inputZ = THREE.MathUtils.clamp(keyboardZ + state.mobileMove.y, -1, 1) * screenFlip;
 
   tempVec3.set(0, 0, 0);
   if (Math.abs(inputX) > 0.001 || Math.abs(inputZ) > 0.001) {
@@ -13012,6 +13014,17 @@ function updateZoneDamage(dt, zone) {
   }
 }
 
+// Team modes: the fixed camera always shows the local player's home base at the bottom of the screen.
+// Soccer (blue) and Chop Wood (team a) bases sit at -z, Knockout/Gem Grab team b starts at -z,
+// so for those players the camera looks from the other side and screen-relative input flips with it.
+function playerHomeAtTop() {
+  const team = getPlayer()?.team;
+  if (state.soccerMode) return team === "blue";
+  if (state.chopWoodMode) return team === "a";
+  if (state.knockoutMode || state.gemGrabMode) return team === "b";
+  return false;
+}
+
 function updateCamera(dt) {
   const player = getPlayer();
   if (!player) {
@@ -13037,7 +13050,8 @@ function updateCamera(dt) {
     cameraTarget.set(0, 0.8, 0);
   }
 
-  camera.up.set(0, 0, -1);
+  const viewSide = playerHomeAtTop() ? -1 : 1;
+  camera.up.set(0, 0, -viewSide);
   const followRate = 1 - Math.exp(-dt * 10);
   if (!cameraLookInitialized || state.gameTime <= dt * 1.5) {
     cameraLookTarget.copy(cameraTarget);
@@ -13050,12 +13064,12 @@ function updateCamera(dt) {
   // 위치와 시선을 따로 보간하지 않으므로 캐릭터는 중앙에 남고 각도도 흔들리지 않는다.
   if (state.victoryCelebrating) {
     cameraLookTarget.y = 1.5;
-    camera.position.set(cameraLookTarget.x, cameraLookTarget.y + 6.8, cameraLookTarget.z + 1.3);
+    camera.position.set(cameraLookTarget.x, cameraLookTarget.y + 6.8, cameraLookTarget.z + 1.3 * viewSide);
   } else {
     camera.position.set(
       cameraLookTarget.x,
       cameraLookTarget.y + CAMERA_HEIGHT,
-      cameraLookTarget.z + CAMERA_DEPTH_OFFSET,
+      cameraLookTarget.z + CAMERA_DEPTH_OFFSET * viewSide,
     );
   }
   camera.lookAt(cameraLookTarget);
