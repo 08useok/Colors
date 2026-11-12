@@ -45,7 +45,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=21";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=14";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=15";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=58";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -9981,8 +9981,22 @@ slowmoButton.addEventListener("click", () => {
   slowmoButton.textContent = slowMotionActive ? "슬로우 모드 (켜짐)" : "슬로우 모드";
 });
 
+// During a match the menus and side panels hide; Esc shows the top menu again (it has the exit buttons).
+let betaMatchUiActive = null;
+function updateBetaMatchUi() {
+  const inMatch = goldRushState.active && !goldRushState.ended;
+  if (inMatch === betaMatchUiActive) return;
+  betaMatchUiActive = inMatch;
+  document.body.classList.toggle("beta-in-match", inMatch);
+  if (!inMatch) document.body.classList.remove("beta-ui-peek");
+}
+addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || event.repeat || !document.body.classList.contains("beta-in-match")) return;
+  document.body.classList.toggle("beta-ui-peek");
+});
 function animate() {
   requestAnimationFrame(animate);
+  updateBetaMatchUi();
   const rawDelta = clock.getDelta();
   if (modelLoading.blocking) { clock.elapsedTime -= rawDelta; renderer.render(scene, camera); return; }
   const dt = Math.min(rawDelta, 0.04) * (slowMotionActive ? SLOW_MOTION_SCALE : 1);

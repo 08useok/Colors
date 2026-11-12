@@ -677,3 +677,11 @@ body.beta-season-9-theme .beta-wallet, body.beta-season-9-theme .test-panel, bod
 /* Per-line buff (green) / nerf (red), also inside rework and adjust cards. */
 .patch-changes li.patch-buff b, .patch-changes li.patch-buff strong { color: #5fe08a; }
 .patch-changes li.patch-nerf b, .patch-changes li.patch-nerf strong { color: #ff6b6b; }
+
+/* In a match: hide the menus and side panels; Esc (beta-ui-peek) brings the top menu back. */
+body.beta-in-match .beta-header, body.beta-in-match .test-panel, body.beta-in-match .beta-wallet,
+body.beta-in-match .location-card, body.beta-in-match .beta-watermark { opacity: 0; pointer-events: none; transition: opacity .2s; }
+body.beta-in-match.beta-ui-peek .beta-header { opacity: 1; pointer-events: auto; }
+body.beta-in-match::after { content: "Esc · 메뉴"; position: fixed; top: 10px; left: 50%; translate: -50% 0; z-index: 3; padding: 4px 10px;
+  border-radius: 999px; background: rgba(7, 19, 28, .6); color: rgba(220, 248, 255, .75); font-size: 11px; pointer-events: none; }
+body.beta-in-match.beta-ui-peek::after { content: "Esc · 메뉴 닫기"; }
