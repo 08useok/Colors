@@ -47,7 +47,8 @@ export const BETA9_BALANCE = Object.freeze({
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
   crimson: { maxHealth: 13000, attackCooldown: .6 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
-  azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 10, width: 5 } },
+  // Big Wave (11.12): reaches the edge of any arena (80 tiles, the wave ends at the arena boundary), through walls, hitting everyone.
+  azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 80, width: 5 } },
   crystal: { maxHealth: 6600 },
   // 11.10 Gold rework: back to a damage dealer. Big ore, faster and wider; split ore skips targets the same attack already hit; projectile defense 1650 -> 900.
   // 11.12: Blue reload 0.5 → 0.3 s per ammo (bottom of the 1v1 gadget runs; Crimson → Blue and Blue → Orange stay 240-0).
@@ -97,8 +98,8 @@ export function applyBeta9Balance(characters) {
     replaceText(mint.basicAttack, 'descriptionEn', [['at 100,', 'at 75,'], ['in succession.', 'in succession, fanning out 9° to each side.']]);
   }
   if (characters.azure) {
-    replaceText(characters.azure.ultimate, 'description', [['큰 파도를 전방으로 보내', '큰 파도를 전방 10타일·폭 5타일로 보내']]);
-    replaceText(characters.azure.ultimate, 'descriptionEn', [['Launches a huge wave', 'Launches a huge 10-tile, 5-wide wave']]);
+    replaceText(characters.azure.ultimate, 'description', [['큰 파도를 전방으로 보내', '큰 파도를 맵 끝까지 폭 5타일로, 벽을 뚫고 보내']]);
+    replaceText(characters.azure.ultimate, 'descriptionEn', [['Launches a huge wave', 'Launches a huge 5-wide wave through walls to the edge of the arena']]);
   }
   if (cyan) {
     replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해']]);

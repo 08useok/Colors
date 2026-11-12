@@ -823,6 +823,8 @@ export function createBeta6Combat(definitions, options = {}) {
       p.x += Math.cos(p.yaw) * advance; p.z += Math.sin(p.yaw) * advance; p.traveled += advance;
       const air = ['ivory', 'vial'].includes(p.kind);
       let ended = !p.returning && p.traveled >= p.reach;
+      // Azure's Big Wave has an arena-wide reach; it ends once it leaves the arena.
+      if (p.kind === 'wave' && p.ultimate && Math.max(Math.abs(p.x), Math.abs(p.z)) > (options.bounds ?? 24) + 1) ended = true;
       const hitWall = !air && !(p.kind === 'wave' && p.ultimate) && !(p.kind === 'orangePeel' && p.returning) && sightBlocked(p.x, p.z, p.radius);
       if (hitWall) { ended = true; p.x = before.x; p.z = before.z; }
       if (p.kind === 'wave') move(a, p.origin.x + Math.cos(p.yaw) * Math.min(p.traveled, p.ride), p.origin.z + Math.sin(p.yaw) * Math.min(p.traveled, p.ride));

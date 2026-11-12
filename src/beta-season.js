@@ -43,10 +43,10 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance } from "./config/beta9-balance.js?v=23";
+import { applyBeta9Balance } from "./config/beta9-balance.js?v=24";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=23";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=62";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=24";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=63";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
@@ -5036,6 +5036,10 @@ function startAzureWave(ultimate = false) {
   };
 }
 
+// Half size of the square the shared combat keeps fighters in, per mode.
+function combatArenaBound() {
+  return goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : ["gemGrab", "knockout"].includes(goldRushState.mode) ? TEAM_ARENA.halfDepth - .5 : 19.5;
+}
 function updateAzureWave(dt) {
   const wave = azureWaveState;
   if (!wave) return false;
@@ -5058,6 +5062,8 @@ function updateAzureWave(dt) {
     // 파도 가운데가 벽에 닿을 때만 멈춘다. 폭 전체로 검사하면 벽 옆에 서거나
     // 벽과 나란히 쏠 때 파도 끝자락이 벽을 스치자마자 공격이 통째로 사라진다.
     if (!wave.ultimate && blocked(x, z, 0.2)) { clearAzureWave(); return true; }
+    // 빅 웨이브는 사거리가 경기장 끝까지라, 경기장 밖으로 나가면 사라진다.
+    if (wave.ultimate && Math.max(Math.abs(x), Math.abs(z)) > combatArenaBound() + 1) { clearAzureWave(); return true; }
     wave.mesh.position.set(x, player.position.y + 0.25, z);
     const ride = Math.min(wave.distance, wave.rideRange);
     const rideX = wave.origin.x + wave.dx * ride;
@@ -7884,7 +7890,7 @@ function startBeta6BotCombat(carried = null) {
     transforms: true,
     gadgets: IS_OFFICIAL_SEASON,
     seed: Math.floor(Math.random() * 0x7fffffff),
-    bounds: goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : ["gemGrab", "knockout"].includes(goldRushState.mode) ? TEAM_ARENA.halfDepth - .5 : 19.5,
+    bounds: combatArenaBound(),
     walkable: (x, z) => groundHeightAt(x, z) > -5 && !(activeEventLayout?.lakes.some(rect => insideMapRect(x, z, rect, 1))),
     retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
     destination(actor, target) {
