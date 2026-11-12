@@ -400,7 +400,7 @@ export function createBeta6Combat(definitions, options = {}) {
     else if (id === 'pink') {
       area(a, a, d.healCircleRange, d.healCircleDamage, true);
       for (const b of actors) if (b !== a && !enemies(a, b) && alive(b) && distance(a, b) <= d.healCircleRange) { const before = b.hp; b.hp = Math.min(b.d.maxHealth, b.hp + d.healCircleHeal); emit('heal', { owner: a, target: b, amount: b.hp - before }); }
-    } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage, homingTarget ? { homingTarget, homingTurnRate: a.g?.homingTurnRate ?? 4 } : {});
+    } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage * (homingTarget ? 1 + (a.g?.damageBonus ?? 0) : 1), homingTarget ? { homingTarget, homingTurnRate: a.g?.homingTurnRate ?? 4 } : {});
     else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
     else if (id === 'yellow') {

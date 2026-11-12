@@ -36,6 +36,7 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
   for (let i = 0; i < 200; i++) { w.update(1 / 60); homing ??= w.projectiles.find(p => p.owner === a && p.homingTarget === b); }
   assert(homing, 'auto shots home on the target');
   assert(b.hp < b.d.maxHealth, 'auto shots hit');
+  assert(Math.abs((b.d.maxHealth - b.hp) % (defs.blue.bulletDamage * 1.1)) < 1e-6 || Math.abs((b.d.maxHealth - b.hp) - defs.blue.bulletDamage * 1.1 * Math.round((b.d.maxHealth - b.hp) / (defs.blue.bulletDamage * 1.1))) < 1e-6, 'auto shots deal +10% (1,080 → 1,188)');
   assert.equal(a.autoFire, null, 'mode over after 2 shots or 3 s');
   assert.equal(shots, 2, 'exactly 2 auto shots');
 }
