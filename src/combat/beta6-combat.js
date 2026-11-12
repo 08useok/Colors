@@ -19,6 +19,8 @@ export function createBeta6Combat(definitions, options = {}) {
   const alive = a => a.hp > 0;
   const hidden = (a,observer) => time >= a.revealedUntil && ((time < a.hiddenUntil && distance(a, a.bush || a) <= (a.u?.radius ?? 0)) || (observer && options.bushAt?.(a.x,a.z) && distance(a,observer)>3));
   const blocked = (x, z, radius = .55) => options.blocked?.(x, z, radius) ?? false;
+  // Projectiles and lines of sight: water stops walking but not shots, so the page may pass a looser check.
+  const sightBlocked = (x, z, radius = .55) => options.sightBlocked ? options.sightBlocked(x, z, radius) : blocked(x, z, radius);
   function move(a, x, z) {
     const bounds = options.bounds ?? 24;
     x = clamp(x, -bounds, bounds); z = clamp(z, -bounds, bounds);
@@ -173,7 +175,7 @@ export function createBeta6Combat(definitions, options = {}) {
   const inAir = b => !!(b.salmonAirborne || b.leap || b.airborne === true);
   function pathClear(from, to) {
     const length = distance(from, to), yaw = Math.atan2(to.z - from.z, to.x - from.x);
-    for (let step = .25; step < length; step += .25) if (blocked(from.x + Math.cos(yaw) * step, from.z + Math.sin(yaw) * step, .1)) return false;
+    for (let step = .25; step < length; step += .25) if (sightBlocked(from.x + Math.cos(yaw) * step, from.z + Math.sin(yaw) * step, .1)) return false;
     return true;
   }
   function knock(a, yaw, amount, by) {
@@ -246,7 +248,7 @@ export function createBeta6Combat(definitions, options = {}) {
     const lookAhead=a.d.botPathLookAhead??.9,safety=a.d.botPathSafetyMargin??.3,directions=a.d.botPathDirections??16;
     const visible=p=>{
       if(!options.blocked)return true;
-      const gap=distance(a,p);for(let step=.25;step<gap;step+=.25){const t=step/gap;if(blocked(a.x+(p.x-a.x)*t,a.z+(p.z-a.z)*t,.05))return false;}return true;
+      const gap=distance(a,p);for(let step=.25;step<gap;step+=.25){const t=step/gap;if(sightBlocked(a.x+(p.x-a.x)*t,a.z+(p.z-a.z)*t,.05))return false;}return true;
     };
     const threats=projectiles.filter(p=>((a.d.botAvoidBurstProjectiles&&['bomb','juice'].includes(p.kind))||(a.d.botAvoidControlProjectiles&&p.control&&(a.d.botAvoidControlProjectiles===true||a.d.botAvoidControlProjectiles.includes?.(p.control)))||(a.d.botAvoidVolleyProjectiles&&p.formation==='parallel'))&&enemies(a,p.owner)&&time>=p.start
       && distance(a,p)<(p.speed+speed)*lookAhead+p.radius+.55&&visible(p));
@@ -770,7 +772,7 @@ export function createBeta6Combat(definitions, options = {}) {
       p.x += Math.cos(p.yaw) * advance; p.z += Math.sin(p.yaw) * advance; p.traveled += advance;
       const air = ['ivory', 'vial'].includes(p.kind);
       let ended = !p.returning && p.traveled >= p.reach;
-      const hitWall = !air && !(p.kind === 'wave' && p.ultimate) && !(p.kind === 'orangePeel' && p.returning) && blocked(p.x, p.z, p.radius);
+      const hitWall = !air && !(p.kind === 'wave' && p.ultimate) && !(p.kind === 'orangePeel' && p.returning) && sightBlocked(p.x, p.z, p.radius);
       if (hitWall) { ended = true; p.x = before.x; p.z = before.z; }
       if (p.kind === 'wave') move(a, p.origin.x + Math.cos(p.yaw) * Math.min(p.traveled, p.ride), p.origin.z + Math.sin(p.yaw) * Math.min(p.traveled, p.ride));
       if (p.kind === 'electric' && a.devices.some(v => segmentDistance(v, before, p) <= .8 + p.radius)) {
@@ -848,7 +850,7 @@ export function createBeta6Combat(definitions, options = {}) {
           const length = distance(zone, b);
           let occluded = false;
           for (let step = .25; step < length; step += .25) {
-            if (blocked(zone.x + Math.cos(yaw) * step, zone.z + Math.sin(yaw) * step, .1)) { occluded = true; break; }
+            if (sightBlocked(zone.x + Math.cos(yaw) * step, zone.z + Math.sin(yaw) * step, .1)) { occluded = true; break; }
           }
           if (occluded) continue;
           const arrivalAt = zone.startedAt + length / zone.spraySpeed;

@@ -47,6 +47,10 @@ export function eventMap(mode,index=0,halfWidth=20,halfDepth=20,reserved=[],wall
 export function insideMapRect(x,z,rect,radius=0) {
   return Math.abs(x-rect.x)<rect.width/2+radius && Math.abs(z-rect.z)<rect.depth/2+radius;
 }
+// Walls and the field edge only: water (lakes) stops walking but projectiles and sight pass over it.
+export function mapSightBlocked(layout,x,z,radius=.6) {
+  return Math.abs(x)>layout.halfWidth-radius || Math.abs(z)>layout.halfDepth-radius || layout.walls.some(rect=>insideMapRect(x,z,rect,radius));
+}
 export function mapBlocked(layout,x,z,radius=.6) {
   return Math.abs(x)>layout.halfWidth-radius || Math.abs(z)>layout.halfDepth-radius
     || layout.walls.some(rect=>insideMapRect(x,z,rect,radius)) || layout.lakes.some(rect=>insideMapRect(x,z,rect,radius));

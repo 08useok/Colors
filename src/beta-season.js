@@ -24,7 +24,8 @@ import { KNOCKOUT_RULES, createKnockoutMatch, advanceKnockout } from "./config/k
 import { TEAM_ARENA, TEAM_ARENA_RESERVED, BETA9_GEM_RULES, teamArenaMap, knockoutSafeArea } from "./config/beta9-team-arena.js?v=1";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
-import { eventMap, insideMapRect, mapBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=4";
+import { eventMap, insideMapRect, mapBlocked, mapSightBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=5";
+import { canyonKnockoutMap } from './config/beta-canyon-map.js?v=1';
 import * as THREE from "three";
 const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
 const respawnShields = createRespawnShields();
@@ -44,8 +45,8 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=21";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=13";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=56";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=14";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=58";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
@@ -7899,6 +7900,11 @@ function startBeta6BotCombat(carried = null) {
       const pickup = goldPickups.slice().sort((a, b) => Math.hypot(a.mesh.position.x - actor.x, a.mesh.position.z - actor.z) - Math.hypot(b.mesh.position.x - actor.x, b.mesh.position.z - actor.z))[0];
       return navigateEventMap(activeEventLayout,actor,{ x: pickup?.mesh.position.x ?? goldMine.position.x, z: pickup?.mesh.position.z ?? goldMine.position.z });
     },
+    sightBlocked(x, z, radius) {
+      if(activeEventLayout && mapSightBlocked(activeEventLayout,x,z,radius))return true;
+      const floor = groundHeightAt(x, z);
+      return (goldRushState.mode === "chopWood" && (Math.abs(x) > 15-radius || Math.abs(z) > 30-radius)) || floor < -5 || getArenaSolids().some(s => s.top > floor + .5 && Math.abs(x - s.x) < s.halfW + radius && Math.abs(z - s.z) < s.halfD + radius);
+    },
     blocked(x, z, radius) {
       if(activeEventLayout && mapBlocked(activeEventLayout,x,z,radius))return true;
       const geometry = getArenaSolids();
@@ -9236,6 +9242,8 @@ function prepareBetaEventMap(mode,plus) {
     : [[0,15,2],[0,0,3],...Array.from({length:9},(_,i)=>[Math.sin(i*Math.PI*2/9)*9,Math.cos(i*Math.PI*2/9)*9,1.4])];
   if(mode==="showdown")for(const point of reserved){point[0]*=showdownProfile.scale;point[1]*=showdownProfile.scale;}
   activeEventLayout=["knockout","gemGrab"].includes(mode) ? (IS_OFFICIAL_SEASON ? plazaArenaMap(mode,index) : teamArenaMap(mode,index)) : eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
+  // Beta Knockout map 4: river canyon, drawn in beta-canyon-map.js.
+  if(!IS_OFFICIAL_SEASON&&mode==="knockout"&&index===3)activeEventLayout=canyonKnockoutMap();
   if(mode==="showdown")activeEventLayout.navigationStep=showdownProfile.navigationStep;
   const addWall=r=>{
     const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));
