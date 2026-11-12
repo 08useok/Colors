@@ -21,8 +21,9 @@ export function atCharacterLevel(config, level = SIMULATION_LEVEL) {
 }
 export function beta6Duel(config, left, right, scenario, seed, mirror = 1, initialCharge = 0) {
   config = atCharacterLevel(config, scenario.level ?? SIMULATION_LEVEL);
+  // 꼬리잡기(240-0 counter cycle) is judged without transforms and gadgets.
   const world = createBeta6Combat(config, {
-    seed, aimError: scenario.aimError, bounds: scenario.bounds ?? 40,
+    seed, aimError: scenario.aimError, bounds: scenario.bounds ?? 40, transforms: false, gadgets: false,
     suddenDeath: scenario.noZone ? undefined : { start: 30, end: 45, startRadius: 40, endRadius: 8, damagePerSecond: .25 },
   });
   const wallZ = (scenario.bounds ?? 40) - 1;
