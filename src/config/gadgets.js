@@ -6,7 +6,9 @@
 // kind 'empowerAttack' the next basic attack gets `effect` (White: `bugs` bugs instead of one;
 //                      Red 'stun', Yellow 'chain', Purple 'poisonBoost').
 // kind 'recall'        Green: boomerangs flying out turn back at once, faster.
-// kind 'brake'         Blue: for `duration` s a dash that hits a wall stops instead of bouncing, then guards.
+// kind 'brake'         for `duration` s a dash that hits a wall stops instead of bouncing, then guards (unused now).
+// kind 'autoFire'      Blue 오토 트래커: for `duration` s, up to `maxShots` basic shots fire by themselves at the nearest
+//                      visible enemy within `detectRange` (not through walls); those shots home in (`homingTurnRate` rad/s).
 // kind 'guard'         takes `damageReduction` less damage for `duration` s.
 // Starting values (11.12); the 꼬리잡기 cycle is judged without gadgets.
 export const GADGETS = {
@@ -14,8 +16,8 @@ export const GADGETS = {
     summary: '다음 일반 공격이 처음 적중한 적을 1초 동안 기절시킵니다.' },
   green: { name: '부메랑 리콜', cooldown: 12, kind: 'recall', returnSpeedBonus: .25,
     summary: '날아가고 있는 부메랑을 모두 즉시 되돌립니다. 돌아오는 속도가 25% 빨라집니다.' },
-  blue: { name: '급제동 장치', cooldown: 14, kind: 'brake', duration: 3, guardDuration: 1.5, damageReduction: .25,
-    summary: '3초 동안 돌진이 벽에 닿으면 튕기지 않고 멈춥니다. 멈춘 뒤 1.5초 동안 받는 피해가 25% 줄어듭니다.' },
+  blue: { name: '오토 트래커', cooldown: 14, kind: 'autoFire', duration: 3, maxShots: 2, detectRange: 10, homingTurnRate: 4,
+    summary: '3초 동안 10타일 안의 가장 가까운 적에게 일반 공격을 자동으로 최대 2발 쏩니다. 구슬은 움직이는 적을 향해 궤도를 조금씩 고칩니다. 피해·탄약은 일반 공격과 같고, 벽 너머의 적은 조준하지 않으며 구슬도 벽을 통과하지 않습니다.' },
   orange: { name: '껍질 보호', cooldown: 15, kind: 'guard', duration: 3, damageReduction: .3,
     summary: '3초 동안 받는 피해가 30% 줄어듭니다.' },
   yellow: { name: '전선 연결', cooldown: 14, kind: 'empowerAttack', effect: 'chain', chainRange: 6, chainDamage: .4,

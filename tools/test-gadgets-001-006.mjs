@@ -28,14 +28,35 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
   assert(out.every(p => p.returning), 'all boomerangs return');
   assert(out[0].speed > defs.green.boomerangSpeed * defs.green.boomerangReturnSpeedMultiplier, 'faster than a normal return');
 }
-{ // Blue: armed, the dash stops at a wall instead of bouncing, then guards 25% for 1.5 s.
-  const w = world(), a = w.add('blue', { automatic: false, x: 15, charge: 99 }), b = w.add('cyan', { automatic: false, x: -15, team: 'b' });
+{ // Blue 오토 트래커: for 3 s up to 2 basic shots fire by themselves at the nearest visible enemy within 10 tiles and home in.
+  let shots = 0;
+  const w = world({ onEvent: e => { if (e.type === 'attack' && e.owner?.id === 'blue') shots++; } }), a = w.add('blue', { automatic: false, x: 0, next: 0 }), b = w.add('red', { automatic: false, x: 8, team: 'b' });
   assert.equal(w.gadget(a), true);
-  assert.equal(w.cast(a, b, { angle: 0 }), true); // dash toward the near (+x) wall, away from the target
-  step(w, .8);
-  assert.equal(a.dash, null, 'stopped at the wall');
-  assert(Math.abs(w.damageReductionFor(a) - .25) < 1e-9, 'guards 25% after stopping');
-  step(w, 1.6); assert.equal(w.damageReductionFor(a), 0, 'guard ends');
+  let homing = null;
+  for (let i = 0; i < 200; i++) { w.update(1 / 60); homing ??= w.projectiles.find(p => p.owner === a && p.homingTarget === b); }
+  assert(homing, 'auto shots home on the target');
+  assert(b.hp < b.d.maxHealth, 'auto shots hit');
+  assert.equal(a.autoFire, null, 'mode over after 2 shots or 3 s');
+  assert.equal(shots, 2, 'exactly 2 auto shots');
+}
+{ // Blue 오토 트래커 ignores enemies beyond 10 tiles or behind a wall.
+  const far = world(), a = far.add('blue', { automatic: false, x: 0, next: 0 }); far.add('red', { automatic: false, x: 12, team: 'b' });
+  far.gadget(a); step(far, 3.2); assert.equal(a.ammo, defs.blue.maxAmmo, 'no shot beyond 10 tiles');
+  const wall = world({ blocked: (x, z) => Math.abs(x - 4) < .5 && Math.abs(z) < 5 });
+  const a2 = wall.add('blue', { automatic: false, x: 0, next: 0 }); wall.add('red', { automatic: false, x: 8, team: 'b' });
+  wall.gadget(a2); step(wall, 3.2); assert.equal(a2.ammo, defs.blue.maxAmmo, 'no shot through a wall');
+}
+{ // Homing: a shot fired at a target that then moves sideways turns toward it.
+  const w = world(), a = w.add('blue', { automatic: false, x: 0, next: 0 }), b = w.add('red', { automatic: false, x: 9, team: 'b' });
+  w.gadget(a);
+  let shot = null; for (let i = 0; i < 60 && !shot; i++) { w.update(1 / 60); shot = w.projectiles.find(p => p.owner === a && p.homingTarget === b); }
+  assert(shot); const yaw0 = shot.yaw; b.z = 3; w.update(1 / 60);
+  assert(shot.yaw !== yaw0 || !w.projectiles.includes(shot), 'the shot bends toward the moving target');
+}
+{ // Bots use it when an enemy is in reach and they have 2+ ammo.
+  const w = world(), bot = w.add('blue', { x: 0 }); w.add('red', { automatic: false, x: 8, team: 'b' });
+  for (let i = 0; i < 120 && !(bot.gadgetReadyAt > 0); i++) w.update(1 / 60);
+  assert(bot.gadgetReadyAt > 0, 'Blue bot used 오토 트래커');
 }
 { // Orange: 30% less damage for 3 s.
   const w = world(), a = w.add('orange', { automatic: false, x: 0 }), b = w.add('red', { automatic: false, x: 1, team: 'b' });
@@ -68,12 +89,4 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
   step(w, .3);
   assert(o.gadgetReadyAt > 0, 'Orange bot used 껍질 보호'); assert(r.gadgetReadyAt > 0 || r.empoweredAttack === 'stun' || r.gadgetReadyAt === 0);
 }
-{ // Blue 급제동 can be armed mid-dash (players and bots); a Blue bot arms it during its own dash.
-  const w = world(), a = w.add('blue', { automatic: false, x: 0, charge: 99 }), b = w.add('cyan', { automatic: false, x: -15, team: 'b' });
-  assert.equal(w.cast(a, b, { angle: 0 }), true); step(w, .2); assert(a.dash, 'dashing');
-  assert.equal(w.gadget(a), true, 'armed mid-dash');
-  const w2 = world(), bot = w2.add('blue', { x: 0, charge: 99, hp: defs.blue.maxHealth * .2 }) /* Blue bots dash away at 10-25% health */, t = w2.add('cyan', { automatic: false, x: 8, team: 'b' });
-  for (let i = 0; i < 240 && !(bot.gadgetReadyAt > 0); i++) w2.update(1 / 60);
-  assert(bot.gadgetReadyAt > 0, 'Blue bot used 급제동 장치');
-}
-console.log('PASS gadgets #001-#006: Red stun punch, Green recall, Blue brake + guard, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');
+console.log('PASS gadgets #001-#006: Red stun punch, Green recall, Blue auto tracker, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');

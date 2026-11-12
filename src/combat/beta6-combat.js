@@ -98,6 +98,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (!flying.length) return false;
       for (const p of flying) { p.returning = true; p.hits.clear(); p.traveled = 0; p.speed *= (a.d.boomerangReturnSpeedMultiplier ?? 1) * (1 + (g.returnSpeedBonus ?? 0)); }
     } else if (g.kind === 'brake') a.brakeUntil = time + g.duration;
+    else if (g.kind === 'autoFire') a.autoFire = { until: time + g.duration, shots: 0 };
     else if (g.kind === 'guard') { a.gadgetGuardUntil = time + g.duration; a.gadgetGuardReduction = g.damageReduction; }
     a.gadgetReadyAt = time + g.cooldown;
     emit('gadget', { owner: a, kind: g.kind, from: aim.from });
@@ -352,6 +353,7 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   function fire(a, target, manualAngle) {
     if (a.id === 'salmon' && !a.isSalmonDevice) return salmon.fire(a, target);
+    const homingTarget = a.autoFireAim ?? null; // Blue 오토 트래커: the auto shot homes on this enemy
     if (a.ultimatePreparing || !alive(a) || a.ammo <= 0 || time < a.next || time < a.lockUntil || time < a.frozenUntil || a.wave || a.dash || a.leap) return false;
     const d = a.d, id = a.id;
     const speed = id === 'purple' && a.index % 2 ? d.vialSpeed : (d.bulletSpeed ?? d.boomerangSpeed ?? d.bombSpeed ?? d.electricSpeed ?? d.needleSpeed ?? d.iceBulletSpeed ?? d.chartreuseSpeed ?? (id === 'azure' ? 10 : 20));
@@ -398,7 +400,7 @@ export function createBeta6Combat(definitions, options = {}) {
     else if (id === 'pink') {
       area(a, a, d.healCircleRange, d.healCircleDamage, true);
       for (const b of actors) if (b !== a && !enemies(a, b) && alive(b) && distance(a, b) <= d.healCircleRange) { const before = b.hp; b.hp = Math.min(b.d.maxHealth, b.hp + d.healCircleHeal); emit('heal', { owner: a, target: b, amount: b.hp - before }); }
-    } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage);
+    } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage, homingTarget ? { homingTarget, homingTurnRate: a.g?.homingTurnRate ?? 4 } : {});
     else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
     else if (id === 'yellow') {
@@ -699,6 +701,14 @@ export function createBeta6Combat(definitions, options = {}) {
       const opponents=actors.filter(b=>alive(b)&&enemies(a,b)).sort((b,c)=>distance(a,b)-distance(a,c));
       const target=opponents.find(b=>!hidden(b,a)) ?? opponents[0];
       a.target = target;
+      if (a.autoFire) {
+        const g = a.g;
+        if (!g || time >= a.autoFire.until || a.autoFire.shots >= (g.maxShots ?? 2)) a.autoFire = null;
+        else {
+          const aim = opponents.find(b => !b.isSalmonDevice && !hidden(b, a) && distance(a, b) <= (g.detectRange ?? 10) && pathClear(a, b));
+          if (aim) { a.autoFireAim = aim; if (fire(a, aim)) a.autoFire.shots++; a.autoFireAim = null; }
+        }
+      }
       // Bots use a ready gadget: dash in when the target is just out of reach (or away when low),
       // and empower an attack when the target is in reach.
       if (a.automatic && a.g && target && time >= (a.gadgetReadyAt ?? 0)) {
@@ -710,6 +720,7 @@ export function createBeta6Combat(definitions, options = {}) {
         } else if (a.g.kind === 'empowerAttack' && gap <= reach && !a.empoweredAttack) gadget(a);
         else if (a.g.kind === 'recall' && a.ammo < 1 && projectiles.some(p => p.owner === a && p.kind === 'boomerang' && !p.returning)) gadget(a);
         else if (a.g.kind === 'brake' && a.dash) gadget(a);
+        else if (a.g.kind === 'autoFire' && a.ammo >= 2 && !hidden(target, a) && gap <= (a.g.detectRange ?? 10) && pathClear(a, target)) gadget(a);
         else if (a.g.kind === 'guard' && a.hp <= a.d.maxHealth * .6 && gap <= reach + 2) gadget(a);
       }
       if (a.automatic && a.t && target && distance(a, target) <= perceivedRange(a) + 1) transform(a);
@@ -801,10 +812,11 @@ export function createBeta6Combat(definitions, options = {}) {
         p.pausedUntil = 0; p.returning = true; p.hits.clear(); p.traveled = 0;
       }
       if (p.kind === 'wave' && !alive(a)) { finish(p); projectiles.splice(i, 1); continue; }
-      if (p.kind === 'crystal' && p.stage === 1 && d.crystalHomingTurnRate && alive(p.homingTarget)) {
+      const homingTurn = p.homingTurnRate ?? (p.kind === 'crystal' && p.stage === 1 ? d.crystalHomingTurnRate : 0);
+      if (homingTurn && alive(p.homingTarget)) {
         const wanted = Math.atan2(p.homingTarget.z-p.z, p.homingTarget.x-p.x);
         const diff = Math.atan2(Math.sin(wanted-p.yaw), Math.cos(wanted-p.yaw));
-        p.yaw += clamp(diff, -d.crystalHomingTurnRate*dt, d.crystalHomingTurnRate*dt);
+        p.yaw += clamp(diff, -homingTurn*dt, homingTurn*dt);
       }
       if (p.returning) p.yaw = Math.atan2(a.z - p.z, a.x - p.x);
       const before = { x: p.x, z: p.z }, advance = Math.min(p.speed * dt, p.returning ? Infinity : Math.max(0, p.reach - p.traveled));
