@@ -1,0 +1,684 @@
+{
+ "date": "2026-11-12",
+ "ring": [
+  "lavender",
+  "purple",
+  "blue",
+  "raspberry",
+  "yellow",
+  "crystal",
+  "orange",
+  "cyan",
+  "black",
+  "ivory",
+  "salmon",
+  "red",
+  "gold",
+  "green",
+  "azure",
+  "crimson",
+  "pink",
+  "white",
+  "chartreuse",
+  "mint"
+ ],
+ "cost": 51,
+ "perfect": 5,
+ "patch": {
+  "raspberry": {
+   "maxHealth": 5280,
+   "vineDamage": 2480
+  },
+  "orange": {
+   "moveSpeedMultiplier": 1.1,
+   "bombDamage": 680
+  },
+  "salmon": {
+   "attackRange": 6.44
+  },
+  "mint": {
+   "moveSpeedMultiplier": 1.26,
+   "reloadDuration": 0.8
+  },
+  "green": {
+   "boomerangDamage": 1430,
+   "moveSpeedMultiplier": 1.32,
+   "boomerangRange": 8.4
+  },
+  "blue": {
+   "bulletRange": 16.67
+  },
+  "yellow": {
+   "moveSpeedMultiplier": 1.1
+  },
+  "crystal": {
+   "crystalDamage": 2400
+  },
+  "crimson": {
+   "attackRange": 2.73,
+   "reloadDuration": 0.82
+  },
+  "lavender": {
+   "maxHealth": 5000,
+   "sprayDamage": 1210
+  },
+  "cyan": {
+   "spreadLineDamage": 910
+  },
+  "gold": {
+   "moveSpeedMultiplier": 1.2,
+   "maxHealth": 8400,
+   "stage3Range": 6.6,
+   "stage1Damage": 4080
+  },
+  "black": {
+   "attackRange": 2.5,
+   "attackDamage": 2200
+  },
+  "purple": {
+   "moveSpeedMultiplier": 0.83
+  },
+  "azure": {
+   "moveSpeedMultiplier": 1.23
+  },
+  "red": {
+   "moveSpeedMultiplier": 1.14,
+   "attackDamage": 1670
+  },
+  "chartreuse": {
+   "moveSpeedMultiplier": 1.2,
+   "maxHealth": 9020,
+   "chartreuseRange": 13.2,
+   "chartreuseDamage": 1660
+  }
+ },
+ "results": [
+  {
+   "a": "lavender",
+   "b": "purple",
+   "w": 44,
+   "l": 4,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 12,
+     "l": 4,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "purple",
+   "b": "blue",
+   "w": 43,
+   "l": 4,
+   "d": 1,
+   "byMap": {
+    "open": {
+     "w": 15,
+     "l": 0,
+     "d": 1
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 12,
+     "l": 4,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "blue",
+   "b": "raspberry",
+   "w": 43,
+   "l": 5,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 13,
+     "l": 3,
+     "d": 0
+    },
+    "bush": {
+     "w": 14,
+     "l": 2,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "raspberry",
+   "b": "yellow",
+   "w": 47,
+   "l": 1,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 15,
+     "l": 1,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "yellow",
+   "b": "crystal",
+   "w": 41,
+   "l": 7,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 9,
+     "l": 7,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "crystal",
+   "b": "orange",
+   "w": 47,
+   "l": 1,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 15,
+     "l": 1,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "orange",
+   "b": "cyan",
+   "w": 38,
+   "l": 3,
+   "d": 7,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 7,
+     "l": 3,
+     "d": 6
+    },
+    "walls": {
+     "w": 15,
+     "l": 0,
+     "d": 1
+    }
+   }
+  },
+  {
+   "a": "cyan",
+   "b": "black",
+   "w": 42,
+   "l": 0,
+   "d": 6,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 10,
+     "l": 0,
+     "d": 6
+    }
+   }
+  },
+  {
+   "a": "black",
+   "b": "ivory",
+   "w": 40,
+   "l": 0,
+   "d": 8,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 8,
+     "l": 0,
+     "d": 8
+    }
+   }
+  },
+  {
+   "a": "ivory",
+   "b": "salmon",
+   "w": 47,
+   "l": 1,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 15,
+     "l": 1,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "salmon",
+   "b": "red",
+   "w": 48,
+   "l": 0,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "red",
+   "b": "gold",
+   "w": 48,
+   "l": 0,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "gold",
+   "b": "green",
+   "w": 47,
+   "l": 1,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 15,
+     "l": 1,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "green",
+   "b": "azure",
+   "w": 48,
+   "l": 0,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "azure",
+   "b": "crimson",
+   "w": 44,
+   "l": 0,
+   "d": 4,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 12,
+     "l": 0,
+     "d": 4
+    }
+   }
+  },
+  {
+   "a": "crimson",
+   "b": "pink",
+   "w": 44,
+   "l": 4,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 12,
+     "l": 4,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "pink",
+   "b": "white",
+   "w": 48,
+   "l": 0,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "white",
+   "b": "chartreuse",
+   "w": 48,
+   "l": 0,
+   "d": 0,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  },
+  {
+   "a": "chartreuse",
+   "b": "mint",
+   "w": 46,
+   "l": 0,
+   "d": 2,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "walls": {
+     "w": 14,
+     "l": 0,
+     "d": 2
+    }
+   }
+  },
+  {
+   "a": "mint",
+   "b": "lavender",
+   "w": 38,
+   "l": 2,
+   "d": 8,
+   "byMap": {
+    "open": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    },
+    "bush": {
+     "w": 6,
+     "l": 2,
+     "d": 8
+    },
+    "walls": {
+     "w": 16,
+     "l": 0,
+     "d": 0
+    }
+   }
+  }
+ ],
+ "log": [
+  {
+   "id": "red",
+   "key": "moveSpeedMultiplier",
+   "value": 1.14,
+   "delta": -4,
+   "cost": 72.5
+  },
+  {
+   "id": "chartreuse",
+   "key": "moveSpeedMultiplier",
+   "value": 1.2,
+   "delta": -1.5,
+   "cost": 71
+  },
+  {
+   "id": "salmon",
+   "key": "attackRange",
+   "value": 6.44,
+   "delta": -3,
+   "cost": 68
+  },
+  {
+   "id": "red",
+   "key": "attackDamage",
+   "value": 1670,
+   "delta": -4,
+   "cost": 64
+  },
+  {
+   "id": "crimson",
+   "key": "reloadDuration",
+   "value": 0.82,
+   "delta": -1,
+   "cost": 63
+  },
+  {
+   "id": "chartreuse",
+   "key": "maxHealth",
+   "value": 9020,
+   "delta": -1,
+   "cost": 62
+  },
+  {
+   "id": "gold",
+   "key": "maxHealth",
+   "value": 8400,
+   "delta": -1,
+   "cost": 61
+  },
+  {
+   "id": "chartreuse",
+   "key": "chartreuseRange",
+   "value": 13.2,
+   "delta": -2,
+   "cost": 59
+  },
+  {
+   "id": "mint",
+   "key": "reloadDuration",
+   "value": 0.8,
+   "delta": -1.5,
+   "cost": 57.5
+  },
+  {
+   "id": "orange",
+   "key": "bombDamage",
+   "value": 680,
+   "delta": -1,
+   "cost": 56.5
+  },
+  {
+   "id": "gold",
+   "key": "stage3Range",
+   "value": 6.6,
+   "delta": -0.5,
+   "cost": 56
+  },
+  {
+   "id": "gold",
+   "key": "stage1Damage",
+   "value": 4080,
+   "delta": -0.5,
+   "cost": 55.5
+  },
+  {
+   "id": "green",
+   "key": "moveSpeedMultiplier",
+   "value": 1.32,
+   "delta": -0.5,
+   "cost": 55
+  },
+  {
+   "id": "green",
+   "key": "boomerangRange",
+   "value": 8.4,
+   "delta": -3.5,
+   "cost": 51.5
+  },
+  {
+   "id": "chartreuse",
+   "key": "chartreuseDamage",
+   "value": 1660,
+   "delta": -0.5,
+   "cost": 51
+  }
+ ]
+}
