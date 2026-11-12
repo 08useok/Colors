@@ -14,9 +14,10 @@ const step = (w, s) => { for (let i = 0; i < s * 60; i++) w.update(1 / 60); };
   assert.equal(a.g, null);
   assert.equal(w.gadget(a), false);
 }
-{ // Characters without a gadget get none even with gadgets on.
+{ // Characters without a gadget get none even with gadgets on (skipped once every character has one).
   const w = createBeta6Combat(defs, { bounds: 19.4, gadgets: true });
-  assert.equal(w.add('red', { automatic: false }).g, null);
+  const without = Object.keys(defs).find(id => !GADGETS[id]);
+  if (without) assert.equal(w.add(without, { automatic: false }).g, null);
 }
 { // Dash (Black's 그림자 걸음): moves `distance` toward the aim, then cools down.
   const w = createBeta6Combat(defs, { bounds: 19.4, gadgets: true });

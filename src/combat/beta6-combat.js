@@ -92,6 +92,13 @@ export function createBeta6Combat(definitions, options = {}) {
       if (Math.hypot(a.x - from.x, a.z - from.z) < .2) return false;
       a.angle = yaw;
     } else if (g.kind === 'empowerAttack') a.empoweredAttack = g.effect;
+    else if (g.kind === 'recall') {
+      // Green: every boomerang still flying out turns back at once, faster than a normal return.
+      const flying = projectiles.filter(p => p.owner === a && p.kind === 'boomerang' && !p.returning);
+      if (!flying.length) return false;
+      for (const p of flying) { p.returning = true; p.hits.clear(); p.traveled = 0; p.speed *= (a.d.boomerangReturnSpeedMultiplier ?? 1) * (1 + (g.returnSpeedBonus ?? 0)); }
+    } else if (g.kind === 'brake') a.brakeUntil = time + g.duration;
+    else if (g.kind === 'guard') { a.gadgetGuardUntil = time + g.duration; a.gadgetGuardReduction = g.damageReduction; }
     a.gadgetReadyAt = time + g.cooldown;
     emit('gadget', { owner: a, kind: g.kind, from: aim.from });
     return true;
@@ -131,7 +138,9 @@ export function createBeta6Combat(definitions, options = {}) {
     const dash=alive(a)&&!a.salmonAirborne&&time>=a.lockUntil&&time>=a.frozenUntil&&rolling?(a.u?.damageReduction??0):0;
     // Transform shield stacks multiplicatively with guards and dashes.
     const shield=a.t&&transformed(a)?TRANSFORM_STATS.damageReduction:0;
-    return clamp(1-(1-Math.max(guard,dash))*(1-shield),0,1);
+    // Gadget guards (Orange 껍질 보호, Blue 급제동 after stopping) stack multiplicatively too.
+    const gadgetGuard=time<(a.gadgetGuardUntil??0)?(a.gadgetGuardReduction??0):0;
+    return clamp(1-(1-Math.max(guard,dash))*(1-shield)*(1-gadgetGuard),0,1);
   }
   function hit(a, b, damage, basic = false, award = 1, ultimate = false, bypassGuard = false) {
     if (!alive(b) || damage <= 0 || time < b.invulnerableUntil || !enemies(a, b)) return 0;
@@ -239,7 +248,7 @@ export function createBeta6Combat(definitions, options = {}) {
   function strike(a, b, yaw, reach, halfAngle, damage) {
     const dx = b.x - a.x, dz = b.z - a.z;
     const delta = Math.atan2(Math.sin(Math.atan2(dz, dx) - yaw), Math.cos(Math.atan2(dz, dx) - yaw));
-    if (distance(a, b) <= reach && Math.abs(delta) <= halfAngle) hit(a, b, damage, true);
+    return distance(a, b) <= reach && Math.abs(delta) <= halfAngle ? hit(a, b, damage, true) : 0;
   }
   // Tactical walking around visible burst/control trajectories; this does not reroll
   // the separate common projectile-dodge chance or grant movement speed.
@@ -370,24 +379,44 @@ export function createBeta6Combat(definitions, options = {}) {
         halfAngle: d.sprayAngle / 2, startedAt: time, spraySpeed: d.spraySpeed,
         until: time + d.attackRange / d.spraySpeed + d.sprayDuration, hits: new Map(),
         next: time, tickInterval: d.sprayTickInterval, damage: d.sprayDamage });
-    } else if (id === 'red' || id === 'crimson') for (let i = 0; i < d.attackCount; i++) after(i * d.attackIntervalMs / 1000, a, () => {
-      if (time < a.lockUntil || time < a.frozenUntil) return;
-      for (const b of actors.filter(b => enemies(a, b))) strike(a, b, yaw + (d.attackAngles?.[i] ?? 0), d.attackRange, d.attackHalfAngle, d.attackDamages?.[i] ?? d.attackDamage);
-    });
+    } else if (id === 'red' || id === 'crimson') {
+      // Red 기절 펀치: the first punch of the next attack that lands also stuns.
+      const stunPunch = a.empoweredAttack === 'stun' ? { done: false } : null;
+      if (stunPunch) a.empoweredAttack = null;
+      for (let i = 0; i < d.attackCount; i++) after(i * d.attackIntervalMs / 1000, a, () => {
+        if (time < a.lockUntil || time < a.frozenUntil) return;
+        for (const b of actors.filter(b => enemies(a, b))) {
+          const dealt = strike(a, b, yaw + (d.attackAngles?.[i] ?? 0), d.attackRange, d.attackHalfAngle, d.attackDamages?.[i] ?? d.attackDamage);
+          if (dealt > 0 && stunPunch && !stunPunch.done) {
+            stunPunch.done = true; const until = time + (a.g?.stunDuration ?? 1);
+            b.lockUntil = Math.max(b.lockUntil, until); b.slowUntil = Math.max(b.slowUntil, until); b.slow = 1; control(b, a);
+            emit('gadgetStun', { owner: a, target: b, until });
+          }
+        }
+      });
+    }
     else if (id === 'pink') {
       area(a, a, d.healCircleRange, d.healCircleDamage, true);
       for (const b of actors) if (b !== a && !enemies(a, b) && alive(b) && distance(a, b) <= d.healCircleRange) { const before = b.hp; b.hp = Math.min(b.d.maxHealth, b.hp + d.healCircleHeal); emit('heal', { owner: a, target: b, amount: b.hp - before }); }
     } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage);
     else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
-    else if (id === 'yellow') launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', control:'shock', radius: d.electricRadius ?? .2, start: time + (d.attackWindup ? 0 : d.attackDelay) });
+    else if (id === 'yellow') {
+      // Yellow 전선 연결: the next ball, on a hit, also arcs to the nearest other enemy.
+      const chain = a.empoweredAttack === 'chain'; if (chain) a.empoweredAttack = null;
+      launch(d.electricSpeed, d.electricRange, d.electricDamage, { kind: 'electric', control:'shock', radius: d.electricRadius ?? .2, start: time + (d.attackWindup ? 0 : d.attackDelay), ...(chain ? { chain: true } : {}) });
+    }
     else if (id === 'cyan') for (let i = 0; i < d.spreadLineCount; i++) {
       const offset = (i - (d.spreadLineCount - 1) / 2) * (d.spreadLineSpacing ?? .75);
       launch(d.spreadLineSpeed, d.spreadLineRange, d.spreadLineDamage, { x: a.x + Math.cos(yaw) * .6 - Math.sin(yaw) * offset, z: a.z + Math.sin(yaw) * .6 + Math.cos(yaw) * offset, formation:'parallel' });
     }
     else if (id === 'purple') {
       if (a.index++ % 2) launch(d.vialSpeed, d.vialRange, d.vialDamage, { kind: 'vial' });
-      else for (let i = 0; i < d.needleCount; i++) launch(d.needleSpeed, d.needleRange, d.needleDamage, { kind: 'needle' }, yaw + (i / (d.needleCount - 1) - .5) * d.needleSpreadAngle);
+      else {
+        // Purple 독 농축: the next needle volley poisons longer (same damage per second, never stacking).
+        const poisonBonus = a.empoweredAttack === 'poisonBoost' ? (a.g?.poisonBonus ?? 1) : 0; if (poisonBonus) a.empoweredAttack = null;
+        for (let i = 0; i < d.needleCount; i++) launch(d.needleSpeed, d.needleRange, d.needleDamage, { kind: 'needle', ...(poisonBonus ? { poisonBonus } : {}) }, yaw + (i / (d.needleCount - 1) - .5) * d.needleSpreadAngle);
+      }
     } else if (id === 'gold') launch(d.stage1Speed, d.stage1Range, d.stage1Damage, { kind: 'gold', stage: 1, radius: d.stage1Size / 2, token: { hits: new Set(), charge: 0 }, spawn: 0 });
     else if (id === 'ivory') launch(d.iceCreamSpeed, Math.min(d.iceCreamRange, distance(a, target)), d.iceCreamDamage, { kind: 'ivory', start: time + (d.attackWindup ? 0 : .2), spawn: 0 });
     else if (id === 'chartreuse' && transformed(a) && a.t.heaven) launch(d.chartreuseSpeed, d.chartreuseRange, d.chartreuseDamage * (time < a.focusUntil ? a.u.damageMultiplier ?? 1 : 1), { kind: 'heaven' });
@@ -679,6 +708,9 @@ export function createBeta6Combat(definitions, options = {}) {
           if (low && gap < reach + 1) gadget(a, { angle: Math.atan2(a.z - target.z, a.x - target.x) });
           else if (!low && gap > reach + 1 && gap < reach + a.g.distance + 1) gadget(a, { angle: Math.atan2(target.z - a.z, target.x - a.x) });
         } else if (a.g.kind === 'empowerAttack' && gap <= reach && !a.empoweredAttack) gadget(a);
+        else if (a.g.kind === 'recall' && a.ammo < 1 && projectiles.some(p => p.owner === a && p.kind === 'boomerang' && !p.returning)) gadget(a);
+        else if (a.g.kind === 'brake' && a.dash) gadget(a);
+        else if (a.g.kind === 'guard' && a.hp <= a.d.maxHealth * .6 && gap <= reach + 2) gadget(a);
       }
       if (a.automatic && a.t && target && distance(a, target) <= perceivedRange(a) + 1) transform(a);
       if (a.automatic) cast(a, target);
@@ -750,7 +782,13 @@ export function createBeta6Combat(definitions, options = {}) {
       const dash = a.dash;
       if (!alive(a) || time >= dash.until || time < a.frozenUntil || time < a.lockUntil) { a.dash = null; continue; }
       const x = a.x + Math.cos(dash.yaw) * a.u.speed * dt, z = a.z + Math.sin(dash.yaw) * a.u.speed * dt;
-      if (blocked(x, z) || Math.abs(x) > (options.bounds ?? 24) || Math.abs(z) > (options.bounds ?? 24)) dash.yaw += Math.PI;
+      const wall = blocked(x, z) || Math.abs(x) > (options.bounds ?? 24) || Math.abs(z) > (options.bounds ?? 24);
+      // Blue 급제동 장치: while armed, hitting a wall stops the dash instead of bouncing, then guards briefly.
+      if (wall && time < (a.brakeUntil ?? 0)) {
+        a.dash = null; a.brakeUntil = 0; a.gadgetGuardUntil = time + (a.g?.guardDuration ?? 1.5); a.gadgetGuardReduction = a.g?.damageReduction ?? .25;
+        emit('gadgetBrake', { owner: a }); continue;
+      }
+      if (wall) dash.yaw += Math.PI;
       else move(a, x, z);
       for (const b of actors) if (enemies(a, b) && !dash.hits.has(b.key) && distance(a, b) <= a.u.hitRadius) { dash.hits.add(b.key); hit(a, b, a.u.damage, true, a.u.rechargePerHit, true); knock(b, dash.yaw, .65, a); }
     }
@@ -813,11 +851,15 @@ export function createBeta6Combat(definitions, options = {}) {
         if (dealt > 0) {
           p.burstChargeHits?.add(b.key);
           b.lastDamageKind = p.kind;
-          if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = time + d.poisonDuration; b.poisonNext = time + 1; }
+          if (p.kind === 'needle') { b.poisonOwner = a; b.poisonUntil = Math.max(b.poisonUntil ?? 0, time + d.poisonDuration + (p.poisonBonus ?? 0)); b.poisonNext = time + 1; }
           if (p.kind === 'mint') ice(b, d.icePerHit, a);
           if (p.kind === 'vine') root(b, d.vineBindDuration + (d.vineTraitBindBonus ?? 0), a);
           if (a.id === 'blue' && !p.ultimate && d.bulletKnockback) knock(b, p.yaw, d.bulletKnockback, a);
           if (p.kind === 'electric') { b.slowUntil = time + d.shockDuration; b.slow = d.shockSlowPercent; control(b, a); }
+          if (p.kind === 'electric' && p.chain) {
+            const next = actors.filter(c => c !== b && alive(c) && enemies(a, c) && distance(b, c) <= (a.g?.chainRange ?? 6)).sort((c, e) => distance(b, c) - distance(b, e))[0];
+            if (next) { hit(a, next, p.damage * (a.g?.chainDamage ?? .4), true, 0); emit('gadgetChain', { owner: a, from: { x: b.x, z: b.z }, to: next }); }
+          }
           if (p.kind === 'gale' || p.kind === 'wave' && p.ultimate) knock(b, p.yaw, a.u.knockback * (a.d.fullUltimateKnockback ? 1 : 1/9), a);
           // The angel mark is crowd control too: a second Heaven round on a marked enemy finishes it.
           if (p.kind === 'heaven' && time < (b.angelMarkUntil ?? 0)) control(b, a);
