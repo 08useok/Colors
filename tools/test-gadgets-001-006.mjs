@@ -68,4 +68,12 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
   step(w, .3);
   assert(o.gadgetReadyAt > 0, 'Orange bot used 껍질 보호'); assert(r.gadgetReadyAt > 0 || r.empoweredAttack === 'stun' || r.gadgetReadyAt === 0);
 }
+{ // Blue 급제동 can be armed mid-dash (players and bots); a Blue bot arms it during its own dash.
+  const w = world(), a = w.add('blue', { automatic: false, x: 0, charge: 99 }), b = w.add('cyan', { automatic: false, x: -15, team: 'b' });
+  assert.equal(w.cast(a, b, { angle: 0 }), true); step(w, .2); assert(a.dash, 'dashing');
+  assert.equal(w.gadget(a), true, 'armed mid-dash');
+  const w2 = world(), bot = w2.add('blue', { x: 0, charge: 99, hp: defs.blue.maxHealth * .2 }) /* Blue bots dash away at 10-25% health */, t = w2.add('cyan', { automatic: false, x: 8, team: 'b' });
+  for (let i = 0; i < 240 && !(bot.gadgetReadyAt > 0); i++) w2.update(1 / 60);
+  assert(bot.gadgetReadyAt > 0, 'Blue bot used 급제동 장치');
+}
 console.log('PASS gadgets #001-#006: Red stun punch, Green recall, Blue brake + guard, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');

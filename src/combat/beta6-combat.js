@@ -83,7 +83,7 @@ export function createBeta6Combat(definitions, options = {}) {
   // Damage dealt by a gadget must pass award 0 to hit() so it never charges the ultimate or transform.
   function gadget(a, aim = {}) {
     const g = a.g;
-    if (!g || !alive(a) || a.isSalmonDevice || time < (a.gadgetReadyAt ?? 0) || time < a.lockUntil || time < a.frozenUntil || a.salmonAirborne || a.leap || a.dash) return false;
+    if (!g || !alive(a) || a.isSalmonDevice || time < (a.gadgetReadyAt ?? 0) || time < a.lockUntil || time < a.frozenUntil || a.salmonAirborne || a.leap || (a.dash && g.kind !== 'brake')) return false; // 급제동 can be armed mid-dash
     if (g.kind === 'dash') {
       if (rooted(a)) return false;
       const yaw = aim.angle ?? a.angle, from = { x: a.x, z: a.z };
