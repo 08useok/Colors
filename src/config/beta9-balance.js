@@ -24,7 +24,8 @@
 //    Azure's wave ultimate was too hard to land: range 6 → 10, width 4 → 5 (still 240-0).
 export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
-  ivory: { iceCreamZoneRadius: 4, iceCreamZoneDamage: 1300, iceCreamDamage: 1600, reloadDuration: 1.05 },
+  // 11.12 (before Champions round 4): smaller zone 4 → 3.5, range 9 → 9.5 keeps Ivory → Salmon 240-0.
+  ivory: { iceCreamZoneRadius: 3.5, iceCreamRange: 9.5, iceCreamZoneDamage: 1300, iceCreamDamage: 1600, reloadDuration: 1.05, ultimate: { zoneRadius: 4 } },
   red: { attackDamage: 2000, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
   // Orange's ultimate charges by fixed shares: 10% per orange hit, 5% per juice hit (they add up).
   orange: { maxHealth: 3400, ultimateChargeShare: { bomb: .1, juice: .05 } },
@@ -82,8 +83,8 @@ export function applyBeta9Balance(characters) {
     replaceText(red.ultimate, 'descriptionEn', [['by 60% for 8 seconds', 'by 75% for 4 seconds']]);
   }
   if (ivory) {
-    replaceText(ivory.basicAttack, 'description', [['착탄 시 2400 피해를 주고, 반경 5타일에 4초 동안 1초마다 2600 피해', '착탄 시 1600 피해를 주고, 반경 4타일에 4초 동안 1초마다 1300 피해']]);
-    replaceText(ivory.basicAttack, 'descriptionEn', [['It deals 2400 impact damage and leaves a 5-tile-radius zone for 4 seconds that deals 2600 damage', 'It deals 1600 impact damage and leaves a 4-tile-radius zone for 4 seconds that deals 1300 damage']]);
+    replaceText(ivory.basicAttack, 'description', [['착탄 시 2400 피해를 주고, 반경 5타일에 4초 동안 1초마다 2600 피해', '착탄 시 1600 피해를 주고, 반경 3.5타일에 4초 동안 1초마다 1300 피해'], ['0~9타일', '0~9.5타일']]);
+    replaceText(ivory.basicAttack, 'descriptionEn', [['It deals 2400 impact damage and leaves a 5-tile-radius zone for 4 seconds that deals 2600 damage', 'It deals 1600 impact damage and leaves a 3.5-tile-radius zone for 4 seconds that deals 1300 damage'], ['within 9 tiles', 'within 9.5 tiles']]);
     replaceText(ivory.ultimate, 'description', [['착탄 피해는 2400, 장판 피해는 1초마다 2600', '착탄 피해는 1600, 장판 피해는 1초마다 1300']]);
     replaceText(ivory.ultimate, 'descriptionEn', [['Each deals 2400 impact damage', 'Each deals 1600 impact damage'], ['dealing 2600 damage every 1 seconds', 'dealing 1300 damage every 1 seconds']]);
   }

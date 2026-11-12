@@ -43,10 +43,10 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance } from "./config/beta9-balance.js?v=21";
+import { applyBeta9Balance } from "./config/beta9-balance.js?v=22";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=16";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=58";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=17";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=59";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
@@ -3874,16 +3874,17 @@ function createIvoryIceCreamZoneMesh(radius) {
 
 function createIvoryIceCreamZone(x, z, fromUltimate = false) {
   const def = BETA_CHARACTERS.ivory;
-  const group = createIvoryIceCreamZoneMesh(def.iceCreamZoneRadius);
+  const zoneRadius = fromUltimate ? (def.ultimate?.zoneRadius ?? def.iceCreamZoneRadius) : def.iceCreamZoneRadius;
+  const group = createIvoryIceCreamZoneMesh(zoneRadius);
   const puddle = group.children.find(child => child.geometry?.type === "CircleGeometry");
   group.position.set(x, Math.max(0.09, groundHeightAt(x, z) + 0.09), z);
   scene.add(group);
   const now = clock.elapsedTime;
-  ivoryIceCreamZones.push({ group, puddle, x, z, radius: def.iceCreamZoneRadius, expiresAt: now + def.iceCreamZoneDuration, nextTickAt: now + def.iceCreamZoneTickInterval, fromUltimate });
+  ivoryIceCreamZones.push({ group, puddle, x, z, radius: zoneRadius, expiresAt: now + def.iceCreamZoneDuration, nextTickAt: now + def.iceCreamZoneTickInterval, fromUltimate });
 
   for (const target of testTargets) {
     if (!target.visible || target.userData.isAlly || betaEventBushHidden(target,player.position)) continue;
-    if (Math.hypot(target.position.x - x, target.position.z - z) <= def.iceCreamZoneRadius) {
+    if (Math.hypot(target.position.x - x, target.position.z - z) <= zoneRadius) {
       const healthBefore = target.userData.health;
       damageTarget(target, def.iceCreamDamage * (fromUltimate ? def.ultimate.damageMultiplier ?? 1 : 1));
       if (target.userData.health < healthBefore) chargeIvoryUltimate(fromUltimate ? (def.ultimate.rechargePerHit ?? 1) : basicUltimateCharge("ivory"));

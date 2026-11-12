@@ -279,7 +279,7 @@ export function createBeta6Combat(definitions, options = {}) {
       const remaining=Math.max(0,p.reach-p.traveled);
       const eta=Math.max(0,p.start-time)+remaining/p.speed;
       const center={x:p.x+Math.cos(p.yaw)*remaining,z:p.z+Math.sin(p.yaw)*remaining};
-      const radius=p.owner.d.iceCreamZoneRadius;
+      const radius=p.ultimate ? (p.owner.u?.zoneRadius ?? p.owner.d.iceCreamZoneRadius) : p.owner.d.iceCreamZoneRadius;
       if(eta<=1.2 && distance(a,center)<radius+speed*eta+.5)
         threats.push({...center,radius,eta:Math.max(1/60,eta),key:p.key,ultimate:p.ultimate});
     }
@@ -601,7 +601,8 @@ export function createBeta6Combat(definitions, options = {}) {
   function finish(p) {
     const a = p.owner, d = a.d;
     if (p.kind === 'vial') area(a, p, d.vialSplashRadius, p.damage, true);
-    if (p.kind === 'ivory') { area(a, p, d.iceCreamZoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1, p.ultimate, p.impactHits ?? null); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: d.iceCreamZoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
+    // The ultimate's zones may keep their own radius (u.zoneRadius) when the basic attack's zone changes.
+    if (p.kind === 'ivory') { const zoneRadius = p.ultimate ? (a.u?.zoneRadius ?? d.iceCreamZoneRadius) : d.iceCreamZoneRadius; area(a, p, zoneRadius, p.damage, true, p.ultimate ? (a.u.rechargePerHit ?? 1) : 1, p.ultimate, p.impactHits ?? null); zones.push({ key: ++serial, x: p.x, z: p.z, owner: a, kind: 'ivory', ultimate: p.ultimate, radius: zoneRadius, until: time + d.iceCreamZoneDuration, next: time + d.iceCreamZoneTickInterval }); }
     if (p.kind === 'bomb') for (let i = 0; i < d.bombSplashCount - (p.hits.size ? d.bombDirectHitJuiceCount : 0); i++) shot(a, i * Math.PI * 2 / d.bombSplashCount, d.bombSplashSpeed, d.bombSplashRange, d.bombSplashDamage, { x: p.x, z: p.z, radius: d.bombSplashHitRadius, kind: 'juice', hits: new Set(p.hits) });
     if (p.kind === 'gold' && p.stage < 3) {
       const stage = p.stage + 1;
