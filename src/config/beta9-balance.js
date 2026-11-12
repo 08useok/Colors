@@ -50,6 +50,8 @@ export const BETA9_BALANCE = Object.freeze({
   azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 10, width: 5 } },
   crystal: { maxHealth: 6600 },
   // 11.10 Gold rework: back to a damage dealer. Big ore, faster and wider; split ore skips targets the same attack already hit; projectile defense 1650 -> 900.
+  // 11.12: Blue reload 0.5 → 0.3 s per ammo (bottom of the 1v1 gadget runs; Crimson → Blue and Blue → Orange stay 240-0).
+  blue: { reloadDuration: 0.3 },
   gold: { maxHealth: 7000, stage1Damage: 3400, stage2Damage: 1700, stage3Damage: 850, stage1Speed: 26, stage1Size: 2.6, stage1SplashRadius: 2,
     goldSplitsSkipHitTargets: true, projectileDamageReduction: 900, ultimate: { radius: 4.5 } },
 });
