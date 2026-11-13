@@ -45,14 +45,13 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=24";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=24";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=25";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=63";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
 import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER } from "./official/progression.js?v=1";
 import { createOfficialUi } from "./official/official-ui.js?v=2";
-import { applyOfficialBalance } from "./official/official-balance.js?v=2";
 import { plazaArenaMap } from "./official/plaza-maps.js?v=1";
 import { createRankedSession, packFighter } from "./official/ranked-net.js?v=1";
 import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=1";
@@ -92,8 +91,6 @@ if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
   // Season 9 emergency 3v3 balance (beta only; main Season 8 is unchanged).
   applyBeta9Balance(BETA_CHARACTERS);
-  // Official Season 1 balance: official page only, from OFFICIAL_BALANCE_START (11/15 18:10 KST).
-  if (IS_OFFICIAL_SEASON) applyOfficialBalance(BETA_CHARACTERS);
 }
 // Salmon's throw clip releases at 0.36 s; play it faster when the balance shortens throwWindup so the bobber leaves the hand on time.
 const attackMotionTimeScale = id => id === "salmon" ? SALMON_THROW.release / (BETA_CHARACTERS.salmon?.throwWindup || SALMON_THROW.release) : 1;
