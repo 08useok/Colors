@@ -181,6 +181,7 @@
                 <li data-i18n="mainV182Champions">메인 챔피언스 — 로비 오른쪽 위 「🏆 챔피언스」에서 참가합니다. 베타 챔피언스와 따로 집계하는 메인 전용 대회로, 11월 16일 18:10(KST)에 열립니다. 메인 17명이 젬 그랩·녹아웃 두 조로 생존전을 치르고 매일 18:10 각 조 최하위 1명이 탈락합니다(3차부터 두 조의 모드 교체). 10명 이하가 남으면 사커 킥 최종전(매일 하위 2명 탈락), 4명이 남으면 1대1 듀얼 토너먼트(4강 1위 vs 4위·2위 vs 3위 → 결승)로 우승 캐릭터를 정합니다.</li>
                 <li data-i18n="mainV182Play">참가 방식 — 생존 캐릭터를 골라 참가하면 보유하지 않은 캐릭터도 그 경기에서 쓸 수 있고, 같은 조 생존 캐릭터 AI가 나머지 자리를 채웁니다. 플레이어와 AI 6명 전원의 승패·피해·처치를 서버에서 캐릭터별로 함께 집계하며, 승수 → 승률 → 피해량 → 처치 순으로 순위를 정합니다. 경기 중 나가면 기권(패배)으로 기록됩니다.</li>
                 <li data-i18n="mainV182Reward">우승 보상 — 대회 경기를 한 번이라도 끝까지 치른 플레이어 모두에게 우승 캐릭터의 「챔피언스 왕관」 스킨을 지급합니다.</li>
+                <li data-i18n="mainV182Roadmap">공지 로드맵 — 시즌 9 칸에 베타·메인 챔피언스 일정과 보상을 함께 표시합니다.</li>
               </ul>
             </div>
             <div id="main-v181-notes" class="patch-entry">
@@ -794,19 +795,18 @@
                   <span>SEASON 9</span>
                   <div>
                     <strong>🏆 CHAMPIONS</strong>
-                    <small><b data-i18n="mainUi154">베타의 마지막 시즌.</b><span data-i18n="mainUi155"> 11월, 모든 캐릭터가 참가하는 BETA FINAL EVENT가 개최됩니다.</span></small>
+                    <small><b data-i18n="mainUi154">베타의 마지막 시즌.</b><span data-i18n="roadmapChampionsIntro"> 11월, 챔피언스가 베타와 메인에서 따로 열립니다. 기록도 따로 집계합니다.</span></small>
                     <ul class="champions-schedule">
-                      <li><b>11/2~13</b><span data-i18n="mainUi156">두 모드에서 진행되는 1차 생존전</span></li>
-                      <li><b>11/16</b><span data-i18n="mainUi157">🐟 살몬 첫 참전 SHOWDOWN</span></li>
-                      <li><b>11/17~30</b><span data-i18n="mainUi158">TOP 9 최종전 · 🍓 라즈베리 참전</span></li>
-                      <li><b>11/30</b><span data-i18n="mainUi159">👑 최종 1~9위 발표</span></li>
+                      <li><b>BETA</b><span data-i18n="roadmapChampionsBeta">11/2~ 베타 페이지 · 18명 생존전 (3일마다 컷) → 사커 킥 → 4강 1대1 듀얼</span></li>
+                      <li><b>MAIN</b><span data-i18n="roadmapChampionsMain">11/16~ 메인 로비 「🏆 챔피언스」 · 17명 생존전 (매일 18:10 컷) → 사커 킥 → 4강 1대1 듀얼</span></li>
+                      <li><b>CHAMPION</b><span data-i18n="roadmapChampionsReward">👑 베타 우승: 정식 시즌 신규 가젯 · 메인 우승: 챔피언스 왕관 스킨</span></li>
                     </ul>
                   </div>
                 </li>
               </ol>
               <div class="champion-reward-card">
                 <span>🥇 CHAMPION REWARD</span>
-                <strong data-i18n="mainUi160">베타 최종 1위 캐릭터는 정식 시즌에서 받을 새로운 능력을 누구보다 먼저 획득합니다.</strong>
+                <strong data-i18n="roadmapChampionsRewardCard">베타 우승 캐릭터는 정식 시즌에서 받을 새 가젯을 누구보다 먼저 획득합니다. 메인 우승 캐릭터의 「챔피언스 왕관」 스킨은 메인 대회 경기를 한 번 이상 끝까지 치른 플레이어 모두에게 지급됩니다.</strong>
               </div>
               <p class="notice-timezone" data-i18n="mainUi12">한국 시간(KST) 기준</p>
             </div>
@@ -1209,6 +1209,6 @@
       </div>
     </div>
   </div>
-  <script type="module" src="./src/main.js?v=1.8.6"></script>
+  <script type="module" src="./src/main.js?v=1.8.7"></script>
 </body>
 </html>
