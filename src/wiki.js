@@ -1,17 +1,17 @@
-import { CHARACTERS } from "./config/characters.js";
-import { BETA_CHARACTERS } from "./config/beta-characters.js";
-import { SKINS } from "./config/skins.js";
-import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
+import {WIKI_BASE_CHARACTERS as CHARACTERS,WIKI_SKINS as SKINS,ROSTER_PALETTE,WIKI_UPDATED,WIKI_EDITIONS,WIKI_NAMES,wikiCharacters,wikiUltimate,wikiAttackStats as currentAttackStats,CURRENT_WIKI_PATCHES,TRANSFORMS,TRANSFORM_STATS,GADGETS} from './wiki-data/current.js?v=20261112';
 
-// 시즌 6부터 메인 게임이 시즌 6 밸런스를 그대로 쓰므로 위키도 같은 수치를 보여준다
-const LIVE_CHARACTERS = applyBeta6Balance(BETA_CHARACTERS);
+const requestedEdition=new URLSearchParams(location.search).get('edition');
+const edition=Object.hasOwn(WIKI_EDITIONS,requestedEdition)?requestedEdition:'main';
+const LIVE_CHARACTERS=wikiCharacters(edition);
+const CURRENT_IDS=Object.keys(LIVE_CHARACTERS);
+const editionPath=path=>edition==='main'?path:`${path}?edition=${edition}`;
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
 // 사이트가 하위 경로(GitHub Pages의 /Colors/)에 올라갈 수 있어 라우팅도 베이스를 탄다.
 // boot.js가 먼저 계산해두지만, 단독 로드 대비 여기서도 구한다.
-const BASE = window.__WIKI_BASE__ ?? (location.pathname.replace(/\/wiki(\/.*)?$/, "") + "/");
+const BASE = window.__WIKI_BASE__ ?? (location.pathname.replace(/\/wiki(?:\.html|\/.*)?$/, "") + "/");
 // 베이스를 뺀 위키 내부 경로 ("/Colors/wiki/shop/" → "/wiki/shop/")
 function wikiPath() {
   const path = location.pathname.toLowerCase();
@@ -274,6 +274,24 @@ const characterDetails = {
   },
 };
 
+// Current descriptions replace stale Season 6 numeric prose; historical tables remain archived.
+for(const [id,d]of Object.entries(LIVE_CHARACTERS)) {
+  const attack=d.basicAttack??{name:id,description:''};
+  const previous=characterMeta[id];
+  characterMeta[id]={...previous,role:previous?.role??['전투 캐릭터','Fighter'],attack:[attack.name,attack.nameEn??attack.name],
+    desc:[d.description??previous?.desc[0]??attack.description,d.descriptionEn??previous?.desc[1]??'See the current ability description below.'],
+    tip:['아래 일반 공격·궁극기 설명과 현재 사거리를 기준으로 거리를 조절하세요.','Use the current attack range and ability descriptions below to manage distance.']};
+  const old=characterDetails[id];
+  const ultimate=wikiUltimate(d,id);
+  const scope=edition==='main'?'메인 시즌 8':edition==='beta'?'베타 시즌 9':'정식 시즌 1 개발';
+  characterDetails[id]={...old,setting:old?.setting??[`${scope} 코드에 연결된 캐릭터입니다. 추가 설정은 미확인입니다.`,`Available in the selected ${edition} code. Additional lore is unconfirmed.`],
+    attack:[attack.description??'',attack.descriptionEn??'The Korean description follows the current game configuration.'],
+    strong:['최신 실전 상성 미확인','Current live matchup unconfirmed'],weak:['최신 실전 상성 미확인','Current live matchup unconfirmed'],
+    matchup:['이전 시즌 시뮬레이션을 현재 버전 승률로 표시하지 않습니다.','Historical simulations are not presented as current-version win rates.'],
+    history:[...(old?.history??[]),[WIKI_UPDATED,`${scope} 설정 연동`,WIKI_UPDATED,`${edition} configuration synchronized`]],
+    other:[ultimate?`${ultimate.name} · ${ultimate.description??''} · 필요 충전 ${ultimate.chargeRequired??d.ultimateChargeRequired??'미확인'}`:'궁극기 정보 미확인',ultimate?`${ultimate.nameEn??ultimate.name} · ${ultimate.descriptionEn??'See the Korean ability description.'} · Charge ${ultimate.chargeRequired??d.ultimateChargeRequired??'unconfirmed'}`:'Ultimate information unconfirmed']};
+}
+
 const guides = [
   { id:"beta6", icon:"β6", title:["베타 시즌 6", "Beta Season 6"], desc:["v1.6.0 바다·여름 해변 업데이트", "The v1.6.0 ocean and summer-beach update"], body:["베타 시즌 6는 2026년 9월 21일 18:00 KST에 시작했습니다. 신규 영웅 애저, 옐로우 궁극기 전기 회로, 3대3 축구 모드 SOCCER KICK, 애저 해변 로비와 14종 전체 밸런스 조정을 포함합니다.", "Beta Season 6 began on September 21, 2026 at 18:00 KST. It adds the Hero fighter Azure, Yellow's Electric Circuit ultimate, the 3v3 SOCCER KICK mode, the Azure Beach lobby, and a full 14-fighter balance pass."], sections:[[["애저", "Azure"], ["서프 대시로 직접 전진하며 3,000 피해를 주고, 빅 웨이브로 벽 너머까지 넉백을 줍니다.", "Surf Dash moves Azure forward for 3,000 damage, and Big Wave knocks enemies back even through walls."]], [["SOCCER KICK", "SOCCER KICK"], ["3대3, 3분 제한, 2골 선승 축구 모드입니다. 전용 60×80 경기장과 매칭 대기열을 사용합니다.", "A 3v3 soccer mode with a three-minute limit where the first team to two goals wins, played in a dedicated 60x80 arena with its own queue."]], [["밸런스", "Balance"], ["모든 일반 투사체 판정을 5×5로 통일했고(샤르트뢰즈는 3×3), 캐릭터별 봇이 전용 공격·궁극기·회피 행동을 사용합니다.", "All basic projectiles now use a 5x5 hitbox (Chartreuse uses 3x3), and bots use character-specific attacks, ultimates, and evasion."]], [["바다 테마", "Ocean theme"], ["애저 해변 로비, 시즌 음악 High Noon Tide, 전용 로딩 화면과 상어·복어·파도 소품이 추가되었습니다.", "Adds the Azure Beach lobby, the High Noon Tide track, a dedicated loading screen, and shark, pufferfish, and wave cosmetics."]]] },
   { id:"soccer", icon:"⚽", title:["사커 킥", "Soccer Kick"], desc:["공을 차 2골을 먼저 넣는 3대3 모드", "A 3v3 mode where the first team to two goals wins"], body:["공을 공격하면 공격 방향으로 공이 날아갑니다. 아군에게 패스하거나 상대 골대로 슛해 득점하세요. 공은 벽에 맞으면 반사됩니다. 캐릭터는 사망해도 잠시 후 자기 진영에서 부활합니다.", "Attacking the ball sends it in the attack direction. Pass to allies or shoot at the enemy goal. The ball bounces off walls, and defeated fighters respawn on their own side after a short delay."], sections:[[["승리 조건", "Win condition"], ["먼저 2골을 넣은 팀이 즉시 승리합니다. 3분이 끝났을 때 0:0 또는 1:1이면 연장전에 들어가며, 연장전에서는 먼저 골을 넣은 팀이 승리합니다.", "The first team to score two goals wins immediately. If the score is 0-0 or 1-1 after three minutes, overtime begins and the next goal wins."]], [["경기 흐름", "Match flow"], ["킥오프와 득점 직후 3초 동안 경기가 멈추며, 득점 시 카메라가 골대를 비춥니다. 같은 팀에게는 조준·피해가 적용되지 않습니다.", "Play pauses for three seconds at kickoff and after each goal, and the camera shows the scoring goal. Aim assist and damage never affect teammates."]], [["매칭", "Matchmaking"], ["전용 대기열은 최대 6명을 받고, 빈자리는 AI로 채웁니다. 전적은 다른 모드와 합산하지 않고 따로 기록합니다.", "The dedicated queue takes up to six players and fills empty slots with AI. Results are recorded separately from other modes."]]] },
@@ -296,6 +314,24 @@ const guides = [
   { id:"account", icon:"▣", title:["계정과 성장", "Account & Progression"], desc:["트로피, 승률, 연승, 캐릭터 레벨과 저장 방식입니다.", "Trophies, win rate, streaks, character levels, and saves."], body:["계정에는 모드별 승패, 캐릭터별 기록, 트로피와 최고 연승이 저장됩니다. 캐릭터는 최대 6레벨까지 성장하며, 레벨에 따라 최대 체력과 공격력이 증가합니다.", "Accounts track records by mode and character, trophies, and best streak. Characters can grow to level 6, increasing maximum health and attack power."] },
   { id:"currency", icon:"◇", title:["재화", "Currencies"], desc:["코인, 크레딧과 트로피를 어디서 얻고 사용하는지 확인하세요.", "How to earn and spend coins, credits, and trophies."], body:["코인은 꾸미기 아이템 상점에서 사용합니다. 크레딧은 캐릭터 구매와 성장에 사용되며, 베타 크레딧은 시즌 테스트에서 별도로 관리됩니다. 트로피는 경기 결과와 연승 보너스로 오르거나 내려갑니다.", "Coins buy cosmetics. Credits unlock and upgrade characters, while beta credits are stored separately for season tests. Trophies rise or fall through match results and streak bonuses."] },
 ];
+
+const setGuide=(id,body,desc)=>Object.assign(guides.find(g=>g.id===id),{body,...(desc?{desc}:{})});
+setGuide('combat',['대부분의 캐릭터는 탄약 3개를 사용하고 캐릭터별 속도로 장전합니다. 살몬은 자동 장전 대신 투척물 회수 규칙을 사용합니다. 일반 공격과 궁극기의 범위·충전은 선택한 버전의 캐릭터 문서를 참고하세요.','Most fighters use three ammo charges and character-specific reloads. Salmon recovers thrown floats instead of automatically reloading. See each fighter’s selected-edition entry for range and charge rules.']);
+setGuide('maps',['벽은 이동과 일반적인 직선 투사체를 막습니다. 물은 걷기를 막지만 투사체와 시야는 통과합니다. 포물선 공격과 이동기의 벽 처리에는 별도 규칙이 있습니다. 베타 녹아웃에는 전용 맵 「물길 협곡」이 연결되어 있습니다.','Walls block movement and ordinary straight projectiles. Water blocks walking but allows projectiles and sight. Lobbed attacks and movement abilities have separate wall rules. Beta Knockout uses the dedicated Waterway Canyon map.']);
+setGuide('modes',['젬 그랩은 젬 확보와 카운트다운을 겨루는 3대3 모드입니다. 녹아웃은 라운드 중 부활 없이 2라운드를 먼저 이기면 승리합니다. 사커 킥은 2골 선승입니다. 쇼다운·쇼다운 +, 찹 우드 등은 선택한 버전에서 제공하는 모드를 확인하세요.','Gem Grab is a 3v3 gem-and-countdown mode. Knockout has no within-round respawns and is won by taking two rounds. Soccer Kick is first to two goals. Check the selected edition for Showdown, Showdown + and Chop Wood.'],['젬 그랩·녹아웃·사커 킥과 쇼다운의 구분입니다.','Gem Grab, Knockout, Soccer Kick and Showdown.']);
+if(edition==='official')setGuide('account',['정식 시즌 1은 별도 저장 영역을 사용하며 파워 1~11을 제공합니다. 파워가 오를 때마다 체력·피해가 2% 증가합니다. 가젯은 파워 7, 변신은 파워 11 조건을 사용합니다. 이 위키의 수치는 파워 1 기준입니다.','Official Season 1 uses a separate save block and power 1–11. Each power step adds 2% health and damage. Gadgets require power 7 and transformations power 11. Wiki stats use power 1.']);
+guides.push({id:'champions',icon:'🏆',title:['챔피언스 · 베타 전용','Champions · Beta only'],desc:['공통 순위·모드 교환·8강 최종전','Shared rankings, mode swaps and the eight-survivor final'],body:[
+ '젬 그랩과 녹아웃에 각각 9명씩 배정합니다. 3일 주기로 공통 경기 기록의 승수 → 승률 → 피해량 → 처치 순으로 순위를 정하고, 두 모드에서 한 명씩 탈락합니다. 새 기록이 없으면 탈락을 기다립니다. 3라운드에 생존 그룹을 교환하고, 총 8명이 남으면 사커 킥 최종전을 시작합니다. 우승자 보상은 가젯이며 효과는 미확정입니다. 블랙·화잇은 이 18명 이벤트 명단에 포함되지 않습니다.',
+ 'Nine characters start in each of Gem Grab and Knockout. Every three days, shared match records rank wins, win rate, damage and kills; one character per mode is eliminated. Cuts wait when no new results exist. Surviving groups swap in round three. Eight survivors advance to Soccer Kick. The champion reward is a gadget with its effect pending. Black and White are outside this 18-character event roster.'
+]});
+guides.push({id:'transform',icon:'✦',title:['변신·가젯 · 개발 버전','Transformations and gadgets · Development'],desc:['메인 시즌 8과 구분되는 베타·정식 시스템','Beta/official systems distinct from main Season 8'],body:[
+ `오렌지와 샤르트뢰즈에 변신이 연결되어 있습니다. 변신은 궁극기 ${TRANSFORMS.orange.chargeMultiplier}번 분량으로 충전되고 ${TRANSFORMS.orange.duration}초 유지되며, 공격력 +${TRANSFORM_STATS.damageBonus*100}%, 체력 +${TRANSFORM_STATS.healthBonus*100}%, 피해 감소 ${TRANSFORM_STATS.damageReduction*100}%를 적용합니다. 오렌지는 ${TRANSFORMS.orange.summary}. 샤르트뢰즈는 ${TRANSFORMS.chartreuse.summary}. 정식 개발 버전 가젯: ${Object.entries(GADGETS).map(([id,g])=>`${WIKI_NAMES[id]?.[0]??id} · ${g.name} · ${g.summary} (재사용 ${g.cooldown}초)`).join(' / ')}. 메인 시즌 8에는 이 신규 기능을 반영한 것으로 표시하지 않습니다.`,
+ 'Orange and Chartreuse have transformations: 1.5 ultimates of charge, six-second duration, +5% damage, +20% health and 10% damage reduction. Orange changes its peel pattern; Chartreuse gains Heaven rounds. Black has a dash gadget and White empowers its next attack to summon five bugs in the official development edition. These additions are not presented as main Season 8 features.'
+]});
+guides.push({id:'models',icon:'◆',title:['모델·스킨·모션','Models, skins and motion'],desc:['최신 연결 내용과 확인 범위','Current integration and verification scope'],body:[
+ '챔피언스 라즈베리·살몬, 산타 레드·크리스마스 엘프 그린의 모델과 모션을 연결했습니다. 블랙·화잇은 옷과 소품 없는 남성 기본 모델입니다. 후속 기본 모델 6종과 새 스킨 4종은 기존 걷기 스타일을 기준으로 출발·반복·정지를 연결하며, 대기 전환과 입력 흔들림을 보정합니다. 파일·전환 검사는 통과했으나 실제 플레이에서의 시각 확인은 미확인입니다.',
+ 'Champions Raspberry/Salmon and Santa Red/Christmas Elf Green have models and animations. Black and White use male base mascots without clothing or props. Six later base models and four new skins use classic start/loop/stop walking with smoother idle transitions and input-noise handling. File and transition checks passed; in-game visual verification remains unconfirmed.'
+]});
 
 const legacyPatch = (version, date, titleKo, titleEn, itemsKo) => ({
   version, date, title:[titleKo, titleEn],
@@ -339,6 +375,7 @@ const legacyPatches = [
 ];
 
 const patches = [
+  ...CURRENT_WIKI_PATCHES,
   { version:"v1.6.0", date:"2026.09.21", title:["베타 시즌 6 업데이트", "Beta Season 6 Update"], items:[
     ["신규 영웅 캐릭터 애저: 서프 대시와 궁극기 빅 웨이브, 프로 서퍼 애저 스킨 출시", "New Hero fighter Azure with Surf Dash, the Big Wave ultimate, and the Pro Surfer Azure skin"],
     ["옐로우 궁극기 전기 회로: 장치를 최대 4개 설치하고 일반 공격으로 맞히면 설치 순서대로 전류가 흐름", "Yellow's Electric Circuit ultimate: place up to four devices and hit one with a basic attack to send current through them in order"],
@@ -426,8 +463,19 @@ const patches = [
 
 let lang = localStorage.getItem("skullCreekLang") === "en" ? "en" : "ko";
 let route = "home";
-const tr = (key) => copy[lang][key] || key;
+const tr = (key) => {
+  const current={
+    charDesc:lang==='ko'?`선택한 버전의 캐릭터 ${CURRENT_IDS.length}명입니다.`:`${CURRENT_IDS.length} fighters in the selected edition.`,
+    liveData:WIKI_EDITIONS[edition][lang==='ko'?0:1],
+    liveDataDesc:lang==='ko'?`${WIKI_UPDATED} ${edition==='main'?'메인 배포 설정':'개발 설정 스냅샷 (게임 배포와 별도)'} 기준 · 체력과 피해는 기본 레벨/파워 기준입니다.`:`${edition==='main'?'Published main configuration':'Development snapshot; game deployment is separate'} as of ${WIKI_UPDATED}; health and damage use base level/power.`,
+    dataNote:lang==='ko'?'선택한 게임 버전의 코드 기준':'Selected game edition configuration',
+    seasonDesc:lang==='ko'?`${WIKI_UPDATED} 메인·베타·개발 변경 사항`:`Main, beta and development updates through ${WIKI_UPDATED}`,
+    matchupNote:lang==='ko'?'최신 버전의 실전 승률은 미확인입니다. 과거 시뮬레이션 수치와 구분합니다.':'Current live win rates are unconfirmed and distinct from historical simulations.',
+  };
+  return current[key]??copy[lang][key]??key;
+};
 const loc = (pair) => pair[lang === "ko" ? 0 : 1];
+const displayName=id=>WIKI_NAMES[id]?loc(WIKI_NAMES[id]):id[0].toUpperCase()+id.slice(1);
 const fmt = (value) => new Intl.NumberFormat(lang === "ko" ? "ko-KR" : "en-US", { maximumFractionDigits: 2 }).format(value);
 
 function wikiStats(id) {
@@ -441,23 +489,7 @@ function moveSpeedLabel(multiplier) {
   return lang === "ko" ? "보통" : "Normal";
 }
 
-function betaAttackStats(id) {
-  const stats = wikiStats(id);
-  if (id === "red") return { damage: stats.attackDamage * stats.attackCount, range: stats.attackRange };
-  if (id === "green") return { damage: stats.boomerangDamage * stats.boomerangAngles.length, range: stats.boomerangRange };
-  if (id === "blue") return { damage: stats.bulletDamage, range: stats.bulletRange };
-  if (id === "orange") return { damage: stats.bombDamage + stats.bombSplashDamage * stats.bombDirectHitJuiceCount, range: stats.bombRange };
-  if (id === "yellow") return { damage: stats.electricDamage, range: stats.electricRange };
-  if (id === "cyan") return { damage: stats.spreadLineDamage * stats.spreadLineCount, range: stats.spreadLineRange };
-  if (id === "crimson") return { damage: stats.attackDamage * stats.attackCount, range: stats.attackRange };
-  if (id === "gold") return { damage: stats.stage1Damage, range: stats.stage1Range };
-  if (id === "ivory") return { damage: stats.iceCreamDamage, range: stats.iceCreamRange };
-  if (id === "chartreuse") return { damage: stats.chartreuseDamage, range: stats.chartreuseRange };
-  if (id === "purple") return { damage: stats.vialDamage, range: stats.vialRange };
-  if (id === "mint") return { damage: stats.iceBulletDamage * stats.burstCount, range: stats.iceBulletRange };
-  if (id === "azure") return { damage: stats.surfDamage, range: stats.surfLength };
-  return { damage: stats.healCircleDamage, range: stats.healCircleRange };
-}
+function betaAttackStats(id) { return currentAttackStats(id,wikiStats(id)); }
 
 function applyLanguage() {
   document.documentElement.lang = lang;
@@ -467,6 +499,10 @@ function applyLanguage() {
   });
   $$("[data-t-placeholder]").forEach((el) => { el.placeholder = tr(el.dataset.tPlaceholder); });
   $("#lang-button").textContent = lang === "ko" ? "EN" : "KO";
+  $('[data-route="characters"].rail-link b').textContent=CURRENT_IDS.length;
+  $('[data-route="systems"].rail-link b').textContent=guides.length;
+  $('[data-route="shop"].rail-link b').textContent=Object.keys(SKINS).length;
+  $('.play-button').href=BASE+(edition==='beta'?'beta-season.html':edition==='official'?'official.html':'index.html');
   const target = routeFromPath();
   renderRoute(target.route, false);
   if (target.character && $("#article-dialog").open) openCharacter(target.character, false);
@@ -482,7 +518,7 @@ function characterCard(id) {
   return `<article class="character-card" data-open="char:${id}" tabindex="0" role="button" aria-label="${id}">
     <div class="portrait" style="--char:#${stats.color.toString(16).padStart(6,"0")}" data-letter="${id[0].toUpperCase()}"></div>
     <div class="char-card-body">
-      <div class="char-title"><h3>${id[0].toUpperCase()+id.slice(1)}</h3><span class="role-pill" style="--char:#${stats.color.toString(16).padStart(6,"0")}">${loc(meta.role)}</span></div>
+      <div class="char-title"><h3>${displayName(id)}</h3><span class="role-pill" style="--char:#${stats.color.toString(16).padStart(6,"0")}">${loc(meta.role)}</span></div>
       <p>${loc(meta.desc)}</p>
       <div class="mini-stats"><div><span>${tr("hp")}</span><strong>${fmt(stats.maxHealth)}</strong></div><div><span>${tr("damage")}</span><strong>${fmt(attackStats.damage)}</strong></div><div><span>${tr("speed")}</span><strong>${moveSpeedLabel(stats.moveSpeedMultiplier)}</strong></div></div>
     </div>
@@ -494,7 +530,7 @@ function sectionHead(title, desc, action = "") {
 }
 
 function renderHome() {
-  const cards = Object.keys(characterMeta).map(characterCard).join("");
+  const cards = CURRENT_IDS.map(characterCard).join("");
   return `${sectionHead(tr("allCharacters"), tr("charDesc"), `<button data-route="characters">${tr("viewAll")} →</button>`)}
     <div class="character-grid">${cards}</div>
     <div class="home-panels">
@@ -510,7 +546,22 @@ function renderHome() {
 }
 
 function renderCharacters() {
-  return `${sectionHead(tr("allCharacters"), tr("charDesc"))}<div class="character-grid">${Object.keys(characterMeta).map(characterCard).join("")}</div>`;
+  const paletteTitle = loc(["기획 캐릭터 팔레트", "Planned character palette"]);
+  const paletteDescription = loc(["#019~#106의 참고 색상이며, 선택한 버전의 플레이 가능 명단과는 별도입니다.", "Reference colors for #019–#106, separate from the selected edition’s playable roster."]);
+  const swatches = ROSTER_PALETTE.map(({ number, name, hex, kind }) => {
+    const swatch = hex
+      ? `<span aria-hidden="true" style="background:${hex}; width:1em; height:1em; border:1px solid currentColor; border-radius:3px; flex:none"></span>`
+      : "";
+    const value = hex ?? (kind === "gradient" ? loc(["그라데이션", "Gradient"]) : loc(["HEX 미정", "HEX pending"]));
+    return `<li style="display:flex; align-items:center; gap:0.5em">${swatch}<span>#${String(number).padStart(3, "0")} ${name} · ${value}</span></li>`;
+  }).join("");
+  return `${sectionHead(tr("allCharacters"), tr("charDesc"))}
+    <div class="character-grid">${CURRENT_IDS.map(characterCard).join("")}</div>
+    <details class="info-panel" style="margin-top:1rem">
+      <summary>${paletteTitle}</summary>
+      <p>${paletteDescription}</p>
+      <ul style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%, 17rem),1fr)); gap:0.5em; padding:0">${swatches}</ul>
+    </details>`;
 }
 
 function renderSystems() {
@@ -519,14 +570,9 @@ function renderSystems() {
 
 function renderShop() {
   const skins = Object.values(SKINS);
-  const fighters = [
-    ["Red · Green · Blue", "common", 0],
-    ["Orange · Yellow · Cyan · Purple · Pink", "rare", 200],
-    ["Crimson · Ivory · Chartreuse · Mint · Azure", "hero", 900],
-    ["Gold", "legendary", 1200],
-  ];
+  const fighters = CURRENT_IDS.map(id=>[displayName(id),LIVE_CHARACTERS[id].rarity??'—',null]);
   return `${sectionHead(tr("shopTitle"), tr("shopDesc"))}
-    <div class="home-panels"><section class="info-panel"><h3>${lang === "ko" ? "캐릭터 해금" : "Character Unlocks"}</h3><p>${lang === "ko" ? "크레딧으로 캐릭터를 해금합니다. 이미 보유한 캐릭터는 다시 구매할 필요가 없습니다." : "Unlock fighters with Credits. Fighters already owned never need to be purchased again."}</p>${fighters.map(([names, rarity, cost]) => `<div class="patch-line"><b>${names}</b><span>${rarity} · ${cost ? `◇ ${fmt(cost)}` : tr("free")}</span></div>`).join("")}</section><section class="info-panel"><h3>${lang === "ko" ? "수집품 상점" : "Collection Shop"}</h3><p>${lang === "ko" ? "시즌 스킨은 코인으로 구매하며 순위 보상 스킨은 조건을 달성하면 무료로 지급됩니다." : "Seasonal skins cost Coins, while placement reward skins are granted free when their conditions are met."}</p></section></div>
+    <div class="home-panels"><section class="info-panel"><h3>${lang === "ko" ? "캐릭터 해금" : "Character Unlocks"}</h3><p>${lang === "ko" ? "크레딧으로 캐릭터를 해금합니다. 이미 보유한 캐릭터는 다시 구매할 필요가 없습니다." : "Unlock fighters with Credits. Fighters already owned never need to be purchased again."}</p>${fighters.map(([names, rarity, cost]) => `<div class="patch-line"><b>${names}</b><span>${rarity} · ${cost === null ? (lang === "ko" ? "게임 상점에서 확인" : "See in-game shop") : cost ? `◇ ${fmt(cost)}` : tr("free")}</span></div>`).join("")}</section><section class="info-panel"><h3>${lang === "ko" ? "수집품 상점" : "Collection Shop"}</h3><p>${lang === "ko" ? "시즌 스킨은 코인으로 구매하며 순위 보상 스킨은 조건을 달성하면 무료로 지급됩니다." : "Seasonal skins cost Coins, while placement reward skins are granted free when their conditions are met."}</p></section></div>
     <div class="skin-grid">${skins.map((skin) => `<article class="skin-card">
       <div class="skin-swatch">${skin.character[0].toUpperCase()}</div>
       <h3>${skin.name}</h3><p>${skin.character[0].toUpperCase()+skin.character.slice(1)} · ${skin.season.toUpperCase()}</p>
@@ -544,13 +590,15 @@ function renderPatches() {
     <ul>${p.items.map(i=>`<li>${loc(i)}</li>`).join("")}</ul>
     <div class="patch-impact"><strong>${lang === "ko" ? "플레이 영향" : "Gameplay impact"}</strong><p>${loc(p.impact)}</p></div>
   </article>`;
-  const betaPatches = patches.filter((patch) => Number(patch.version.match(/^v1\.(\d+)/)?.[1] ?? 0) >= 5);
-  const alphaPatches = patches.filter((patch) => !betaPatches.includes(patch));
+  const archived=patches.filter(patch=>!CURRENT_WIKI_PATCHES.includes(patch));
+  const betaPatches = archived.filter((patch) => Number(patch.version.match(/^v1\.(\d+)/)?.[1] ?? 0) >= 5);
+  const alphaPatches = archived.filter((patch) => !betaPatches.includes(patch));
   const group = (title, entries, open = false) => `<details class="patch-season-group" ${open ? "open" : ""}>
     <summary><span class="patch-season-arrow" aria-hidden="true"></span><span><strong>${title}</strong><small>${entries.length}${lang === "ko" ? "개 업데이트" : " updates"}</small></span></summary>
     <div class="patch-list">${entries.map(patchCard).join("")}</div>
   </details>`;
   return `${sectionHead(tr("patchTitle"), tr("patchDesc"))}
+    ${group(lang === 'ko' ? '최신 변경 · 적용 범위 구분' : 'Current changes · Edition scope',CURRENT_WIKI_PATCHES,true)}
     ${group(lang === "ko" ? "베타 시즌" : "Beta Seasons", betaPatches, true)}
     ${group(lang === "ko" ? "알파 시즌" : "Alpha Seasons", alphaPatches)}`;
 }
@@ -566,9 +614,10 @@ const routePaths = {
 function renderRoute(nextRoute, updateUrl = true) {
   route = ["home","characters","systems","shop","patches"].includes(nextRoute) ? nextRoute : "home";
   const renderers = { home:renderHome, characters:renderCharacters, systems:renderSystems, shop:renderShop, patches:renderPatches };
-  $("#page-content").innerHTML = renderers[route]();
+  const selector=`<section class="info-panel wiki-edition"><label for="wiki-edition">${lang==='ko'?'데이터 버전':'Data edition'}</label> <select id="wiki-edition">${Object.entries(WIKI_EDITIONS).map(([id,label])=>`<option value="${id}" ${id===edition?'selected':''}>${loc(label)}</option>`).join('')}</select><p>${tr('liveDataDesc')} ${lang==='ko'?'버전별 캐릭터와 시스템을 구분해서 표시합니다.':'Rosters and systems are shown separately for each edition.'}</p></section>`;
+  $("#page-content").innerHTML = selector+renderers[route]();
   $$("[data-route]").forEach((el) => el.classList.toggle("active", el.dataset.route === route));
-  if (updateUrl && location.pathname !== routePaths[route]) history.pushState(null, "", routePaths[route]);
+  if (updateUrl && location.pathname !== routePaths[route]) history.pushState(null, "", editionPath(routePaths[route]));
   const titles = {
     home: "COLORS 위키",
     characters: `${tr("characters")} | COLORS 위키`,
@@ -598,7 +647,7 @@ function openCharacter(id, updateUrl = true) {
   const labels = lang === "ko"
     ? ["개요", "설정", "체력·속도", "일반 공격", "팁", "상성", "변천사", "기타"]
     : ["Overview", "Concept", "Health & Speed", "Basic Attack", "Tips", "Matchups", "History", "Other"];
-  $("#dialog-content").innerHTML = `<div class="article-hero" style="--char:${color}"><div><p>${tr("dataNote")}</p><h2>${id[0].toUpperCase()+id.slice(1)}</h2><p>${loc(meta.role)} · ${loc(meta.attack)}</p></div></div>
+  $("#dialog-content").innerHTML = `<div class="article-hero" style="--char:${color}"><div><p>${tr("dataNote")}</p><h2>${displayName(id)}</h2><p>${loc(meta.role)} · ${loc(meta.attack)}</p></div></div>
     <div class="article-body">
       <nav class="article-toc" aria-label="${lang === "ko" ? "문서 목차" : "Article contents"}">${labels.map((label,index)=>`<a href="#char-section-${index+1}"><b>${index+1}</b>${label}</a>`).join("")}</nav>
 
@@ -639,10 +688,10 @@ function openCharacter(id, updateUrl = true) {
         <p><button class="guide-link" data-dialog-open="guide:combat"><span>⚔</span>${loc(guides.find((guide) => guide.id === "combat").title)}</button></p>
       </section>
     </div>`;
-  document.title = `${id[0].toUpperCase()+id.slice(1)} | COLORS 위키`;
+  document.title = `${displayName(id)} | COLORS 위키`;
   if (!$("#article-dialog").open) $("#article-dialog").showModal();
   if (updateUrl && location.pathname !== `${BASE}wiki/characters/${id}/`) {
-    history.pushState(null, "", `${BASE}wiki/characters/${id}/`);
+    history.pushState(null, "", editionPath(`${BASE}wiki/characters/${id}/`));
   }
 }
 
@@ -654,10 +703,10 @@ function openGuide(id, updateUrl = true) {
   document.title = `${loc(guide.title)} | COLORS 위키`;
   if (!$("#article-dialog").open) $("#article-dialog").showModal();
   if (id === "beta1" && updateUrl && wikiPath() !== "/wiki/seasons/beta-1/") {
-    history.pushState(null, "", `${BASE}wiki/seasons/beta-1/`);
+    history.pushState(null, "", editionPath(`${BASE}wiki/seasons/beta-1/`));
   }
   if (id === "beta2" && updateUrl && wikiPath() !== "/wiki/seasons/beta-2/") {
-    history.pushState(null, "", `${BASE}wiki/seasons/beta-2/`);
+    history.pushState(null, "", editionPath(`${BASE}wiki/seasons/beta-2/`));
   }
 }
 
@@ -683,7 +732,7 @@ function routeFromPath() {
 function closeArticle() {
   $("#article-dialog").close();
   if (/^\/wiki\/characters\/[a-z]+\/?$/.test(wikiPath())) {
-    history.pushState(null, "", routePaths.characters);
+    history.pushState(null, "", editionPath(routePaths.characters));
     renderRoute("characters", false);
   }
 }
@@ -693,12 +742,23 @@ function search(query) {
   const box = $("#search-results");
   if (!q) { box.classList.add("hidden"); return; }
   const results = [
-    ...Object.keys(characterMeta).map(id => ({ open:`char:${id}`, title:id[0].toUpperCase()+id.slice(1), desc:loc(characterMeta[id].desc), hay:[id, ...characterMeta[id].role, ...characterMeta[id].attack, ...characterMeta[id].desc].join(" ").toLowerCase() })),
+    ...CURRENT_IDS.map(id => ({ open:`char:${id}`, title:displayName(id), desc:loc(characterMeta[id].desc), hay:[id, ...(WIKI_NAMES[id] ?? []), ...characterMeta[id].role, ...characterMeta[id].attack, ...characterMeta[id].desc].join(" ").toLowerCase() })),
     ...guides.map(g => ({ open:`guide:${g.id}`, title:loc(g.title), desc:loc(g.desc), hay:[g.id,...g.title,...g.desc,...g.body].join(" ").toLowerCase() })),
   ].filter(item => item.hay.includes(q)).slice(0,8);
   box.innerHTML = results.length ? results.map(r=>`<button class="search-item" data-open="${r.open}"><span>◇</span><span><strong>${r.title}</strong><small>${r.desc}</small></span></button>`).join("") : `<div class="search-item">${tr("noResult")}</div>`;
   box.classList.remove("hidden");
 }
+
+document.addEventListener('change',event=>{
+  if(event.target.id!=='wiki-edition')return;
+  const next=event.target.value;
+  if(!Object.hasOwn(WIKI_EDITIONS,next))return;
+  const url=new URL(location.href);
+  if(next==='main')url.searchParams.delete('edition');else url.searchParams.set('edition',next);
+  const character=wikiPath().match(/^\/wiki\/characters\/([^/]+)/)?.[1];
+  if(character&&!wikiCharacters(next)[character])url.pathname=BASE+'wiki/characters/';
+  location.href=url.href;
+});
 
 document.addEventListener("click", (event) => {
   const routeButton = event.target.closest("[data-route]");
