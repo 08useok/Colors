@@ -1,6 +1,7 @@
 import { routePartykitRequest, Server } from "partyserver";
 import { DurableObject } from "cloudflare:workers";
 import { createRankedQueue, assignRankedSeats, RANKED_MAP_COUNT } from "../src/official/ranked-match.js";
+import { getMainChampions, startMainChampions, finishMainChampions } from "./main-champions-store.js";
 
 const ROOM_MAX = 8;
 const SOCCER_ROOM_MAX = 6;
@@ -8,6 +9,9 @@ const COUNTDOWN_SEC = 5;
 // 매칭에서 허용하는 캐릭터 — 베타 시즌 1에서 크림슨 추가
 const PLAYABLE_CHARACTERS = new Set(["red", "green", "blue", "orange", "yellow", "cyan", "purple", "pink", "crimson", "gold", "ivory", "chartreuse", "mint", "azure", "crystal", "lavender", "salmon"]);
 export class LeaderboardStore extends DurableObject {
+  mainChampions() { return getMainChampions(this.ctx.storage); }
+  mainChampionsStart(input) { return startMainChampions(this.ctx.storage, input); }
+  mainChampionsFinish(input) { return finishMainChampions(this.ctx.storage, input); }
   async getLeaderboard() {
     return await this.ctx.storage.get("global-leaderboard") ?? [];
   }
@@ -259,6 +263,19 @@ export default {
       } catch {
         return Response.json({ error: "Invalid leaderboard request" }, { status: 400, headers: corsHeaders });
       }
+    }
+
+    // Main (Season 8) Champions: its own store, separate from the beta Champions.
+    if (pathname === '/api/main-champions' || pathname === '/api/main-champions/start' || pathname === '/api/main-champions/finish') {
+      const store = env.LeaderboardStore.getByName('main-champions-global');
+      const headers = { ...corsHeaders, 'cache-control': 'no-store' };
+      try {
+        if (pathname === '/api/main-champions' && request.method === 'GET') return Response.json(await store.mainChampions(), { headers });
+        if (request.method !== 'POST' || pathname === '/api/main-champions') return Response.json({ error: 'Method not allowed' }, { status: 405, headers });
+        const raw = await request.text(); if (raw.length > 2048) throw Error('요청이 너무 큽니다.');
+        const input = JSON.parse(raw);
+        return Response.json(pathname.endsWith('/start') ? await store.mainChampionsStart(input) : await store.mainChampionsFinish(input), { headers });
+      } catch (error) { return Response.json({ error: error.message || '챔피언스 서버에 연결할 수 없습니다.' }, { status: 400, headers }); }
     }
 
     const routed = await routePartykitRequest(request, env);

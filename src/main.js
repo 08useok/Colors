@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=3";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=4";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -33,6 +33,8 @@ import { applyBetaObeliskModel } from "./visuals/beta-obelisk.js?v=1";
 import { applyBetaWallModel } from "./visuals/beta-wall.js?v=1";
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=1.6.0";
 import { SKINS, migrateSkinId } from "./config/skins.js?v=1.7.0.4";
+import { MAIN_CHAMPIONS, mainChampionsCrownSkin } from "./config/main-champions.js?v=1";
+import { createMainChampions } from "./main-champions.js?v=1";
 import { createHighPolyCrown, fitCrownToHead, getCrownVariant } from "./visuals/crown.js";
 import { createYellowCircuitDeviceMesh, createYellowCircuitWireMesh, updateYellowCircuitDeviceMesh } from "./visuals/yellow-circuit.js?v=1";
 
@@ -191,6 +193,8 @@ const resultTitle = document.getElementById("result-title");
 const resultBody = document.getElementById("result-body");
 const resultStats = document.getElementById("result-stats");
 const resultStreak = document.getElementById("result-streak");
+// Main Champions crown reward skins, one per character (only the champion's is granted to participants).
+for (const id of MAIN_CHAMPIONS.roster) SKINS[mainChampionsCrownSkin(id)] ??= { id: mainChampionsCrownSkin(id), name: "챔피언스 왕관", nameEn: "Champions Crown", character: id, season: "mainChampions", rarity: "legendary", cost: 0, desc: "메인 시즌 8 챔피언스 우승 기념 왕관", descEn: "Crown for the Main Season 8 Champions winner" };
 const playAgainButton = document.getElementById("play-again-button");
 const restartButton = document.getElementById("restart-button");
 const healthFill = document.getElementById("health-fill");
@@ -395,7 +399,7 @@ const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
 const BETA_SEASON_8_START_AT = new Date("2026-10-31T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.1" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.2" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_8_START_AT ? "beta8" : Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -1874,6 +1878,7 @@ function syncLobbyStartButton() {
 }
 
 function showLobby() {
+  if (state.championsTicket) finishMainChampionsMatch({ won: false, draw: false, abandoned: true });
   document.body.classList.add("lobby-active");
   crosshairEl.classList.add("hidden");
   // 전투 HUD 잔여물 정리 — updateHud가 로비에서는 안 돌아 궁극기 버튼이 남는다
@@ -8077,11 +8082,13 @@ function initPlayers() {
 
   // 봇마다 독립적으로 뽑으면 로스터가 9명보다 커도 캐릭터가 자주 겹친다.
   // 로스터를 한 번 섞어서 봇 슬롯에 순서대로 배정해 중복 없이 다양하게 나오게 한다.
-  const shuffledBotTypes = [...ROSTER];
+  const championsRoster = state.championsTicket ? state.championsTicket.roster.filter((id) => id !== state.selectedCharacter) : null;
+  const shuffledBotTypes = championsRoster?.length ? championsRoster : [...ROSTER];
   for (let i = shuffledBotTypes.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffledBotTypes[i], shuffledBotTypes[j]] = [shuffledBotTypes[j], shuffledBotTypes[i]];
   }
+  if (state.championsDuel) shuffledBotTypes.sort((a, b) => (b === state.championsDuel) - (a === state.championsDuel));
   let botTypeIndex = 0;
   spawns.forEach((spawn, index) => {
     const characterType = index === 0 ? state.selectedCharacter : shuffledBotTypes[botTypeIndex++ % shuffledBotTypes.length];
@@ -8096,7 +8103,7 @@ function initPlayers() {
       yaw: Math.random() * Math.PI * 2,
     });
     if (!fighter.isPlayer) {
-      fighter.botDifficulty = Math.floor(Math.random() * 3);
+      fighter.botDifficulty = state.championsTicket ? 1 : Math.floor(Math.random() * 3);
     }
     state.players.push(fighter);
   });
@@ -8249,7 +8256,7 @@ function exitTraining() {
 function resetGame(mode="showdown") {
   respawnShields.clear();
   selectMainEventMap();
-  state.showdownPlus=mode==="showdownPlus";state.mode=mode;state.seasonKills=0;
+  state.showdownPlus=mode==="showdownPlus";state.mode=mode;state.seasonKills=0;state.championsLastMatch=false;
   state.questMatch = questStats();
   seasonCombat?.clear(); state.gemGrabMode=false; state.knockoutMode=false; state.knockoutMatch=null; knockoutBgm.pause();
 
@@ -8395,6 +8402,7 @@ function endSoccerKick(winningTeam, relayResult = true) {
   const won = winningTeam === state.playerTeam;
   if (relayResult && mpConfig?.mode === "soccer" && mpConfig.isHost) mp.relay("SK_END", { winningTeam });
   state.gameOver=true; state.running=false; const rewards=recordGameResult(won?1:2);
+  finishMainChampionsMatch({won,draw:false,abandoned:false});
   const account=loadAccount(); if(account){account.beta6SoccerStats??={wins:0,losses:0,games:0,goals:0};account.beta6SoccerStats.games++;account.beta6SoccerStats[won?"wins":"losses"]++;account.beta6SoccerStats.goals+=state.soccerScore[0];saveAccount(account);}
   resultTitle.textContent=won?"SOCCER KICK 승리!":"SOCCER KICK 패배"; resultBody.textContent=`BLUE ${state.soccerScore[0]} : ${state.soccerScore[1]} RED`;
   resultStats.textContent=`코인 +${rewards.coinsEarned}`; resultStreak.style.display="none"; resultOverlay.style.display="flex"; document.exitPointerLock?.();
@@ -11639,6 +11647,7 @@ function applyDamage(target, amount, attacker = null, updateCombatTime = true, n
       createHealEffect(target.mesh.position.x, target.mesh.position.z);
     }
     target.dead = true;
+    if (attacker && attacker !== target) attacker.matchKills = (attacker.matchKills ?? 0) + 1;
     removeGreenUltimateBush(target);
     target.mesh.visible = false;
     target.shadow.visible = false;
@@ -15351,6 +15360,7 @@ if (window.location.hash === "#chop-wood") {
   });
 
   playAgainButton.addEventListener("click", () => {
+    if (state.championsLastMatch) { state.championsLastMatch = false; restartButton.click(); openMainChampions(); return; }
     // Local 3v3 event modes restart themselves instead of queueing for Showdown.
     if (!mpConfig && state.knockoutMode) { resultOverlay.style.display = "none"; startMainKnockout(); return; }
     if (!mpConfig && state.gemGrabMode) { resultOverlay.style.display = "none"; startMainGemGrab(); return; }
@@ -15553,18 +15563,20 @@ const KNOCKOUT_SPAWNS={a:[[-6,15],[0,15],[6,15]],b:[[-6,-15],[0,-15],[6,-15]]};
 const knockoutBgm=new Audio("./assets/beta8-the-midnight-gambit.mp3?v=1");knockoutBgm.loop=true;
 function knockoutText(ko,en){return currentLang==="en"?en:ko;}
 function placeKnockoutTeams(){
- const fighters=state.players.slice(0,6);
- fighters.forEach((f,i)=>{const team=i<3?'a':'b',[x,z]=KNOCKOUT_SPAWNS[team][i%3];
+ const fighters=knockoutFighters();
+ fighters.forEach((f,i)=>{const team=state.championsDuel?(i?'b':'a'):i<3?'a':'b',[x,z]=KNOCKOUT_SPAWNS[team][state.championsDuel?1:i%3];
   Object.assign(f,{dead:false,health:f.maxHealth,ammo:f.maxAmmo,respawnAt:0,invulnerableUntil:0,mintIce:0,mintFrozenUntil:0,blueDash:null,blueKnockback:null,shockUntil:0,seasonUltimateCharge:0,[`${f.characterType}UltimateCharge`]:0});
   f.mesh.position.set(x,1.85,z);f.shadow.position.set(x,.04,z);f.yaw=team==='a'?Math.PI:0;f.mesh.visible=true;f.shadow.visible=true;f.healthBar.visible=true;});
  // Recreate engine actors so charge, statuses, projectiles, fields and Salmon devices reset.
  seasonCombat?.clear();
  state.projectiles.forEach(p=>disposeSceneObject(p.mesh));state.projectiles=[];state.scheduledHits=[];
 }
+// Fighters in a Knockout match: six for 3v3, two for a Champions 1v1 duel.
+function knockoutFighters(){return state.players.slice(0,state.championsDuel?2:6);}
 function startMainKnockout(){
  resetGame('knockout');state.knockoutMode=true;state.goldRushMode=true;
- state.players.slice(6).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
- state.players.slice(0,6).forEach((f,i)=>{f.team=i<3?'a':'b';addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
+ state.players.slice(knockoutFighters().length).forEach(f=>{f.dead=true;f.mesh.visible=false;f.shadow.visible=false;f.healthBar.visible=false;});
+ knockoutFighters().forEach((f,i)=>{f.team=state.championsDuel?(i?'b':'a'):i<3?'a':'b';addTeamMarker(f,f.team);});state.playerTeam=getPlayer().team;
  placeKnockoutTeams();
  state.knockoutMatch=createKnockoutMatch(state.gameTime);state.freezeUntil=state.knockoutMatch.until;
  stopAllBgm();if(state.audioEnabled){knockoutBgm.currentTime=0;applyMasterVolume();knockoutBgm.volume=.45*masterVolume;knockoutBgm.play().catch(()=>{});}
@@ -15576,11 +15588,11 @@ function updateKnockoutPoison(elapsed,dt){
  const half=knockoutSafeHalf(elapsed),outer=20,band=Math.max(.01,outer-half),mid=(outer+half)/2;
  [[0,-mid,outer*2,band],[0,mid,outer*2,band],[-mid,0,band,half*2],[mid,0,band,half*2]].forEach(([x,z,w,d],i)=>{const m=fog[i];if(!m)return;m.visible=band>.05;m.position.set(x,.6,z);m.scale.set(w,1,Math.max(.01,d));});
  if(mpConfig&&!mpConfig.isHost)return;
- for(const f of state.players.slice(0,6)){if(f.dead)continue;const p=f.mesh.position;if(Math.abs(p.x)>half||Math.abs(p.z)>half)applyDamage(f,f.maxHealth*.1*dt,null,true,false,true);}
+ for(const f of knockoutFighters()){if(f.dead)continue;const p=f.mesh.position;if(Math.abs(p.x)>half||Math.abs(p.z)>half)applyDamage(f,f.maxHealth*.1*dt,null,true,false,true);}
 }
 function updateMainKnockout(dt){
  const m=state.knockoutMatch;if(!m)return;
- const event=advanceKnockout(m,state.players.slice(0,6),state.gameTime);
+ const event=advanceKnockout(m,knockoutFighters(),state.gameTime);
  if(event==='round-end'){
   state.freezeUntil=m.until+KNOCKOUT_RULES.countdown;
   showKnockoutAnnounce(m.lastWinner?(m.lastWinner===state.playerTeam?knockoutText('라운드 승리!','Round won!'):knockoutText('라운드 패배','Round lost')):knockoutText('무승부 · 점수 없음','Draw · no point'));
@@ -15593,7 +15605,7 @@ function updateMainKnockout(dt){
 }
 function knockoutHudText(){
  const m=state.knockoutMatch;if(!m)return 'KNOCKOUT';
- const alive=team=>state.players.slice(0,6).filter(f=>f.team===team&&!f.dead).length;
+ const alive=team=>knockoutFighters().filter(f=>f.team===team&&!f.dead).length;
  const mine=state.playerTeam,theirs=mine==='a'?'b':'a';
  const clockText=m.phase==='fighting'?formatTime(Math.max(0,KNOCKOUT_RULES.roundSeconds-(state.gameTime-m.startedAt))):String(Math.ceil(Math.max(0,m.until-state.gameTime)));
  return `R${m.round} · ${knockoutText('아군','ALLY')} ${m.wins[mine]} : ${m.wins[theirs]} ${knockoutText('적','ENEMY')} · ${alive(mine)}v${alive(theirs)} · ${clockText}`;
@@ -15606,6 +15618,7 @@ function finishMainKnockout(){
  if(state.gameOver)return;state.gameOver=true;state.running=false;knockoutBgm.pause();
  state.knockoutPoison?.forEach(m=>m.visible=false);
  const m=state.knockoutMatch,won=m.winner===state.playerTeam,mine=state.playerTeam,theirs=mine==='a'?'b':'a';
+ finishMainChampionsMatch({won,draw:!m.winner,abandoned:false});
  const {coinsEarned,betaCreditsEarned}=recordGameResult(won?1:10);
  resultTitle.textContent=won?knockoutText('KNOCKOUT 승리!','KNOCKOUT Victory!'):knockoutText('KNOCKOUT 패배','KNOCKOUT Defeat');
  resultBody.textContent=knockoutText(`2라운드 선승 · 최종 ${m.wins[mine]} : ${m.wins[theirs]}`,`First to two rounds · Final ${m.wins[mine]} : ${m.wins[theirs]}`);
@@ -15625,12 +15638,74 @@ function updateMainGemGrab(dt){
  const a=gemTeamCount('a'),b=gemTeamCount('b');let escaped=gemEscapeResult(state.gemEscape,{a,b},state.gameTime);const leader=state.gemEscape.a!=null?'a':state.gemEscape.b!=null?'b':null;state.gemEscapeTeam=leader;state.gemEscapeAt=leader?state.gemEscape[leader]:0;
  const timedOut=state.gameTime-state.gemStartedAt>=GEM_GRAB_RULES.matchSeconds;if(timedOut)escaped=a>b?'a':b>a?'b':null;
  document.body.classList.toggle('temple-countdown-final',!!leader&&state.gameTime-state.gemEscapeAt>=12);
- if(escaped||timedOut){const won=escaped===state.playerTeam;const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?ui("시간 종료 · 무승부"):won?ui("유적 탈출 성공!"):ui("유적 탈출 실패");resultBody.textContent=timedOut?ui("경기 시간이 종료됐습니다."):ui("팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.");resultStats.textContent+=(currentLang==='en'?' · Allied gems ':' · 아군 젬 ')+gemTeamCount(state.playerTeam)+(currentLang==='en'?' · Enemy gems ':' · 적 젬 ')+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
+ if(escaped||timedOut){const won=escaped===state.playerTeam;finishMainChampionsMatch({won,draw:!escaped,abandoned:false});const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?ui("시간 종료 · 무승부"):won?ui("유적 탈출 성공!"):ui("유적 탈출 실패");resultBody.textContent=timedOut?ui("경기 시간이 종료됐습니다."):ui("팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.");resultStats.textContent+=(currentLang==='en'?' · Allied gems ':' · 아군 젬 ')+gemTeamCount(state.playerTeam)+(currentLang==='en'?' · Enemy gems ':' · 적 젬 ')+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
 }
 const supplementalAttackAim=createAimGuide(THREE,scene);
 const seasonUltimateAim=createAimGuide(THREE,scene,0xffdf65);
 const season7AttackAim=new THREE.Group();
 for(const geometry of [new THREE.PlaneGeometry(1,.04),new THREE.CircleGeometry(1,32,-Math.PI/6,Math.PI/3)]){const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0xc9a7f5,transparent:true,opacity:.2,depthWrite:false,side:THREE.DoubleSide}));mesh.rotation.x=-Math.PI/2;if(season7AttackAim.children.length===0)mesh.position.x=.5;season7AttackAim.add(mesh);}scene.add(season7AttackAim);season7AttackAim.visible=false;
+// ── Main Champions (own event, separate from the beta Champions) ──
+const mainChampionsOverlay = document.getElementById("main-champions-overlay");
+const mainChampions = createMainChampions({
+  title: document.getElementById("main-champions-title"),
+  content: document.getElementById("main-champions-content"),
+  name: (id) => displayName(id),
+  notify: (message) => showToast(message),
+  onPlay: playMainChampions,
+  onState: grantMainChampionsReward,
+});
+function openMainChampions() { mainChampionsOverlay.classList.remove("hidden"); void mainChampions.render(); }
+function closeMainChampions() { mainChampionsOverlay.classList.add("hidden"); }
+document.getElementById("main-champions-toggle")?.addEventListener("click", openMainChampions);
+document.getElementById("main-champions-close")?.addEventListener("click", closeMainChampions);
+mainChampionsOverlay.addEventListener("click", (event) => { if (event.target === mainChampionsOverlay) closeMainChampions(); });
+window.addEventListener("keydown", (event) => { if (event.key === "Escape" && !mainChampionsOverlay.classList.contains("hidden")) closeMainChampions(); });
+// Plays a Champions match with the ticket's character (owned or not); the lobby character comes back afterwards.
+async function playMainChampions(ticket) {
+  mainChampions.begin(ticket, state.selectedCharacter);
+  state.championsTicket = ticket;
+  state.championsDuel = ticket.mode === "duel" ? ticket.opponent : null;
+  state.selectedCharacter = ticket.character;
+  closeMainChampions();
+  try {
+    await initAudio();
+    if (ticket.mode === "gemGrab") startMainGemGrab();
+    else if (ticket.mode === "soccer") startSoccerKick();
+    else startMainKnockout();
+    // Team modes report all six fighters; the player's side is always "a".
+    if (!state.championsDuel) mainChampions.setParticipants(championsSlots().map(({ id, f }) => ({ id, character: f.characterType, team: f.team === state.playerTeam ? "a" : "b" })));
+  } catch (error) {
+    finishMainChampionsMatch({ won: false, draw: false, abandoned: true });
+    showLobby();
+    showToast(error.message);
+  }
+}
+// The six fighters of a team match by slot: the player, then AI 1-5.
+function championsSlots() { let ai = 0; return state.players.slice(0, 6).map((f) => ({ id: f.isPlayer ? "player" : `ai-${++ai}`, f })); }
+function finishMainChampionsMatch(outcome) {
+  if (!state.championsTicket) return;
+  const player = getPlayer();
+  const ticket = mainChampions.finish({ ...outcome, damage: player?.damageDealt ?? 0, kills: player?.matchKills ?? 0,
+    participants: championsSlots().map(({ id, f }) => ({ id, damage: f.damageDealt ?? 0, kills: f.matchKills ?? 0 })) });
+  state.selectedCharacter = ticket?.previousCharacter ?? state.selectedCharacter;
+  state.championsTicket = null; state.championsDuel = null; state.championsLastMatch = true;
+  if (!outcome.abandoned) {
+    const account = loadAccount();
+    if (account && account.mainChampionsParticipated !== MAIN_CHAMPIONS.id) { account.mainChampionsParticipated = MAIN_CHAMPIONS.id; saveAccount(account); }
+  }
+}
+// Once the event is over, everyone who finished a Champions match gets the champion's crown skin.
+function grantMainChampionsReward(snapshot) {
+  if (snapshot?.phase !== "complete" || !snapshot.champion) return;
+  const account = loadAccount();
+  if (!account || account.mainChampionsParticipated !== MAIN_CHAMPIONS.id) return;
+  const skin = mainChampionsCrownSkin(snapshot.champion);
+  account.ownedSkins ??= [];
+  if (account.ownedSkins.includes(skin)) return;
+  account.ownedSkins.push(skin); saveAccount(account);
+  showToast(`🏆 챔피언스 우승 ${displayName(snapshot.champion)} · 「챔피언스 왕관」 스킨을 받았습니다!`);
+}
+if (Date.now() >= MAIN_CHAMPIONS.start) void mainChampions.refresh();
 createLights();
 createMap(MAP_POOL[0]);
 createTrainingMap();
