@@ -66,8 +66,8 @@ export const ARCHIVE_TEXT = {
     "en": "Balance and bots: Ported Season 6 stats, character-specific bot combat and an ultimate-enabled matchup table to the main game."
   },
   "archivePatch7": {
-    "ko": "상성표 수정: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종을 다시 시뮬레이션해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.",
-    "en": "Matchup correction: Re-simulated 13 characters including Mint. Blue versus Chartreuse changed from impossible to dominant; Red versus Orange changed from severely disadvantaged to disadvantaged. These are basic-attack-only duels without ultimates or terrain, not live win rates."
+    "ko": "상성표 수정: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종의 상성을 다시 계산해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.",
+    "en": "Matchup correction: Recalculated 13 characters including Mint. Blue versus Chartreuse changed from impossible to dominant; Red versus Orange changed from severely disadvantaged to disadvantaged. These are basic-attack-only duels without ultimates or terrain, not live win rates."
   },
   "archivePatch8": {
     "ko": "민트 누락: 민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다. 7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.",
