@@ -183,6 +183,12 @@ export function createBeta6Combat(definitions, options = {}) {
   }
   const rooted = a => time < (a.rootUntil ?? 0);
   const inAir = b => !!(b.salmonAirborne || b.leap || b.airborne === true);
+  // Yellow bots power a circuit (walk to a device and shoot it) only when it would hit someone: an enemy within reach
+  // of a connection between devices (d.botCircuitOnlyOnEnemies). Otherwise they keep shooting enemies.
+  function circuitUseful(a) {
+    return !a.d.botCircuitOnlyOnEnemies || actors.some(b => enemies(a, b) && alive(b) && !b.isSalmonDevice
+      && a.devices.some((dv, i) => i > 0 && segmentDistance(b, a.devices[i - 1], dv) <= (a.u?.connectionRadius ?? .7) + 1));
+  }
   function pathClear(from, to) {
     const length = distance(from, to), yaw = Math.atan2(to.z - from.z, to.x - from.x);
     for (let step = .25; step < length; step += .25) if (sightBlocked(from.x + Math.cos(yaw) * step, from.z + Math.sin(yaw) * step, .1)) return false;
@@ -362,7 +368,7 @@ export function createBeta6Combat(definitions, options = {}) {
     const initialAimYaw=Math.atan2(target.z + target.vz * lead - a.z - a.vz * windupLead, target.x + target.vx * lead - a.x - a.vx * windupLead);
     let yaw = manualAngle ?? initialAimYaw + (random() * 2 - 1) * (options.aimError ?? .08);
     const yawError=yaw-initialAimYaw;
-    if (id === 'yellow' && a.automatic && manualAngle == null && a.devices.length >= 2) {
+    if (id === 'yellow' && a.automatic && manualAngle == null && a.devices.length >= 2 && circuitUseful(a)) {
       const device = a.devices.filter(p => distance(a, p) <= range(a)).sort((b,c)=>distance(a,b)-distance(a,c))[0];
       if (device) yaw = Math.atan2(device.z - a.z, device.x - a.x);
     }
@@ -730,11 +736,7 @@ export function createBeta6Combat(definitions, options = {}) {
       if (!a.d.noAutomaticReload && a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
       else if (a.ammo >= (a.d.maxAmmo ?? 3)) a.reload = 0;
       if (!a.automatic || !target) continue;
-      // Yellow powers a circuit only when it would hit someone: an enemy within reach of a connection between devices
-      // (a.d.botCircuitOnlyOnEnemies). Otherwise it keeps shooting enemies instead of walking to its devices.
-      const circuitUseful = !a.d.botCircuitOnlyOnEnemies || actors.some(b => enemies(a, b) && alive(b) && !b.isSalmonDevice
-        && a.devices.some((dv, i) => i > 0 && segmentDistance(b, a.devices[i - 1], dv) <= (a.u?.connectionRadius ?? .7) + 1));
-      const circuitDevice = a.id === 'yellow' && a.d.botTargetCircuitDevices && a.devices.length >= 2 && circuitUseful
+      const circuitDevice = a.id === 'yellow' && a.d.botTargetCircuitDevices && a.devices.length >= 2 && circuitUseful(a)
         ? [...a.devices].sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;
       const approachingDevice = circuitDevice && distance(a,circuitDevice)>range(a);
       const recoverTarget = a.id === 'salmon' && a.ammo < a.d.maxAmmo ? salmon.floats.filter(f=>f.owner===a).sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;
