@@ -730,7 +730,11 @@ export function createBeta6Combat(definitions, options = {}) {
       if (!a.d.noAutomaticReload && a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
       else if (a.ammo >= (a.d.maxAmmo ?? 3)) a.reload = 0;
       if (!a.automatic || !target) continue;
-      const circuitDevice = a.id === 'yellow' && a.d.botTargetCircuitDevices && a.devices.length >= 2
+      // Yellow powers a circuit only when it would hit someone: an enemy within reach of a connection between devices
+      // (a.d.botCircuitOnlyOnEnemies). Otherwise it keeps shooting enemies instead of walking to its devices.
+      const circuitUseful = !a.d.botCircuitOnlyOnEnemies || actors.some(b => enemies(a, b) && alive(b) && !b.isSalmonDevice
+        && a.devices.some((dv, i) => i > 0 && segmentDistance(b, a.devices[i - 1], dv) <= (a.u?.connectionRadius ?? .7) + 1));
+      const circuitDevice = a.id === 'yellow' && a.d.botTargetCircuitDevices && a.devices.length >= 2 && circuitUseful
         ? [...a.devices].sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;
       const approachingDevice = circuitDevice && distance(a,circuitDevice)>range(a);
       const recoverTarget = a.id === 'salmon' && a.ammo < a.d.maxAmmo ? salmon.floats.filter(f=>f.owner===a).sort((b,c)=>distance(a,b)-distance(a,c))[0] : null;

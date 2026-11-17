@@ -42,7 +42,11 @@ export const BETA9_BALANCE = Object.freeze({
     // Standing 3 s on the field freezes (25 ice/s vs 75); no ice builds while frozen, so freezes re-apply after thawing.
     iceBlockedWhileFrozen: true, special: { chargeRequired: 4, icePerSecond: 25 } },
   // Yellow's orb was hard to land (18% in 3v3): no release delay, 0.5 hitbox (was 0.2), speed 30.
-  yellow: { electricSpeed: 30, maxHealth: 6800, electricDamage: 2500, electricRange: 14, shockSlowPercent: .4, attackDelay: 0, attackWindup: 0, electricRadius: .5 },
+  // 11.17 (Champions round-3 out): orb 2500 → 2700; the bot powers a circuit only when an enemy is near a connection.
+  yellow: { electricSpeed: 30, maxHealth: 6800, electricDamage: 2700, electricRange: 14, shockSlowPercent: .4, attackDelay: 0, attackWindup: 0, electricRadius: .5, botCircuitOnlyOnEnemies: true },
+  // 11.17 (Champions round-3 out): circle 4.5 → 5 tiles, damage 2200 → 2400, heal 1400 → 1500, Encore 12 → 10.
+  // (Backing off at low health was tried and dropped: it lost Pink → Purple in 1v1.)
+  pink: { healCircleRange: 5, healCircleDamage: 2400, healCircleHeal: 1500, ultimate: { chargeRequired: 10 } },
   cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
   crimson: { maxHealth: 13000, attackCooldown: .6 },
