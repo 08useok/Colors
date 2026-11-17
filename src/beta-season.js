@@ -5035,7 +5035,7 @@ function startAzureWave(ultimate = false) {
 
 // Half size of the square the shared combat keeps fighters in, per mode.
 function combatArenaBound() {
-  return goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : ["gemGrab", "knockout"].includes(goldRushState.mode) ? TEAM_ARENA.halfDepth - .5 : 19.5;
+  return goldRushState.mode === "soccer" ? SOCCER_ACTOR_LIMIT : goldRushState.mode === "chopWood" ? 29.5 : goldRushState.mode === "showdown" ? showdownProfile.actorLimit : ["gemGrab", "knockout"].includes(goldRushState.mode) ? TEAM_ARENA.halfDepth - .5 : 19.5;
 }
 function updateAzureWave(dt) {
   const wave = azureWaveState;
@@ -6737,6 +6737,64 @@ function soccerGoal(team) {
 // 봇 사커 행동. 팀마다 공에 가장 가까운 한 명만 공을 쫓고 나머지는 수비 자리를 지킨다.
 // 킥은 한 프레임에 한 번만, 공에 가장 가까운 봇이 찬다 — 목록 순서 때문에 한 팀이
 // 공 다툼에서 늘 이기던 문제를 막는다.
+// Soccer Kick on the shared combat engine: every bot uses its own attacks, abilities and ultimate against
+// the other team, while the soccer roles decide where it goes. Per team: the bot nearest the ball chases it,
+// the holder drives to the enemy goal, one supporter runs alongside up the field and the rest guard their own half.
+function soccerBotRoles() {
+  const ball = soccerBall.position;
+  for (const team of ["a", "b"]) {
+    const attackSign = team === "a" ? 1 : -1, ownGoalZ = -attackSign * SOCCER_FIELD_HALF;
+    const mates = goldRushBots.filter((bot) => bot.team === team && !bot.dead);
+    const holderBot = soccerState.holder?.type === "bot" && soccerState.holder.team === team ? soccerState.holder.bot : null;
+    const ourBall = soccerState.holder?.team === team;
+    const byBall = [...mates].sort((p, q) => Math.hypot(ball.x - p.mesh.position.x, ball.z - p.mesh.position.z) - Math.hypot(ball.x - q.mesh.position.x, ball.z - q.mesh.position.z));
+    const chaser = holderBot ?? (ourBall ? null : byBall[0]);
+    let slot = 0;
+    for (const bot of mates) {
+      if (bot === holderBot) {
+        bot.soccerSpot = { x: THREE.MathUtils.clamp(bot.mesh.position.x * 0.6, -SOCCER_GOAL_HALF_WIDTH, SOCCER_GOAL_HALF_WIDTH), z: attackSign * SOCCER_FIELD_HALF };
+      } else if (bot === chaser) {
+        bot.soccerSpot = { x: ball.x, z: ball.z - attackSign * 0.6 };
+      } else if (slot++ === 0) {
+        // Supporter: alongside the ball, a few tiles toward the enemy goal (ready for a loose ball or a tackle).
+        const side = ball.x > 0 ? -4 : 4;
+        bot.soccerSpot = { x: THREE.MathUtils.clamp(ball.x + side, -15, 15), z: THREE.MathUtils.clamp(ball.z + attackSign * (ourBall ? 5 : 1), -SOCCER_ACTOR_LIMIT, SOCCER_ACTOR_LIMIT) };
+      } else {
+        // Defender: between the ball and the own goal.
+        bot.soccerSpot = { x: THREE.MathUtils.clamp(ball.x * 0.5, -10, 10), z: ownGoalZ * 0.55 + ball.z * 0.35 };
+      }
+    }
+  }
+}
+function updateSoccerEngineBots(dt) {
+  if (isSoccerFrozen()) {
+    for (const bot of goldRushBots) faceGoldRushHealthBarToCamera(bot.healthBar);
+    return;
+  }
+  soccerBotRoles();
+  updateBeta6BotCombat(dt);
+  const candidates = [];
+  for (const bot of goldRushBots) {
+    if (bot.dead) continue;
+    clampSoccerActor(bot.mesh.position);
+    if (bot.combatActor) { bot.combatActor.x = bot.mesh.position.x; bot.combatActor.z = bot.mesh.position.z; }
+    const holding = soccerState.holder?.type === "bot" && soccerState.holder.bot === bot;
+    if (!holding) trySoccerCatch(bot.mesh.position, bot.team, "bot", bot);
+    const attackSign = bot.team === "a" ? 1 : -1;
+    const goalDistance = Math.abs(attackSign * SOCCER_FIELD_HALF - bot.mesh.position.z);
+    // Shots cost no ammo here (the engine spends it on attacks), only the kick cooldown, as for the player.
+    if (holding && goalDistance <= 9 && clock.elapsedTime >= (bot.soccerKickReadyAt ?? 0)) {
+      candidates.push({ bot, distance: goalDistance, tieBreak: Math.random() });
+    }
+  }
+  if (candidates.length === 0) return;
+  candidates.sort((p, q) => p.distance - q.distance || p.tieBreak - q.tieBreak);
+  const { bot } = candidates[0];
+  const yaw = soccerYawToEnemyGoal(bot.team) + (Math.random() - 0.5) * 0.35;
+  if (kickSoccerBall(bot.mesh.position, yaw, bot.team, "bot", bot)) {
+    bot.soccerKickReadyAt = clock.elapsedTime + SOCCER_BOT_KICK_COOLDOWN;
+  }
+}
 function updateSoccerBots(dt) {
   if (isSoccerFrozen()) {
     for (const bot of goldRushBots) faceGoldRushHealthBarToCamera(bot.healthBar);
@@ -7877,7 +7935,6 @@ function beta6TransformGauges() {
 }
 
 function startBeta6BotCombat(carried = null) {
-  if (goldRushState.mode === "soccer") return;
   if (IS_BETA8_TEST) {
     transformModels.preload(betaState.selectedCharacter);
     for (const bot of goldRushBots) transformModels.preload(bot.characterId);
@@ -7889,8 +7946,17 @@ function startBeta6BotCombat(carried = null) {
     seed: Math.floor(Math.random() * 0x7fffffff),
     bounds: combatArenaBound(),
     walkable: (x, z) => groundHeightAt(x, z) > -5 && !(activeEventLayout?.lakes.some(rect => insideMapRect(x, z, rect, 1))),
-    retreatsAtLowHealth: goldRushState.mode === "chopWood" ? () => false : undefined,
+    retreatsAtLowHealth: ["chopWood", "soccer"].includes(goldRushState.mode) ? () => false : undefined,
     destination(actor, target) {
+      // Soccer Kick: each bot heads for its role spot (ball, support, defence) set by soccerBotRoles();
+      // it turns to fight only when an enemy is within 4 tiles, and the ball holder keeps driving to the goal.
+      if (goldRushState.mode === "soccer") {
+        const spot = actor.bot?.soccerSpot;
+        if (!spot) return navigateEventMap(activeEventLayout, actor, target);
+        const holding = soccerState.holder?.type === "bot" && soccerState.holder.bot === actor.bot;
+        if (!holding && Math.hypot(actor.x - target.x, actor.z - target.z) < 4) return target;
+        return navigateEventMap(activeEventLayout, actor, spot);
+      }
       if (goldRushState.mode === "chopWood") {
         const tree = chopWoodTrees[actor.team === "a" ? "b" : "a"];
         return navigateEventMap(activeEventLayout,actor,tree);
@@ -8409,7 +8475,7 @@ function removeGoldPickup(index) {
 
 function updateGoldRushBots(dt) {
   updateGoldRushAttackEffects(dt);
-  if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }
+  if (goldRushState.mode === "soccer") { if (beta6Combat) updateSoccerEngineBots(dt); else updateSoccerBots(dt); return; }
   if (beta6Combat) { updateBeta6BotCombat(dt); return; }
   for (const bot of goldRushBots) {
     if (bot.dead) {
