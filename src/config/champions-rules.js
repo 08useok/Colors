@@ -53,14 +53,18 @@ export function createChampionsRules({ id, start, roundMs, swapRound, finalSize,
     state.nextEliminationAt = championsCutAt(state.nextEliminationAt);
     if (now < state.nextEliminationAt || state.phase === 'complete') return;
     if (state.phase === 'survival') {
-      // Wait for at least one new result in either group, and never replay several missed cuts at once.
-      if (groups.every(g => games(state.survivalStats, g.characters) <= state.checkpointGames[g.id])) return;
-      for (const g of groups) {
-        const loser = rank(state.survivalStats, state.groups[g.id]).at(-1);
+      // Each group is cut on its own: only when it has new results since its last cut, and only among characters that
+      // have played (a group with no games, or a character never picked, is not cut by roster order). Wait while no
+      // group has new results, and never replay several missed cuts at once.
+      const stats = state.survivalStats;
+      const due = groups.filter(g => games(stats, state.groups[g.id]) > state.checkpointGames[g.id] && state.groups[g.id].some(c => stats[c]?.games > 0));
+      if (!due.length) return;
+      for (const g of due) {
+        const loser = rank(stats, state.groups[g.id].filter(c => stats[c]?.games > 0)).at(-1);
         state.groups[g.id] = state.groups[g.id].filter(c => c !== loser);
         state.eliminations.push({ character: loser, mode: g.id, phase: 'survival', round: state.round, at: now });
-        state.checkpointGames[g.id] = games(state.survivalStats, g.characters);
       }
+      for (const g of groups) state.checkpointGames[g.id] = games(stats, state.groups[g.id]);
       if (Object.values(state.groups).flat().length <= finalSize) {
         state.phase = 'final'; state.finalists = Object.values(state.groups).flat(); state.finalStats = table(state.finalists); state.round = 1;
       } else {
@@ -68,6 +72,7 @@ export function createChampionsRules({ id, start, roundMs, swapRound, finalSize,
         if (state.round === swapRound && !state.swapped) {
           const [a, b] = groups.map(g => g.id);
           [state.groups[a], state.groups[b]] = [state.groups[b], state.groups[a]]; state.swapped = true;
+          [state.checkpointGames[a], state.checkpointGames[b]] = [state.checkpointGames[b], state.checkpointGames[a]];
         }
       }
     } else if (state.phase === 'final') {

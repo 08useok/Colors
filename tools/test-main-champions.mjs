@@ -65,6 +65,26 @@ assert.equal(state.phase, 'complete');
 assert.equal(state.champion, final.a);
 assert.equal(state.reward.skin, mainChampionsCrownSkin(final.a));
 
+// A group with no games is not cut, and a character that never played is not cut by roster order (11.17 Crystal).
+{
+  const s2 = R.create(), cut = s2.nextEliminationAt;
+  const six = R.rosterFor(s2, 'gemGrab').slice(0, 6).map((c, i) => ({ character: c, team: i < 3 ? 'a' : 'b', damage: 100 * (6 - i), kills: 0 }));
+  R.record(s2, { phase: 'survival', round: 1, mode: 'gemGrab', character: six[0].character }, { won: true, draw: false, abandoned: false, damage: 0, kills: 0, participants: six }, cut - 1000);
+  R.advance(s2, cut + 1000);
+  assert.equal(s2.groups.knockout.length, 8, 'Knockout had no games: nobody cut there');
+  const out = s2.eliminations.find(e => e.mode === 'gemGrab');
+  assert.ok(six.some(p => p.character === out.character), 'the Gem Grab loser is someone who played');
+  assert.equal(s2.groups.gemGrab.length, 8);
+}
+// The live 11.17 state: Crystal comes back once.
+{
+  const { applyMainChampionsFixes } = await import('../party/main-champions-store.js');
+  const s3 = R.create();
+  s3.groups.knockout = s3.groups.knockout.filter(c => c !== 'crystal');
+  s3.eliminations.push({ character: 'crystal', mode: 'knockout', phase: 'survival', round: 1, at: 0 });
+  applyMainChampionsFixes(s3); applyMainChampionsFixes(s3);
+  assert.ok(s3.groups.knockout.includes('crystal')); assert.equal(s3.eliminations.length, 0); assert.deepEqual(s3.fixes, ['crystal-r1']);
+}
 // Store: fake storage with transactions; start/finish validation.
 const map = new Map();
 const storage = { transaction: async fn => fn({ get: async k => structuredClone(map.get(k)), put: async (k, v) => { map.set(k, structuredClone(v)); } }) };

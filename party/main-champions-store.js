@@ -3,7 +3,22 @@ import { MAIN_CHAMPIONS as R } from '../src/config/main-champions.js';
 
 const key = 'main-champions:' + R.id, ticketKey = id => 'main-champions-ticket:' + id;
 const fail = message => { throw new Error(message); };
-async function stateAt(tx, now) { const state = await tx.get(key) || R.create(); R.advance(state, now); return state; }
+// One-time fixes to the live state, applied once and remembered in state.fixes.
+// crystal-r1: the 11.17 first cut eliminated Crystal by roster order while Knockout had no games yet.
+export function applyMainChampionsFixes(state) {
+  state.fixes ??= [];
+  if (!state.fixes.includes('crystal-r1')) {
+    const i = state.eliminations.findIndex(e => e.character === 'crystal' && e.phase === 'survival' && e.round === 1);
+    if (i >= 0 && state.phase === 'survival') {
+      const { mode } = state.eliminations[i];
+      state.eliminations.splice(i, 1);
+      if (!state.groups[mode].includes('crystal')) state.groups[mode].push('crystal');
+    }
+    state.fixes.push('crystal-r1');
+  }
+  return state;
+}
+async function stateAt(tx, now) { const state = applyMainChampionsFixes(await tx.get(key) || R.create()); R.advance(state, now); return state; }
 
 export async function getMainChampions(storage) {
   return storage.transaction(async tx => { const now = Date.now(), state = await stateAt(tx, now); await tx.put(key, state); return R.snapshot(state, now); });
