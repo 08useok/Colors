@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=9";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=10";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -8541,6 +8541,11 @@ function resolveMovementCollision(position, radius, zoneRadius = null) {
   const isShowdown = showdownMapGroup.visible || mpConfig?.mode === "showdown";
   if (isShowdown) clampToShowdownBounds(position, radius);
   else clampToWorld(position, radius);
+  // Soccer Kick: the goal mouths have no wall, so keep everyone inside the touchlines and goal lines.
+  if (state.soccerMode) {
+    position.x = THREE.MathUtils.clamp(position.x, -SOCCER_FIELD_HALF_WIDTH + radius, SOCCER_FIELD_HALF_WIDTH - radius);
+    position.z = THREE.MathUtils.clamp(position.z, -SOCCER_FIELD_HALF_LENGTH + radius, SOCCER_FIELD_HALF_LENGTH - radius);
+  }
 
   if (zoneRadius !== null) {
     clampToZone(position, radius, zoneRadius);
