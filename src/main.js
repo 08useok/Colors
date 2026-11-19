@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=11";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=12";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -965,7 +965,8 @@ function updateHeadAttachedSkin(group) {
   const model = getHeadwearModel(group);
   let headBone = model?.getObjectByName("CC_Base_Head")
     ?? model?.getObjectByName("Head")
-    ?? model?.getObjectByName("head");
+    ?? model?.getObjectByName("head")
+    ?? model?.getObjectByName("mixamorigHead");
   if (!headBone && model) {
     model.traverse((node) => {
       if (!headBone && /(^|[_-])(head|cc_base_head)([_-]|$)/i.test(node.name ?? "")) headBone = node;
@@ -3151,6 +3152,7 @@ function createStickman(color, skinId, normalizeBattleModel = false, isAiBot = f
       blueMixer, blueWalkAction,
       bodyMaterials, guitar: null,
     };
+    if (skinId) applySkin(group, skinId);
     return group;
   }
 
