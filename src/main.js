@@ -3,8 +3,8 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=12";
-import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=13";
+import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, bounceMapBall, MAIN_DENSE_WALLS } from "./config/event-maps.js?v=2";
@@ -15657,7 +15657,7 @@ function updateMainGemGrab(dt){
  const a=gemTeamCount('a'),b=gemTeamCount('b');let escaped=gemEscapeResult(state.gemEscape,{a,b},state.gameTime);const ta=state.gemEscape.a,tb=state.gemEscape.b,leader=ta!=null&&(tb==null||ta<=tb)?'a':tb!=null?'b':null;state.gemEscapeTeam=leader;state.gemEscapeAt=leader?state.gemEscape[leader]:0;
  const timedOut=state.gameTime-state.gemStartedAt>=GEM_GRAB_RULES.matchSeconds;if(timedOut)escaped=a>b?'a':b>a?'b':null;
  document.body.classList.toggle('temple-countdown-final',!!leader&&state.gameTime-state.gemEscapeAt>=12);
- if(escaped||timedOut){const won=escaped===state.playerTeam;finishMainChampionsMatch({won,draw:!escaped,abandoned:false});const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?ui("시간 종료 · 무승부"):won?ui("유적 탈출 성공!"):ui("유적 탈출 실패");resultBody.textContent=timedOut?ui("경기 시간이 종료됐습니다."):ui("팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.");resultStats.textContent+=(currentLang==='en'?' · Allied gems ':' · 아군 젬 ')+gemTeamCount(state.playerTeam)+(currentLang==='en'?' · Enemy gems ':' · 적 젬 ')+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
+ if(escaped||timedOut){const won=escaped===state.playerTeam;finishMainChampionsMatch({won,draw:!escaped,abandoned:false});const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?ui("시간 종료 · 무승부"):won?ui("유적 탈출 성공!"):ui("유적 탈출 실패");resultBody.textContent=timedOut?ui("경기 시간이 종료됐습니다."):(won?ui("아군 팀이 젬 10개 이상을 확보하고 15초를 버텼습니다."):ui("적 팀이 젬 10개 이상을 확보하고 15초를 버텼습니다."));resultStats.textContent+=(currentLang==='en'?' · Allied gems ':' · 아군 젬 ')+gemTeamCount(state.playerTeam)+(currentLang==='en'?' · Enemy gems ':' · 적 젬 ')+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
 }
 const supplementalAttackAim=createAimGuide(THREE,scene);
 const seasonUltimateAim=createAimGuide(THREE,scene,0xffdf65);

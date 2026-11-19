@@ -99,7 +99,8 @@ export const MAIN_UI = [
   ["보상 없음", "No Reward Available"], ["크레딧 지급 완료", "Credits Granted"],
   ["시간 종료 · 무승부", "Time Up · Draw"], ["유적 탈출 성공!", "Temple Escape Successful!"],
   ["유적 탈출 실패", "Temple Escape Failed"], ["경기 시간이 종료됐습니다.", "The match time has expired."],
-  ["팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.", "The team held at least 10 gems for 15 seconds."],
+  ["아군 팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.", "Your team held at least 10 gems for 15 seconds."],
+  ["적 팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.", "The enemy team held at least 10 gems for 15 seconds."],
 ];
 export function mainUiText(text, lang) {
   return lang === "en" ? MAIN_UI.find(([ko]) => ko === text)?.[1] ?? text : text;
