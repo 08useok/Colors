@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=17";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=18";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -14418,6 +14418,15 @@ function setupInput() {
     state.mobileMove.active = false;
     state.mobileMove.pointerId = null;
     mobileJoystickThumb.style.transform = "translate(-50%, -50%)";
+    // Standing aim follows state.mouse, which still holds the joystick finger. Point it just ahead of the
+    // player so releasing the stick keeps the movement facing instead of turning toward the joystick.
+    const player = getPlayer();
+    if (state.running && player && !player.dead) {
+      const ahead = new THREE.Vector3(player.mesh.position.x + Math.sin(player.yaw) * 5, 0, player.mesh.position.z + Math.cos(player.yaw) * 5).project(camera);
+      const rect = canvas.getBoundingClientRect();
+      state.mouse.screenX = rect.left + (ahead.x + 1) / 2 * rect.width;
+      state.mouse.screenY = rect.top + (1 - ahead.y) / 2 * rect.height;
+    }
   }
 
   mobileJoystick.addEventListener("pointerdown", (event) => {
