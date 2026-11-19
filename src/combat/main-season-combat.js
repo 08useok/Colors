@@ -1,4 +1,4 @@
-import {createBeta6Combat} from './beta6-combat.js?v=37';
+import {createBeta6Combat} from './beta6-combat.js?v=40';
 import {beta6Ultimate} from '../config/beta6-balance.js';
 
 // Main fighters use Three.js positions and wall-clock status fields; the shared
@@ -9,7 +9,7 @@ export function createMainSeasonCombat(definitions,hooks) {
   const world=createBeta6Combat(definitions,{
     bounds:100,aimError:.08,
     // Knockout disables Pink's revive; read live because one world serves every mode.
-    get allowRevives(){return hooks.allowRevives?.()??true;},blocked:(x,z,r)=>hooks.blocked(x,z,r),
+    get allowRevives(){return hooks.allowRevives?.()??true;},encoreWithoutRevives:true,blocked:(x,z,r)=>hooks.blocked(x,z,r),
     bushAt:(x,z)=>hooks.bushAt?.(x,z)??false,
     destination:(a,b)=>hooks.destination?.(a.fighter,b)??b,
     onEvent(e){

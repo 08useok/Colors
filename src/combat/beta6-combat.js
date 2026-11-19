@@ -489,8 +489,10 @@ export function createBeta6Combat(definitions, options = {}) {
       aim = {};
     }
     if (a.id === 'pink') {
-      if (options.allowRevives === false) return false;
-      const allies = actors.filter(b => b !== a && !enemies(a, b) && distance(a, b) <= u.radius);
+      // Knockout bans revives; with encoreWithoutRevives the cast still gives living allies Encore.
+      const revives = options.allowRevives !== false;
+      if (!revives && !options.encoreWithoutRevives) return false;
+      const allies = actors.filter(b => b !== a && !enemies(a, b) && distance(a, b) <= u.radius && (revives || alive(b)));
       if (!allies.length) return false;
       return beginUltimate(a, target, () => {
       for (const b of allies) { if (!alive(b)) revive(b, a); else { b.encoreUntil = time + 12; b.encoreOwner = a; } }
