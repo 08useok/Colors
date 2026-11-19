@@ -20,12 +20,14 @@ assert(start >= 0 && end > start, 'balance block');
 const context = vm.createContext({ CURRENT_SEASON: 'beta8', CHARACTERS: structuredClone(baseline), BETA_CHARACTERS, applyBeta6Balance, applyBeta7Balance, applyBeta8Balance });
 vm.runInContext(main.slice(start, end), context);
 const expected = applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS));
+// Main-only balance on top of beta8 (v1.8.4).
+const MAIN_OVERRIDES = { red: { maxHealth: 8000, attackDamage: 2200 }, orange: { bombSplashDamage: 1000 }, cyan: { maxHealth: 7000, spreadLineDamage: 900, spreadLineRange: 9 }, mint: { maxHealth: 7000, iceBulletDamage: 1100 } };
 const ids = Object.keys(expected);
 assert.equal(ids.length, 17);
 assert.deepEqual(Object.keys(context.CHARACTERS).sort(), [...ids].sort());
 for (const id of ids) {
   for (const [key, value] of Object.entries(expected[id])) {
-    if (typeof value === 'number') assert.equal(context.CHARACTERS[id][key], value, `${id}.${key}`);
+    if (typeof value === 'number') assert.equal(context.CHARACTERS[id][key], MAIN_OVERRIDES[id]?.[key] ?? value, `${id}.${key}`);
   }
 }
 // Season 7 main-only tweaks must not leak into Season 8.
@@ -33,7 +35,7 @@ assert.equal(context.CHARACTERS.crystal.crystalDamage, expected.crystal.crystalD
 assert.equal(context.CHARACTERS.red.moveSpeedMultiplier, 1.15);
 assert.equal(context.CHARACTERS.orange.orangeUltimateEnabled, true);
 assert.equal(context.CHARACTERS.purple.purpleUltimateEnabled, true);
-console.log('PASS: 17 main definitions equal beta8 stats; Season 7 main-only tweaks excluded');
+console.log('PASS: 17 main definitions equal beta8 stats apart from main-only balance; Season 7 main-only tweaks excluded');
 
 // 2. Entry points on the page.
 for (const id of ids) assert(html.includes(`data-char="${id}"`), `select button ${id}`);

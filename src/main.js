@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=20";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=21";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -399,7 +399,7 @@ const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
 const BETA_SEASON_8_START_AT = new Date("2026-10-31T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.3" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.4" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_8_START_AT ? "beta8" : Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -426,6 +426,13 @@ if (["beta6", "beta7", "beta8"].includes(CURRENT_SEASON)) {
     releaseStats.purple.purpleUltimateEnabled = true;
     // Main aims Crystal's bind: the engine takes the first enemy inside this width, matching the warning line.
     releaseStats.crystal.ultimate.width = releaseStats.crystal.ultimate.telegraphWidth;
+    // Main-only Season 8 balance (v1.8.4): pull the strongest and weakest 1v1 characters toward the pack.
+    Object.assign(releaseStats.red, { maxHealth: 8000, attackDamage: 2200 });
+    releaseStats.orange.bombSplashDamage = 1000;
+    Object.assign(releaseStats.cyan, { maxHealth: 7000, spreadLineDamage: 900, spreadLineRange: 9 });
+    releaseStats.cyan.basicAttack.description = releaseStats.cyan.basicAttack.description.replace("알약당 700 피해, 사거리 8.33타일", "알약당 900 피해, 사거리 9타일");
+    releaseStats.cyan.basicAttack.descriptionEn = releaseStats.cyan.basicAttack.descriptionEn.replace("deals 700 damage with a 8.33-tile range", "deals 900 damage with a 9-tile range");
+    Object.assign(releaseStats.mint, { maxHealth: 7000, iceBulletDamage: 1100 });
   }
   // Main-only balance adjustments; beta definitions remain separate.
   if (CURRENT_SEASON === "beta7") {
