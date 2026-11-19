@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=18";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=19";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -12046,7 +12046,8 @@ function updateEffects(dt) {
 }
 
 function updatePointerAim(player = getPlayer()) {
-  if (!player || state.mobileMove.active) return;
+  // A finger dragging the ultimate button aims even while the joystick moves the player.
+  if (!player || (state.mobileMove.active && !state.ultimateTouchAim)) return;
   const rect = canvas.getBoundingClientRect();
   aimRaycaster.setFromCamera({x:((state.mouse.screenX-rect.left)/Math.max(rect.width,1))*2-1,y:-((state.mouse.screenY-rect.top)/Math.max(rect.height,1))*2+1},camera);
   if (!aimRaycaster.ray.intersectPlane(groundPlane,mouseAimWorld)) return;
@@ -12097,7 +12098,7 @@ function updatePlayerControls(dt) {
     player.yaw = moveAngleToward(player.yaw, targetYaw, dt * 28);
   } else {
     // 타겟 없음 → 일반 조준 (조이스틱 or 마우스)
-    const isMobile = state.mobileMove.active;
+    const isMobile = state.mobileMove.active && !state.ultimateTouchAim;
     if (isMobile) {
       if (Math.abs(inputX) > 0.001 || Math.abs(inputZ) > 0.001) {
         const desiredYaw = Math.atan2(tempVec3.x, tempVec3.z);
@@ -15522,19 +15523,19 @@ if (window.location.hash === "#chop-wood") {
   ultimateButton.addEventListener("pointerdown", (event) => {
     event.preventDefault();
     if (!state.running) return;
-    state.ultimateAiming = true;
+    state.ultimateAiming = true; state.ultimateTouchAim = false;
     ultimateButton.setPointerCapture(event.pointerId);
   });
   ultimateButton.addEventListener("pointermove", (event) => {
     if (!state.ultimateAiming) return;
-    state.mouse.screenX = event.clientX; state.mouse.screenY = event.clientY;
+    state.mouse.screenX = event.clientX; state.mouse.screenY = event.clientY; state.ultimateTouchAim = true;
   });
   ultimateButton.addEventListener("pointerup", () => {
     if (!state.ultimateAiming) return;
-    state.ultimateAiming = false; tryUseUltimate();
+    state.ultimateAiming = false; tryUseUltimate(); state.ultimateTouchAim = false;
   });
-  ultimateButton.addEventListener("pointercancel", () => { state.ultimateAiming = false; seasonUltimateAim.hide(); });
-  window.addEventListener("blur", () => { state.ultimateAiming = false; seasonUltimateAim.hide(); });
+  ultimateButton.addEventListener("pointercancel", () => { state.ultimateAiming = false; state.ultimateTouchAim = false; seasonUltimateAim.hide(); });
+  window.addEventListener("blur", () => { state.ultimateAiming = false; state.ultimateTouchAim = false; seasonUltimateAim.hide(); });
 }
 
 
@@ -15562,7 +15563,7 @@ function getSeasonCombat(){
    let goal=target;if(state.soccerMode&&state.soccerBall)goal=soccerBotGoal(f,target);else if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?15:-15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
    return state.eventMapLayout?navigateEventMap(state.eventMapLayout,{x:f.mesh.position.x,z:f.mesh.position.z},goal):goal;
   },
-  aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple","salmon"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
+  aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&(!state.mobileMove.active||state.ultimateTouchAim)&&["ivory","mint","yellow","purple","salmon"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
   automatic:f=>!state.chopWoodMode&&!state.takedownMode&&(!mpConfig||mpConfig.isHost),
   allowRevives:()=>!state.knockoutMode,
   damage:(target,amount,source)=>{if(!mpConfig||mpConfig.isHost)applyDamage(target,amount,source,true,false,true);},
