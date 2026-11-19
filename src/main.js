@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=10";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=11";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -8434,9 +8434,11 @@ function finishGoldRush(winner) {
   resultBody.textContent = winner?.isPlayer
     ? (currentLang === "en" ? "You held 10 gold for 10 seconds." : "금 10개를 10초간 지켰습니다.")
     : (currentLang === "en" ? `${winner?.name ?? "AI"} held the gold.` : `${winner?.name ?? "AI"}가 금을 지켰습니다.`);
+  // Gem Grab adds both teams' gems after this line, so it shows coins only (no gold count).
+  const goldText = state.gemGrabMode ? "" : currentLang === "en" ? `Gold ${player?.goldCount ?? 0}/10 · ` : `보유 금 ${player?.goldCount ?? 0}/10 · `;
   resultStats.textContent = currentLang === "en"
-    ? `Gold ${player?.goldCount ?? 0}/10 · Coins +${coinsEarned}${betaCreditsEarned ? ` · ★ Pending ${betaCreditsEarned}` : ""}`
-    : `보유 금 ${player?.goldCount ?? 0}/10 · 코인 +${coinsEarned}${betaCreditsEarned ? ` · ★ 대기 ${betaCreditsEarned}` : ""}`;
+    ? `${goldText}Coins +${coinsEarned}${betaCreditsEarned ? ` · ★ Pending ${betaCreditsEarned}` : ""}`
+    : `${goldText}코인 +${coinsEarned}${betaCreditsEarned ? ` · ★ 대기 ${betaCreditsEarned}` : ""}`;
   resultStreak.style.display = "none";
   resultOverlay.style.display = "flex";
   document.exitPointerLock?.();
@@ -15650,7 +15652,7 @@ function startMainGemGrab(){
 function updateMainGemGrab(dt){
  if(state.gameTime>=state.gemNextSpawnAt&&state.goldRushItems.length+gemTeamCount("a")+gemTeamCount("b")<GEM_GRAB_RULES.maxInPlay){spawnGoldRushPickup(0,0);state.gemNextSpawnAt=state.gameTime+GEM_GRAB_RULES.spawnInterval;}
  for(let i=state.goldRushItems.length-1;i>=0;i--){const item=state.goldRushItems[i];item.mesh.rotation.y+=dt*3;const f=state.players.find(f=>!f.dead&&Math.hypot(f.mesh.position.x-item.x,f.mesh.position.z-item.z)<=GEM_GRAB_RULES.pickupRange);if(f){f.goldCount=(f.goldCount??0)+1;disposeSceneObject(item.mesh);state.goldRushItems.splice(i,1);}}
- const a=gemTeamCount('a'),b=gemTeamCount('b');let escaped=gemEscapeResult(state.gemEscape,{a,b},state.gameTime);const leader=state.gemEscape.a!=null?'a':state.gemEscape.b!=null?'b':null;state.gemEscapeTeam=leader;state.gemEscapeAt=leader?state.gemEscape[leader]:0;
+ const a=gemTeamCount('a'),b=gemTeamCount('b');let escaped=gemEscapeResult(state.gemEscape,{a,b},state.gameTime);const ta=state.gemEscape.a,tb=state.gemEscape.b,leader=ta!=null&&(tb==null||ta<=tb)?'a':tb!=null?'b':null;state.gemEscapeTeam=leader;state.gemEscapeAt=leader?state.gemEscape[leader]:0;
  const timedOut=state.gameTime-state.gemStartedAt>=GEM_GRAB_RULES.matchSeconds;if(timedOut)escaped=a>b?'a':b>a?'b':null;
  document.body.classList.toggle('temple-countdown-final',!!leader&&state.gameTime-state.gemEscapeAt>=12);
  if(escaped||timedOut){const won=escaped===state.playerTeam;finishMainChampionsMatch({won,draw:!escaped,abandoned:false});const winner=won?getPlayer():escaped?state.players.find(f=>f.team===escaped):null;finishGoldRush(winner);resultTitle.textContent=timedOut&&!escaped?ui("시간 종료 · 무승부"):won?ui("유적 탈출 성공!"):ui("유적 탈출 실패");resultBody.textContent=timedOut?ui("경기 시간이 종료됐습니다."):ui("팀이 젬 10개 이상을 확보하고 15초를 버텼습니다.");resultStats.textContent+=(currentLang==='en'?' · Allied gems ':' · 아군 젬 ')+gemTeamCount(state.playerTeam)+(currentLang==='en'?' · Enemy gems ':' · 적 젬 ')+gemTeamCount(state.playerTeam==='a'?'b':'a');document.body.classList.remove('temple-countdown-final');gemGrabBgm.pause();}
