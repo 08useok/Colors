@@ -254,7 +254,7 @@ assert(runtime.includes('BETA_CHARACTERS.purple.purpleUltimateEnabled = true;'))
 assert(runtime.includes('document.title = "Colors - Beta Season 9 Champions";'));
 assert(runtime.includes('if (betaState.selectedCharacter === "orange" && (IS_BETA7_TEST || IS_BETA8_TEST))'));
 assert(runtime.includes('HAS_BETA6_CONTENT ? applyBeta6Balance(BASE_BETA_CHARACTERS)'));
-assert(runtime.includes('if (goldRushState.mode === "soccer") { updateSoccerBots(dt); return; }\n  if (beta6Combat) { updateBeta6BotCombat(dt); return; }'));
+assert(runtime.includes('if (goldRushState.mode === "soccer") { if (beta6Combat) updateSoccerEngineBots(dt); else updateSoccerBots(dt); return; }\n  if (beta6Combat) { updateBeta6BotCombat(dt); return; }'));
 assert(runtime.includes('if (beta6Combat !== world) return;'));
 // A lethal player hit can end the match and clear all actors during event delivery.
 // Exercise the bridge without a browser and verify it stops before using disposed state.
