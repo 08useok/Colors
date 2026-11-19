@@ -38,7 +38,7 @@ export function createMainSeasonCombat(definitions,hooks) {
     return a;
   }
   function synchronize(dt=0){const fighters=hooks.fighters();for(const[f,a]of units)if(!fighters.includes(f)){world.remove(a);units.delete(f);}for(const f of fighters)syncIn(f,add(f),dt);}
-  function target(a){return world.actors.filter(b=>b!==a&&b.hp>0&&(a.team==null||a.team!==b.team)).sort((b,c)=>Math.hypot(a.x-b.x,a.z-b.z)-Math.hypot(a.x-c.x,a.z-c.z))[0];}
+  function target(a,visible=false){return world.actors.filter(b=>b!==a&&b.hp>0&&(a.team==null||a.team!==b.team)&&!(visible&&world.hidden(b,a))).sort((b,c)=>Math.hypot(a.x-b.x,a.z-b.z)-Math.hypot(a.x-c.x,a.z-c.z))[0];}
   // Salmon capture devices are engine-only actors without a main fighter.
   function out(a){const f=a.fighter;if(!f)return;f.ammo=a.ammo;f[`${f.characterType}UltimateCharge`]=a.charge;f.seasonUltimateCharge=a.charge;f.seasonUltimateFieldActive=world.ultimateFieldActive(a);f.mintIce=a.ice;f.seasonActionLocked=world.time<a.lockUntil||world.time<a.frozenUntil||!!a.dash||!!a.leap||!!a.wave;f.seasonHidden=world.hidden(a);f.seasonSlow=world.time<a.slowUntil?1-a.slow:1;f.nextAttackAt=hooks.time()+Math.max(0,a.next-world.time);f.attackIndex=a.index;f.redGuardUntil=hooks.time()+Math.max(0,a.guardUntil-world.time);f.invulnerableUntil=hooks.time()+Math.max(0,a.invulnerableUntil-world.time);f.revealedUntil=hooks.time()+Math.max(0,a.revealedUntil-world.time);
     // Captured fighters ride Salmon's arc; restore the standing height once they land.
@@ -57,7 +57,10 @@ export function createMainSeasonCombat(definitions,hooks) {
       for(const unit of world.actors)out(unit);return fired;
     },
     cast(f,remote=false){
-      synchronize();const a=add(f),point=hooks.aim?.(f),b=target(a)??(point?{...point,hp:1}:null);
+      // The engine refuses a hidden target, so skip enemies in bushes. With none visible, cast toward the aim point
+      // or straight ahead; Crystal still needs a real enemy to bind.
+      synchronize();const a=add(f),point=hooks.aim?.(f),ahead={x:a.x+Math.sin(f.yaw)*6,z:a.z+Math.cos(f.yaw)*6,hp:1};
+      const b=target(a,true)??(point?{...point,hp:1}:f.characterType==='crystal'?null:ahead);
       if(remote)a.charge=a.u?.chargeRequired??0;
       const angle=point?Math.atan2(point.z-a.z,point.x-a.x):Math.PI/2-f.yaw;
       const cast=world.cast(a,b,{angle,...(point?{point}:{})});for(const unit of world.actors)out(unit);return cast;

@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=13";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=14";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -20,7 +20,7 @@ import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=14";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=17";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=3";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
