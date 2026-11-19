@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=15";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=16";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -13104,7 +13104,11 @@ function updateAttackAimIndicator() {
   if (state.mintUltimateAim) state.mintUltimateAim.visible = false;
   if (player && !player.dead && state.running && state.ultimateAiming) {
     const position = {x:player.mesh.position.x,y:showdownMapGroup.visible ? .16 : trainingMapGroup.visible ? .08 : 0,z:player.mesh.position.z};
-    seasonUltimateAim.show(ultimateGuide(player.characterType, CHARACTERS[player.characterType], { distance: Math.hypot(mouseAimWorld.x-position.x, mouseAimWorld.z-position.z), yaw: player.yaw }), position, player.yaw);
+    const guide = ultimateGuide(player.characterType, CHARACTERS[player.characterType], { distance: Math.hypot(mouseAimWorld.x-position.x, mouseAimWorld.z-position.z), yaw: player.yaw });
+    // Purple's takeoff and landing bursts also scatter thorns; outline their reach around both burst rings.
+    const purpleUltimate = player.characterType === "purple" ? CHARACTERS.purple.ultimate : null;
+    if (purpleUltimate?.projectileCount) guide.push(...guide.filter((part) => part.type === "ring").map((part) => ({ ...part, radius: purpleUltimate.projectileRange ?? part.radius })));
+    seasonUltimateAim.show(guide, position, player.yaw);
   }
   const charType = player?.characterType;
 
