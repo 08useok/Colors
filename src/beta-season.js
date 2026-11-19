@@ -45,8 +45,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=27";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=29";
-import { characterDisplayName } from "./LANGS/character-names.js?v=2";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=30";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=67";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -6454,20 +6453,24 @@ function reviveSoccerBot(bot) {
 }
 
 function resetSoccerPositions() {
-  // A goal resets the living only; anyone down keeps waiting for their own respawn timer.
-  if (!goldRushState.dead) {
-    goldRushState.health = goldRushState.maxHealth;
-    goldRushState.ammo = goldRushState.maxAmmo;
-    goldRushState.reloadTimer = 0;
-    updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
-    updateGoldRushCombatHud();
-    resetPlayer();
-    player.rotation.y = 0;
+  // The next round starts with everyone back, including anyone still down when the goal went in.
+  if (goldRushState.dead) {
+    grantBetaRespawnProtection(goldRushState, player);
+    goldRushState.dead = false;
+    player.visible = true;
+    playerGoldRushHealthBar.visible = true;
+    respawnOverlay.classList.add("hidden");
   }
+  goldRushState.health = goldRushState.maxHealth;
+  goldRushState.ammo = goldRushState.maxAmmo;
+  goldRushState.reloadTimer = 0;
+  updateGoldRushHealthBar(playerGoldRushHealthBar, goldRushState.health, goldRushState.maxHealth);
+  updateGoldRushCombatHud();
+  resetPlayer();
+  player.rotation.y = 0;
   soccerState.prevPlayerX = player.position.x;
   soccerState.prevPlayerZ = player.position.z;
   for (const bot of goldRushBots) {
-    if (bot.dead) continue;
     reviveSoccerBot(bot);
     bot.nextAttackAt = clock.elapsedTime + 1;
     bot.soccerKickReadyAt = clock.elapsedTime + 1;
@@ -6675,19 +6678,8 @@ function formatSoccerClock(remaining) {
   return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
-// Score line with everyone waiting to respawn, e.g. "BLUE 1 : 0 RED · 부활 나 3초 · 그린 2초".
-function soccerScoreText() {
-  const left = at => Math.max(1, Math.ceil(at - clock.elapsedTime));
-  const waiting = [
-    ...(goldRushState.dead ? [`나 ${left(goldRushState.respawnAt)}초`] : []),
-    ...goldRushBots.filter(bot => bot.dead).map(bot => `${({ raspberry: "라즈베리", black: "블랙", white: "화이트" })[bot.characterId] ?? characterDisplayName(bot.characterId, "ko")} ${left(bot.respawnAt)}초`),
-  ];
-  return `BLUE ${soccerState.scoreA} : ${soccerState.scoreB} RED${waiting.length ? ` · 부활 ${waiting.join(" · ")}` : ""}`;
-}
-
 function updateSoccer(dt) {
   clampSoccerActor(player.position);
-  goldRushRivalsEl.textContent = soccerScoreText();
   if (isSoccerFrozen()) {
     // 정지 시간은 경기 시계에서 빼고, 공도 그대로 둔다
     goldRushState.startedAt += dt;
@@ -6723,7 +6715,7 @@ function updateSoccer(dt) {
   const elapsed = clock.elapsedTime - goldRushState.startedAt;
   const remaining = Math.max(0, 180 - elapsed);
   goldRushTimerEl.textContent = soccerState.overtime ? "연장전 · 다음 골 승리" : formatSoccerClock(remaining);
-  goldRushRivalsEl.textContent = soccerScoreText();
+  goldRushRivalsEl.textContent = `BLUE ${soccerState.scoreA} : ${soccerState.scoreB} RED`;
   if (!soccerState.overtime && remaining <= 0) {
     if (soccerState.scoreA === soccerState.scoreB) soccerState.overtime = true;
     else endGoldRush(`SOCCER KICK 시간 종료 · ${soccerState.scoreA}:${soccerState.scoreB}`, soccerState.scoreA > soccerState.scoreB);
@@ -6777,10 +6769,7 @@ function soccerBotRoles() {
 }
 function updateSoccerEngineBots(dt) {
   if (isSoccerFrozen()) {
-    for (const bot of goldRushBots) {
-      if (bot.dead && clock.elapsedTime >= bot.respawnAt) reviveSoccerBot(bot);
-      faceGoldRushHealthBarToCamera(bot.healthBar);
-    }
+    for (const bot of goldRushBots) faceGoldRushHealthBarToCamera(bot.healthBar);
     return;
   }
   soccerBotRoles();
@@ -9600,9 +9589,13 @@ function updateGoldRush(dt) {
   if (goldRushState.mode === "knockout") { updateKnockout(dt); return; }
   faceGoldRushHealthBarToCamera(playerGoldRushHealthBar);
   if (goldRushState.dead) {
-    const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
-    respawnCountdownEl.textContent = String(Math.ceil(remaining));
-    if (remaining <= 0) respawnGoldRushPlayer();
+    // Soccer Kick: nobody respawns during the goal sequence and no timer shows; the next round revives everyone.
+    if (goldRushState.mode === "soccer" && soccerState.pendingReset) respawnOverlay.classList.add("hidden");
+    else {
+      const remaining = Math.max(0, goldRushState.respawnAt - clock.elapsedTime);
+      respawnCountdownEl.textContent = String(Math.ceil(remaining));
+      if (remaining <= 0) respawnGoldRushPlayer();
+    }
   }
   // 한 발만 써도 곧바로 채워진다. 공격 쿨다운과 무관하게 진행한다.
   if (!BETA_CHARACTERS[betaState.selectedCharacter]?.noAutomaticReload && !goldRushState.dead && goldRushState.ammo < goldRushState.maxAmmo && !(beta6Combat)) {
