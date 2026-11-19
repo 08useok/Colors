@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=8";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=9";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=13";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -15514,6 +15514,16 @@ if (window.location.hash === "#chop-wood") {
 }
 
 
+// Soccer Kick roles for each team's bots: the nearest bot goes behind the ball and kicks it, the next supports
+// up the field, and the rest guard their half. Only non-chasers stop to fight an enemy that comes close.
+function soccerBotGoal(f,target){
+ const ball=state.soccerBall.position,dir=f.team==='blue'?1:-1,W=SOCCER_FIELD_HALF_WIDTH-1.5,L=SOCCER_FIELD_HALF_LENGTH-1.5;
+ const inField=(x,z)=>({x:THREE.MathUtils.clamp(x,-W,W),z:THREE.MathUtils.clamp(z,-L,L)}),ballDistance=b=>Math.hypot(ball.x-b.mesh.position.x,ball.z-b.mesh.position.z);
+ const bots=state.players.slice(0,6).filter(b=>!b.dead&&b.team===f.team&&!b.isPlayer&&!b.isNetworkPlayer).sort((a,b)=>ballDistance(a)-ballDistance(b)||a.id-b.id),role=bots.indexOf(f);
+ if(role===0){const gx=-ball.x,gz=dir*(SOCCER_FIELD_HALF_LENGTH+5)-ball.z,length=Math.hypot(gx,gz)||1;return inField(ball.x-gx/length*.9,ball.z-gz/length*.9);}
+ if(target&&Math.hypot(target.x-f.mesh.position.x,target.z-f.mesh.position.z)<5)return target;
+ return role===1?inField(ball.x+(ball.x>0?-8:8),ball.z+dir*7):inField(ball.x*.35,-dir*L*.55+ball.z*.35);
+}
 let seasonCombat=null,seasonCombatVisuals=null,salmonCombatVisuals=null,seasonSkinEffects=null,seasonSkinEffectsTime=0;
 // Skin tier effects follow the equipped skin rarity (rare look only → legendary ambient).
 const fighterGround=f=>new THREE.Vector3(f.mesh.position.x,0,f.mesh.position.z);
@@ -15522,10 +15532,10 @@ function getSeasonCombat(){
  seasonCombatVisuals=createSeasonCombatVisuals(scene,CHARACTERS);salmonCombatVisuals=createSalmonVisuals(scene,()=>0);if(CURRENT_SEASON==="beta8")seasonSkinEffects=createSkinEffects(scene);
  seasonCombat=createMainSeasonCombat(CHARACTERS,{
   fighters:()=>state.players,time:()=>state.gameTime,
-  blocked:(x,z,r)=>state.solids.some(s=>Math.abs(x-s.x)<(s.halfW??s.width/2)+r&&Math.abs(z-s.z)<(s.halfD??s.depth/2)+r)||state.lakeRects.some(s=>Math.abs(x-s.x)<s.width/2+r&&Math.abs(z-s.z)<s.depth/2+r),
+  blocked:(x,z,r)=>(state.soccerMode&&(Math.abs(x)>SOCCER_FIELD_HALF_WIDTH-r||Math.abs(z)>SOCCER_FIELD_HALF_LENGTH-r))||state.solids.some(s=>Math.abs(x-s.x)<(s.halfW??s.width/2)+r&&Math.abs(z-s.z)<(s.halfD??s.depth/2)+r)||state.lakeRects.some(s=>Math.abs(x-s.x)<s.width/2+r&&Math.abs(z-s.z)<s.depth/2+r),
   bushAt:(x,z)=>state.bushes.some(b=>Math.hypot(x-b.x,z-b.z)<(b.radius??2)),
   destination:(f,target)=>{
-   let goal=target;if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?15:-15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
+   let goal=target;if(state.soccerMode&&state.soccerBall)goal=soccerBotGoal(f,target);else if(state.gemGrabMode&&gemTeamCount(f.team)>=10)goal={x:0,z:f.team==='a'?15:-15};else if(state.goldRushMode&&!state.soccerMode&&state.goldRushItems.length){const item=[...state.goldRushItems].sort((a,b)=>Math.hypot(a.x-f.mesh.position.x,a.z-f.mesh.position.z)-Math.hypot(b.x-f.mesh.position.x,b.z-f.mesh.position.z))[0];goal={x:item.x,z:item.z};}
    return state.eventMapLayout?navigateEventMap(state.eventMapLayout,{x:f.mesh.position.x,z:f.mesh.position.z},goal):goal;
   },
   aim:f=>f.isNetworkPlayer?f.seasonAimPoint:f.isPlayer&&!state.mobileMove.active&&["ivory","mint","yellow","purple","salmon"].includes(f.characterType)?{x:mouseAimWorld.x,z:mouseAimWorld.z}:null,
