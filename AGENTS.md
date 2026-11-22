@@ -2,55 +2,55 @@
 # Keep this file under 60 lines. Operational info only — no status updates.
 
 ## Build & Run
-No build step (vanilla JS ES modules, Three.js r165 via CDN, no bundler).
-Serve the project root with any static file server, then open in a browser:
+No build step (vanilla JS ES modules, Three.js via CDN, no bundler).
+Serve the project root with any static server (`py -m http.server 4173`, or
+`preview_start` with `skull-creek` from `.claude/launch.json`).
+- Main: `index.html` → `src/main.js`
+- Beta: `beta-season.html` → `src/beta-season.js`
+- Official: `official.html` → same `src/beta-season.js`
+- Wiki: `wiki.html` → `src/wiki.js`
 
-```powershell
-py -m http.server 4173
-```
-
-Open `http://localhost:4173`. Entry point: `index.html` → `src/main.js` (type="module").
-
-For multiplayer development, run the Cloudflare Worker in a second terminal:
-
-```powershell
-npm install
-npm run dev
-```
-
-Wrangler listens on `http://localhost:8787`; deploy with `npm run deploy`.
+Multiplayer Worker (`party/server.js`, `wrangler.jsonc`): `npm install`, then
+`npm run dev` (port 8787, or `preview_start` with `multiplayer`).
+The user deploys (`npm run deploy`) — just say when Worker code changed.
 
 ## Validation
-- Tests: plain node scripts in `tools/` (e.g. `node tools/test-ranked-matchmaking.mjs`);
-  ranked server/QA scripts need `npm run dev` (8787) and a static server.
-- Typecheck: none (plain JS, no TS)
-- Lint: none configured
-- Build: none (no bundler/compile step)
-- Manual verification: use the Claude Preview MCP tools (`preview_start`,
-  `preview_eval`, `preview_console_logs`, `preview_screenshot`) to run the
-  page and check for runtime errors after changes.
+- Tests: plain node scripts in `tools/` (`node tools/<name>.mjs`); common ones
+  are in `package.json` scripts (`check:*`). Ranked/QA scripts need the
+  Worker (8787) and a static server.
+- No typecheck, lint, or build.
+- Browser check: built-in browser tools (`preview_start`, `javascript_tool`,
+  `read_console_messages`, `computer` screenshot). Screenshots can time out;
+  prefer `javascript_tool` + console errors. Long scripts: store results in
+  `window.__res` and poll instead of awaiting past the 45 s tool timeout.
 
-## Operational Notes
-- Single source file: `src/main.js` (~2700+ lines). Markup in `index.html`,
-  styles in `styles.css`.
-- Reload via `preview_eval` with `window.location.reload()`, then check
-  `preview_console_logs(level: "error")`.
-- For quick in-page testing, temporarily expose internals via
-  `window.__debug = { ... }` near the bottom of `src/main.js` (after
-  `createMap()`), test via `preview_eval`, then remove before committing.
-- `preview_screenshot` can be flaky/time out in this environment; prefer
-  `preview_eval` + `preview_console_logs` for verification when it hangs.
+## Layout
+- `src/main.js` (~16k lines): main season. Balance on top of beta8 lives in
+  its `if (CURRENT_SEASON === "beta8") {...}` block (`releaseStats`);
+  `CURRENT_VERSION` drives the lobby version label.
+- `src/beta-season.js` (~11k lines): beta + official seasons.
+- `src/combat/beta6-combat.js`: shared combat engine (main, beta, official).
+  Main reaches it through `src/combat/main-season-combat.js`.
+- `src/config/`: characters (`beta-characters.js`), per-season balance
+  (`beta6..9-balance.js`), modes, maps, skins, gadgets, patch notes.
+- `src/LANGS/`: ko/en UI and archive text. `specs/`: specs and patch notes.
 
-### Codebase Patterns
-- `state` object holds all mutable game state (players, projectiles, effects,
-  zone, lobby/account data).
-- Transient visuals (sparks, slashes, damage popups) go through
-  `state.effects` as `{ mesh, life, maxLife, type }`, processed in
-  `updateEffects(dt)`.
-- Character stats/config live in `CHARACTERS` (red/green/blue).
-- Battle map geometry/solids/lake/bushes are built in `createMap()` into
-  `battleMapGroup` + `state.battleSolids/battleLakeRects/battleBushes`;
-  training map is separate (`createTrainingMap()` / `trainingMapGroup`).
-- When tearing down a mode (e.g. `exitTraining()`), always remove fighter
-  meshes/projectiles/effects from `scene` and clear the corresponding
-  `state` arrays to avoid leftover objects.
+## Working Rules
+- Cache busting: when a module changes, bump the `?v=` on every import of it
+  (and the `<script>` tag in the HTML that loads the entry file).
+- The working tree usually holds the user's uncommitted edits. Never commit
+  them: build changes from `git show HEAD:path`, then stage with
+  `git hash-object -w` + `git update-index --cacheinfo`.
+- Commit locally; push only when the user asks.
+- Patch notes go in the same commit as the change:
+  - Main: `index.html` patch entry + `src/LANGS/archive-text.js` (ko/en) +
+    `specs/patch-notes.md`, and bump `CURRENT_VERSION`.
+  - Beta/official: `src/config/beta9-patch-notes.js` summary.
+- Main-only balance changes also update `MAIN_OVERRIDES` in
+  `tools/test-main-season8-release.mjs`.
+
+## Codebase Patterns
+- `state` holds all mutable game state; transient visuals go through
+  `state.effects` (`{ mesh, life, maxLife, type }`, `updateEffects(dt)`).
+- When tearing down a mode, remove meshes/projectiles/effects from `scene`
+  and clear the matching `state` arrays.
