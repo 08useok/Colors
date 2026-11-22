@@ -26,7 +26,7 @@ import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, mapSightBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=5";
 import { canyonKnockoutMap } from './config/beta-canyon-map.js?v=1';
-import { gemSpringsMap, GEM_SPRINGS_MAP_INDEX } from './config/beta-gem-springs-map.js?v=1';
+import { drawnEventMap } from './config/drawn-event-maps.js?v=1';
 import * as THREE from "three";
 const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
 const respawnShields = createRespawnShields();
@@ -46,7 +46,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=28";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=37";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=38";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=71";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -55,7 +55,7 @@ import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, T
 import { createOfficialUi } from "./official/official-ui.js?v=2";
 import { plazaArenaMap } from "./official/plaza-maps.js?v=1";
 import { createRankedSession, packFighter } from "./official/ranked-net.js?v=1";
-import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=1";
+import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=2";
 import { createTransformModels } from "./visuals/transform-models.js?v=2";
 import { TRANSFORMS, TRANSFORM_STATS } from "./config/transforms.js";
 import { SKINS, getSkinsForSeason, migrateSkinId } from "./config/skins.js?v=0.8.4";
@@ -7021,7 +7021,7 @@ function clearHotZone() {
 }
 function startHotZone() {
   const index = Math.max(0, Number(document.getElementById("beta-event-map-variant")?.value) || 0);
-  hotZoneState = createHotZone(index);
+  hotZoneState = createHotZone(index, activeEventLayout?.hotZones ?? null);
   for (const zone of hotZoneState.zones) {
     const group = new THREE.Group();
     const disc = new THREE.Mesh(new THREE.CircleGeometry(zone.radius, 48), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .2, depthWrite: false }));
@@ -9320,8 +9320,9 @@ function prepareBetaEventMap(mode,plus) {
   activeEventLayout=["knockout","gemGrab"].includes(mode) ? (IS_OFFICIAL_SEASON ? plazaArenaMap(mode,index) : teamArenaMap(mode,index)) : eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
   // Beta Knockout map 4: river canyon, drawn in beta-canyon-map.js.
   if(!IS_OFFICIAL_SEASON&&mode==="knockout"&&index===3)activeEventLayout=canyonKnockoutMap();
-  // Gem Grab map 5 (beta and official): four springs, drawn in beta-gem-springs-map.js.
-  if(mode==="gemGrab"&&index===GEM_SPRINGS_MAP_INDEX)activeEventLayout=gemSpringsMap();
+  // Drawn maps (list numbers 4+, beta and official), see drawn-event-maps.js. Hot Zone runs on the Gem Grab arena.
+  const drawn=drawnEventMap(goldRushState.hotZone?"hotZone":mode,index);
+  if(drawn)activeEventLayout=drawn;
   if(mode==="showdown")activeEventLayout.navigationStep=showdownProfile.navigationStep;
   const addWall=r=>{
     const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));

@@ -10,8 +10,9 @@ export const HOT_ZONE_LAYOUTS = Object.freeze([
   [{ x: 0, z: -7, radius: 3 }, { x: 0, z: 7, radius: 3 }],
 ]);
 
-export function createHotZone(mapIndex = 0) {
-  const layout = HOT_ZONE_LAYOUTS[Math.max(0, Math.min(HOT_ZONE_LAYOUTS.length - 1, mapIndex | 0))];
+// Drawn maps bring their own zones (drawn-event-maps.js); otherwise the list number picks a shared layout.
+export function createHotZone(mapIndex = 0, mapZones = null) {
+  const layout = mapZones ?? HOT_ZONE_LAYOUTS[Math.max(0, Math.min(HOT_ZONE_LAYOUTS.length - 1, mapIndex | 0))];
   return { zones: layout.map(z => ({ ...z, owner: null })), score: { a: 0, b: 0 }, winner: null };
 }
 
