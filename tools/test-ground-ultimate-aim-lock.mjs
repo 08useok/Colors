@@ -40,4 +40,22 @@ for (const id of ['ivory', 'mint', 'raspberry']) {
     near(zone, point, `${id} zone`);
   }
 }
+{
+  // Purple's leap lands on the aimed point even if Purple moves during the cast motion.
+  const config = structuredClone(defs);
+  const ult = config.purple.special ?? config.purple.ultimate;
+  ult.motionWindup ||= .25;
+  const w = createBeta6Combat(config, { bounds: 40 });
+  const purple = w.add('purple', { automatic: false, team: 'a', x: -10, z: 0, next: 99 });
+  const enemy = w.add('red', { automatic: false, team: 'b', x: 20, z: 20, next: 99 });
+  assert(purple.u.motionWindup > 0, 'purple has a cast motion');
+  purple.charge = purple.u.chargeRequired;
+  const point = { x: -5, z: 2 };
+  assert(w.cast(purple, enemy, { point, angle: Math.atan2(point.z, point.x + 10) }), 'purple cast');
+  let leap = null;
+  for (let i = 0; i < 60 * 2 && !leap; i++) { if (purple.ultimatePreparing) { purple.x += .1; purple.z -= .08; } w.update(1 / 60); leap = purple.leap; }
+  assert(leap, 'purple leaps');
+  assert(leap.from.x > -9.5, 'purple moved during the cast motion');
+  near(leap.to, point, 'purple landing');
+}
 console.log('ground ultimate aim lock: ok');

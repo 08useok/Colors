@@ -535,7 +535,7 @@ export function createBeta6Combat(definitions, options = {}) {
       // ultimate hits can immediately begin charging the next ultimate.
       if (a.id === 'blue' && a.automatic && a.d.dashAwayFromTarget) yaw += Math.PI;
       a.angle = yaw;
-      // Ground-targeted ultimates land where they were aimed even if the caster moves during the cast motion.
+      // Ground-targeted ultimates (and Purple's leap landing) land where they were aimed even if the caster moves during the cast motion.
       const castX = a.x, castZ = a.z;
       return beginUltimate(a, target, () => {
       if (a.id === 'lavender') zones.push({ key: ++serial, owner: a, kind: 'fragrance', x: a.x, z: a.z,
@@ -602,8 +602,8 @@ export function createBeta6Combat(definitions, options = {}) {
         const bounds = options.bounds ?? 24;
         const from = { x: a.x, z: a.z };
         const to = {
-          x: clamp(a.x + Math.cos(yaw) * reach, -bounds, bounds),
-          z: clamp(a.z + Math.sin(yaw) * reach, -bounds, bounds),
+          x: clamp(castX + Math.cos(yaw) * reach, -bounds, bounds),
+          z: clamp(castZ + Math.sin(yaw) * reach, -bounds, bounds),
         };
         a.leap = { from, to, startedAt: time, duration: u.duration, jumpHeight: u.jumpHeight };
         a.lockUntil = time + u.duration;
