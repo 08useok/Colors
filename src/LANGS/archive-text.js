@@ -5,6 +5,8 @@ export const ARCHIVE_TEXT = {
   "roadmapChampionsMain": {"ko": "11/16~ 메인 로비 「🏆 챔피언스」 · 17명 생존전 (매일 18:10 컷) → 사커 킥 → 4강 1대1 듀얼", "en": "From 11/16 via 🏆 Champions in the main lobby · 17-character survival (daily cut at 18:10) → Soccer Kick → 1v1 duel top 4"},
   "roadmapChampionsReward": {"ko": "👑 베타 우승: 정식 시즌 신규 가젯 · 메인 우승: 챔피언스 왕관 스킨", "en": "👑 Beta winner: new official gadget · Main winner: Champions Crown skin"},
   "roadmapChampionsRewardCard": {"ko": "베타 우승 캐릭터는 정식 시즌에서 받을 새 가젯을 누구보다 먼저 획득합니다. 메인 우승 캐릭터의 「챔피언스 왕관」 스킨은 메인 대회 경기를 한 번 이상 끝까지 치른 플레이어 모두에게 지급됩니다.", "en": "The beta champion gets its new official-season gadget first. The main champion's Champions Crown skin goes to every player who finished at least one main event match."},
+  "mainV185Title": {"ko": "v1.8.5 — 2026.11.22 · 버그 수정", "en": "v1.8.5 — 2026.11.22 · Bug fixes"},
+  "mainV185Lavender": {"ko": "라벤더 — 궁극기 사용 중 쓰러져도 향기 장판이 남아 계속 피해를 주던 문제를 수정했습니다. 이제 라벤더가 쓰러지면 장판도 바로 사라집니다.", "en": "Lavender — fixed her fragrance field lingering and dealing damage after she went down during her ultimate. The field now disappears as soon as she goes down."},
   "mainV184Title": {"ko": "v1.8.4 — 2026.11.19 · 밸런스 조정", "en": "v1.8.4 — 2026.11.19 · Balance update"},
   "mainV184Red": {"ko": "레드 (하향) — 체력 9000 → 8000, 일반 공격 피해 2400 → 2200", "en": "Red (nerf) — HP 9000 → 8000, basic attack damage 2400 → 2200"},
   "mainV184Orange": {"ko": "오렌지 (하향) — 과즙 피해 1170 → 1000", "en": "Orange (nerf) — juice splash damage 1170 → 1000"},

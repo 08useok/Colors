@@ -906,6 +906,8 @@ export function createBeta6Combat(definitions, options = {}) {
     for (let i = zones.length - 1; i >= 0; i--) {
       const zone = zones[i], a = zone.owner;
       if (time + 1e-9 >= zone.until) { zones.splice(i, 1); continue; }
+      // Lavender's fragrance field follows her, so it ends as soon as she goes down.
+      if (zone.kind === 'fragrance' && !alive(a)) { zones.splice(i, 1); continue; }
       if (zone.kind === 'fragrance') { zone.x = a.x; zone.z = a.z; }
       const center = zone.kind === 'lock' ? a : zone;
       for (const b of actors) if (alive(b) && enemies(a, b) && distance(center, b) <= zone.radius) {
