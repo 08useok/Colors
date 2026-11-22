@@ -46,8 +46,8 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=29";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=40";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=71";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=44";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=72";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
@@ -7800,6 +7800,10 @@ function processBeta6CombatEvent(event) {
         const to = event.owner.id === "crystal" ? new THREE.Vector3(event.owner.x, groundHeightAt(event.owner.x,event.owner.z)+1, event.owner.z) : event.target?.bot?.mesh.position ?? player.position;
         if (from) createGoldRushAttackEffect(from, to, CHARACTERS.find(c => c.id === event.owner.id)?.color ?? 0xffffff);
         if (event.type === "ultimate") canvas.dataset[event.owner === beta6PlayerActor ? "lastBeta6PlayerUltimate" : "lastBeta6BotUltimate"] = event.owner.id;
+      }
+      if (event.type === "gadgetStunShot") {
+        const y = groundHeightAt(event.from.x, event.from.z) + 1;
+        createGoldRushAttackEffect(new THREE.Vector3(event.from.x, y, event.from.z), new THREE.Vector3(event.to.x, y, event.to.z), 0xffd43b);
       }
       if (event.type === "gadget") {
         const position = beta6ActorPosition(event.owner);

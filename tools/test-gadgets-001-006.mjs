@@ -10,11 +10,17 @@ const world = (extra = {}) => createBeta6Combat(defs, { bounds: 19.4, gadgets: t
 const step = (w, s) => { for (let i = 0; i < Math.round(s * 60); i++) w.update(1 / 60); };
 for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(GADGETS[id]?.summary, `${id} has a gadget`);
 
-{ // Red: the next attack's first landing punch stuns for 1 s; a normal attack does not.
-  const w = world(), a = w.add('red', { automatic: false, x: 0, next: 0 }), b = w.add('cyan', { automatic: false, x: 2, team: 'b' });
-  assert.equal(w.gadget(a), true); assert.equal(a.empoweredAttack, 'stun');
-  w.fire(a, b); step(w, .1);
-  assert(b.lockUntil > w.time + .5, 'stunned'); assert.equal(a.empoweredAttack, null);
+{ // Red: a straight 4-tile shot along the aim stuns the first enemy for 1 s, with no ammo and no damage.
+  const w = world(), a = w.add('red', { automatic: false, x: 0, next: 0 }), b = w.add('cyan', { automatic: false, x: 3, team: 'b' }), c = w.add('cyan', { automatic: false, x: 3.6, team: 'b' });
+  assert.equal(w.gadget(a, { angle: 0 }), true); assert(!a.empoweredAttack, 'no empowered attack');
+  assert(b.lockUntil > w.time + .9 && b.lockUntil <= w.time + 1, 'first enemy stunned for 1 s');
+  assert(!(c.lockUntil > w.time), 'only one enemy'); assert.equal(b.hp, b.d.maxHealth, 'no damage'); assert.equal(a.ammo, a.d.maxAmmo, 'no ammo used');
+  const far = world(), a3 = far.add('red', { automatic: false, x: 0 }), b3 = far.add('cyan', { automatic: false, x: 5, team: 'b' });
+  far.gadget(a3, { angle: 0 }); assert(!(b3.lockUntil > far.time), 'beyond 4 tiles');
+  const side = world(), a4 = side.add('red', { automatic: false, x: 0 }), b4 = side.add('cyan', { automatic: false, x: 0, z: 3, team: 'b' });
+  side.gadget(a4, { angle: 0 }); assert(!(b4.lockUntil > side.time), 'off the line');
+  const wall = world({ blocked: (x, z) => Math.abs(x - 1.5) < .3 && Math.abs(z) < 3 }), a5 = wall.add('red', { automatic: false, x: 0 }), b5 = wall.add('cyan', { automatic: false, x: 3, team: 'b' });
+  wall.gadget(a5, { angle: 0 }); assert(!(b5.lockUntil > wall.time), 'not through walls');
   const w2 = world(), a2 = w2.add('red', { automatic: false, x: 0, next: 0 }), b2 = w2.add('cyan', { automatic: false, x: 2, team: 'b' });
   w2.fire(a2, b2); step(w2, .1); assert(!(b2.lockUntil > w2.time), 'no stun without the gadget');
 }
@@ -88,6 +94,6 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
 { // Bots: Orange guards when hurt in a fight; Red empowers when the target is in reach.
   const w = world(), o = w.add('orange', { x: 0, hp: defs.orange.maxHealth * .5 }), r = w.add('red', { x: 3, team: 'b' });
   step(w, .3);
-  assert(o.gadgetReadyAt > 0, 'Orange bot used 껍질 보호'); assert(r.gadgetReadyAt > 0 || r.empoweredAttack === 'stun' || r.gadgetReadyAt === 0);
+  assert(o.gadgetReadyAt > 0, 'Orange bot used 껍질 보호'); assert(r.gadgetReadyAt > 0 || r.gadgetReadyAt === 0);
 }
-console.log('PASS gadgets #001-#006: Red stun punch, Green recall, Blue auto tracker, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');
+console.log('PASS gadgets #001-#006: Red stun shot, Green recall, Blue auto tracker, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');

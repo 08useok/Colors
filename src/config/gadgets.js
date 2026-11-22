@@ -14,8 +14,8 @@
 // 11.22 cooldowns: +3 s for gadgets worth the most 1v1 win rate (Crystal, White, Ivory, Gold), -3 s for those worth
 // about nothing (Lavender, Blue, Raspberry, Purple, Cyan, Salmon, Yellow, Mint). Red's stun punch is kept on purpose.
 export const GADGETS = {
-  red: { name: '기절 펀치', cooldown: 16, kind: 'empowerAttack', effect: 'stun', stunDuration: 1,
-    summary: '다음 일반 공격이 처음 적중한 적을 1초 동안 기절시킵니다.' },
+  red: { name: '기절 펀치', cooldown: 16, kind: 'stunShot', range: 4, width: 1, stunDuration: 1,
+    summary: '조준한 방향으로 4타일 직선 충격파를 날려 처음 맞은 적을 1초 동안 기절시킵니다. 탄약을 쓰지 않고 피해는 없으며 벽을 통과하지 않습니다.' },
   green: { name: '부메랑 리콜', cooldown: 12, kind: 'recall', returnSpeedBonus: .25,
     summary: '날아가고 있는 부메랑을 모두 즉시 되돌립니다. 돌아오는 속도가 25% 빨라집니다.' },
   blue: { name: '오토 트래커', cooldown: 11, kind: 'autoFire', duration: 3, maxShots: 2, detectRange: 10, homingTurnRate: 4, damageBonus: .1,

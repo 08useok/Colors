@@ -2,7 +2,7 @@ import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 import { TRANSFORMS, TRANSFORM_STATS } from '../config/transforms.js';
-import { GADGETS } from '../config/gadgets.js?v=cooldowns-20261122';
+import { GADGETS } from '../config/gadgets.js?v=stun-20261122';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
@@ -91,6 +91,26 @@ export function createBeta6Combat(definitions, options = {}) {
       // Pressed straight into a wall: nothing happens and the cooldown is kept.
       if (Math.hypot(a.x - from.x, a.z - from.z) < .2) return false;
       a.angle = yaw;
+    } else if (g.kind === 'stunShot') {
+      // Red 기절 펀치: one straight shot along the aim, no ammo and no damage; the first enemy it reaches
+      // within `range` tiles (not through walls) is stunned for `stunDuration` s.
+      const yaw = aim.angle ?? a.angle, cos = Math.cos(yaw), sin = Math.sin(yaw);
+      let reach = g.range;
+      for (let step = .25; step <= g.range; step += .25) if (sightBlocked(a.x + cos * step, a.z + sin * step, .1)) { reach = step; break; }
+      let target = null, along = Infinity;
+      for (const b of actors) {
+        if (!alive(b) || b.isSalmonDevice || !enemies(a, b) || time < (b.invulnerableUntil ?? 0)) continue;
+        const dx = b.x - a.x, dz = b.z - a.z, t = dx * cos + dz * sin, side = Math.abs(dz * cos - dx * sin);
+        if (t >= 0 && t <= reach && side <= g.width / 2 + .5 && t < along) { target = b; along = t; }
+      }
+      a.angle = yaw;
+      const end = target ? { x: target.x, z: target.z } : { x: a.x + cos * reach, z: a.z + sin * reach };
+      emit('gadgetStunShot', { owner: a, from: { x: a.x, z: a.z }, to: end, target });
+      if (target) {
+        const until = time + (g.stunDuration ?? 1);
+        target.lockUntil = Math.max(target.lockUntil, until); target.slowUntil = Math.max(target.slowUntil, until); target.slow = 1; control(target, a);
+        emit('gadgetStun', { owner: a, target, until });
+      }
     } else if (g.kind === 'empowerAttack') a.empoweredAttack = g.effect;
     else if (g.kind === 'recall') {
       // Green: every boomerang still flying out turns back at once, faster than a normal return.
@@ -727,7 +747,8 @@ export function createBeta6Combat(definitions, options = {}) {
           const low = a.hp <= a.d.maxHealth * .35;
           if (low && gap < reach + 1) gadget(a, { angle: Math.atan2(a.z - target.z, a.x - target.x) });
           else if (!low && gap > reach + 1 && gap < reach + a.g.distance + 1) gadget(a, { angle: Math.atan2(target.z - a.z, target.x - a.x) });
-        } else if (a.g.kind === 'empowerAttack' && gap <= reach && !a.empoweredAttack) gadget(a);
+        } else if (a.g.kind === 'stunShot' && gap <= a.g.range && pathClear(a, target)) gadget(a, { angle: Math.atan2(target.z - a.z, target.x - a.x) });
+        else if (a.g.kind === 'empowerAttack' && gap <= reach && !a.empoweredAttack) gadget(a);
         else if (a.g.kind === 'recall' && a.ammo < 1 && projectiles.some(p => p.owner === a && p.kind === 'boomerang' && !p.returning)) gadget(a);
         else if (a.g.kind === 'brake' && a.dash) gadget(a);
         else if (a.g.kind === 'autoFire' && a.ammo >= 2 && !hidden(target, a) && gap <= (a.g.detectRange ?? 10) && pathClear(a, target)) gadget(a);
