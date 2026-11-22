@@ -7,8 +7,8 @@ export const POWER_MAX = 11;
 export const POWER_STEP = 0.02;          // +2% health and damage per power (power 11 = +20%)
 export const GADGET_POWER = 7;           // gadget unlocks at power 7
 export const TRANSFORM_POWER = 11;       // transform unlocks at power 11
-// Coins to go from power p to p + 1 (index p - 1). 1→2 costs 20, 10→11 costs 1,500; 4,475 in total.
-export const POWER_UPGRADE_COSTS = Object.freeze([20, 45, 80, 130, 200, 300, 450, 650, 1100, 1500]);
+// Coins to go from power p to p + 1 (index p - 1). 1→2 costs 100, 10→11 costs 7,500; 22,375 in total.
+export const POWER_UPGRADE_COSTS = Object.freeze([100, 225, 400, 650, 1000, 1500, 2250, 3250, 5500, 7500]);
 
 const clampPower = p => Math.max(1, Math.min(POWER_MAX, Math.floor(Number(p) || 1)));
 export const powerMultiplier = p => 1 + POWER_STEP * (clampPower(p) - 1);

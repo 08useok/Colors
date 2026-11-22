@@ -6,12 +6,12 @@ import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 
 const fresh = () => ({ coins: 10000, credits: 0, ownedCharacters: ['red', 'blue'], official: P.normalizeOfficial({}) });
 
-{ // Power: +2% per level, 11 = +20%; costs 20 … 1,500 (4,475 total); gadget at 7, transform at 11.
+{ // Power: +2% per level, 11 = +20%; costs 100 … 7,500 (22,375 total); gadget at 7, transform at 11.
   assert.equal(P.powerMultiplier(1), 1);
   assert(Math.abs(P.powerMultiplier(11) - 1.2) < 1e-12);
-  assert.equal(P.POWER_UPGRADE_COSTS[0], 20); assert.equal(P.POWER_UPGRADE_COSTS.at(-1), 1500);
-  assert.equal(P.POWER_UPGRADE_COSTS.reduce((a, b) => a + b), 4475);
-  const s = fresh();
+  assert.equal(P.POWER_UPGRADE_COSTS[0], 100); assert.equal(P.POWER_UPGRADE_COSTS.at(-1), 7500);
+  assert.equal(P.POWER_UPGRADE_COSTS.reduce((a, b) => a + b), 22375);
+  const s = fresh(); s.coins = 30000;
   assert.equal(P.powerOf(s.official, 'red'), 1);
   for (let p = 1; p < 7; p++) assert.equal(P.upgradePower(s, 'red').ok, true);
   assert.equal(P.powerOf(s.official, 'red'), 7);
@@ -19,7 +19,7 @@ const fresh = () => ({ coins: 10000, credits: 0, ownedCharacters: ['red', 'blue'
   while (P.upgradePower(s, 'red').ok);
   assert.equal(P.powerOf(s.official, 'red'), 11);
   assert(P.transformUnlocked(s.official, 'red'));
-  assert.equal(s.coins, 10000 - 4475);
+  assert.equal(s.coins, 30000 - 22375);
   assert.equal(P.upgradePower(s, 'red').reason, 'max');
   s.coins = 5; assert.equal(P.upgradePower(s, 'blue').reason, 'coins');
 }
