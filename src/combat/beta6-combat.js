@@ -535,11 +535,13 @@ export function createBeta6Combat(definitions, options = {}) {
       // ultimate hits can immediately begin charging the next ultimate.
       if (a.id === 'blue' && a.automatic && a.d.dashAwayFromTarget) yaw += Math.PI;
       a.angle = yaw;
+      // Ground-targeted ultimates land where they were aimed even if the caster moves during the cast motion.
+      const castX = a.x, castZ = a.z;
       return beginUltimate(a, target, () => {
       if (a.id === 'lavender') zones.push({ key: ++serial, owner: a, kind: 'fragrance', x: a.x, z: a.z,
         radius: u.radius, until: time + u.duration, next: time, tickInterval: u.tickInterval });
       else if (a.id === 'raspberry') {
-        const reach = Math.min(dist, u.castRange), x = a.x + Math.cos(yaw) * reach, z = a.z + Math.sin(yaw) * reach;
+        const reach = Math.min(dist, u.castRange), x = castX + Math.cos(yaw) * reach, z = castZ + Math.sin(yaw) * reach;
         // One prison per Raspberry: a new cast replaces the old warning or field.
         for (let i = zones.length - 1; i >= 0; i--) if (zones[i].owner === a && ['vinePrison', 'vinePrisonWarning'].includes(zones[i].kind)) zones.splice(i, 1);
         zones.push({ key: ++serial, owner: a, kind: 'vinePrisonWarning', x, z, radius: u.radius, until: time + u.telegraph });
@@ -569,7 +571,7 @@ export function createBeta6Combat(definitions, options = {}) {
       } else if (a.id === 'cyan') shot(a, yaw, a.d.spreadLineSpeed * u.speedMultiplier, u.range, u.damage, { kind: 'gale', ultimate: true, radius: u.projectileRadius });
       else if (a.id === 'gold') after(u.delay, a, () => zones.push({ key: ++serial, owner: a, kind: 'lock', until: time + u.duration, radius: u.radius, next: time, tickInterval: u.tickInterval ?? 1 }), true);
       else if (a.id === 'ivory') {
-        const x = a.x + Math.cos(yaw) * Math.min(dist, u.castRange), z = a.z + Math.sin(yaw) * Math.min(dist, u.castRange), offset = u.patternRadius / Math.sqrt(2);
+        const x = castX + Math.cos(yaw) * Math.min(dist, u.castRange), z = castZ + Math.sin(yaw) * Math.min(dist, u.castRange), offset = u.patternRadius / Math.sqrt(2);
         // Season 9: the five overlapping impacts deal their impact damage once per target per cast.
         const impactHits = new Set();
         for (const [ox, oz] of [[0, 0], [-offset, -offset], [-offset, offset], [offset, -offset], [offset, offset]]) {
@@ -608,7 +610,7 @@ export function createBeta6Combat(definitions, options = {}) {
         purpleLeapBurst(a, from, 'takeoff');
       }
       else if (a.id === 'mint') {
-        const reach = Math.min(dist, u.castRange), center = { x: a.x + Math.cos(yaw) * reach, z: a.z + Math.sin(yaw) * reach };
+        const reach = Math.min(dist, u.castRange), center = { x: castX + Math.cos(yaw) * reach, z: castZ + Math.sin(yaw) * reach };
         after(reach / 14 + .08, a, () => zones.push({ key: ++serial, ...center, owner: a, kind: 'mint', started: time, until: time + u.duration, next: time, radius: u.radius }));
       } else if (a.id === 'azure') wave(a, yaw, true);
       else if (a.id === 'crystal') {
