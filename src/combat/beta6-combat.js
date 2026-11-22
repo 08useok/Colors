@@ -2,7 +2,7 @@ import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 import { TRANSFORMS, TRANSFORM_STATS } from '../config/transforms.js';
-import { GADGETS } from '../config/gadgets.js';
+import { GADGETS } from '../config/gadgets.js?v=cooldowns-20261122';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
