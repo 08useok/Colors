@@ -46,7 +46,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=29";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=44";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=45";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=72";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -75,6 +75,7 @@ const betaSearchParams = new URLSearchParams(location.search);
 // official.html runs this same code as Official Season 1 with its own saves; Season 1 features
 // switch on with IS_OFFICIAL_SEASON. It always uses the current (beta8) code path.
 const IS_OFFICIAL_SEASON = document.documentElement.dataset.officialSeason === "1";
+const IS_OFFICIAL_TEST = IS_OFFICIAL_SEASON && document.documentElement.hasAttribute("data-official-test");
 const requestedBetaSeason = IS_OFFICIAL_SEASON ? "beta8" : betaSearchParams.get("test");
 const BETA_SEASON_ID = ["beta5", "beta6", "beta7", "beta8"].includes(requestedBetaSeason) ? requestedBetaSeason : "beta8";
 const HAS_BETA6_CONTENT = ["beta6", "beta7", "beta8"].includes(BETA_SEASON_ID);
@@ -378,6 +379,7 @@ const BASE_BETA_STORAGE_KEY = IS_OFFICIAL_SEASON
     : "colorsBetaSeasonTest";
 const betaAccount = IS_BETA8_TEST ? await initBetaAccount(BASE_BETA_STORAGE_KEY) : {storageKey:BASE_BETA_STORAGE_KEY,queueSave(){},isOpen:false};
 const BETA_STORAGE_KEY = betaAccount.storageKey;
+const officialTestSkinKey = BETA_STORAGE_KEY + ":test-skins";
 const CHARACTER_MODEL_VERSION = "86";
 const CHARACTERS = [
   { id: "red", name: "Red", rarity: "common", price: 0, color: 0xef3c58 },
@@ -400,7 +402,7 @@ const CHARACTERS = [
 // 이 페이지는 베타 시즌 4 테스트 샌드박스다. 기존 시즌 2 콘텐츠는
 // 시즌 4 이식 전 회귀 테스트를 위해 유지한다.
 const BETA_SEASON_ACTIVE = true;
-const BETA_SKINS = BETA_SEASON_ACTIVE ? [...getSkinsForSeason(BETA_SEASON_ID), ...(IS_BETA8_TEST ? getSkinsForSeason("beta7") : [])] : [];
+const BETA_SKINS = IS_OFFICIAL_TEST ? Object.values(SKINS) : BETA_SEASON_ACTIVE ? [...getSkinsForSeason(BETA_SEASON_ID), ...(IS_BETA8_TEST ? getSkinsForSeason("beta7") : [])] : [];
 if (IS_BETA6_TEST) {
   document.title = "Colors - Beta Season 6 Test";
   document.querySelector(".beta-header h1").textContent = "베타 시즌 6 테스트";
@@ -614,7 +616,27 @@ function loadBetaState() {
   return state;
 }
 const betaState = loadBetaState();
-function saveBetaState() { localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(betaState)); betaAccount.queueSave(betaState); updateWallet(); }
+const accountSelectedSkins = betaState.selectedSkins;
+if (IS_OFFICIAL_TEST) {
+  betaState.selectedSkins = { ...accountSelectedSkins };
+  try {
+    const saved = JSON.parse(localStorage.getItem(officialTestSkinKey));
+    if (saved && typeof saved === "object" && !Array.isArray(saved)) {
+      betaState.selectedSkins = Object.fromEntries(Object.entries(saved)
+        .filter(([characterId, skinId]) => SKINS[skinId]?.character === characterId));
+    }
+  } catch {}
+}
+function saveBetaState() {
+  const state = IS_OFFICIAL_TEST ? { ...betaState, selectedSkins: accountSelectedSkins } : betaState;
+  localStorage.setItem(BETA_STORAGE_KEY, JSON.stringify(state));
+  betaAccount.queueSave(state);
+  updateWallet();
+}
+function saveSkinSelection() {
+  if (IS_OFFICIAL_TEST) localStorage.setItem(officialTestSkinKey, JSON.stringify(betaState.selectedSkins));
+  else saveBetaState();
+}
 const betaRecords = IS_BETA8_TEST ? createBetaRecords({state:betaState,save:saveBetaState,storageKey:BETA_STORAGE_KEY,account:betaAccount,characters:CHARACTERS,title:modalTitle,content:modalContent,open:()=>openPanel('records')}) : null;
 // Official Season 1 screens (battle pass, gem shop, ranked, power on character cards).
 const officialUi = IS_OFFICIAL_SEASON ? createOfficialUi({ state: betaState, save: saveBetaState, title: modalTitle, content: modalContent,
@@ -2367,21 +2389,25 @@ function rebuildRedThemeAccessory(skinId) {
 
 const MODEL_RELOAD_ON_SKIN_CHANGE = ["ivory", "pink", ...Object.keys(SEASON6_MODEL_SKINS), ...Object.keys(SEASON7_MODEL_SKINS), ...Object.keys(SEASON8_MODEL_SKINS)];
 
-function equipSkin(characterId, skinId) {
+function canEquipSkin(skinId) {
+  return IS_OFFICIAL_TEST || betaState.ownedSkins.includes(skinId);
+}
+
+function equipSkin(characterId, skinId, render = renderCharacters) {
   const skin = SKINS[skinId];
-  if (!skin || skin.character !== characterId || !betaState.ownedSkins.includes(skinId)) return;
+  if (!skin || skin.character !== characterId || !canEquipSkin(skinId)) return;
   betaState.selectedSkins[characterId] = skinId;
-  saveBetaState();
+  saveSkinSelection();
   if (betaState.selectedCharacter === characterId && MODEL_RELOAD_ON_SKIN_CHANGE.includes(characterId)) setPlayerModel(characterId);
   else applySelectedSkinVisual();
-  renderCharacters();
+  render();
   showToast(`${getSkinName(skin)} 장착`);
 }
 
 function unequipSkin(characterId) {
   if (!betaState.selectedSkins[characterId]) return;
   delete betaState.selectedSkins[characterId];
-  saveBetaState();
+  saveSkinSelection();
   if (betaState.selectedCharacter === characterId) {
     if (MODEL_RELOAD_ON_SKIN_CHANGE.includes(characterId)) setPlayerModel(characterId);
     else applySelectedSkinVisual();
@@ -2525,9 +2551,9 @@ function renderCharacters() {
     const basicAttack = BETA_CHARACTERS[character.id]?.basicAttack;
     const officialAbility = BETA_CHARACTERS[character.id]?.officialAbility;
     const ultimate = BETA_CHARACTERS[character.id]?.ultimate;
-    const ownedCharacterSkins = BETA_SKINS.filter((skin) => skin.character === character.id && betaState.ownedSkins.includes(skin.id));
-    const skinList = ownedCharacterSkins.length
-      ? `<div class="owned-skin-list">${ownedCharacterSkins.map((skin) => {
+    const availableCharacterSkins = BETA_SKINS.filter((skin) => skin.character === character.id && canEquipSkin(skin.id));
+    const skinList = availableCharacterSkins.length
+      ? `<div class="owned-skin-list">${availableCharacterSkins.map((skin) => {
         const equipped = betaState.selectedSkins[character.id] === skin.id;
         return `<div class="owned-skin-row"><span>${getSkinName(skin)}</span><button ${equipped ? `data-unequip-skin="${character.id}"` : `data-equip-skin="${skin.id}" data-skin-character="${character.id}"`}>${equipped ? "착용 해제" : "장착"}</button></div>`;
       }).join("")}</div>`
@@ -2552,13 +2578,17 @@ function renderCharacters() {
 }
 
 function renderShop() {
-  modalTitle.textContent = IS_BETA8_TEST ? "시즌 8 · 할로윈 상점" : "베타 시즌 상점";
-  modalContent.innerHTML = `<p>보유 코인: <strong>${betaState.coins.toLocaleString("ko-KR")}</strong></p><div class="beta-grid">${BETA_SKINS.map((skin) => {
+  modalTitle.textContent = IS_OFFICIAL_TEST ? "정식 테스트 · 스킨" : IS_BETA8_TEST ? "시즌 8 · 할로윈 상점" : "베타 시즌 상점";
+  const description = IS_OFFICIAL_TEST ? "<p>모든 스킨을 바로 장착할 수 있습니다.</p>" : `<p>보유 코인: <strong>${betaState.coins.toLocaleString("ko-KR")}</strong></p>`;
+  modalContent.innerHTML = `${description}<div class="beta-grid">${BETA_SKINS.map((skin) => {
+    const equipped = betaState.selectedSkins[skin.character] === skin.id;
     const owned = betaState.ownedSkins.includes(skin.id);
     return `<article class="beta-card">
       <span class="rarity ${skin.rarity}">${rarityName(skin.rarity)}</span>
       <h3>${getSkinName(skin)}</h3><p>${CHARACTERS.find((character) => character.id === skin.character)?.name || skin.character} 전용 · 시즌 ${skin.season.replace("beta", "")} ${skin.season === BETA_SEASON_ID ? "신규" : "보관"} 스킨</p>
-      <button data-skin="${skin.id}" ${owned ? "disabled" : ""}>${owned ? "보유 중" : skin.cost === 0 ? getBetaText("shopFree") : `${skin.cost.toLocaleString("ko-KR")} 코인`}</button>
+      ${IS_OFFICIAL_TEST
+        ? `<button type="button" data-test-skin="${skin.id}" ${equipped ? "disabled" : ""}>${equipped ? "장착 중" : "장착"}</button>`
+        : `<button data-skin="${skin.id}" ${owned ? "disabled" : ""}>${owned ? "보유 중" : skin.cost === 0 ? getBetaText("shopFree") : `${skin.cost.toLocaleString("ko-KR")} 코인`}</button>`}
     </article>`;
   }).join("")}</div>`;
 }
@@ -2769,6 +2799,7 @@ function renderAssetShowroom() {
 }
 
 function buySkin(id) {
+  if (IS_OFFICIAL_TEST) return;
   const skin = SKINS[id];
   if (!skin || betaState.ownedSkins.includes(id)) return;
   if (skin.season !== BETA_SEASON_ID) return;
@@ -3259,6 +3290,11 @@ modalContent.addEventListener("click", (event) => {
   }
   const characterButton = event.target.closest("[data-character]");
   if (characterButton) characterButton.dataset.action === "buy" ? buyCharacter(characterButton.dataset.character) : selectCharacter(characterButton.dataset.character);
+  const testSkinButton = event.target.closest("[data-test-skin]");
+  if (IS_OFFICIAL_TEST && testSkinButton) {
+    const skin = SKINS[testSkinButton.dataset.testSkin];
+    if (skin) equipSkin(skin.character, skin.id, renderShop);
+  }
   const skinButton = event.target.closest("[data-skin]");
   if (skinButton) buySkin(skinButton.dataset.skin);
   const equipSkinButton = event.target.closest("[data-equip-skin]");
