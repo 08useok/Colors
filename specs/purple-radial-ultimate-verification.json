@@ -1,8 +1,8 @@
 {
   "countPerBurst": 16,
   "totalPerLeap": 32,
-  "centralDamagePerPhase": 6250,
-  "thornDamage": 1100,
+  "centralDamagePerPhase": 1000,
+  "thornDamage": 550,
   "range": 10,
   "centerSpawn": true,
   "centralInstantDamage": true,

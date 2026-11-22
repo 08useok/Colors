@@ -56,7 +56,7 @@ function practice(ivoryKinds, immune = false) {
     mintIceZones: [{ x: 0, z: 0, radius: 5, expiresAt: 10, nextTickAt: 1, startedAt: 0, slideStrength: 0, slideAcceleration: 0, mesh: { rotation: { z: 0 } } }],
     clock: { elapsedTime: 1 }, dt: 1 / 60, canvas: { dataset: {} }, player: { position: { x: 0, z: 0 } },
     betaState: { selectedCharacter: 'mint' }, mintUltimateCharge: 0, ivoryCharge: 0,
-    betaEventBushHidden() { return false; }, applyMintIce() {}, updateCrimsonUltimateGauge() {},
+    betaEventBushHidden() { return false; }, applyMintIce() {}, updateCrimsonUltimateGauge() {}, updateIvoryZoneVisual() {},
     damageTarget(t, amount) { if (!immune) t.userData.health -= amount; } };
   vm.createContext(sandbox);
   vm.runInContext('function chargeIvoryUltimate(amount) { ivoryCharge += amount; }' + practiceLoop, sandbox);

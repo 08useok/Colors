@@ -4,7 +4,10 @@ import { CHARACTERS } from '../src/config/characters.js';
 
 const scenario = { distance: 4, aimError: 0.035 };
 const totals = { _events: {} };
-for (const id of Object.keys(CHARACTERS).filter(id => CHARACTERS[id].ultimate && id !== 'pink')) {
+// The legacy duel model implements these nine solo ultimates; characters whose ultimates were added later
+// (e.g. Yellow) are covered by the shared combat engine tests instead.
+const MODELED_ULTIMATES = ['red', 'green', 'blue', 'cyan', 'crimson', 'gold', 'ivory', 'chartreuse', 'mint'];
+for (const id of MODELED_ULTIMATES.filter(id => CHARACTERS[id]?.ultimate)) {
   const diagnostics = { _events: {} };
   // Charged fixtures exercise rare skills; production tournaments still start at zero.
   for (let seed = 1; seed <= 10; seed++) duel(id, 'pink', scenario, seed, 1, true, diagnostics, 100);
