@@ -115,3 +115,20 @@ export function applyBeta9Balance(characters) {
   }
   return characters;
 }
+
+// Official Season 1 only (official.html), applied after applyBeta9Balance; the beta page keeps the Season 9 values.
+//  - 2026-11-22: Red's guard 4 → 2 s (Red led the official 1v1 bot league at 82.5% with gadgets on).
+export const OFFICIAL_BALANCE = Object.freeze({
+  red: { ultimate: { duration: 2 } },
+});
+
+export function applyOfficialBalance(characters) {
+  const red = characters.red;
+  if (red) {
+    const before = red.ultimate.duration;
+    red.ultimate.duration = OFFICIAL_BALANCE.red.ultimate.duration;
+    replaceText(red.ultimate, 'description', [[`${before}초 동안`, `${red.ultimate.duration}초 동안`]]);
+    replaceText(red.ultimate, 'descriptionEn', [[`for ${before} seconds`, `for ${red.ultimate.duration} seconds`]]);
+  }
+  return characters;
+}

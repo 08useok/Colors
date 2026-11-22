@@ -44,9 +44,9 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance } from "./config/beta9-balance.js?v=27";
+import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=28";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=33";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=34";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=69";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -92,6 +92,7 @@ if (BETA_SEASON_ID === "beta8") {
   BETA_CHARACTERS.purple.purpleUltimateEnabled = true;
   // Season 9 emergency 3v3 balance (beta only; main Season 8 is unchanged).
   applyBeta9Balance(BETA_CHARACTERS);
+  if (IS_OFFICIAL_SEASON) applyOfficialBalance(BETA_CHARACTERS);
 }
 // Salmon's throw clip releases at 0.36 s; play it faster when the balance shortens throwWindup so the bobber leaves the hand on time.
 const attackMotionTimeScale = id => id === "salmon" ? SALMON_THROW.release / (BETA_CHARACTERS.salmon?.throwWindup || SALMON_THROW.release) : 1;
