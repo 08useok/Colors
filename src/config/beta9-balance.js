@@ -50,7 +50,8 @@ export const BETA9_BALANCE = Object.freeze({
   // 11.17 (Champions round-3 out): circle 4.5 → 5 tiles, damage 2200 → 2400, heal 1400 → 1500, Encore 12 → 10.
   // (Backing off at low health was tried and dropped: it lost Pink → Purple in 1v1.)
   pink: { healCircleRange: 5, healCircleDamage: 2400, healCircleHeal: 1500, ultimate: { chargeRequired: 10 } },
-  cyan: { spreadLineDamage: 1000, maxHealth: 8200 },
+  // 11.22: basic range 8.33 → 9.5 tiles, Gale Strike range 10 → 10.5 tiles.
+  cyan: { spreadLineDamage: 1000, maxHealth: 8200, spreadLineRange: 9.5, ultimate: { range: 10.5 } },
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
   crimson: { maxHealth: 13000, attackCooldown: .6 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
@@ -113,8 +114,8 @@ export function applyBeta9Balance(characters) {
     replaceText(characters.azure.ultimate, 'descriptionEn', [['Launches a huge wave', 'Launches a huge 5-wide wave through walls to the edge of the arena']]);
   }
   if (cyan) {
-    replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해']]);
-    replaceText(cyan.basicAttack, 'descriptionEn', [['Each deals 700 damage', 'Each deals 1000 damage']]);
+    replaceText(cyan.basicAttack, 'description', [['알약당 700 피해', '알약당 1000 피해'], ['사거리 8.33타일', '사거리 9.5타일']]);
+    replaceText(cyan.basicAttack, 'descriptionEn', [['Each deals 700 damage', 'Each deals 1000 damage'], ['with a 8.33-tile range', 'with a 9.5-tile range']]);
   }
   if (salmon) {
     replaceText(salmon.basicAttack, 'description', [['가장 가까운 적 1명에게 3000 피해', '가장 가까운 적 1명에게 3300 피해'], ['1.2초 포획', '2.4초 포획'], ['1.2초간 띄운', '2.4초간 띄운']]);
