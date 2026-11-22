@@ -26,6 +26,7 @@ import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
 import { eventMap, insideMapRect, mapBlocked, mapSightBlocked, navigateEventMap, bounceMapBall } from "./config/event-maps.js?v=5";
 import { canyonKnockoutMap } from './config/beta-canyon-map.js?v=1';
+import { gemSpringsMap, GEM_SPRINGS_MAP_INDEX } from './config/beta-gem-springs-map.js?v=1';
 import * as THREE from "three";
 const modelLoading = createModelLoadingScreen(new THREE.LoadingManager());
 const respawnShields = createRespawnShields();
@@ -45,7 +46,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance } from "./config/beta9-balance.js?v=27";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=32";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=33";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=69";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -9318,6 +9319,8 @@ function prepareBetaEventMap(mode,plus) {
   activeEventLayout=["knockout","gemGrab"].includes(mode) ? (IS_OFFICIAL_SEASON ? plazaArenaMap(mode,index) : teamArenaMap(mode,index)) : eventMap(key,index,mode==="chopWood" ? 15:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,mode==="chopWood" ? 30:mode==="soccer" ? SOCCER_FIELD_HALF:mode==="showdown" ? showdownProfile.halfSize:20,reserved);
   // Beta Knockout map 4: river canyon, drawn in beta-canyon-map.js.
   if(!IS_OFFICIAL_SEASON&&mode==="knockout"&&index===3)activeEventLayout=canyonKnockoutMap();
+  // Gem Grab map 5 (beta and official): four springs, drawn in beta-gem-springs-map.js.
+  if(mode==="gemGrab"&&index===GEM_SPRINGS_MAP_INDEX)activeEventLayout=gemSpringsMap();
   if(mode==="showdown")activeEventLayout.navigationStep=showdownProfile.navigationStep;
   const addWall=r=>{
     const m=new THREE.Mesh(new THREE.BoxGeometry(r.width,2.6,r.depth),new THREE.MeshStandardMaterial({color:0x9b7952,roughness:.9}));
