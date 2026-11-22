@@ -257,7 +257,9 @@ export function createBeta6Combat(definitions, options = {}) {
         hit(a, b, u.damage, true, u.rechargePerHit ?? 1, true);
       }
       for (let i = 0; i < u.projectileCount; i++) {
-        shot(a, a.angle + i * Math.PI * 2 / u.projectileCount, u.projectileSpeed, u.projectileRange ?? u.radius, u.projectileDamage,
+        // projectileSpread: a forward fan along the facing direction instead of a full ring.
+        const yaw = u.projectileSpread ? a.angle + (u.projectileCount > 1 ? (i / (u.projectileCount - 1) - .5) * u.projectileSpread : 0) : a.angle + i * Math.PI * 2 / u.projectileCount;
+        shot(a, yaw, u.projectileSpeed, u.projectileRange ?? u.radius, u.projectileDamage,
           { kind: 'purpleThorn', ultimate: true, radius: u.projectileRadius, spawn: 0,
             x: position.x, z: position.z, origin: { ...position }, burstChargeHits });
       }
@@ -856,6 +858,8 @@ export function createBeta6Combat(definitions, options = {}) {
       let ended = !p.returning && p.traveled >= p.reach;
       // Azure's Big Wave has an arena-wide reach; it ends once it leaves the arena.
       if (p.kind === 'wave' && p.ultimate && Math.max(Math.abs(p.x), Math.abs(p.z)) > (options.bounds ?? 24) + 1) ended = true;
+      // Purple's wall-to-wall thorns also end once they leave the arena.
+      if (p.kind === 'purpleThorn' && Math.max(Math.abs(p.x), Math.abs(p.z)) > (options.bounds ?? 24) + 1) ended = true;
       const hitWall = !air && !(p.kind === 'wave' && p.ultimate) && !(p.kind === 'orangePeel' && p.returning) && sightBlocked(p.x, p.z, p.radius);
       if (hitWall) { ended = true; p.x = before.x; p.z = before.z; }
       if (p.kind === 'wave') move(a, p.origin.x + Math.cos(p.yaw) * Math.min(p.traveled, p.ride), p.origin.z + Math.sin(p.yaw) * Math.min(p.traveled, p.ride));

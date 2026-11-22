@@ -26,6 +26,8 @@ export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   // 11.12 (before Champions round 4): smaller zone 4 → 3.5, range 9 → 9.5 keeps Ivory → Salmon 240-0.
   ivory: { iceCreamZoneRadius: 3.5, iceCreamRange: 9.5, iceCreamZoneDamage: 1300, iceCreamDamage: 1600, reloadDuration: 1.05, ultimate: { zoneRadius: 4 } },
+  // 11.22: Purple's leap hits 5000 at takeoff and landing; the 16 thorns fly forward in a 60-degree fan until a wall.
+  purple: { ultimate: { damage: 5000, projectileRange: 60, projectileSpread: Math.PI / 3 } },
   // 11.22: reload 0.9 → 1.1 s per ammo (beta and official).
   red: { attackDamage: 2000, reloadDuration: 1.1, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
   // Orange's ultimate charges by fixed shares: 10% per orange hit, 5% per juice hit (they add up).
@@ -89,6 +91,10 @@ export function applyBeta9Balance(characters) {
   if (red) {
     replaceText(red.ultimate, 'description', [['8초 동안 피해를 60% 감소', '4초 동안 피해를 75% 감소']]);
     replaceText(red.ultimate, 'descriptionEn', [['by 60% for 8 seconds', 'by 75% for 4 seconds']]);
+  }
+  if (characters.purple) {
+    replaceText(characters.purple.ultimate, 'description', [['즉시 1000 피해', '즉시 5000 피해'], ['가시 16발을 사방으로 발사합니다. 가시는 사거리 10타일,', '가시 16발을 바라보는 방향 60도 부채꼴로 발사합니다. 가시는 벽에 닿을 때까지 날아가고,']]);
+    replaceText(characters.purple.ultimate, 'descriptionEn', [['deals 1000 damage', 'deals 5000 damage'], ['fires 16 thorns from the center. Each thorn deals 550 damage with 10-tile range;', 'fires 16 thorns forward in a 60-degree fan. Each thorn flies until it hits a wall and deals 550 damage;']]);
   }
   if (ivory) {
     replaceText(ivory.basicAttack, 'description', [['착탄 시 2400 피해를 주고, 반경 5타일에 4초 동안 1초마다 2600 피해', '착탄 시 1600 피해를 주고, 반경 3.5타일에 4초 동안 1초마다 1300 피해'], ['0~9타일', '0~9.5타일']]);

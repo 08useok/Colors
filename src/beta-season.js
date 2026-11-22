@@ -44,10 +44,10 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=29";
+import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=30";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=45";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=72";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=47";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=73";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
@@ -5865,7 +5865,7 @@ function damagePurpleLeapArea(position, phase) {
   if (betaState.selectedCharacter === "purple") updateCrimsonUltimateGauge();
   if (def.projectileCount) {
     for (let i = 0; i < def.projectileCount; i++) {
-      const yaw = player.rotation.y + i * Math.PI * 2 / def.projectileCount;
+      const yaw = def.projectileSpread ? player.rotation.y + (def.projectileCount > 1 ? (i / (def.projectileCount - 1) - .5) * def.projectileSpread : 0) : player.rotation.y + i * Math.PI * 2 / def.projectileCount;
       const mesh = createPurpleThornMesh();
       mesh.rotation.order = "YXZ"; mesh.rotation.y = yaw;
       mesh.position.copy(position); mesh.position.y += 1.25; scene.add(mesh);
