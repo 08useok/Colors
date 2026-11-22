@@ -26,7 +26,8 @@ export const BETA9_BALANCE = Object.freeze({
   // Nerfs: ahead in 3v3.
   // 11.12 (before Champions round 4): smaller zone 4 → 3.5, range 9 → 9.5 keeps Ivory → Salmon 240-0.
   ivory: { iceCreamZoneRadius: 3.5, iceCreamRange: 9.5, iceCreamZoneDamage: 1300, iceCreamDamage: 1600, reloadDuration: 1.05, ultimate: { zoneRadius: 4 } },
-  red: { attackDamage: 2000, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
+  // 11.22: reload 0.9 → 1.1 s per ammo (beta and official).
+  red: { attackDamage: 2000, reloadDuration: 1.1, attackRange: 4, moveSpeedMultiplier: 1.25, botIdealDistance: 3, ultimate: { damageReduction: .75, duration: 4 } },
   // Orange's ultimate charges by fixed shares: 10% per orange hit, 5% per juice hit (they add up).
   orange: { maxHealth: 3400, ultimateChargeShare: { bomb: .1, juice: .05 } },
   // Buffs: behind in 3v3.
