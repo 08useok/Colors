@@ -51,8 +51,8 @@ import { createBeta6Combat } from "./combat/beta6-combat.js?v=73";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
-import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER } from "./official/progression.js?v=2";
-import { createOfficialUi } from "./official/official-ui.js?v=3";
+import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER, STAR_REWARD_TIERS, STAR_EXTRA_JUMPS } from "./official/progression.js?v=3";
+import { createOfficialUi } from "./official/official-ui.js?v=4";
 import { plazaArenaMap } from "./official/plaza-maps.js?v=1";
 import { createRankedSession, packFighter } from "./official/ranked-net.js?v=1";
 import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=2";
@@ -2938,7 +2938,7 @@ function playOrderVictoryEffect() {
 }
 
 // 9단계 이름은 말 그대로 "???"다. 자리표시자가 아니라 확정된 이름.
-const DAILY_REWARD_TIERS = [
+const BETA_DAILY_REWARD_TIERS = [
   { id: "common", name: "일반", credits: 100, coins: 250 },
   { id: "rare", name: "희귀", credits: 150, coins: 400 },
   { id: "epic", name: "초희귀", credits: 250, coins: 700 },
@@ -2950,6 +2950,8 @@ const DAILY_REWARD_TIERS = [
   { id: "unknown", name: "???", credits: 3200, coins: 12000 },
   { id: "absolute", name: "절대", credits: 5000, coins: 20000 },
 ];
+// 정식은 12단계(11 고귀 · 12 영광) 보상표를 쓴다 (official/progression.js).
+const DAILY_REWARD_TIERS = IS_OFFICIAL_SEASON ? STAR_REWARD_TIERS : BETA_DAILY_REWARD_TIERS;
 let dailyRewardTierIndex = 0;
 let dailyRewardMaxTierIndex = DAILY_REWARD_TIERS.length - 1;
 let dailyRewardSpinning = false;
@@ -2967,6 +2969,7 @@ const DAILY_REWARD_JUMP_WEIGHTS = [
   { steps: 5, weight: 6 }, { steps: 6, weight: 5 },
   { steps: 7, weight: 4 }, { steps: 8, weight: 2.5 },
   { steps: 9, weight: 1.5 }, { steps: 10, weight: 1 },
+  ...(IS_OFFICIAL_SEASON ? STAR_EXTRA_JUMPS : []),
 ];
 
 function formatDailyRewardChance(value) { return `${Number((value * 100).toFixed(2))}%`; }
@@ -3012,7 +3015,7 @@ function triggerDailyRewardTierEffect(tierIndex) {
   const tierNumber = tierIndex + 1;
   const isTierSevenPlus = tierNumber >= 7;
   const isMaxTier = tierNumber === DAILY_REWARD_TIERS.length;
-  const colors = { legendary: "#ffd84d", mythic: "#ff657a", unique: "#b06bff", ultra: "#ff8a1e", transcend: "#00e5ff", unknown: "#e0aaff", absolute: "#ffffff" };
+  const colors = { legendary: "#ffd84d", mythic: "#ff657a", unique: "#b06bff", ultra: "#ff8a1e", transcend: "#00e5ff", unknown: "#e0aaff", absolute: "#ffffff", exalted: "#ff4fd8", glorious: "#ffe9a8" };
   dailyRewardReveal.style.setProperty("--reward-fx", colors[tier.id] ?? "#ffd84d");
   dailyRewardReveal.classList.add("high-tier");
   dailyRewardReveal.classList.toggle("tier-7-plus", isTierSevenPlus);
@@ -3090,7 +3093,7 @@ function showDailyRewardReveal() {
     return false;
   }
   dailyRewardTierIndex = 0;
-  dailyRewardMaxTierIndex = betaState.daily.lastRewardTierId === "absolute"
+  dailyRewardMaxTierIndex = betaState.daily.lastRewardTierId === DAILY_REWARD_TIERS.at(-1).id
     ? DAILY_REWARD_TIERS.length - 2 : DAILY_REWARD_TIERS.length - 1;
   dailyRewardSpinning = false;
   dailyRewardComplete = false;

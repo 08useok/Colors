@@ -1,6 +1,6 @@
 // Official Season 1 screens: battle pass, gem shop (with daily gems and exchanges), ranked, and the power
 // block on character cards. The page passes its save, modal and match starter; this file owns no game state.
-import * as P from './progression.js?v=2';
+import * as P from './progression.js?v=3';
 
 const num = v => Number(v || 0).toLocaleString('ko-KR');
 const rewardText = r => r.label ?? [r.coins ? `코인 ${num(r.coins)}` : '', r.credits ? `크레딧 ${num(r.credits)}` : '', r.gems ? `💎 ${num(r.gems)}` : ''].filter(Boolean).join(' + ');

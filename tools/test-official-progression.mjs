@@ -6,6 +6,12 @@ import { createBeta6Combat } from '../src/combat/beta6-combat.js';
 
 const fresh = () => ({ coins: 10000, credits: 0, ownedCharacters: ['red', 'blue'], official: P.normalizeOfficial({}) });
 
+{ // Win star: 12 official grades (11 고귀, 12 영광), 250 … 30,000 coins.
+  assert.equal(P.STAR_REWARD_TIERS.length, 12);
+  assert.deepEqual(P.STAR_REWARD_TIERS.slice(-2).map(t => t.name), ['고귀', '영광']);
+  assert.equal(P.STAR_REWARD_TIERS[0].coins, 250); assert.equal(P.STAR_REWARD_TIERS.at(-1).coins, 30000);
+  assert(P.STAR_REWARD_TIERS.every((t, i, a) => i === 0 || (t.coins > a[i - 1].coins && t.credits > a[i - 1].credits)));
+}
 { // Power: +2% per level, 11 = +20%; costs 100 … 7,500 (22,375 total); gadget at 7, transform at 11.
   assert.equal(P.powerMultiplier(1), 1);
   assert(Math.abs(P.powerMultiplier(11) - 1.2) < 1e-12);

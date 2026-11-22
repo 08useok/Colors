@@ -54,6 +54,26 @@ export function exchangeGems(state, exchangeId) {
   return { ok: true, exchange };
 }
 
+// ── Win star reward ─────────────────────────────────────────────────────────
+// Every win gives one star; opening it rolls a grade, then pays that grade's coins or credits (50/50).
+// Official uses 12 grades (the beta's 10 plus 11 고귀 and 12 영광), about 2,080 coins per win on average (2,410 with "한 번에 사용"); tiers 1–10 match the beta.
+export const STAR_REWARD_TIERS = Object.freeze([
+  Object.freeze({ id: 'common', name: '일반', credits: 100, coins: 250 }),
+  Object.freeze({ id: 'rare', name: '희귀', credits: 150, coins: 400 }),
+  Object.freeze({ id: 'epic', name: '초희귀', credits: 250, coins: 700 }),
+  Object.freeze({ id: 'mythic', name: '신화', credits: 400, coins: 1200 }),
+  Object.freeze({ id: 'legendary', name: '전설', credits: 600, coins: 2000 }),
+  Object.freeze({ id: 'unique', name: '유니크', credits: 900, coins: 3200 }),
+  Object.freeze({ id: 'ultra', name: '울트라 전설', credits: 1400, coins: 5000 }),
+  Object.freeze({ id: 'transcend', name: '초월', credits: 2100, coins: 8000 }),
+  Object.freeze({ id: 'unknown', name: '???', credits: 3200, coins: 12000 }),
+  Object.freeze({ id: 'absolute', name: '절대', credits: 5000, coins: 20000 }),
+  Object.freeze({ id: 'exalted', name: '고귀', credits: 6000, coins: 25000 }),
+  Object.freeze({ id: 'glorious', name: '영광', credits: 7500, coins: 30000 }),
+]);
+// Extra upgrade jump on top of the beta's 1–10 step weights, so a single jump can reach 영광 from 희귀.
+export const STAR_EXTRA_JUMPS = Object.freeze([Object.freeze({ steps: 11, weight: 0.5 })]);
+
 // ── Battle pass ─────────────────────────────────────────────────────────────
 export const PASS_TIERS = 50;
 export const PASS_XP_PER_TIER = 100;
