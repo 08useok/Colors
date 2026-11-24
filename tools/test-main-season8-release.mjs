@@ -20,8 +20,8 @@ assert(start >= 0 && end > start, 'balance block');
 const context = vm.createContext({ CURRENT_SEASON: 'beta8', CHARACTERS: structuredClone(baseline), BETA_CHARACTERS, applyBeta6Balance, applyBeta7Balance, applyBeta8Balance });
 vm.runInContext(main.slice(start, end), context);
 const expected = applyBeta8Balance(applyBeta7Balance(BETA_CHARACTERS));
-// Main-only balance on top of beta8 (v1.8.4).
-const MAIN_OVERRIDES = { red: { maxHealth: 8000, attackDamage: 2200 }, orange: { bombSplashDamage: 1000 }, cyan: { maxHealth: 7000, spreadLineDamage: 900, spreadLineRange: 9 }, mint: { maxHealth: 7000, iceBulletDamage: 1100 } };
+// Main-only balance on top of beta8 (v1.8.4, v1.8.6).
+const MAIN_OVERRIDES = { red: { maxHealth: 8000, attackDamage: 2200, reloadDuration: 1.1 }, orange: { bombSplashDamage: 1000 }, cyan: { maxHealth: 7000, spreadLineDamage: 900, spreadLineRange: 9.5 }, mint: { maxHealth: 7000, iceBulletDamage: 1100 } };
 const ids = Object.keys(expected);
 assert.equal(ids.length, 17);
 assert.deepEqual(Object.keys(context.CHARACTERS).sort(), [...ids].sort());

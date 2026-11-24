@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=22";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=23";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -20,7 +20,7 @@ import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=19";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=20";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=3";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
@@ -399,7 +399,7 @@ const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
 const BETA_SEASON_8_START_AT = new Date("2026-10-31T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.5" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.6" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_8_START_AT ? "beta8" : Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -429,10 +429,16 @@ if (["beta6", "beta7", "beta8"].includes(CURRENT_SEASON)) {
     // Main-only Season 8 balance (v1.8.4): pull the strongest and weakest 1v1 characters toward the pack.
     Object.assign(releaseStats.red, { maxHealth: 8000, attackDamage: 2200 });
     releaseStats.orange.bombSplashDamage = 1000;
-    Object.assign(releaseStats.cyan, { maxHealth: 7000, spreadLineDamage: 900, spreadLineRange: 9 });
-    releaseStats.cyan.basicAttack.description = releaseStats.cyan.basicAttack.description.replace("알약당 700 피해, 사거리 8.33타일", "알약당 900 피해, 사거리 9타일");
-    releaseStats.cyan.basicAttack.descriptionEn = releaseStats.cyan.basicAttack.descriptionEn.replace("deals 700 damage with a 8.33-tile range", "deals 900 damage with a 9-tile range");
+    Object.assign(releaseStats.cyan, { maxHealth: 7000, spreadLineDamage: 900, spreadLineRange: 9.5 });
+    releaseStats.cyan.basicAttack.description = releaseStats.cyan.basicAttack.description.replace("알약당 700 피해, 사거리 8.33타일", "알약당 900 피해, 사거리 9.5타일");
+    releaseStats.cyan.basicAttack.descriptionEn = releaseStats.cyan.basicAttack.descriptionEn.replace("deals 700 damage with a 8.33-tile range", "deals 900 damage with a 9.5-tile range");
     Object.assign(releaseStats.mint, { maxHealth: 7000, iceBulletDamage: 1100 });
+    // Main v1.8.6: the first beta/official balance pack (11.22) carried over to main.
+    releaseStats.red.reloadDuration = 1.1;
+    Object.assign(releaseStats.purple.ultimate, { damage: 5000, projectileRange: 60, projectileSpread: Math.PI / 3 });
+    releaseStats.purple.ultimate.description = releaseStats.purple.ultimate.description.replace("즉시 1000 피해", "즉시 5000 피해").replace("가시 16발을 사방으로 발사합니다. 가시는 사거리 10타일,", "가시 16발을 바라보는 방향 60도 부채꼴로 발사합니다. 가시는 벽에 닿을 때까지 날아가고,");
+    releaseStats.purple.ultimate.descriptionEn = releaseStats.purple.ultimate.descriptionEn.replace("deals 1000 damage", "deals 5000 damage").replace("fires 16 thorns from the center. Each thorn deals 550 damage with 10-tile range;", "fires 16 thorns forward in a 60-degree fan. Each thorn flies until it hits a wall and deals 550 damage;");
+    releaseStats.cyan.ultimate.range = 10.5;
   }
   // Main-only balance adjustments; beta definitions remain separate.
   if (CURRENT_SEASON === "beta7") {
@@ -13115,7 +13121,8 @@ function updateAttackAimIndicator() {
     const guide = ultimateGuide(player.characterType, CHARACTERS[player.characterType], { distance: Math.hypot(mouseAimWorld.x-position.x, mouseAimWorld.z-position.z), yaw: player.yaw });
     // Purple's takeoff and landing bursts also scatter thorns; outline their reach around both burst rings.
     const purpleUltimate = player.characterType === "purple" ? CHARACTERS.purple.ultimate : null;
-    if (purpleUltimate?.projectileCount) guide.push(...guide.filter((part) => part.type === "ring").map((part) => ({ ...part, radius: purpleUltimate.projectileRange ?? part.radius })));
+    // Forward-fan thorns (projectileSpread) fly to the wall, so no reach ring is drawn for them.
+    if (purpleUltimate?.projectileCount && !purpleUltimate.projectileSpread) guide.push(...guide.filter((part) => part.type === "ring").map((part) => ({ ...part, radius: purpleUltimate.projectileRange ?? part.radius })));
     seasonUltimateAim.show(guide, position, player.yaw);
   }
   const charType = player?.characterType;
