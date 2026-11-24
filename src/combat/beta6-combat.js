@@ -627,6 +627,8 @@ export function createBeta6Combat(definitions, options = {}) {
         };
         a.leap = { from, to, startedAt: time, duration: u.duration, jumpHeight: u.jumpHeight };
         a.lockUntil = time + u.duration;
+        // Remember the leap's own lock so landing releases only it, not a stun received mid-air.
+        a.leap.lockUntil = a.lockUntil;
         purpleLeapBurst(a, from, 'takeoff');
       }
       else if (a.id === 'mint') {
@@ -720,7 +722,7 @@ export function createBeta6Combat(definitions, options = {}) {
         a.z = leap.from.z + (leap.to.z - leap.from.z) * progress;
         if (progress >= 1) {
           a.leap = null;
-          a.lockUntil = time;
+          if (a.lockUntil <= (leap.lockUntil ?? a.lockUntil) + 1e-9) a.lockUntil = time;
           purpleLeapBurst(a, leap.to, 'landing');
 
 
