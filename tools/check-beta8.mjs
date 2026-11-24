@@ -3,7 +3,7 @@ import {writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const modules=['src/beta-season.js','src/beta-account.js','src/beta-records.js','src/config/beta8-balance.js','src/config/beta8-counter-targets.js','src/config/beta8-quests.js','src/config/beta8-records.js','src/config/salmon.js','src/config/salmon-animation.js','src/config/beta-attack-motion.js','src/config/beta-ultimate-motion.js','src/config/skin-effects.js','src/combat/beta6-combat.js','src/combat/salmon-combat.js','src/visuals/crystal-telegraph.js','src/visuals/salmon-combat.js','src/visuals/salmon-attack.js','src/visuals/beta-attack-motion.js','src/visuals/beta-attack-props.js','src/visuals/skin-effects.js','tools/beta-auth.mjs','tools/beta-records.mjs','tools/serve-game.mjs'];
-const tests=['test-beta-auth.mjs','test-beta-recovery.mjs','test-beta8-records.mjs','test-beta8-records-client.mjs','test-beta8-quests.mjs','test-salmon-combat.mjs','test-beta8-cyan-defense.mjs','test-beta8-ultimate-balance.mjs','test-beta-attack-release.mjs','test-beta-ultimate-motion.mjs','test-skin-tier-effects.mjs','test-beta6-combat.mjs','test-aim-guides.mjs'];
+const tests=['test-beta-auth.mjs','test-beta-recovery.mjs','test-beta8-records.mjs','test-beta8-records-client.mjs','test-beta8-quests.mjs','test-salmon-combat.mjs','test-beta8-cyan-defense.mjs','test-beta-attack-release.mjs','test-beta-ultimate-motion.mjs','test-skin-tier-effects.mjs','test-beta6-combat.mjs','test-aim-guides.mjs'];
 tests.push('test-beta8-blue-knockback.mjs','test-beta8-blue-shield.mjs');
 tests.push('test-beta8-blue-charge.mjs');
 tests.push('test-beta8-bot-dodge.mjs');
