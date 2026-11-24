@@ -53,7 +53,8 @@ export const BETA9_BALANCE = Object.freeze({
   // 11.22: basic range 8.33 → 9.5 tiles, Gale Strike range 10 → 10.5 tiles.
   cyan: { spreadLineDamage: 1000, maxHealth: 8200, spreadLineRange: 9.5, ultimate: { range: 10.5 } },
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
-  crimson: { maxHealth: 13000, attackCooldown: .6 },
+  // 11.24: bot projectile dodge rolls 50% like everyone else (it always dodged before).
+  crimson: { maxHealth: 13000, attackCooldown: .6, projectileDodgeChance: .5 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   // Big Wave (11.12): reaches the edge of any arena (80 tiles, the wave ends at the arena boundary), through walls, hitting everyone.
   azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 80, width: 5 } },
