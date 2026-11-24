@@ -2,7 +2,7 @@ import { createSalmonCombat } from "./salmon-combat.js?v=3";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 import { TRANSFORMS, TRANSFORM_STATS } from '../config/transforms.js';
-import { GADGETS } from '../config/gadgets.js?v=stun-20261122';
+import { GADGETS } from '../config/gadgets.js?v=green-20261124';
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const distance = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 const segmentDistance = (p, a, b) => {
@@ -112,12 +112,7 @@ export function createBeta6Combat(definitions, options = {}) {
         emit('gadgetStun', { owner: a, target, until });
       }
     } else if (g.kind === 'empowerAttack') a.empoweredAttack = g.effect;
-    else if (g.kind === 'recall') {
-      // Green: every boomerang still flying out turns back at once, faster than a normal return.
-      const flying = projectiles.filter(p => p.owner === a && p.kind === 'boomerang' && !p.returning);
-      if (!flying.length) return false;
-      for (const p of flying) { p.returning = true; p.hits.clear(); p.traveled = 0; p.speed *= (a.d.boomerangReturnSpeedMultiplier ?? 1) * (1 + (g.returnSpeedBonus ?? 0)); }
-    } else if (g.kind === 'brake') a.brakeUntil = time + g.duration;
+    else if (g.kind === 'brake') a.brakeUntil = time + g.duration;
     else if (g.kind === 'autoFire') a.autoFire = { until: time + g.duration, shots: 0 };
     else if (g.kind === 'guard') { a.gadgetGuardUntil = time + g.duration; a.gadgetGuardReduction = g.damageReduction; }
     a.gadgetReadyAt = time + g.cooldown;
@@ -395,6 +390,9 @@ export function createBeta6Combat(definitions, options = {}) {
       if (device) yaw = Math.atan2(device.z - a.z, device.x - a.x);
     }
     a.angle = yaw; a.ammo--; a.next = time + d.attackCooldown; a.combatAt = time; a.revealedUntil = time + 3; a.attackCount++;
+    const greenTrick = id === 'green' && a.empoweredAttack === 'returnMark'
+      ? { marks: new Map(), triggered: new Set(), ...a.g } : null;
+    if(greenTrick)a.empoweredAttack=null;
     emit('attack', { owner: a, target, kind: id });
     const resolveAttack = () => {
     if (!alive(a) || time < a.lockUntil || time < a.frozenUntil || a.salmonAirborne) return;
@@ -429,7 +427,7 @@ export function createBeta6Combat(definitions, options = {}) {
       area(a, a, d.healCircleRange, d.healCircleDamage, true);
       for (const b of actors) if (b !== a && !enemies(a, b) && alive(b) && distance(a, b) <= d.healCircleRange) { const before = b.hp; b.hp = Math.min(b.d.maxHealth, b.hp + d.healCircleHeal); emit('heal', { owner: a, target: b, amount: b.hp - before }); }
     } else if (id === 'blue') launch(d.bulletSpeed, d.bulletRange, d.bulletDamage * (homingTarget ? 1 + (a.g?.damageBonus ?? 0) : 1), homingTarget ? { homingTarget, homingTurnRate: a.g?.homingTurnRate ?? 4 } : {});
-    else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0 }, yaw + offset);
+    else if (id === 'green') for (const offset of d.boomerangAngles) launch(d.boomerangSpeed, d.boomerangRange, d.boomerangDamage, { kind: 'boomerang', radius: .34, spawn: 0, greenTrick }, yaw + offset);
     else if (id === 'orange') launch(d.bombSpeed, d.bombRange, d.bombDamage, { kind: 'bomb' });
     else if (id === 'yellow') {
       // Yellow 전선 연결: the next ball, on a hit, also arcs to the nearest other enemy.
@@ -696,6 +694,7 @@ export function createBeta6Combat(definitions, options = {}) {
     for (const a of actors) {
       // 시전자가 쓰러져도 대상이 영원히 묶이지 않도록 죽음 검사보다 먼저 푼다
       if (a.analysisTarget && (!alive(a) || !alive(a.analysisTarget))) releaseAnalysis(a);
+      for(const [token,until]of a.greenGadgetMarks??[])if(time>=until||token.triggered.has(a.key))a.greenGadgetMarks.delete(token);
       // The +20% transform health goes away when the transform ends.
       if (a.transformBonusHp && time >= a.transformUntil) { a.transformBonusHp = 0; a.hp = Math.min(a.hp, a.d.maxHealth); }
       if (a.salmonAirborne && time < (a.angelMarkUntil ?? 0)) control(a, a.salmonAirborne.owner);
@@ -751,7 +750,6 @@ export function createBeta6Combat(definitions, options = {}) {
           else if (!low && gap > reach + 1 && gap < reach + a.g.distance + 1) gadget(a, { angle: Math.atan2(target.z - a.z, target.x - a.x) });
         } else if (a.g.kind === 'stunShot' && gap <= a.g.range && pathClear(a, target)) gadget(a, { angle: Math.atan2(target.z - a.z, target.x - a.x) });
         else if (a.g.kind === 'empowerAttack' && gap <= reach && !a.empoweredAttack) gadget(a);
-        else if (a.g.kind === 'recall' && a.ammo < 1 && projectiles.some(p => p.owner === a && p.kind === 'boomerang' && !p.returning)) gadget(a);
         else if (a.g.kind === 'brake' && a.dash) gadget(a);
         else if (a.g.kind === 'autoFire' && a.ammo >= 2 && !hidden(target, a) && gap <= (a.g.detectRange ?? 10) && pathClear(a, target)) gadget(a);
         else if (a.g.kind === 'guard' && a.hp <= a.d.maxHealth * .6 && gap <= reach + 2) gadget(a);
@@ -897,6 +895,24 @@ export function createBeta6Combat(definitions, options = {}) {
         // Fixed ultimate share per basic hit (Season 9 Orange: orange 10%, each juice 5%); hits add up.
         const share = p.ultimate ? null : d.ultimateChargeShare?.[p.kind];
         const dealt = hit(a, b, amount, true, share != null ? share * a.u.chargeRequired : p.ultimate ? award * (a.u.rechargePerHit ?? 1) * (p.rechargeScale ?? 1) : award, p.ultimate || share != null);
+        const trick=p.greenTrick;
+        if(trick && alive(b) && time>=b.invulnerableUntil && !trick.triggered.has(b.key)) {
+          if(!p.returning && dealt>0) {
+            const until=time+trick.markDuration;
+            trick.marks.set(b.key,until);
+            (b.greenGadgetMarks??=new Map()).set(trick,until);
+            emit('gadgetMark',{owner:a,target:b,until});
+          } else if(p.returning && time<(trick.marks.get(b.key)??0)) {
+            trick.triggered.add(b.key);b.greenGadgetMarks?.delete(trick);
+            const bonus=hit(a,b,trick.bonusDamage,false,0);
+            if(alive(b)){
+              b.slow=Math.max(time<b.slowUntil?b.slow:0,trick.slowPercent);
+              b.slowUntil=Math.max(b.slowUntil,time+trick.slowDuration);
+              control(b,a);
+            }
+            emit('gadgetBoomerang',{owner:a,target:b,damage:bonus,until:time+trick.slowDuration});
+          }
+        }
         if (dealt > 0) {
           p.burstChargeHits?.add(b.key);
           b.lastDamageKind = p.kind;

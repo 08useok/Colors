@@ -5,7 +5,7 @@
 // kind 'dash'          moves `distance` tiles toward the aim, stopping at walls.
 // kind 'empowerAttack' the next basic attack gets `effect` (White: `bugs` bugs instead of one;
 //                      Red 'stun', Yellow 'chain', Purple 'poisonBoost').
-// kind 'recall'        Green: boomerangs flying out turn back at once, faster.
+// Green 'returnMark': one shared mark/proc ledger for all boomerangs of the next attack.
 // kind 'brake'         for `duration` s a dash that hits a wall stops instead of bouncing, then guards (unused now).
 // kind 'autoFire'      Blue 오토 트래커: for `duration` s, up to `maxShots` basic shots fire by themselves at the nearest
 //                      visible enemy within `detectRange` (not through walls); those shots home in (`homingTurnRate` rad/s).
@@ -16,8 +16,8 @@
 export const GADGETS = {
   red: { name: '기절 펀치', cooldown: 16, kind: 'stunShot', range: 4, width: 1, stunDuration: 1,
     summary: '조준한 방향으로 4타일 직선 충격파를 날려 처음 맞은 적을 1초 동안 기절시킵니다. 탄약을 쓰지 않고 피해는 없으며 벽을 통과하지 않습니다.' },
-  green: { name: '부메랑 리콜', cooldown: 12, kind: 'recall', returnSpeedBonus: .25,
-    summary: '날아가고 있는 부메랑을 모두 즉시 되돌립니다. 돌아오는 속도가 25% 빨라집니다.' },
+  green: { name: '비열한 부메랑', cooldown: 12, kind: 'empowerAttack', effect: 'returnMark', markDuration: 3, bonusDamage: 700, slowPercent: .3, slowDuration: 1.5,
+    summary: '다음 일반 공격의 나가는 부메랑이 적중하면 3초 표식을 남깁니다. 돌아오는 부메랑으로 다시 맞히면 추가 피해 700과 1.5초간 이동속도 30% 감소를 줍니다. 공격당 적 한 명에게 추가 효과 1회.' },
   blue: { name: '오토 트래커', cooldown: 11, kind: 'autoFire', duration: 3, maxShots: 2, detectRange: 10, homingTurnRate: 4, damageBonus: .1,
     summary: '3초 동안 10타일 안의 가장 가까운 적에게 일반 공격을 자동으로 최대 2발 쏩니다. 구슬은 움직이는 적을 향해 궤도를 조금씩 고치고 피해가 10% 늘어납니다. 탄약은 일반 공격과 같이 쓰고, 벽 너머의 적은 조준하지 않으며 구슬도 벽을 통과하지 않습니다.' },
   orange: { name: '껍질 보호', cooldown: 15, kind: 'guard', duration: 3, damageReduction: .3,

@@ -24,15 +24,15 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
   const w2 = world(), a2 = w2.add('red', { automatic: false, x: 0, next: 0 }), b2 = w2.add('cyan', { automatic: false, x: 2, team: 'b' });
   w2.fire(a2, b2); step(w2, .1); assert(!(b2.lockUntil > w2.time), 'no stun without the gadget');
 }
-{ // Green: flying boomerangs turn back at once; with none flying the gadget does nothing (cooldown kept).
+{ // Green: arm the next volley, which shares its mark ledger across all four boomerangs.
   const w = world(), a = w.add('green', { automatic: false, x: 0, next: 0 }), far = w.add('cyan', { automatic: false, x: 15, team: 'b' });
-  assert.equal(w.gadget(a), false, 'nothing to recall');
+  assert.equal(w.gadget(a), true);
   w.fire(a, far); step(w, .3);
   const out = w.projectiles.filter(p => p.owner === a && p.kind === 'boomerang');
   assert(out.length && out.every(p => !p.returning));
-  assert.equal(w.gadget(a), true);
-  assert(out.every(p => p.returning), 'all boomerangs return');
-  assert(out[0].speed > defs.green.boomerangSpeed * defs.green.boomerangReturnSpeedMultiplier, 'faster than a normal return');
+  assert.equal(a.empoweredAttack,null,'consumed by the next accepted attack');
+  assert(out.every(p=>p.greenTrick===out[0].greenTrick&&p.greenTrick),'one ledger for the whole volley');
+  assert.equal(w.gadget(a),false,'cooldown enforced');
 }
 { // Blue 오토 트래커: for 3 s up to 2 basic shots fire by themselves at the nearest visible enemy within 10 tiles and home in.
   let shots = 0;
@@ -96,4 +96,4 @@ for (const id of ['red', 'green', 'blue', 'orange', 'yellow', 'purple']) assert(
   step(w, .3);
   assert(o.gadgetReadyAt > 0, 'Orange bot used 껍질 보호'); assert(r.gadgetReadyAt > 0 || r.gadgetReadyAt === 0);
 }
-console.log('PASS gadgets #001-#006: Red stun shot, Green recall, Blue auto tracker, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');
+console.log('PASS gadgets #001-#006: Red stun shot, Green return mark, Blue auto tracker, Orange 30% guard, Yellow 40% arc, Purple +1 s poison, bot use.');

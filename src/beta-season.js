@@ -46,8 +46,8 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=31";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=48";
-import { createBeta6Combat } from "./combat/beta6-combat.js?v=73";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=49";
+import { createBeta6Combat } from "./combat/beta6-combat.js?v=75";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
@@ -4552,7 +4552,7 @@ function createMintIceZone(x, z) {
 }
 
 function createChartreuseStatusEffect(kind, target, durationOverride = null) {
-  const colors = { slow: 0x7fdbff, malfunction: 0xffc928, reveal: 0xff9d2e, poison: 0x75e34c, knockback: 0xff4d5a, stun: 0xfff36b, root: 0xd6336c, airborne: 0xffffff, ice: 0x98ffed };
+  const colors = { greenMark: 0x46e878, slow: 0x7fdbff, malfunction: 0xffc928, reveal: 0xff9d2e, poison: 0x75e34c, knockback: 0xff4d5a, stun: 0xfff36b, root: 0xd6336c, airborne: 0xffffff, ice: 0x98ffed };
   const durations = { slow: 1.5, malfunction: 1.2, reveal: 2.5, poison: 3, knockback: 0.8, stun: 1.5, root: 1.5, airborne: 1, ice: 1.5 };
   const color = colors[kind] || 0xffffff;
   const group = new THREE.Group();
@@ -7741,7 +7741,7 @@ function updateBeta6StatusVisuals(world) {
     if (actor.hp <= 0) continue;
     const allied = actor === beta6PlayerActor || (actor.team != null && actor.team === beta6PlayerActor?.team);
     if (!allied && world.hidden(actor, beta6PlayerActor)) continue;
-    for (const [kind, until] of [["poison", actor.poisonUntil], ["slow", actor.slowUntil], ["malfunction", actor.analysisOwner || actor.analysisTarget ? 0 : actor.lockUntil]]) {
+    for (const [kind, until] of [["greenMark", Math.max(0,...(actor.greenGadgetMarks?.values()??[]))], ["poison", actor.poisonUntil], ["slow", actor.slowUntil], ["malfunction", actor.analysisOwner || actor.analysisTarget ? 0 : actor.lockUntil]]) {
       if (until <= world.time) continue;
       const key = `${actor.key}:${kind}`;
       active.add(key);
