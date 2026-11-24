@@ -7,6 +7,7 @@ export const ARCHIVE_TEXT = {
   "roadmapChampionsRewardCard": {"ko": "베타 우승 캐릭터는 정식 시즌에서 받을 새 가젯을 누구보다 먼저 획득합니다. 메인 우승 캐릭터의 「챔피언스 왕관」 스킨은 메인 대회 경기를 한 번 이상 끝까지 치른 플레이어 모두에게 지급됩니다.", "en": "The beta champion gets its new official-season gadget first. The main champion's Champions Crown skin goes to every player who finished at least one main event match."},
   "mainV187Title": {"ko": "v1.8.7 — 2026.11.24 · 버그 수정", "en": "v1.8.7 — 2026.11.24 · Bug fixes"},
   "mainV187Purple": {"ko": "퍼플 — 궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.", "en": "Purple — fixed stuns and other action locks received during Toxic Leap ending the moment she landed. Effects received mid-air now last their full duration."},
+  "mainV187Crimson": {"ko": "크림슨 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Crimson — fixed her basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
   "mainV186Title": {"ko": "v1.8.6 — 2026.11.24 · 밸런스 조정", "en": "v1.8.6 — 2026.11.24 · Balance update"},
   "mainV186Red": {"ko": "레드 (하향) — 탄약 1발 재장전 시간 0.9 → 1.1초", "en": "Red (nerf) — reload time per ammo 0.9 → 1.1 s"},
   "mainV186Purple": {"ko": "퍼플 (상향) — 궁극기 「독성 대도약」 이륙·착지 중앙 피해 1000 → 5000. 가시 16발이 사방 대신 바라보는 방향 60도 부채꼴로, 사거리 10타일 대신 벽에 닿을 때까지 날아갑니다.", "en": "Purple (buff) — Toxic Leap takeoff and landing damage 1000 → 5000. The 16 thorns now fly forward in a 60-degree fan until they hit a wall instead of in every direction up to 10 tiles."},
