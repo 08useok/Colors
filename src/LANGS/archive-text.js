@@ -5,6 +5,8 @@ export const ARCHIVE_TEXT = {
   "roadmapChampionsMain": {"ko": "11/16~ 메인 로비 「🏆 챔피언스」 · 17명 생존전 (매일 18:10 컷) → 사커 킥 → 4강 1대1 듀얼", "en": "From 11/16 via 🏆 Champions in the main lobby · 17-character survival (daily cut at 18:10) → Soccer Kick → 1v1 duel top 4"},
   "roadmapChampionsReward": {"ko": "👑 베타 우승: 정식 시즌 신규 가젯 · 메인 우승: 챔피언스 왕관 스킨", "en": "👑 Beta winner: new official gadget · Main winner: Champions Crown skin"},
   "roadmapChampionsRewardCard": {"ko": "베타 우승 캐릭터는 정식 시즌에서 받을 새 가젯을 누구보다 먼저 획득합니다. 메인 우승 캐릭터의 「챔피언스 왕관」 스킨은 메인 대회 경기를 한 번 이상 끝까지 치른 플레이어 모두에게 지급됩니다.", "en": "The beta champion gets its new official-season gadget first. The main champion's Champions Crown skin goes to every player who finished at least one main event match."},
+  "mainV188Title": {"ko": "v1.8.8 — 2026.11.25 · 버그 수정", "en": "v1.8.8 — 2026.11.25 · Bug fixes"},
+  "mainV188Red": {"ko": "레드 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Red — fixed his basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
   "mainV187Title": {"ko": "v1.8.7 — 2026.11.24 · 버그 수정", "en": "v1.8.7 — 2026.11.24 · Bug fixes"},
   "mainV187Purple": {"ko": "퍼플 — 궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.", "en": "Purple — fixed stuns and other action locks received during Toxic Leap ending the moment she landed. Effects received mid-air now last their full duration."},
   "mainV187Crimson": {"ko": "크림슨 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Crimson — fixed her basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},

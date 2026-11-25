@@ -414,8 +414,8 @@ export function createBeta6Combat(definitions, options = {}) {
       for (let i = 0; i < d.attackCount; i++) after(i * d.attackIntervalMs / 1000, a, () => {
         if (time < a.lockUntil || time < a.frozenUntil) return;
         for (const b of actors.filter(b => enemies(a, b))) {
-          // Crimson's punches stop at walls, checked per punch at impact (her ultimate is unaffected).
-          if (id === 'crimson' && !pathClear(a, b)) continue;
+          // Red's and Crimson's punches stop at walls, checked per punch at impact (Crimson's ultimate is unaffected).
+          if (!pathClear(a, b)) continue;
           const dealt = strike(a, b, yaw + (d.attackAngles?.[i] ?? 0), d.attackRange, d.attackHalfAngle, d.attackDamages?.[i] ?? d.attackDamage);
           if (dealt > 0 && stunPunch && !stunPunch.done) {
             stunPunch.done = true; const until = time + (a.g?.stunDuration ?? 1);
