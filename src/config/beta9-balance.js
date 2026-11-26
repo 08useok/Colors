@@ -15,6 +15,7 @@
 //  - Raspberry (2026-11-07): basic bind 1.6 → 2.0 s (raspberry.js). Chartreuse → Raspberry fell to 238-2, so
 //    Chartreuse shots fly faster (22 → 26) and reload faster (1.2 → 1.1 s): 240-0 again, Red → Chartreuse stays 240-0.
 //  - Chartreuse (2026-11-26): damage 1380 → 1500, enhanced 2760 → 3000, projectile size 0.3 → 0.33 (+10%).
+//  - Cyan (2026-11-26): attack windup 0.08 → 0.04 s, attack cooldown 0.35 → 0.3 s (main too).
 //  - Salmon (2026-11-26): lift 2.4 → 1.2 s (targets are invulnerable while lifted), direct hit 2700 → 2300 (Ivory → Salmon 240-0).
 //  - Crimson (2026-11-26): attack cooldown 0.6 → 0.5 s (Crimson → Blue 240-0, Lavender → Crimson stays 240-0).
 //  - Chartreuse (2026-11-07): range 9.5 → 11, damage 1320 → 1380, enhanced 2640 → 2760 (more than this lets
@@ -54,7 +55,7 @@ export const BETA9_BALANCE = Object.freeze({
   // (Backing off at low health was tried and dropped: it lost Pink → Purple in 1v1.)
   pink: { healCircleRange: 5, healCircleDamage: 2400, healCircleHeal: 1500, ultimate: { chargeRequired: 10 } },
   // 11.22: basic range 8.33 → 9.5 tiles, Gale Strike range 10 → 10.5 tiles.
-  cyan: { spreadLineDamage: 1000, maxHealth: 8200, spreadLineRange: 9.5, ultimate: { range: 10.5 } },
+  cyan: { attackCooldown: .3, attackWindup: .04, spreadLineDamage: 1000, maxHealth: 8200, spreadLineRange: 9.5, ultimate: { range: 10.5 } },
   chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1500, chartreuseEnhancedDamage: 3000, projectileSize: .33, ultimate: { damageMultiplier: 1.5 } },
   // 11.24: bot projectile dodge rolls 50% like everyone else (it always dodged before).
   crimson: { maxHealth: 13000, attackCooldown: .5, projectileDodgeChance: .5 },

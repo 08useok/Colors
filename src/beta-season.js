@@ -44,9 +44,9 @@ import { BETA_CHARACTERS as BASE_BETA_CHARACTERS, BETA5_BALANCE_OVERRIDES } from
 import { applyBeta6Balance } from "./config/beta6-balance.js?v=3";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=33";
+import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=34";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=55";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=56";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=79";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";

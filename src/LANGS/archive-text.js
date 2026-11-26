@@ -45,6 +45,8 @@ export const ARCHIVE_TEXT = {
   "pn189_5": {"ko": "탄속: 16 → 30", "en": "Orb speed: 16 → 30"},
   "pn189_6": {"ko": "판정 크기: 0.4타일 → 1타일", "en": "Hit size: 0.4 tiles → 1 tile"},
   "pn189_7": {"ko": "감전 둔화: 25% → 40%", "en": "Shock slow: 25% → 40%"},
+  "pn189_9": {"ko": "일반 공격 선딜: 0.08초 → 0.04초", "en": "Basic attack windup: 0.08 s → 0.04 s"},
+  "pn189_10": {"ko": "일반 공격 간격: 0.35초 → 0.3초", "en": "Basic attack interval: 0.35 s → 0.3 s"},
   "pn189_8": {"ko": "발사 지연: 0.12초 → 없음", "en": "Firing delay: 0.12 s → none"},
   "pn188_1": {"ko": "벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Fixed basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
   "pn187_1": {"ko": "궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.", "en": "Fixed stuns and other action locks received during Toxic Leap ending the moment she landed. Effects received mid-air now last their full duration."},
