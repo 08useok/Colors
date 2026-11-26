@@ -46,3 +46,20 @@ body.official-season-1 .official-power small { color: #d9eadf; }
 #official-ranked-queue { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); z-index: 60; display: flex; gap: 12px; align-items: center; max-width: calc(100vw - 32px); padding: 10px 16px; border-radius: 14px; background: rgba(11,42,24,.92); color: #fff7d6; border: 2px solid #f2c14e; font-weight: 700; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
 #official-ranked-queue[hidden] { display: none; }
 #official-ranked-queue button { flex: none; padding: 6px 12px; border-radius: 10px; border: 0; background: #c8323c; color: #fff; font-weight: 800; cursor: pointer; }
+
+/* Christmas event (12.1–12.31): gift track and calendar. */
+#official-christmas-open { position: relative; }
+#official-christmas-open.has-reward::after { content: ''; position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: var(--xmas-red); box-shadow: 0 0 0 2px var(--xmas-snow); }
+.xmas-head strong { color: var(--xmas-gold); }
+.xmas-track-rail { height: 8px; margin: .4rem 0 .6rem; border-radius: 99px; background: rgba(0,0,0,.35); overflow: hidden; }
+.xmas-track-rail i { display: block; height: 100%; background: linear-gradient(90deg, var(--xmas-red), var(--xmas-gold)); }
+.xmas-track { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: .45rem; }
+.xmas-stop, .xmas-day { display: grid; gap: .2rem; align-content: start; padding: .4rem; border: 1px solid rgba(242,193,78,.3); border-radius: 10px; background: rgba(20,72,42,.55); font-size: .8rem; }
+.xmas-stop b, .xmas-day b { color: var(--xmas-gold); font-size: 1rem; }
+.xmas-stop button, .xmas-day button { font-size: .75rem; padding: .2rem .4rem; }
+.xmas-stop.open, .xmas-day.today { border-color: var(--xmas-gold); box-shadow: 0 0 10px rgba(242,193,78,.45); }
+.xmas-stop.claimed, .xmas-day.claimed, .xmas-day.missed { opacity: .5; }
+.xmas-calendar { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .35rem; }
+.xmas-calendar em { text-align: center; font-style: normal; font-size: .75rem; color: #d9eadf; }
+.xmas-day.special { background: rgba(122,16,32,.6); border-color: var(--xmas-red); }
+@media (max-width: 640px) { .xmas-day span { font-size: .65rem; } .xmas-day { padding: .25rem; } }

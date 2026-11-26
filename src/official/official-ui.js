@@ -1,12 +1,15 @@
 // Official Season 1 screens: battle pass, gem shop (with daily gems and exchanges), ranked, and the power
-// block on character cards. The page passes its save, modal and match starter; this file owns no game state.
-import * as P from './progression.js?v=3';
+// block on character cards, and the Christmas event. The page passes its save, modal and match starter; this file owns no game state.
+import * as P from './progression.js?v=4';
+import * as X from './christmas-event.js?v=1';
 
 const num = v => Number(v || 0).toLocaleString('ko-KR');
 const rewardText = r => r.label ?? [r.coins ? `코인 ${num(r.coins)}` : '', r.credits ? `크레딧 ${num(r.credits)}` : '', r.gems ? `💎 ${num(r.gems)}` : ''].filter(Boolean).join(' + ');
+const KST_DATE = t => new Date(t + 9 * 3600e3);
+const until = ms => { const m = Math.max(0, Math.ceil(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60); return d ? `${d}일 ${h}시간` : h ? `${h}시간 ${m % 60}분` : `${m % 60}분`; };
 const MODE_LABEL = { gemGrab: '젬 그랩', knockout: '녹아웃', hotZone: '핫 존' };
 
-export function createOfficialUi({ state, save, title, content, toast, characters, startRanked, onChange = () => {} }) {
+export function createOfficialUi({ state, save, title, content, toast, characters, startRanked, onChange = () => {}, now = () => Date.now() }) {
   const official = () => state.official;
   const name = id => characters.find(c => c.id === id)?.name ?? id;
   let current = null, rankedPick = null;
@@ -72,6 +75,43 @@ export function createOfficialUi({ state, save, title, content, toast, character
     save(); toast(`교환 완료: ${result.exchange.coins ? `코인 ${num(result.exchange.coins)}` : `크레딧 ${num(result.exchange.credits)}`}`); rerender();
   }
 
+  // ── Christmas event ─────────────────────────────────────────────────────
+  function renderChristmas() {
+    current = renderChristmas;
+    const t = now(), event = official().christmas, phase = X.christmasPhase(t), today = X.calendarDay(t);
+    const status = phase === 'before' ? `12월 1일 0시에 시작합니다 (${until(X.CHRISTMAS_START - t)} 남음)`
+      : phase === 'open' ? `진행 중 · 종료까지 ${until(X.CHRISTMAS_END - t)}` : '이벤트가 끝났습니다. 모은 선물로 열린 보상은 계속 받을 수 있습니다.';
+    const firstDow = KST_DATE(X.CHRISTMAS_START).getUTCDay();
+    title.textContent = '🎁 크리스마스 이벤트';
+    content.innerHTML = `<section class="xmas-head"><p><strong>12.1 ~ 12.31</strong> · ${status}</p></section>
+      <h3>🎁 선물 보상 트랙 · ${num(event.gifts)} / ${num(X.GIFT_MAX)}</h3>
+      <p>이벤트 기간에 판을 하면 선물 상자를 받습니다: 승리 3 · 무승부 2 · 패배 1 (중도 이탈 0)</p>
+      <div class="xmas-track-rail"><i style="width:${event.gifts / X.GIFT_MAX * 100}%"></i></div>
+      <div class="xmas-track">${X.GIFT_TRACK.map(r => {
+        const claimed = event.trackClaimed.includes(r.gifts), open = event.gifts >= r.gifts;
+        return `<article class="xmas-stop${claimed ? ' claimed' : open ? ' open' : ''}"><b>🎁 ${r.gifts}</b><span>${rewardText(r)}</span><button data-xmas-track="${r.gifts}" ${claimed || !open ? 'disabled' : ''}>${claimed ? '받음' : open ? '받기' : '잠김'}</button></article>`;
+      }).join('')}</div>
+      <h3>🎄 크리스마스 달력</h3>
+      <p>12월 하루에 상자 하나, 그날에만 열 수 있습니다. 25일과 31일에는 특별 상자가 열립니다.${today && event.calendarClaimed.includes(today) ? ` 다음 상자까지 ${until(X.nextKstDay(t) - t)}` : ''}</p>
+      <div class="xmas-calendar">${['일', '월', '화', '수', '목', '금', '토'].map(d => `<em>${d}</em>`).join('')}${'<i></i>'.repeat(firstDow)}${X.CALENDAR.map(r => {
+        const claimed = event.calendarClaimed.includes(r.day), isToday = r.day === today, missed = today != null ? r.day < today : phase === 'ended';
+        const label = claimed ? '✓ 받음' : isToday ? '열기' : missed ? '지남' : '🔒';
+        return `<article class="xmas-day${r.special ? ' special' : ''}${claimed ? ' claimed' : isToday ? ' today' : missed ? ' missed' : ''}"><b>${r.day}</b><span>${rewardText(r)}</span><button data-xmas-day="${r.day}" ${isToday && !claimed ? '' : 'disabled'}>${label}</button></article>`;
+      }).join('')}</div>`;
+  }
+  function claimTrack(gifts) {
+    const result = X.claimGiftReward(state, gifts);
+    if (!result.ok) return toast(result.reason === 'claimed' ? '이미 받았습니다.' : '선물이 더 필요합니다.');
+    save(); toast(`선물 ${gifts}개 보상: ${rewardText(result.reward)}`); rerender();
+  }
+  function claimDay(day) {
+    const result = X.claimCalendarBox(state, day, now());
+    if (!result.ok) return toast({ claimed: '이미 열었습니다.', missed: '지난 날의 상자는 열 수 없습니다.', locked: '아직 열 수 없는 상자입니다.' }[result.reason] ?? '열 수 없습니다.');
+    save(); toast(`12월 ${day}일 상자: ${rewardText(result.reward)}`); rerender();
+  }
+  // Lobby button badge: something to claim right now.
+  const christmasReady = () => X.unclaimedGiftRewards(official().christmas) > 0 || X.calendarReady(official().christmas, now());
+
   // ── Ranked ──────────────────────────────────────────────────────────────
   function renderRanked(selected = state.selectedCharacter) {
     current = () => renderRanked(selected); rankedPick = selected;
@@ -95,6 +135,8 @@ export function createOfficialUi({ state, save, title, content, toast, character
     else if (b.hasAttribute('data-official-premium')) buyPremium();
     else if (b.hasAttribute('data-official-daily')) daily();
     else if (b.dataset.officialExchange) exchange(b.dataset.officialExchange);
+    else if (b.dataset.xmasTrack) claimTrack(Number(b.dataset.xmasTrack));
+    else if (b.dataset.xmasDay) claimDay(Number(b.dataset.xmasDay));
     else if (b.dataset.officialRankedPick) renderRanked(b.dataset.officialRankedPick);
     else if (b.dataset.officialRankedStart) {
       const id = rankedPick || state.selectedCharacter;
@@ -104,15 +146,16 @@ export function createOfficialUi({ state, save, title, content, toast, character
   });
 
   return {
-    powerHtml, renderBattlePass, renderGemShop, renderRanked,
+    powerHtml, renderBattlePass, renderGemShop, renderRanked, renderChristmas, christmasReady,
     stopRendering() { current = null; },
-    // Called by the page when a match ends: battle pass XP, and rank points for ranked matches.
+    // Called by the page when a match ends: battle pass XP, Christmas gifts, and rank points for ranked matches.
     matchEnded({ won, draw, abandoned, ranked }) {
       const xp = P.passXpForMatch({ won, draw, abandoned });
       const before = P.passTier(official()), after = P.addPassXp(official(), xp);
+      const gifts = X.addChristmasGifts(official(), { won, draw, abandoned }, now());
       const rankedResult = ranked ? P.recordRanked(official(), { won, draw, abandoned }) : null;
-      save();
-      const parts = [xp ? `패스 +${xp} XP${after > before ? ` (${after}단계!)` : ''}` : ''];
+      save(); onChange();
+      const parts = [xp ? `패스 +${xp} XP${after > before ? ` (${after}단계!)` : ''}` : '', gifts ? `🎁 선물 +${gifts}` : ''];
       if (rankedResult) parts.push(`경쟁전 ${rankedResult.delta >= 0 ? '+' : ''}${rankedResult.delta}점 · ${rankedResult.rank.name}${rankedResult.promoted ? ' 승급!' : ''}`);
       return parts.filter(Boolean).join(' · ');
     },

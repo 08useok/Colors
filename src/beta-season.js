@@ -46,13 +46,13 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=32";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=53";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=54";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=78";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
 import { activeRotation, modeOpen, MODE_NAMES } from "./config/mode-rotation.js?v=1";
-import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER, STAR_REWARD_TIERS, STAR_EXTRA_JUMPS } from "./official/progression.js?v=3";
-import { createOfficialUi } from "./official/official-ui.js?v=4";
+import { normalizeOfficial, powerOf, powerMultiplier, POWER_MAX, GADGET_POWER, TRANSFORM_POWER, STAR_REWARD_TIERS, STAR_EXTRA_JUMPS } from "./official/progression.js?v=4";
+import { createOfficialUi } from "./official/official-ui.js?v=5";
 import { plazaArenaMap } from "./official/plaza-maps.js?v=1";
 import { createRankedSession, packFighter } from "./official/ranked-net.js?v=1";
 import { HOT_ZONE_RULES, createHotZone, tickHotZone, hotZoneTimeResult } from "./config/hot-zone.js?v=2";
@@ -638,10 +638,21 @@ function saveSkinSelection() {
   else saveBetaState();
 }
 const betaRecords = IS_BETA8_TEST ? createBetaRecords({state:betaState,save:saveBetaState,storageKey:BETA_STORAGE_KEY,account:betaAccount,characters:CHARACTERS,title:modalTitle,content:modalContent,open:()=>openPanel('records')}) : null;
-// Official Season 1 screens (battle pass, gem shop, ranked, power on character cards).
+// Official Season 1 screens (battle pass, gem shop, ranked, Christmas event, power on character cards).
+// official.html?xmasDate=2026-12-05 shifts the Christmas event clock to that KST day, to try the event before 12.1.
+const christmasNow = (() => {
+  const day = IS_OFFICIAL_SEASON ? new URLSearchParams(location.search).get('xmasDate') : null;
+  const offset = day ? Date.parse(`${day}T12:00:00+09:00`) - Date.now() : 0;
+  return () => Date.now() + (Number.isFinite(offset) ? offset : 0);
+})();
 const officialUi = IS_OFFICIAL_SEASON ? createOfficialUi({ state: betaState, save: saveBetaState, title: modalTitle, content: modalContent,
-  toast: message => showToast(message), characters: CHARACTERS, startRanked: (mode, id) => startOfficialRanked(mode, id),
-  onChange: () => { if (modalContent.querySelector('[data-official-upgrade]')) renderCharacters(); } }) : null;
+  toast: message => showToast(message), characters: CHARACTERS, startRanked: (mode, id) => startOfficialRanked(mode, id), now: christmasNow,
+  onChange: () => { if (modalContent.querySelector('[data-official-upgrade]')) renderCharacters(); updateChristmasBadge(); } }) : null;
+// Red dot on the lobby's Christmas button while a gift reward or today's calendar box is waiting.
+function updateChristmasBadge() {
+  document.getElementById('official-christmas-open')?.classList.toggle('has-reward', !!officialUi?.christmasReady());
+}
+if (officialUi) { updateChristmasBadge(); setInterval(updateChristmasBadge, 60000); }
 // Power level used in matches: the chosen character's power (bots match it); ranked is power 11 for everyone.
 const officialPowerLevel = () => !IS_OFFICIAL_SEASON ? 1 : goldRushState.ranked ? POWER_MAX : powerOf(betaState.official, betaState.selectedCharacter);
 const officialHealth = base => IS_OFFICIAL_SEASON ? Math.round(base * powerMultiplier(officialPowerLevel())) : base;
@@ -3282,6 +3293,7 @@ function openPanel(panel) {
   if (panel === "battlepass") officialUi?.renderBattlePass();
   if (panel === "gemshop") officialUi?.renderGemShop();
   if (panel === "ranked") officialUi?.renderRanked();
+  if (panel === "christmas") officialUi?.renderChristmas();
   if (panel === "quests") IS_BETA8_TEST ? renderBeta8Quests() : IS_BETA7_TEST ? renderBeta7Quests() : showToast("베타 시즌 7 전용 퀘스트입니다.");
 }
 document.querySelectorAll("[data-panel]").forEach((button) => button.addEventListener("click", () => openPanel(button.dataset.panel)));

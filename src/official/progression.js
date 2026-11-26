@@ -1,6 +1,7 @@
 // Official Season 1 progression: power 1–11, gems, battle pass and ranked mode.
 // Pure functions over the saved `official` block so they can be tested without the page.
 // See specs/official-season-1.md (배틀 시스템 · 배틀 패스 · 보석 · 파워 업그레이드 비용).
+import { normalizeChristmas } from './christmas-event.js?v=1';
 
 // ── Power 1–11 ──────────────────────────────────────────────────────────────
 export const POWER_MAX = 11;
@@ -159,5 +160,6 @@ export function normalizeOfficial(saved = {}) {
     pass: { xp: Math.min(PASS_TIERS * PASS_XP_PER_TIER, n(saved.pass?.xp)), premium: saved.pass?.premium === true, claimed: { free: tiers(saved.pass?.claimed?.free), premium: tiers(saved.pass?.claimed?.premium) } },
     pendingRewards: Array.isArray(saved.pendingRewards) ? saved.pendingRewards.filter(r => typeof r === 'string') : [],
     ranked: { season: RANKED_SEASON, points: n(ranked.points), best: n(ranked.best), wins: n(ranked.wins), losses: n(ranked.losses), draws: n(ranked.draws) },
+    christmas: normalizeChristmas(saved.christmas),
   };
 }
