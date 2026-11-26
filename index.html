@@ -6,6 +6,7 @@
   <title>Colors - 3D TPS Battle Royale</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
   <link rel="stylesheet" href="./styles.css?v=1.8.0">
+  <link rel="stylesheet" href="./patchnotes.css?v=1">
   <style>.hidden{display:none!important}</style>
   <script type="importmap">
   {
@@ -173,598 +174,1099 @@
           </div>
           <button id="patchnotes-toggle" class="side-toggle-btn" type="button" data-i18n="patchnotesBtn">패치노트</button>
           <div id="patchnotes" class="patchnotes hidden">
-            <div class="patch-section-label" data-i18n="archiveHeading106">베타 시즌 패치노트</div>
+            <div class="patch-section-label" data-i18n="pnSeasonBeta">베타 시즌 패치노트</div>
             <!-- Main-update patch notes: character stats/skills only; omit AI-only changes. -->
             <div id="main-v188-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV188Title">v1.8.8 — 2026.11.25 · 버그 수정</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.8</span><span class="patch-date">2026.11.25</span><span class="patch-tag fix" data-i18n="pnTag_fix">버그 수정</span></div>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="mainV188Red">레드 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.</li>
+                <li><b class="patch-label" data-i18n="pnCh_red">레드</b><span data-i18n="pn188_1">벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.</span></li>
               </ul>
             </div>
             <div id="main-v187-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV187Title">v1.8.7 — 2026.11.24 · 버그 수정</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.7</span><span class="patch-date">2026.11.24</span><span class="patch-tag fix" data-i18n="pnTag_fix">버그 수정</span></div>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="mainV187Purple">퍼플 — 궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.</li>
-                <li data-i18n="mainV187Crimson">크림슨 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.</li>
+                <li><b class="patch-label" data-i18n="pnCh_purple">퍼플</b><span data-i18n="pn187_1">궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.</span></li>
+                <li><b class="patch-label" data-i18n="pnCh_crimson">크림슨</b><span data-i18n="pn187_2">벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.</span></li>
               </ul>
             </div>
             <div id="main-v186-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV186Title">v1.8.6 — 2026.11.24 · 밸런스 조정</div>
-              <ul>
-                <li data-i18n="mainV186Red">레드 (하향) — 탄약 1발 재장전 시간 0.9 → 1.1초</li>
-                <li data-i18n="mainV186Purple">퍼플 (상향) — 궁극기 「독성 대도약」 이륙·착지 중앙 피해 1000 → 5000. 가시 16발이 사방 대신 바라보는 방향 60도 부채꼴로, 사거리 10타일 대신 벽에 닿을 때까지 날아갑니다.</li>
-                <li data-i18n="mainV186Cyan">시안 (상향) — 사거리 9 → 9.5타일, 궁극기 「질풍 강타」 사거리 10 → 10.5타일</li>
+              <div class="patch-version"><span class="patch-ver">v1.8.6</span><span class="patch-date">2026.11.24</span><span class="patch-tag balance" data-i18n="pnTag_balance">밸런스</span></div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn186_1">탄약 1발 재장전 시간: 0.9초 → 1.1초</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn186_2">「독성 대도약」 이륙·착지 중앙 피해: 1,000 → 5,000</li>
+                <li data-i18n="pn186_3">「독성 대도약」 가시 16발 방향: 사방 → 바라보는 방향 60도 부채꼴</li>
+                <li data-i18n="pn186_4">「독성 대도약」 가시 사거리: 10타일 → 벽에 닿을 때까지</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn186_5">사거리: 9 → 9.5타일</li>
+                <li data-i18n="pn186_6">궁극기 「질풍 강타」 사거리: 10 → 10.5타일</li>
               </ul>
             </div>
             <div id="main-v185-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV185Title">v1.8.5 — 2026.11.22 · 버그 수정</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.5</span><span class="patch-date">2026.11.22</span><span class="patch-tag fix" data-i18n="pnTag_fix">버그 수정</span></div>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="mainV185Lavender">라벤더 — 궁극기 사용 중 쓰러져도 향기 장판이 남아 계속 피해를 주던 문제를 수정했습니다. 이제 라벤더가 쓰러지면 장판도 바로 사라집니다.</li>
+                <li><b class="patch-label" data-i18n="pnCh_lavender">라벤더</b><span data-i18n="pn185_1">궁극기 사용 중 쓰러져도 향기 장판이 남아 계속 피해를 주던 문제를 수정했습니다. 이제 라벤더가 쓰러지면 장판도 바로 사라집니다.</span></li>
               </ul>
             </div>
             <div id="main-v184-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV184Title">v1.8.4 — 2026.11.19 · 밸런스 조정</div>
-              <ul>
-                <li data-i18n="mainV184Red">레드 (하향) — 체력 9000 → 8000, 일반 공격 피해 2400 → 2200</li>
-                <li data-i18n="mainV184Orange">오렌지 (하향) — 과즙 피해 1170 → 1000</li>
-                <li data-i18n="mainV184Cyan">시안 (상향) — 체력 6200 → 7000, 알약 피해 700 → 900, 사거리 8.33 → 9타일</li>
-                <li data-i18n="mainV184Mint">민트 (상향) — 체력 6600 → 7000, 아이스크림 탄환 피해 1000 → 1100</li>
+              <div class="patch-version"><span class="patch-ver">v1.8.4</span><span class="patch-date">2026.11.19</span><span class="patch-tag balance" data-i18n="pnTag_balance">밸런스</span></div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn184_1">체력: 9,000 → 8,000</li>
+                <li data-i18n="pn184_2">일반 공격 피해: 2,400 → 2,200</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn184_3">과즙 피해: 1,170 → 1,000</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn184_4">체력: 6,200 → 7,000</li>
+                <li data-i18n="pn184_5">알약 피해: 700 → 900</li>
+                <li data-i18n="pn184_6">사거리: 8.33 → 9타일</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_mint">민트</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn184_7">체력: 6,600 → 7,000</li>
+                <li data-i18n="pn184_8">아이스크림 탄환 피해: 1,000 → 1,100</li>
               </ul>
             </div>
             <div id="main-v183-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV183Title">v1.8.3 — 2026.11.19 · 버그 수정</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.3</span><span class="patch-date">2026.11.19</span><span class="patch-tag fix" data-i18n="pnTag_fix">버그 수정</span></div>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="mainV183Soccer">사커 킥 — 봇이 공을 쫓지 않고 몰려다니거나 제자리에 서 있던 문제와, 봇과 플레이어가 골대 뒤로 경기장을 벗어나던 문제를 수정했습니다. 이제 봇이 공을 차고 지원·수비 위치를 나눠 움직입니다.</li>
-                <li data-i18n="mainV183GemTimer">젬 그랩 — 양 팀이 모두 젬 10개 이상일 때 먼저 모은 팀이 아닌 팀의 탈출 시간이 표시될 수 있던 문제와, 결과 화면에 쓰지 않는 금 개수가 표시되던 문제를 수정했습니다.</li>
-                <li data-i18n="mainV183GemResult">젬 그랩 — 졌을 때 결과 화면에 아군이 탈출한 것처럼 읽히는 문구가 표시되던 문제를 수정했습니다.</li>
-                <li data-i18n="mainV183Salmon">샐먼 — 궁극기 「월척이다!」 장치가 설치되면 경기가 멈춰 끝나지 않던 문제를 수정했습니다.</li>
-                <li data-i18n="mainV183UltBush">궁극기 — 가장 가까운 적이 덤불에 숨어 있으면 궁극기 버튼을 눌러도 나가지 않던 문제를 수정했습니다. 이제 보이는 적을 기준으로 쓰고, 보이는 적이 없으면 조준한 곳이나 바라보는 방향으로 나갑니다.</li>
-                <li data-i18n="mainV183Crystal">크리스탈 — 궁극기가 조준한 적이 아니라 가장 가까운 적을 노려 자주 빗나가던 문제를 수정했습니다. 이제 조준선(폭 2.4칸) 안의 첫 적을 붙잡습니다.</li>
-                <li data-i18n="mainV183Pink">핑크 — 녹아웃에서 궁극기를 쓸 수 없던 문제를 수정했습니다. 녹아웃에서는 쓰러진 아군을 부활시키지 않고, 주변의 살아 있는 아군에게 앙코르만 겁니다.</li>
-                <li data-i18n="mainV183Purple">퍼플 — 궁극기 조준선에 뛰어오를 때와 착지할 때 퍼지는 가시의 사거리가 표시되지 않던 문제를 수정했습니다. 이제 10칸 범위도 함께 보입니다.</li>
-                <li data-i18n="mainV183MobileFacing">모바일 — 조이스틱을 놓으면 캐릭터가 조이스틱이 있던 화면 쪽으로 돌던 문제를 수정했습니다. 이제 이동하던 방향을 계속 바라봅니다.</li>
-                <li data-i18n="mainV183MobileAim">모바일 — 이동하면서 궁극기 버튼을 끌면 손가락 위치가 무시되던 문제를 수정했습니다. 이제 조준선과 궁극기가 손가락이 가리키는 곳으로 향합니다.</li>
-                <li data-i18n="mainV183Crown">챔피언스 왕관 — 블루와 라벤더에게 챔피언스 왕관이 보이지 않던 문제를 수정했습니다.</li>
+                <li><b class="patch-label" data-i18n="pn183_1">사커 킥</b><span data-i18n="pn183_2">봇이 공을 쫓지 않고 몰려다니거나 제자리에 서 있던 문제와, 봇과 플레이어가 골대 뒤로 경기장을 벗어나던 문제를 수정했습니다. 이제 봇이 공을 차고 지원·수비 위치를 나눠 움직입니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn183_3">젬 그랩</b><span data-i18n="pn183_4">양 팀이 모두 젬 10개 이상일 때 먼저 모은 팀이 아닌 팀의 탈출 시간이 표시될 수 있던 문제와, 결과 화면에 쓰지 않는 금 개수가 표시되던 문제를 수정했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn183_5">젬 그랩</b><span data-i18n="pn183_6">졌을 때 결과 화면에 아군이 탈출한 것처럼 읽히는 문구가 표시되던 문제를 수정했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pnCh_salmon">살몬</b><span data-i18n="pn183_7">궁극기 「월척이다!」 장치가 설치되면 경기가 멈춰 끝나지 않던 문제를 수정했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn183_8">궁극기</b><span data-i18n="pn183_9">가장 가까운 적이 덤불에 숨어 있으면 궁극기 버튼을 눌러도 나가지 않던 문제를 수정했습니다. 이제 보이는 적을 기준으로 쓰고, 보이는 적이 없으면 조준한 곳이나 바라보는 방향으로 나갑니다.</span></li>
+                <li><b class="patch-label" data-i18n="pnCh_crystal">크리스탈</b><span data-i18n="pn183_10">궁극기가 조준한 적이 아니라 가장 가까운 적을 노려 자주 빗나가던 문제를 수정했습니다. 이제 조준선(폭 2.4칸) 안의 첫 적을 붙잡습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pnCh_pink">핑크</b><span data-i18n="pn183_11">녹아웃에서 궁극기를 쓸 수 없던 문제를 수정했습니다. 녹아웃에서는 쓰러진 아군을 부활시키지 않고, 주변의 살아 있는 아군에게 앙코르만 겁니다.</span></li>
+                <li><b class="patch-label" data-i18n="pnCh_purple">퍼플</b><span data-i18n="pn183_12">궁극기 조준선에 뛰어오를 때와 착지할 때 퍼지는 가시의 사거리가 표시되지 않던 문제를 수정했습니다. 이제 10칸 범위도 함께 보입니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn183_13">모바일</b><span data-i18n="pn183_14">조이스틱을 놓으면 캐릭터가 조이스틱이 있던 화면 쪽으로 돌던 문제를 수정했습니다. 이제 이동하던 방향을 계속 바라봅니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn183_15">모바일</b><span data-i18n="pn183_16">이동하면서 궁극기 버튼을 끌면 손가락 위치가 무시되던 문제를 수정했습니다. 이제 조준선과 궁극기가 손가락이 가리키는 곳으로 향합니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn183_17">챔피언스 왕관</b><span data-i18n="pn183_18">블루와 라벤더에게 챔피언스 왕관이 보이지 않던 문제를 수정했습니다.</span></li>
               </ul>
             </div>
             <div id="main-v182-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV182Title">v1.8.2 — 2026.11.16 · 메인 챔피언스 개막</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.2</span><span class="patch-date">2026.11.16</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn182_1">메인 챔피언스 개막</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="mainV182Champions">메인 챔피언스 — 로비 오른쪽 위 「🏆 챔피언스」에서 참가합니다. 베타 챔피언스와 따로 집계하는 메인 전용 대회로, 11월 16일 18:10(KST)에 열립니다. 메인 17명이 젬 그랩·녹아웃 두 조로 생존전을 치르고 매일 18:10 각 조 최하위 1명이 탈락합니다(3차부터 두 조의 모드 교체). 10명 이하가 남으면 사커 킥 최종전(매일 하위 2명 탈락), 4명이 남으면 1대1 듀얼 토너먼트(4강 1위 vs 4위·2위 vs 3위 → 결승)로 우승 캐릭터를 정합니다.</li>
-                <li data-i18n="mainV182Play">참가 방식 — 생존 캐릭터를 골라 참가하면 보유하지 않은 캐릭터도 그 경기에서 쓸 수 있고, 같은 조 생존 캐릭터 AI가 나머지 자리를 채웁니다. 플레이어와 AI 6명 전원의 승패·피해·처치를 서버에서 캐릭터별로 함께 집계하며, 승수 → 승률 → 피해량 → 처치 순으로 순위를 정합니다. 경기 중 나가면 기권(패배)으로 기록됩니다.</li>
-                <li data-i18n="mainV182Reward">우승 보상 — 대회 경기를 한 번이라도 끝까지 치른 플레이어 모두에게 우승 캐릭터의 「챔피언스 왕관」 스킨을 지급합니다.</li>
-                <li data-i18n="mainV182CutFix">챔피언스 집계 수정 (11.17) — 각 조는 그 조에 새 경기가 있을 때만 탈락자를 정하고, 경기에 한 번 이상 나온 캐릭터 중에서만 고릅니다. 첫 집계에서 녹아웃 조 경기가 없는데 탈락한 크리스탈은 대회에 복귀합니다.</li>
-                <li data-i18n="mainV182Roadmap">공지 로드맵 — 시즌 9 칸에 베타·메인 챔피언스 일정과 보상을 함께 표시합니다.</li>
+                <li><b class="patch-label" data-i18n="pn182_2">메인 챔피언스</b><span data-i18n="pn182_3">로비 오른쪽 위 「🏆 챔피언스」에서 참가합니다. 베타 챔피언스와 따로 집계하는 메인 전용 대회로, 11월 16일 18:10(KST)에 열립니다. 메인 17명이 젬 그랩·녹아웃 두 조로 생존전을 치르고 매일 18:10 각 조 최하위 1명이 탈락합니다(3차부터 두 조의 모드 교체). 10명 이하가 남으면 사커 킥 최종전(매일 하위 2명 탈락), 4명이 남으면 1대1 듀얼 토너먼트(4강 1위 vs 4위·2위 vs 3위 → 결승)로 우승 캐릭터를 정합니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn182_4">참가 방식</b><span data-i18n="pn182_5">생존 캐릭터를 골라 참가하면 보유하지 않은 캐릭터도 그 경기에서 쓸 수 있고, 같은 조 생존 캐릭터 AI가 나머지 자리를 채웁니다. 플레이어와 AI 6명 전원의 승패·피해·처치를 서버에서 캐릭터별로 함께 집계하며, 승수 → 승률 → 피해량 → 처치 순으로 순위를 정합니다. 경기 중 나가면 기권(패배)으로 기록됩니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn182_6">우승 보상</b><span data-i18n="pn182_7">대회 경기를 한 번이라도 끝까지 치른 플레이어 모두에게 우승 캐릭터의 「챔피언스 왕관」 스킨을 지급합니다.</span></li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li><b class="patch-label" data-i18n="pn182_8">챔피언스 집계 (11.17)</b><span data-i18n="pn182_9">각 조는 그 조에 새 경기가 있을 때만 탈락자를 정하고, 경기에 한 번 이상 나온 캐릭터 중에서만 고릅니다. 첫 집계에서 녹아웃 조 경기가 없는데 탈락한 크리스탈은 대회에 복귀합니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn182_10">공지 로드맵</b><span data-i18n="pn182_11">시즌 9 칸에 베타·메인 챔피언스 일정과 보상을 함께 표시합니다.</span></li>
               </ul>
             </div>
             <div id="main-v181-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainV181Title">v1.8.1 — 2026.11.12 · 3대3 진영 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.1</span><span class="patch-date">2026.11.12</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn181_1">3대3 진영 업데이트</div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="mainV181TeamSide">3대3 시작 위치 — 녹아웃·젬 그랩·사커 킥·찹 우드에서 내 팀 진영이 항상 화면 아래쪽에 보이고 상대는 위쪽에서 내려옵니다. 녹아웃·젬 그랩은 시작·부활 위치와 봇이 돌아가는 기지 위치를 바꿨고, 사커 킥·찹 우드는 내 기지가 위쪽인 팀일 때 고정 카메라가 반대편에서 비춥니다.</li>
-                <li data-i18n="mainV181Controls">조작 — WASD와 조이스틱은 화면 기준이라 위쪽 키를 누르면 항상 상대 진영으로 이동합니다. 마우스 조준은 그대로 정확합니다. 카메라는 지금처럼 위에서 내려다보는 고정 시점입니다.</li>
+                <li><b class="patch-label" data-i18n="pn181_2">3대3 시작 위치</b><span data-i18n="pn181_3">녹아웃·젬 그랩·사커 킥·찹 우드에서 내 팀 진영이 항상 화면 아래쪽에 보이고 상대는 위쪽에서 내려옵니다. 녹아웃·젬 그랩은 시작·부활 위치와 봇이 돌아가는 기지 위치를 바꿨고, 사커 킥·찹 우드는 내 기지가 위쪽인 팀일 때 고정 카메라가 반대편에서 비춥니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn181_4">조작</b><span data-i18n="pn181_5">WASD와 조이스틱은 화면 기준이라 위쪽 키를 누르면 항상 상대 진영으로 이동합니다. 마우스 조준은 그대로 정확합니다. 카메라는 지금처럼 위에서 내려다보는 고정 시점입니다.</span></li>
               </ul>
             </div>
             <div id="main-season-8-balance-preview" class="patch-entry">
-              <div class="patch-version" data-i18n="mainSeason8BalanceTitle">v1.8.0 — 2026.10.31 · 베타 시즌 8 메인 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.8.0</span><span class="patch-date">2026.10.31</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn180_1">베타 시즌 8 메인 업데이트</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="mainSeason8Modes">신규 모드 — KNOCKOUT: 플레이어와 아군 AI 2명 대 적 AI 3명, 2라운드 선승. 라운드 중 부활이 없고 핑크 부활 궁극기를 쓸 수 없습니다. 45초부터 독안개가 좁혀지고 90초에 남은 인원·체력으로 판정합니다. 맵 3종(유령 결투장·저주받은 성벽·안개 묘지).</li>
-                <li data-i18n="mainSeason8Skins">할로윈 스킨 — 해골 아이보리·잭오랜턴 오렌지·마녀 퍼플·유령 신부 라벤더를 상점에서 각 2,500코인에 판매합니다.</li>
-                <li data-i18n="mainSeason8Quests">시즌 퀘스트 — 킬 1회 = 1점, 회복량 2,000 = 1점, 피해량 1,000 = 1점. 103단계·최종 10,000점, 합계 코인 8,400·크레딧 1,900. 개별·일괄 수령. 훈련장은 제외합니다.</li>
-                <li data-i18n="mainSeason8Respawn">부활 보호막 — 부활한 캐릭터는 5초간 무적이며 하늘색 보호막으로 표시됩니다. 공격해도 보호 시간이 끝나지 않습니다.</li>
-                <li data-i18n="mainSeason8Theme">테마 — 할로윈 바닥·벽 색상과 로비·전투·KNOCKOUT·젬 그랩 음악을 적용했습니다.</li>
-                <li data-i18n="mainSeason8NewCharacters">신규 — 라벤더·살몬이 합류합니다. 살몬은 낚시찌를 꺼내 던져 적을 포획하고, 궁극기로 포획 장치를 설치합니다.</li>
-                <li data-i18n="mainSeason8RedNerf">너프 — 레드: 이동 속도 배율 1.4 → 1.15.</li>
-                <li data-i18n="mainSeason8CyanBuff">버프 — 시안: 궁극기 피해 5,200, 충전 요구량 10 → 1.5칸으로 변경합니다. 일반 공격 유효 명중 10회 → 3회로 충전되며, 알약 6발을 평행 발사합니다.</li>
-                <li data-i18n="mainSeason8GoldBalance">조정 — 골드: 체력 7,380, 일반 공격 단계별 피해 1,300 / 600 / 300, 받는 투사체 피해 감소 1,650, 궁극기 틱 피해 138로 조정합니다.</li>
-                <li data-i18n="mainSeason8BlueBalance">조정 — 블루: 일반 공격 넉백을 삭제하고 사거리를 20타일, 투사체 판정을 10% 확대합니다. 일반 공격 5회 또는 궁극기 5회 유효 명중으로 궁을 충전합니다. 궁 준비·구르기 중 피해를 70% 감소시키고 종료·중단 시 해제합니다.</li>
-                <li data-i18n="mainSeason8AzureBalance">조정 — 애저: 일반 파도 크기 4×3타일·피해 3,000, 일반 공격 이동 거리 2타일로 조정합니다.</li>
-                <li data-i18n="mainSeason8PurpleBalance">조정 — 퍼플: 독 피해 초당 1,250·5초, 일반 공격 2회 유효 명중으로 궁을 충전합니다. 궁 이륙·착지 중심 피해 1,000, 가시 피해 550이며 중심·첫 가시 명중으로 단계별 제한 재충전합니다.</li>
-                <li data-i18n="mainSeason8CrystalBalance">개편 — 크리스탈: 일반 공격 단계별 피해 2,000 / 1,000 / 500. 궁은 사용 표시와 돌진 경로를 보여주고 1.5초 후 돌진합니다. 붙잡은 적을 8초 분석한 뒤 피해 감소 보호막을 무시하는 고정 28,000 피해를 줍니다.</li>
-                <li data-i18n="mainSeason8SalmonSkills">살몬 상세 — 일반 포획 피해 3,000+착지 600, 공중 지속 1.2초. 탄약 5발·자동 재장전 없음. 궁 장치는 땅에 닿으면 즉시 설치되며 접촉 피해 3,000+착지 600을 주고 한 번 포획하면 소모됩니다.</li>
-                <li data-i18n="mainSeason8MotionChanges">모션·스킨 효과 — 캐릭터별 일반 공격·궁극기 모션을 정비합니다. 스킨 등급별로 희귀는 외형, 초희귀는 일반 공격까지, 영웅은 궁극기까지, 전설은 주변 효과까지 변경합니다.</li>
+                <li><b class="patch-label" data-i18n="pn180_2">신규 모드 KNOCKOUT</b><span data-i18n="pn180_3">플레이어와 아군 AI 2명 대 적 AI 3명, 2라운드 선승. 라운드 중 부활이 없고 핑크 부활 궁극기를 쓸 수 없습니다. 45초부터 독안개가 좁혀지고 90초에 남은 인원·체력으로 판정합니다. 맵 3종(유령 결투장·저주받은 성벽·안개 묘지).</span></li>
+                <li><b class="patch-label" data-i18n="pn180_4">신규 캐릭터</b><span data-i18n="pn180_5">라벤더·살몬이 합류합니다. 살몬은 낚시찌를 꺼내 던져 적을 포획하고, 궁극기로 포획 장치를 설치합니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn180_6">할로윈 스킨</b><span data-i18n="pn180_7">해골 아이보리·잭오랜턴 오렌지·마녀 퍼플·유령 신부 라벤더를 상점에서 각 2,500코인에 판매합니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn180_8">시즌 퀘스트</b><span data-i18n="pn180_9">킬 1회 = 1점, 회복량 2,000 = 1점, 피해량 1,000 = 1점. 103단계·최종 10,000점, 합계 코인 8,400·크레딧 1,900. 개별·일괄 수령. 훈련장은 제외합니다.</span></li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_salmon">살몬</span><span class="patch-dir new" data-i18n="pnDir_new">★ 신규</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_10">일반 포획 피해: 3,000 + 착지 600</li>
+                <li data-i18n="pn180_11">공중 지속: 1.2초</li>
+                <li data-i18n="pn180_12">탄약: 5발 · 자동 재장전 없음</li>
+                <li data-i18n="pn180_13">궁극기 장치: 땅에 닿으면 즉시 설치 · 접촉 피해 3,000 + 착지 600 · 한 번 포획하면 소모</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li><b class="patch-label" data-i18n="pn180_14">부활 보호막</b><span data-i18n="pn180_15">부활한 캐릭터는 5초간 무적이며 하늘색 보호막으로 표시됩니다. 공격해도 보호 시간이 끝나지 않습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn180_16">테마</b><span data-i18n="pn180_17">할로윈 바닥·벽 색상과 로비·전투·KNOCKOUT·젬 그랩 음악을 적용했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn180_18">모션·스킨 효과</b><span data-i18n="pn180_19">캐릭터별 일반 공격·궁극기 모션을 정비합니다. 스킨 등급별로 희귀는 외형, 초희귀는 일반 공격까지, 영웅은 궁극기까지, 전설은 주변 효과까지 변경합니다.</span></li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_20">이동 속도 배율: 1.4 → 1.15</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_21">궁극기 피해: 5,200</li>
+                <li data-i18n="pn180_22">궁극기 충전 요구량: 10 → 1.5칸 (일반 공격 유효 명중 10회 → 3회)</li>
+                <li data-i18n="pn180_23">궁극기: 알약 6발 평행 발사</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_gold">골드</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_24">체력: 7,380</li>
+                <li data-i18n="pn180_25">일반 공격 단계별 피해: 1,300 / 600 / 300</li>
+                <li data-i18n="pn180_26">받는 투사체 피해 감소: 1,650</li>
+                <li data-i18n="pn180_27">궁극기 틱 피해: 138</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_blue">블루</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_28">일반 공격 넉백: 삭제</li>
+                <li data-i18n="pn180_29">사거리: 20타일</li>
+                <li data-i18n="pn180_30">투사체 판정: 10% 확대</li>
+                <li data-i18n="pn180_31">궁극기 충전: 일반 공격 5회 또는 궁극기 5회 유효 명중</li>
+                <li data-i18n="pn180_32">궁 준비·구르기 중 받는 피해: 70% 감소 (종료·중단 시 해제)</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_azure">애저</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_33">일반 파도 크기: 4×3타일</li>
+                <li data-i18n="pn180_34">일반 파도 피해: 3,000</li>
+                <li data-i18n="pn180_35">일반 공격 이동 거리: 2타일</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_36">독 피해: 초당 1,250 · 5초</li>
+                <li data-i18n="pn180_37">궁극기 충전: 일반 공격 2회 유효 명중</li>
+                <li data-i18n="pn180_38">궁극기 이륙·착지 중심 피해: 1,000</li>
+                <li data-i18n="pn180_39">가시 피해: 550</li>
+                <li data-i18n="pn180_40">중심·첫 가시 명중 시 단계별 제한 재충전</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_crystal">크리스탈</span><span class="patch-dir rework" data-i18n="pnDir_rework">◆ 개편</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn180_41">일반 공격 단계별 피해: 2,000 / 1,000 / 500</li>
+                <li data-i18n="pn180_42">궁극기: 사용 표시와 돌진 경로를 보여 주고 1.5초 후 돌진</li>
+                <li data-i18n="pn180_43">궁극기: 붙잡은 적을 8초 분석한 뒤 피해 감소 보호막을 무시하는 고정 28,000 피해</li>
               </ul>
             </div>
             <div id="main-season-7-release-notes" class="patch-entry">
-              <div class="patch-version" data-i18n="mainSeason7ReleaseTitle">v1.7.0.1 — 2026.10.13 · 베타 시즌 7 메인 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.7.0.1</span><span class="patch-date">2026.10.13</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn1701_1">베타 시즌 7 메인 업데이트</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="mainSeason7Characters">캐릭터·기술: 크리스탈과 오렌지 궁극기 「껍질 회수」·퍼플 궁극기 「독성 대도약」을 메인에 추가했습니다. 시즌 7 캐릭터 15종의 전투 수치를 반영했으며 라벤더는 시즌 8 출시 예정입니다.</li>
-                <li data-i18n="mainSeason7Skins">시즌 스킨: 파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈을 추가하고 모델·걷기 모션을 연결했습니다.</li>
-                <li data-i18n="mainSeason7Modes">정규 이벤트: 젬 그랩 3대3과 SHOWDOWN+를 메인에 추가했습니다. 젬 그랩은 젬 10개 이상을 15초 유지하면 승리하며, SHOWDOWN+는 플레이어 처치당 트로피 +2를 제공합니다. 각 모드의 맵 3종을 지원합니다.</li>
-                <li data-i18n="mainSeason7Theme">테마: 잃어버린 황금 유적의 사막·석벽·오벨리스크와 시즌 7 로비·젬 그랩 음악을 적용했습니다.</li>
+                <li><b class="patch-label" data-i18n="pn1701_2">캐릭터·기술</b><span data-i18n="pn1701_3">크리스탈과 오렌지 궁극기 「껍질 회수」·퍼플 궁극기 「독성 대도약」을 메인에 추가했습니다. 시즌 7 캐릭터 15종의 전투 수치를 반영했으며 라벤더는 시즌 8 출시 예정입니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn1701_4">시즌 스킨</b><span data-i18n="pn1701_5">파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈을 추가하고 모델·걷기 모션을 연결했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn1701_6">정규 이벤트</b><span data-i18n="pn1701_7">젬 그랩 3대3과 SHOWDOWN+를 메인에 추가했습니다. 젬 그랩은 젬 10개 이상을 15초 유지하면 승리하며, SHOWDOWN+는 플레이어 처치당 트로피 +2를 제공합니다. 각 모드의 맵 3종을 지원합니다.</span></li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li><b class="patch-label" data-i18n="pn1701_8">테마</b><span data-i18n="pn1701_9">잃어버린 황금 유적의 사막·석벽·오벨리스크와 시즌 7 로비·젬 그랩 음악을 적용했습니다.</span></li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading107">시즌 6 후속 업데이트 — 2026.10.06 · 정규 이벤트 맵 3종</div>
+              <div class="patch-version"><span class="patch-ver" data-i18n="pn16f_1">시즌 6 후속</span><span class="patch-date">2026.10.06</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn16f_2">정규 이벤트 맵 3종</div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="archivePatch0">메인: 쇼다운·찹 우드·골드 러쉬·사커 킥·테이크다운을 상시 운영하며, 모드별 기본·벽 중심·부쉬 중심 맵 3종과 새로운 맵 이름을 적용했습니다.</li>
-                <li data-i18n="archivePatch1">전투 지형: 부쉬 은신과 호수 통행 제한, 봇의 벽 우회 이동, 사커 공의 내부 벽 충돌을 반영했습니다. 같은 모드·같은 맵을 선택한 플레이어끼리 매칭합니다.</li>
-                <li data-i18n="archivePatch2">베타 전용: 젬 그랩·쇼다운+도 맵 3종을 제공합니다. 골드 러쉬를 로비와 분리하고, 높은 방 입구 4곳에 스카라베 신전 계단과 발판·난간 판정을 적용했습니다.</li>
+                <li><b class="patch-label" data-i18n="pn16f_3">메인</b><span data-i18n="pn16f_4">쇼다운·찹 우드·골드 러쉬·사커 킥·테이크다운을 상시 운영하며, 모드별 기본·벽 중심·부쉬 중심 맵 3종과 새로운 맵 이름을 적용했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn16f_5">전투 지형</b><span data-i18n="pn16f_6">부쉬 은신과 호수 통행 제한, 봇의 벽 우회 이동, 사커 공의 내부 벽 충돌을 반영했습니다. 같은 모드·같은 맵을 선택한 플레이어끼리 매칭합니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn16f_7">베타 전용</b><span data-i18n="pn16f_8">젬 그랩·쇼다운+도 맵 3종을 제공합니다. 골드 러쉬를 로비와 분리하고, 높은 방 입구 4곳에 스카라베 신전 계단과 발판·난간 판정을 적용했습니다.</span></li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading108">v1.6.0 — 2026.09.21 · 베타 시즌 6 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.6.0</span><span class="patch-date">2026.09.21</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn160_1">베타 시즌 6 업데이트</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch3">출시: 애저와 궁극기 「빅 웨이브」, 옐로우 궁극기 「전기 회로」, 3대3 사커 킥을 추가했습니다.</li>
-                <li data-i18n="archivePatch4">신규 스킨: 프로 서퍼 애저·잠수부 시안·복어 샤트·트로피컬 오렌지를 추가하고, 스킨 모델과 걷기 모션 적용을 보완했습니다.</li>
-                <li data-i18n="archivePatch5">시즌 테마: 애저 해변 로비, High Noon Tide 음악, 바다 테마 로딩 화면을 적용했습니다.</li>
-                <li data-i18n="archivePatch6">밸런스·봇: 시즌 6 캐릭터 수치를 메인에 반영하고, 캐릭터별 봇 전투와 궁극기 포함 상성표를 적용했습니다.</li>
+                <li><b class="patch-label" data-i18n="pn160_2">출시</b><span data-i18n="pn160_3">애저와 궁극기 「빅 웨이브」, 옐로우 궁극기 「전기 회로」, 3대3 사커 킥을 추가했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn160_4">신규 스킨</b><span data-i18n="pn160_5">프로 서퍼 애저·잠수부 시안·복어 샤트·트로피컬 오렌지를 추가하고, 스킨 모델과 걷기 모션 적용을 보완했습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pn160_6">시즌 테마</b><span data-i18n="pn160_7">애저 해변 로비, High Noon Tide 음악, 바다 테마 로딩 화면을 적용했습니다.</span></li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li><b class="patch-label" data-i18n="pn160_8">밸런스·봇</b><span data-i18n="pn160_9">시즌 6 캐릭터 수치를 메인에 반영하고, 캐릭터별 봇 전투와 궁극기 포함 상성표를 적용했습니다.</span></li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading109">v1.5.5 — 2026.09.17 · 상성표 수정·민트 누락 보완</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.5</span><span class="patch-date">2026.09.17</span><span class="patch-tag fix" data-i18n="pnTag_fix">버그 수정</span></div>
+              <div class="patch-title" data-i18n="pn155_1">상성표 수정·민트 누락 보완</div>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="archivePatch7">상성표 수정: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종의 상성을 다시 계산해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.</li>
-                <li data-i18n="archivePatch8">민트 누락: 민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다. 7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.</li>
+                <li><b class="patch-label" data-i18n="pn155_2">상성표</b><span data-i18n="pn155_3">기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종의 상성을 다시 계산해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.</span></li>
+                <li><b class="patch-label" data-i18n="pnCh_mint">민트</b><span data-i18n="pn155_4">민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다. 7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.</span></li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading110">v1.5.4.3 — 2026.09.01 · 베타 시즌 5 밸런스 패치</div>
-              <ul>
-                <li data-i18n="archivePatch9">오렌지 너프 — 공격 쿨다운 0.35→0.40초, 과즙 피해 700→600, 직격 추가 과즙 4→3개</li>
-                <li data-i18n="archivePatch10">핑크 너프 — 체력 10,500→10,000, 공격 피해 2,100→2,000, 아군 회복 1,400→1,300</li>
-                <li data-i18n="archivePatch11">시안 버프 — 일반 공격 사거리 8.33→9, 탄속 18→20, 궁극기 피해 1,300→1,400</li>
+              <div class="patch-version"><span class="patch-ver">v1.5.4.3</span><span class="patch-date">2026.09.01</span><span class="patch-tag balance" data-i18n="pnTag_balance">밸런스</span></div>
+              <div class="patch-title" data-i18n="pn1543_1">베타 시즌 5 밸런스 패치</div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1543_2">공격 쿨다운: 0.35 → 0.40초</li>
+                <li data-i18n="pn1543_3">과즙 피해: 700 → 600</li>
+                <li data-i18n="pn1543_4">직격 추가 과즙: 4 → 3개</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_pink">핑크</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1543_5">체력: 10,500 → 10,000</li>
+                <li data-i18n="pn1543_6">공격 피해: 2,100 → 2,000</li>
+                <li data-i18n="pn1543_7">아군 회복: 1,400 → 1,300</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1543_8">일반 공격 사거리: 8.33 → 9</li>
+                <li data-i18n="pn1543_9">탄속: 18 → 20</li>
+                <li data-i18n="pn1543_10">궁극기 피해: 1,300 → 1,400</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading111">v1.5.4.2 — 2026.08.31 · 골드 긴급 패치 2</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.4.2</span><span class="patch-date">2026.08.31</span><span class="patch-tag hotfix" data-i18n="pnTag_hotfix">긴급 패치</span></div>
+              <div class="patch-title" data-i18n="pn1542_1">골드 긴급 패치 2</div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="archivePatch12">골드 버프 — 제1탄 사거리 8타일 유지, 제2탄 사거리 4→8타일, 제3탄 사거리 3→6타일</li>
-                <li data-i18n="archivePatch13">고장 지대 — 궁극기 장판 반경 3→6타일</li>
-                <li data-i18n="archivePatch14">시각 조정 — 골드 대표 색상을 #FFD700으로 통일하고 궁극기 장판 가시성 강화</li>
+                <li><b class="patch-label" data-i18n="pn1542_2">시각 조정</b><span data-i18n="pn1542_3">골드 대표 색상을 #FFD700으로 통일하고 궁극기 장판 가시성 강화</span></li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_gold">골드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1542_4">제1탄 사거리: 8타일 (유지)</li>
+                <li data-i18n="pn1542_5">제2탄 사거리: 4 → 8타일</li>
+                <li data-i18n="pn1542_6">제3탄 사거리: 3 → 6타일</li>
+                <li data-i18n="pn1542_7">궁극기 「고장 지대」 장판 반경: 3 → 6타일</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading112">v1.5.4.1 — 2026.08.27 · 시안 긴급 버프</div>
-              <ul>
-                <li data-i18n="archivePatch15">긴급 버프 — 시안: 체력 6,200→7,200, 일반 공격 650→750, 궁극기 충전량 12→6회</li>
+              <div class="patch-version"><span class="patch-ver">v1.5.4.1</span><span class="patch-date">2026.08.27</span><span class="patch-tag hotfix" data-i18n="pnTag_hotfix">긴급 패치</span></div>
+              <div class="patch-title" data-i18n="pn1541_1">시안 긴급 버프</div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1541_2">체력: 6,200 → 7,200</li>
+                <li data-i18n="pn1541_3">일반 공격: 650 → 750</li>
+                <li data-i18n="pn1541_4">궁극기 충전량: 12 → 6회</li>
               </ul>
             </div>
             <div id="beta-season-4-patch" class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading113">v1.5.4 — 2026.08.24 · 베타 시즌 4 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.4</span><span class="patch-date">2026.08.24</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn154_1">베타 시즌 4 업데이트</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch16">신규 영웅 캐릭터 샤르트뢰즈: 강화탄·CC탄·흑사병탄·무탄을 무작위로 발사</li>
-                <li data-i18n="archivePatch17">샤르트뢰즈 궁극기 「49% 정신 차림」: 6초간 무탄 제거, 나머지 탄환 3종이 같은 확률로 등장</li>
-                <li data-i18n="archivePatch18">레드 궁극기 「레드 가드」: 8초간 투명 구형 보호막과 받는 피해 60% 감소</li>
-                <li data-i18n="archivePatch19">쇼다운을 회색 벽·아스팔트·콘크리트 바닥의 도시 테마로 변경하고 수풀 제거</li>
-                <li data-i18n="archivePatch20">시즌 이벤트 「도시 봉쇄 작전」과 테이크다운 전용 맵 추가</li>
-                <li data-i18n="archivePatch21">베타 시즌 4 전용 음악 적용</li>
-                <li data-i18n="archivePatch22">버프 — 레드: 사거리 5→5.5, 궁극기 충전 8→7</li>
-                <li data-i18n="archivePatch23">버프 — 그린: 피해 950→1,000, 사거리 6.5→7, 귀환 피해 25%→35%, 은신 투명도 28%</li>
-                <li data-i18n="archivePatch24">버프 — 시안: 일반 공격 600→650, 궁극기 1,200→1,300</li>
-                <li data-i18n="archivePatch25">너프 — 핑크: 체력 11,500→10,500, 이속 1.4→1.3, 쿨다운 0.2→0.3초, 피해 2,400→2,100, 회복 1,800→1,400</li>
-                <li data-i18n="archivePatch26">너프 — 크림슨: 이속 1.5→1.4, 재장전 0.8→0.9초</li>
-                <li data-i18n="archivePatch27">조정 — 퍼플 독병 2,840→2,700, 옐로우 둔화 25%·2초 정상 적용</li>
+                <li><b class="patch-label" data-i18n="pn154_2">레드 궁극기 「레드 가드」</b><span data-i18n="pn154_3">8초간 투명 구형 보호막과 받는 피해 60% 감소</span></li>
+                <li><b class="patch-label" data-i18n="pn154_4">시즌 이벤트</b><span data-i18n="pn154_5">「도시 봉쇄 작전」과 테이크다운 전용 맵 추가</span></li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_chartreuse">샤르트뢰즈</span><span class="patch-dir new" data-i18n="pnDir_new">★ 신규</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_6">신규 영웅 캐릭터: 강화탄·CC탄·흑사병탄·무탄을 무작위로 발사</li>
+                <li data-i18n="pn154_7">궁극기 「49% 정신 차림」: 6초간 무탄 제거, 나머지 탄환 3종이 같은 확률로 등장</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn154_8">쇼다운을 회색 벽·아스팔트·콘크리트 바닥의 도시 테마로 변경하고 수풀 제거</li>
+                <li data-i18n="pn154_9">베타 시즌 4 전용 음악 적용</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_10">사거리: 5 → 5.5</li>
+                <li data-i18n="pn154_11">궁극기 충전: 8 → 7</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_12">피해: 950 → 1,000</li>
+                <li data-i18n="pn154_13">사거리: 6.5 → 7</li>
+                <li data-i18n="pn154_14">귀환 피해: 25% → 35%</li>
+                <li data-i18n="pn154_15">은신 투명도: 28%</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_16">일반 공격: 600 → 650</li>
+                <li data-i18n="pn154_17">궁극기: 1,200 → 1,300</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_pink">핑크</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_18">체력: 11,500 → 10,500</li>
+                <li data-i18n="pn154_19">이속: 1.4 → 1.3</li>
+                <li data-i18n="pn154_20">쿨다운: 0.2 → 0.3초</li>
+                <li data-i18n="pn154_21">피해: 2,400 → 2,100</li>
+                <li data-i18n="pn154_22">회복: 1,800 → 1,400</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_crimson">크림슨</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_23">이속: 1.5 → 1.4</li>
+                <li data-i18n="pn154_24">재장전: 0.8 → 0.9초</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn154_25">독병 피해: 2,840 → 2,700</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li><b class="patch-label" data-i18n="pnCh_yellow">옐로우</b><span data-i18n="pn154_26">둔화 25%·2초가 제대로 적용되지 않던 문제를 수정했습니다.</span></li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading114">v1.5.3.1 — 2026.08.12 · 핑크 궁극기 패치</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.3.1</span><span class="patch-date">2026.08.12</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn1531_1">핑크 궁극기 패치</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch28">핑크 궁극기 추가·리워크: 아군에게 부활 효과를 부여하고, 사망 시 3초 연출 후 사망 위치에서 부활</li>
-                <li data-i18n="archivePatch29">부활 대상 아군 머리 위 음표 표시와 SSS급 부활 이펙트 추가</li>
-                <li data-i18n="archivePatch30">로비·캐릭터 미리보기 분리, GLB 로딩 중 임시 모델 노출 방지, 캐릭터 UI 즉시 전환</li>
+                <li><b class="patch-label" data-i18n="pn1531_2">핑크 궁극기 추가·리워크</b><span data-i18n="pn1531_3">아군에게 부활 효과를 부여하고, 사망 시 3초 연출 후 사망 위치에서 부활</span></li>
+                <li data-i18n="pn1531_4">부활 대상 아군 머리 위 음표 표시와 SSS급 부활 이펙트 추가</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn1531_5">로비·캐릭터 미리보기 분리, GLB 로딩 중 임시 모델 노출 방지, 캐릭터 UI 즉시 전환</li>
               </ul>
             </div>
             <div id="beta-season-3-patch" class="patch-entry hidden">
-              <div class="patch-version" data-i18n="archiveHeading115">v1.5.3 — 2026.08.10 · 베타 시즌 3 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.3</span><span class="patch-date">2026.08.10</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn153_1">베타 시즌 3 업데이트</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch31">신규 플레이어블 캐릭터 아이보리 추가</li>
-                <li data-i18n="archivePatch32">그린 궁극기 추가: 부메랑을 활용한 광역 공격</li>
-                <li data-i18n="archivePatch33">모든 전투 맵에 베타 시즌 3 신규 테마 적용</li>
-                <li data-i18n="archivePatch34">「주문 왔어요~!」 승리 누적 이벤트 추가 — AI전 +1승, 플레이어전 +2승</li>
-                <li data-i18n="archivePatch35">신규 시즌 스킨 및 이벤트 보상 추가</li>
-                <li data-i18n="archivePatch36">아이보리 아이스크림 투사체·장판 이펙트와 스프링클 연출 추가</li>
-                <li data-i18n="archivePatch37">캐릭터 모델·체력바·공격 이펙트 표시 개선</li>
-                <li data-i18n="archivePatch38">재시작 시 잔여 이펙트와 오브젝트가 남아 렉이 발생하던 문제 수정</li>
-                <li data-i18n="archivePatch39">쇼다운 시작 시 승리 효과음이 먼저 재생되던 문제 수정</li>
-                <li data-i18n="archivePatch40">캐릭터 설명 누락 및 UI 텍스트 정렬 문제 수정</li>
-                <li data-i18n="archivePatch41">밸런스 패치: 캐릭터별 재장전 속도와 공격 판정 전반 조정</li>
-                <li data-i18n="archivePatch42">Yellow: 피해 2,400 → 2,200, 공격 쿨다운 0.35초 → 0.45초, 발사 지연 0.12초, 사거리 12, 감속 12%</li>
-                <li data-i18n="archivePatch43">Purple: 독침 확산각 90도 → 24도, 독병 사거리 14 → 11</li>
+                <li data-i18n="pn153_2">신규 플레이어블 캐릭터 아이보리 추가</li>
+                <li><b class="patch-label" data-i18n="pn153_3">그린 궁극기</b><span data-i18n="pn153_4">부메랑을 활용한 광역 공격</span></li>
+                <li><b class="patch-label" data-i18n="pn153_5">「주문 왔어요~!」 승리 누적 이벤트</b><span data-i18n="pn153_6">AI전 +1승, 플레이어전 +2승</span></li>
+                <li data-i18n="pn153_7">신규 시즌 스킨 및 이벤트 보상 추가</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn153_8">모든 전투 맵에 베타 시즌 3 신규 테마 적용</li>
+                <li data-i18n="pn153_9">아이보리 아이스크림 투사체·장판 이펙트와 스프링클 연출 추가</li>
+                <li data-i18n="pn153_10">캐릭터 모델·체력바·공격 이펙트 표시 개선</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li data-i18n="pn153_11">캐릭터별 재장전 속도와 공격 판정 전반 조정</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_yellow">옐로우</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn153_12">피해: 2,400 → 2,200</li>
+                <li data-i18n="pn153_13">공격 쿨다운: 0.35 → 0.45초</li>
+                <li data-i18n="pn153_14">발사 지연: 0.12초</li>
+                <li data-i18n="pn153_15">사거리: 12</li>
+                <li data-i18n="pn153_16">감속: 12%</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn153_17">독침 확산각: 90도 → 24도</li>
+                <li data-i18n="pn153_18">독병 사거리: 14 → 11</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn153_19">재시작 시 잔여 이펙트와 오브젝트가 남아 렉이 발생하던 문제를 수정했습니다.</li>
+                <li data-i18n="pn153_20">쇼다운 시작 시 승리 효과음이 먼저 재생되던 문제를 수정했습니다.</li>
+                <li data-i18n="pn153_21">캐릭터 설명이 누락되고 UI 텍스트가 어긋나던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div id="beta-season-2-patch" class="patch-entry hidden">
-              <div class="patch-version" data-i18n="archiveHeading116">v1.5.2 — 2026.08.03 · 베타 시즌 2 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.2</span><span class="patch-date">2026.08.03</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn152_1">베타 시즌 2 업데이트</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch44">베타 시즌 2를 2026.08.03 00:00~2026.08.10 00:00 KST로 정식 개시</li>
-                <li data-i18n="archivePatch45">신규 전설 캐릭터 Gold 추가: 3단 분열 광석 공격과 고장 지대 궁극기</li>
-                <li data-i18n="archivePatch46">Gold Rush 모드 추가: AI 9명과 금 10개를 10초간 지키는 경쟁</li>
-                <li data-i18n="archivePatch47">전체 캐릭터 상성표와 공식 위키를 최신 밸런스로 갱신</li>
-                <li data-i18n="archivePatch48">밸런스 패치</li>
-                <li data-i18n="archivePatch49">Red: 일반 공격 판정 폭 0.5타일 증가</li>
-                <li data-i18n="archivePatch50">Green: 돌아오는 부메랑 피해량을 최초 피해의 25%로 조정</li>
-                <li data-i18n="archivePatch51">Blue: 재장전 시간 0.3초 → 0.2초</li>
-                <li data-i18n="archivePatch52">Orange: 폭탄 직격 시 과즙 최대 적중 수를 4개로 제한 (기존엔 5개 전부 적중 가능)</li>
-                <li data-i18n="archivePatch53">Cyan: 투사체 피해 450 → 600, 궁극기 피해 800 → 1,200</li>
-                <li data-i18n="archivePatch54">Purple: 독침 2발·11도 → 3발·90도, 독병 피해 3,040 → 2,840, 사거리 13 → 12, 폭발 반경 5 → 4</li>
-                <li data-i18n="archivePatch55">Pink: 아군 회복량 1,600 → 1,800</li>
-                <li data-i18n="archivePatch56">Crimson: 일반 공격 총피해 2,700 → 4,000, 궁극기 피해 2,500 → 3,000, 범위 5×5 → 6×6</li>
+                <li><b class="patch-label" data-i18n="pn152_2">시즌 일정</b><span data-i18n="pn152_3">베타 시즌 2를 2026.08.03 00:00~2026.08.10 00:00 KST로 정식 개시</span></li>
+                <li><b class="patch-label" data-i18n="pn152_4">신규 전설 캐릭터 골드</b><span data-i18n="pn152_5">3단 분열 광석 공격과 고장 지대 궁극기</span></li>
+                <li><b class="patch-label" data-i18n="pn152_6">골드 러쉬 모드</b><span data-i18n="pn152_7">AI 9명과 금 10개를 10초간 지키는 경쟁</span></li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn152_8">전체 캐릭터 상성표와 공식 위키를 최신 밸런스로 갱신</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_9">일반 공격 판정 폭: +0.5타일</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_10">돌아오는 부메랑 피해: 최초 피해의 25%</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_blue">블루</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_11">재장전 시간: 0.3 → 0.2초</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_12">폭탄 직격 시 과즙 최대 적중 수: 5개 전부 → 4개</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_cyan">시안</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_13">투사체 피해: 450 → 600</li>
+                <li data-i18n="pn152_14">궁극기 피해: 800 → 1,200</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_15">독침: 2발·11도 → 3발·90도</li>
+                <li data-i18n="pn152_16">독병 피해: 3,040 → 2,840</li>
+                <li data-i18n="pn152_17">독병 사거리: 13 → 12</li>
+                <li data-i18n="pn152_18">폭발 반경: 5 → 4</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_pink">핑크</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_19">아군 회복량: 1,600 → 1,800</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_crimson">크림슨</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn152_20">일반 공격 총피해: 2,700 → 4,000</li>
+                <li data-i18n="pn152_21">궁극기 피해: 2,500 → 3,000</li>
+                <li data-i18n="pn152_22">궁극기 범위: 5×5 → 6×6</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading117">v1.5.1 — 2026.08.01 · 베타 시즌 1 업데이트</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.1</span><span class="patch-date">2026.08.01</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn151_1">베타 시즌 1 업데이트</div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="archivePatch57">Green·Orange·Red·Yellow 전용 3D 모델을 본 게임에 연결하고 전 캐릭터 렌더링을 카툰 셰이딩으로 통일</li>
-                <li data-i18n="archivePatch58">크림슨 콤보 조준선 추가, 원격 플레이어 타격 이펙트·타격음 동기화 수정</li>
-                <li data-i18n="archivePatch59">상성표에 크림슨 추가, 오렌지 상성 관계를 최신 밸런스에 맞게 갱신</li>
-                <li data-i18n="archivePatch60">전투 카메라 기울기를 2.5도로 고정</li>
-                <li data-i18n="archivePatch61">전역 사거리 배율을 제거하고 캐릭터별 사거리를 재조정</li>
-                <li data-i18n="archivePatch62">Orange 스킨 모자 부착 위치·크기 개선</li>
-                <li data-i18n="archivePatch63">종료된 이벤트 탭·맵 숨김, 만료된 로테이션 능력이 남아있던 문제 수정</li>
-                <li data-i18n="archivePatch64">캐릭터 소개·기술 설명에 영어 번역 추가</li>
-                <li data-i18n="archivePatch65">베타 시즌 로비 음악과 시즌 표시 적용, 패치노트 위치를 로비 우측 상단으로 이동</li>
+                <li data-i18n="pn151_2">그린·오렌지·레드·옐로우 전용 3D 모델을 본 게임에 연결하고 전 캐릭터 렌더링을 카툰 셰이딩으로 통일</li>
+                <li data-i18n="pn151_3">크림슨 콤보 조준선 추가</li>
+                <li data-i18n="pn151_4">상성표에 크림슨 추가, 오렌지 상성 관계를 최신 밸런스에 맞게 갱신</li>
+                <li data-i18n="pn151_5">전투 카메라 기울기를 2.5도로 고정</li>
+                <li data-i18n="pn151_6">오렌지 스킨 모자 부착 위치·크기 개선</li>
+                <li data-i18n="pn151_7">종료된 이벤트 탭·맵 숨김</li>
+                <li data-i18n="pn151_8">캐릭터 소개·기술 설명에 영어 번역 추가</li>
+                <li data-i18n="pn151_9">베타 시즌 로비 음악과 시즌 표시 적용, 패치노트 위치를 로비 우측 상단으로 이동</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li data-i18n="pn151_10">전역 사거리 배율을 제거하고 캐릭터별 사거리를 재조정</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn151_11">원격 플레이어의 타격 이펙트·타격음이 어긋나던 문제를 수정했습니다.</li>
+                <li data-i18n="pn151_12">만료된 로테이션 능력이 남아 있던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div id="beta-season-patch" class="patch-entry hidden">
-              <div class="patch-version" data-i18n="archiveHeading118">v1.5.0 — 2026.07.27 · 베타 시즌 1 시작</div>
+              <div class="patch-version"><span class="patch-ver">v1.5.0</span><span class="patch-date">2026.07.27</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn150_1">베타 시즌 1 시작</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch66">알파 시즌 4 종료, 베타 시즌 1 시작 — 알파 시즌 1~4 전적은 그대로 보존됩니다</li>
-                <li data-i18n="archivePatch67">신규 영웅 캐릭터 크림슨 추가 (체력 9,800 · 게임 내 최고 이동속도)</li>
-                <li data-i18n="archivePatch68">크림슨 일반 공격 3연속 펀치: 부채꼴 범위에 900 피해 3회</li>
-                <li data-i18n="archivePatch69">크림슨 궁극기 KO 스트레이트: 정면 5×5 범위에 2,500 피해, 범위 안 벽을 부수고 적을 밀쳐냅니다 (일반 공격 9회 명중 시 사용, 사망해도 충전량 유지)</li>
-                <li data-i18n="archivePatch70">캐릭터 등급 시스템 도입 — 일반(Red·Green·Blue) / 희귀(Orange·Yellow·Cyan·Purple·Pink, 200크레딧) / 영웅(Crimson, 900크레딧)</li>
-                <li data-i18n="archivePatch71">기존 계정은 쓰던 8캐릭터를 그대로 보유합니다 (크림슨만 신규 구매 대상)</li>
-                <li data-i18n="archivePatch72">신규 화폐 β 크레딧 추가 — 쇼다운·Chop Wood·Take Down 승리마다 100 크레딧 자동 지급</li>
-                <li data-i18n="archivePatch73">상점에 캐릭터 구매 탭 추가</li>
-                <li data-i18n="archivePatch74">베타 시즌 1 신규 스킨 6종: 크림슨 오렌지(1,000) · 블러드 크림슨(2,500) · 스칼렛 레드(5,000) · 왕관 3종(무료)</li>
-                <li data-i18n="archivePatch75">상점 스킨·캐릭터 카드에 등급 배지 표시</li>
-                <li data-i18n="archivePatch76">Orange 밸런스 상향: 직격 피해 750→900, 폭탄 속도 22→26, 스플래시 판정 반경 0.60→0.75</li>
+                <li><b class="patch-label" data-i18n="pn150_2">시즌 전환</b><span data-i18n="pn150_3">알파 시즌 4 종료, 베타 시즌 1 시작 — 알파 시즌 1~4 전적은 그대로 보존됩니다</span></li>
+                <li><b class="patch-label" data-i18n="pn150_4">캐릭터 등급</b><span data-i18n="pn150_5">일반(레드·그린·블루) / 희귀(오렌지·옐로우·시안·퍼플·핑크, 200크레딧) / 영웅(크림슨, 900크레딧)</span></li>
+                <li data-i18n="pn150_6">기존 계정은 쓰던 8캐릭터를 그대로 보유합니다 (크림슨만 신규 구매 대상)</li>
+                <li><b class="patch-label" data-i18n="pn150_7">신규 화폐 β 크레딧</b><span data-i18n="pn150_8">쇼다운·찹 우드·테이크다운 승리마다 100 크레딧 자동 지급</span></li>
+                <li data-i18n="pn150_9">상점에 캐릭터 구매 탭 추가</li>
+                <li><b class="patch-label" data-i18n="pn150_10">베타 시즌 1 신규 스킨 6종</b><span data-i18n="pn150_11">크림슨 오렌지(1,000) · 블러드 크림슨(2,500) · 스칼렛 레드(5,000) · 왕관 3종(무료)</span></li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_crimson">크림슨</span><span class="patch-dir new" data-i18n="pnDir_new">★ 신규</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn150_12">신규 영웅 캐릭터: 체력 9,800 · 게임 내 최고 이동속도</li>
+                <li data-i18n="pn150_13">일반 공격 3연속 펀치: 부채꼴 범위에 900 피해 3회</li>
+                <li data-i18n="pn150_14">궁극기 「KO 스트레이트」: 정면 5×5 범위에 2,500 피해, 범위 안 벽을 부수고 적을 밀쳐냅니다</li>
+                <li data-i18n="pn150_15">궁극기 충전: 일반 공격 9회 명중 (사망해도 충전량 유지)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn150_16">상점 스킨·캐릭터 카드에 등급 배지 표시</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn150_17">직격 피해: 750 → 900</li>
+                <li data-i18n="pn150_18">폭탄 속도: 22 → 26</li>
+                <li data-i18n="pn150_19">스플래시 판정 반경: 0.60 → 0.75</li>
               </ul>
             </div>
-            <div class="patch-section-label" data-i18n="archiveHeading119">이전 시즌(알파) 아카이브</div>
+            <div class="patch-section-label" data-i18n="pnSeasonAlpha">이전 시즌(알파) 아카이브</div>
             <div class="patch-entry">
-              <div class="patch-version" data-i18n="archiveHeading120">v1.4.14 — 2026.07.19 · 알파 시즌 라스트 패치</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.14</span><span class="patch-date">2026.07.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-title" data-i18n="pn1414_1">알파 시즌 라스트 패치</div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch77">Showdown 멀티플레이 매칭과 실제 계정 기반 글로벌 트로피 리더보드 추가</li>
-                <li data-i18n="archivePatch78">Showdown 스폰·AI 배치를 경기마다 무작위화하고 모든 참가자에게 동일하게 동기화</li>
-                <li data-i18n="archivePatch79">사망 후 AI 전투 관전·조기 나가기와 1위 캐릭터 줌 연출 및 전용 결과 효과음 추가</li>
-                <li data-i18n="archivePatch80">Chop Wood 승리 보상·전적 판정을 수정하고 캐릭터별·시즌별 승률과 승수 추가</li>
-                <li data-i18n="archivePatch81">Blue 전용 3D 모델과 걷기 애니메이션 적용</li>
-                <li data-i18n="archivePatch82">8개 캐릭터 공식 기본 공격명과 6개 역할군 확정</li>
-                <li data-i18n="archivePatch83">렌더 해상도·HUD·수풀 판정·로비 렌더링 등 전반적인 성능 최적화</li>
-                <li data-i18n="archivePatch84">Pink 회복 시 실제 회복량을 초록색 숫자로 표시</li>
-                <li data-i18n="archivePatch85">로비 시즌 소개 카드를 정리하고 버튼 클릭 애니메이션 추가</li>
-                <li data-i18n="archivePatch86">Green 어빌리티: 원거리 튕김 공격의 데미지가 기본 피해로 뻥튀기되던 문제 수정</li>
-                <li data-i18n="archivePatch87">Pink 어빌리티: 추가 범위 +35%→+20% 너프 (최종 범위 6.075→5.4타일)</li>
-                <li data-i18n="archivePatch88">Take Down 최종 순위에서 다시 시작 후 캐릭터 선택을 취소하면 정지 화면처럼 보이던 문제 수정</li>
+                <li data-i18n="pn1414_2">쇼다운 멀티플레이 매칭과 실제 계정 기반 글로벌 트로피 리더보드 추가</li>
+                <li data-i18n="pn1414_3">사망 후 AI 전투 관전·조기 나가기와 1위 캐릭터 줌 연출 및 전용 결과 효과음 추가</li>
+                <li data-i18n="pn1414_4">캐릭터별·시즌별 승률과 승수 추가</li>
+                <li data-i18n="pn1414_5">블루 전용 3D 모델과 걷기 애니메이션 적용</li>
+                <li data-i18n="pn1414_6">8개 캐릭터 공식 기본 공격명과 6개 역할군 확정</li>
               </ul>
-            </div>
-            <div class="patch-entry">
-              <div class="patch-version">v1.4.13 — 2026.07.16</div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="archivePatch89">Green 밸런스: 부메랑 사거리 약 8.3% 증가</li>
-                <li data-i18n="archivePatch90">Green 밸런스: 부메랑 공격 각도 약 16.7% 감소</li>
-                <li data-i18n="archivePatch91">멀티플레이 공격 효과·사운드 동기화 및 호스트 이탈 대응 개선</li>
-                <li data-i18n="archivePatch92">보스 이동·사망 판정 수정 및 공격 모션·방사형 충격파 추가</li>
-                <li data-i18n="archivePatch93">플레이어·AI 공격 사거리 50% 증가 및 피격 사운드 추가</li>
-                <li data-i18n="archivePatch94">Take Down 맵 방사형 벽과 화면 밖 보스 방향 아이콘 추가</li>
+                <li data-i18n="pn1414_7">쇼다운 스폰·AI 배치를 경기마다 무작위화하고 모든 참가자에게 동일하게 동기화</li>
+                <li data-i18n="pn1414_8">렌더 해상도·HUD·수풀 판정·로비 렌더링 등 전반적인 성능 최적화</li>
+                <li data-i18n="pn1414_9">핑크 회복 시 실제 회복량을 초록색 숫자로 표시</li>
+                <li data-i18n="pn1414_10">로비 시즌 소개 카드를 정리하고 버튼 클릭 애니메이션 추가</li>
               </ul>
-            </div>
-            <div class="patch-entry">
-              <div class="patch-version">v1.4.12 — 2026.07.15</div>
-              <ul>
-                <li data-i18n="archivePatch95">Cloudflare 기반 Take Down 멀티플레이 추가</li>
-                <li data-i18n="archivePatch96">아이디·닉네임 계정 생성 및 탭별 계정 전환 추가</li>
-                <li data-i18n="archivePatch97">로비 사이드바와 오른쪽 하단 전투 시작 버튼 개편</li>
-                <li data-i18n="archivePatch98">캐릭터 미리보기, 선택, 훈련장 체험 흐름 추가</li>
-                <li data-i18n="archivePatch99">전투 시작 전 오른쪽 맵 선택 패널 추가</li>
-                <li data-i18n="archivePatch100">멀티플레이 연결·전투 동기화 오류 수정</li>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_pink">핑크</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1414_11">어빌리티 추가 범위: +35% → +20% (최종 범위 6.075 → 5.4타일)</li>
               </ul>
-            </div>
-            <div class="patch-entry">
-              <div class="patch-version">v1.4.11 — 2026.07.09</div>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="pv1411a">캐릭터별 전용 자세 + 소품 추가 (Green·Blue·Orange·Yellow·Cyan·Purple)</li>
-              </ul>
-            </div>
-            <div class="patch-entry">
-              <div class="patch-version">v1.4.10 — 2026.07.05</div>
-              <ul>
-                <li data-i18n="pv1410a">Purple 체력: 4800→6000</li>
-                <li data-i18n="pv1410b">Purple 독침: 직격 데미지 추가(700), 사거리 12→13, 명중 시 은신 해제(발각)</li>
-                <li data-i18n="pv1410d">Purple 독병: 데미지 2292→3040, 사거리 12→13</li>
-                <li data-i18n="pv1410f">Purple 그 외: 독 데미지 568→760, 중독 대상 회복량 50% 감소, 봇 AI 체력 30% 이하 시 독병 마무리</li>
-                <li data-i18n="pv1410h">Red 펀치 가로 사거리 4.3→2.3 너프 (롤백)</li>
-                <li data-i18n="pv1410i">전 캐릭터 봇 AI 개선 (거리 유지 후퇴 로직 추가)</li>
-                <li data-i18n="pv1410j">Orange 재장전 0.6→0.5초, 폭탄 사거리 8→9, 폭발 반경 +15%, 파편 사거리 +25% 버프</li>
-                <li data-i18n="pv1410l">Take Down 캐릭터 선택 화면 추가</li>
-                <li data-i18n="pv1410m">Take Down 멀티플레이어 추가 (WebSocket 자동 매칭)</li>
-                <li data-i18n="pv1410n">버그 수정: Take Down extraPool 로직·재시작 캐릭터 선택 누락</li>
+                <li data-i18n="pn1414_12">찹 우드 승리 보상·전적 판정이 잘못되던 문제를 수정했습니다.</li>
+                <li><b class="patch-label" data-i18n="pnCh_green">그린</b><span data-i18n="pn1414_13">원거리 튕김 공격의 피해가 기본 피해로 뻥튀기되던 문제를 수정했습니다.</span></li>
+                <li data-i18n="pn1414_14">테이크다운 최종 순위에서 다시 시작 후 캐릭터 선택을 취소하면 정지 화면처럼 보이던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.9 — 2026.06.30</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.13</span><span class="patch-date">2026.07.16</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv149a">Red 펀치 가로 사거리 2타일 증가</li>
+                <li data-i18n="pn1413_1">멀티플레이 공격 효과·사운드 동기화 및 호스트 이탈 대응 개선</li>
+                <li data-i18n="pn1413_2">보스 공격 모션·방사형 충격파 추가</li>
+                <li data-i18n="pn1413_3">피격 사운드 추가</li>
+                <li data-i18n="pn1413_4">테이크다운 맵 방사형 벽과 화면 밖 보스 방향 아이콘 추가</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li data-i18n="pn1413_5">플레이어·AI 공격 사거리 50% 증가</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1413_6">부메랑 사거리: 약 8.3% 증가</li>
+                <li data-i18n="pn1413_7">부메랑 공격 각도: 약 16.7% 감소</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn1413_8">보스 이동·사망 판정이 잘못되던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.8 — 2026.06.30</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.12</span><span class="patch-date">2026.07.15</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv148a">알파 시즌 4 전환</li>
-                <li data-i18n="pv148c">Take Down 이벤트 모드 추가 (1~4위 승리 판정)</li>
-                <li data-i18n="pv148d">Take Down 전용 8방향 대칭 고정 맵 추가</li>
-                <li data-i18n="pv148e">Take Down 봇 캐릭터 중복 없이 랜덤 배정</li>
+                <li data-i18n="pn1412_1">Cloudflare 기반 테이크다운 멀티플레이 추가</li>
+                <li data-i18n="pn1412_2">아이디·닉네임 계정 생성 및 탭별 계정 전환 추가</li>
+                <li data-i18n="pn1412_3">캐릭터 미리보기, 선택, 훈련장 체험 흐름 추가</li>
+                <li data-i18n="pn1412_4">전투 시작 전 오른쪽 맵 선택 패널 추가</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn1412_5">로비 사이드바와 오른쪽 하단 전투 시작 버튼 개편</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn1412_6">멀티플레이 연결·전투 동기화 오류를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.7 — 2026.06.29</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.11</span><span class="patch-date">2026.07.09</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv147a">캐릭터 모델링 개선 — 관절 구체 제거, 매끄러운 외형</li>
-                <li data-i18n="pv147b">Pink V자 일렉기타 디테일 대폭 추가</li>
-                <li data-i18n="pv147c">Pink 사운드 웨이브 이펙트 (충격파 링 + 음표 파티클)</li>
-                <li data-i18n="pv147d">공중 이펙트 빌보딩 — 항상 카메라를 향하도록</li>
-                <li data-i18n="pv147e">상점 레벨업 UI 업그레이드</li>
-                <li data-i18n="pv147f">캐릭터 정보 패널에 스킨 장착/해제 버튼 추가</li>
-                <li data-i18n="pv147g">favicon 추가 (Red 캐릭터 실루엣)</li>
-                <li data-i18n="pv147h">재장전 속도 1발당 기준 정리 (Red 0.5, Blue 0.3, Orange 0.6 등)</li>
+                <li data-i18n="pn1411_1">캐릭터별 전용 자세 + 소품 추가 (그린·블루·오렌지·옐로우·시안·퍼플)</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.6 — 2026.06.28</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.10</span><span class="patch-date">2026.07.05</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv146a">Pink 캐릭터 추가 — 탱크/서포터 (원형 범위 공격 + 아군 회복)</li>
-                <li data-i18n="pv146b">상성표 8캐릭터로 갱신</li>
-                <li data-i18n="pv146c">Purple 약병 범위 6.0→5.0 너프</li>
+                <li data-i18n="pn1410_1">테이크다운 캐릭터 선택 화면 추가</li>
+                <li data-i18n="pn1410_2">테이크다운 멀티플레이어 추가 (WebSocket 자동 매칭)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn1410_3">전 캐릭터 봇 AI 개선 (거리 유지 후퇴 로직 추가)</li>
+                <li data-i18n="pn1410_4">퍼플 봇 AI: 체력 30% 이하 시 독병 마무리</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1410_5">체력: 4,800 → 6,000</li>
+                <li data-i18n="pn1410_6">독침 직격 피해: 700 (추가)</li>
+                <li data-i18n="pn1410_7">독침 사거리: 12 → 13</li>
+                <li data-i18n="pn1410_8">독침 명중 시 은신 해제 (발각)</li>
+                <li data-i18n="pn1410_9">독병 피해: 2,292 → 3,040</li>
+                <li data-i18n="pn1410_10">독병 사거리: 12 → 13</li>
+                <li data-i18n="pn1410_11">독 피해: 568 → 760</li>
+                <li data-i18n="pn1410_12">중독 대상 회복량: 50% 감소</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1410_13">펀치 가로 사거리: 4.3 → 2.3 (v1.4.9 롤백)</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn1410_14">재장전: 0.6 → 0.5초</li>
+                <li data-i18n="pn1410_15">폭탄 사거리: 8 → 9</li>
+                <li data-i18n="pn1410_16">폭발 반경: +15%</li>
+                <li data-i18n="pn1410_17">파편 사거리: +25%</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn1410_18">테이크다운 extraPool 로직 오류와 재시작 시 캐릭터 선택이 빠지던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.5 — 2026.06.28</div>
-              <ul>
-                <li data-i18n="pv145a">슬로우/독/피격 발광 전신(팔·다리 포함)에 적용</li>
-                <li data-i18n="pv145b">슬로우/독 발광색 개선 (하늘색 / 연두색)</li>
-                <li data-i18n="pv145c">봇 AI 경로 탐색 개선 — 벽·호수 우회 이동</li>
-                <li data-i18n="pv145d">클릭 공격 시 자동조준 추가 (가장 가까운 적 방향)</li>
+              <div class="patch-version"><span class="patch-ver">v1.4.9</span><span class="patch-date">2026.06.30</span><span class="patch-tag balance" data-i18n="pnTag_balance">밸런스</span></div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn149_1">펀치 가로 사거리: +2타일</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.4 — 2026.06.28</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.8</span><span class="patch-date">2026.06.30</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv144a">Purple 캐릭터 추가 — 포이즌 컨트롤러 (독침/독병 교대 공격)</li>
-                <li data-i18n="pv144b">스킨 시스템 추가 — Alpha Red 황금 왕관 한정 스킨</li>
-                <li data-i18n="pv144c">전 캐릭터 적중 이펙트 추가</li>
-                <li data-i18n="pv144d">Red 펀치 이펙트 강화 (충격파 링 + 버스트)</li>
-                <li data-i18n="pv144e">Yellow 감전 이펙트 강화 (번개선 4갈래 + 스파크)</li>
-                <li data-i18n="pv144f">슬로우/독 상태 이펙트 추가 (얼음 결정 / 독 거품)</li>
-                <li data-i18n="pv144g">Blue·Yellow·Purple 투사체 꼬리 이펙트 추가</li>
-                <li data-i18n="pv144h">수동 공격 시 자동조준 해제 + 탭 전환 프리즈 수정</li>
+                <li data-i18n="pn148_1">알파 시즌 4 전환</li>
+                <li data-i18n="pn148_2">테이크다운 이벤트 모드 추가 (1~4위 승리 판정)</li>
+                <li data-i18n="pn148_3">테이크다운 전용 8방향 대칭 고정 맵 추가</li>
+                <li data-i18n="pn148_4">테이크다운 봇 캐릭터 중복 없이 랜덤 배정</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.3 — 2026.06.27</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.7</span><span class="patch-date">2026.06.29</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv143a">캐릭터 최대 레벨 Lv.6 추가 (비용 4000, 최대 +10%)</li>
-                <li data-i18n="pv143b">캐릭터 모델링 개선: 팔꿈치·무릎 관절 추가, 몸통 슬림화</li>
-                <li data-i18n="pv143c">Red 전용 가드 스탠스 + 강펀치 애니메이션</li>
-                <li data-i18n="pv143d">Yellow: 데미지 3400→2400, 사거리 8→12</li>
-                <li data-i18n="pv143e">Green: 부메랑 데미지 1100→950, 히트박스 +30%</li>
-                <li data-i18n="pv143f">Blue: 체력 4400→4800, 탄속 28→32</li>
-                <li data-i18n="pv143g">Orange: 직격 데미지 850→750</li>
-                <li data-i18n="pv143h">벽/호수와 겹치는 수풀 제거 (해골 협곡 9개, 마른 호수 3개)</li>
+                <li data-i18n="pn147_1">캐릭터 모델링 개선 — 관절 구체 제거, 매끄러운 외형</li>
+                <li data-i18n="pn147_2">핑크 V자 일렉기타 디테일 대폭 추가</li>
+                <li data-i18n="pn147_3">핑크 사운드 웨이브 이펙트 (충격파 링 + 음표 파티클)</li>
+                <li data-i18n="pn147_4">공중 이펙트 빌보딩 — 항상 카메라를 향하도록</li>
+                <li data-i18n="pn147_5">상점 레벨업 UI 업그레이드</li>
+                <li data-i18n="pn147_6">캐릭터 정보 패널에 스킨 장착/해제 버튼 추가</li>
+                <li data-i18n="pn147_7">favicon 추가 (레드 캐릭터 실루엣)</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li data-i18n="pn147_8">재장전 속도 1발당 기준 정리 (레드 0.5, 블루 0.3, 오렌지 0.6 등)</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.2 — 2026.06.25</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.6</span><span class="patch-date">2026.06.28</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="archivePatch101">코인 재화 시스템 추가 (승리/패배/1위/연승 보너스)</li>
-                <li data-i18n="archivePatch102">캐릭터 레벨 시스템 추가 (Lv.1~5, 레벨당 체력·공격력 +2%)</li>
-                <li data-i18n="archivePatch103">마스터리 시스템 추가 (Bronze~Master 5등급)</li>
-                <li data-i18n="archivePatch104">상점 화면 추가 (캐릭터 레벨업 구매)</li>
-                <li data-i18n="archivePatch105">알파 시즌 3 전환</li>
-                <li data-i18n="pv142f">Orange 추가 너프: 파편 데미지 400→300, 재장전 1.0→1.3초, 파편 범위 2.5→3.5</li>
+                <li data-i18n="pn146_1">핑크 캐릭터 추가 — 탱크/서포터 (원형 범위 공격 + 아군 회복)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn146_2">상성표 8캐릭터로 갱신</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_purple">퍼플</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn146_3">약병 범위: 6.0 → 5.0</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.1 — 2026.06.25</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.5</span><span class="patch-date">2026.06.28</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv139a">Red 체력 9000→9800, 공격 쿨다운 0.62→0.55 버프</li>
-                <li data-i18n="pv139b">Orange 체력 6500→5800, 직격 데미지 1000→850 너프</li>
-                <li data-i18n="pv139c">Yellow 사거리 10→8, 감전 지속 2.0→1.5초 너프</li>
+                <li data-i18n="pn145_1">슬로우/독/피격 발광 전신(팔·다리 포함)에 적용</li>
+                <li data-i18n="pn145_2">슬로우/독 발광색 개선 (하늘색 / 연두색)</li>
+                <li data-i18n="pn145_3">봇 AI 경로 탐색 개선 — 벽·호수 우회 이동</li>
+                <li data-i18n="pn145_4">클릭 공격 시 자동조준 추가 (가장 가까운 적 방향)</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.4.0 — 2026.06.25</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.4</span><span class="patch-date">2026.06.28</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv140a">Cyan 캐릭터 추가 — 컨트롤 파이터 (알약 6연발, 넓은 범위 제압)</li>
-                <li data-i18n="pv140b">상성표 7캐릭터로 갱신</li>
-                <li data-i18n="pv140c">찹 우드 맵 세로 레이아웃으로 변경</li>
-                <li data-i18n="pv140d">전체 캐릭터 색상 통일</li>
+                <li data-i18n="pn144_1">퍼플 캐릭터 추가 — 포이즌 컨트롤러 (독침/독병 교대 공격)</li>
+                <li data-i18n="pn144_2">스킨 시스템 추가 — 알파 레드 황금 왕관 한정 스킨</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn144_3">전 캐릭터 적중 이펙트 추가</li>
+                <li data-i18n="pn144_4">레드 펀치 이펙트 강화 (충격파 링 + 버스트)</li>
+                <li data-i18n="pn144_5">옐로우 감전 이펙트 강화 (번개선 4갈래 + 스파크)</li>
+                <li data-i18n="pn144_6">슬로우/독 상태 이펙트 추가 (얼음 결정 / 독 거품)</li>
+                <li data-i18n="pn144_7">블루·옐로우·퍼플 투사체 꼬리 이펙트 추가</li>
+                <li data-i18n="pn144_8">수동 공격 시 자동조준 해제</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn144_9">탭을 전환하면 게임이 멈추던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.9 — 2026.06.25</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.3</span><span class="patch-date">2026.06.27</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv141a">선택 캐릭터 강조 강화 (glow + 떠오르는 효과)</li>
-                <li data-i18n="pv141b">3D 캐릭터 프리뷰 150% 확대</li>
-                <li data-i18n="pv141c">좌측 패널에 스탯 바 추가 (체력/공격/사거리/기동)</li>
-                <li data-i18n="pv141d">레벨 옆에 시즌 + 버전 표시 추가</li>
-                <li data-i18n="pv141e">캐릭터 설명을 컬러 버튼 패널로 이동</li>
+                <li data-i18n="pn143_1">캐릭터 최대 레벨 Lv.6 추가 (비용 4,000, 최대 +10%)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn143_2">캐릭터 모델링 개선: 팔꿈치·무릎 관절 추가, 몸통 슬림화</li>
+                <li data-i18n="pn143_3">레드 전용 가드 스탠스 + 강펀치 애니메이션</li>
+                <li data-i18n="pn143_4">벽/호수와 겹치는 수풀 제거 (해골 협곡 9개, 마른 호수 3개)</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_yellow">옐로우</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn143_5">데미지: 3,400 → 2,400</li>
+                <li data-i18n="pn143_6">사거리: 8 → 12</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn143_7">부메랑 데미지: 1,100 → 950</li>
+                <li data-i18n="pn143_8">히트박스: +30%</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_blue">블루</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn143_9">체력: 4,400 → 4,800</li>
+                <li data-i18n="pn143_10">탄속: 28 → 32</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn143_11">직격 데미지: 850 → 750</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.8 — 2026.06.25</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.2</span><span class="patch-date">2026.06.25</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv138a">캐릭터 모델링 개선: 어깨·허벅지 관절 추가</li>
+                <li data-i18n="pn142_1">알파 시즌 3 전환</li>
+                <li data-i18n="pn142_2">코인 재화 시스템 추가 (승리/패배/1위/연승 보너스)</li>
+                <li data-i18n="pn142_3">캐릭터 레벨 시스템 추가 (Lv.1~5, 레벨당 체력·공격력 +2%)</li>
+                <li data-i18n="pn142_4">마스터리 시스템 추가 (Bronze~Master 5등급)</li>
+                <li data-i18n="pn142_5">상점 화면 추가 (캐릭터 레벨업 구매)</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn142_6">파편 데미지: 400 → 300</li>
+                <li data-i18n="pn142_7">재장전: 1.0 → 1.3초</li>
+                <li data-i18n="pn142_8">파편 범위: 2.5 → 3.5</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.7 — 2026.06.24</div>
-              <ul>
-                <li data-i18n="pv137a">Yellow 캐릭터 추가 (전기 투사체 + 감전 감속)</li>
-                <li data-i18n="pv137b">상성표 5캐릭터 + 경합 열 추가</li>
-                <li data-i18n="pv137c">로비 왼쪽 캐릭터 컬러 버튼 추가</li>
-                <li data-i18n="pv137d">Yellow 사거리 8→10, 데미지 4400→3400</li>
-                <li data-i18n="pv137e">캐릭터 카드 실제 인게임 수치 동기화</li>
-                <li data-i18n="pv137f">리더보드 봇 이름 고정</li>
-                <li data-i18n="pv137g">Blue 아이콘 색상 수정</li>
+              <div class="patch-version"><span class="patch-ver">v1.4.1</span><span class="patch-date">2026.06.25</span><span class="patch-tag balance" data-i18n="pnTag_balance">밸런스</span></div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn141_1">체력: 9,000 → 9,800</li>
+                <li data-i18n="pn141_2">공격 쿨다운: 0.62 → 0.55</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn141_3">체력: 6,500 → 5,800</li>
+                <li data-i18n="pn141_4">직격 데미지: 1,000 → 850</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_yellow">옐로우</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn141_5">사거리: 10 → 8</li>
+                <li data-i18n="pn141_6">감전 지속: 2.0 → 1.5초</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.6 — 2026.06.22</div>
+              <div class="patch-version"><span class="patch-ver">v1.4.0</span><span class="patch-date">2026.06.25</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv136a">내 정보 + 리더보드 패널 추가</li>
-                <li data-i18n="pv136b">AI 랜덤 이름 (한글/영어/혼용)</li>
-                <li data-i18n="pv136c">리더보드 봇 유저 순위 표시</li>
-                <li data-i18n="pv136d">시즌별 승률 추가</li>
-                <li data-i18n="pv136e">알파 시즌 2 전환</li>
-                <li data-i18n="pv136f">Red HP 10000 → 9000, Green 사거리 5 → 6, Orange 폭탄속도 14 → 16</li>
-                <li data-i18n="pv136g">Green 부메랑 900 → 1100, Orange 분산 1000 → 400</li>
-                <li data-i18n="pv136h">Green 봇 AI 적정 교전 거리 3.5타일</li>
+                <li data-i18n="pn140_1">시안 캐릭터 추가 — 컨트롤 파이터 (알약 6연발, 넓은 범위 제압)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn140_2">상성표 7캐릭터로 갱신</li>
+                <li data-i18n="pn140_3">찹 우드 맵 세로 레이아웃으로 변경</li>
+                <li data-i18n="pn140_4">전체 캐릭터 색상 통일</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.5 — 2026.06.22</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.9</span><span class="patch-date">2026.06.25</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv135a">Orange 분산 데미지 10 → 1000 버프</li>
-                <li data-i18n="pv135b">Orange 투사체 히트박스 2배 증가</li>
-                <li data-i18n="pv135c">Red 공격력 10% 증가 (4000 → 4400)</li>
-                <li data-i18n="pv135d">탄약 UI 미갱신 버그 수정</li>
+                <li data-i18n="pn139_1">선택 캐릭터 강조 강화 (glow + 떠오르는 효과)</li>
+                <li data-i18n="pn139_2">3D 캐릭터 프리뷰 150% 확대</li>
+                <li data-i18n="pn139_3">좌측 패널에 스탯 바 추가 (체력/공격/사거리/기동)</li>
+                <li data-i18n="pn139_4">레벨 옆에 시즌 + 버전 표시 추가</li>
+                <li data-i18n="pn139_5">캐릭터 설명을 컬러 버튼 패널로 이동</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.4 — 2026.06.22</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.8</span><span class="patch-date">2026.06.25</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv134a">찹 우드 자기장 판정 제거</li>
-                <li data-i18n="pv134b">찹 우드 플레이어 이동 제한 해제</li>
-                <li data-i18n="pv134c">나무 체력 100 → 50</li>
-                <li data-i18n="pv134d">벌목 시간 2초 → 1초</li>
+                <li data-i18n="pn138_1">캐릭터 모델링 개선: 어깨·허벅지 관절 추가</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.3 — 2026.06.22</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.7</span><span class="patch-date">2026.06.24</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv133a">모드 선택 UI 추가 (쇼다운/찹 우드 분기)</li>
-                <li data-i18n="pv133b">찹 우드 팀 구분 (머리 위 색상 마커 + 킬피드 색상)</li>
-                <li data-i18n="pv133c">Red 공격력 10% 증가 (4000 → 4400)</li>
+                <li data-i18n="pn137_1">옐로우 캐릭터 추가 (전기 투사체 + 감전 감속)</li>
+                <li data-i18n="pn137_2">로비 왼쪽 캐릭터 컬러 버튼 추가</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn137_3">상성표 5캐릭터 + 경합 열 추가</li>
+                <li data-i18n="pn137_4">캐릭터 카드 실제 인게임 수치 동기화</li>
+                <li data-i18n="pn137_5">리더보드 봇 이름 고정</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_yellow">옐로우</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn137_6">사거리: 8 → 10</li>
+                <li data-i18n="pn137_7">데미지: 4,400 → 3,400</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn137_8">블루 아이콘 색상이 잘못 표시되던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.2 — 2026.06.22</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.6</span><span class="patch-date">2026.06.22</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv132a">Orange 분산 사거리 5 → 2.5 너프</li>
-                <li data-i18n="pv132b">Red 이동속도 +4% 버프</li>
-                <li data-i18n="pv132c">Blue 공속 0.25 → 0.3초 너프</li>
-                <li data-i18n="pv132d">죽은 코드 정리 (-1400줄)</li>
-                <li data-i18n="pv132e">찹 우드 모드 스펙 작성</li>
+                <li data-i18n="pn136_1">알파 시즌 2 전환</li>
+                <li data-i18n="pn136_2">내 정보 + 리더보드 패널 추가</li>
+                <li data-i18n="pn136_3">시즌별 승률 추가</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn136_4">AI 랜덤 이름 (한글/영어/혼용)</li>
+                <li data-i18n="pn136_5">리더보드 봇 유저 순위 표시</li>
+                <li data-i18n="pn136_6">그린 봇 AI 적정 교전 거리 3.5타일</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn136_7">체력: 10,000 → 9,000</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn136_8">사거리: 5 → 6</li>
+                <li data-i18n="pn136_9">부메랑: 900 → 1,100</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn136_10">폭탄 속도: 14 → 16</li>
+                <li data-i18n="pn136_11">분산: 1,000 → 400</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.1 — 2026.06.21</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.5</span><span class="patch-date">2026.06.22</span><span class="patch-tag balance" data-i18n="pnTag_balance">밸런스</span></div>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn135_1">분산 데미지: 10 → 1,000</li>
+                <li data-i18n="pn135_2">투사체 히트박스: 2배</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn135_3">공격력: 4,000 → 4,400 (10% 증가)</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
               <ul>
-                <li data-i18n="pv131a">Orange 조준선 추가</li>
-                <li data-i18n="pv131b">상성표 4캐릭터로 갱신</li>
-                <li data-i18n="pv131c">3개 맵 자기장 밖 오브젝트 제거 + 경계 벽 추가</li>
-                <li data-i18n="pv131d">승리 시 결과 화면 안 뜨는 버그 수정</li>
-                <li data-i18n="pv131e">로비 UI 가로 25% 증가</li>
-                <li data-i18n="pv131f">LANGS 번역 데이터 모듈 분리</li>
-                <li data-i18n="pv131g">bestStreakLabel 번역 키 추가</li>
+                <li data-i18n="pn135_4">탄약 UI가 갱신되지 않던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.3.0 — 2026.06.21</div>
-              <ul>
-                <li data-i18n="pv130a">Orange 캐릭터 정식 추가 (폭탄 + 5갈래 폭발)</li>
-                <li data-i18n="pv130b">자기장 색상 초록으로 변경</li>
-                <li data-i18n="pv130c">자기장 축소 시간 단축 (136초 → 75초)</li>
-                <li data-i18n="pv130d">받은 데미지 빨간 팝업 표시</li>
-                <li data-i18n="pv130e">Orange 사거리 8타일로 조정</li>
+              <div class="patch-version"><span class="patch-ver">v1.3.4</span><span class="patch-date">2026.06.22</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pn134_1">찹 우드</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn134_2">자기장 판정: 제거</li>
+                <li data-i18n="pn134_3">플레이어 이동 제한: 해제</li>
+                <li data-i18n="pn134_4">나무 체력: 100 → 50</li>
+                <li data-i18n="pn134_5">벌목 시간: 2초 → 1초</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.9 — 2026.06.20</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.3</span><span class="patch-date">2026.06.22</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv129a">봇 AI 개선 (타겟 선택, 자기장 인식, 캐릭터별 전략)</li>
-                <li data-i18n="pv129b">수풀 전투 발각 시스템 (공격/피격 시 3초 노출)</li>
-                <li data-i18n="pv129c">그린 부메랑 히트박스 25% 증가</li>
-                <li data-i18n="pv129d">이동속도 밸런스 (Red 빠름 > Green 중간 > Blue 보통)</li>
-                <li data-i18n="pv129e">훈련장 더미 3초 리스폰 + 킬로그 제거</li>
-                <li data-i18n="pv129f">로딩 화면 추가 + 무한 로딩 수정</li>
-                <li data-i18n="pv129g">다른 탭 전환 시에도 게임 진행</li>
-                <li data-i18n="pv129h">타이틀 Colors로 변경</li>
-                <li data-i18n="pv129i">HUD 로고 제거</li>
-                <li data-i18n="pv129j">봇 수풀 매복 시스템 제거</li>
-                <li data-i18n="pv129k">CSS 문법 오류 수정 (스타일 깨짐 해결)</li>
-                <li data-i18n="pv129l">Three.js CDN 복원 (로컬 로드 실패 대응)</li>
+                <li data-i18n="pn133_1">모드 선택 UI 추가 (쇼다운/찹 우드 분기)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn133_2">찹 우드 팀 구분 (머리 위 색상 마커 + 킬피드 색상)</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn133_3">공격력: 4,000 → 4,400 (10% 증가)</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.8 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.2</span><span class="patch-date">2026.06.22</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv128a">알파 시즌 1 UI와 전투 경험 다듬기</li>
-                <li data-i18n="pv128b">캐릭터 카드 간소화 및 Orange 카드 개선</li>
-                <li data-i18n="pv128c">재장전 UI 개선 및 피격 이펙트 강화</li>
-                <li data-i18n="pv128d">킬 로그, 승률, 최고 기록 시스템 추가</li>
+                <li data-i18n="pn132_1">죽은 코드 정리 (-1,400줄)</li>
+                <li data-i18n="pn132_2">찹 우드 모드 스펙 작성</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn132_3">분산 사거리: 5 → 2.5</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_red">레드</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn132_4">이동속도: +4%</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_blue">블루</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn132_5">공속: 0.25 → 0.3초</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.6 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.1</span><span class="patch-date">2026.06.21</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv126a">그린 공격 쿨다운 0.40 → 0.45</li>
-                <li data-i18n="pv126b">캐릭터 통계 표시 개선</li>
-                <li data-i18n="pv126c">사소한 버그 수정</li>
+                <li data-i18n="pn131_1">오렌지 조준선 추가</li>
+                <li data-i18n="pn131_2">상성표 4캐릭터로 갱신</li>
+                <li data-i18n="pn131_3">3개 맵 자기장 밖 오브젝트 제거 + 경계 벽 추가</li>
+                <li data-i18n="pn131_4">로비 UI 가로 25% 증가</li>
+                <li data-i18n="pn131_5">LANGS 번역 데이터 모듈 분리</li>
+                <li data-i18n="pn131_6">bestStreakLabel 번역 키 추가</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn131_7">승리 시 결과 화면이 뜨지 않던 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.5 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.3.0</span><span class="patch-date">2026.06.21</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv124a">HUD 로고 제거</li>
-                <li data-i18n="pv124b">훈련장 더미 3초 후 자동 리스폰</li>
-                <li data-i18n="pv124c">훈련장 더미 사망 킬로그 제거</li>
-                <li data-i18n="pv124d">로딩 화면 추가 (진행 바 + 단계별 메시지)</li>
-                <li data-i18n="pv124e">무한 로딩 버그 수정</li>
-                <li data-i18n="pv124f">타이틀 Colors로 변경</li>
-                <li data-i18n="pv124g">다른 탭 전환 시에도 게임 계속 진행</li>
-                <li data-i18n="pv124h">봇 수풀 매복 시스템 제거</li>
-                <li data-i18n="pv124i">이동속도 밸런스 조정 (Red 빠름 > Green 중간 > Blue 보통)</li>
-                <li data-i18n="pv124j">그린 부메랑 투사체 히트박스 25% 증가</li>
+                <li data-i18n="pn130_1">오렌지 캐릭터 정식 추가 (폭탄 + 5갈래 폭발)</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn130_2">자기장 색상 초록으로 변경</li>
+                <li data-i18n="pn130_3">자기장 축소 시간 단축 (136초 → 75초)</li>
+                <li data-i18n="pn130_4">받은 데미지 빨간 팝업 표시</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_orange">오렌지</span><span class="patch-dir adjust" data-i18n="pnDir_adjust">◆ 조정</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn130_5">사거리: 8타일</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.3 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.2.9</span><span class="patch-date">2026.06.20</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv123a">다국어 시스템 추가 (한국어/영어)</li>
+                <li data-i18n="pn129_1">봇 AI 개선 (타겟 선택, 자기장 인식, 캐릭터별 전략)</li>
+                <li data-i18n="pn129_2">수풀 전투 발각 시스템 (공격/피격 시 3초 노출)</li>
+                <li data-i18n="pn129_3">훈련장 더미 3초 리스폰 + 킬로그 제거</li>
+                <li data-i18n="pn129_4">로딩 화면 추가</li>
+                <li data-i18n="pn129_5">다른 탭 전환 시에도 게임 진행</li>
+                <li data-i18n="pn129_6">타이틀 Colors로 변경</li>
+                <li data-i18n="pn129_7">HUD 로고 제거</li>
+                <li data-i18n="pn129_8">봇 수풀 매복 시스템 제거</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li data-i18n="pn129_9">이동속도 밸런스 (레드 빠름 &gt; 그린 중간 &gt; 블루 보통)</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn129_10">부메랑 히트박스: +25%</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn129_11">무한 로딩 문제를 수정했습니다.</li>
+                <li data-i18n="pn129_12">CSS 문법 오류로 스타일이 깨지던 문제를 수정했습니다.</li>
+                <li data-i18n="pn129_13">Three.js 로컬 로드 실패에 대응해 CDN을 복원했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.2 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.2.8</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv122a">상성표 · 패치노트를 로비 우측 상단으로 이동</li>
+                <li data-i18n="pn128_1">킬 로그, 승률, 최고 기록 시스템 추가</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn128_2">알파 시즌 1 UI와 전투 경험 다듬기</li>
+                <li data-i18n="pn128_3">캐릭터 카드 간소화 및 오렌지 카드 개선</li>
+                <li data-i18n="pn128_4">재장전 UI 개선 및 피격 이펙트 강화</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2.1 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.2.6</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv121a">알파 시즌 1 시작</li>
-                <li data-i18n="pv121b">상성표 설명 텍스트 추가</li>
-                <li data-i18n="pv121c">패치노트 스크롤 수정</li>
+                <li data-i18n="pn126_1">캐릭터 통계 표시 개선</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir nerf" data-i18n="pnDir_nerf">▼ 하향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn126_2">공격 쿨다운: 0.40 → 0.45</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn126_3">사소한 버그를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.2 — 2026.06.19</div>
+              <div class="patch-version"><span class="patch-ver">v1.2.5</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv12a">캐릭터별 승률 · 판수 · 승리 횟수 표시 추가</li>
-                <li data-i18n="pv12b">연승 시스템 추가 (2연승+1 ~ 5연승이상+4 보너스 트로피)</li>
-                <li data-i18n="pv12c">상성표 추가</li>
-                <li data-i18n="pv12d">패치노트 추가</li>
+                <li data-i18n="pn125_1">HUD 로고 제거</li>
+                <li data-i18n="pn125_2">훈련장 더미 3초 후 자동 리스폰</li>
+                <li data-i18n="pn125_3">훈련장 더미 사망 킬로그 제거</li>
+                <li data-i18n="pn125_4">로딩 화면 추가 (진행 바 + 단계별 메시지)</li>
+                <li data-i18n="pn125_5">타이틀 Colors로 변경</li>
+                <li data-i18n="pn125_6">다른 탭 전환 시에도 게임 계속 진행</li>
+                <li data-i18n="pn125_7">봇 수풀 매복 시스템 제거</li>
+              </ul>
+              <div class="patch-sec balance" data-i18n="pnSec_balance">밸런스 조정</div>
+              <ul>
+                <li data-i18n="pn125_8">이동속도 밸런스 조정 (레드 빠름 &gt; 그린 중간 &gt; 블루 보통)</li>
+              </ul>
+              <div class="patch-char"><span class="patch-char-name" data-i18n="pnCh_green">그린</span><span class="patch-dir buff" data-i18n="pnDir_buff">▲ 상향</span></div>
+              <ul class="patch-lines">
+                <li data-i18n="pn125_9">부메랑 투사체 히트박스: +25%</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn125_10">무한 로딩 문제를 수정했습니다.</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.1 — 2026.06.18</div>
+              <div class="patch-version"><span class="patch-ver">v1.2.3</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
               <ul>
-                <li data-i18n="pv11a">즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)</li>
-                <li data-i18n="pv11b">봇 수풀 매복 영구 정지 버그 수정</li>
-                <li data-i18n="pv11c">자기장 피해 중 자연회복 동시 적용 차단</li>
-                <li data-i18n="pv11d">수풀 GPU 최적화</li>
-                <li data-i18n="pv11e">봇 타겟팅 로직 개선</li>
+                <li data-i18n="pn123_1">다국어 시스템 추가 (한국어/영어)</li>
               </ul>
             </div>
             <div class="patch-entry">
-              <div class="patch-version">v1.0 — 2026.06.14</div>
+              <div class="patch-version"><span class="patch-ver">v1.2.2</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
               <ul>
-                <li data-i18n="pv10a">3종 캐릭터 (Red / Green / Blue)</li>
-                <li data-i18n="pv10b">배틀 맵 3종 로테이션</li>
-                <li data-i18n="pv10c">트로피 · 순위 시스템</li>
-                <li data-i18n="pv10d">수풀 은신 메커닉</li>
-                <li data-i18n="pv10e">훈련장</li>
+                <li data-i18n="pn122_1">상성표 · 패치노트를 로비 우측 상단으로 이동</li>
+              </ul>
+            </div>
+            <div class="patch-entry">
+              <div class="patch-version"><span class="patch-ver">v1.2.1</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
+              <ul>
+                <li data-i18n="pn121_1">알파 시즌 1 시작</li>
+              </ul>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn121_2">상성표 설명 텍스트 추가</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn121_3">패치노트가 스크롤되지 않던 문제를 수정했습니다.</li>
+              </ul>
+            </div>
+            <div class="patch-entry">
+              <div class="patch-version"><span class="patch-ver">v1.2</span><span class="patch-date">2026.06.19</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
+              <ul>
+                <li data-i18n="pn12_1">캐릭터별 승률 · 판수 · 승리 횟수 표시 추가</li>
+                <li data-i18n="pn12_2">연승 시스템 추가 (2연승 +1 ~ 5연승 이상 +4 보너스 트로피)</li>
+                <li data-i18n="pn12_3">상성표 추가</li>
+                <li data-i18n="pn12_4">패치노트 추가</li>
+              </ul>
+            </div>
+            <div class="patch-entry">
+              <div class="patch-version"><span class="patch-ver">v1.1</span><span class="patch-date">2026.06.18</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec system" data-i18n="pnSec_system">시스템·UI</div>
+              <ul>
+                <li data-i18n="pn11_1">즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)</li>
+                <li data-i18n="pn11_2">자기장 피해 중 자연회복 동시 적용 차단</li>
+                <li data-i18n="pn11_3">수풀 GPU 최적화</li>
+                <li data-i18n="pn11_4">봇 타겟팅 로직 개선</li>
+              </ul>
+              <div class="patch-sec fix" data-i18n="pnSec_fix">버그 수정</div>
+              <ul>
+                <li data-i18n="pn11_5">봇이 수풀 매복 중 영구 정지하던 문제를 수정했습니다.</li>
+              </ul>
+            </div>
+            <div class="patch-entry">
+              <div class="patch-version"><span class="patch-ver">v1.0</span><span class="patch-date">2026.06.14</span><span class="patch-tag update" data-i18n="pnTag_update">업데이트</span></div>
+              <div class="patch-sec new" data-i18n="pnSec_new">신규</div>
+              <ul>
+                <li data-i18n="pn10_1">3종 캐릭터 (레드 / 그린 / 블루)</li>
+                <li data-i18n="pn10_2">배틀 맵 3종 로테이션</li>
+                <li data-i18n="pn10_3">트로피 · 순위 시스템</li>
+                <li data-i18n="pn10_4">수풀 은신 메커닉</li>
+                <li data-i18n="pn10_5">훈련장</li>
               </ul>
             </div>
           </div>

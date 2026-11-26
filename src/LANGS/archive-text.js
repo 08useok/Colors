@@ -5,549 +5,496 @@ export const ARCHIVE_TEXT = {
   "roadmapChampionsMain": {"ko": "11/16~ 메인 로비 「🏆 챔피언스」 · 17명 생존전 (매일 18:10 컷) → 사커 킥 → 4강 1대1 듀얼", "en": "From 11/16 via 🏆 Champions in the main lobby · 17-character survival (daily cut at 18:10) → Soccer Kick → 1v1 duel top 4"},
   "roadmapChampionsReward": {"ko": "👑 베타 우승: 정식 시즌 신규 가젯 · 메인 우승: 챔피언스 왕관 스킨", "en": "👑 Beta winner: new official gadget · Main winner: Champions Crown skin"},
   "roadmapChampionsRewardCard": {"ko": "베타 우승 캐릭터는 정식 시즌에서 받을 새 가젯을 누구보다 먼저 획득합니다. 메인 우승 캐릭터의 「챔피언스 왕관」 스킨은 메인 대회 경기를 한 번 이상 끝까지 치른 플레이어 모두에게 지급됩니다.", "en": "The beta champion gets its new official-season gadget first. The main champion's Champions Crown skin goes to every player who finished at least one main event match."},
-  "mainV188Title": {"ko": "v1.8.8 — 2026.11.25 · 버그 수정", "en": "v1.8.8 — 2026.11.25 · Bug fixes"},
-  "mainV188Red": {"ko": "레드 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Red — fixed his basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
-  "mainV187Title": {"ko": "v1.8.7 — 2026.11.24 · 버그 수정", "en": "v1.8.7 — 2026.11.24 · Bug fixes"},
-  "mainV187Purple": {"ko": "퍼플 — 궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.", "en": "Purple — fixed stuns and other action locks received during Toxic Leap ending the moment she landed. Effects received mid-air now last their full duration."},
-  "mainV187Crimson": {"ko": "크림슨 — 벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Crimson — fixed her basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
-  "mainV186Title": {"ko": "v1.8.6 — 2026.11.24 · 밸런스 조정", "en": "v1.8.6 — 2026.11.24 · Balance update"},
-  "mainV186Red": {"ko": "레드 (하향) — 탄약 1발 재장전 시간 0.9 → 1.1초", "en": "Red (nerf) — reload time per ammo 0.9 → 1.1 s"},
-  "mainV186Purple": {"ko": "퍼플 (상향) — 궁극기 「독성 대도약」 이륙·착지 중앙 피해 1000 → 5000. 가시 16발이 사방 대신 바라보는 방향 60도 부채꼴로, 사거리 10타일 대신 벽에 닿을 때까지 날아갑니다.", "en": "Purple (buff) — Toxic Leap takeoff and landing damage 1000 → 5000. The 16 thorns now fly forward in a 60-degree fan until they hit a wall instead of in every direction up to 10 tiles."},
-  "mainV186Cyan": {"ko": "시안 (상향) — 사거리 9 → 9.5타일, 궁극기 「질풍 강타」 사거리 10 → 10.5타일", "en": "Cyan (buff) — range 9 → 9.5 tiles, Gale Strike range 10 → 10.5 tiles"},
-  "mainV185Title": {"ko": "v1.8.5 — 2026.11.22 · 버그 수정", "en": "v1.8.5 — 2026.11.22 · Bug fixes"},
-  "mainV185Lavender": {"ko": "라벤더 — 궁극기 사용 중 쓰러져도 향기 장판이 남아 계속 피해를 주던 문제를 수정했습니다. 이제 라벤더가 쓰러지면 장판도 바로 사라집니다.", "en": "Lavender — fixed her fragrance field lingering and dealing damage after she went down during her ultimate. The field now disappears as soon as she goes down."},
-  "mainV184Title": {"ko": "v1.8.4 — 2026.11.19 · 밸런스 조정", "en": "v1.8.4 — 2026.11.19 · Balance update"},
-  "mainV184Red": {"ko": "레드 (하향) — 체력 9000 → 8000, 일반 공격 피해 2400 → 2200", "en": "Red (nerf) — HP 9000 → 8000, basic attack damage 2400 → 2200"},
-  "mainV184Orange": {"ko": "오렌지 (하향) — 과즙 피해 1170 → 1000", "en": "Orange (nerf) — juice splash damage 1170 → 1000"},
-  "mainV184Cyan": {"ko": "시안 (상향) — 체력 6200 → 7000, 알약 피해 700 → 900, 사거리 8.33 → 9타일", "en": "Cyan (buff) — HP 6200 → 7000, pill damage 700 → 900, range 8.33 → 9 tiles"},
-  "mainV184Mint": {"ko": "민트 (상향) — 체력 6600 → 7000, 아이스크림 탄환 피해 1000 → 1100", "en": "Mint (buff) — HP 6600 → 7000, ice cream bullet damage 1000 → 1100"},
-  "mainV183Title": {"ko": "v1.8.3 — 2026.11.19 · 버그 수정", "en": "v1.8.3 — 2026.11.19 · Bug fixes"},
-  "mainV183Soccer": {"ko": "사커 킥 — 봇이 공을 쫓지 않고 몰려다니거나 제자리에 서 있던 문제와, 봇과 플레이어가 골대 뒤로 경기장을 벗어나던 문제를 수정했습니다. 이제 봇이 공을 차고 지원·수비 위치를 나눠 움직입니다.", "en": "Soccer Kick — fixed bots bunching up or standing still instead of chasing the ball, and bots and players leaving the field through the goals. Bots now kick the ball and split into support and defense positions."},
-  "mainV183GemTimer": {"ko": "젬 그랩 — 양 팀이 모두 젬 10개 이상일 때 먼저 모은 팀이 아닌 팀의 탈출 시간이 표시될 수 있던 문제와, 결과 화면에 쓰지 않는 금 개수가 표시되던 문제를 수정했습니다.", "en": "Gem Grab — fixed the escape timer sometimes following the wrong team when both teams held 10+ gems, and the result screen showing an unused gold count."},
-  "mainV183GemResult": {"ko": "젬 그랩 — 졌을 때 결과 화면에 아군이 탈출한 것처럼 읽히는 문구가 표시되던 문제를 수정했습니다.", "en": "Gem Grab — fixed the result text reading as if your team had escaped after a loss."},
-  "mainV183Salmon": {"ko": "샐먼 — 궁극기 「월척이다!」 장치가 설치되면 경기가 멈춰 끝나지 않던 문제를 수정했습니다.", "en": "Salmon — fixed matches freezing and never ending after the devices from Salmon's ultimate were placed."},
-  "mainV183UltBush": {"ko": "궁극기 — 가장 가까운 적이 덤불에 숨어 있으면 궁극기 버튼을 눌러도 나가지 않던 문제를 수정했습니다. 이제 보이는 적을 기준으로 쓰고, 보이는 적이 없으면 조준한 곳이나 바라보는 방향으로 나갑니다.", "en": "Ultimates — fixed ultimates not firing when the nearest enemy was hiding in a bush. They now use the nearest visible enemy, or your aim or facing direction when no enemy is visible."},
-  "mainV183Crystal": {"ko": "크리스탈 — 궁극기가 조준한 적이 아니라 가장 가까운 적을 노려 자주 빗나가던 문제를 수정했습니다. 이제 조준선(폭 2.4칸) 안의 첫 적을 붙잡습니다.", "en": "Crystal — fixed her ultimate targeting the nearest enemy instead of the one you aimed at, which often made it miss. It now binds the first enemy inside the 2.4-tile-wide aim line."},
-  "mainV183Pink": {"ko": "핑크 — 녹아웃에서 궁극기를 쓸 수 없던 문제를 수정했습니다. 녹아웃에서는 쓰러진 아군을 부활시키지 않고, 주변의 살아 있는 아군에게 앙코르만 겁니다.", "en": "Pink — fixed her ultimate being unusable in Knockout. There it does not revive downed allies; it gives Encore to living allies nearby."},
-  "mainV183Purple": {"ko": "퍼플 — 궁극기 조준선에 뛰어오를 때와 착지할 때 퍼지는 가시의 사거리가 표시되지 않던 문제를 수정했습니다. 이제 10칸 범위도 함께 보입니다.", "en": "Purple — fixed the ultimate aim guide not showing the reach of the thorns burst on takeoff and landing. The 10-tile reach is now shown."},
-  "mainV183MobileFacing": {"ko": "모바일 — 조이스틱을 놓으면 캐릭터가 조이스틱이 있던 화면 쪽으로 돌던 문제를 수정했습니다. 이제 이동하던 방향을 계속 바라봅니다.", "en": "Mobile — fixed your character turning toward the joystick on screen after you released it. It now keeps facing the way it was moving."},
-  "mainV183MobileAim": {"ko": "모바일 — 이동하면서 궁극기 버튼을 끌면 손가락 위치가 무시되던 문제를 수정했습니다. 이제 조준선과 궁극기가 손가락이 가리키는 곳으로 향합니다.", "en": "Mobile — fixed finger aiming being ignored when you dragged the ultimate button while moving. The aim guide and the ultimate now follow your finger."},
-  "mainV183Crown": {"ko": "챔피언스 왕관 — 블루와 라벤더에게 챔피언스 왕관이 보이지 않던 문제를 수정했습니다.", "en": "Champions Crown — fixed the Champions crown not showing on Blue and Lavender."},
-  "mainV182Roadmap": {"ko": "공지 로드맵 — 시즌 9 칸에 베타·메인 챔피언스 일정과 보상을 함께 표시합니다.", "en": "Notice roadmap — the Season 9 entry now lists both the beta and main Champions schedules and rewards."},
-  "mainV182CutFix": {"ko": "챔피언스 집계 수정 (11.17) — 각 조는 그 조에 새 경기가 있을 때만 탈락자를 정하고, 경기에 한 번 이상 나온 캐릭터 중에서만 고릅니다. 첫 집계에서 녹아웃 조 경기가 없는데 탈락한 크리스탈은 대회에 복귀합니다.", "en": "Champions cut fix (11.17) — each group is cut only when it has new matches, and only among characters that have played. Crystal, eliminated in the first cut although Knockout had no matches yet, is back in the event."},
-  "mainV182Title": {"ko": "v1.8.2 — 2026.11.16 · 메인 챔피언스 개막", "en": "v1.8.2 — 2026.11.16 · Main Champions opens"},
-  "mainV182Champions": {"ko": "메인 챔피언스 — 로비 오른쪽 위 「🏆 챔피언스」에서 참가합니다. 베타 챔피언스와 따로 집계하는 메인 전용 대회로, 11월 16일 18:10(KST)에 열립니다. 메인 17명이 젬 그랩·녹아웃 두 조로 생존전을 치르고 매일 18:10 각 조 최하위 1명이 탈락합니다(3차부터 두 조의 모드 교체). 10명 이하가 남으면 사커 킥 최종전(매일 하위 2명 탈락), 4명이 남으면 1대1 듀얼 토너먼트(4강 1위 vs 4위·2위 vs 3위 → 결승)로 우승 캐릭터를 정합니다.", "en": "Main Champions — join from 🏆 Champions at the top right of the lobby. A main-only event with its own standings, apart from the beta Champions, opening Nov 16 18:10 (KST). The 17 main characters play survival in two groups (Gem Grab and Knockout); every day at 18:10 the last character of each group is out (the groups swap modes from round 3). At 10 or fewer, a Soccer Kick final drops the bottom 2 daily; at 4, a 1v1 duel tournament (semifinals 1v4 and 2v3, then the final) decides the champion."},
-  "mainV182Play": {"ko": "참가 방식 — 생존 캐릭터를 골라 참가하면 보유하지 않은 캐릭터도 그 경기에서 쓸 수 있고, 같은 조 생존 캐릭터 AI가 나머지 자리를 채웁니다. 플레이어와 AI 6명 전원의 승패·피해·처치를 서버에서 캐릭터별로 함께 집계하며, 승수 → 승률 → 피해량 → 처치 순으로 순위를 정합니다. 경기 중 나가면 기권(패배)으로 기록됩니다.", "en": "How to play — pick a surviving character to join, even one you do not own; AI characters from the same group fill the other seats. Wins, damage and kills of all six fighters (player and AI) count on the server per character, ranked by wins, then win rate, damage and kills. Leaving a match counts as a forfeit (loss)."},
-  "mainV182Reward": {"ko": "우승 보상 — 대회 경기를 한 번이라도 끝까지 치른 플레이어 모두에게 우승 캐릭터의 「챔피언스 왕관」 스킨을 지급합니다.", "en": "Reward — everyone who finished at least one event match gets the champion character's Champions Crown skin."},
-  "mainV181Title": {"ko": "v1.8.1 — 2026.11.12 · 3대3 진영 업데이트", "en": "v1.8.1 — 2026.11.12 · 3v3 Team Side Update"},
-  "mainV181TeamSide": {"ko": "3대3 시작 위치 — 녹아웃·젬 그랩·사커 킥·찹 우드에서 내 팀 진영이 항상 화면 아래쪽에 보이고 상대는 위쪽에서 내려옵니다. 녹아웃·젬 그랩은 시작·부활 위치와 봇이 돌아가는 기지 위치를 바꿨고, 사커 킥·찹 우드는 내 기지가 위쪽인 팀일 때 고정 카메라가 반대편에서 비춥니다.", "en": "3v3 start side — In Knockout, Gem Grab, Soccer Kick and Chop Wood your team's side is always at the bottom of the screen and the enemy comes from the top. Knockout and Gem Grab move the spawn, respawn and bot home-base positions; in Soccer Kick and Chop Wood the fixed camera views from the other side when your base is at the top."},
-  "mainV181Controls": {"ko": "조작 — WASD와 조이스틱은 화면 기준이라 위쪽 키를 누르면 항상 상대 진영으로 이동합니다. 마우스 조준은 그대로 정확합니다. 카메라는 지금처럼 위에서 내려다보는 고정 시점입니다.", "en": "Controls — WASD and the joystick follow the screen, so up always moves toward the enemy side. Mouse aiming stays exact. The camera is still the fixed top-down view."},
-  "mainSeason7ReleaseTitle": {"ko": "v1.7.0.1 — 2026.10.13 · 베타 시즌 7 메인 업데이트", "en": "v1.7.0.1 — 2026.10.13 · Beta Season 7 Main Update"},
-  "mainSeason7Characters": {"ko": "캐릭터·기술: 크리스탈과 오렌지 궁극기 「껍질 회수」·퍼플 궁극기 「독성 대도약」을 메인에 추가했습니다. 시즌 7 캐릭터 15종의 전투 수치를 반영했으며 라벤더는 시즌 8 출시 예정입니다.", "en": "Characters and skills: added Crystal, Orange’s Peel Recovery ultimate and Purple’s Toxic Leap ultimate to the main game. Applied Season 7 combat stats for 15 characters; Lavender is planned for Season 8."},
-  "mainSeason7Skins": {"ko": "시즌 스킨: 파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈을 추가하고 모델·걷기 모션을 연결했습니다.", "en": "Season skins: added Pharaoh Gold, Mummy Green, Scarab Blue and Jewel Princess Crystal with their models and walking animations."},
-  "mainSeason7Modes": {"ko": "정규 이벤트: 젬 그랩 3대3과 SHOWDOWN+를 메인에 추가했습니다. 젬 그랩은 젬 10개 이상을 15초 유지하면 승리하며, SHOWDOWN+는 플레이어 처치당 트로피 +2를 제공합니다. 각 모드의 맵 3종을 지원합니다.", "en": "Events: added 3v3 Gem Grab and SHOWDOWN+ to the main game, each with three maps. Hold at least 10 gems for 15 seconds to win Gem Grab; SHOWDOWN+ awards +2 trophies per player elimination."},
-  "mainSeason7Theme": {"ko": "테마: 잃어버린 황금 유적의 사막·석벽·오벨리스크와 시즌 7 로비·젬 그랩 음악을 적용했습니다.", "en": "Theme: added the Lost Golden Ruins desert, stone walls and obelisks, plus Season 7 lobby and Gem Grab music."},
-
-    "mainSeason8BalanceTitle": {"ko": "v1.8.0 — 2026.10.31 · 베타 시즌 8 메인 업데이트", "en": "v1.8.0 — 2026.10.31 · Beta Season 8 Main Update"},
-  "mainSeason8Modes": {"ko": "신규 모드 — KNOCKOUT: 플레이어와 아군 AI 2명 대 적 AI 3명, 2라운드 선승. 라운드 중 부활이 없고 핑크 부활 궁극기를 쓸 수 없습니다. 45초부터 독안개가 좁혀지고 90초에 남은 인원·체력으로 판정합니다. 맵 3종(유령 결투장·저주받은 성벽·안개 묘지).", "en": "New mode — KNOCKOUT: you and two allied AI versus three enemy AI, first to two rounds. No respawns during a round and Pink's revive is disabled. Poison closes in from 45 seconds; at 90 seconds survivors and remaining health decide the round. Three maps (Ghost Duel, Cursed Ramparts, Misty Graveyard)."},
-  "mainSeason8Skins": {"ko": "할로윈 스킨 — 해골 아이보리·잭오랜턴 오렌지·마녀 퍼플·유령 신부 라벤더를 상점에서 각 2,500코인에 판매합니다.", "en": "Halloween skins — Skeleton Ivory, Jack-o'-Lantern Orange, Potion Witch Purple and Ghost Bride Lavender are on sale for 2,500 coins each."},
-  "mainSeason8Quests": {"ko": "시즌 퀘스트 — 킬 1회 = 1점, 회복량 2,000 = 1점, 피해량 1,000 = 1점. 103단계·최종 10,000점, 합계 코인 8,400·크레딧 1,900. 개별·일괄 수령. 훈련장은 제외합니다.", "en": "Season quests — 1 point per kill, per 2,000 healing and per 1,000 damage. 103 steps up to 10,000 points, worth 8,400 coins and 1,900 credits in total, claimed one by one or all at once. Training is excluded."},
-  "mainSeason8Respawn": {"ko": "부활 보호막 — 부활한 캐릭터는 5초간 무적이며 하늘색 보호막으로 표시됩니다. 공격해도 보호 시간이 끝나지 않습니다.", "en": "Respawn shield — respawned characters are invulnerable for five seconds, shown by a light-blue shield. Attacking does not end it."},
-  "mainSeason8Theme": {"ko": "테마 — 할로윈 바닥·벽 색상과 로비·전투·KNOCKOUT·젬 그랩 음악을 적용했습니다.", "en": "Theme — Halloween floors, walls and new lobby, battle, KNOCKOUT and Gem Grab music."},
-  "mainSeason8NewCharacters": {"ko": "신규 — 라벤더·살몬이 합류합니다. 살몬은 낚시찌를 꺼내 던져 적을 포획하고, 궁극기로 포획 장치를 설치합니다.", "en": "New — Lavender and Salmon join the roster. Salmon draws and throws a fishing float to capture enemies, and places capture devices with the ultimate."},
-  "mainSeason8RedNerf": {"ko": "너프 — 레드: 이동 속도 배율 1.4 → 1.15.", "en": "Nerf — Red: movement-speed multiplier 1.4 → 1.15."},
-  "mainSeason8CyanBuff": {"ko": "버프 — 시안: 궁극기 피해 5,200, 충전 요구량 10 → 1.5칸으로 변경합니다. 일반 공격 유효 명중 10회 → 3회로 충전되며, 알약 6발을 평행 발사합니다.", "en": "Buff — Cyan: ultimate damage becomes 5,200 and charge requirement changes from 10 to 1.5 units (10 → 3 basic hits). Fires six parallel pills."},
-  "mainSeason8GoldBalance": {"ko": "조정 — 골드: 체력 7,380, 일반 공격 단계별 피해 1,300 / 600 / 300, 받는 투사체 피해 감소 1,650, 궁극기 틱 피해 138로 조정합니다.", "en": "Adjustment — Gold: health 7,380; basic stage damage 1,300 / 600 / 300; incoming projectile damage reduced by 1,650; ultimate damage per tick 138."},
-  "mainSeason8BlueBalance": {"ko": "조정 — 블루: 일반 공격 넉백을 삭제하고 사거리를 20타일, 투사체 판정을 10% 확대합니다. 일반 공격 5회 또는 궁극기 5회 유효 명중으로 궁을 충전합니다. 궁 준비·구르기 중 피해를 70% 감소시키고 종료·중단 시 해제합니다.", "en": "Adjustment — Blue: removes basic knockback, increases basic range to 20 tiles and projectile hitboxes by 10%. Five basic hits or five ultimate hits charge the ultimate. Takes 70% less damage during preparation and rolling; the shield ends on completion or interruption."},
-  "mainSeason8AzureBalance": {"ko": "조정 — 애저: 일반 파도 크기 4×3타일·피해 3,000, 일반 공격 이동 거리 2타일로 조정합니다.", "en": "Adjustment — Azure: basic wave size 4×3 tiles, damage 3,000 and basic ride distance 2 tiles."},
-  "mainSeason8PurpleBalance": {"ko": "조정 — 퍼플: 독 피해 초당 1,250·5초, 일반 공격 2회 유효 명중으로 궁을 충전합니다. 궁 이륙·착지 중심 피해 1,000, 가시 피해 550이며 중심·첫 가시 명중으로 단계별 제한 재충전합니다.", "en": "Adjustment — Purple: poison deals 1,250 per second for five seconds; two basic hits charge the ultimate. Takeoff and landing deal 1,000 central damage and 550 per thorn, with limited recharge from central and first-thorn hits per phase."},
-  "mainSeason8CrystalBalance": {"ko": "개편 — 크리스탈: 일반 공격 단계별 피해 2,000 / 1,000 / 500. 궁은 사용 표시와 돌진 경로를 보여주고 1.5초 후 돌진합니다. 붙잡은 적을 8초 분석한 뒤 피해 감소 보호막을 무시하는 고정 28,000 피해를 줍니다.", "en": "Rework — Crystal: basic stage damage 2,000 / 1,000 / 500. The ultimate displays a warning and dash path, then dashes after 1.5 seconds. After binding and analyzing for eight seconds, deals a fixed 28,000 damage that ignores damage-reduction guards."},
-  "mainSeason8SalmonSkills": {"ko": "살몬 상세 — 일반 포획 피해 3,000+착지 600, 공중 지속 1.2초. 탄약 5발·자동 재장전 없음. 궁 장치는 땅에 닿으면 즉시 설치되며 접촉 피해 3,000+착지 600을 주고 한 번 포획하면 소모됩니다.", "en": "Salmon — basic capture deals 3,000 plus 600 landing damage and suspends enemies for 1.2 seconds. Five ammo, no automatic reload. Ultimate devices deploy on landing, deal 3,000 plus 600 landing damage and are consumed after one capture."},
-  "mainSeason8MotionChanges": {"ko": "모션·스킨 효과 — 캐릭터별 일반 공격·궁극기 모션을 정비합니다. 스킨 등급별로 희귀는 외형, 초희귀는 일반 공격까지, 영웅은 궁극기까지, 전설은 주변 효과까지 변경합니다.", "en": "Animations and skin effects — updates character basic and ultimate animations. Rare skins change appearance; super rare adds basic effects, epic adds ultimate effects, and legendary adds ambient effects."},
-
-
-  "archivePatch0": {
-    "ko": "메인: 쇼다운·찹 우드·골드 러쉬·사커 킥·테이크다운을 상시 운영하며, 모드별 기본·벽 중심·부쉬 중심 맵 3종과 새로운 맵 이름을 적용했습니다.",
-    "en": "Main: Showdown, Chop Wood, Gold Rush, Soccer Kick and Take Down are permanent events. Each mode has three named maps: standard, wall-heavy and bush-heavy."
-  },
-  "archivePatch1": {
-    "ko": "전투 지형: 부쉬 은신과 호수 통행 제한, 봇의 벽 우회 이동, 사커 공의 내부 벽 충돌을 반영했습니다. 같은 모드·같은 맵을 선택한 플레이어끼리 매칭합니다.",
-    "en": "Terrain: Added bush concealment, blocked lake traversal, bot wall navigation and soccer ball collisions with interior walls. Matchmaking groups players by mode and map."
-  },
-  "archivePatch2": {
-    "ko": "베타 전용: 젬 그랩·쇼다운+도 맵 3종을 제공합니다. 골드 러쉬를 로비와 분리하고, 높은 방 입구 4곳에 스카라베 신전 계단과 발판·난간 판정을 적용했습니다.",
-    "en": "Beta only: Gem Grab and Showdown+ also have three maps. Gold Rush has a separate arena. Added Scarab Temple stairs, platform collision and railings at four high room entrances."
-  },
-  "archivePatch3": {
-    "ko": "출시: 애저와 궁극기 「빅 웨이브」, 옐로우 궁극기 「전기 회로」, 3대3 사커 킥을 추가했습니다.",
-    "en": "Released Azure with Big Wave, Yellow's Electric Circuit ultimate and 3v3 Soccer Kick."
-  },
-  "archivePatch4": {
-    "ko": "신규 스킨: 프로 서퍼 애저·잠수부 시안·복어 샤트·트로피컬 오렌지를 추가하고, 스킨 모델과 걷기 모션 적용을 보완했습니다.",
-    "en": "New skins: Pro Surfer Azure, Diver Cyan, Pufferfish Chart and Tropical Orange. Improved skin models and walking animations."
-  },
-  "archivePatch5": {
-    "ko": "시즌 테마: 애저 해변 로비, High Noon Tide 음악, 바다 테마 로딩 화면을 적용했습니다.",
-    "en": "Season theme: Azure's beach lobby, High Noon Tide music and an ocean loading screen."
-  },
-  "archivePatch6": {
-    "ko": "밸런스·봇: 시즌 6 캐릭터 수치를 메인에 반영하고, 캐릭터별 봇 전투와 궁극기 포함 상성표를 적용했습니다.",
-    "en": "Balance and bots: Ported Season 6 stats, character-specific bot combat and an ultimate-enabled matchup table to the main game."
-  },
-  "archivePatch7": {
-    "ko": "상성표 수정: 기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종의 상성을 다시 계산해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.",
-    "en": "Matchup correction: Recalculated 13 characters including Mint. Blue versus Chartreuse changed from impossible to dominant; Red versus Orange changed from severely disadvantaged to disadvantaged. These are basic-attack-only duels without ultimates or terrain, not live win rates."
-  },
-  "archivePatch8": {
-    "ko": "민트 누락: 민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다. 7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.",
-    "en": "Missing Mint features: Added 25 ice per hit, a 2-second freeze at 100 ice, ice/freeze indicators and ultimate charging/casting. The ice cream field charges after 7 hits and applies damage, ice and sliding."
-  },
-  "archivePatch9": {
-    "ko": "오렌지 너프 — 공격 쿨다운 0.35→0.40초, 과즙 피해 700→600, 직격 추가 과즙 4→3개",
-    "en": "Orange nerf: Attack cooldown 0.35→0.40s, juice damage 700→600, extra juice on direct hits 4→3."
-  },
-  "archivePatch10": {
-    "ko": "핑크 너프 — 체력 10,500→10,000, 공격 피해 2,100→2,000, 아군 회복 1,400→1,300",
-    "en": "Pink nerf: HP 10,500→10,000, attack damage 2,100→2,000, allied healing 1,400→1,300."
-  },
-  "archivePatch11": {
-    "ko": "시안 버프 — 일반 공격 사거리 8.33→9, 탄속 18→20, 궁극기 피해 1,300→1,400",
-    "en": "Cyan buff: Basic attack range 8.33→9, projectile speed 18→20, ultimate damage 1,300→1,400."
-  },
-  "archivePatch12": {
-    "ko": "골드 버프 — 제1탄 사거리 8타일 유지, 제2탄 사거리 4→8타일, 제3탄 사거리 3→6타일",
-    "en": "Gold buff: Stage 1 range stays at 8 tiles; stage 2 range 4→8 tiles; stage 3 range 3→6 tiles."
-  },
-  "archivePatch13": {
-    "ko": "고장 지대 — 궁극기 장판 반경 3→6타일",
-    "en": "Malfunction Zone: Ultimate field radius 3→6 tiles."
-  },
-  "archivePatch14": {
-    "ko": "시각 조정 — 골드 대표 색상을 #FFD700으로 통일하고 궁극기 장판 가시성 강화",
-    "en": "Visual adjustment: Unified Gold's color to #FFD700 and improved ultimate field visibility."
-  },
-  "archivePatch15": {
-    "ko": "긴급 버프 — 시안: 체력 6,200→7,200, 일반 공격 650→750, 궁극기 충전량 12→6회",
-    "en": "Emergency Cyan buff: HP 6,200→7,200, basic attack damage 650→750, ultimate charge requirement 12→6 hits."
-  },
-  "archivePatch16": {
-    "ko": "신규 영웅 캐릭터 샤르트뢰즈: 강화탄·CC탄·흑사병탄·무탄을 무작위로 발사",
-    "en": "New Hero character Chartreuse randomly fires enhanced, CC, plague or blank rounds."
-  },
-  "archivePatch17": {
-    "ko": "샤르트뢰즈 궁극기 「49% 정신 차림」: 6초간 무탄 제거, 나머지 탄환 3종이 같은 확률로 등장",
-    "en": "Chartreuse ultimate, 49% Clear Mind: Removes blank rounds for 6 seconds; the other three rounds have equal probability."
-  },
-  "archivePatch18": {
-    "ko": "레드 궁극기 「레드 가드」: 8초간 투명 구형 보호막과 받는 피해 60% 감소",
-    "en": "Red ultimate, Red Guard: A translucent spherical shield reduces damage taken by 60% for 8 seconds."
-  },
-  "archivePatch19": {
-    "ko": "쇼다운을 회색 벽·아스팔트·콘크리트 바닥의 도시 테마로 변경하고 수풀 제거",
-    "en": "Changed Showdown to an urban theme with gray walls, asphalt and concrete floors; removed bushes."
-  },
-  "archivePatch20": {
-    "ko": "시즌 이벤트 「도시 봉쇄 작전」과 테이크다운 전용 맵 추가",
-    "en": "Added the City Lockdown season event and a dedicated Take Down map."
-  },
-  "archivePatch21": {
-    "ko": "베타 시즌 4 전용 음악 적용",
-    "en": "Added Beta Season 4 music."
-  },
-  "archivePatch22": {
-    "ko": "버프 — 레드: 사거리 5→5.5, 궁극기 충전 8→7",
-    "en": "Red buff: Range 5→5.5, ultimate charge requirement 8→7."
-  },
-  "archivePatch23": {
-    "ko": "버프 — 그린: 피해 950→1,000, 사거리 6.5→7, 귀환 피해 25%→35%, 은신 투명도 28%",
-    "en": "Green buff: Damage 950→1,000, range 6.5→7, return damage 25%→35%, stealth opacity 28%."
-  },
-  "archivePatch24": {
-    "ko": "버프 — 시안: 일반 공격 600→650, 궁극기 1,200→1,300",
-    "en": "Cyan buff: Basic attack damage 600→650, ultimate damage 1,200→1,300."
-  },
-  "archivePatch25": {
-    "ko": "너프 — 핑크: 체력 11,500→10,500, 이속 1.4→1.3, 쿨다운 0.2→0.3초, 피해 2,400→2,100, 회복 1,800→1,400",
-    "en": "Pink nerf: HP 11,500→10,500, movement multiplier 1.4→1.3, cooldown 0.2→0.3s, damage 2,400→2,100, healing 1,800→1,400."
-  },
-  "archivePatch26": {
-    "ko": "너프 — 크림슨: 이속 1.5→1.4, 재장전 0.8→0.9초",
-    "en": "Crimson nerf: Movement multiplier 1.5→1.4, reload time 0.8→0.9s."
-  },
-  "archivePatch27": {
-    "ko": "조정 — 퍼플 독병 2,840→2,700, 옐로우 둔화 25%·2초 정상 적용",
-    "en": "Adjustment: Purple vial damage 2,840→2,700; Yellow's 25% slow now correctly lasts 2 seconds."
-  },
-  "archivePatch28": {
-    "ko": "핑크 궁극기 추가·리워크: 아군에게 부활 효과를 부여하고, 사망 시 3초 연출 후 사망 위치에서 부활",
-    "en": "Pink ultimate added/reworked: Grants allies revival. After death, a 3-second effect plays before they respawn at their death location."
-  },
-  "archivePatch29": {
-    "ko": "부활 대상 아군 머리 위 음표 표시와 SSS급 부활 이펙트 추가",
-    "en": "Added musical notes above allies eligible for revival and an SSS-tier revival effect."
-  },
-  "archivePatch30": {
-    "ko": "로비·캐릭터 미리보기 분리, GLB 로딩 중 임시 모델 노출 방지, 캐릭터 UI 즉시 전환",
-    "en": "Separated lobby and character previews, hid placeholder models during GLB loading and made character UI switch immediately."
-  },
-  "archivePatch31": {
-    "ko": "신규 플레이어블 캐릭터 아이보리 추가",
-    "en": "Added Ivory as a playable character."
-  },
-  "archivePatch32": {
-    "ko": "그린 궁극기 추가: 부메랑을 활용한 광역 공격",
-    "en": "Added Green's ultimate: A boomerang-based area attack."
-  },
-  "archivePatch33": {
-    "ko": "모든 전투 맵에 베타 시즌 3 신규 테마 적용",
-    "en": "Applied the Beta Season 3 theme to all battle maps."
-  },
-  "archivePatch34": {
-    "ko": "「주문 왔어요~!」 승리 누적 이벤트 추가 — AI전 +1승, 플레이어전 +2승",
-    "en": "Added the Order's Here win event: +1 progress for an AI win, +2 for a player win."
-  },
-  "archivePatch35": {
-    "ko": "신규 시즌 스킨 및 이벤트 보상 추가",
-    "en": "Added season skins and event rewards."
-  },
-  "archivePatch36": {
-    "ko": "아이보리 아이스크림 투사체·장판 이펙트와 스프링클 연출 추가",
-    "en": "Added Ivory's ice cream projectile, persistent field and sprinkle effects."
-  },
-  "archivePatch37": {
-    "ko": "캐릭터 모델·체력바·공격 이펙트 표시 개선",
-    "en": "Improved character models, health bars and attack effects."
-  },
-  "archivePatch38": {
-    "ko": "재시작 시 잔여 이펙트와 오브젝트가 남아 렉이 발생하던 문제 수정",
-    "en": "Fixed lingering objects and effects causing lag after restarting."
-  },
-  "archivePatch39": {
-    "ko": "쇼다운 시작 시 승리 효과음이 먼저 재생되던 문제 수정",
-    "en": "Fixed the victory sound playing when Showdown started."
-  },
-  "archivePatch40": {
-    "ko": "캐릭터 설명 누락 및 UI 텍스트 정렬 문제 수정",
-    "en": "Fixed missing character descriptions and UI text alignment."
-  },
-  "archivePatch41": {
-    "ko": "밸런스 패치: 캐릭터별 재장전 속도와 공격 판정 전반 조정",
-    "en": "Balance patch: Adjusted reload times and attack hitboxes across characters."
-  },
-  "archivePatch42": {
-    "ko": "Yellow: 피해 2,400 → 2,200, 공격 쿨다운 0.35초 → 0.45초, 발사 지연 0.12초, 사거리 12, 감속 12%",
-    "en": "Yellow: Damage 2,400→2,200, attack cooldown 0.35→0.45s, firing delay 0.12s, range 12, slow 12%."
-  },
-  "archivePatch43": {
-    "ko": "Purple: 독침 확산각 90도 → 24도, 독병 사거리 14 → 11",
-    "en": "Purple: Needle spread 90°→24°, vial range 14→11."
-  },
-  "archivePatch44": {
-    "ko": "베타 시즌 2를 2026.08.03 00:00~2026.08.10 00:00 KST로 정식 개시",
-    "en": "Beta Season 2 officially runs from August 3, 2026 at 00:00 to August 10, 2026 at 00:00 KST."
-  },
-  "archivePatch45": {
-    "ko": "신규 전설 캐릭터 Gold 추가: 3단 분열 광석 공격과 고장 지대 궁극기",
-    "en": "Added Legendary character Gold: Three-stage splitting ore attacks and the Malfunction Zone ultimate."
-  },
-  "archivePatch46": {
-    "ko": "Gold Rush 모드 추가: AI 9명과 금 10개를 10초간 지키는 경쟁",
-    "en": "Added Gold Rush: Compete with 9 bots to hold 10 gold for 10 seconds."
-  },
-  "archivePatch47": {
-    "ko": "전체 캐릭터 상성표와 공식 위키를 최신 밸런스로 갱신",
-    "en": "Updated the full matchup table and official wiki to the latest balance."
-  },
-  "archivePatch48": {
-    "ko": "밸런스 패치",
-    "en": "Balance patch"
-  },
-  "archivePatch49": {
-    "ko": "Red: 일반 공격 판정 폭 0.5타일 증가",
-    "en": "Red: Increased basic attack hitbox width by 0.5 tiles."
-  },
-  "archivePatch50": {
-    "ko": "Green: 돌아오는 부메랑 피해량을 최초 피해의 25%로 조정",
-    "en": "Green: Returning boomerangs deal 25% of their initial damage."
-  },
-  "archivePatch51": {
-    "ko": "Blue: 재장전 시간 0.3초 → 0.2초",
-    "en": "Blue: Reload time 0.3→0.2s."
-  },
-  "archivePatch52": {
-    "ko": "Orange: 폭탄 직격 시 과즙 최대 적중 수를 4개로 제한 (기존엔 5개 전부 적중 가능)",
-    "en": "Orange: Direct bomb hits can hit with at most 4 juice fragments instead of all 5."
-  },
-  "archivePatch53": {
-    "ko": "Cyan: 투사체 피해 450 → 600, 궁극기 피해 800 → 1,200",
-    "en": "Cyan: Projectile damage 450→600, ultimate damage 800→1,200."
-  },
-  "archivePatch54": {
-    "ko": "Purple: 독침 2발·11도 → 3발·90도, 독병 피해 3,040 → 2,840, 사거리 13 → 12, 폭발 반경 5 → 4",
-    "en": "Purple: Needles 2 at 11°→3 at 90°; vial damage 3,040→2,840, range 13→12, explosion radius 5→4."
-  },
-  "archivePatch55": {
-    "ko": "Pink: 아군 회복량 1,600 → 1,800",
-    "en": "Pink: Allied healing 1,600→1,800."
-  },
-  "archivePatch56": {
-    "ko": "Crimson: 일반 공격 총피해 2,700 → 4,000, 궁극기 피해 2,500 → 3,000, 범위 5×5 → 6×6",
-    "en": "Crimson: Total basic attack damage 2,700→4,000, ultimate damage 2,500→3,000, area 5×5→6×6."
-  },
-  "archivePatch57": {
-    "ko": "Green·Orange·Red·Yellow 전용 3D 모델을 본 게임에 연결하고 전 캐릭터 렌더링을 카툰 셰이딩으로 통일",
-    "en": "Connected dedicated 3D models for Green, Orange, Red and Yellow; unified cartoon shading across characters."
-  },
-  "archivePatch58": {
-    "ko": "크림슨 콤보 조준선 추가, 원격 플레이어 타격 이펙트·타격음 동기화 수정",
-    "en": "Added Crimson's combo guide and fixed remote hit effect and sound synchronization."
-  },
-  "archivePatch59": {
-    "ko": "상성표에 크림슨 추가, 오렌지 상성 관계를 최신 밸런스에 맞게 갱신",
-    "en": "Added Crimson to the matchup table and updated Orange's matchups."
-  },
-  "archivePatch60": {
-    "ko": "전투 카메라 기울기를 2.5도로 고정",
-    "en": "Fixed battle camera tilt at 2.5 degrees."
-  },
-  "archivePatch61": {
-    "ko": "전역 사거리 배율을 제거하고 캐릭터별 사거리를 재조정",
-    "en": "Removed the global range multiplier and adjusted character ranges individually."
-  },
-  "archivePatch62": {
-    "ko": "Orange 스킨 모자 부착 위치·크기 개선",
-    "en": "Improved Orange skin hat placement and scale."
-  },
-  "archivePatch63": {
-    "ko": "종료된 이벤트 탭·맵 숨김, 만료된 로테이션 능력이 남아있던 문제 수정",
-    "en": "Hid expired event tabs and maps; fixed expired rotation abilities remaining active."
-  },
-  "archivePatch64": {
-    "ko": "캐릭터 소개·기술 설명에 영어 번역 추가",
-    "en": "Added English translations for character introductions and skill descriptions."
-  },
-  "archivePatch65": {
-    "ko": "베타 시즌 로비 음악과 시즌 표시 적용, 패치노트 위치를 로비 우측 상단으로 이동",
-    "en": "Added beta lobby music and season labels; moved patch notes to the top right of the lobby."
-  },
-  "archivePatch66": {
-    "ko": "알파 시즌 4 종료, 베타 시즌 1 시작 — 알파 시즌 1~4 전적은 그대로 보존됩니다",
-    "en": "Alpha Season 4 ends and Beta Season 1 begins. Records from Alpha Seasons 1–4 are preserved."
-  },
-  "archivePatch67": {
-    "ko": "신규 영웅 캐릭터 크림슨 추가 (체력 9,800 · 게임 내 최고 이동속도)",
-    "en": "Added Hero character Crimson: 9,800 HP and the highest movement speed in the game."
-  },
-  "archivePatch68": {
-    "ko": "크림슨 일반 공격 3연속 펀치: 부채꼴 범위에 900 피해 3회",
-    "en": "Crimson basic attack: Three consecutive punches, each dealing 900 damage in a fan."
-  },
-  "archivePatch69": {
-    "ko": "크림슨 궁극기 KO 스트레이트: 정면 5×5 범위에 2,500 피해, 범위 안 벽을 부수고 적을 밀쳐냅니다 (일반 공격 9회 명중 시 사용, 사망해도 충전량 유지)",
-    "en": "Crimson ultimate, KO Straight: Deals 2,500 damage in a 5×5 area ahead, destroys walls and knocks back enemies. Charges after 9 basic hits; charge persists after death."
-  },
-  "archivePatch70": {
-    "ko": "캐릭터 등급 시스템 도입 — 일반(Red·Green·Blue) / 희귀(Orange·Yellow·Cyan·Purple·Pink, 200크레딧) / 영웅(Crimson, 900크레딧)",
-    "en": "Added character rarities: Common (Red, Green, Blue), Rare (Orange, Yellow, Cyan, Purple, Pink; 200 credits), Hero (Crimson; 900 credits)."
-  },
-  "archivePatch71": {
-    "ko": "기존 계정은 쓰던 8캐릭터를 그대로 보유합니다 (크림슨만 신규 구매 대상)",
-    "en": "Existing accounts keep their eight characters. Only Crimson requires a new purchase."
-  },
-  "archivePatch72": {
-    "ko": "신규 화폐 β 크레딧 추가 — 쇼다운·Chop Wood·Take Down 승리마다 100 크레딧 자동 지급",
-    "en": "Added Beta Credits: Each Showdown, Chop Wood or Take Down win automatically grants 100 credits."
-  },
-  "archivePatch73": {
-    "ko": "상점에 캐릭터 구매 탭 추가",
-    "en": "Added a character purchase tab to the shop."
-  },
-  "archivePatch74": {
-    "ko": "베타 시즌 1 신규 스킨 6종: 크림슨 오렌지(1,000) · 블러드 크림슨(2,500) · 스칼렛 레드(5,000) · 왕관 3종(무료)",
-    "en": "Six Beta Season 1 skins: Crimson Orange (1,000), Blood Crimson (2,500), Scarlet Red (5,000) and three free crowns."
-  },
-  "archivePatch75": {
-    "ko": "상점 스킨·캐릭터 카드에 등급 배지 표시",
-    "en": "Added rarity badges to skin and character shop cards."
-  },
-  "archivePatch76": {
-    "ko": "Orange 밸런스 상향: 직격 피해 750→900, 폭탄 속도 22→26, 스플래시 판정 반경 0.60→0.75",
-    "en": "Orange buff: Direct damage 750→900, bomb speed 22→26, splash hit radius 0.60→0.75."
-  },
-  "archivePatch77": {
-    "ko": "Showdown 멀티플레이 매칭과 실제 계정 기반 글로벌 트로피 리더보드 추가",
-    "en": "Added Showdown multiplayer matchmaking and a global trophy leaderboard using real accounts."
-  },
-  "archivePatch78": {
-    "ko": "Showdown 스폰·AI 배치를 경기마다 무작위화하고 모든 참가자에게 동일하게 동기화",
-    "en": "Randomized Showdown spawns and bot placement each match, synchronized across participants."
-  },
-  "archivePatch79": {
-    "ko": "사망 후 AI 전투 관전·조기 나가기와 1위 캐릭터 줌 연출 및 전용 결과 효과음 추가",
-    "en": "Added post-death spectating, early exit, winner camera zoom and dedicated result sounds."
-  },
-  "archivePatch80": {
-    "ko": "Chop Wood 승리 보상·전적 판정을 수정하고 캐릭터별·시즌별 승률과 승수 추가",
-    "en": "Fixed Chop Wood rewards and record results; added wins and win rates by character and season."
-  },
-  "archivePatch81": {
-    "ko": "Blue 전용 3D 모델과 걷기 애니메이션 적용",
-    "en": "Added Blue's dedicated 3D model and walk animation."
-  },
-  "archivePatch82": {
-    "ko": "8개 캐릭터 공식 기본 공격명과 6개 역할군 확정",
-    "en": "Finalized official basic attack names for eight characters and six combat roles."
-  },
-  "archivePatch83": {
-    "ko": "렌더 해상도·HUD·수풀 판정·로비 렌더링 등 전반적인 성능 최적화",
-    "en": "Optimized rendering resolution, HUD, bush checks and lobby rendering."
-  },
-  "archivePatch84": {
-    "ko": "Pink 회복 시 실제 회복량을 초록색 숫자로 표시",
-    "en": "Pink healing now shows the actual amount in green numbers."
-  },
-  "archivePatch85": {
-    "ko": "로비 시즌 소개 카드를 정리하고 버튼 클릭 애니메이션 추가",
-    "en": "Tidied lobby season cards and added button click animations."
-  },
-  "archivePatch86": {
-    "ko": "Green 어빌리티: 원거리 튕김 공격의 데미지가 기본 피해로 뻥튀기되던 문제 수정",
-    "en": "Green ability: Fixed ranged bounce attacks incorrectly increasing to basic attack damage."
-  },
-  "archivePatch87": {
-    "ko": "Pink 어빌리티: 추가 범위 +35%→+20% 너프 (최종 범위 6.075→5.4타일)",
-    "en": "Pink ability nerf: Extra area +35%→+20%; final range 6.075→5.4 tiles."
-  },
-  "archivePatch88": {
-    "ko": "Take Down 최종 순위에서 다시 시작 후 캐릭터 선택을 취소하면 정지 화면처럼 보이던 문제 수정",
-    "en": "Fixed a frozen-looking screen after restarting from Take Down results and cancelling character selection."
-  },
-  "archivePatch89": {
-    "ko": "Green 밸런스: 부메랑 사거리 약 8.3% 증가",
-    "en": "Green balance: Boomerang range increased by about 8.3%."
-  },
-  "archivePatch90": {
-    "ko": "Green 밸런스: 부메랑 공격 각도 약 16.7% 감소",
-    "en": "Green balance: Boomerang attack angle reduced by about 16.7%."
-  },
-  "archivePatch91": {
-    "ko": "멀티플레이 공격 효과·사운드 동기화 및 호스트 이탈 대응 개선",
-    "en": "Improved multiplayer effect/sound synchronization and host disconnect handling."
-  },
-  "archivePatch92": {
-    "ko": "보스 이동·사망 판정 수정 및 공격 모션·방사형 충격파 추가",
-    "en": "Fixed boss movement/death checks; added attack animations and radial shockwaves."
-  },
-  "archivePatch93": {
-    "ko": "플레이어·AI 공격 사거리 50% 증가 및 피격 사운드 추가",
-    "en": "Increased player and bot attack ranges by 50%; added hit sounds."
-  },
-  "archivePatch94": {
-    "ko": "Take Down 맵 방사형 벽과 화면 밖 보스 방향 아이콘 추가",
-    "en": "Added radial walls to Take Down and an off-screen boss direction indicator."
-  },
-  "archivePatch95": {
-    "ko": "Cloudflare 기반 Take Down 멀티플레이 추가",
-    "en": "Added Cloudflare-based Take Down multiplayer."
-  },
-  "archivePatch96": {
-    "ko": "아이디·닉네임 계정 생성 및 탭별 계정 전환 추가",
-    "en": "Added ID/nickname account creation and per-tab account switching."
-  },
-  "archivePatch97": {
-    "ko": "로비 사이드바와 오른쪽 하단 전투 시작 버튼 개편",
-    "en": "Redesigned the lobby sidebar and bottom-right battle start button."
-  },
-  "archivePatch98": {
-    "ko": "캐릭터 미리보기, 선택, 훈련장 체험 흐름 추가",
-    "en": "Added character preview, selection and training trials."
-  },
-  "archivePatch99": {
-    "ko": "전투 시작 전 오른쪽 맵 선택 패널 추가",
-    "en": "Added a right-side map selection panel before battle."
-  },
-  "archivePatch100": {
-    "ko": "멀티플레이 연결·전투 동기화 오류 수정",
-    "en": "Fixed multiplayer connection and battle synchronization errors."
-  },
-  "archivePatch101": {
-    "ko": "코인 재화 시스템 추가 (승리/패배/1위/연승 보너스)",
-    "en": "Added coins with win, loss, first-place and win-streak bonuses."
-  },
-  "archivePatch102": {
-    "ko": "캐릭터 레벨 시스템 추가 (Lv.1~5, 레벨당 체력·공격력 +2%)",
-    "en": "Added character levels 1–5; each level grants +2% HP and attack."
-  },
-  "archivePatch103": {
-    "ko": "마스터리 시스템 추가 (Bronze~Master 5등급)",
-    "en": "Added five mastery tiers, from Bronze to Master."
-  },
-  "archivePatch104": {
-    "ko": "상점 화면 추가 (캐릭터 레벨업 구매)",
-    "en": "Added the shop and purchasable character upgrades."
-  },
-  "archivePatch105": {
-    "ko": "알파 시즌 3 전환",
-    "en": "Switched to Alpha Season 3."
-  },
-  "archiveHeading106": {
-    "ko": "베타 시즌 패치노트",
-    "en": "Beta Season Patch Notes"
-  },
-  "archiveHeading107": {
-    "ko": "시즌 6 후속 업데이트 — 2026.10.06 · 정규 이벤트 맵 3종",
-    "en": "Season 6 Follow-up — 2026.10.06 · Three Maps per Regular Event"
-  },
-  "archiveHeading108": {
-    "ko": "v1.6.0 — 2026.09.21 · 베타 시즌 6 업데이트",
-    "en": "v1.6.0 — 2026.09.21 · Beta Season 6 Update"
-  },
-  "archiveHeading109": {
-    "ko": "v1.5.5 — 2026.09.17 · 상성표 수정·민트 누락 보완",
-    "en": "v1.5.5 — 2026.09.17 · Matchup Corrections and Missing Mint Features"
-  },
-  "archiveHeading110": {
-    "ko": "v1.5.4.3 — 2026.09.01 · 베타 시즌 5 밸런스 패치",
-    "en": "v1.5.4.3 — 2026.09.01 · Beta Season 5 Balance Patch"
-  },
-  "archiveHeading111": {
-    "ko": "v1.5.4.2 — 2026.08.31 · 골드 긴급 패치 2",
-    "en": "v1.5.4.2 — 2026.08.31 · Gold Hotfix 2"
-  },
-  "archiveHeading112": {
-    "ko": "v1.5.4.1 — 2026.08.27 · 시안 긴급 버프",
-    "en": "v1.5.4.1 — 2026.08.27 · Cyan Emergency Buff"
-  },
-  "archiveHeading113": {
-    "ko": "v1.5.4 — 2026.08.24 · 베타 시즌 4 업데이트",
-    "en": "v1.5.4 — 2026.08.24 · Beta Season 4 Update"
-  },
-  "archiveHeading114": {
-    "ko": "v1.5.3.1 — 2026.08.12 · 핑크 궁극기 패치",
-    "en": "v1.5.3.1 — 2026.08.12 · Pink Ultimate Patch"
-  },
-  "archiveHeading115": {
-    "ko": "v1.5.3 — 2026.08.10 · 베타 시즌 3 업데이트",
-    "en": "v1.5.3 — 2026.08.10 · Beta Season 3 Update"
-  },
-  "archiveHeading116": {
-    "ko": "v1.5.2 — 2026.08.03 · 베타 시즌 2 업데이트",
-    "en": "v1.5.2 — 2026.08.03 · Beta Season 2 Update"
-  },
-  "archiveHeading117": {
-    "ko": "v1.5.1 — 2026.08.01 · 베타 시즌 1 업데이트",
-    "en": "v1.5.1 — 2026.08.01 · Beta Season 1 Update"
-  },
-  "archiveHeading118": {
-    "ko": "v1.5.0 — 2026.07.27 · 베타 시즌 1 시작",
-    "en": "v1.5.0 — 2026.07.27 · Beta Season 1 Begins"
-  },
-  "archiveHeading119": {
-    "ko": "이전 시즌(알파) 아카이브",
-    "en": "Previous Seasons (Alpha) Archive"
-  },
-  "archiveHeading120": {
-    "ko": "v1.4.14 — 2026.07.19 · 알파 시즌 라스트 패치",
-    "en": "v1.4.14 — 2026.07.19 · Final Alpha Season Patch"
-  }
+  // 패치노트 (index.html #patchnotes). pnTag/pnSec/pnDir/pnCh는 공용, pn<버전>_<번호>는 항목별 문구.
+  "pnTag_update": {"ko": "업데이트", "en": "Update"},
+  "pnTag_balance": {"ko": "밸런스", "en": "Balance"},
+  "pnTag_fix": {"ko": "버그 수정", "en": "Bug Fix"},
+  "pnTag_hotfix": {"ko": "긴급 패치", "en": "Hotfix"},
+  "pnSec_new": {"ko": "신규", "en": "New"},
+  "pnSec_system": {"ko": "시스템·UI", "en": "Systems & UI"},
+  "pnSec_balance": {"ko": "밸런스 조정", "en": "Balance Changes"},
+  "pnSec_fix": {"ko": "버그 수정", "en": "Bug Fixes"},
+  "pnDir_buff": {"ko": "▲ 상향", "en": "▲ Buff"},
+  "pnDir_nerf": {"ko": "▼ 하향", "en": "▼ Nerf"},
+  "pnDir_adjust": {"ko": "◆ 조정", "en": "◆ Adjusted"},
+  "pnDir_rework": {"ko": "◆ 개편", "en": "◆ Rework"},
+  "pnDir_new": {"ko": "★ 신규", "en": "★ New"},
+  "pnSeasonBeta": {"ko": "베타 시즌 패치노트", "en": "Beta Season Patch Notes"},
+  "pnCh_red": {"ko": "레드", "en": "Red"},
+  "pnCh_green": {"ko": "그린", "en": "Green"},
+  "pnCh_blue": {"ko": "블루", "en": "Blue"},
+  "pnCh_orange": {"ko": "오렌지", "en": "Orange"},
+  "pnCh_yellow": {"ko": "옐로우", "en": "Yellow"},
+  "pnCh_cyan": {"ko": "시안", "en": "Cyan"},
+  "pnCh_purple": {"ko": "퍼플", "en": "Purple"},
+  "pnCh_pink": {"ko": "핑크", "en": "Pink"},
+  "pnCh_crimson": {"ko": "크림슨", "en": "Crimson"},
+  "pnCh_ivory": {"ko": "아이보리", "en": "Ivory"},
+  "pnCh_gold": {"ko": "골드", "en": "Gold"},
+  "pnCh_chartreuse": {"ko": "샤르트뢰즈", "en": "Chartreuse"},
+  "pnCh_mint": {"ko": "민트", "en": "Mint"},
+  "pnCh_azure": {"ko": "애저", "en": "Azure"},
+  "pnCh_crystal": {"ko": "크리스탈", "en": "Crystal"},
+  "pnCh_lavender": {"ko": "라벤더", "en": "Lavender"},
+  "pnCh_salmon": {"ko": "살몬", "en": "Salmon"},
+  "pn188_1": {"ko": "벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Fixed basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
+  "pn187_1": {"ko": "궁극기 「독성 대도약」으로 뛰어오른 동안 기절·빙결 같은 행동 불가 효과를 받아도, 착지하는 순간 바로 풀리던 문제를 수정했습니다. 이제 도약 중에 받은 효과는 원래 시간만큼 유지됩니다.", "en": "Fixed stuns and other action locks received during Toxic Leap ending the moment she landed. Effects received mid-air now last their full duration."},
+  "pn187_2": {"ko": "벽 너머의 적에게도 일반 공격 펀치가 맞던 문제를 수정했습니다. 이제 벽에 가려진 적에게는 펀치가 들어가지 않습니다.", "en": "Fixed basic-attack punches hitting enemies behind walls. Punches no longer land on enemies behind cover."},
+  "pn186_1": {"ko": "탄약 1발 재장전 시간: 0.9초 → 1.1초", "en": "Reload time per ammo: 0.9 s → 1.1 s"},
+  "pn186_2": {"ko": "「독성 대도약」 이륙·착지 중앙 피해: 1,000 → 5,000", "en": "Toxic Leap takeoff and landing damage: 1,000 → 5,000"},
+  "pn186_3": {"ko": "「독성 대도약」 가시 16발 방향: 사방 → 바라보는 방향 60도 부채꼴", "en": "Toxic Leap thorns (16): every direction → 60-degree forward fan"},
+  "pn186_4": {"ko": "「독성 대도약」 가시 사거리: 10타일 → 벽에 닿을 때까지", "en": "Toxic Leap thorn range: 10 tiles → until they hit a wall"},
+  "pn186_5": {"ko": "사거리: 9 → 9.5타일", "en": "Range: 9 → 9.5 tiles"},
+  "pn186_6": {"ko": "궁극기 「질풍 강타」 사거리: 10 → 10.5타일", "en": "Gale Strike range: 10 → 10.5 tiles"},
+  "pn185_1": {"ko": "궁극기 사용 중 쓰러져도 향기 장판이 남아 계속 피해를 주던 문제를 수정했습니다. 이제 라벤더가 쓰러지면 장판도 바로 사라집니다.", "en": "Fixed her fragrance field lingering and dealing damage after she went down during her ultimate. The field now disappears as soon as she goes down."},
+  "pn184_1": {"ko": "체력: 9,000 → 8,000", "en": "HP: 9,000 → 8,000"},
+  "pn184_2": {"ko": "일반 공격 피해: 2,400 → 2,200", "en": "Basic attack damage: 2,400 → 2,200"},
+  "pn184_3": {"ko": "과즙 피해: 1,170 → 1,000", "en": "Juice splash damage: 1,170 → 1,000"},
+  "pn184_4": {"ko": "체력: 6,200 → 7,000", "en": "HP: 6,200 → 7,000"},
+  "pn184_5": {"ko": "알약 피해: 700 → 900", "en": "Pill damage: 700 → 900"},
+  "pn184_6": {"ko": "사거리: 8.33 → 9타일", "en": "Range: 8.33 → 9 tiles"},
+  "pn184_7": {"ko": "체력: 6,600 → 7,000", "en": "HP: 6,600 → 7,000"},
+  "pn184_8": {"ko": "아이스크림 탄환 피해: 1,000 → 1,100", "en": "Ice cream bullet damage: 1,000 → 1,100"},
+  "pn183_1": {"ko": "사커 킥", "en": "Soccer Kick"},
+  "pn183_2": {"ko": "봇이 공을 쫓지 않고 몰려다니거나 제자리에 서 있던 문제와, 봇과 플레이어가 골대 뒤로 경기장을 벗어나던 문제를 수정했습니다. 이제 봇이 공을 차고 지원·수비 위치를 나눠 움직입니다.", "en": "Fixed bots bunching up or standing still instead of chasing the ball, and bots and players leaving the field through the goals. Bots now kick the ball and split into support and defense positions."},
+  "pn183_3": {"ko": "젬 그랩", "en": "Gem Grab"},
+  "pn183_4": {"ko": "양 팀이 모두 젬 10개 이상일 때 먼저 모은 팀이 아닌 팀의 탈출 시간이 표시될 수 있던 문제와, 결과 화면에 쓰지 않는 금 개수가 표시되던 문제를 수정했습니다.", "en": "Fixed the escape timer sometimes following the wrong team when both teams held 10+ gems, and the result screen showing an unused gold count."},
+  "pn183_5": {"ko": "젬 그랩", "en": "Gem Grab"},
+  "pn183_6": {"ko": "졌을 때 결과 화면에 아군이 탈출한 것처럼 읽히는 문구가 표시되던 문제를 수정했습니다.", "en": "Fixed the result text reading as if your team had escaped after a loss."},
+  "pn183_7": {"ko": "궁극기 「월척이다!」 장치가 설치되면 경기가 멈춰 끝나지 않던 문제를 수정했습니다.", "en": "Fixed matches freezing and never ending after the devices from her ultimate were placed."},
+  "pn183_8": {"ko": "궁극기", "en": "Ultimates"},
+  "pn183_9": {"ko": "가장 가까운 적이 덤불에 숨어 있으면 궁극기 버튼을 눌러도 나가지 않던 문제를 수정했습니다. 이제 보이는 적을 기준으로 쓰고, 보이는 적이 없으면 조준한 곳이나 바라보는 방향으로 나갑니다.", "en": "Fixed ultimates not firing when the nearest enemy was hiding in a bush. They now use the nearest visible enemy, or your aim or facing direction when no enemy is visible."},
+  "pn183_10": {"ko": "궁극기가 조준한 적이 아니라 가장 가까운 적을 노려 자주 빗나가던 문제를 수정했습니다. 이제 조준선(폭 2.4칸) 안의 첫 적을 붙잡습니다.", "en": "Fixed her ultimate targeting the nearest enemy instead of the one you aimed at, which often made it miss. It now binds the first enemy inside the 2.4-tile-wide aim line."},
+  "pn183_11": {"ko": "녹아웃에서 궁극기를 쓸 수 없던 문제를 수정했습니다. 녹아웃에서는 쓰러진 아군을 부활시키지 않고, 주변의 살아 있는 아군에게 앙코르만 겁니다.", "en": "Fixed her ultimate being unusable in Knockout. There it does not revive downed allies; it gives Encore to living allies nearby."},
+  "pn183_12": {"ko": "궁극기 조준선에 뛰어오를 때와 착지할 때 퍼지는 가시의 사거리가 표시되지 않던 문제를 수정했습니다. 이제 10칸 범위도 함께 보입니다.", "en": "Fixed the ultimate aim guide not showing the reach of the thorns burst on takeoff and landing. The 10-tile reach is now shown."},
+  "pn183_13": {"ko": "모바일", "en": "Mobile"},
+  "pn183_14": {"ko": "조이스틱을 놓으면 캐릭터가 조이스틱이 있던 화면 쪽으로 돌던 문제를 수정했습니다. 이제 이동하던 방향을 계속 바라봅니다.", "en": "Fixed your character turning toward the joystick on screen after you released it. It now keeps facing the way it was moving."},
+  "pn183_15": {"ko": "모바일", "en": "Mobile"},
+  "pn183_16": {"ko": "이동하면서 궁극기 버튼을 끌면 손가락 위치가 무시되던 문제를 수정했습니다. 이제 조준선과 궁극기가 손가락이 가리키는 곳으로 향합니다.", "en": "Fixed finger aiming being ignored when you dragged the ultimate button while moving. The aim guide and the ultimate now follow your finger."},
+  "pn183_17": {"ko": "챔피언스 왕관", "en": "Champions Crown"},
+  "pn183_18": {"ko": "블루와 라벤더에게 챔피언스 왕관이 보이지 않던 문제를 수정했습니다.", "en": "Fixed the Champions crown not showing on Blue and Lavender."},
+  "pn182_1": {"ko": "메인 챔피언스 개막", "en": "Main Champions Opens"},
+  "pn182_2": {"ko": "메인 챔피언스", "en": "Main Champions"},
+  "pn182_3": {"ko": "로비 오른쪽 위 「🏆 챔피언스」에서 참가합니다. 베타 챔피언스와 따로 집계하는 메인 전용 대회로, 11월 16일 18:10(KST)에 열립니다. 메인 17명이 젬 그랩·녹아웃 두 조로 생존전을 치르고 매일 18:10 각 조 최하위 1명이 탈락합니다(3차부터 두 조의 모드 교체). 10명 이하가 남으면 사커 킥 최종전(매일 하위 2명 탈락), 4명이 남으면 1대1 듀얼 토너먼트(4강 1위 vs 4위·2위 vs 3위 → 결승)로 우승 캐릭터를 정합니다.", "en": "Join from 🏆 Champions at the top right of the lobby. A main-only event with its own standings, apart from the beta Champions, opening Nov 16 18:10 (KST). The 17 main characters play survival in two groups (Gem Grab and Knockout); every day at 18:10 the last character of each group is out (the groups swap modes from round 3). At 10 or fewer, a Soccer Kick final drops the bottom 2 daily; at 4, a 1v1 duel tournament (semifinals 1v4 and 2v3, then the final) decides the champion."},
+  "pn182_4": {"ko": "참가 방식", "en": "How to play"},
+  "pn182_5": {"ko": "생존 캐릭터를 골라 참가하면 보유하지 않은 캐릭터도 그 경기에서 쓸 수 있고, 같은 조 생존 캐릭터 AI가 나머지 자리를 채웁니다. 플레이어와 AI 6명 전원의 승패·피해·처치를 서버에서 캐릭터별로 함께 집계하며, 승수 → 승률 → 피해량 → 처치 순으로 순위를 정합니다. 경기 중 나가면 기권(패배)으로 기록됩니다.", "en": "Pick a surviving character to join, even one you do not own; AI characters from the same group fill the other seats. Wins, damage and kills of all six fighters (player and AI) count on the server per character, ranked by wins, then win rate, damage and kills. Leaving a match counts as a forfeit (loss)."},
+  "pn182_6": {"ko": "우승 보상", "en": "Reward"},
+  "pn182_7": {"ko": "대회 경기를 한 번이라도 끝까지 치른 플레이어 모두에게 우승 캐릭터의 「챔피언스 왕관」 스킨을 지급합니다.", "en": "Everyone who finished at least one event match gets the champion character's Champions Crown skin."},
+  "pn182_8": {"ko": "챔피언스 집계 (11.17)", "en": "Champions cut (11.17)"},
+  "pn182_9": {"ko": "각 조는 그 조에 새 경기가 있을 때만 탈락자를 정하고, 경기에 한 번 이상 나온 캐릭터 중에서만 고릅니다. 첫 집계에서 녹아웃 조 경기가 없는데 탈락한 크리스탈은 대회에 복귀합니다.", "en": "Each group is cut only when it has new matches, and only among characters that have played. Crystal, eliminated in the first cut although Knockout had no matches yet, is back in the event."},
+  "pn182_10": {"ko": "공지 로드맵", "en": "Notice roadmap"},
+  "pn182_11": {"ko": "시즌 9 칸에 베타·메인 챔피언스 일정과 보상을 함께 표시합니다.", "en": "The Season 9 entry now lists both the beta and main Champions schedules and rewards."},
+  "pn181_1": {"ko": "3대3 진영 업데이트", "en": "3v3 Team Side Update"},
+  "pn181_2": {"ko": "3대3 시작 위치", "en": "3v3 start side"},
+  "pn181_3": {"ko": "녹아웃·젬 그랩·사커 킥·찹 우드에서 내 팀 진영이 항상 화면 아래쪽에 보이고 상대는 위쪽에서 내려옵니다. 녹아웃·젬 그랩은 시작·부활 위치와 봇이 돌아가는 기지 위치를 바꿨고, 사커 킥·찹 우드는 내 기지가 위쪽인 팀일 때 고정 카메라가 반대편에서 비춥니다.", "en": "In Knockout, Gem Grab, Soccer Kick and Chop Wood your team's side is always at the bottom of the screen and the enemy comes from the top. Knockout and Gem Grab move the spawn, respawn and bot home-base positions; in Soccer Kick and Chop Wood the fixed camera views from the other side when your base is at the top."},
+  "pn181_4": {"ko": "조작", "en": "Controls"},
+  "pn181_5": {"ko": "WASD와 조이스틱은 화면 기준이라 위쪽 키를 누르면 항상 상대 진영으로 이동합니다. 마우스 조준은 그대로 정확합니다. 카메라는 지금처럼 위에서 내려다보는 고정 시점입니다.", "en": "WASD and the joystick follow the screen, so up always moves toward the enemy side. Mouse aiming stays exact. The camera is still the fixed top-down view."},
+  "pn180_1": {"ko": "베타 시즌 8 메인 업데이트", "en": "Beta Season 8 Main Update"},
+  "pn180_2": {"ko": "신규 모드 KNOCKOUT", "en": "New mode: KNOCKOUT"},
+  "pn180_3": {"ko": "플레이어와 아군 AI 2명 대 적 AI 3명, 2라운드 선승. 라운드 중 부활이 없고 핑크 부활 궁극기를 쓸 수 없습니다. 45초부터 독안개가 좁혀지고 90초에 남은 인원·체력으로 판정합니다. 맵 3종(유령 결투장·저주받은 성벽·안개 묘지).", "en": "You and two allied AI versus three enemy AI, first to two rounds. No respawns during a round and Pink's revive is disabled. Poison closes in from 45 seconds; at 90 seconds survivors and remaining health decide the round. Three maps (Ghost Duel, Cursed Ramparts, Misty Graveyard)."},
+  "pn180_4": {"ko": "신규 캐릭터", "en": "New characters"},
+  "pn180_5": {"ko": "라벤더·살몬이 합류합니다. 살몬은 낚시찌를 꺼내 던져 적을 포획하고, 궁극기로 포획 장치를 설치합니다.", "en": "Lavender and Salmon join the roster. Salmon draws and throws a fishing float to capture enemies, and places capture devices with the ultimate."},
+  "pn180_6": {"ko": "할로윈 스킨", "en": "Halloween skins"},
+  "pn180_7": {"ko": "해골 아이보리·잭오랜턴 오렌지·마녀 퍼플·유령 신부 라벤더를 상점에서 각 2,500코인에 판매합니다.", "en": "Skeleton Ivory, Jack-o'-Lantern Orange, Potion Witch Purple and Ghost Bride Lavender are on sale for 2,500 coins each."},
+  "pn180_8": {"ko": "시즌 퀘스트", "en": "Season quests"},
+  "pn180_9": {"ko": "킬 1회 = 1점, 회복량 2,000 = 1점, 피해량 1,000 = 1점. 103단계·최종 10,000점, 합계 코인 8,400·크레딧 1,900. 개별·일괄 수령. 훈련장은 제외합니다.", "en": "1 point per kill, per 2,000 healing and per 1,000 damage. 103 steps up to 10,000 points, worth 8,400 coins and 1,900 credits in total, claimed one by one or all at once. Training is excluded."},
+  "pn180_10": {"ko": "일반 포획 피해: 3,000 + 착지 600", "en": "Basic capture damage: 3,000 + 600 on landing"},
+  "pn180_11": {"ko": "공중 지속: 1.2초", "en": "Time held in the air: 1.2 s"},
+  "pn180_12": {"ko": "탄약: 5발 · 자동 재장전 없음", "en": "Ammo: 5 · no automatic reload"},
+  "pn180_13": {"ko": "궁극기 장치: 땅에 닿으면 즉시 설치 · 접촉 피해 3,000 + 착지 600 · 한 번 포획하면 소모", "en": "Ultimate device: deploys on landing · 3,000 contact damage + 600 on landing · consumed after one capture"},
+  "pn180_14": {"ko": "부활 보호막", "en": "Respawn shield"},
+  "pn180_15": {"ko": "부활한 캐릭터는 5초간 무적이며 하늘색 보호막으로 표시됩니다. 공격해도 보호 시간이 끝나지 않습니다.", "en": "Respawned characters are invulnerable for five seconds, shown by a light-blue shield. Attacking does not end it."},
+  "pn180_16": {"ko": "테마", "en": "Theme"},
+  "pn180_17": {"ko": "할로윈 바닥·벽 색상과 로비·전투·KNOCKOUT·젬 그랩 음악을 적용했습니다.", "en": "Halloween floors, walls and new lobby, battle, KNOCKOUT and Gem Grab music."},
+  "pn180_18": {"ko": "모션·스킨 효과", "en": "Animations and skin effects"},
+  "pn180_19": {"ko": "캐릭터별 일반 공격·궁극기 모션을 정비합니다. 스킨 등급별로 희귀는 외형, 초희귀는 일반 공격까지, 영웅은 궁극기까지, 전설은 주변 효과까지 변경합니다.", "en": "Updates character basic and ultimate animations. Rare skins change appearance; super rare adds basic effects, epic adds ultimate effects, and legendary adds ambient effects."},
+  "pn180_20": {"ko": "이동 속도 배율: 1.4 → 1.15", "en": "Movement-speed multiplier: 1.4 → 1.15"},
+  "pn180_21": {"ko": "궁극기 피해: 5,200", "en": "Ultimate damage: 5,200"},
+  "pn180_22": {"ko": "궁극기 충전 요구량: 10 → 1.5칸 (일반 공격 유효 명중 10회 → 3회)", "en": "Ultimate charge requirement: 10 → 1.5 units (10 → 3 basic hits)"},
+  "pn180_23": {"ko": "궁극기: 알약 6발 평행 발사", "en": "Ultimate: fires six parallel pills"},
+  "pn180_24": {"ko": "체력: 7,380", "en": "HP: 7,380"},
+  "pn180_25": {"ko": "일반 공격 단계별 피해: 1,300 / 600 / 300", "en": "Basic attack damage per stage: 1,300 / 600 / 300"},
+  "pn180_26": {"ko": "받는 투사체 피해 감소: 1,650", "en": "Incoming projectile damage reduction: 1,650"},
+  "pn180_27": {"ko": "궁극기 틱 피해: 138", "en": "Ultimate damage per tick: 138"},
+  "pn180_28": {"ko": "일반 공격 넉백: 삭제", "en": "Basic attack knockback: removed"},
+  "pn180_29": {"ko": "사거리: 20타일", "en": "Range: 20 tiles"},
+  "pn180_30": {"ko": "투사체 판정: 10% 확대", "en": "Projectile hitbox: +10%"},
+  "pn180_31": {"ko": "궁극기 충전: 일반 공격 5회 또는 궁극기 5회 유효 명중", "en": "Ultimate charge: five basic hits or five ultimate hits"},
+  "pn180_32": {"ko": "궁 준비·구르기 중 받는 피해: 70% 감소 (종료·중단 시 해제)", "en": "Damage taken during preparation and rolling: −70% (ends on completion or interruption)"},
+  "pn180_33": {"ko": "일반 파도 크기: 4×3타일", "en": "Basic wave size: 4×3 tiles"},
+  "pn180_34": {"ko": "일반 파도 피해: 3,000", "en": "Basic wave damage: 3,000"},
+  "pn180_35": {"ko": "일반 공격 이동 거리: 2타일", "en": "Basic ride distance: 2 tiles"},
+  "pn180_36": {"ko": "독 피해: 초당 1,250 · 5초", "en": "Poison: 1,250 per second for 5 s"},
+  "pn180_37": {"ko": "궁극기 충전: 일반 공격 2회 유효 명중", "en": "Ultimate charge: two basic hits"},
+  "pn180_38": {"ko": "궁극기 이륙·착지 중심 피해: 1,000", "en": "Ultimate takeoff and landing central damage: 1,000"},
+  "pn180_39": {"ko": "가시 피해: 550", "en": "Thorn damage: 550"},
+  "pn180_40": {"ko": "중심·첫 가시 명중 시 단계별 제한 재충전", "en": "Limited recharge per phase from central and first-thorn hits"},
+  "pn180_41": {"ko": "일반 공격 단계별 피해: 2,000 / 1,000 / 500", "en": "Basic attack damage per stage: 2,000 / 1,000 / 500"},
+  "pn180_42": {"ko": "궁극기: 사용 표시와 돌진 경로를 보여 주고 1.5초 후 돌진", "en": "Ultimate: shows a warning and dash path, then dashes after 1.5 s"},
+  "pn180_43": {"ko": "궁극기: 붙잡은 적을 8초 분석한 뒤 피해 감소 보호막을 무시하는 고정 28,000 피해", "en": "Ultimate: after binding and analyzing for 8 s, deals a fixed 28,000 damage that ignores damage-reduction guards"},
+  "pn1701_1": {"ko": "베타 시즌 7 메인 업데이트", "en": "Beta Season 7 Main Update"},
+  "pn1701_2": {"ko": "캐릭터·기술", "en": "Characters and skills"},
+  "pn1701_3": {"ko": "크리스탈과 오렌지 궁극기 「껍질 회수」·퍼플 궁극기 「독성 대도약」을 메인에 추가했습니다. 시즌 7 캐릭터 15종의 전투 수치를 반영했으며 라벤더는 시즌 8 출시 예정입니다.", "en": "Added Crystal, Orange's Peel Recovery ultimate and Purple's Toxic Leap ultimate to the main game. Applied Season 7 combat stats for 15 characters; Lavender is planned for Season 8."},
+  "pn1701_4": {"ko": "시즌 스킨", "en": "Season skins"},
+  "pn1701_5": {"ko": "파라오 골드·미라 그린·스카라베 블루·보석 공주 크리스탈을 추가하고 모델·걷기 모션을 연결했습니다.", "en": "Added Pharaoh Gold, Mummy Green, Scarab Blue and Jewel Princess Crystal with their models and walking animations."},
+  "pn1701_6": {"ko": "정규 이벤트", "en": "Events"},
+  "pn1701_7": {"ko": "젬 그랩 3대3과 SHOWDOWN+를 메인에 추가했습니다. 젬 그랩은 젬 10개 이상을 15초 유지하면 승리하며, SHOWDOWN+는 플레이어 처치당 트로피 +2를 제공합니다. 각 모드의 맵 3종을 지원합니다.", "en": "Added 3v3 Gem Grab and SHOWDOWN+ to the main game, each with three maps. Hold at least 10 gems for 15 seconds to win Gem Grab; SHOWDOWN+ awards +2 trophies per player elimination."},
+  "pn1701_8": {"ko": "테마", "en": "Theme"},
+  "pn1701_9": {"ko": "잃어버린 황금 유적의 사막·석벽·오벨리스크와 시즌 7 로비·젬 그랩 음악을 적용했습니다.", "en": "Added the Lost Golden Ruins desert, stone walls and obelisks, plus Season 7 lobby and Gem Grab music."},
+  "pn16f_1": {"ko": "시즌 6 후속", "en": "Season 6 Follow-up"},
+  "pn16f_2": {"ko": "정규 이벤트 맵 3종", "en": "Three Maps per Regular Event"},
+  "pn16f_3": {"ko": "메인", "en": "Main"},
+  "pn16f_4": {"ko": "쇼다운·찹 우드·골드 러쉬·사커 킥·테이크다운을 상시 운영하며, 모드별 기본·벽 중심·부쉬 중심 맵 3종과 새로운 맵 이름을 적용했습니다.", "en": "Showdown, Chop Wood, Gold Rush, Soccer Kick and Take Down are permanent events. Each mode has three named maps: standard, wall-heavy and bush-heavy."},
+  "pn16f_5": {"ko": "전투 지형", "en": "Terrain"},
+  "pn16f_6": {"ko": "부쉬 은신과 호수 통행 제한, 봇의 벽 우회 이동, 사커 공의 내부 벽 충돌을 반영했습니다. 같은 모드·같은 맵을 선택한 플레이어끼리 매칭합니다.", "en": "Added bush concealment, blocked lake traversal, bot wall navigation and soccer ball collisions with interior walls. Matchmaking groups players by mode and map."},
+  "pn16f_7": {"ko": "베타 전용", "en": "Beta only"},
+  "pn16f_8": {"ko": "젬 그랩·쇼다운+도 맵 3종을 제공합니다. 골드 러쉬를 로비와 분리하고, 높은 방 입구 4곳에 스카라베 신전 계단과 발판·난간 판정을 적용했습니다.", "en": "Gem Grab and Showdown+ also have three maps. Gold Rush has a separate arena. Added Scarab Temple stairs, platform collision and railings at four high room entrances."},
+  "pn160_1": {"ko": "베타 시즌 6 업데이트", "en": "Beta Season 6 Update"},
+  "pn160_2": {"ko": "출시", "en": "Released"},
+  "pn160_3": {"ko": "애저와 궁극기 「빅 웨이브」, 옐로우 궁극기 「전기 회로」, 3대3 사커 킥을 추가했습니다.", "en": "Azure with Big Wave, Yellow's Electric Circuit ultimate and 3v3 Soccer Kick."},
+  "pn160_4": {"ko": "신규 스킨", "en": "New skins"},
+  "pn160_5": {"ko": "프로 서퍼 애저·잠수부 시안·복어 샤트·트로피컬 오렌지를 추가하고, 스킨 모델과 걷기 모션 적용을 보완했습니다.", "en": "Pro Surfer Azure, Diver Cyan, Pufferfish Chart and Tropical Orange. Improved skin models and walking animations."},
+  "pn160_6": {"ko": "시즌 테마", "en": "Season theme"},
+  "pn160_7": {"ko": "애저 해변 로비, High Noon Tide 음악, 바다 테마 로딩 화면을 적용했습니다.", "en": "Azure's beach lobby, High Noon Tide music and an ocean loading screen."},
+  "pn160_8": {"ko": "밸런스·봇", "en": "Balance and bots"},
+  "pn160_9": {"ko": "시즌 6 캐릭터 수치를 메인에 반영하고, 캐릭터별 봇 전투와 궁극기 포함 상성표를 적용했습니다.", "en": "Ported Season 6 stats, character-specific bot combat and an ultimate-enabled matchup table to the main game."},
+  "pn155_1": {"ko": "상성표 수정·민트 누락 보완", "en": "Matchup Corrections and Missing Mint Features"},
+  "pn155_2": {"ko": "상성표", "en": "Matchup table"},
+  "pn155_3": {"ko": "기존 캐릭터들의 상성이 맞지 않았습니다. 민트 포함 13종의 상성을 다시 계산해 상성표를 수정했습니다. 블루→샤르트뢰즈는 불가능→완전 유리, 레드→오렌지는 완전 불리→불리로 표기가 바뀌었습니다. 궁극기·지형을 제외한 일반 공격 1대1 기준이며, 실전 승률을 뜻하지 않습니다.", "en": "Recalculated 13 characters including Mint. Blue versus Chartreuse changed from impossible to dominant; Red versus Orange changed from severely disadvantaged to disadvantaged. These are basic-attack-only duels without ultimates or terrain, not live win rates."},
+  "pn155_4": {"ko": "민트가 처음 출시된 뒤 메인에 누락된 기능이 많았습니다. 특히 적중당 얼음 25 누적, 얼음 100에서 2초 빙결, 얼음 수치·빙결 표시, 궁극기 충전과 발동이 빠져 있었습니다. 7회 적중으로 준비되는 아이스크림 장판과 장판의 피해·얼음 누적·미끄러짐을 추가했습니다.", "en": "Added missing features: 25 ice per hit, a 2-second freeze at 100 ice, ice/freeze indicators and ultimate charging/casting. The ice cream field charges after 7 hits and applies damage, ice and sliding."},
+  "pn1543_1": {"ko": "베타 시즌 5 밸런스 패치", "en": "Beta Season 5 Balance Patch"},
+  "pn1543_2": {"ko": "공격 쿨다운: 0.35 → 0.40초", "en": "Attack cooldown: 0.35 → 0.40 s"},
+  "pn1543_3": {"ko": "과즙 피해: 700 → 600", "en": "Juice damage: 700 → 600"},
+  "pn1543_4": {"ko": "직격 추가 과즙: 4 → 3개", "en": "Extra juice on direct hits: 4 → 3"},
+  "pn1543_5": {"ko": "체력: 10,500 → 10,000", "en": "HP: 10,500 → 10,000"},
+  "pn1543_6": {"ko": "공격 피해: 2,100 → 2,000", "en": "Attack damage: 2,100 → 2,000"},
+  "pn1543_7": {"ko": "아군 회복: 1,400 → 1,300", "en": "Allied healing: 1,400 → 1,300"},
+  "pn1543_8": {"ko": "일반 공격 사거리: 8.33 → 9", "en": "Basic attack range: 8.33 → 9"},
+  "pn1543_9": {"ko": "탄속: 18 → 20", "en": "Projectile speed: 18 → 20"},
+  "pn1543_10": {"ko": "궁극기 피해: 1,300 → 1,400", "en": "Ultimate damage: 1,300 → 1,400"},
+  "pn1542_1": {"ko": "골드 긴급 패치 2", "en": "Gold Hotfix 2"},
+  "pn1542_2": {"ko": "시각 조정", "en": "Visuals"},
+  "pn1542_3": {"ko": "골드 대표 색상을 #FFD700으로 통일하고 궁극기 장판 가시성 강화", "en": "Unified Gold's color to #FFD700 and improved ultimate field visibility."},
+  "pn1542_4": {"ko": "제1탄 사거리: 8타일 (유지)", "en": "Stage 1 range: 8 tiles (unchanged)"},
+  "pn1542_5": {"ko": "제2탄 사거리: 4 → 8타일", "en": "Stage 2 range: 4 → 8 tiles"},
+  "pn1542_6": {"ko": "제3탄 사거리: 3 → 6타일", "en": "Stage 3 range: 3 → 6 tiles"},
+  "pn1542_7": {"ko": "궁극기 「고장 지대」 장판 반경: 3 → 6타일", "en": "Malfunction Zone field radius: 3 → 6 tiles"},
+  "pn1541_1": {"ko": "시안 긴급 버프", "en": "Cyan Emergency Buff"},
+  "pn1541_2": {"ko": "체력: 6,200 → 7,200", "en": "HP: 6,200 → 7,200"},
+  "pn1541_3": {"ko": "일반 공격: 650 → 750", "en": "Basic attack damage: 650 → 750"},
+  "pn1541_4": {"ko": "궁극기 충전량: 12 → 6회", "en": "Ultimate charge requirement: 12 → 6 hits"},
+  "pn154_1": {"ko": "베타 시즌 4 업데이트", "en": "Beta Season 4 Update"},
+  "pn154_2": {"ko": "레드 궁극기 「레드 가드」", "en": "Red ultimate: Red Guard"},
+  "pn154_3": {"ko": "8초간 투명 구형 보호막과 받는 피해 60% 감소", "en": "A translucent spherical shield reduces damage taken by 60% for 8 seconds."},
+  "pn154_4": {"ko": "시즌 이벤트", "en": "Season event"},
+  "pn154_5": {"ko": "「도시 봉쇄 작전」과 테이크다운 전용 맵 추가", "en": "Added City Lockdown and a dedicated Take Down map."},
+  "pn154_6": {"ko": "신규 영웅 캐릭터: 강화탄·CC탄·흑사병탄·무탄을 무작위로 발사", "en": "New Hero character: randomly fires enhanced, CC, plague or blank rounds"},
+  "pn154_7": {"ko": "궁극기 「49% 정신 차림」: 6초간 무탄 제거, 나머지 탄환 3종이 같은 확률로 등장", "en": "49% Clear Mind: removes blank rounds for 6 s; the other three rounds have equal probability"},
+  "pn154_8": {"ko": "쇼다운을 회색 벽·아스팔트·콘크리트 바닥의 도시 테마로 변경하고 수풀 제거", "en": "Changed Showdown to an urban theme with gray walls, asphalt and concrete floors; removed bushes."},
+  "pn154_9": {"ko": "베타 시즌 4 전용 음악 적용", "en": "Added Beta Season 4 music."},
+  "pn154_10": {"ko": "사거리: 5 → 5.5", "en": "Range: 5 → 5.5"},
+  "pn154_11": {"ko": "궁극기 충전: 8 → 7", "en": "Ultimate charge requirement: 8 → 7"},
+  "pn154_12": {"ko": "피해: 950 → 1,000", "en": "Damage: 950 → 1,000"},
+  "pn154_13": {"ko": "사거리: 6.5 → 7", "en": "Range: 6.5 → 7"},
+  "pn154_14": {"ko": "귀환 피해: 25% → 35%", "en": "Return damage: 25% → 35%"},
+  "pn154_15": {"ko": "은신 투명도: 28%", "en": "Stealth opacity: 28%"},
+  "pn154_16": {"ko": "일반 공격: 600 → 650", "en": "Basic attack damage: 600 → 650"},
+  "pn154_17": {"ko": "궁극기: 1,200 → 1,300", "en": "Ultimate damage: 1,200 → 1,300"},
+  "pn154_18": {"ko": "체력: 11,500 → 10,500", "en": "HP: 11,500 → 10,500"},
+  "pn154_19": {"ko": "이속: 1.4 → 1.3", "en": "Movement multiplier: 1.4 → 1.3"},
+  "pn154_20": {"ko": "쿨다운: 0.2 → 0.3초", "en": "Cooldown: 0.2 → 0.3 s"},
+  "pn154_21": {"ko": "피해: 2,400 → 2,100", "en": "Damage: 2,400 → 2,100"},
+  "pn154_22": {"ko": "회복: 1,800 → 1,400", "en": "Healing: 1,800 → 1,400"},
+  "pn154_23": {"ko": "이속: 1.5 → 1.4", "en": "Movement multiplier: 1.5 → 1.4"},
+  "pn154_24": {"ko": "재장전: 0.8 → 0.9초", "en": "Reload time: 0.8 → 0.9 s"},
+  "pn154_25": {"ko": "독병 피해: 2,840 → 2,700", "en": "Vial damage: 2,840 → 2,700"},
+  "pn154_26": {"ko": "둔화 25%·2초가 제대로 적용되지 않던 문제를 수정했습니다.", "en": "Fixed the 25% slow not lasting its full 2 seconds."},
+  "pn1531_1": {"ko": "핑크 궁극기 패치", "en": "Pink Ultimate Patch"},
+  "pn1531_2": {"ko": "핑크 궁극기 추가·리워크", "en": "Pink ultimate added and reworked"},
+  "pn1531_3": {"ko": "아군에게 부활 효과를 부여하고, 사망 시 3초 연출 후 사망 위치에서 부활", "en": "Grants allies revival. After death, a 3-second effect plays before they respawn at their death location."},
+  "pn1531_4": {"ko": "부활 대상 아군 머리 위 음표 표시와 SSS급 부활 이펙트 추가", "en": "Added musical notes above allies eligible for revival and an SSS-tier revival effect."},
+  "pn1531_5": {"ko": "로비·캐릭터 미리보기 분리, GLB 로딩 중 임시 모델 노출 방지, 캐릭터 UI 즉시 전환", "en": "Separated lobby and character previews, hid placeholder models during GLB loading and made character UI switch immediately."},
+  "pn153_1": {"ko": "베타 시즌 3 업데이트", "en": "Beta Season 3 Update"},
+  "pn153_2": {"ko": "신규 플레이어블 캐릭터 아이보리 추가", "en": "Added Ivory as a playable character."},
+  "pn153_3": {"ko": "그린 궁극기", "en": "Green ultimate"},
+  "pn153_4": {"ko": "부메랑을 활용한 광역 공격", "en": "A boomerang-based area attack."},
+  "pn153_5": {"ko": "「주문 왔어요~!」 승리 누적 이벤트", "en": "Order's Here win event"},
+  "pn153_6": {"ko": "AI전 +1승, 플레이어전 +2승", "en": "+1 progress for an AI win, +2 for a player win."},
+  "pn153_7": {"ko": "신규 시즌 스킨 및 이벤트 보상 추가", "en": "Added season skins and event rewards."},
+  "pn153_8": {"ko": "모든 전투 맵에 베타 시즌 3 신규 테마 적용", "en": "Applied the Beta Season 3 theme to all battle maps."},
+  "pn153_9": {"ko": "아이보리 아이스크림 투사체·장판 이펙트와 스프링클 연출 추가", "en": "Added Ivory's ice cream projectile, persistent field and sprinkle effects."},
+  "pn153_10": {"ko": "캐릭터 모델·체력바·공격 이펙트 표시 개선", "en": "Improved character models, health bars and attack effects."},
+  "pn153_11": {"ko": "캐릭터별 재장전 속도와 공격 판정 전반 조정", "en": "Adjusted reload times and attack hitboxes across characters."},
+  "pn153_12": {"ko": "피해: 2,400 → 2,200", "en": "Damage: 2,400 → 2,200"},
+  "pn153_13": {"ko": "공격 쿨다운: 0.35 → 0.45초", "en": "Attack cooldown: 0.35 → 0.45 s"},
+  "pn153_14": {"ko": "발사 지연: 0.12초", "en": "Firing delay: 0.12 s"},
+  "pn153_15": {"ko": "사거리: 12", "en": "Range: 12"},
+  "pn153_16": {"ko": "감속: 12%", "en": "Slow: 12%"},
+  "pn153_17": {"ko": "독침 확산각: 90도 → 24도", "en": "Needle spread: 90° → 24°"},
+  "pn153_18": {"ko": "독병 사거리: 14 → 11", "en": "Vial range: 14 → 11"},
+  "pn153_19": {"ko": "재시작 시 잔여 이펙트와 오브젝트가 남아 렉이 발생하던 문제를 수정했습니다.", "en": "Fixed lingering objects and effects causing lag after restarting."},
+  "pn153_20": {"ko": "쇼다운 시작 시 승리 효과음이 먼저 재생되던 문제를 수정했습니다.", "en": "Fixed the victory sound playing when Showdown started."},
+  "pn153_21": {"ko": "캐릭터 설명이 누락되고 UI 텍스트가 어긋나던 문제를 수정했습니다.", "en": "Fixed missing character descriptions and UI text alignment."},
+  "pn152_1": {"ko": "베타 시즌 2 업데이트", "en": "Beta Season 2 Update"},
+  "pn152_2": {"ko": "시즌 일정", "en": "Season schedule"},
+  "pn152_3": {"ko": "베타 시즌 2를 2026.08.03 00:00~2026.08.10 00:00 KST로 정식 개시", "en": "Beta Season 2 officially runs from August 3, 2026 at 00:00 to August 10, 2026 at 00:00 KST."},
+  "pn152_4": {"ko": "신규 전설 캐릭터 골드", "en": "New Legendary character: Gold"},
+  "pn152_5": {"ko": "3단 분열 광석 공격과 고장 지대 궁극기", "en": "Three-stage splitting ore attacks and the Malfunction Zone ultimate."},
+  "pn152_6": {"ko": "골드 러쉬 모드", "en": "Gold Rush mode"},
+  "pn152_7": {"ko": "AI 9명과 금 10개를 10초간 지키는 경쟁", "en": "Compete with 9 bots to hold 10 gold for 10 seconds."},
+  "pn152_8": {"ko": "전체 캐릭터 상성표와 공식 위키를 최신 밸런스로 갱신", "en": "Updated the full matchup table and official wiki to the latest balance."},
+  "pn152_9": {"ko": "일반 공격 판정 폭: +0.5타일", "en": "Basic attack hitbox width: +0.5 tiles"},
+  "pn152_10": {"ko": "돌아오는 부메랑 피해: 최초 피해의 25%", "en": "Returning boomerang damage: 25% of the initial hit"},
+  "pn152_11": {"ko": "재장전 시간: 0.3 → 0.2초", "en": "Reload time: 0.3 → 0.2 s"},
+  "pn152_12": {"ko": "폭탄 직격 시 과즙 최대 적중 수: 5개 전부 → 4개", "en": "Juice fragments that can hit on a direct bomb hit: all 5 → 4"},
+  "pn152_13": {"ko": "투사체 피해: 450 → 600", "en": "Projectile damage: 450 → 600"},
+  "pn152_14": {"ko": "궁극기 피해: 800 → 1,200", "en": "Ultimate damage: 800 → 1,200"},
+  "pn152_15": {"ko": "독침: 2발·11도 → 3발·90도", "en": "Needles: 2 at 11° → 3 at 90°"},
+  "pn152_16": {"ko": "독병 피해: 3,040 → 2,840", "en": "Vial damage: 3,040 → 2,840"},
+  "pn152_17": {"ko": "독병 사거리: 13 → 12", "en": "Vial range: 13 → 12"},
+  "pn152_18": {"ko": "폭발 반경: 5 → 4", "en": "Explosion radius: 5 → 4"},
+  "pn152_19": {"ko": "아군 회복량: 1,600 → 1,800", "en": "Allied healing: 1,600 → 1,800"},
+  "pn152_20": {"ko": "일반 공격 총피해: 2,700 → 4,000", "en": "Total basic attack damage: 2,700 → 4,000"},
+  "pn152_21": {"ko": "궁극기 피해: 2,500 → 3,000", "en": "Ultimate damage: 2,500 → 3,000"},
+  "pn152_22": {"ko": "궁극기 범위: 5×5 → 6×6", "en": "Ultimate area: 5×5 → 6×6"},
+  "pn151_1": {"ko": "베타 시즌 1 업데이트", "en": "Beta Season 1 Update"},
+  "pn151_2": {"ko": "그린·오렌지·레드·옐로우 전용 3D 모델을 본 게임에 연결하고 전 캐릭터 렌더링을 카툰 셰이딩으로 통일", "en": "Connected dedicated 3D models for Green, Orange, Red and Yellow; unified cartoon shading across characters."},
+  "pn151_3": {"ko": "크림슨 콤보 조준선 추가", "en": "Added Crimson's combo guide."},
+  "pn151_4": {"ko": "상성표에 크림슨 추가, 오렌지 상성 관계를 최신 밸런스에 맞게 갱신", "en": "Added Crimson to the matchup table and updated Orange's matchups."},
+  "pn151_5": {"ko": "전투 카메라 기울기를 2.5도로 고정", "en": "Fixed battle camera tilt at 2.5 degrees."},
+  "pn151_6": {"ko": "오렌지 스킨 모자 부착 위치·크기 개선", "en": "Improved Orange skin hat placement and scale."},
+  "pn151_7": {"ko": "종료된 이벤트 탭·맵 숨김", "en": "Hid expired event tabs and maps."},
+  "pn151_8": {"ko": "캐릭터 소개·기술 설명에 영어 번역 추가", "en": "Added English translations for character introductions and skill descriptions."},
+  "pn151_9": {"ko": "베타 시즌 로비 음악과 시즌 표시 적용, 패치노트 위치를 로비 우측 상단으로 이동", "en": "Added beta lobby music and season labels; moved patch notes to the top right of the lobby."},
+  "pn151_10": {"ko": "전역 사거리 배율을 제거하고 캐릭터별 사거리를 재조정", "en": "Removed the global range multiplier and adjusted character ranges individually."},
+  "pn151_11": {"ko": "원격 플레이어의 타격 이펙트·타격음이 어긋나던 문제를 수정했습니다.", "en": "Fixed remote hit effect and sound synchronization."},
+  "pn151_12": {"ko": "만료된 로테이션 능력이 남아 있던 문제를 수정했습니다.", "en": "Fixed expired rotation abilities remaining active."},
+  "pn150_1": {"ko": "베타 시즌 1 시작", "en": "Beta Season 1 Begins"},
+  "pn150_2": {"ko": "시즌 전환", "en": "Season change"},
+  "pn150_3": {"ko": "알파 시즌 4 종료, 베타 시즌 1 시작 — 알파 시즌 1~4 전적은 그대로 보존됩니다", "en": "Alpha Season 4 ends and Beta Season 1 begins. Records from Alpha Seasons 1–4 are preserved."},
+  "pn150_4": {"ko": "캐릭터 등급", "en": "Character rarities"},
+  "pn150_5": {"ko": "일반(레드·그린·블루) / 희귀(오렌지·옐로우·시안·퍼플·핑크, 200크레딧) / 영웅(크림슨, 900크레딧)", "en": "Common (Red, Green, Blue), Rare (Orange, Yellow, Cyan, Purple, Pink; 200 credits), Hero (Crimson; 900 credits)."},
+  "pn150_6": {"ko": "기존 계정은 쓰던 8캐릭터를 그대로 보유합니다 (크림슨만 신규 구매 대상)", "en": "Existing accounts keep their eight characters. Only Crimson requires a new purchase."},
+  "pn150_7": {"ko": "신규 화폐 β 크레딧", "en": "New currency: Beta Credits"},
+  "pn150_8": {"ko": "쇼다운·찹 우드·테이크다운 승리마다 100 크레딧 자동 지급", "en": "Each Showdown, Chop Wood or Take Down win automatically grants 100 credits."},
+  "pn150_9": {"ko": "상점에 캐릭터 구매 탭 추가", "en": "Added a character purchase tab to the shop."},
+  "pn150_10": {"ko": "베타 시즌 1 신규 스킨 6종", "en": "Six Beta Season 1 skins"},
+  "pn150_11": {"ko": "크림슨 오렌지(1,000) · 블러드 크림슨(2,500) · 스칼렛 레드(5,000) · 왕관 3종(무료)", "en": "Crimson Orange (1,000), Blood Crimson (2,500), Scarlet Red (5,000) and three free crowns."},
+  "pn150_12": {"ko": "신규 영웅 캐릭터: 체력 9,800 · 게임 내 최고 이동속도", "en": "New Hero character: 9,800 HP and the highest movement speed in the game"},
+  "pn150_13": {"ko": "일반 공격 3연속 펀치: 부채꼴 범위에 900 피해 3회", "en": "Basic attack: three consecutive punches, each dealing 900 damage in a fan"},
+  "pn150_14": {"ko": "궁극기 「KO 스트레이트」: 정면 5×5 범위에 2,500 피해, 범위 안 벽을 부수고 적을 밀쳐냅니다", "en": "KO Straight: deals 2,500 damage in a 5×5 area ahead, destroys walls and knocks back enemies"},
+  "pn150_15": {"ko": "궁극기 충전: 일반 공격 9회 명중 (사망해도 충전량 유지)", "en": "Ultimate charge: 9 basic hits (kept after death)"},
+  "pn150_16": {"ko": "상점 스킨·캐릭터 카드에 등급 배지 표시", "en": "Added rarity badges to skin and character shop cards."},
+  "pn150_17": {"ko": "직격 피해: 750 → 900", "en": "Direct damage: 750 → 900"},
+  "pn150_18": {"ko": "폭탄 속도: 22 → 26", "en": "Bomb speed: 22 → 26"},
+  "pn150_19": {"ko": "스플래시 판정 반경: 0.60 → 0.75", "en": "Splash hit radius: 0.60 → 0.75"},
+  "pnSeasonAlpha": {"ko": "이전 시즌(알파) 아카이브", "en": "Previous Seasons (Alpha) Archive"},
+  "pn1414_1": {"ko": "알파 시즌 라스트 패치", "en": "Final Alpha Season Patch"},
+  "pn1414_2": {"ko": "쇼다운 멀티플레이 매칭과 실제 계정 기반 글로벌 트로피 리더보드 추가", "en": "Added Showdown multiplayer matchmaking and a global trophy leaderboard using real accounts."},
+  "pn1414_3": {"ko": "사망 후 AI 전투 관전·조기 나가기와 1위 캐릭터 줌 연출 및 전용 결과 효과음 추가", "en": "Added post-death spectating, early exit, winner camera zoom and dedicated result sounds."},
+  "pn1414_4": {"ko": "캐릭터별·시즌별 승률과 승수 추가", "en": "Added wins and win rates by character and season."},
+  "pn1414_5": {"ko": "블루 전용 3D 모델과 걷기 애니메이션 적용", "en": "Added Blue's dedicated 3D model and walk animation."},
+  "pn1414_6": {"ko": "8개 캐릭터 공식 기본 공격명과 6개 역할군 확정", "en": "Finalized official basic attack names for eight characters and six combat roles."},
+  "pn1414_7": {"ko": "쇼다운 스폰·AI 배치를 경기마다 무작위화하고 모든 참가자에게 동일하게 동기화", "en": "Randomized Showdown spawns and bot placement each match, synchronized across participants."},
+  "pn1414_8": {"ko": "렌더 해상도·HUD·수풀 판정·로비 렌더링 등 전반적인 성능 최적화", "en": "Optimized rendering resolution, HUD, bush checks and lobby rendering."},
+  "pn1414_9": {"ko": "핑크 회복 시 실제 회복량을 초록색 숫자로 표시", "en": "Pink healing now shows the actual amount in green numbers."},
+  "pn1414_10": {"ko": "로비 시즌 소개 카드를 정리하고 버튼 클릭 애니메이션 추가", "en": "Tidied lobby season cards and added button click animations."},
+  "pn1414_11": {"ko": "어빌리티 추가 범위: +35% → +20% (최종 범위 6.075 → 5.4타일)", "en": "Ability extra area: +35% → +20% (final range 6.075 → 5.4 tiles)"},
+  "pn1414_12": {"ko": "찹 우드 승리 보상·전적 판정이 잘못되던 문제를 수정했습니다.", "en": "Fixed Chop Wood rewards and record results."},
+  "pn1414_13": {"ko": "원거리 튕김 공격의 피해가 기본 피해로 뻥튀기되던 문제를 수정했습니다.", "en": "Fixed ranged bounce attacks incorrectly increasing to basic attack damage."},
+  "pn1414_14": {"ko": "테이크다운 최종 순위에서 다시 시작 후 캐릭터 선택을 취소하면 정지 화면처럼 보이던 문제를 수정했습니다.", "en": "Fixed a frozen-looking screen after restarting from Take Down results and cancelling character selection."},
+  "pn1413_1": {"ko": "멀티플레이 공격 효과·사운드 동기화 및 호스트 이탈 대응 개선", "en": "Improved multiplayer effect/sound synchronization and host disconnect handling."},
+  "pn1413_2": {"ko": "보스 공격 모션·방사형 충격파 추가", "en": "Added boss attack animations and radial shockwaves."},
+  "pn1413_3": {"ko": "피격 사운드 추가", "en": "Added hit sounds."},
+  "pn1413_4": {"ko": "테이크다운 맵 방사형 벽과 화면 밖 보스 방향 아이콘 추가", "en": "Added radial walls to Take Down and an off-screen boss direction indicator."},
+  "pn1413_5": {"ko": "플레이어·AI 공격 사거리 50% 증가", "en": "Increased player and bot attack ranges by 50%."},
+  "pn1413_6": {"ko": "부메랑 사거리: 약 8.3% 증가", "en": "Boomerang range: about +8.3%"},
+  "pn1413_7": {"ko": "부메랑 공격 각도: 약 16.7% 감소", "en": "Boomerang attack angle: about −16.7%"},
+  "pn1413_8": {"ko": "보스 이동·사망 판정이 잘못되던 문제를 수정했습니다.", "en": "Fixed boss movement and death checks."},
+  "pn1412_1": {"ko": "Cloudflare 기반 테이크다운 멀티플레이 추가", "en": "Added Cloudflare-based Take Down multiplayer."},
+  "pn1412_2": {"ko": "아이디·닉네임 계정 생성 및 탭별 계정 전환 추가", "en": "Added ID/nickname account creation and per-tab account switching."},
+  "pn1412_3": {"ko": "캐릭터 미리보기, 선택, 훈련장 체험 흐름 추가", "en": "Added character preview, selection and training trials."},
+  "pn1412_4": {"ko": "전투 시작 전 오른쪽 맵 선택 패널 추가", "en": "Added a right-side map selection panel before battle."},
+  "pn1412_5": {"ko": "로비 사이드바와 오른쪽 하단 전투 시작 버튼 개편", "en": "Redesigned the lobby sidebar and bottom-right battle start button."},
+  "pn1412_6": {"ko": "멀티플레이 연결·전투 동기화 오류를 수정했습니다.", "en": "Fixed multiplayer connection and battle synchronization errors."},
+  "pn1411_1": {"ko": "캐릭터별 전용 자세 + 소품 추가 (그린·블루·오렌지·옐로우·시안·퍼플)", "en": "Character-specific poses + props added (Green, Blue, Orange, Yellow, Cyan, Purple)."},
+  "pn1410_1": {"ko": "테이크다운 캐릭터 선택 화면 추가", "en": "Take Down character select screen added."},
+  "pn1410_2": {"ko": "테이크다운 멀티플레이어 추가 (WebSocket 자동 매칭)", "en": "Take Down multiplayer added (WebSocket auto-matching)."},
+  "pn1410_3": {"ko": "전 캐릭터 봇 AI 개선 (거리 유지 후퇴 로직 추가)", "en": "Bot AI improved for all characters (distance-hold retreat logic)."},
+  "pn1410_4": {"ko": "퍼플 봇 AI: 체력 30% 이하 시 독병 마무리", "en": "Purple bot AI finishes with the vial below 30% HP."},
+  "pn1410_5": {"ko": "체력: 4,800 → 6,000", "en": "HP: 4,800 → 6,000"},
+  "pn1410_6": {"ko": "독침 직격 피해: 700 (추가)", "en": "Needle direct-hit damage: 700 (new)"},
+  "pn1410_7": {"ko": "독침 사거리: 12 → 13", "en": "Needle range: 12 → 13"},
+  "pn1410_8": {"ko": "독침 명중 시 은신 해제 (발각)", "en": "Needle hits break bush stealth (reveal)"},
+  "pn1410_9": {"ko": "독병 피해: 2,292 → 3,040", "en": "Vial damage: 2,292 → 3,040"},
+  "pn1410_10": {"ko": "독병 사거리: 12 → 13", "en": "Vial range: 12 → 13"},
+  "pn1410_11": {"ko": "독 피해: 568 → 760", "en": "Poison damage: 568 → 760"},
+  "pn1410_12": {"ko": "중독 대상 회복량: 50% 감소", "en": "Poisoned targets: −50% healing"},
+  "pn1410_13": {"ko": "펀치 가로 사거리: 4.3 → 2.3 (v1.4.9 롤백)", "en": "Punch horizontal range: 4.3 → 2.3 (v1.4.9 rollback)"},
+  "pn1410_14": {"ko": "재장전: 0.6 → 0.5초", "en": "Reload: 0.6 → 0.5 s"},
+  "pn1410_15": {"ko": "폭탄 사거리: 8 → 9", "en": "Bomb range: 8 → 9"},
+  "pn1410_16": {"ko": "폭발 반경: +15%", "en": "Explosion radius: +15%"},
+  "pn1410_17": {"ko": "파편 사거리: +25%", "en": "Fragment range: +25%"},
+  "pn1410_18": {"ko": "테이크다운 extraPool 로직 오류와 재시작 시 캐릭터 선택이 빠지던 문제를 수정했습니다.", "en": "Fixed Take Down extraPool logic and the missing character select on restart."},
+  "pn149_1": {"ko": "펀치 가로 사거리: +2타일", "en": "Punch horizontal range: +2 tiles"},
+  "pn148_1": {"ko": "알파 시즌 4 전환", "en": "Alpha Season 4 begins."},
+  "pn148_2": {"ko": "테이크다운 이벤트 모드 추가 (1~4위 승리 판정)", "en": "Take Down event mode added (1st–4th place win condition)."},
+  "pn148_3": {"ko": "테이크다운 전용 8방향 대칭 고정 맵 추가", "en": "Take Down exclusive 8-way symmetric fixed map added."},
+  "pn148_4": {"ko": "테이크다운 봇 캐릭터 중복 없이 랜덤 배정", "en": "Take Down bots assigned unique characters (no duplicates)."},
+  "pn147_1": {"ko": "캐릭터 모델링 개선 — 관절 구체 제거, 매끄러운 외형", "en": "Character modeling improved — joint spheres removed, smooth appearance."},
+  "pn147_2": {"ko": "핑크 V자 일렉기타 디테일 대폭 추가", "en": "Pink V-shape electric guitar detail overhaul."},
+  "pn147_3": {"ko": "핑크 사운드 웨이브 이펙트 (충격파 링 + 음표 파티클)", "en": "Pink sound wave effect (shockwave rings + note particles)."},
+  "pn147_4": {"ko": "공중 이펙트 빌보딩 — 항상 카메라를 향하도록", "en": "Aerial effects billboarding — always face the camera."},
+  "pn147_5": {"ko": "상점 레벨업 UI 업그레이드", "en": "Shop level-up UI upgraded."},
+  "pn147_6": {"ko": "캐릭터 정보 패널에 스킨 장착/해제 버튼 추가", "en": "Skin equip/unequip button added to the character info panel."},
+  "pn147_7": {"ko": "favicon 추가 (레드 캐릭터 실루엣)", "en": "Favicon added (Red character silhouette)."},
+  "pn147_8": {"ko": "재장전 속도 1발당 기준 정리 (레드 0.5, 블루 0.3, 오렌지 0.6 등)", "en": "Reload speed standardized per bullet (Red 0.5, Blue 0.3, Orange 0.6, etc.)."},
+  "pn146_1": {"ko": "핑크 캐릭터 추가 — 탱크/서포터 (원형 범위 공격 + 아군 회복)", "en": "Pink character added — Tank/Support (AoE attack + ally healing)."},
+  "pn146_2": {"ko": "상성표 8캐릭터로 갱신", "en": "Matchup table updated to 8 characters."},
+  "pn146_3": {"ko": "약병 범위: 6.0 → 5.0", "en": "Vial splash radius: 6.0 → 5.0"},
+  "pn145_1": {"ko": "슬로우/독/피격 발광 전신(팔·다리 포함)에 적용", "en": "Slow/poison/hit glow applied to the full body (arms & legs)."},
+  "pn145_2": {"ko": "슬로우/독 발광색 개선 (하늘색 / 연두색)", "en": "Slow/poison glow colors improved (sky blue / lime green)."},
+  "pn145_3": {"ko": "봇 AI 경로 탐색 개선 — 벽·호수 우회 이동", "en": "Bot AI pathfinding improved — wall & lake avoidance."},
+  "pn145_4": {"ko": "클릭 공격 시 자동조준 추가 (가장 가까운 적 방향)", "en": "Auto-aim on click attack added (nearest enemy direction)."},
+  "pn144_1": {"ko": "퍼플 캐릭터 추가 — 포이즌 컨트롤러 (독침/독병 교대 공격)", "en": "Purple character added — Poison Controller (alternating needle/vial attacks)."},
+  "pn144_2": {"ko": "스킨 시스템 추가 — 알파 레드 황금 왕관 한정 스킨", "en": "Skin system added — Alpha Red golden crown limited skin."},
+  "pn144_3": {"ko": "전 캐릭터 적중 이펙트 추가", "en": "Hit effects added for all characters."},
+  "pn144_4": {"ko": "레드 펀치 이펙트 강화 (충격파 링 + 버스트)", "en": "Red punch effect enhanced (shockwave ring + burst)."},
+  "pn144_5": {"ko": "옐로우 감전 이펙트 강화 (번개선 4갈래 + 스파크)", "en": "Yellow electrocution effect enhanced (4-way lightning + sparks)."},
+  "pn144_6": {"ko": "슬로우/독 상태 이펙트 추가 (얼음 결정 / 독 거품)", "en": "Slow/poison status effects added (ice crystal / poison bubbles)."},
+  "pn144_7": {"ko": "블루·옐로우·퍼플 투사체 꼬리 이펙트 추가", "en": "Blue, Yellow and Purple projectile trail effects added."},
+  "pn144_8": {"ko": "수동 공격 시 자동조준 해제", "en": "Manual attacks now turn off auto-aim."},
+  "pn144_9": {"ko": "탭을 전환하면 게임이 멈추던 문제를 수정했습니다.", "en": "Fixed the game freezing when switching tabs."},
+  "pn143_1": {"ko": "캐릭터 최대 레벨 Lv.6 추가 (비용 4,000, 최대 +10%)", "en": "Max character level Lv.6 added (cost 4,000, up to +10%)."},
+  "pn143_2": {"ko": "캐릭터 모델링 개선: 팔꿈치·무릎 관절 추가, 몸통 슬림화", "en": "Character modeling improved: elbow & knee joints, slimmer torso."},
+  "pn143_3": {"ko": "레드 전용 가드 스탠스 + 강펀치 애니메이션", "en": "Red exclusive guard stance + power punch animation."},
+  "pn143_4": {"ko": "벽/호수와 겹치는 수풀 제거 (해골 협곡 9개, 마른 호수 3개)", "en": "Removed bushes overlapping walls/lakes (Skull Canyon 9, Dry Lake 3)."},
+  "pn143_5": {"ko": "데미지: 3,400 → 2,400", "en": "Damage: 3,400 → 2,400"},
+  "pn143_6": {"ko": "사거리: 8 → 12", "en": "Range: 8 → 12"},
+  "pn143_7": {"ko": "부메랑 데미지: 1,100 → 950", "en": "Boomerang damage: 1,100 → 950"},
+  "pn143_8": {"ko": "히트박스: +30%", "en": "Hitbox: +30%"},
+  "pn143_9": {"ko": "체력: 4,400 → 4,800", "en": "HP: 4,400 → 4,800"},
+  "pn143_10": {"ko": "탄속: 28 → 32", "en": "Bullet speed: 28 → 32"},
+  "pn143_11": {"ko": "직격 데미지: 850 → 750", "en": "Direct hit damage: 850 → 750"},
+  "pn142_1": {"ko": "알파 시즌 3 전환", "en": "Switched to Alpha Season 3."},
+  "pn142_2": {"ko": "코인 재화 시스템 추가 (승리/패배/1위/연승 보너스)", "en": "Added coins with win, loss, first-place and win-streak bonuses."},
+  "pn142_3": {"ko": "캐릭터 레벨 시스템 추가 (Lv.1~5, 레벨당 체력·공격력 +2%)", "en": "Added character levels 1–5; each level grants +2% HP and attack."},
+  "pn142_4": {"ko": "마스터리 시스템 추가 (Bronze~Master 5등급)", "en": "Added five mastery tiers, from Bronze to Master."},
+  "pn142_5": {"ko": "상점 화면 추가 (캐릭터 레벨업 구매)", "en": "Added the shop and purchasable character upgrades."},
+  "pn142_6": {"ko": "파편 데미지: 400 → 300", "en": "Splash damage: 400 → 300"},
+  "pn142_7": {"ko": "재장전: 1.0 → 1.3초", "en": "Reload: 1.0 → 1.3 s"},
+  "pn142_8": {"ko": "파편 범위: 2.5 → 3.5", "en": "Splash range: 2.5 → 3.5"},
+  "pn141_1": {"ko": "체력: 9,000 → 9,800", "en": "HP: 9,000 → 9,800"},
+  "pn141_2": {"ko": "공격 쿨다운: 0.62 → 0.55", "en": "Attack cooldown: 0.62 → 0.55"},
+  "pn141_3": {"ko": "체력: 6,500 → 5,800", "en": "HP: 6,500 → 5,800"},
+  "pn141_4": {"ko": "직격 데미지: 1,000 → 850", "en": "Direct damage: 1,000 → 850"},
+  "pn141_5": {"ko": "사거리: 10 → 8", "en": "Range: 10 → 8"},
+  "pn141_6": {"ko": "감전 지속: 2.0 → 1.5초", "en": "Shock duration: 2.0 → 1.5 s"},
+  "pn140_1": {"ko": "시안 캐릭터 추가 — 컨트롤 파이터 (알약 6연발, 넓은 범위 제압)", "en": "Cyan character added — Control Fighter (6-pill spread line, wide area suppression)."},
+  "pn140_2": {"ko": "상성표 7캐릭터로 갱신", "en": "Matchup table updated to 7 characters."},
+  "pn140_3": {"ko": "찹 우드 맵 세로 레이아웃으로 변경", "en": "Chop Wood map changed to a vertical layout."},
+  "pn140_4": {"ko": "전체 캐릭터 색상 통일", "en": "Unified all character colors."},
+  "pn139_1": {"ko": "선택 캐릭터 강조 강화 (glow + 떠오르는 효과)", "en": "Selected character highlight enhanced (glow + float effect)."},
+  "pn139_2": {"ko": "3D 캐릭터 프리뷰 150% 확대", "en": "3D character preview enlarged 150%."},
+  "pn139_3": {"ko": "좌측 패널에 스탯 바 추가 (체력/공격/사거리/기동)", "en": "Stat bars added to the left panel (HP/ATK/Range/Speed)."},
+  "pn139_4": {"ko": "레벨 옆에 시즌 + 버전 표시 추가", "en": "Season + version shown next to level."},
+  "pn139_5": {"ko": "캐릭터 설명을 컬러 버튼 패널로 이동", "en": "Character details moved to the color button panel."},
+  "pn138_1": {"ko": "캐릭터 모델링 개선: 어깨·허벅지 관절 추가", "en": "Character modeling improved: shoulder & thigh joints added."},
+  "pn137_1": {"ko": "옐로우 캐릭터 추가 (전기 투사체 + 감전 감속)", "en": "Yellow character added (electric projectile + shock slow)."},
+  "pn137_2": {"ko": "로비 왼쪽 캐릭터 컬러 버튼 추가", "en": "Character color buttons added to the lobby left side."},
+  "pn137_3": {"ko": "상성표 5캐릭터 + 경합 열 추가", "en": "Matchup table: 5 characters + Even column."},
+  "pn137_4": {"ko": "캐릭터 카드 실제 인게임 수치 동기화", "en": "Character card stats synced with in-game values."},
+  "pn137_5": {"ko": "리더보드 봇 이름 고정", "en": "Leaderboard bot names fixed."},
+  "pn137_6": {"ko": "사거리: 8 → 10", "en": "Range: 8 → 10"},
+  "pn137_7": {"ko": "데미지: 4,400 → 3,400", "en": "Damage: 4,400 → 3,400"},
+  "pn137_8": {"ko": "블루 아이콘 색상이 잘못 표시되던 문제를 수정했습니다.", "en": "Fixed the Blue icon color."},
+  "pn136_1": {"ko": "알파 시즌 2 전환", "en": "Alpha Season 2 begins."},
+  "pn136_2": {"ko": "내 정보 + 리더보드 패널 추가", "en": "My Info + Leaderboard panels added."},
+  "pn136_3": {"ko": "시즌별 승률 추가", "en": "Per-season win rate tracking added."},
+  "pn136_4": {"ko": "AI 랜덤 이름 (한글/영어/혼용)", "en": "AI random names (KR/EN/mixed)."},
+  "pn136_5": {"ko": "리더보드 봇 유저 순위 표시", "en": "Leaderboard shows bot user rankings."},
+  "pn136_6": {"ko": "그린 봇 AI 적정 교전 거리 3.5타일", "en": "Green bot AI optimal range: 3.5 tiles."},
+  "pn136_7": {"ko": "체력: 10,000 → 9,000", "en": "HP: 10,000 → 9,000"},
+  "pn136_8": {"ko": "사거리: 5 → 6", "en": "Range: 5 → 6"},
+  "pn136_9": {"ko": "부메랑: 900 → 1,100", "en": "Boomerang: 900 → 1,100"},
+  "pn136_10": {"ko": "폭탄 속도: 14 → 16", "en": "Bomb speed: 14 → 16"},
+  "pn136_11": {"ko": "분산: 1,000 → 400", "en": "Splash: 1,000 → 400"},
+  "pn135_1": {"ko": "분산 데미지: 10 → 1,000", "en": "Splash damage: 10 → 1,000"},
+  "pn135_2": {"ko": "투사체 히트박스: 2배", "en": "Projectile hitbox: ×2"},
+  "pn135_3": {"ko": "공격력: 4,000 → 4,400 (10% 증가)", "en": "Damage: 4,000 → 4,400 (+10%)"},
+  "pn135_4": {"ko": "탄약 UI가 갱신되지 않던 문제를 수정했습니다.", "en": "Fixed the ammo UI not updating."},
+  "pn134_1": {"ko": "찹 우드", "en": "Chop Wood"},
+  "pn134_2": {"ko": "자기장 판정: 제거", "en": "Zone damage: removed"},
+  "pn134_3": {"ko": "플레이어 이동 제한: 해제", "en": "Player movement limit: removed"},
+  "pn134_4": {"ko": "나무 체력: 100 → 50", "en": "Tree HP: 100 → 50"},
+  "pn134_5": {"ko": "벌목 시간: 2초 → 1초", "en": "Chop interval: 2 s → 1 s"},
+  "pn133_1": {"ko": "모드 선택 UI 추가 (쇼다운/찹 우드 분기)", "en": "Mode selector UI added (Showdown / Chop Wood)."},
+  "pn133_2": {"ko": "찹 우드 팀 구분 (머리 위 색상 마커 + 킬피드 색상)", "en": "Chop Wood team markers (head color + kill feed color)."},
+  "pn133_3": {"ko": "공격력: 4,000 → 4,400 (10% 증가)", "en": "Damage: 4,000 → 4,400 (+10%)"},
+  "pn132_1": {"ko": "죽은 코드 정리 (-1,400줄)", "en": "Dead code cleanup (−1,400 lines)."},
+  "pn132_2": {"ko": "찹 우드 모드 스펙 작성", "en": "Chop Wood mode spec written."},
+  "pn132_3": {"ko": "분산 사거리: 5 → 2.5", "en": "Splash range: 5 → 2.5"},
+  "pn132_4": {"ko": "이동속도: +4%", "en": "Move speed: +4%"},
+  "pn132_5": {"ko": "공속: 0.25 → 0.3초", "en": "Attack cooldown: 0.25 → 0.3 s"},
+  "pn131_1": {"ko": "오렌지 조준선 추가", "en": "Orange aim indicator added."},
+  "pn131_2": {"ko": "상성표 4캐릭터로 갱신", "en": "Matchup table updated to 4 characters."},
+  "pn131_3": {"ko": "3개 맵 자기장 밖 오브젝트 제거 + 경계 벽 추가", "en": "Removed objects outside the zone on all 3 maps + border walls."},
+  "pn131_4": {"ko": "로비 UI 가로 25% 증가", "en": "Lobby UI width +25%."},
+  "pn131_5": {"ko": "LANGS 번역 데이터 모듈 분리", "en": "LANGS translation data separated into a module."},
+  "pn131_6": {"ko": "bestStreakLabel 번역 키 추가", "en": "bestStreakLabel translation key added."},
+  "pn131_7": {"ko": "승리 시 결과 화면이 뜨지 않던 문제를 수정했습니다.", "en": "Fixed the victory screen not showing."},
+  "pn130_1": {"ko": "오렌지 캐릭터 정식 추가 (폭탄 + 5갈래 폭발)", "en": "Orange character added (bomb + 5-way explosion)."},
+  "pn130_2": {"ko": "자기장 색상 초록으로 변경", "en": "Zone color changed to green."},
+  "pn130_3": {"ko": "자기장 축소 시간 단축 (136초 → 75초)", "en": "Zone shrink time reduced (136 s → 75 s)."},
+  "pn130_4": {"ko": "받은 데미지 빨간 팝업 표시", "en": "Damage taken shown as a red popup."},
+  "pn130_5": {"ko": "사거리: 8타일", "en": "Range: 8 tiles"},
+  "pn129_1": {"ko": "봇 AI 개선 (타겟 선택, 자기장 인식, 캐릭터별 전략)", "en": "Bot AI improvements (targeting, zone awareness, per-character strategy)."},
+  "pn129_2": {"ko": "수풀 전투 발각 시스템 (공격/피격 시 3초 노출)", "en": "Bush combat reveal system (3 s exposure on attack/hit)."},
+  "pn129_3": {"ko": "훈련장 더미 3초 리스폰 + 킬로그 제거", "en": "Training dummy 3 s respawn + kill log removed."},
+  "pn129_4": {"ko": "로딩 화면 추가", "en": "Loading screen added."},
+  "pn129_5": {"ko": "다른 탭 전환 시에도 게임 진행", "en": "Game keeps running in background tabs."},
+  "pn129_6": {"ko": "타이틀 Colors로 변경", "en": "Title changed to Colors."},
+  "pn129_7": {"ko": "HUD 로고 제거", "en": "HUD logo removed."},
+  "pn129_8": {"ko": "봇 수풀 매복 시스템 제거", "en": "Bot bush ambush system removed."},
+  "pn129_9": {"ko": "이동속도 밸런스 (레드 빠름 > 그린 중간 > 블루 보통)", "en": "Move speed rebalance (Red fast > Green mid > Blue normal)."},
+  "pn129_10": {"ko": "부메랑 히트박스: +25%", "en": "Boomerang hitbox: +25%"},
+  "pn129_11": {"ko": "무한 로딩 문제를 수정했습니다.", "en": "Fixed infinite loading."},
+  "pn129_12": {"ko": "CSS 문법 오류로 스타일이 깨지던 문제를 수정했습니다.", "en": "Fixed broken styles caused by a CSS syntax error."},
+  "pn129_13": {"ko": "Three.js 로컬 로드 실패에 대응해 CDN을 복원했습니다.", "en": "Restored the Three.js CDN after local loading failed."},
+  "pn128_1": {"ko": "킬 로그, 승률, 최고 기록 시스템 추가", "en": "Kill log, win rate and best streak system added."},
+  "pn128_2": {"ko": "알파 시즌 1 UI와 전투 경험 다듬기", "en": "Alpha Season 1 UI and combat polish."},
+  "pn128_3": {"ko": "캐릭터 카드 간소화 및 오렌지 카드 개선", "en": "Simplified character cards + Orange card polish."},
+  "pn128_4": {"ko": "재장전 UI 개선 및 피격 이펙트 강화", "en": "Reload UI polish + hit feedback improvements."},
+  "pn126_1": {"ko": "캐릭터 통계 표시 개선", "en": "Improved character statistics display."},
+  "pn126_2": {"ko": "공격 쿨다운: 0.40 → 0.45", "en": "Attack cooldown: 0.40 → 0.45"},
+  "pn126_3": {"ko": "사소한 버그를 수정했습니다.", "en": "Minor bug fixes."},
+  "pn125_1": {"ko": "HUD 로고 제거", "en": "HUD logo removed."},
+  "pn125_2": {"ko": "훈련장 더미 3초 후 자동 리스폰", "en": "Training dummy auto-respawns after 3 s."},
+  "pn125_3": {"ko": "훈련장 더미 사망 킬로그 제거", "en": "Training dummy kill log removed."},
+  "pn125_4": {"ko": "로딩 화면 추가 (진행 바 + 단계별 메시지)", "en": "Loading screen added (progress bar + messages)."},
+  "pn125_5": {"ko": "타이틀 Colors로 변경", "en": "Title changed to Colors."},
+  "pn125_6": {"ko": "다른 탭 전환 시에도 게임 계속 진행", "en": "Game keeps running in background tabs."},
+  "pn125_7": {"ko": "봇 수풀 매복 시스템 제거", "en": "Bot bush ambush system removed."},
+  "pn125_8": {"ko": "이동속도 밸런스 조정 (레드 빠름 > 그린 중간 > 블루 보통)", "en": "Move speed rebalance (Red fast > Green mid > Blue normal)."},
+  "pn125_9": {"ko": "부메랑 투사체 히트박스: +25%", "en": "Boomerang projectile hitbox: +25%"},
+  "pn125_10": {"ko": "무한 로딩 문제를 수정했습니다.", "en": "Fixed infinite loading."},
+  "pn123_1": {"ko": "다국어 시스템 추가 (한국어/영어)", "en": "Multi-language support (Korean/English)."},
+  "pn122_1": {"ko": "상성표 · 패치노트를 로비 우측 상단으로 이동", "en": "Moved the matchup table and patch notes to the top right."},
+  "pn121_1": {"ko": "알파 시즌 1 시작", "en": "Alpha Season 1 begins."},
+  "pn121_2": {"ko": "상성표 설명 텍스트 추가", "en": "Matchup description added."},
+  "pn121_3": {"ko": "패치노트가 스크롤되지 않던 문제를 수정했습니다.", "en": "Fixed patch notes scrolling."},
+  "pn12_1": {"ko": "캐릭터별 승률 · 판수 · 승리 횟수 표시 추가", "en": "Per-character win rate / games / wins display."},
+  "pn12_2": {"ko": "연승 시스템 추가 (2연승 +1 ~ 5연승 이상 +4 보너스 트로피)", "en": "Win streak system (2-streak +1 up to 5+ streak +4 bonus trophies)."},
+  "pn12_3": {"ko": "상성표 추가", "en": "Matchup table added."},
+  "pn12_4": {"ko": "패치노트 추가", "en": "Patch notes added."},
+  "pn11_1": {"ko": "즉시회복 시스템 변경 (3초 후 25% 일괄 회복, 봇은 5초)", "en": "Instant regen changed (25% at once after 3 s, bots 5 s)."},
+  "pn11_2": {"ko": "자기장 피해 중 자연회복 동시 적용 차단", "en": "Zone damage now blocks natural regen."},
+  "pn11_3": {"ko": "수풀 GPU 최적화", "en": "Bush GPU optimization."},
+  "pn11_4": {"ko": "봇 타겟팅 로직 개선", "en": "Bot targeting improvements."},
+  "pn11_5": {"ko": "봇이 수풀 매복 중 영구 정지하던 문제를 수정했습니다.", "en": "Fixed bots freezing permanently while ambushing in bushes."},
+  "pn10_1": {"ko": "3종 캐릭터 (레드 / 그린 / 블루)", "en": "3 characters (Red / Green / Blue)."},
+  "pn10_2": {"ko": "배틀 맵 3종 로테이션", "en": "3 battle map rotation."},
+  "pn10_3": {"ko": "트로피 · 순위 시스템", "en": "Trophy & ranking system."},
+  "pn10_4": {"ko": "수풀 은신 메커닉", "en": "Bush stealth mechanic."},
+  "pn10_5": {"ko": "훈련장", "en": "Training mode."},
 };

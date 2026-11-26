@@ -46,7 +46,7 @@ import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
 import { applyBeta9Balance, applyOfficialBalance } from "./config/beta9-balance.js?v=32";
 import { SALMON_THROW } from "./config/salmon-animation.js";
-import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=52";
+import { BETA9_PATCH_NOTES } from "./config/beta9-patch-notes.js?v=53";
 import { createBeta6Combat } from "./combat/beta6-combat.js?v=78";
 import { createBetaTransform } from "./beta-transform.js?v=4";
 import { createGadgetUi } from "./gadget-ui.js?v=1";
@@ -3255,8 +3255,15 @@ function renderBeta8Overview() {
 function renderBetaPatchNotes() {
   const notes = BETA9_PATCH_NOTES;
   modalTitle.textContent = `${notes.title} · ${notes.date}`;
-  const card = (group, c) => `<article class="beta-card patch-card patch-${group.type}"><span class="patch-badge ${group.type}">${group.label}</span><h3>${c.name}</h3><ul class="patch-changes">${c.changes.map(([stat, before, after, kind = group.type === 'buff' || group.type === 'nerf' ? group.type : '']) => `<li${kind ? ` class="patch-${kind}"` : ''}><b>${stat}</b><span><s>${before}</s> → <strong>${after}</strong></span></li>`).join('')}</ul>${c.note ? `<p>${c.note}</p>` : ''}</article>`;
-  modalContent.innerHTML = `<section class="storybook-intro"><span>SEASON 9 · UPDATE</span><h2>${notes.title}</h2><ul class="patch-summary">${notes.summary.map(line => `<li>${line}</li>`).join('')}</ul></section>`
+  const sections = [['new', '신규'], ['system', '시스템'], ['balance', '밸런스 조정'], ['fix', '버그 수정']];
+  const dirs = { buff: '▲ 상향', nerf: '▼ 하향', adjust: '◆ 조정', rework: '◆ 리워크' };
+  const dirKind = type => (type === 'buff' || type === 'nerf' ? type : '');
+  const change = ([stat, before, after, kind], fallback) => { kind ??= fallback; return `<li${kind ? ` class="patch-${kind}"` : ''}><b>${stat}</b><span><s>${before}</s> → <strong>${after}</strong></span></li>`; };
+  const logItem = item => `<li><div class="patch-log-target"><b>${item.target}</b>${item.dir ? `<span class="patch-dir ${item.dir}">${dirs[item.dir]}</span>` : ''}${item.scope ? `<span class="patch-scope">${item.scope}</span>` : ''}</div>${item.text ? `<p>${item.text}</p>` : ''}${item.lines ? `<ul class="patch-changes">${item.lines.map(line => change(line, dirKind(item.dir))).join('')}</ul>` : ''}</li>`;
+  const update = u => `<article class="patch-log-entry"><header>${u.date}</header>${sections.filter(([key]) => u.sections[key]?.length).map(([key, label]) => `<h4 class="patch-log-sec ${key}">${label}</h4><ul class="patch-log-items">${u.sections[key].map(logItem).join('')}</ul>`).join('')}</article>`;
+  const card = (group, c) => `<article class="beta-card patch-card patch-${group.type}"><span class="patch-badge ${group.type}">${group.label}</span><h3>${c.name}</h3><ul class="patch-changes">${c.changes.map(line => change(line, dirKind(group.type))).join('')}</ul>${c.note ? `<p>${c.note}</p>` : ''}</article>`;
+  modalContent.innerHTML = `<section class="storybook-intro"><span>SEASON 9 · UPDATE</span><h2>${notes.title}</h2><p>${notes.intro}</p></section>`
+    + `<section class="patch-log">${notes.updates.map(update).join('')}</section><h3 class="patch-detail-title">상세 변경 내역</h3>`
     + notes.groups.map(group => `<h3 class="patch-group-title ${group.type}">${group.label} · ${group.characters.length}${group.unit ?? '명'}</h3><div class="beta-grid">${group.characters.map(c => card(group, c)).join('')}</div>`).join('');
 }
 
