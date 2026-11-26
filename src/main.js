@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=29";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=30";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -441,6 +441,11 @@ if (["beta6", "beta7", "beta8"].includes(CURRENT_SEASON)) {
     releaseStats.cyan.ultimate.range = 10.5;
     // Main v1.8.9: Cyan fires sooner and more often (windup 0.08 → 0.04 s, cooldown 0.35 → 0.3 s).
     Object.assign(releaseStats.cyan, { attackWindup: 0.04, attackCooldown: 0.3 });
+    // Main v1.8.9: the 11.26 beta/official adjustments by the same proportion.
+    Object.assign(releaseStats.chartreuse, { chartreuseDamage: 1450, chartreuseEnhancedDamage: 2900, projectileSize: 0.33 });
+    releaseStats.crimson.attackCooldown = 0.64;
+    releaseStats.salmon.directDamage = 2000;
+    releaseStats.salmon.basicAttack.description = releaseStats.salmon.basicAttack.description.replace("가장 가까운 적 1명에게 3000 피해", "가장 가까운 적 1명에게 2600 피해");
     // Main v1.8.9: Yellow takes the beta/official basic attack (main was last in knockout simulations).
     Object.assign(releaseStats.yellow, { maxHealth: 6800, electricDamage: 2700, electricRange: 14, electricSpeed: 30, electricRadius: 0.5, shockSlowPercent: 0.4, attackDelay: 0, attackWindup: 0, botCircuitOnlyOnEnemies: true });
     releaseStats.yellow.basicAttack.description = releaseStats.yellow.basicAttack.description.replace("이동속도를 25% 감소", "이동속도를 40% 감소");
