@@ -1,4 +1,4 @@
-import { createSalmonCombat } from "./salmon-combat.js?v=3";
+import { createSalmonCombat } from "./salmon-combat.js?v=4";
 // Browser-independent combat used by beta6 bots and the matchup runner.
 import { beta6Ultimate } from '../config/beta6-balance.js';
 import { TRANSFORMS, TRANSFORM_STATS } from '../config/transforms.js';
@@ -147,6 +147,8 @@ export function createBeta6Combat(definitions, options = {}) {
     emit('ccRound', { owner: a, target: b, effect });
     // Every CC round effect, poison and reveal included, finishes an angel-marked target.
     control(b, a);
+    // A lifted target is invulnerable until it lands (after the angel finish above).
+    if (b.salmonAirborne && effect === 'airborne') { b.invulnerableUntil = Math.max(b.invulnerableUntil ?? 0, b.salmonAirborne.until); b.airInvulnerableUntil = b.salmonAirborne.until; }
   }
   function damageReductionFor(a) {
     const guard=time<a.guardUntil?(a.u?.damageReduction??a.d.ultimate?.damageReduction??0):0;
@@ -158,8 +160,10 @@ export function createBeta6Combat(definitions, options = {}) {
     const gadgetGuard=time<(a.gadgetGuardUntil??0)?(a.gadgetGuardReduction??0):0;
     return clamp(1-(1-Math.max(guard,dash))*(1-shield)*(1-gadgetGuard),0,1);
   }
-  function hit(a, b, damage, basic = false, award = 1, ultimate = false, bypassGuard = false) {
-    if (!alive(b) || damage <= 0 || time < b.invulnerableUntil || !enemies(a, b)) return 0;
+  // throughAirborne: effects that were already running before an airborne invulnerability (poison ticks) keep applying.
+  function hit(a, b, damage, basic = false, award = 1, ultimate = false, bypassGuard = false, throughAirborne = false) {
+    const airOnly = throughAirborne && b.invulnerableUntil <= (b.airInvulnerableUntil ?? -Infinity) + 1e-9;
+    if (!alive(b) || damage <= 0 || (time < b.invulnerableUntil && !airOnly) || !enemies(a, b)) return 0;
     if (a.t && transformed(a)) damage *= 1 + TRANSFORM_STATS.damageBonus;
     if (a.powerMultiplier) damage *= a.powerMultiplier;
     const dealt = Math.min(b.hp, damage * (bypassGuard?1:1-damageReductionFor(b)));
@@ -631,6 +635,8 @@ export function createBeta6Combat(definitions, options = {}) {
         a.lockUntil = time + u.duration;
         // Remember the leap's own lock so landing releases only it, not a stun received mid-air.
         a.leap.lockUntil = a.lockUntil;
+        // Invulnerable while in the air: no damage or crowd control until landing.
+        a.invulnerableUntil = Math.max(a.invulnerableUntil, time + u.duration); a.airInvulnerableUntil = time + u.duration;
         purpleLeapBurst(a, from, 'takeoff');
       }
       else if (a.id === 'mint') {
@@ -702,7 +708,10 @@ export function createBeta6Combat(definitions, options = {}) {
       // The +20% transform health goes away when the transform ends.
       if (a.transformBonusHp && time >= a.transformUntil) { a.transformBonusHp = 0; a.hp = Math.min(a.hp, a.d.maxHealth); }
       if (a.salmonAirborne && time < (a.angelMarkUntil ?? 0)) control(a, a.salmonAirborne.owner);
-      if (!alive(a) || a.isSalmonDevice || a.salmonAirborne) continue;
+      if (!alive(a) || a.isSalmonDevice) continue;
+      // Poison keeps ticking while lifted or leaping (airborne invulnerability lets running poison through).
+      if (time < a.poisonUntil && time >= a.poisonNext) { hit(a.poisonOwner, a, a.poisonOwner.d.poisonDPS ?? definitions.purple.poisonDPS, false, 1, false, false, true); a.poisonNext = time + 1; }
+      if (!alive(a) || a.salmonAirborne) continue;
       if (a.analysisTarget) {
         const target = a.analysisTarget;
         if (time >= target.analysisExpires) { hit(a, target, a.u.executionFixedAmount ?? target.hp, false, 0, true, a.u.executeBypassesGuard === true); target.analysisOwner = null; a.analysisTarget = null; a.lockUntil = time; emit('analysisExecute', { owner: a, target }); }
@@ -761,7 +770,6 @@ export function createBeta6Combat(definitions, options = {}) {
       if (a.automatic && a.t && target && distance(a, target) <= perceivedRange(a) + 1) transform(a);
       if (a.automatic) cast(a, target);
       if (a.leap) continue;
-      if (time < a.poisonUntil && time >= a.poisonNext) { hit(a.poisonOwner, a, a.poisonOwner.d.poisonDPS ?? definitions.purple.poisonDPS); a.poisonNext = time + 1; }
       if (!a.d.noAutomaticReload && a.ammo < (a.d.maxAmmo ?? 3) && time >= a.next) { a.reload += dt; if (a.reload >= a.d.reloadDuration) { a.ammo++; a.reload -= a.d.reloadDuration; } }
       else if (a.ammo >= (a.d.maxAmmo ?? 3)) a.reload = 0;
       if (!a.automatic || !target) continue;

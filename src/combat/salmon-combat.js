@@ -20,6 +20,8 @@ export function createSalmonCombat(h) {
     for(let step=1;step<=40;step++){const p={x:from.x+dx/len*step*.05,z:from.z+dz/len*step*.05};if(!onFloor(p,.55))break;to=p;}
     const duration=owner.d.salmonAirborneDuration??SALMON_AIRBORNE_DURATION;
     target.salmonAirborne={from,to,start:now(),until:now()+duration,duration,slow,owner,landingDamage:(slow?owner.u:owner.d).landingDamage??0};target.lockUntil=Math.max(target.lockUntil??0,now()+duration);target.dash=null;target.wave=false;
+    // Invulnerable while in the air (poison already running keeps ticking); the landing damage still applies on touchdown.
+    target.invulnerableUntil=Math.max(target.invulnerableUntil??0,now()+duration);target.airInvulnerableUntil=now()+duration;
     h.cancelRide?.(target);h.emit('salmonCapture',{owner,target});
   }
   function recover(a){if(a.ammo>=a.d.maxAmmo)return false;const f=floats.filter(f=>f.owner===a&&dist(a,f)<=4+1e-9&&clearLine(a,f)).sort((b,c)=>dist(a,b)-dist(a,c)||b.key-c.key)[0];if(!f)return false;floats.splice(floats.indexOf(f),1);a.ammo++;h.emit('salmonRecover',{owner:a,float:f});return true;}
@@ -51,7 +53,7 @@ export function createSalmonCombat(h) {
     for(const a of h.actors){if(a.isSalmonDevice)continue;
       if(Math.hypot(a.vx??0,a.vz??0)>.05&&!a.salmonAirborne)a.salmonLastMove={x:a.vx,z:a.vz,at:now()};
       const air=a.salmonAirborne;if(air){if(a.hp<=0){a.salmonAirborne=null;a.salmonHeight=0;continue;}const t=Math.min(1,(now()-air.start)/(air.duration??SALMON_AIRBORNE_DURATION));a.x=air.from.x+(air.to.x-air.from.x)*t;a.z=air.from.z+(air.to.z-air.from.z)*t;a.salmonHeight=Math.sin(Math.PI*t)*SALMON_AIRBORNE_HEIGHT;
-        if(t>=1){a.salmonAirborne=null;a.salmonHeight=0;h.hit(air.owner,a,air.landingDamage);if(air.slow&&a.hp>0){a.slow=.3;a.slowUntil=now()+1;}}}
+        if(t>=1){a.salmonAirborne=null;a.salmonHeight=0;if((a.invulnerableUntil??0)<=air.until+1e-9)a.invulnerableUntil=Math.min(a.invulnerableUntil??0,now());h.hit(air.owner,a,air.landingDamage);if(air.slow&&a.hp>0){a.slow=.3;a.slowUntil=now()+1;}}}
     }
     for(let i=flights.length-1;i>=0;i--){const f=flights[i];if(f.owner.hp<=0){flights.splice(i,1);continue;}if(now()+1e-9>=f.lands){flights.splice(i,1);landing(f);}}
     for(let i=floats.length-1;i>=0;i--)if(floats[i].owner.hp<=0)floats.splice(i,1);

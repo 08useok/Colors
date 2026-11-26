@@ -12,13 +12,13 @@ const setup=(options={})=>{const w=createBeta6Combat(defs,{bounds:30,...options}
  assert(w.fire(a,b));assert.equal(a.ammo,4);run(w,.8);assert.equal(b.hp,100000);
  run(w,.1);assert.equal(b.hp,97000);assert.equal(c.hp,99400);assert.equal(a.ammo,5);assert.equal(a.charge,4);
  assert(b.salmonAirborne);assert(!w.fire(b,a));assert(!w.cast(b,a));
- assert.equal(w.hit(a,b,100),100,'airborne targets remain damageable');
+ assert.equal(w.hit(a,b,100),0,'airborne targets are invulnerable');
  assert(Math.abs(b.salmonAirborne.until-b.salmonAirborne.start-1.2)<1e-9);
  // Advance exactly to the midpoint to verify the larger peak as well as the lock.
  const peakAt=b.salmonAirborne.start+.6;while(w.time<peakAt-1e-9)w.update(Math.min(1/60,peakAt-w.time));assert(Math.abs(b.salmonHeight-4.5)<1e-7);
  run(w,.5);assert(b.salmonAirborne,'still airborne before 1.2 seconds');assert(!w.fire(b,a));
  run(w,.2);assert(!b.salmonAirborne);assert.equal(b.salmonHeight,0);assert(Math.abs(b.x-9)<1e-7);
- assert.equal(b.hp,96300,'captured target takes 600 landing damage');assert.equal(c.hp,99400,'landing does not damage bystanders');
+ assert.equal(b.hp,96400,'captured target takes 600 landing damage');assert.equal(c.hp,99400,'landing does not damage bystanders');
  const landedHp=b.hp,landedCharge=a.charge;run(w,.2);assert.equal(b.hp,landedHp,'landing hits once');assert.equal(a.charge,landedCharge,'landing grants no extra ultimate charge');
 }
 {

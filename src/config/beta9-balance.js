@@ -14,6 +14,9 @@
 //    Ivory's zone stays 4 s, Gold's ultimate field radius 6 → 4.5.
 //  - Raspberry (2026-11-07): basic bind 1.6 → 2.0 s (raspberry.js). Chartreuse → Raspberry fell to 238-2, so
 //    Chartreuse shots fly faster (22 → 26) and reload faster (1.2 → 1.1 s): 240-0 again, Red → Chartreuse stays 240-0.
+//  - Chartreuse (2026-11-26): damage 1380 → 1500, enhanced 2760 → 3000, projectile size 0.3 → 0.33 (+10%).
+//  - Salmon (2026-11-26): lift 2.4 → 1.2 s (targets are invulnerable while lifted), direct hit 2700 → 2300 (Ivory → Salmon 240-0).
+//  - Crimson (2026-11-26): attack cooldown 0.6 → 0.5 s (Crimson → Blue 240-0, Lavender → Crimson stays 240-0).
 //  - Chartreuse (2026-11-07): range 9.5 → 11, damage 1320 → 1380, enhanced 2640 → 2760 (more than this lets
 //    Chartreuse beat Red). Keeps Red → Chartreuse and Chartreuse → Raspberry at 240-0.
 //    Ultimate damage bonus +25% → +50% (both links still 240-0).
@@ -35,7 +38,7 @@ export const BETA9_BALANCE = Object.freeze({
   // Buffs: behind in 3v3.
   // 2026-11-04: faster throw (windup 0.36 → 0.22 s, speed 20 → 26, impact radius 1.75 → 2.3) so Salmon can
   // land hits on Orange (1v1 55-185 → 152-88); the beta page plays the throw clip faster to match.
-  salmon: { maxHealth: 7200, directDamage: 2700, throwSpeed: 26, throwWindup: .22, impactRadius: 2.3, attackCooldown: 1.5, salmonAirborneDuration: 2.4, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
+  salmon: { maxHealth: 7200, directDamage: 2300, throwSpeed: 26, throwWindup: .22, impactRadius: 2.3, attackCooldown: 1.5, salmonAirborneDuration: 1.2, pursuesWhileLowHealth: true, attackPerceptionMinRange: 7.8 },
   green: { maxHealth: 9600 },
   // Mint's three-shot burst fans out: side shots 10% of a right angle (9°) off the aim line.
   // 2026-11-03: faster burst (120 → 80 ms), no windup, 0.55 s between attacks and a 4-unit ultimate
@@ -52,9 +55,9 @@ export const BETA9_BALANCE = Object.freeze({
   pink: { healCircleRange: 5, healCircleDamage: 2400, healCircleHeal: 1500, ultimate: { chargeRequired: 10 } },
   // 11.22: basic range 8.33 → 9.5 tiles, Gale Strike range 10 → 10.5 tiles.
   cyan: { spreadLineDamage: 1000, maxHealth: 8200, spreadLineRange: 9.5, ultimate: { range: 10.5 } },
-  chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1380, chartreuseEnhancedDamage: 2760, ultimate: { damageMultiplier: 1.5 } },
+  chartreuse: { chartreuseSpeed: 26, reloadDuration: 1.1, chartreuseRange: 11, chartreuseDamage: 1500, chartreuseEnhancedDamage: 3000, projectileSize: .33, ultimate: { damageMultiplier: 1.5 } },
   // 11.24: bot projectile dodge rolls 50% like everyone else (it always dodged before).
-  crimson: { maxHealth: 13000, attackCooldown: .6, projectileDodgeChance: .5 },
+  crimson: { maxHealth: 13000, attackCooldown: .5, projectileDodgeChance: .5 },
   // Tanks (Red, Crimson, Azure, Pink) keep fighting at low health; Azure was the only one retreating.
   // Big Wave (11.12): reaches the edge of any arena (80 tiles, the wave ends at the arena boundary), through walls, hitting everyone.
   azure: { maxHealth: 10500, pursuesWhileLowHealth: true, ultimate: { range: 80, width: 5 } },
@@ -119,8 +122,7 @@ export function applyBeta9Balance(characters) {
     replaceText(cyan.basicAttack, 'descriptionEn', [['Each deals 700 damage', 'Each deals 1000 damage'], ['with a 8.33-tile range', 'with a 9.5-tile range']]);
   }
   if (salmon) {
-    replaceText(salmon.basicAttack, 'description', [['가장 가까운 적 1명에게 3000 피해', '가장 가까운 적 1명에게 3300 피해'], ['1.2초 포획', '2.4초 포획'], ['1.2초간 띄운', '2.4초간 띄운']]);
-    replaceText(salmon.ultimate, 'description', [['1.2초 포획', '2.4초 포획']]);
+    replaceText(salmon.basicAttack, 'description', [['가장 가까운 적 1명에게 3000 피해', '가장 가까운 적 1명에게 2900 피해']]);
   }
   return characters;
 }

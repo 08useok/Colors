@@ -3,7 +3,7 @@ import { BETA_ATTACK_PROFILES, applyBetaAttackPose, restoreBetaAttackPose } from
 import { crystalWalkInPlace } from "./visuals/crystal-motion.js?v=1";
 import { createModelLoadingScreen } from "./visuals/model-loading.js?v=3";
 import { characterDisplayName } from "./LANGS/character-names.js?v=2";
-import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=27";
+import { ARCHIVE_TEXT } from "./LANGS/archive-text.js?v=28";
 import { MAIN_UI, mainUiText } from "./LANGS/main-ui.js?v=14";
 import { attackGuide, ultimateGuide } from "./config/aim-guides.js?v=3";
 import { createAimGuide } from "./visuals/aim-guide.js?v=1";
@@ -20,7 +20,7 @@ import { CHARACTERS } from "./config/characters.js?v=1.7.0.3";
 import { BETA_CHARACTERS } from "./config/beta-characters.js?v=1.7.0.4";
 import { applyBeta7Balance } from "./config/beta7-balance.js?v=20";
 import { applyBeta8Balance } from "./config/beta8-balance.js?v=10";
-import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=23";
+import { createMainSeasonCombat } from "./combat/main-season-combat.js?v=24";
 import { createSeasonCombatVisuals } from "./visuals/season-combat.js?v=3";
 import { createSalmonVisuals } from "./visuals/salmon-combat.js?v=1";
 import { createSkinEffects } from "./visuals/skin-effects.js?v=1";
@@ -399,7 +399,7 @@ const BETA_SEASON_5_START_AT = new Date("2026-09-07T18:00:00+09:00").getTime();
 const BETA_SEASON_6_START_AT = new Date("2026-09-21T18:00:00+09:00").getTime();
 const BETA_SEASON_7_START_AT = new Date("2026-10-13T00:00:00+09:00").getTime();
 const BETA_SEASON_8_START_AT = new Date("2026-10-31T00:00:00+09:00").getTime();
-const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.8" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
+const CURRENT_VERSION = Date.now() >= BETA_SEASON_8_START_AT ? "v1.8.9" : Date.now() >= BETA_SEASON_7_START_AT ? "v1.7.0.7" : Date.now() >= BETA_SEASON_6_START_AT ? "v1.6.0" : Date.now() >= BETA_SEASON_5_START_AT ? "v1.5.5" : Date.now() >= BETA_SEASON_4_START_AT ? "v1.5.4" : Date.now() >= BETA_SEASON_3_START_AT ? "v1.5.3" : "v1.5.2";
 const CURRENT_SEASON = Date.now() >= BETA_SEASON_8_START_AT ? "beta8" : Date.now() >= BETA_SEASON_7_START_AT ? "beta7" : Date.now() >= BETA_SEASON_6_START_AT ? "beta6" : Date.now() >= BETA_SEASON_5_START_AT
   ? "beta5"
   : Date.now() >= BETA_SEASON_4_START_AT
@@ -439,6 +439,10 @@ if (["beta6", "beta7", "beta8"].includes(CURRENT_SEASON)) {
     releaseStats.purple.ultimate.description = releaseStats.purple.ultimate.description.replace("즉시 1000 피해", "즉시 5000 피해").replace("가시 16발을 사방으로 발사합니다. 가시는 사거리 10타일,", "가시 16발을 바라보는 방향 60도 부채꼴로 발사합니다. 가시는 벽에 닿을 때까지 날아가고,");
     releaseStats.purple.ultimate.descriptionEn = releaseStats.purple.ultimate.descriptionEn.replace("deals 1000 damage", "deals 5000 damage").replace("fires 16 thorns from the center. Each thorn deals 550 damage with 10-tile range;", "fires 16 thorns forward in a 60-degree fan. Each thorn flies until it hits a wall and deals 550 damage;");
     releaseStats.cyan.ultimate.range = 10.5;
+    // Main v1.8.9: Yellow takes the beta/official basic attack (main was last in knockout simulations).
+    Object.assign(releaseStats.yellow, { maxHealth: 6800, electricDamage: 2700, electricRange: 14, electricSpeed: 30, electricRadius: 0.5, shockSlowPercent: 0.4, attackDelay: 0, attackWindup: 0, botCircuitOnlyOnEnemies: true });
+    releaseStats.yellow.basicAttack.description = releaseStats.yellow.basicAttack.description.replace("이동속도를 25% 감소", "이동속도를 40% 감소");
+    releaseStats.yellow.basicAttack.descriptionEn = releaseStats.yellow.basicAttack.descriptionEn.replace("by 25%", "by 40%");
   }
   // Main-only balance adjustments; beta definitions remain separate.
   if (CURRENT_SEASON === "beta7") {
